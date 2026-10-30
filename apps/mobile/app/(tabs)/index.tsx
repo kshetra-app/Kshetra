@@ -6,6 +6,8 @@ import {
   ActivityIndicator,
   ScrollView,
   Dimensions,
+  Image,
+  Animated,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -46,6 +48,7 @@ import {
 import StateSwitcher from '../../components/StateSwitcher';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import MapLegend from '../../components/MapLegend';
+import AdaptiveFloatingControls from '../../components/AdaptiveFloatingControls';
 import MapFallback from '../../components/MapFallback';
 import TriviaCard from '../../components/TriviaCard';
 import DefectionBadge from '../../components/DefectionBadge';
@@ -195,6 +198,46 @@ function FullMapScreen() {
   const broadcastMode = usePreferencesStore((s) => s.broadcastMode);
   const currentState = STATES[stateCode];
   const hasLocalBodyData = useHasRepresentativeData(stateCode);
+
+  // Immersion mode & inactivity auto-revival timer (JOB 102)
+  const isScreenImmersive = useActiveStateStore((s) => s.isScreenImmersive);
+  const setIsScreenImmersive = useActiveStateStore((s) => s.setIsScreenImmersive);
+  const immersiveAnim = useRef(new Animated.Value(1)).current;
+  const inactivityTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const startInactivityTimer = useCallback(() => {
+    if (inactivityTimerRef.current) {
+      clearTimeout(inactivityTimerRef.current);
+    }
+    inactivityTimerRef.current = setTimeout(() => {
+      Animated.timing(immersiveAnim, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }).start();
+      setIsScreenImmersive(false);
+    }, 7500);
+  }, [immersiveAnim, setIsScreenImmersive]);
+
+  const handleTouchActivity = useCallback(() => {
+    if (!useActiveStateStore.getState().isScreenImmersive) {
+      Animated.timing(immersiveAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+      setIsScreenImmersive(true);
+    }
+    startInactivityTimer();
+  }, [immersiveAnim, setIsScreenImmersive, startInactivityTimer]);
+
+  useEffect(() => {
+    return () => {
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current);
+      }
+    };
+  }, []);
 
   // Spatial UI local tab selections
   const [spatialTab, setSpatialTab] = useState<'feed' | 'stats' | 'list'>('feed');
@@ -842,6 +885,19 @@ function FullMapScreen() {
   const handleReset = useCallback(() => {
     tapLight();
 
+    // 0. If in transparent immersion mode, instantly revive all UI elements
+    if (useActiveStateStore.getState().isScreenImmersive) {
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current);
+      }
+      Animated.timing(immersiveAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+      setIsScreenImmersive(false);
+    }
+
     // Step-by-step "back" that unwinds the map hierarchy one level per press
     // (booth popup → booth zoom → constituency → district/compare → state →
     // India) instead of jumping straight to the national map.
@@ -1033,9 +1089,11 @@ function FullMapScreen() {
   const mapTopOffset = Math.max(insets.top, 24);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} onTouchStart={handleTouchActivity} onTouchMove={handleTouchActivity}>
       <MapboxGL.MapView
         style={styles.map}
+        onTouchStart={handleTouchActivity}
+        onTouchMove={handleTouchActivity}
         styleURL={MAP_STYLE}
         onPress={handleMapPress}
         onRegionDidChange={handleRegionDidChange}
@@ -1307,14 +1365,21 @@ function FullMapScreen() {
         </Pressable>
       )}
 
-      {/* Header overlay */}
+      {/* Header overlay with Poligram Logo and Immersion Fade */}
       {!broadcastMode && (
-        <View style={[styles.header, { top: mapTopOffset }]} pointerEvents="box-none">
+        <Animated.View
+          style={[styles.header, { top: mapTopOffset, opacity: immersiveAnim }]}
+          pointerEvents={isScreenImmersive ? 'none' : 'box-none'}
+        >
           <View style={styles.headerTop}>
             <View style={{ flex: 1, marginRight: 8, justifyContent: 'center' }}>
-              <Text style={styles.headerTitle} numberOfLines={1}>
-                {t('common.appName')}
-              </Text>
+              <Image
+                source={require('../../assets/poligram_logo_lockup_transparent.png')}
+                style={{ width: 88, height: 26, marginBottom: 2 }}
+                resizeMode="contain"
+                accessibilityLabel="POLIGRAM"
+                accessible={true}
+              />
               <Text style={styles.headerSubtitle} numberOfLines={1}>
                 {stateCode === 'IN'
                   ? t('mapExtended.nationalOverview')
@@ -1412,7 +1477,7 @@ function FullMapScreen() {
               </View>
             </Pressable>
           )}
-        </View>
+        </Animated.View>
       )}
 
       {/* Floating Draggable Map Legend (Moved downwards, fully movable anywhere on screen) */}
@@ -1534,125 +1599,39 @@ function FullMapScreen() {
         </View>
       )}
 
-      {/* Action buttons with Short Crisp Titles on the right */}
+      {/* Adaptive Floating Action Controls (Consolidated Draggable Unit with Dynamic Orientation) */}
       {!broadcastMode && (
-        <View style={[styles.actionButtons, { top: mapTopOffset + (stateCode === 'IN' ? 55 : 62) }]}>
-          {stateCode !== 'IN' && (
-            <View style={styles.actionItem}>
-              <Pressable
-                style={[styles.actionButton, styles.searchButton]}
-                onPress={() => setShowSearch(true)}
-              >
-                <Ionicons name="search" size={19} color="#60A5FA" />
-              </Pressable>
-              <Text style={styles.actionButtonLabel}>{t('common.search')}</Text>
-            </View>
-          )}
-
-          {stateCode !== 'IN' && (
-            <View style={styles.actionItem}>
-              <Pressable
-                style={[styles.actionButton, styles.compareButton]}
-                onPress={() => setShowCompare(true)}
-              >
-                <Ionicons name="git-compare" size={19} color="#A78BFA" />
-              </Pressable>
-              <Text style={styles.actionButtonLabel}>{t('common.compare', { defaultValue: 'Compare' })}</Text>
-            </View>
-          )}
-
-          {(selected || mapCompareActive || focusedDistrict !== '' || stateCode !== 'IN') && (
-            <View style={styles.actionItem}>
-              <Pressable style={[styles.actionButton, styles.resetButton]} onPress={handleReset}>
-                <Ionicons name="refresh" size={19} color="#F1F5F9" />
-              </Pressable>
-              <Text style={styles.actionButtonLabel}>{t('common.reset', { defaultValue: 'Reset' })}</Text>
-            </View>
-          )}
-
-          {/* 3D Extrusion Toggle */}
-          <View style={styles.actionItem}>
-            <Pressable
-              style={[styles.actionButton, is3DMode && styles.activeButton]}
-              onPress={() => {
-                tapLight();
-                setIs3DMode((v) => !v);
-              }}
-            >
-              <Ionicons name="cube" size={19} color={is3DMode ? '#FCD34D' : '#FFFFFF'} />
-            </Pressable>
-            <Text style={[styles.actionButtonLabel, is3DMode && { color: '#FCD34D' }]}>{t('mapExtended.view3D', { defaultValue: '3D View' })}</Text>
-          </View>
-
-          {/* District Focus Toggle */}
-          {stateCode !== 'IN' && (
-            <View style={styles.actionItem}>
-              <Pressable
-                style={[
-                  styles.actionButton,
-                  focusedDistrict !== '' && styles.activeButton,
-                  !selected && styles.actionButtonDisabled,
-                ]}
-                onPress={() => {
-                  if (!selected) return;
-                  tapLight();
-                  setFocusedDistrict((d) => (d === selected.district ? '' : selected.district));
-                }}
-                disabled={!selected}
-              >
-                <Ionicons
-                  name="funnel"
-                  size={19}
-                  color={focusedDistrict !== '' ? '#FCD34D' : selected ? '#FFFFFF' : '#475569'}
-                />
-              </Pressable>
-              <Text style={[styles.actionButtonLabel, focusedDistrict !== '' && { color: '#FCD34D' }]}>{t('mapExtended.district', { defaultValue: 'District' })}</Text>
-            </View>
-          )}
-
-          {/* Delimitation / Seat Density Toggle */}
-          {stateCode !== 'IN' && (
-            <View style={styles.actionItem}>
-              <Pressable
-                style={[
-                  styles.actionButton,
-                  showDelimitation && styles.delimButtonActive,
-                ]}
-                onPress={() => setShowDelimitation((v) => !v)}
-              >
-                <Ionicons name="layers" size={19} color={showDelimitation ? '#34D399' : '#FFFFFF'} />
-              </Pressable>
-              <Text style={[styles.actionButtonLabel, showDelimitation && { color: '#34D399' }]}>{t('mapExtended.density', { defaultValue: 'Density' })}</Text>
-            </View>
-          )}
-
-          {/* Locate Me */}
-          <View style={styles.actionItem}>
-            <Pressable
-              style={[
-                styles.actionButton,
-                styles.locateButton,
-                locating && styles.actionButtonDisabled,
-              ]}
-              onPress={handleLocateMe}
-              disabled={locating}
-            >
-              {locating ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
-              ) : (
-                <Ionicons name="navigate" size={19} color="#FFFFFF" />
-              )}
-            </Pressable>
-            <Text style={styles.actionButtonLabel}>{t('mapExtended.locate', { defaultValue: 'Locate' })}</Text>
-          </View>
-        </View>
+        <AdaptiveFloatingControls
+          initialX={Dimensions.get('window').width - 64}
+          initialY={mapTopOffset + (stateCode === 'IN' ? 55 : 62)}
+          stateCode={stateCode}
+          selectedConstituency={selected}
+          mapCompareActive={mapCompareActive}
+          focusedDistrict={focusedDistrict}
+          is3DMode={is3DMode}
+          showDelimitation={showDelimitation}
+          locating={locating}
+          isImmersive={isScreenImmersive}
+          onOpenSearch={() => setShowSearch(true)}
+          onOpenCompare={() => setShowCompare(true)}
+          onReset={handleReset}
+          onToggle3D={() => {
+            tapLight();
+            setIs3DMode((v) => !v);
+          }}
+          onToggleDistrict={() => {
+            if (!selected) return;
+            tapLight();
+            setFocusedDistrict((d) => (d === selected.district ? '' : selected.district));
+          }}
+          onToggleDelimitation={() => setShowDelimitation((v) => !v)}
+          onLocateMe={handleLocateMe}
+        />
       )}
-
-
 
       {/* Delimitation overlay info bar */}
       {!broadcastMode && showDelimitation && stateProjection && (
-        <View style={styles.delimBar}>
+        <Animated.View style={[styles.delimBar, { opacity: immersiveAnim }]} pointerEvents={isScreenImmersive ? 'none' : 'box-none'}>
           <View style={styles.delimBarTop}>
             <Ionicons name="layers" size={14} color="#FCD34D" />
             <Text style={styles.delimBarTitle}>{t('mapExtended.seatDensityOverlay')}</Text>
@@ -1682,12 +1661,12 @@ function FullMapScreen() {
           <Pressable onPress={() => router.push('/delimitation' as any)}>
             <Text style={styles.delimBarLink}>{t('mapExtended.viewFullAnalysis')}</Text>
           </Pressable>
-        </View>
+        </Animated.View>
       )}
 
       {/* Spatial Hub Overlay (when mapOnlyMode is active and no selection is active) */}
       {!broadcastMode && mapOnlyMode && !selected && !showDelimitation && !mapCompareActive && (
-        <View style={styles.spatialHub}>
+        <Animated.View style={[styles.spatialHub, { opacity: immersiveAnim }]} pointerEvents={isScreenImmersive ? 'none' : 'box-none'}>
           {/* Spatial Hub Tabs */}
           <View style={styles.spatialHubTabs}>
             <Pressable
@@ -1853,7 +1832,7 @@ function FullMapScreen() {
               )}
             </ScrollView>
           )}
-        </View>
+        </Animated.View>
       )}
 
       {/* Bottom Dashboard: stacks timeline slider, idle trivia, and home button dynamically */}

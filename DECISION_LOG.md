@@ -4723,3 +4723,37 @@
   7. Looping neon amber pulse Reset button beacon in transparent immersion mode providing instant visual affordance to cancel immersion and reset the map.
 - **Next Steps:**
   Await user review, architectural decision ratification, and explicit implementation authorization under Control M before source code execution.
+
+---
+
+### DEC-196: User Ratification and Implementation Authorization for JOB 102 under Control M
+- **Date:** 2026-10-30
+- **Status:** RATIFIED & AUTHORIZED (Control M Token Granted)
+- **Authority:** User Directive & Explicit Control M Authorization Token (`PLAN_STATUS: APPROVED`, `IMPLEMENTATION_AUTHORIZATION: YES`), DEC-195 & AGENT_EXECUTION_PROTOCOL.md
+- **Architectural Ratifications:**
+  1. **Decision 1 (Orientation Switching Model):** Option A ratified. Three-Zone Dynamic Matrix (Horizontal along top/bottom bands, Vertical along lateral margins, Clustered 2xN grid in all four corners) with continuous geometric coordinate evaluation, viewport clamping, and haptic threshold notifications.
+  2. **Decision 2 (Immersion Gesture Detection & Tab Bar Dimming):** Option A ratified. Non-blocking touch listeners directly on MapView canvas updating `isScreenImmersive` in `useActiveStateStore`. Screen UI smoothly transitions to 0.0 opacity via 300ms timing animation; Expo Router bottom tab bar coordinates directly via `display: (mapOnlyMode || broadcastMode || isScreenImmersive) ? 'none' : 'flex'`.
+  3. **Decision 3 (Glowing Reset Affordance):** Option A ratified. Animated Neon Amber Halo Ring (`#FCD34D`, shadowRadius 16, elevation 12) with continuous looping pulse during immersion mode, providing intuitive visual affordance to instantly cancel immersion and reset the viewport.
+  4. **Decision 4 (MapLegend Party Scaling & National Roster):** Option A ratified. Dynamic uncapped collector via `buildPartyLegend(stateCode)` removing arbitrary `.slice(0, 8)` truncation, embedded within a dedicated vertical scroll container with persistent scrollbars and nested scroll coordination.
+- **Authorization Token:**
+  `PLAN_STATUS: APPROVED`
+  `IMPLEMENTATION_AUTHORIZATION: YES`
+
+---
+
+### DEC-197: Completion, Verification and Certification of JOB 102 (Flagship User-Centric UX Transformation for Landing Map Screen)
+- **Date:** 2026-10-30
+- **Status:** ACCEPTED / COMPLETE (TESTED & VERIFIED)
+- **Authority:** User Directive for JOB 102, DEC-195, DEC-196, Amendment v1.2, Amendment v1.5-A Section 26, Amendment v1.6 & AGENT_EXECUTION_PROTOCOL.md
+- **Execution Scope & Deliverables:**
+  1. **Canonical Brand Lockup Header:** Copied native high-resolution logo asset (`Logo/poligram_logo_lockup_transparent.png`) into `apps/mobile/assets/poligram_logo_lockup_transparent.png` (211KB, 1197x400 native PNG, exact 3:1 aspect ratio) and integrated it into `apps/mobile/app/(tabs)/index.tsx` replacing legacy text.
+  2. **Uncapped Party Legend with Scrollability:** Extracted and tested `buildPartyLegend(stateCode)` in `apps/mobile/lib/partyLegendBuilder.ts`; updated `apps/mobile/components/MapLegend.tsx` eliminating `.slice(0, 8)` hard cap and introducing an enhanced vertical `ScrollView` with `nestedScrollEnabled={true}`, `showsVerticalScrollIndicator={true}`, and `persistentScrollbar={true}`.
+  3. **Non-Blocking Touch Immersion Mode:** Implemented active canvas touch listeners (`onTouchStart`, `onTouchMove`, `onPanResponderGrant`) in `apps/mobile/app/(tabs)/index.tsx` triggering smooth 300ms fade to 0.0 opacity for all non-map UI and updating `isScreenImmersive: true` in `apps/mobile/stores/activeState.ts`.
+  4. **Dynamic Bottom Tab Bar Concealment:** Synchronized `apps/mobile/app/(tabs)/_layout.tsx` to set `display: (mapOnlyMode || broadcastMode || isScreenImmersive) ? 'none' : 'flex'`, cleanly hiding the main bottom menu bar during screen immersion without layout shift.
+  5. **Auto-Revival Inactivity Timer:** Integrated 7500ms inactivity timer in `apps/mobile/app/(tabs)/index.tsx` that smoothly animates UI back to 1.0 opacity after 7.5s of no touch interaction.
+  6. **Spatial Orientation Layout Engine:** Authored pure coordinate mathematical engine `computeControlOrientation(x, y, w, h)` in `apps/mobile/lib/adaptiveControlMath.ts`. Implemented `apps/mobile/components/AdaptiveFloatingControls.tsx` with `PanResponder` dragging, safe-area boundary clamping, haptic feedback on orientation transitions, and consolidation of search, compare, reset, 3D view, district, density, and locate action buttons.
+  7. **Glowing Neon Amber Pulse Reset Beacon:** Implemented looping pulse animation (`Animated.loop`) with neon amber halo (`#FCD34D`, shadowRadius 16, elevation 12) on the Reset button during immersion. Reset button tap cancels immersion immediately and restores UI visibility.
+- **Verification Evidence:**
+  - Dedicated automated test battery: `tests/job102-immersive-map-and-adaptive-controls.test.ts` (6/6 PASS - 100%).
+  - Full TypeScript typecheck: `npx tsc --noEmit` across `apps/mobile` (0 errors, 100% clean).
+  - Monorepo package builds: `packages/shared` and `apps/api` (0 errors, 100% clean).

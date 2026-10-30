@@ -26,6 +26,7 @@ export default function TabLayout() {
   const unreadCount = useNotificationsStore((s) => s.unreadCount);
   const insets = useSafeAreaInsets();
   const mapOnlyMode = useActiveStateStore((s) => s.mapOnlyMode);
+  const isScreenImmersive = useActiveStateStore((s) => s.isScreenImmersive);
   const broadcastMode = usePreferencesStore((s) => s.broadcastMode);
 
   // Adapt tab bar to device: bottom inset covers gesture bar / soft nav
@@ -45,7 +46,7 @@ export default function TabLayout() {
           height: tabBarHeight,
           paddingBottom: tabBarPaddingBottom,
           paddingTop: 6,
-          display: (mapOnlyMode || broadcastMode) ? 'none' : 'flex',
+          display: (mapOnlyMode || broadcastMode || isScreenImmersive) ? 'none' : 'flex',
           elevation: 10,
           shadowColor: colors.shadowColor || '#000',
           shadowOffset: { width: 0, height: -3 },

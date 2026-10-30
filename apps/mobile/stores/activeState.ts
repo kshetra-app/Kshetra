@@ -7,6 +7,8 @@ interface ActiveStateStore {
   setStateCode: (code: string) => void;
   mapOnlyMode: boolean;
   setMapOnlyMode: (val: boolean) => void;
+  isScreenImmersive: boolean;
+  setIsScreenImmersive: (val: boolean) => void;
 }
 
 export const useActiveStateStore = create<ActiveStateStore>()(
@@ -16,10 +18,16 @@ export const useActiveStateStore = create<ActiveStateStore>()(
       setStateCode: (code) => set({ stateCode: code }),
       mapOnlyMode: false,
       setMapOnlyMode: (val) => set({ mapOnlyMode: val }),
+      isScreenImmersive: false,
+      setIsScreenImmersive: (val) => set({ isScreenImmersive: val }),
     }),
     {
       name: 'kshetra-active-state',
       storage: createJSONStorage(() => mmkvStorage),
+      partialize: (state) => ({
+        stateCode: state.stateCode,
+        mapOnlyMode: state.mapOnlyMode,
+      }),
     },
   ),
 );

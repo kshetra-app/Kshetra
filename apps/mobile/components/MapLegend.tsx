@@ -19,8 +19,8 @@ import { useTheme } from '../lib/theme';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-/** Build party legend dynamically from a state's seed data, sorted by seat count */
-function buildPartyLegend(stateCode: string): { party: string; label: string; seats: number }[] {
+/** Build party legend dynamically from state or national seed data, sorted by seat count / states ruled */
+export function buildPartyLegend(stateCode: string): { party: string; label: string; seats: number }[] {
   if (stateCode.toUpperCase() === 'IN') {
     const counts = new Map<string, number>();
     for (const state of Object.values(STATES)) {
@@ -29,8 +29,25 @@ function buildPartyLegend(stateCode: string): { party: string; label: string; se
         counts.set(p, (counts.get(p) ?? 0) + 1);
       }
     }
+
+    // Include other major parties across India from PARTY_CONFIG
+    for (const p of Object.keys(PARTY_CONFIG)) {
+      if (!counts.has(p) && p !== 'OTH' && p !== 'IND') {
+        counts.set(p, 0);
+      }
+    }
+    if (PARTY_CONFIG['IND']) counts.set('IND', 0);
+    if (PARTY_CONFIG['OTH']) counts.set('OTH', 0);
+
     return Array.from(counts.entries())
-      .sort((a, b) => b[1] - a[1])
+      .sort((a, b) => {
+        if (b[1] !== a[1]) return b[1] - a[1];
+        if (a[0] === 'OTH') return 1;
+        if (b[0] === 'OTH') return -1;
+        if (a[0] === 'IND') return 1;
+        if (b[0] === 'IND') return -1;
+        return a[0].localeCompare(b[0]);
+      })
       .map(([party, statesRuled]) => ({
         party,
         label: (PARTY_CONFIG as Record<string, { name: string }>)[party]?.name ?? party,
@@ -44,12 +61,14 @@ function buildPartyLegend(stateCode: string): { party: string; label: string; se
   const counts = new Map<string, number>();
   for (const c of constituencies) {
     const p = c.currentParty || c.winnerParty;
-    counts.set(p, (counts.get(p) ?? 0) + 1);
+    if (p) {
+      counts.set(p, (counts.get(p) ?? 0) + 1);
+    }
   }
 
+  // Display all active parties without artificial truncation
   return Array.from(counts.entries())
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 8) // top 8 parties max
     .map(([party, seats]) => ({
       party,
       label: (PARTY_CONFIG as Record<string, { name: string }>)[party]?.name ?? party,
@@ -284,6 +303,11 @@ export default function MapLegend({
               <Text style={[styles.partyName, { color: colors.textSecondary }]} numberOfLines={1}>
                 {item.label}
               </Text>
+              {item.seats > 0 && (
+                <Text style={[styles.partySeats, { color: colors.gold || '#FCD34D' }]}>
+                  {item.seats}
+                </Text>
+              )}
             </View>
           );
         })}
@@ -323,8 +347,11 @@ export default function MapLegend({
             </Pressable>
           </View>
           <ScrollView
-            style={{ maxHeight: 220 }}
-            showsVerticalScrollIndicator={false}
+            style={{ maxHeight: Math.min(280, SCREEN_HEIGHT * 0.45) }}
+            contentContainerStyle={{ paddingRight: 4, paddingBottom: 6 }}
+            showsVerticalScrollIndicator={true}
+            persistentScrollbar={true}
+            nestedScrollEnabled={true}
           >
             {renderContent()}
 
@@ -378,8 +405,8 @@ const styles = StyleSheet.create({
     left: 0,
     borderRadius: 14,
     padding: 12,
-    minWidth: 210,
-    maxWidth: SCREEN_WIDTH * 0.75,
+    minWidth: 220,
+    maxWidth: SCREEN_WIDTH * 0.85,
     backgroundColor: '#0F172AF8',
     borderColor: '#C5A059',
     borderWidth: 1.5,
@@ -445,6 +472,11 @@ const styles = StyleSheet.create({
     fontSize: 11,
     flex: 1,
   },
+  partySeats: {
+    fontSize: 11,
+    fontWeight: '700',
+    marginLeft: 4,
+  },
   gradientRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -471,6 +503,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     marginVertical: 6,
   },
 });
