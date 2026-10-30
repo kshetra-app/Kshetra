@@ -9,3 +9,4 @@ export * from './delimitationShare';
 export * from './broadcast';
 export * from './civic';
 export * from './aspirant';
+export * from './media';

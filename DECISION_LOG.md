@@ -4452,3 +4452,30 @@
   - **Decision 2 (A2 - Shorts Storage & Transcoding):** Ratified Option A (Cloud Object Storage + CDN Streaming: Mobile uploads generate presigned URLs to Supabase/S3 Storage, and backend validates MP4/HLS manifests with automated thumbnail generation and strict AC binding).
   - **Decision 3 (A3 - Live Streaming Architecture):** Ratified hybrid of Option A and Option B with intelligent switching of technologies and resources wherever applicable (Low-Latency HLS via CDN for mass audience streaming and zero-bloat mobile playback + WebRTC for studio ingress and real-time interactive speaker sessions).
   - **Ratification Disposition:** Granted `PLAN_STATUS: APPROVED` and `IMPLEMENTATION_AUTHORIZATION: YES` for sequential execution of Domain 5 (JOB 037, JOB 038, JOB 039, JOB 040, JOB 041, JOB 042, JOB 043, JOB 044, JOB 045, JOB 051, JOB 052, and JOB 053).
+
+
+---
+
+### DEC-181: Engineering Execution, Verification, and Formal Closure of Domain 5 (JOB 037–045 & JOB 051–053: Media, News, Shorts & Live Broadcasting)
+- **Date:** 2026-10-30
+- **Status:** ACCEPTED / COMPLETE (TESTED & VERIFIED)
+- **Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.5-A Section 26 & AGENT_EXECUTION_PROTOCOL.md
+- **Context:** Following the user ratification under DEC-180, all twelve jobs in Domain 5 were engineered, verified, and certified:
+  1. **JOB 037 (Representative Civic Response Engine):** `tests/job037-representative-civic-response.test.ts` (5/5 PASS). Verified official representative responses attaching directly to civic issue timelines, designated official badges, and action plan tracking.
+  2. **JOB 038 (Political News Ingestion Pipeline):** `tests/job038-political-news-ingestion.test.ts` (5/5 PASS). Verified multi-source ingestion from ECI gazettes, PIB dispatches, sentiment analysis, and fact-check verdict tags.
+  3. **JOB 039 (News Rights & Multi-Lingual Presentation):** `tests/job039-news-rights-presentation.test.ts` (4/4 PASS). Verified copyright attribution, canonical links, and localization across official Indian languages.
+  4. **JOB 040 (Political Context Engine):** `tests/job040-political-context-engine.test.ts` (4/4 PASS). Verified deep entity resolution linking news articles to Assembly Constituencies, legislators, and related civic issues.
+  5. **JOB 041 (Shorts Creation Pipeline):** `tests/job041-shorts-creation-pipeline.test.ts` (5/5 PASS). Verified 15-60s 9:16 video upload pipeline with mandatory constituency binding to eradicate political astroturfing.
+  6. **JOB 042 (Shorts Viewer & Mobile Player Feed):** `tests/job042-shorts-viewer-mobile.test.ts` (4/4 PASS). Verified vertical reel feed delivery with constituency scoping and statewide discovery.
+  7. **JOB 043 (Shorts Analytics & Reach Engine):** `tests/job043-shorts-analytics-telemetry.test.ts` (5/5 PASS). Verified DPDP Act 2023 compliant telemetry utilizing salted user hashes, computing watch duration, completion rate, and reach.
+  8. **JOB 044 (Notification Engine & Anti-Spam Rate Limiter):** `tests/job044-notification-engine.test.ts` (5/5 PASS). Verified topic subscriptions and anti-spam dispatch cap (max 3/week for regular announcements) with emergency civic bypass.
+  9. **JOB 045 (Retention Digests & Civic Recaps):** `tests/job045-retention-digests.test.ts` (4/4 PASS). Verified automated weekly and monthly constituency digests with civic participation index and deterministic time-window caching.
+  10. **JOB 051 (Live Consumer Experience):** `tests/job051-live-consumer-experience.test.ts` (4/4 PASS). Verified consumer live stream discovery, low-latency HLS delivery, and real-time live viewer tracking.
+  11. **JOB 052 (Professional Broadcast Architecture Certification):** `tests/job052-broadcast-architecture-benchmark.test.ts` (4/4 PASS). Verified DEF-003 decoupling: zero `react-native-webrtc` in mobile package.json, decoupled `HlsPlayer.tsx` WebView playback, and binary size preservation.
+  12. **JOB 053 (Broadcast Studio Workflow & Lifecycle):** `tests/job053-broadcast-studio-flow.test.ts` (5/5 PASS). Verified broadcast studio console generating RTMP ingress, WHIP ingest, stream keys, live state management, and VOD archive creation.
+- **Verification Summary:**
+  - Automated tests: 54/54 tests passing (100%) across all 12 Domain 5 test suites.
+  - Regression unit suites: 91/91 tests passing (Domain 3 civic tests 23/23 PASS, Domain 4 aspirant tests 34/34 PASS, `manage-pages-routes-unit.test.ts` 34/34 PASS).
+  - Grand total tests: 145/145 PASS (100%).
+  - Monorepo typecheck: 100% clean across `@kshetra/shared`, `@kshetra/api`, and `apps/mobile` (`tsc --noEmit`, 0 errors).
+  - Evidence dossiers committed at `reports/domain5_media_broadcasting_report.json` and `reports/domain5_media_broadcasting_report.md`.
