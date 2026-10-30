@@ -4416,3 +4416,27 @@
   - Monorepo typecheck: 100% clean across `@kshetra/shared`, `@kshetra/api`, and `apps/mobile` (`tsc --noEmit`, 0 errors).
   - Regression unit suites: `manage-pages-routes-unit.test.ts` (34/34 PASS), all Domain 3 civic tests (Jobs 030-035, ALL PASS).
   - Evidence dossiers committed at `reports/domain4_aspirants_academy_report.json` and `reports/domain4_aspirants_academy_report.md`.
+
+---
+
+### DEC-179: Formulation & Submission of Domain 5 (JOB 037–045 & JOB 051–053) Media, News, Shorts & Live Broadcasting Pre-Implementation Plan
+- **Date:** 2026-10-30
+- **Status:** PLAN_SUBMITTED_FOR_REVIEW (IMPLEMENTATION_AUTHORIZATION = NO)
+- **Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.5-A Section 26 & AGENT_EXECUTION_PROTOCOL.md
+- **Context:** Following the certified completion of Domain 4 (DEC-178), the user explicitly commissioned Domain 5: Media, News, Shorts & Live Broadcasting, encompassing twelve interconnected jobs (JOB 037 through JOB 045, and JOB 051 through JOB 053). In strict accordance with Amendment v1.5-A Section 26 and Rule IV-001 Non-Self-Acceptance, a canonical 22-section Pre-Implementation Plan was authored and submitted for user review prior to any product code modification.
+- **Architectural Scope of Domain 5:**
+  1. **JOB 037 (Representative Civic Response Engine):** Official verified MLA/MP response pipeline and grievance escalation.
+  2. **JOB 038 (Political News Ingestion Pipeline):** Multi-source factual news aggregation (ECI, PIB, state legislative assemblies) with deduplication and fact-check tagging.
+  3. **JOB 039 (News Rights & Multi-Lingual Presentation):** Attribution standards, fair-use excerpts, and 13 official languages translation metadata.
+  4. **JOB 040 (Political Context Engine):** Semantic entity linking connecting news articles directly to Assembly Constituencies (AC), Parliamentary Constituencies (PC), MLAs, and MPs.
+  5. **JOB 041 (Shorts Creation Pipeline):** Video upload metadata validation, aspect ratio (9:16), constituency binding to eliminate astroturfing, and captioning.
+  6. **JOB 042 (Shorts Viewer & Mobile Player):** Vertical reels swipe player, bottom-sheet comments, double-tap endorsement, and client caching.
+  7. **JOB 043 (Shorts Analytics & Reach Engine):** Watch time, completion rate, unique reach, and candidate discovery analytics.
+  8. **JOB 044 (Notification & Alerts Engine):** Push notification dispatch pipeline (APNs/FCM) with anti-spam rate limiting (max 3 broadcasts/week).
+  9. **JOB 045 (Retention Digests & Civic Recaps):** Automated scheduled weekly and monthly constituency digests.
+  10. **JOB 051 (Live Consumer Experience):** Zero-latency HLS video stream playback via decoupled WebView/hls.js player (`HlsPlayer`), live chat, and polls.
+  11. **JOB 052 (Professional Broadcast Architecture):** Formal verification of decoupled broadcast architecture in `ACCEPTANCE_REGISTER.md` and mobile performance benchmarking.
+  12. **JOB 053 (Professional Broadcast Studio Console):** Web broadcasting console (`/studio`), stream key management, live polls, and automatic VOD archiving.
+- **Operational Authorization:**
+  - Plan document committed to `governance/plans/PLAN-DOMAIN-5-MEDIA-NEWS-SHORTS-AND-LIVE-BROADCASTING-REV-1.0.md`.
+  - Implementation authorization remains frozen (`IMPLEMENTATION_AUTHORIZATION = NO`) pending explicit user ratification.
