@@ -10,9 +10,11 @@ import {
   RefreshControl,
   Alert,
   TextInput,
+  Modal,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { tapLight } from '../../lib/haptics';
 import { useFeedStore } from '../../stores/feed';
 import { useAuthStore } from '../../stores/auth';
 import { useActiveStateStore } from '../../stores/activeState';
@@ -79,6 +81,8 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
   const [constituencySheetVisible, setConstituencySheetVisible] = useState(false);
   const [detailPost, setDetailPost] = useState<Post | null>(null);
   const [autoFocusReply, setAutoFocusReply] = useState(false);
+  const [showScopeModal, setShowScopeModal] = useState(false);
+  const [showSortModal, setShowSortModal] = useState(false);
 
   // Store selectors
   const allPosts = useFeedStore((s) => s.posts);
@@ -333,58 +337,162 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Header */}
-      <View style={[styles.header, { paddingTop: hideHeader ? 8 : (insets.top + 8), borderBottomColor: colors.border }]}>
-        <View style={styles.headerLeft}>
-          {!hideHeader && (
-            <Text style={[styles.headerTitle, { color: colors.text }]} numberOfLines={1}>
-              {t('feed.title')}
-            </Text>
-          )}
-          <View style={[styles.scopeIndicator, hideHeader && { marginTop: 0 }]}>
-            <Ionicons name="funnel" size={10} color={colors.textMuted} />
-            <Text style={[styles.scopeIndicatorText, { color: colors.textMuted }]} numberOfLines={1}>
-              {scopeLabel} · {posts.length} {posts.length !== 1 ? t('common.posts') : t('common.post')}
-            </Text>
-          </View>
+      {/* Standalone Title (only when not embedded in Community tab) */}
+      {!hideHeader && (
+        <View style={[styles.standaloneHeader, { paddingTop: insets.top + 8, borderBottomColor: colors.border }]}>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>
+            {t('feed.title')}
+          </Text>
         </View>
+      )}
 
-        <View style={styles.headerRight}>
-          <StateSwitcher />
-          <Pressable
+      {/* Unified Compact Control Strip (Replaces 2 stacked headers & rails) */}
+      <View
+        style={[
+          styles.compactControlStrip,
+          {
+            paddingTop: hideHeader ? 6 : 8,
+            borderBottomColor: colors.border,
+            backgroundColor: colors.surface,
+          },
+        ]}
+      >
+        {/* Left: Scope Selector Pill */}
+        <Pressable
+          style={[
+            styles.scopePill,
+            { backgroundColor: colors.background, borderColor: colors.goldBorder || colors.border },
+            scopeFilter !== 'national' && { borderColor: colors.primary, backgroundColor: colors.primary + '18' },
+          ]}
+          onPress={() => {
+            tapLight();
+            if (scopeFilter === 'constituency' && !effectiveConstituencyId) {
+              setConstituencySheetVisible(true);
+            } else {
+              setShowScopeModal(true);
+            }
+          }}
+          accessibilityRole="button"
+          accessibilityLabel="Feed Scope"
+        >
+          <Ionicons
+            name={scopeFilter === 'national' ? 'globe-outline' : scopeFilter === 'state' ? 'map-outline' : 'location-outline'}
+            size={13}
+            color={scopeFilter !== 'national' ? colors.primary : colors.textSecondary}
+          />
+          <Text
             style={[
-              styles.headerIconButton,
-              { backgroundColor: colors.surface, borderColor: colors.border },
+              styles.scopePillText,
+              { color: scopeFilter !== 'national' ? colors.primary : colors.textSecondary },
             ]}
-            onPress={() => router.push('/pages' as any)}
-            hitSlop={6}
-            accessibilityLabel="Pages & Leaders"
+            numberOfLines={1}
           >
-            <Ionicons name="people" size={18} color={colors.primary} />
-          </Pressable>
+            {scopeLabel}
+          </Text>
+          <Ionicons name="chevron-down" size={10} color={colors.textMuted} />
+        </Pressable>
+
+        {/* Right: Actions (State Switcher, Sort, Verified, Search, Pages) */}
+        <View style={styles.stripActions}>
+          <StateSwitcher />
+
+          {/* Sort Selector Pill */}
           <Pressable
             style={[
-              styles.headerIconButton,
-              { backgroundColor: colors.surface, borderColor: colors.border },
-              searchOpen && { backgroundColor: colors.primaryLight, borderColor: colors.primary },
+              styles.sortPill,
+              { backgroundColor: colors.background, borderColor: colors.border },
+              sortBy !== 'ranked' && { borderColor: colors.primary, backgroundColor: colors.primary + '18' },
             ]}
-            onPress={() => setSearchOpen(!searchOpen)}
-            hitSlop={6}
+            onPress={() => {
+              tapLight();
+              setShowSortModal(true);
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Sort Discussions"
+          >
+            <Ionicons
+              name={
+                sortBy === 'ranked'
+                  ? 'sparkles-outline'
+                  : sortBy === 'latest'
+                  ? 'time-outline'
+                  : sortBy === 'top'
+                  ? 'flame-outline'
+                  : sortBy === 'polls'
+                  ? 'stats-chart-outline'
+                  : 'chatbubbles-outline'
+              }
+              size={13}
+              color={sortBy !== 'ranked' ? colors.primary : colors.textSecondary}
+            />
+            <Text
+              style={[
+                styles.sortPillText,
+                { color: sortBy !== 'ranked' ? colors.primary : colors.textSecondary },
+              ]}
+              numberOfLines={1}
+            >
+              {t(SORT_OPTIONS.find((s) => s.key === sortBy)?.tKey ?? 'feed.sort.forYou')}
+            </Text>
+            <Ionicons name="chevron-down" size={10} color={colors.textMuted} />
+          </Pressable>
+
+          {/* Verified Authors Toggle */}
+          <Pressable
+            style={[
+              styles.iconBtnSmall,
+              { backgroundColor: colors.background, borderColor: colors.border },
+              verifiedOnly && { borderColor: '#10B981', backgroundColor: '#10B98120' },
+            ]}
+            onPress={() => {
+              tapLight();
+              setVerifiedOnly(!verifiedOnly);
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Verified Authors Only"
+          >
+            <Ionicons
+              name={verifiedOnly ? 'checkmark-circle' : 'shield-checkmark-outline'}
+              size={15}
+              color={verifiedOnly ? '#10B981' : colors.textMuted}
+            />
+          </Pressable>
+
+          {/* Search Toggle */}
+          <Pressable
+            style={[
+              styles.iconBtnSmall,
+              { backgroundColor: colors.background, borderColor: colors.border },
+              (searchOpen || searchQuery.length > 0) && { borderColor: colors.primary, backgroundColor: colors.primary + '20' },
+            ]}
+            onPress={() => {
+              tapLight();
+              setSearchOpen(!searchOpen);
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Search Feed"
           >
             <Ionicons
               name={searchOpen ? 'close' : 'search'}
-              size={18}
-              color={searchOpen ? colors.primary : colors.text}
+              size={15}
+              color={searchOpen || searchQuery.length > 0 ? colors.primary : colors.textMuted}
             />
           </Pressable>
+
+          {/* Pages & Leaders Shortcut */}
           <Pressable
-            style={[styles.composeButton, { backgroundColor: colors.primary }]}
+            style={[
+              styles.iconBtnSmall,
+              { backgroundColor: colors.background, borderColor: colors.border },
+            ]}
             onPress={() => {
-              setEditingPost(undefined);
-              setComposeVisible(true);
+              tapLight();
+              router.push('/pages' as any);
             }}
+            accessibilityRole="button"
+            accessibilityLabel="Pages & Leaders"
           >
-            <Ionicons name="create" size={18} color="#FFFFFF" />
+            <Ionicons name="people-outline" size={15} color={colors.primary} />
           </Pressable>
         </View>
       </View>
@@ -392,7 +500,7 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
       {/* Expandable Live Search Bar */}
       {searchOpen && (
         <View style={[styles.searchBarRow, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
-          <Ionicons name="search" size={16} color={colors.textMuted} />
+          <Ionicons name="search" size={15} color={colors.textMuted} />
           <TextInput
             style={[styles.searchInput, { color: colors.text }]}
             placeholder={t('feed.searchPlaceholder', 'Search discussions, news, #tags...')}
@@ -404,171 +512,54 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
           />
           {searchQuery.length > 0 && (
             <Pressable onPress={() => setSearchQuery('')}>
-              <Ionicons name="close-circle" size={16} color={colors.textMuted} />
+              <Ionicons name="close-circle" size={15} color={colors.textMuted} />
             </Pressable>
           )}
         </View>
       )}
 
-      {/* Geographic Scope Menu */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.scopeScroll}
-        contentContainerStyle={styles.scopeScrollContent}
-      >
-        {SCOPE_OPTIONS.map((opt) => {
-          const active = scopeFilter === opt.key;
-          const isConstituency = opt.key === 'constituency';
-          const disabled = stateCode === 'IN' && (opt.key === 'state' || opt.key === 'constituency');
-
-          let label = t(opt.tKey);
-          if (opt.key === 'state') label = stateName;
-          if (isConstituency && effectiveConstituencyName) label = effectiveConstituencyName;
-
-          return (
-            <Pressable
-              key={opt.key}
-              style={[
-                styles.scopeChip,
-                { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
-                active && { backgroundColor: colors.primary, borderColor: colors.primary },
-                disabled && styles.scopeChipDisabled,
-              ]}
-              onPress={() => !disabled && handleScopePress(opt.key)}
-            >
-              <Ionicons
-                name={opt.icon as any}
-                size={12}
-                color={active ? '#FFF' : disabled ? colors.textMuted : colors.textSecondary}
-              />
-              <Text
-                numberOfLines={1}
-                allowFontScaling={false}
-                style={[
-                  styles.scopeChipText,
-                  { color: colors.textSecondary },
-                  active && styles.scopeChipTextActive,
-                  disabled && { color: colors.textMuted },
-                ]}
-              >
-                {label}
-              </Text>
-              {isConstituency && active && (
-                <Pressable
-                  onPress={(e) => {
-                    e.stopPropagation();
-                    setConstituencySheetVisible(true);
-                  }}
-                  hitSlop={8}
-                >
-                  <Ionicons name="chevron-down" size={12} color="#FFFFFF" />
-                </Pressable>
-              )}
-            </Pressable>
-          );
-        })}
-      </ScrollView>
-
-      {/* Post Type Category Tabs */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={[styles.filterScroll, { borderBottomColor: colors.border }]}
-        contentContainerStyle={styles.filterContent}
-      >
-        {FILTER_TAB_KEYS.map((tab) => {
-          const active = feedFilter === tab.key;
-          return (
-            <Pressable
-              key={tab.key}
-              style={[
-                styles.filterTab,
-                { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
-                active && { backgroundColor: colors.primary, borderColor: colors.primary },
-              ]}
-              onPress={() => setFilter(tab.key)}
-            >
-              <Ionicons
-                name={tab.icon as any}
-                size={13}
-                color={active ? '#FFFFFF' : colors.textSecondary}
-              />
-              <Text
-                numberOfLines={1}
-                allowFontScaling={false}
-                style={[
-                  styles.filterLabel,
-                  { color: colors.textSecondary },
-                  active && styles.filterLabelActive,
-                ]}
-              >
-                {t(tab.tKey)}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </ScrollView>
-
-      {/* Sort & Secondary Sub-menu Bar */}
-      <View style={[styles.subMenuBar, { borderBottomColor: colors.border }]}>
+      {/* Single Clean Post Type Category Rail */}
+      <View style={styles.categoryRailContainer}>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.subMenuContent}
+          style={styles.filterScroll}
+          contentContainerStyle={styles.filterContent}
         >
-          {SORT_OPTIONS.map((s) => {
-            const isSelected = sortBy === s.key;
+          {FILTER_TAB_KEYS.map((tab) => {
+            const active = feedFilter === tab.key;
             return (
               <Pressable
-                key={s.key}
+                key={tab.key}
                 style={[
-                  styles.sortChip,
-                  { backgroundColor: colors.surface, borderColor: colors.border },
-                  isSelected && { borderColor: colors.primary, backgroundColor: colors.primaryLight },
+                  styles.filterTab,
+                  { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
+                  active && { backgroundColor: colors.primary, borderColor: colors.primary },
                 ]}
-                onPress={() => setSortBy(s.key)}
+                onPress={() => {
+                  tapLight();
+                  setFilter(tab.key);
+                }}
               >
                 <Ionicons
-                  name={s.icon as any}
+                  name={tab.icon as any}
                   size={12}
-                  color={isSelected ? colors.primary : colors.textMuted}
+                  color={active ? '#FFFFFF' : colors.textSecondary}
                 />
                 <Text
+                  numberOfLines={1}
+                  allowFontScaling={false}
                   style={[
-                    styles.sortChipText,
-                    { color: isSelected ? colors.primary : colors.textSecondary },
+                    styles.filterLabel,
+                    { color: colors.textSecondary },
+                    active && styles.filterLabelActive,
                   ]}
                 >
-                  {t(s.tKey)}
+                  {t(tab.tKey)}
                 </Text>
               </Pressable>
             );
           })}
-
-          {/* Verified Authors Only Toggle */}
-          <Pressable
-            style={[
-              styles.sortChip,
-              { backgroundColor: colors.surface, borderColor: colors.border },
-              verifiedOnly && { borderColor: '#10B981', backgroundColor: '#10B98115' },
-            ]}
-            onPress={() => setVerifiedOnly(!verifiedOnly)}
-          >
-            <Ionicons
-              name={verifiedOnly ? 'checkmark-circle' : 'shield-checkmark-outline'}
-              size={12}
-              color={verifiedOnly ? '#10B981' : colors.textMuted}
-            />
-            <Text
-              style={[
-                styles.sortChipText,
-                { color: verifiedOnly ? '#10B981' : colors.textSecondary },
-              ]}
-            >
-              {t('feed.sort.verifiedOnly', 'Verified Only')}
-            </Text>
-          </Pressable>
         </ScrollView>
       </View>
 
@@ -747,6 +738,144 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
           setScopeFilter('constituency');
         }}
       />
+
+      {/* Floating Action Button (FAB) for Compose */}
+      <Pressable
+        style={[
+          styles.composeFab,
+          { backgroundColor: colors.primary },
+        ]}
+        onPress={() => {
+          tapLight();
+          setEditingPost(undefined);
+          setComposeVisible(true);
+        }}
+        accessibilityRole="button"
+        accessibilityLabel="Create Post"
+      >
+        <Ionicons name="create" size={22} color="#FFFFFF" />
+      </Pressable>
+
+      {/* Modal: Scope Selector */}
+      <Modal
+        visible={showScopeModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowScopeModal(false)}
+      >
+        <Pressable style={styles.modalBackdrop} onPress={() => setShowScopeModal(false)}>
+          <View style={[styles.modalSheet, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <View style={styles.modalHeader}>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>Select Geographic Scope</Text>
+              <Pressable onPress={() => setShowScopeModal(false)} hitSlop={10}>
+                <Ionicons name="close" size={20} color={colors.textMuted} />
+              </Pressable>
+            </View>
+            <View style={styles.modalList}>
+              {SCOPE_OPTIONS.map((opt) => {
+                const active = scopeFilter === opt.key;
+                const disabled = stateCode === 'IN' && (opt.key === 'state' || opt.key === 'constituency');
+                let label = t(opt.tKey);
+                if (opt.key === 'state') label = stateName;
+                if (opt.key === 'constituency' && effectiveConstituencyName) label = effectiveConstituencyName;
+
+                return (
+                  <Pressable
+                    key={opt.key}
+                    disabled={disabled}
+                    style={[
+                      styles.modalOption,
+                      { borderColor: colors.border },
+                      active && { backgroundColor: colors.primary + '15', borderColor: colors.primary },
+                      disabled && { opacity: 0.4 },
+                    ]}
+                    onPress={() => {
+                      tapLight();
+                      setShowScopeModal(false);
+                      handleScopePress(opt.key);
+                    }}
+                  >
+                    <View style={styles.modalOptionLeft}>
+                      <Ionicons
+                        name={opt.icon as any}
+                        size={18}
+                        color={active ? colors.primary : colors.textSecondary}
+                      />
+                      <Text
+                        style={[
+                          styles.modalOptionText,
+                          { color: active ? colors.primary : colors.text },
+                          active && { fontWeight: '700' },
+                        ]}
+                      >
+                        {label}
+                      </Text>
+                    </View>
+                    {active && <Ionicons name="checkmark-circle" size={18} color={colors.primary} />}
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+        </Pressable>
+      </Modal>
+
+      {/* Modal: Sort Selector */}
+      <Modal
+        visible={showSortModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowSortModal(false)}
+      >
+        <Pressable style={styles.modalBackdrop} onPress={() => setShowSortModal(false)}>
+          <View style={[styles.modalSheet, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <View style={styles.modalHeader}>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>Sort Discussions By</Text>
+              <Pressable onPress={() => setShowSortModal(false)} hitSlop={10}>
+                <Ionicons name="close" size={20} color={colors.textMuted} />
+              </Pressable>
+            </View>
+            <View style={styles.modalList}>
+              {SORT_OPTIONS.map((s) => {
+                const isSelected = sortBy === s.key;
+                return (
+                  <Pressable
+                    key={s.key}
+                    style={[
+                      styles.modalOption,
+                      { borderColor: colors.border },
+                      isSelected && { backgroundColor: colors.primary + '15', borderColor: colors.primary },
+                    ]}
+                    onPress={() => {
+                      tapLight();
+                      setSortBy(s.key);
+                      setShowSortModal(false);
+                    }}
+                  >
+                    <View style={styles.modalOptionLeft}>
+                      <Ionicons
+                        name={s.icon as any}
+                        size={18}
+                        color={isSelected ? colors.primary : colors.textSecondary}
+                      />
+                      <Text
+                        style={[
+                          styles.modalOptionText,
+                          { color: isSelected ? colors.primary : colors.text },
+                          isSelected && { fontWeight: '700' },
+                        ]}
+                      >
+                        {t(s.tKey)}
+                      </Text>
+                    </View>
+                    {isSelected && <Ionicons name="checkmark-circle" size={18} color={colors.primary} />}
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+        </Pressable>
+      </Modal>
     </View>
   );
 }
@@ -754,6 +883,131 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  standaloneHeader: {
+    paddingHorizontal: 16,
+    paddingBottom: 6,
+    borderBottomWidth: 0.5,
+  },
+  compactControlStrip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 12,
+    paddingBottom: 6,
+    borderBottomWidth: 1,
+  },
+  scopePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    borderRadius: 14,
+    borderWidth: 1,
+    maxWidth: 135,
+  },
+  scopePillText: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  stripActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  sortPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    borderRadius: 14,
+    borderWidth: 1,
+  },
+  sortPillText: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  iconBtnSmall: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+  },
+  categoryRailContainer: {
+    paddingVertical: 4,
+  },
+  composeFab: {
+    position: 'absolute',
+    bottom: 24,
+    right: 18,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 6,
+    elevation: 8,
+    zIndex: 90,
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalSheet: {
+    width: '100%',
+    maxWidth: 380,
+    borderRadius: 20,
+    padding: 18,
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 10,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 14,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  modalList: {
+    gap: 8,
+  },
+  modalOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  modalOptionLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  modalOptionText: {
+    fontSize: 14,
+    fontWeight: '600',
   },
   header: {
     flexDirection: 'row',
