@@ -4880,3 +4880,30 @@
   - TypeScript: `tsc --noEmit` clean (0 errors).
   - ESLint: `expo lint` clean (0 errors).
 
+
+
+---
+
+### DEC-203: Master Pre-Implementation Plan Submission for Domain 10 (Deep Testing, Security Audits & Disaster Recovery: JOB 077–JOB 085)
+- **Date:** 2026-11-01
+- **Status:** SUBMITTED_FOR_REVIEW (Awaiting User Ratification & Control M Authorization)
+- **Authority:** Master Product Blueprint, AI Agent Master Execution Job Book, Amendment v1.2, Amendment v1.5-A Section 26, Amendment v1.6 & AGENT_EXECUTION_PROTOCOL.md
+- **Context & Objectives:**
+  Following the certified completion of Domain 9 (DEC-200), JOB 102 (DEC-197), and Mobile Search Remediation (DEC-202), authored and submitted the canonical 22-section Pre-Implementation Plan `governance/plans/PLAN-DOMAIN-10-DEEP-TESTING-SECURITY-DISASTER-RECOVERY-REV-1.0.md` for Domain 10, covering:
+  1. **JOB 077 (Performance Testing):** Low-end Android mobile performance profiling harness (<2.0s cold boot, 60fps Map & Feed, <100ms navigation, <120MB RSS memory ceiling, Hermes bytecode optimization).
+  2. **JOB 078 (Database Performance):** Query plan execution analyzer (`EXPLAIN (ANALYZE, BUFFERS)`), PostGIS `GIST` spatial index verification, elimination of N+1 query cascades in feeds and representative hierarchies (P50 < 5ms, P95 < 20ms).
+  3. **JOB 079 (API Load Test):** Concurrency stress testing harness (Autocannon/k6) executing 500-1000 concurrent RPS across `/feed`, `/constituencies/:id`, `/representatives`, and `/offline-sync` (P50 < 50ms, P95 < 150ms, P99 < 300ms, 0% 5xx errors, RFC 6585 429 backoff validation).
+  4. **JOB 080 (Mobile Size Regression Gate):** Automated CI size comparison script (`scripts/ci/mobile-size-gate.mjs`) enforcing architectural ceilings (APK <= 45MB, AAB <= 25MB, Hermes bundle <= 25MB, fonts <= 10MB) and blocking unauthorized >2% regressions.
+  5. **JOB 081 (Security Final Audit):** Adversarial automated penetration testing suite (`tests/security-pentest.test.ts`) covering OWASP Top 10 API Security Risks (BOLA/IDOR, broken auth, SSRF host pinning, mass assignment, SQLi) and certifying DPDP 2023 PII log redaction.
+  6. **JOB 082 (Data Final Audit):** Nationwide spatial boundary topology certification across all 4,123 Assembly Constituencies and 543 Parliamentary Constituencies (100% `ST_IsValid`, 0 slivers < 100m², 0 overlaps, 100% state containment `ST_Within`).
+  7. **JOB 083 (Release Pipeline):** Automated tag-to-store CD pipeline (`.github/workflows/release-cd.yml` and `scripts/ci/release-pipeline.mjs`) from semantic tag (`v*.*.*`) through compilation, code signing, artifact hashing, and Fastlane store staging with 13-language localized metadata.
+  8. **JOB 084 (Rollback Test):** Production rollback exercise harness (`tests/rollback-drill.test.ts` and `scripts/sre/production-rollback.mjs`) validating two-phase expand-contract non-destructive schema migrations and certifying zero data loss during simulated application rollbacks.
+  9. **JOB 085 (Disaster-Recovery Test):** Automated disaster recovery drill harness (`tests/disaster-recovery.test.ts` and `scripts/sre/disaster-recovery-drill.mjs`) certifying Point-In-Time Recovery (PITR) with continuous WAL archiving, snapshot restoration timing, RPO < 1 hour, RTO < 30 minutes, and 100% entity parity.
+- **Architectural Decisions Formulated:**
+  - Decision 1 (Low-End Android Performance Simulation & Profiling Rig): Option A (In-engine synthetic CPU throttling & memory profiler) vs Option B (External cloud device farms only).
+  - Decision 2 (Automated PostGIS Query Optimization & N+1 Cascade Shield): Option A (Composite GIST spatial indexing + single-pass joined lateral queries with P95 < 20ms assertion) vs Option B (Sequential multi-query execution + in-memory caching).
+  - Decision 3 (High-Concurrency API Load Rig & Adaptive Rate-Limiting Protection): Option A (Automated 1,000 RPS concurrency stress harness asserting P50 < 50ms, P95 < 150ms, P99 < 300ms + RFC 6585 429 headers) vs Option B (Basic sequential latency checks).
+  - Decision 4 (Zero-Downtime Expand-Contract Database Rollback & Multi-Region PITR DR): Option A (Strict two-phase expand-contract schema architecture + automated rollback script + PITR DR drill asserting RPO < 1h, RTO < 30m) vs Option B (Provider-managed manual backups).
+  - Decision 5 (100% Boundary Spatial Topology Certification & Sliver Elimination): Option A (Programmatic nationwide PostGIS topology validator across 4,123 ACs + 543 PCs) vs Option B (Sample state spot checks).
+- **Next Steps:**
+  Await user review, architectural decision ratification, and explicit implementation authorization under Control M before source code execution.
