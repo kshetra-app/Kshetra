@@ -64,6 +64,8 @@ export default function MapSearch({ constituencies, onSelect, onClose }: MapSear
           value={query}
           onChangeText={setQuery}
           returnKeyType="search"
+          onSubmitEditing={() => Keyboard.dismiss()}
+          blurOnSubmit={false}
           autoCorrect={false}
           autoCapitalize="none"
         />
@@ -83,6 +85,7 @@ export default function MapSearch({ constituencies, onSelect, onClose }: MapSear
             data={results}
             keyExtractor={(item) => String(item.acNo)}
             keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
             renderItem={({ item }) => (
               <Pressable
                 style={styles.resultItem}

@@ -170,7 +170,7 @@ export default function GlobalSearchScreen() {
     );
   }, [handleSelect]);
 
-  const showResults = query.trim().length >= 2;
+  const showResults = query.trim().length >= 1;
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]}>
@@ -193,6 +193,8 @@ export default function GlobalSearchScreen() {
             autoCapitalize="none"
             autoCorrect={false}
             returnKeyType="search"
+            onSubmitEditing={() => Keyboard.dismiss()}
+            blurOnSubmit={false}
           />
           {query.length > 0 && (
             <Pressable onPress={() => setQuery('')}>
@@ -212,6 +214,7 @@ export default function GlobalSearchScreen() {
                 renderItem={renderResult}
                 keyExtractor={(item) => item.id}
                 keyboardShouldPersistTaps="handled"
+                keyboardDismissMode="on-drag"
               />
             </>
           ) : (

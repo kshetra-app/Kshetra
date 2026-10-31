@@ -9,7 +9,7 @@
  * Reached from the Explore tab quick-nav and the map bottom sheet.
  */
 import { useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, TextInput, ActivityIndicator, Keyboard } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -364,7 +364,11 @@ export default function LocalBodiesScreen() {
             placeholderTextColor={colors.textMuted}
             value={query}
             onChangeText={setQuery}
+            returnKeyType="search"
+            onSubmitEditing={() => Keyboard.dismiss()}
+            blurOnSubmit={false}
             autoCorrect={false}
+            autoCapitalize="none"
           />
           {query.length > 0 && (
             <Pressable onPress={() => setQuery('')} hitSlop={8}>
@@ -374,7 +378,11 @@ export default function LocalBodiesScreen() {
         </View>
       )}
 
-      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 32 }}>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 32 }}
+      >
         {/* DISTRICTS LEVEL */}
         {level === 'districts' && (
           <>

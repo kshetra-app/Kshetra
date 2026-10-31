@@ -4854,3 +4854,29 @@
 - **Authorization Token:**
   `PLAN_STATUS: APPROVED`
   `IMPLEMENTATION_AUTHORIZATION: YES`
+
+---
+
+### DEC-202: Mobile Search UX Remediation, Software Keyboard Permanence & Incremental Prefix Matching
+- **Date:** 2026-10-31
+- **Status:** ACCEPTED / COMPLETE (TESTED & VERIFIED)
+- **Authority:** User Defect Resolution Request (Constituency Search Keyboard Loss), AGENT_EXECUTION_PROTOCOL.md & DEC-201
+- **Root Cause Analysis:**
+  1. In `apps/mobile/app/(tabs)/explore.tsx`, `renderHeaderControls` was declared as an inline arrow function passed to `ListHeaderComponent` of `@shopify/flash-list`. On every keystroke, `setQuery` triggered a re-render of `ExploreScreen`, generating a new function instance for `renderHeaderControls`. `@shopify/flash-list` recycled/unmounted the old header view and mounted a new one, destroying the native `TextInput` view from the native view hierarchy, immediately dismissing the software keyboard on every keystroke.
+  2. In `explore.tsx`, `filtered.length === 0` conditionally swapped between `<ScrollView>` and `<FlashList>`, completely remounting the hierarchy whenever results shifted between 0 and >0.
+  3. In `apps/mobile/lib/globalSearch.ts` and `apps/mobile/app/search.tsx`, search queries had an artificial minimum threshold of 2 characters (`query.trim().length >= 2`), completely suppressing single-character constituency lookups (e.g., typing 'n' to find 'Nagarkurnool').
+- **Remediation & Architecture:**
+  1. **Persistent Header Outside Virtualized List:** Refactored `apps/mobile/app/(tabs)/explore.tsx` to mount the Search Bar and Filter Controls in a persistent header container permanently positioned outside `<FlashList>`. The `TextInput` never unmounts, never loses focus, and never destroys the native soft keyboard while typing.
+  2. **FlashList Single View Stability:** Eliminated conditional `<ScrollView>` / `<FlashList>` swapping in `explore.tsx`. `<FlashList>` remains permanently mounted and uses `ListEmptyComponent` for both empty search results and unselected state views.
+  3. **Intelligent Prefix Matching & Ranking:** Enhanced `apps/mobile/lib/globalSearch.ts` and `explore.tsx` to support 1-character queries (`query.trim().length >= 1`), prioritizing exact matches (score 100) and prefix matches (score 90, e.g. "n" -> Nagarkurnool, Nalgonda, Nirmal).
+  4. **Smooth Keyboard Interaction:**
+     - Tapping any search result card calls `Keyboard.dismiss()` and navigates seamlessly.
+     - Pressing "Search" / "Return" invokes `onSubmitEditing={() => Keyboard.dismiss()}` without clearing results.
+     - Dragging or scrolling results smoothly dismisses the keyboard via `keyboardDismissMode="on-drag"` and `keyboardShouldPersistTaps="handled"`.
+     - Standardized across `explore.tsx`, `search.tsx`, `parliament/index.tsx`, `local-bodies/index.tsx`, `ConstituencySelectorSheet.tsx`, and `MapSearch.tsx`.
+- **Verification Evidence:**
+  - `apps/mobile/__tests__/search-keyboard-persistence.test.ts`: 8/8 tests passing (100%).
+  - Full mobile test suite: 35/35 test suites passing, 414/414 tests passing (100%).
+  - TypeScript: `tsc --noEmit` clean (0 errors).
+  - ESLint: `expo lint` clean (0 errors).
+

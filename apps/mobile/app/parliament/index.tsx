@@ -13,6 +13,7 @@ import {
   TextInput,
   Modal,
   Linking,
+  Keyboard,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -287,6 +288,11 @@ export default function ParliamentScreen() {
             placeholderTextColor={colors.textMuted}
             value={searchQuery}
             onChangeText={setSearchQuery}
+            returnKeyType="search"
+            onSubmitEditing={() => Keyboard.dismiss()}
+            blurOnSubmit={false}
+            autoCorrect={false}
+            autoCapitalize="none"
           />
           {searchQuery.length > 0 && (
             <Pressable onPress={() => setSearchQuery('')}>
@@ -301,6 +307,7 @@ export default function ParliamentScreen() {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
           style={{ maxHeight: 38, borderBottomWidth: 1, borderBottomColor: colors.border, backgroundColor: colors.surface }}
           contentContainerStyle={{ paddingHorizontal: 16, gap: 6, alignItems: 'center' }}
         >
@@ -329,7 +336,12 @@ export default function ParliamentScreen() {
         </ScrollView>
       )}
 
-      <ScrollView style={styles.scroll} contentContainerStyle={[styles.scrollContent, { paddingBottom: Math.max(insets.bottom, 20) + 80 }]}>
+      <ScrollView
+        style={styles.scroll}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: Math.max(insets.bottom, 20) + 80 }]}
+      >
         {tab === 'overview' && (
           <>
             {/* Alliance Strength at Centre */}

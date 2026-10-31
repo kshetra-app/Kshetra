@@ -9,6 +9,7 @@ import {
   FlatList,
   Platform,
   StatusBar,
+  Keyboard,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -64,6 +65,7 @@ export default function ConstituencySelectorSheet({
   }, [constituencies, search]);
 
   const handleChoose = (item: ConstituencyBrief) => {
+    Keyboard.dismiss();
     onSelect({
       id: `${stateCode}-AC-${item.acNo}`,
       acNo: item.acNo,
@@ -73,6 +75,7 @@ export default function ConstituencySelectorSheet({
   };
 
   const handleSetHome = (item: ConstituencyBrief) => {
+    Keyboard.dismiss();
     setHome({
       acNo: item.acNo,
       name: item.name,
@@ -126,6 +129,10 @@ export default function ConstituencySelectorSheet({
             value={search}
             onChangeText={setSearch}
             autoCorrect={false}
+            autoCapitalize="none"
+            returnKeyType="search"
+            onSubmitEditing={() => Keyboard.dismiss()}
+            blurOnSubmit={false}
             clearButtonMode="while-editing"
           />
           {search.length > 0 && (
@@ -140,6 +147,8 @@ export default function ConstituencySelectorSheet({
           data={filtered}
           keyExtractor={(item) => String(item.acNo)}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
           contentContainerStyle={styles.listContent}
           renderItem={({ item }) => {
             const isHome = home?.acNo === item.acNo;

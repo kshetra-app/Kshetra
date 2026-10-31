@@ -42,7 +42,7 @@ export interface SearchResult {
  * Search across all data sources.
  */
 export function globalSearch(query: string, maxResults = 30): SearchResult[] {
-  if (!query || query.trim().length < 2) return [];
+  if (!query || !query.trim()) return [];
 
   const q = query.trim().toLowerCase();
   const results: SearchResult[] = [];
@@ -169,12 +169,14 @@ function scoreConstituency(c: UnifiedConstituency, q: string): number {
 
   // Name match
   const nameLower = c.name.toLowerCase();
-  if (nameLower === q) return 90;
-  if (nameLower.startsWith(q)) score = Math.max(score, 80);
-  else if (nameLower.includes(q)) score = Math.max(score, 60);
+  if (nameLower === q) return 100;
+  if (nameLower.startsWith(q)) score = Math.max(score, 90);
+  else if (q.length > 1 && nameLower.includes(q)) score = Math.max(score, 60);
+  else if (q.length === 1 && nameLower.includes(q)) score = Math.max(score, 25);
 
   // District match
-  if (c.district.toLowerCase().includes(q)) score = Math.max(score, 45);
+  if (c.district.toLowerCase().startsWith(q)) score = Math.max(score, 50);
+  else if (q.length > 1 && c.district.toLowerCase().includes(q)) score = Math.max(score, 45);
 
   // Party match
   if (c.currentParty.toLowerCase() === q) score = Math.max(score, 40);
@@ -186,7 +188,7 @@ function scoreMLA(c: UnifiedConstituency, q: string): number {
   const name = c.winnerName.toLowerCase();
   if (name === q) return 90;
   if (name.startsWith(q)) return 75;
-  if (name.includes(q)) return 55;
+  if (q.length > 1 && name.includes(q)) return 55;
   return 0;
 }
 

@@ -8,6 +8,7 @@ import {
   Platform,
   ScrollView,
   Image,
+  Keyboard,
 } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { Ionicons } from '@expo/vector-icons';
@@ -127,18 +128,41 @@ export default function ExploreScreen() {
 
     // Sort
     const sorted = [...results];
-    switch (sortKey) {
-      case 'name':
-        sorted.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      case 'margin_asc':
-        sorted.sort((a, b) => a.margin - b.margin);
-        break;
-      case 'margin_desc':
-        sorted.sort((a, b) => b.margin - a.margin);
-        break;
-      default: // acNo
-        sorted.sort((a, b) => a.acNo - b.acNo);
+    const q = query.toLowerCase().trim();
+    if (q && sortKey === 'acNo') {
+      // Prioritize name startsWith, then district startsWith, then acNo
+      sorted.sort((a, b) => {
+        const aNameStarts = a.name.toLowerCase().startsWith(q);
+        const bNameStarts = b.name.toLowerCase().startsWith(q);
+        if (aNameStarts && !bNameStarts) return -1;
+        if (!aNameStarts && bNameStarts) return 1;
+
+        const aDistStarts = a.district.toLowerCase().startsWith(q);
+        const bDistStarts = b.district.toLowerCase().startsWith(q);
+        if (aDistStarts && !bDistStarts) return -1;
+        if (!aDistStarts && bDistStarts) return 1;
+
+        const aMlaStarts = a.winnerName.toLowerCase().startsWith(q);
+        const bMlaStarts = b.winnerName.toLowerCase().startsWith(q);
+        if (aMlaStarts && !bMlaStarts) return -1;
+        if (!aMlaStarts && bMlaStarts) return 1;
+
+        return a.acNo - b.acNo;
+      });
+    } else {
+      switch (sortKey) {
+        case 'name':
+          sorted.sort((a, b) => a.name.localeCompare(b.name));
+          break;
+        case 'margin_asc':
+          sorted.sort((a, b) => a.margin - b.margin);
+          break;
+        case 'margin_desc':
+          sorted.sort((a, b) => b.margin - a.margin);
+          break;
+        default: // acNo
+          sorted.sort((a, b) => a.acNo - b.acNo);
+      }
     }
 
     return sorted;
@@ -150,7 +174,10 @@ export default function ExploreScreen() {
         <ConstituencyCard
           item={item}
           isFav={isFavorite(item.acNo)}
-          onPress={() => router.push(`/constituency/${item.stateCode}-AC-${item.acNo}` as any)}
+          onPress={() => {
+            Keyboard.dismiss();
+            router.push(`/constituency/${item.stateCode}-AC-${item.acNo}` as any);
+          }}
           onAvatarPress={(uri, name, party) => setPhotoViewer({ uri, name, party })}
           onToggleFav={() => toggleFavorite(item.acNo)}
         />
@@ -164,261 +191,124 @@ export default function ExploreScreen() {
 
   const { insets, contentPaddingBottom } = useResponsive();
 
-  const renderHeaderControls = () => (
-    <View>
-      <ChiefMinisterBadge stateCode={stateCode} />
+  const renderListHeader = useCallback(() => {
+    if (stateCode === 'IN') return null;
 
-      {/* Quick Nav — Parliament, AI Chat, Delimitation */}
-      <View style={styles.quickNavRow}>
-        <Pressable
-          style={[styles.quickNavBtn, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}
-          onPress={() => router.push('/parliament' as any)}
-        >
-          <Ionicons name="business" size={20} color={colors.teal} />
-          <Text style={[styles.quickNavText, { color: colors.text }]} numberOfLines={2}>
-            {t('exploreExtended.mpsParliament', { defaultValue: 'Parliament & MPs' })}
+    if (query.trim()) {
+      return (
+        <View style={styles.searchNoticeRow}>
+          <Text style={[styles.searchNoticeText, { color: colors.textMuted }]}>
+            {filtered.length} {t('explore.constituencies')} found
           </Text>
-        </Pressable>
-        <Pressable
-          style={[styles.quickNavBtn, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}
-          onPress={() => router.push('/ai-chat' as any)}
-        >
-          <Ionicons name="sparkles" size={20} color={colors.gold} />
-          <Text style={[styles.quickNavText, { color: colors.text }]} numberOfLines={2}>
-            {t('exploreExtended.aiChat', { defaultValue: 'AI Chat' })}
-          </Text>
-        </Pressable>
-        <Pressable
-          style={[styles.quickNavBtn, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}
-          onPress={() => router.push('/delimitation' as any)}
-        >
-          <Ionicons name="resize" size={20} color={colors.primary} />
-          <Text style={[styles.quickNavText, { color: colors.text, fontSize: 10.5 }]} numberOfLines={1}>
-            {t('exploreExtended.delimitation', { defaultValue: 'Delimitation' })}
-          </Text>
-        </Pressable>
-        <Pressable
-          style={[styles.quickNavBtn, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}
-          onPress={() => router.push('/local-bodies' as any)}
-        >
-          <Ionicons name="home" size={20} color={colors.gold} />
-          <Text style={[styles.quickNavText, { color: colors.text }]} numberOfLines={2}>
-            {t('exploreExtended.localBodies', { defaultValue: 'Local Bodies' })}
-          </Text>
-        </Pressable>
-      </View>
+        </View>
+      );
+    }
 
-      {/* AI Smart Search toggle */}
-      <View style={styles.aiSearchToggleRow}>
-        <Pressable
-          style={[
-            styles.aiSearchToggle,
-            { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
-            showAISearch && { backgroundColor: colors.goldLight, borderColor: colors.gold },
-          ]}
-          onPress={() => setShowAISearch((v) => !v)}
-        >
-          <Ionicons name="sparkles" size={14} color={showAISearch ? colors.gold : colors.textMuted} />
-          <Text
-            style={[
-              styles.aiSearchToggleText,
-              { color: colors.textSecondary },
-              showAISearch && { color: colors.gold, fontWeight: '700' },
-            ]}
+    return (
+      <View>
+        <ChiefMinisterBadge stateCode={stateCode} />
+
+        {/* Quick Nav — Parliament, AI Chat, Delimitation */}
+        <View style={styles.quickNavRow}>
+          <Pressable
+            style={[styles.quickNavBtn, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}
+            onPress={() => router.push('/parliament' as any)}
           >
-            {t('explore.aiSearch')}
+            <Ionicons name="business" size={20} color={colors.teal} />
+            <Text style={[styles.quickNavText, { color: colors.text }]} numberOfLines={2}>
+              {t('exploreExtended.mpsParliament', { defaultValue: 'Parliament & MPs' })}
+            </Text>
+          </Pressable>
+          <Pressable
+            style={[styles.quickNavBtn, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}
+            onPress={() => router.push('/ai-chat' as any)}
+          >
+            <Ionicons name="sparkles" size={20} color={colors.gold} />
+            <Text style={[styles.quickNavText, { color: colors.text }]} numberOfLines={2}>
+              {t('exploreExtended.aiChat', { defaultValue: 'AI Chat' })}
+            </Text>
+          </Pressable>
+          <Pressable
+            style={[styles.quickNavBtn, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}
+            onPress={() => router.push('/delimitation' as any)}
+          >
+            <Ionicons name="resize" size={20} color={colors.primary} />
+            <Text style={[styles.quickNavText, { color: colors.text, fontSize: 10.5 }]} numberOfLines={1}>
+              {t('exploreExtended.delimitation', { defaultValue: 'Delimitation' })}
+            </Text>
+          </Pressable>
+          <Pressable
+            style={[styles.quickNavBtn, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}
+            onPress={() => router.push('/local-bodies' as any)}
+          >
+            <Ionicons name="home" size={20} color={colors.gold} />
+            <Text style={[styles.quickNavText, { color: colors.text }]} numberOfLines={2}>
+              {t('exploreExtended.localBodies', { defaultValue: 'Local Bodies' })}
+            </Text>
+          </Pressable>
+        </View>
+
+        {/* AI Smart Search toggle */}
+        <View style={styles.aiSearchToggleRow}>
+          <Pressable
+            style={[
+              styles.aiSearchToggle,
+              { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
+              showAISearch && { backgroundColor: colors.goldLight, borderColor: colors.gold },
+            ]}
+            onPress={() => setShowAISearch((v) => !v)}
+          >
+            <Ionicons name="sparkles" size={14} color={showAISearch ? colors.gold : colors.textMuted} />
+            <Text
+              style={[
+                styles.aiSearchToggleText,
+                { color: colors.textSecondary },
+                showAISearch && { color: colors.gold, fontWeight: '700' },
+              ]}
+            >
+              {t('explore.aiSearch')}
+            </Text>
+          </Pressable>
+        </View>
+
+        {showAISearch && (
+          <View style={styles.aiSearchContainer}>
+            <AISmartSearch onSelect={(acNo) => {
+              Keyboard.dismiss();
+              router.push(`/constituency/${stateCode}-AC-${acNo}` as any);
+            }} />
+          </View>
+        )}
+      </View>
+    );
+  }, [stateCode, query, filtered.length, colors, t, router, showAISearch]);
+
+  const renderEmptyComponent = useCallback(() => {
+    if (stateCode === 'IN') {
+      return (
+        <View style={styles.emptyState}>
+          <View style={[styles.emptyIconWrap, { backgroundColor: colors.goldLight, borderColor: colors.goldBorder || colors.border }]}>
+            <Ionicons name="map" size={38} color={colors.gold} />
+          </View>
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>{t('exploreExtended.selectAState')}</Text>
+          <Text style={[styles.emptyText, { color: colors.textMuted }]}>
+            {t('exploreExtended.pleaseSelectState')}
           </Text>
-        </Pressable>
+        </View>
+      );
+    }
+    return (
+      <View style={styles.emptyState}>
+        <View style={[styles.emptyIconWrap, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Ionicons name="search" size={34} color={colors.textMuted} />
+        </View>
+        <Text style={[styles.emptyTitle, { color: colors.text }]}>{t('common.noResults')}</Text>
+        <Text style={[styles.emptyText, { color: colors.textMuted }]}>
+          {t('explore.noResultsHint')}
+        </Text>
       </View>
-
-      {showAISearch && (
-        <View style={styles.aiSearchContainer}>
-          <AISmartSearch onSelect={(acNo) => router.push(`/constituency/${stateCode}-AC-${acNo}` as any)} />
-        </View>
-      )}
-
-      <View style={styles.searchRow}>
-        <View style={[styles.searchContainer, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}>
-          <Ionicons
-            name="search"
-            size={18}
-            color={colors.textMuted}
-            style={styles.searchIcon}
-          />
-          <TextInput
-            style={[styles.searchInput, { color: colors.text }]}
-            placeholder={t('explore.searchPlaceholder')}
-            placeholderTextColor={colors.textMuted}
-            value={query}
-            onChangeText={setQuery}
-            returnKeyType="search"
-            autoCorrect={false}
-          />
-          {query.length > 0 && (
-            <Pressable onPress={() => setQuery('')} hitSlop={8}>
-              <Ionicons name="close-circle" size={18} color={colors.textMuted} />
-            </Pressable>
-          )}
-        </View>
-        <Pressable
-          style={[
-            styles.filterToggle,
-            { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
-            showFilters && { backgroundColor: colors.primaryLight, borderColor: colors.primary },
-          ]}
-          onPress={() => setShowFilters((v) => !v)}
-        >
-          <Ionicons name="options" size={18} color={showFilters ? colors.primary : colors.textMuted} />
-          {activeFilterCount > 0 && (
-            <View style={[styles.filterBadge, { backgroundColor: colors.primary }]}>
-              <Text style={styles.filterBadgeText}>{activeFilterCount}</Text>
-            </View>
-          )}
-        </Pressable>
-      </View>
-      {activeFilterCount > 0 && (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingHorizontal: 16, marginTop: 6, maxHeight: 36 }}>
-          <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }}>
-            {partyFilter && (
-              <Pressable
-                style={[styles.activeChip, { borderColor: getPartyColor(partyFilter) }]}
-                onPress={() => setPartyFilter(null)}
-              >
-                <Text style={{ fontSize: 11, fontWeight: '700', color: getPartyColor(partyFilter) }}>{partyFilter}</Text>
-                <Ionicons name="close" size={12} color={getPartyColor(partyFilter)} />
-              </Pressable>
-            )}
-            {districtFilter && (
-              <Pressable
-                style={[styles.activeChip, { borderColor: colors.primary }]}
-                onPress={() => setDistrictFilter(null)}
-              >
-                <Text style={{ fontSize: 11, fontWeight: '700', color: colors.primary }}>{districtFilter}</Text>
-                <Ionicons name="close" size={12} color={colors.primary} />
-              </Pressable>
-            )}
-            {typeFilter && (
-              <Pressable
-                style={[styles.activeChip, { borderColor: colors.gold }]}
-                onPress={() => setTypeFilter(null)}
-              >
-                <Text style={{ fontSize: 11, fontWeight: '700', color: colors.gold }}>{typeFilter}</Text>
-                <Ionicons name="close" size={12} color={colors.gold} />
-              </Pressable>
-            )}
-            <Pressable style={styles.clearChip} onPress={clearAllFilters}>
-              <Text style={{ fontSize: 11, fontWeight: '700', color: '#EF4444' }}>{t('explore.clearFilters')}</Text>
-            </Pressable>
-          </View>
-        </ScrollView>
-      )}
-
-      {showFilters && (
-        <View style={styles.filtersPanel}>
-          {/* Sort */}
-          <View style={styles.filterSection}>
-            <Text style={styles.filterLabel}>{t('explore.sortBy')}</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <View style={styles.chipRow}>
-                {SORT_OPTION_KEYS.map((opt) => (
-                  <Pressable
-                    key={opt.key}
-                    style={[styles.chip, sortKey === opt.key && styles.chipActive]}
-                    onPress={() => setSortKey(opt.key)}
-                  >
-                    <Text style={[styles.chipText, sortKey === opt.key && styles.chipTextActive]}>
-                      {t(opt.tKey)}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
-            </ScrollView>
-          </View>
-
-          {/* Party filter */}
-          <View style={styles.filterSection}>
-            <Text style={styles.filterLabel}>{t('explore.party')}</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <View style={styles.chipRow}>
-                <Pressable
-                  style={[styles.chip, !partyFilter && styles.chipActive]}
-                  onPress={() => setPartyFilter(null)}
-                >
-                  <Text style={[styles.chipText, !partyFilter && styles.chipTextActive]}>{t('common.all')}</Text>
-                </Pressable>
-                {parties.map((p) => (
-                  <Pressable
-                    key={p}
-                    style={[
-                      styles.chip,
-                      partyFilter === p && { backgroundColor: getPartyColor(p) + '30', borderColor: getPartyColor(p) },
-                    ]}
-                    onPress={() => setPartyFilter(partyFilter === p ? null : p)}
-                  >
-                    <View style={[styles.partyDot, { backgroundColor: getPartyColor(p) }]} />
-                    <Text style={[styles.chipText, partyFilter === p && { color: getPartyColor(p) }]}>{p}</Text>
-                  </Pressable>
-                ))}
-              </View>
-            </ScrollView>
-          </View>
-
-          {/* District filter */}
-          <View style={styles.filterSection}>
-            <Text style={styles.filterLabel}>{t('explore.district')}</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <View style={styles.chipRow}>
-                <Pressable
-                  style={[styles.chip, !districtFilter && styles.chipActive]}
-                  onPress={() => setDistrictFilter(null)}
-                >
-                  <Text style={[styles.chipText, !districtFilter && styles.chipTextActive]}>{t('common.all')}</Text>
-                </Pressable>
-                {districts.map((d) => (
-                  <Pressable
-                    key={d}
-                    style={[styles.chip, districtFilter === d && styles.chipActive]}
-                    onPress={() => setDistrictFilter(districtFilter === d ? null : d)}
-                  >
-                    <Text style={[styles.chipText, districtFilter === d && styles.chipTextActive]}>{d}</Text>
-                  </Pressable>
-                ))}
-              </View>
-            </ScrollView>
-          </View>
-
-          {/* Type filter */}
-          <View style={styles.filterSection}>
-            <Text style={styles.filterLabel}>{t('explore.type')}</Text>
-            <View style={styles.chipRow}>
-              <Pressable
-                style={[styles.chip, !typeFilter && styles.chipActive]}
-                onPress={() => setTypeFilter(null)}
-              >
-                <Text style={[styles.chipText, !typeFilter && styles.chipTextActive]}>{t('common.all')}</Text>
-              </Pressable>
-              {['GEN', 'SC', 'ST'].map((tp) => (
-                <Pressable
-                  key={tp}
-                  style={[styles.chip, typeFilter === tp && styles.chipActive]}
-                  onPress={() => setTypeFilter(typeFilter === tp ? null : tp)}
-                >
-                  <Text style={[styles.chipText, typeFilter === tp && styles.chipTextActive]}>{tp}</Text>
-                </Pressable>
-              ))}
-            </View>
-          </View>
-
-          {activeFilterCount > 0 && (
-            <Pressable style={styles.clearButton} onPress={clearAllFilters}>
-              <Ionicons name="close" size={14} color="#EF4444" />
-              <Text style={styles.clearButtonText}>{t('explore.clearFilters')}</Text>
-            </Pressable>
-          )}
-        </View>
-      )}
-    </View>
-  );
+    );
+  }, [stateCode, colors, t]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -430,8 +320,9 @@ export default function ExploreScreen() {
               <StateSwitcher />
             </View>
             <Text style={[styles.subtitle, { color: colors.textMuted }]}>
-              {filtered.length} / {allConstituencies.length} {t('explore.constituencies')}
-              {showFavoritesOnly ? ` (${t('explore.favoritesOnly')})` : ''}
+              {query.trim()
+                ? `${filtered.length} ${t('explore.constituencies')}`
+                : `${filtered.length} / ${allConstituencies.length} ${t('explore.constituencies')}${showFavoritesOnly ? ` (${t('explore.favoritesOnly')})` : ''}`}
             </Text>
           </View>
           <Pressable
@@ -460,48 +351,212 @@ export default function ExploreScreen() {
             <Ionicons name="help-circle-outline" size={18} color={colors.gold || colors.primary} />
           </Pressable>
         </View>
+
+        {/* Persistent Search Bar: Permanently mounted outside virtualized list so keyboard never dismisses on typing */}
+        <View style={styles.searchRow}>
+          <View style={[styles.searchContainer, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}>
+            <Ionicons
+              name="search"
+              size={18}
+              color={colors.textMuted}
+              style={styles.searchIcon}
+            />
+            <TextInput
+              style={[styles.searchInput, { color: colors.text }]}
+              placeholder={t('explore.searchPlaceholder')}
+              placeholderTextColor={colors.textMuted}
+              value={query}
+              onChangeText={setQuery}
+              returnKeyType="search"
+              onSubmitEditing={() => Keyboard.dismiss()}
+              blurOnSubmit={false}
+              autoCorrect={false}
+              autoCapitalize="none"
+            />
+            {query.length > 0 && (
+              <Pressable onPress={() => setQuery('')} hitSlop={8}>
+                <Ionicons name="close-circle" size={18} color={colors.textMuted} />
+              </Pressable>
+            )}
+          </View>
+          <Pressable
+            style={[
+              styles.filterToggle,
+              { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
+              showFilters && { backgroundColor: colors.primaryLight, borderColor: colors.primary },
+            ]}
+            onPress={() => setShowFilters((v) => !v)}
+          >
+            <Ionicons name="options" size={18} color={showFilters ? colors.primary : colors.textMuted} />
+            {activeFilterCount > 0 && (
+              <View style={[styles.filterBadge, { backgroundColor: colors.primary }]}>
+                <Text style={styles.filterBadgeText}>{activeFilterCount}</Text>
+              </View>
+            )}
+          </Pressable>
+        </View>
+
+        {/* Active Filter Chips */}
+        {activeFilterCount > 0 && (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 2, marginBottom: 6, maxHeight: 36 }}>
+            <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }}>
+              {partyFilter && (
+                <Pressable
+                  style={[styles.activeChip, { borderColor: getPartyColor(partyFilter) }]}
+                  onPress={() => setPartyFilter(null)}
+                >
+                  <Text style={{ fontSize: 11, fontWeight: '700', color: getPartyColor(partyFilter) }}>{partyFilter}</Text>
+                  <Ionicons name="close" size={12} color={getPartyColor(partyFilter)} />
+                </Pressable>
+              )}
+              {districtFilter && (
+                <Pressable
+                  style={[styles.activeChip, { borderColor: colors.primary }]}
+                  onPress={() => setDistrictFilter(null)}
+                >
+                  <Text style={{ fontSize: 11, fontWeight: '700', color: colors.primary }}>{districtFilter}</Text>
+                  <Ionicons name="close" size={12} color={colors.primary} />
+                </Pressable>
+              )}
+              {typeFilter && (
+                <Pressable
+                  style={[styles.activeChip, { borderColor: colors.gold }]}
+                  onPress={() => setTypeFilter(null)}
+                >
+                  <Text style={{ fontSize: 11, fontWeight: '700', color: colors.gold }}>{typeFilter}</Text>
+                  <Ionicons name="close" size={12} color={colors.gold} />
+                </Pressable>
+              )}
+              <Pressable style={styles.clearChip} onPress={clearAllFilters}>
+                <Text style={{ fontSize: 11, fontWeight: '700', color: '#EF4444' }}>{t('explore.clearFilters')}</Text>
+              </Pressable>
+            </View>
+          </ScrollView>
+        )}
+
+        {/* Filters Panel (collapsible) */}
+        {showFilters && (
+          <View style={styles.filtersPanel}>
+            {/* Sort */}
+            <View style={styles.filterSection}>
+              <Text style={styles.filterLabel}>{t('explore.sortBy')}</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <View style={styles.chipRow}>
+                  {SORT_OPTION_KEYS.map((opt) => (
+                    <Pressable
+                      key={opt.key}
+                      style={[styles.chip, sortKey === opt.key && styles.chipActive]}
+                      onPress={() => setSortKey(opt.key)}
+                    >
+                      <Text style={[styles.chipText, sortKey === opt.key && styles.chipTextActive]}>
+                        {t(opt.tKey)}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </ScrollView>
+            </View>
+
+            {/* Party filter */}
+            <View style={styles.filterSection}>
+              <Text style={styles.filterLabel}>{t('explore.party')}</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <View style={styles.chipRow}>
+                  <Pressable
+                    style={[styles.chip, !partyFilter && styles.chipActive]}
+                    onPress={() => setPartyFilter(null)}
+                  >
+                    <Text style={[styles.chipText, !partyFilter && styles.chipTextActive]}>{t('common.all')}</Text>
+                  </Pressable>
+                  {parties.map((p) => (
+                    <Pressable
+                      key={p}
+                      style={[
+                        styles.chip,
+                        partyFilter === p && { backgroundColor: getPartyColor(p) + '30', borderColor: getPartyColor(p) },
+                      ]}
+                      onPress={() => setPartyFilter(partyFilter === p ? null : p)}
+                    >
+                      <View style={[styles.partyDot, { backgroundColor: getPartyColor(p) }]} />
+                      <Text style={[styles.chipText, partyFilter === p && { color: getPartyColor(p) }]}>{p}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </ScrollView>
+            </View>
+
+            {/* District filter */}
+            <View style={styles.filterSection}>
+              <Text style={styles.filterLabel}>{t('explore.district')}</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <View style={styles.chipRow}>
+                  <Pressable
+                    style={[styles.chip, !districtFilter && styles.chipActive]}
+                    onPress={() => setDistrictFilter(null)}
+                  >
+                    <Text style={[styles.chipText, !districtFilter && styles.chipTextActive]}>{t('common.all')}</Text>
+                  </Pressable>
+                  {districts.map((d) => (
+                    <Pressable
+                      key={d}
+                      style={[styles.chip, districtFilter === d && styles.chipActive]}
+                      onPress={() => setDistrictFilter(districtFilter === d ? null : d)}
+                    >
+                      <Text style={[styles.chipText, districtFilter === d && styles.chipTextActive]}>{d}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </ScrollView>
+            </View>
+
+            {/* Type filter */}
+            <View style={styles.filterSection}>
+              <Text style={styles.filterLabel}>{t('explore.type')}</Text>
+              <View style={styles.chipRow}>
+                <Pressable
+                  style={[styles.chip, !typeFilter && styles.chipActive]}
+                  onPress={() => setTypeFilter(null)}
+                >
+                  <Text style={[styles.chipText, !typeFilter && styles.chipTextActive]}>{t('common.all')}</Text>
+                </Pressable>
+                {['GEN', 'SC', 'ST'].map((tp) => (
+                  <Pressable
+                    key={tp}
+                    style={[styles.chip, typeFilter === tp && styles.chipActive]}
+                    onPress={() => setTypeFilter(typeFilter === tp ? null : tp)}
+                  >
+                    <Text style={[styles.chipText, typeFilter === tp && styles.chipTextActive]}>{tp}</Text>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+
+            {activeFilterCount > 0 && (
+              <Pressable style={styles.clearButton} onPress={clearAllFilters}>
+                <Ionicons name="close" size={14} color="#EF4444" />
+                <Text style={styles.clearButtonText}>{t('explore.clearFilters')}</Text>
+              </Pressable>
+            )}
+          </View>
+        )}
       </View>
 
-      {stateCode === 'IN' ? (
-        <ScrollView contentContainerStyle={styles.scrollHeaderOnly}>
-          {renderHeaderControls()}
-          <View style={styles.emptyState}>
-            <View style={[styles.emptyIconWrap, { backgroundColor: colors.goldLight, borderColor: colors.goldBorder || colors.border }]}>
-              <Ionicons name="map" size={38} color={colors.gold} />
-            </View>
-            <Text style={[styles.emptyTitle, { color: colors.text }]}>{t('exploreExtended.selectAState')}</Text>
-            <Text style={[styles.emptyText, { color: colors.textMuted }]}>
-              {t('exploreExtended.pleaseSelectState')}
-            </Text>
-          </View>
-        </ScrollView>
-      ) : filtered.length === 0 ? (
-        <ScrollView contentContainerStyle={styles.scrollHeaderOnly}>
-          {renderHeaderControls()}
-          <View style={styles.emptyState}>
-            <View style={[styles.emptyIconWrap, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-              <Ionicons name="search" size={34} color={colors.textMuted} />
-            </View>
-            <Text style={[styles.emptyTitle, { color: colors.text }]}>{t('common.noResults')}</Text>
-            <Text style={[styles.emptyText, { color: colors.textMuted }]}>
-              {t('explore.noResultsHint')}
-            </Text>
-          </View>
-        </ScrollView>
-      ) : (
-        <FlashList
-          key={stateCode}
-          data={filtered}
-          extraData={{ stateCode, favoriteIds, showAISearch, showFilters, query, sortKey, partyFilter, districtFilter, typeFilter }}
-          renderItem={renderItem}
-          keyExtractor={(item) => `${stateCode}-${item.acNo}`}
-          ListHeaderComponent={renderHeaderControls}
-          contentContainerStyle={[
-            styles.listContent,
-            { paddingBottom: Math.max(contentPaddingBottom, 110) },
-          ]}
-        />
-      )}
+      {/* Permanently Mounted Virtualized List */}
+      <FlashList
+        key={stateCode}
+        data={stateCode === 'IN' ? [] : filtered}
+        extraData={{ stateCode, favoriteIds, showAISearch, showFilters, query, sortKey, partyFilter, districtFilter, typeFilter }}
+        renderItem={renderItem}
+        keyExtractor={(item) => `${stateCode}-${item.acNo}`}
+        ListHeaderComponent={renderListHeader}
+        ListEmptyComponent={renderEmptyComponent}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        contentContainerStyle={[
+          styles.listContent,
+          { paddingBottom: Math.max(contentPaddingBottom, 110) },
+        ]}
+      />
 
       <DiscoveryHubSheet
         visible={showDiscoveryHub}
@@ -683,9 +738,18 @@ const styles = StyleSheet.create({
   searchRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 16,
-    marginVertical: 12,
+    marginTop: 8,
+    marginBottom: 6,
     gap: 8,
+  },
+  searchNoticeRow: {
+    paddingVertical: 10,
+    paddingHorizontal: 4,
+    marginBottom: 4,
+  },
+  searchNoticeText: {
+    fontSize: 12.5,
+    fontWeight: '700',
   },
   searchContainer: {
     flex: 1,
