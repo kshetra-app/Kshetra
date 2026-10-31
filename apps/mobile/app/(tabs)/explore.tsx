@@ -348,9 +348,57 @@ export default function ExploreScreen() {
             accessibilityRole="button"
             accessibilityLabel={t('discovery.tabs.guide', { defaultValue: 'Explore Guide' })}
           >
-            <Ionicons name="help-circle-outline" size={18} color={colors.gold || colors.primary} />
+            <Ionicons name="sparkles" size={18} color={colors.gold || colors.primary} />
           </Pressable>
         </View>
+
+        {/* Platform Discovery & Directory Card */}
+        <Pressable
+          style={{
+            marginHorizontal: 16,
+            marginBottom: 10,
+            padding: 12,
+            borderRadius: 14,
+            backgroundColor: colors.surfaceElevated || colors.surface,
+            borderWidth: 1,
+            borderColor: colors.goldBorder || '#C5A05950',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 12,
+            shadowColor: '#000000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.15,
+            shadowRadius: 4,
+            elevation: 3,
+          }}
+          onPress={() => setShowDiscoveryHub(true)}
+          accessibilityRole="button"
+          accessibilityLabel={t('discovery.hubTitle', { defaultValue: 'Platform Feature Directory & Guide' })}
+        >
+          <View
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 18,
+              backgroundColor: '#C5A05925',
+              borderWidth: 1,
+              borderColor: '#C5A059',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Ionicons name="compass" size={20} color="#FCD34D" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 13, fontWeight: '700', color: colors.text }}>
+              {t('discovery.hubTitle', { defaultValue: 'Platform Feature Directory & Guide' })}
+            </Text>
+            <Text style={{ fontSize: 11, color: colors.textMuted, marginTop: 1 }}>
+              {t('discovery.hubSubtitle', { defaultValue: 'Explore all 25+ political intelligence tools, maps & guides' })}
+            </Text>
+          </View>
+          <Ionicons name="chevron-forward" size={16} color="#C5A059" />
+        </Pressable>
 
         {/* Persistent Search Bar: Permanently mounted outside virtualized list so keyboard never dismisses on typing */}
         <View style={styles.searchRow}>

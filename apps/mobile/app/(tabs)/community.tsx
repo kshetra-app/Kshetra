@@ -121,6 +121,16 @@ export default function CommunityScreen() {
         </View>
 
         <View style={styles.headerIconsRow}>
+          {/* Guide & Discovery Hub button */}
+          <Pressable
+            style={[styles.headerIconButton, { backgroundColor: colors.background, borderColor: colors.goldBorder || colors.border }]}
+            onPress={() => setShowDiscoveryHub(true)}
+            hitSlop={8}
+            accessibilityLabel={t('discovery.tabs.guide', { defaultValue: 'Community Guide' })}
+          >
+            <Ionicons name="sparkles-outline" size={19} color={colors.gold || colors.primary} />
+          </Pressable>
+
           {/* Notifications Bell -> /notifications */}
           <Pressable
             style={[styles.headerIconButton, { backgroundColor: colors.background, borderColor: colors.border }]}

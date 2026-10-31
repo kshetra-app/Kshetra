@@ -127,20 +127,32 @@ export default function NewsScreen() {
             </Text>
           </View>
         </View>
-        <Pressable
-          style={[
-            styles.iconBtn,
-            { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
-            showBookmarks && { backgroundColor: colors.goldLight, borderColor: colors.gold },
-          ]}
-          onPress={() => setShowBookmarks((v) => !v)}
-        >
-          <Ionicons
-            name={showBookmarks ? 'bookmark' : 'bookmark-outline'}
-            size={18}
-            color={showBookmarks ? colors.gold : colors.textMuted}
-          />
-        </Pressable>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Pressable
+            style={[
+              styles.iconBtn,
+              { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
+            ]}
+            onPress={() => setShowDiscoveryHub(true)}
+            accessibilityLabel="News Guide"
+          >
+            <Ionicons name="sparkles-outline" size={18} color={colors.gold || colors.primary} />
+          </Pressable>
+          <Pressable
+            style={[
+              styles.iconBtn,
+              { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
+              showBookmarks && { backgroundColor: colors.goldLight, borderColor: colors.gold },
+            ]}
+            onPress={() => setShowBookmarks((v) => !v)}
+          >
+            <Ionicons
+              name={showBookmarks ? 'bookmark' : 'bookmark-outline'}
+              size={18}
+              color={showBookmarks ? colors.gold : colors.textMuted}
+            />
+          </Pressable>
+        </View>
       </View>
 
       {/* Language rail */}

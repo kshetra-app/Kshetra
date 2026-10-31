@@ -291,6 +291,14 @@ export function enrichIndiaGeoJSON(
   nameToCode['orissa'] = 'OD';
   nameToCode['uttaranchal'] = 'UK';
   nameToCode['uttarakhand'] = 'UK';
+  nameToCode['andamanandnicobar'] = 'AN';
+  nameToCode['andamanandnicobarislands'] = 'AN';
+  nameToCode['dadraandnagarhavelianddamanddiu'] = 'DN';
+  nameToCode['dadranagarhaveli'] = 'DN';
+  nameToCode['damandiu'] = 'DN';
+  nameToCode['lakshadweep'] = 'LD';
+  nameToCode['ladakh'] = 'LA';
+  nameToCode['chandigarh'] = 'CH';
 
   return {
     ...geojson,
@@ -308,6 +316,13 @@ export function enrichIndiaGeoJSON(
           STATE_NAME: stateInfo?.name ?? name,
           WINNER_PARTY: stateInfo?.rulingParty ?? 'IND', // Color by ruling party of state
           SEATS: stateInfo?.assemblySeats ?? 0,
+          AC_NO: -1,
+          AC_NAME: stateInfo?.name ?? name,
+          DISTRICT: '',
+          MARGIN: 0,
+          RESERVATION: 'GEN',
+          BATTLEGROUND: 'safe',
+          IS_SWING: 'retained',
         },
       };
     }),

@@ -1166,13 +1166,15 @@ function FullMapScreen() {
                       '#00E5FF',
                       activeFillColor,
                     ],
-                    fillOpacity: [
-                      'case',
-                      // District focus masking
-                      ['all', ['literal', focusedDistrict !== ''], ['!=', ['get', 'DISTRICT'], focusedDistrict]],
-                      0.1,
-                      ['case', ['==', ['get', 'AC_NO'], selectedAcNo], 0.8, 0.5],
-                    ],
+                    fillOpacity: stateCode === 'IN'
+                      ? 0.7
+                      : [
+                          'case',
+                          // District focus masking
+                          ['all', ['literal', focusedDistrict !== ''], ['!=', ['get', 'DISTRICT'], focusedDistrict]],
+                          0.1,
+                          ['case', ['==', ['get', 'AC_NO'], selectedAcNo], 0.8, 0.55],
+                        ],
                   }}
                 />
               )}
@@ -1180,31 +1182,36 @@ function FullMapScreen() {
               <MapboxGL.LineLayer
                 id={`constituency-border-${stateCode}`}
                 style={{
-                  lineColor: [
-                    'case',
-                    ['==', ['get', 'AC_NO'], selectedAcNo],
-                    '#FFD700',
-                    ['==', ['get', 'AC_NO'], compareSelectedAcNo],
-                    '#00E5FF',
-                    'rgba(255,255,255,0.4)',
-                  ],
-                  lineWidth: [
-                    'case',
-                    ['==', ['get', 'AC_NO'], selectedAcNo],
-                    2.5,
-                    ['==', ['get', 'AC_NO'], compareSelectedAcNo],
-                    2.5,
-                    0.6,
-                  ],
-                  lineOpacity: [
-                    'case',
-                    ['all', ['literal', focusedDistrict !== ''], ['!=', ['get', 'DISTRICT'], focusedDistrict]],
-                    0.1,
-                    0.8,
-                  ],
+                  lineColor: stateCode === 'IN'
+                    ? '#FFFFFF'
+                    : [
+                        'case',
+                        ['==', ['get', 'AC_NO'], selectedAcNo],
+                        '#FFD700',
+                        ['==', ['get', 'AC_NO'], compareSelectedAcNo],
+                        '#00E5FF',
+                        'rgba(255,255,255,0.4)',
+                      ],
+                  lineWidth: stateCode === 'IN'
+                    ? 1.2
+                    : [
+                        'case',
+                        ['==', ['get', 'AC_NO'], selectedAcNo],
+                        2.5,
+                        ['==', ['get', 'AC_NO'], compareSelectedAcNo],
+                        2.5,
+                        0.6,
+                      ],
+                  lineOpacity: stateCode === 'IN'
+                    ? 0.9
+                    : [
+                        'case',
+                        ['all', ['literal', focusedDistrict !== ''], ['!=', ['get', 'DISTRICT'], focusedDistrict]],
+                        0.1,
+                        0.8,
+                      ],
                 }}
               />
-
             </MapboxGL.ShapeSource>
 
             {labelGeoJSON && (
@@ -1433,19 +1440,19 @@ function FullMapScreen() {
               {/* Discovery & Guidance Hub trigger */}
               <Pressable
                 style={{
-                  backgroundColor: colors.surfaceElevated || colors.surface,
-                  borderRadius: 14,
-                  width: 28,
-                  height: 28,
+                  backgroundColor: 'rgba(15, 23, 42, 0.92)',
+                  borderRadius: 16,
+                  width: 32,
+                  height: 32,
                   justifyContent: 'center',
                   alignItems: 'center',
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                  shadowColor: colors.shadowColor,
+                  borderWidth: 1.5,
+                  borderColor: '#C5A059',
+                  shadowColor: '#000000',
                   shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.2,
-                  shadowRadius: 3,
-                  elevation: 4,
+                  shadowOpacity: 0.35,
+                  shadowRadius: 4,
+                  elevation: 5,
                 }}
                 onPress={() => {
                   tapLight();
@@ -1454,10 +1461,35 @@ function FullMapScreen() {
                 accessibilityRole="button"
                 accessibilityLabel={t('discovery.hubTitle', { defaultValue: 'Discovery and Guide' })}
               >
-                <Ionicons name="help-circle" size={16} color={colors.gold || colors.primary} />
+                <Ionicons name="sparkles" size={17} color="#FCD34D" />
               </Pressable>
             </View>
           </View>
+
+          {/* National India Instruction Chip */}
+          {stateCode === 'IN' && !hideOverlays && (
+            <View
+              style={{
+                marginTop: 6,
+                marginRight: 54,
+                paddingVertical: 5,
+                paddingHorizontal: 10,
+                borderRadius: 12,
+                backgroundColor: 'rgba(15, 23, 42, 0.88)',
+                borderWidth: 1,
+                borderColor: 'rgba(197, 160, 89, 0.45)',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 6,
+                alignSelf: 'flex-start',
+              }}
+            >
+              <Ionicons name="finger-print" size={14} color="#FCD34D" />
+              <Text style={{ fontSize: 11, fontWeight: '700', color: '#F1F5F9' }}>
+                Tap any state to explore its assembly constituencies
+              </Text>
+            </View>
+          )}
 
           {/* Prime Minister (National) / Chief Minister (State) Leader badge */}
           {!hideOverlays && !selected && (
@@ -1630,8 +1662,8 @@ function FullMapScreen() {
       {/* Adaptive Floating Action Controls (Consolidated Draggable Unit with Dynamic Orientation) */}
       {!broadcastMode && (
         <AdaptiveFloatingControls
-          initialX={Dimensions.get('window').width - 64}
-          initialY={mapTopOffset + (stateCode === 'IN' ? 55 : 62)}
+          initialX={Dimensions.get('window').width - 60}
+          initialY={mapTopOffset + 50}
           stateCode={stateCode}
           selectedConstituency={selected}
           mapCompareActive={mapCompareActive}
