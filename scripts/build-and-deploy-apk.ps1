@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop"
 
 Write-Host "=========================================="
-Write-Host "  KSHETRA FULL FRESH RELEASE APK BUILD"
+Write-Host "  POLIGRAM RELEASE APK BUILD"
 Write-Host "=========================================="
 
 # 1. Thorough Cache Cleaning
@@ -108,14 +108,8 @@ if (-not (Test-Path $apkSrc)) {
 }
 
 $destinations = @(
-    "c:\Users\Laven\OneDrive\Desktop\kshetra-release.apk",
-    "c:\Users\Laven\OneDrive\Desktop\kshetra.apk",
     "c:\Users\Laven\OneDrive\Desktop\Poligram.apk",
-    "c:\Users\Laven\OneDrive\Desktop\Poligram-release.apk",
-    "c:\Users\Laven\Desktop\kshetra-release.apk",
-    "c:\Users\Laven\Desktop\kshetra.apk",
-    "c:\Users\Laven\Desktop\Poligram.apk",
-    "c:\Users\Laven\Desktop\Poligram-release.apk"
+    "c:\Users\Laven\Desktop\Poligram.apk"
 )
 
 foreach ($dest in $destinations) {
@@ -127,7 +121,7 @@ foreach ($dest in $destinations) {
 }
 
 # Verification
-$finalApk = Get-Item "c:\Users\Laven\OneDrive\Desktop\kshetra-release.apk"
+$finalApk = Get-Item "c:\Users\Laven\OneDrive\Desktop\Poligram.apk"
 Write-Host "`n=========================================="
 Write-Host "  BUILD AND DEPLOY SUCCESSFUL!"
 Write-Host "=========================================="
