@@ -1,15 +1,19 @@
 /**
  * Custom Babel plugin that replaces process.env.EXPO_ROUTER_APP_ROOT
- * with the absolute path to the app/ directory at build time,
+ * with the relative path to the app/ directory from the file requiring it,
  * and inlines process.env.EXPO_ROUTER_IMPORT_MODE.
  * 
- * This solves the monorepo problem where the env var value gets inlined
- * into node_modules/expo-router/_ctx.android.js and must resolve relative
- * to THAT file — but we don't know where expo-router is installed.
+ * Metro's require.context implementation uses:
+ *   path.join(parentPath, "..", dep.name)
+ * When dep.name is an absolute Windows path (e.g. C:\Users\...), Node's path.join
+ * concatenates it as "parentPath\..\C:\Users\...", resulting in an invalid path
+ * where Metro finds 0 files, generates metroEmptyContext, and throws "No routes found".
  * 
- * By using an absolute path, require.context always finds the right directory.
+ * By using a canonicalized relative path (e.g. "../../app"), path.join resolves
+ * cleanly to the actual app directory on all platforms including Windows.
  */
 const path = require('path');
+const fs = require('fs');
 
 module.exports = function ({ types: t }) {
   const appRoot = path.resolve(__dirname, 'app');
@@ -21,7 +25,20 @@ module.exports = function ({ types: t }) {
         if (
           nodePath.matchesPattern('process.env.EXPO_ROUTER_APP_ROOT')
         ) {
-          nodePath.replaceWith(t.stringLiteral(appRoot));
+          const currentFile = state.filename || (state.file && state.file.opts && state.file.opts.filename);
+          let relativePath = '../../app';
+          if (currentFile) {
+            let realCurrent = currentFile;
+            let realApp = appRoot;
+            try { realCurrent = fs.realpathSync(realCurrent); } catch {}
+            try { realApp = fs.realpathSync(realApp); } catch {}
+            let rel = path.relative(path.dirname(realCurrent), realApp).replace(/\\/g, '/');
+            if (!rel.startsWith('.')) {
+              rel = './' + rel;
+            }
+            relativePath = rel;
+          }
+          nodePath.replaceWith(t.stringLiteral(relativePath));
         }
         if (
           nodePath.matchesPattern('process.env.EXPO_ROUTER_IMPORT_MODE')

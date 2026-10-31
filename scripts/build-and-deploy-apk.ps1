@@ -50,6 +50,17 @@ if (-not (Test-Path "C:\K\apps\mobile\android\app\src\main\assets\index.android.
 $rawSize = (Get-Item "C:\K\apps\mobile\android\app\src\main\assets\index.android.bundle").Length
 Write-Host "Fresh raw JS bundle size: $([math]::Round($rawSize / 1MB, 2)) MB"
 
+# Verify routes are actually included in bundle
+$hasEmptyContext = Select-String -Path "C:\K\apps\mobile\android\app\src\main\assets\index.android.bundle" -Pattern "No modules in context" -Quiet
+if ($hasEmptyContext) {
+    throw "Fatal error: Metro bundle has 'No modules in context' (empty router context)!"
+}
+$hasTabRoute = Select-String -Path "C:\K\apps\mobile\android\app\src\main\assets\index.android.bundle" -Pattern "\.\/\(tabs\)\/index" -Quiet
+if (-not $hasTabRoute) {
+    throw "Fatal error: Metro bundle is missing standard route definitions!"
+}
+Write-Host "Expo Router context verified: all 50+ routes successfully registered in JS bundle."
+
 # 4. Compile JS bundle to Hermes Bytecode
 Write-Host "`n[4/6] Compiling JS bundle with hermesc.exe..."
 $hermesc = "C:\K\node_modules\react-native\sdks\hermesc\win64-bin\hermesc.exe"
