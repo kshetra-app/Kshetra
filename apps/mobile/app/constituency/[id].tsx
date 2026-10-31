@@ -1,3 +1,4 @@
+import PodiumHistoryCard from '../../components/PodiumHistoryCard';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Platform, Pressable, Share, Image } from 'react-native';
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
@@ -840,6 +841,15 @@ export default function ConstituencyDetailScreen() {
 
               {elections.map((e, idx) => {
                 const isCurrent = idx === elections.length - 1;
+                if ((e as any).first_runner_up_name || (e as any).first_runner_up_party || (e as any).winner_votes) {
+                  return (
+                    <PodiumHistoryCard
+                      key={e.year}
+                      item={e as any}
+                      isLatest={isCurrent}
+                    />
+                  );
+                }
                 const prevParty = idx > 0 ? normalize(elections[idx - 1].party) : null;
                 const flipped = prevParty !== null && normalize(e.party) !== prevParty;
 

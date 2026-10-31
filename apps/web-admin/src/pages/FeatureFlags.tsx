@@ -69,7 +69,7 @@ export function FeatureFlags() {
   }, []);
 
   const handleToggle = (key: keyof AppFeatureFlags) => {
-    setFlags((prev) => ({
+    setFlags((prev: AppFeatureFlags) => ({
       ...prev,
       [key]: !prev[key],
     }));
@@ -169,7 +169,7 @@ export function FeatureFlags() {
           const isEnabled = Boolean(flags[flag.key]);
           return (
             <div
-              key={flag.key}
+              key={String(flag.key)}
               onClick={() => handleToggle(flag.key)}
               className={`p-5 rounded-2xl border transition-all cursor-pointer select-none flex flex-col justify-between space-y-4 ${
                 isEnabled
@@ -195,7 +195,7 @@ export function FeatureFlags() {
               </div>
 
               <div className="pt-3 border-t border-slate-800/60 flex items-center justify-between text-[11px] font-mono">
-                <span className="text-slate-400">{flag.key}</span>
+                <span className="text-slate-400">{String(flag.key)}</span>
                 <span className={isEnabled ? 'text-emerald-400 font-bold' : 'text-slate-400'}>
                   {isEnabled ? 'ENABLED' : 'DISABLED'}
                 </span>

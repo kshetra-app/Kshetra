@@ -11,7 +11,10 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "paths": {
+      "@kshetra/shared": ["../../packages/shared/src"]
+    }
   },
   "include": ["src/**/*", "../../data/seed/**/*", "../../data/census/**/*"],
   "exclude": [

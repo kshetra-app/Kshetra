@@ -148,19 +148,44 @@ export interface ElectionResult {
   year: number;
   electionType: 'GENERAL' | 'BYPOLL';
   winner: CandidateResult;
-  runnerUp: CandidateResult;
+  runnerUp: CandidateResult; // Backwards-compatibility alias for firstRunnerUp
+  firstRunnerUp?: CandidateResult;
+  secondRunnerUp?: CandidateResult;
   totalVoters: number;
   votesPolled: number;
   turnout: number;
-  margin: number;
+  margin: number; // Victory margin (V1 - V2)
+  marginWinnerToRunnerUp1?: number; // (V1 - V2)
+  marginWinnerToRunnerUp2?: number; // (V1 - V3)
+  marginRunnerUp1ToRunnerUp2?: number; // (V2 - V3)
   candidates: CandidateResult[];
 }
 
 export interface CandidateResult {
   name: string;
-  party: PartyCode;
+  party: PartyCode | string;
   votes: number;
   voteShare: number;
+  rank?: number;
+}
+
+export interface CandidateFullProfile extends CandidateResult {
+  id?: string;
+  partyFullName?: string;
+  marginToWinner?: number;
+  marginToPreviousRank?: number;
+  gender?: 'M' | 'F' | 'O';
+  age?: number;
+  dob?: string;
+  education?: string;
+  profession?: string;
+  criminalCases?: number;
+  seriousCriminalCases?: number;
+  totalAssets?: number;
+  totalLiabilities?: number;
+  photoUrl?: string;
+  affidavitUrl?: string;
+  dataStatus?: 'OFFICIAL' | 'VERIFIED' | 'DERIVED' | 'UNVERIFIED';
 }
 
 export interface StateInfo {

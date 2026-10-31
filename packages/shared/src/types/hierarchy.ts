@@ -278,6 +278,13 @@ export interface GPWard {
   hasBoundary?: boolean;
 }
 
+export type OfficeholdingStatus =
+  | 'CURRENT_CONFIRMED'
+  | 'HISTORICAL_TERM'
+  | 'HISTORICAL_WINNER'
+  | 'UNRESOLVED'
+  | 'VACATED';
+
 /**
  * Unified local-body office-holder (migration 023 `representatives`).
  *
@@ -338,6 +345,7 @@ export interface Representative {
   termStart?: string;
   termEnd?: string;
   isCurrent: boolean;
+  officeholdingStatus?: OfficeholdingStatus;
 
   // Provenance summary
   sourceType: RepresentativeSourceType;

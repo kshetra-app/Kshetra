@@ -32,6 +32,12 @@ const OUT_FILE = path.resolve(ROOT, 'data/seed/local-body-representatives.genera
 
 /** Normalized KYR rep → shared `Representative` shape (drops empty fields). */
 function toRepresentative(rep) {
+  const electionYear = Number(rep.electionYear) || 2020;
+  // Decouple historical election winners from active officeholders.
+  // 5-year statutory local body term in India.
+  const isCurrentActive = electionYear >= 2024;
+  const officeholdingStatus = isCurrentActive ? 'CURRENT_CONFIRMED' : 'HISTORICAL_WINNER';
+
   const out = {
     id: rep.id,
     officeType: rep.officeType,
@@ -40,9 +46,10 @@ function toRepresentative(rep) {
     stateCode: rep.stateCode,
     name: rep.name,
     partyOfficial: rep.partyOfficial,
-    isCurrent: true,
+    isCurrent: isCurrentActive,
+    officeholdingStatus,
     sourceType: 'sec',
-    dataStatus: 'verified',
+    dataStatus: isCurrentActive ? 'verified' : 'unverified',
   };
   if (rep.district) out.district = rep.district;
   // Clean geography (real, scraped) so the app can build a District → Mandal →

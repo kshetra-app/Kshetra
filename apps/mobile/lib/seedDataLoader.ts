@@ -58,9 +58,44 @@ export interface HistoricalResultRow {
   id: string;
   state_code: string;
   ac_no: number;
+  constituency_name?: string;
   year: number;
+  delimitation_id?: string;
+  total_valid_votes?: number;
   winner: string;
   party: string;
+  winner_name?: string;
+  winner_party?: string;
+  winner_votes?: number;
+  winner_vote_share?: number;
+  winner_education?: string;
+  winner_profession?: string;
+  winner_criminal_cases?: number;
+  winner_total_assets?: number;
+  winner_total_liabilities?: number;
+  first_runner_up_name?: string;
+  first_runner_up_party?: string;
+  first_runner_up_votes?: number;
+  first_runner_up_vote_share?: number;
+  margin_winner_to_runner_up_1?: number;
+  first_runner_up_education?: string;
+  first_runner_up_profession?: string;
+  first_runner_up_criminal_cases?: number;
+  first_runner_up_total_assets?: number;
+  first_runner_up_total_liabilities?: number;
+  second_runner_up_name?: string;
+  second_runner_up_party?: string;
+  second_runner_up_votes?: number;
+  second_runner_up_vote_share?: number;
+  margin_winner_to_runner_up_2?: number;
+  margin_runner_up_1_to_runner_up_2?: number;
+  second_runner_up_education?: string;
+  second_runner_up_profession?: string;
+  second_runner_up_criminal_cases?: number;
+  second_runner_up_total_assets?: number;
+  second_runner_up_total_liabilities?: number;
+  localized_names_json?: string;
+  localized_parties_json?: string;
 }
 
 export interface PoliticalTimelineRow {
@@ -186,9 +221,44 @@ async function initLocalSchema(db: SQLite.SQLiteDatabase): Promise<void> {
       id TEXT PRIMARY KEY,
       state_code TEXT NOT NULL,
       ac_no INTEGER NOT NULL,
+      constituency_name TEXT,
       year INTEGER NOT NULL,
+      delimitation_id TEXT,
+      total_valid_votes INTEGER,
       winner TEXT,
       party TEXT,
+      winner_name TEXT,
+      winner_party TEXT,
+      winner_votes INTEGER,
+      winner_vote_share REAL,
+      winner_education TEXT,
+      winner_profession TEXT,
+      winner_criminal_cases INTEGER,
+      winner_total_assets REAL,
+      winner_total_liabilities REAL,
+      first_runner_up_name TEXT,
+      first_runner_up_party TEXT,
+      first_runner_up_votes INTEGER,
+      first_runner_up_vote_share REAL,
+      margin_winner_to_runner_up_1 INTEGER,
+      first_runner_up_education TEXT,
+      first_runner_up_profession TEXT,
+      first_runner_up_criminal_cases INTEGER,
+      first_runner_up_total_assets REAL,
+      first_runner_up_total_liabilities REAL,
+      second_runner_up_name TEXT,
+      second_runner_up_party TEXT,
+      second_runner_up_votes INTEGER,
+      second_runner_up_vote_share REAL,
+      margin_winner_to_runner_up_2 INTEGER,
+      margin_runner_up_1_to_runner_up_2 INTEGER,
+      second_runner_up_education TEXT,
+      second_runner_up_profession TEXT,
+      second_runner_up_criminal_cases INTEGER,
+      second_runner_up_total_assets REAL,
+      second_runner_up_total_liabilities REAL,
+      localized_names_json TEXT,
+      localized_parties_json TEXT,
       UNIQUE(state_code, ac_no, year)
     );
 

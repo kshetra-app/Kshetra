@@ -93,10 +93,11 @@ function makeRep({ stateCode, year, sourceUrl, officeType, jurisdictionType, jur
     party_official: isPartyOfficial(stateCode, officeType),
     elected_party: winner.party ?? null,
     election_year: Number(year),
-    is_current: true,
+    is_current: Number(year) >= 2024,
+    officeholding_status: Number(year) >= 2024 ? 'CURRENT_CONFIRMED' : 'HISTORICAL_WINNER',
     source_type: 'sec',
     source_url: sourceUrl ?? null,
-    data_status: 'verified',
+    data_status: Number(year) >= 2024 ? 'verified' : 'unverified',
   };
 }
 

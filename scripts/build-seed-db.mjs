@@ -93,9 +93,44 @@ function initSchema(db) {
       id TEXT PRIMARY KEY,
       state_code TEXT NOT NULL,
       ac_no INTEGER NOT NULL,
+      constituency_name TEXT,
       year INTEGER NOT NULL,
+      delimitation_id TEXT,
+      total_valid_votes INTEGER,
       winner TEXT,
       party TEXT,
+      winner_name TEXT,
+      winner_party TEXT,
+      winner_votes INTEGER,
+      winner_vote_share REAL,
+      winner_education TEXT,
+      winner_profession TEXT,
+      winner_criminal_cases INTEGER,
+      winner_total_assets REAL,
+      winner_total_liabilities REAL,
+      first_runner_up_name TEXT,
+      first_runner_up_party TEXT,
+      first_runner_up_votes INTEGER,
+      first_runner_up_vote_share REAL,
+      margin_winner_to_runner_up_1 INTEGER,
+      first_runner_up_education TEXT,
+      first_runner_up_profession TEXT,
+      first_runner_up_criminal_cases INTEGER,
+      first_runner_up_total_assets REAL,
+      first_runner_up_total_liabilities REAL,
+      second_runner_up_name TEXT,
+      second_runner_up_party TEXT,
+      second_runner_up_votes INTEGER,
+      second_runner_up_vote_share REAL,
+      margin_winner_to_runner_up_2 INTEGER,
+      margin_runner_up_1_to_runner_up_2 INTEGER,
+      second_runner_up_education TEXT,
+      second_runner_up_profession TEXT,
+      second_runner_up_criminal_cases INTEGER,
+      second_runner_up_total_assets REAL,
+      second_runner_up_total_liabilities REAL,
+      localized_names_json TEXT,
+      localized_parties_json TEXT,
       UNIQUE(state_code, ac_no, year)
     );
 
@@ -481,6 +516,136 @@ async function importSeedData(db) {
 }
 
 // ═════════════════════════════════════════════════════════════════════════
+
+// ═════════════════════════════════════════════════════════════════════════
+// ── National Historical Podium Results (1999–2026) ──────────────────────
+// ═════════════════════════════════════════════════════════════════════════
+
+function importHistoricalPodiumResults(db, manifest) {
+  const historicalDir = path.resolve(rootDir, 'data/historical');
+  if (!fs.existsSync(historicalDir)) {
+    console.log('  (no data/historical directory — skipping historical podium results)');
+    return { total: 0 };
+  }
+
+  const files = fs.readdirSync(historicalDir).filter((f) => f.endsWith('-podium-results.json'));
+  if (files.length === 0) return { total: 0 };
+
+  const insertStmt = db.prepare(`
+    INSERT OR REPLACE INTO historical_results (
+      id, state_code, ac_no, constituency_name, year, delimitation_id, total_valid_votes,
+      winner, party,
+      winner_name, winner_party, winner_votes, winner_vote_share,
+      winner_education, winner_profession, winner_criminal_cases, winner_total_assets, winner_total_liabilities,
+      first_runner_up_name, first_runner_up_party, first_runner_up_votes, first_runner_up_vote_share,
+      margin_winner_to_runner_up_1, first_runner_up_education, first_runner_up_profession,
+      first_runner_up_criminal_cases, first_runner_up_total_assets, first_runner_up_total_liabilities,
+      second_runner_up_name, second_runner_up_party, second_runner_up_votes, second_runner_up_vote_share,
+      margin_winner_to_runner_up_2, margin_runner_up_1_to_runner_up_2,
+      second_runner_up_education, second_runner_up_profession, second_runner_up_criminal_cases,
+      second_runner_up_total_assets, second_runner_up_total_liabilities,
+      localized_names_json, localized_parties_json
+    ) VALUES (
+      ?, ?, ?, ?, ?, ?, ?,
+      ?, ?,
+      ?, ?, ?, ?,
+      ?, ?, ?, ?, ?,
+      ?, ?, ?, ?,
+      ?, ?, ?,
+      ?, ?, ?,
+      ?, ?, ?, ?,
+      ?, ?,
+      ?, ?, ?,
+      ?, ?,
+      ?, ?
+    )
+  `);
+
+  let totalContests = 0;
+  const insertMany = db.transaction((contests) => {
+    for (const c of contests) {
+      const w = c.winner || {};
+      const ru1 = c.firstRunnerUp || {};
+      const ru2 = c.secondRunnerUp || {};
+
+      const locNames = JSON.stringify({
+        winner: w.localizedNames || null,
+        ru1: ru1.localizedNames || null,
+        ru2: ru2.localizedNames || null,
+      });
+
+      const locParties = JSON.stringify({
+        winner: w.localizedParties || null,
+        ru1: ru1.localizedParties || null,
+        ru2: ru2.localizedParties || null,
+      });
+
+      insertStmt.run(
+        c.id,
+        (c.stateCode || (c.id?.startsWith('IN-') ? 'IN' : 'IN')),
+        (c.acNo ?? c.pcNo ?? 0),
+        c.constituencyName || '',
+        c.electionYear,
+        c.delimitationId || (c.electionYear >= 2008 ? '4' : '3'),
+        c.validVotes || 0,
+        w.name || '',
+        w.party || '',
+        w.name || '',
+        w.party || '',
+        w.votes || 0,
+        w.voteShare || 0,
+        w.education || null,
+        w.profession || null,
+        w.criminalCases ?? null,
+        w.totalAssets ?? null,
+        w.totalLiabilities ?? null,
+        ru1.name || null,
+        ru1.party || null,
+        ru1.votes || 0,
+        ru1.voteShare || 0,
+        c.marginWinnerToRunnerUp1 ?? null,
+        ru1.education || null,
+        ru1.profession || null,
+        ru1.criminalCases ?? null,
+        ru1.totalAssets ?? null,
+        ru1.totalLiabilities ?? null,
+        ru2.name || null,
+        ru2.party || null,
+        ru2.votes || 0,
+        ru2.voteShare || 0,
+        c.marginWinnerToRunnerUp2 ?? null,
+        c.marginRunnerUp1ToRunnerUp2 ?? null,
+        ru2.education || null,
+        ru2.profession || null,
+        ru2.criminalCases ?? null,
+        ru2.totalAssets ?? null,
+        ru2.totalLiabilities ?? null,
+        locNames,
+        locParties
+      );
+      totalContests++;
+    }
+  });
+
+  for (const file of files) {
+    try {
+      const contests = JSON.parse(fs.readFileSync(path.join(historicalDir, file), 'utf8'));
+      if (Array.isArray(contests) && contests.length > 0) {
+        insertMany(contests);
+        const state = contests[0].stateCode;
+        if (manifest && manifest[state]) {
+          manifest[state].has_historical_results = 1;
+        }
+      }
+    } catch (e) {
+      console.error(`  ✗ Error loading ${file}:`, e.message);
+    }
+  }
+
+  console.log(`  ✓ Ingested ${totalContests} historical podium contests across ${files.length} states/UTs`);
+  return { total: totalContests };
+}
+
 // ── Local-body representatives (SEC KYR → representatives table) ───────────
 // ═════════════════════════════════════════════════════════════════════════
 
@@ -664,6 +829,10 @@ async function main() {
         Object.entries(reps.byState).map(([s, n]) => `${s}:${n}`).join(', ') + ')');
     }
 
+    // Import National Historical Podium Results (1999–2026)
+    console.log('\n🏆 Importing national historical podium results...');
+    const podiumStats = importHistoricalPodiumResults(db, manifest);
+
     // Optimize
     console.log('\n⚙️  Optimizing database...');
     db.exec('VACUUM; ANALYZE;');
@@ -704,8 +873,13 @@ async function main() {
   fs.writeFileSync(versionPath, JSON.stringify({ version: hash, builtAt: new Date().toISOString() }, null, 2) + '\n');
   console.log(`✅ Version file written: ${versionPath} (${hash})`);
 
-  // Note: Decoupled architecture does NOT bundle seed-data.db directly into APK assets
-  // to maintain <=25-30 MB binary budget. Preserved for archive generation only.
+  // Synchronize to data/archive/mobile-bundled-assets/db/seed-data.db
+  const archiveDbDir = path.resolve(rootDir, 'data/archive/mobile-bundled-assets/db');
+  if (fs.existsSync(archiveDbDir)) {
+    fs.copyFileSync(dbPath, path.resolve(archiveDbDir, 'seed-data.db'));
+    fs.copyFileSync(versionPath, path.resolve(archiveDbDir, 'seed-db-version.json'));
+    console.log(`✅ Synchronized seed-data.db to archive directory: ${archiveDbDir}`);
+  }
 }
 
 main().catch(err => {

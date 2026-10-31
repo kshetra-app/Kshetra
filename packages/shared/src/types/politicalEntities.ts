@@ -334,6 +334,45 @@ export interface OrganizationSymbol {
   updatedAt: string;
 }
 
+export type EntityTypeForLocalization =
+  | 'person'
+  | 'political_party'
+  | 'constituency'
+  | 'urban_local_body'
+  | 'gram_panchayat'
+  | 'ward'
+  | 'taxonomy';
+
+export type TranslationStatusEnum =
+  | 'SOURCE_NATIVE'
+  | 'OFFICIAL_LOCALIZED'
+  | 'HUMAN_VERIFIED'
+  | 'MACHINE_DRAFT'
+  | 'NOT_AVAILABLE'
+  | 'CONFLICT';
+
+export interface EntityMultilingualRepresentation {
+  id: string;
+  entityType: EntityTypeForLocalization;
+  entityId: string;
+  languageCode: string;
+  scriptCode: string;
+  fieldKey: string;
+  representationValue: string;
+  representationType:
+    | 'OFFICIAL'
+    | 'PREFERRED'
+    | 'SOURCE_NATIVE'
+    | 'TRANSLITERATION'
+    | 'TRANSLATION'
+    | 'ALIAS'
+    | 'HISTORICAL';
+  translationStatus: TranslationStatusEnum;
+  sourceEvidence?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface PoliticalCareerTimeline {
   person: CanonicalPerson;
   activeRoles: PersonRole[];

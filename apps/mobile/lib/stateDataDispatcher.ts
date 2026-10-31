@@ -1,3 +1,4 @@
+import { getHistoricalResults } from './seedDataLoader';
 /**
  * State Data Dispatcher — Unified routing for all state-specific data
  *
@@ -379,6 +380,23 @@ export interface ConstituencyHistoryEntry {
   year: number;
   winner: string;
   party: string;
+  winner_votes?: number;
+  winner_vote_share?: number;
+  first_runner_up_name?: string;
+  first_runner_up_party?: string;
+  first_runner_up_votes?: number;
+  first_runner_up_vote_share?: number;
+  margin_winner_to_runner_up_1?: number;
+  second_runner_up_name?: string;
+  second_runner_up_party?: string;
+  second_runner_up_votes?: number;
+  second_runner_up_vote_share?: number;
+  margin_winner_to_runner_up_2?: number;
+  margin_runner_up_1_to_runner_up_2?: number;
+  delimitation_id?: string;
+  total_valid_votes?: number;
+  localized_names_json?: string;
+  localized_parties_json?: string;
 }
 
 /**
@@ -389,6 +407,32 @@ export function getHistoryForState(
   stateCode: string,
   acNo: number,
 ): ConstituencyHistoryEntry[] {
+  const sqliteRows = getHistoricalResults(stateCode, acNo);
+  if (sqliteRows && sqliteRows.length > 0) {
+    return sqliteRows.map((r) => ({
+      year: r.year,
+      winner: r.winner_name || r.winner,
+      party: r.winner_party || r.party,
+      winner_votes: r.winner_votes,
+      winner_vote_share: r.winner_vote_share,
+      first_runner_up_name: r.first_runner_up_name,
+      first_runner_up_party: r.first_runner_up_party,
+      first_runner_up_votes: r.first_runner_up_votes,
+      first_runner_up_vote_share: r.first_runner_up_vote_share,
+      margin_winner_to_runner_up_1: r.margin_winner_to_runner_up_1,
+      second_runner_up_name: r.second_runner_up_name,
+      second_runner_up_party: r.second_runner_up_party,
+      second_runner_up_votes: r.second_runner_up_votes,
+      second_runner_up_vote_share: r.second_runner_up_vote_share,
+      margin_winner_to_runner_up_2: r.margin_winner_to_runner_up_2,
+      margin_runner_up_1_to_runner_up_2: r.margin_runner_up_1_to_runner_up_2,
+      delimitation_id: r.delimitation_id,
+      total_valid_votes: r.total_valid_votes,
+      localized_names_json: r.localized_names_json,
+      localized_parties_json: r.localized_parties_json,
+    }));
+  }
+
   switch (stateCode) {
     case 'TS': {
       const h = getTSHistory(acNo);

@@ -62,6 +62,10 @@ export interface ElectionContest {
   victoryMargin: number;
   winningCandidacyId?: string | null;
   runnerUpCandidacyId?: string | null;
+  secondRunnerUpCandidacyId?: string | null;
+  marginWinnerToRunnerUp1?: number | null;
+  marginWinnerToRunnerUp2?: number | null;
+  marginRunnerUp1ToRunnerUp2?: number | null;
   dataStatus: GovernanceDataStatus;
   provenanceId?: string | null;
   metadata?: Record<string, unknown>;
@@ -92,6 +96,16 @@ export interface ContestDetail extends ElectionContest {
     party?: PoliticalOrganization | null;
   } | null;
   runnerUp?: {
+    candidacy: Candidacy;
+    person: CanonicalPerson;
+    party?: PoliticalOrganization | null;
+  } | null;
+  firstRunnerUp?: {
+    candidacy: Candidacy;
+    person: CanonicalPerson;
+    party?: PoliticalOrganization | null;
+  } | null;
+  secondRunnerUp?: {
     candidacy: Candidacy;
     person: CanonicalPerson;
     party?: PoliticalOrganization | null;
