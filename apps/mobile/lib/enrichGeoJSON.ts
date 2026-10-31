@@ -283,6 +283,7 @@ export function enrichIndiaGeoJSON(
     nameToCode[key] = code;
   }
   // Custom manual mappings for variant spellings
+  nameToCode['jammukashmir'] = 'JK';
   nameToCode['jammuandkashmir'] = 'JK';
   nameToCode['puducherry'] = 'PY';
   nameToCode['delhi'] = 'DL';
@@ -291,8 +292,10 @@ export function enrichIndiaGeoJSON(
   nameToCode['orissa'] = 'OD';
   nameToCode['uttaranchal'] = 'UK';
   nameToCode['uttarakhand'] = 'UK';
+  nameToCode['andamannicobar'] = 'AN';
   nameToCode['andamanandnicobar'] = 'AN';
   nameToCode['andamanandnicobarislands'] = 'AN';
+  nameToCode['dadraandnagarhavelianddamananddiu'] = 'DN';
   nameToCode['dadraandnagarhavelianddamanddiu'] = 'DN';
   nameToCode['dadranagarhaveli'] = 'DN';
   nameToCode['damandiu'] = 'DN';
@@ -316,13 +319,6 @@ export function enrichIndiaGeoJSON(
           STATE_NAME: stateInfo?.name ?? name,
           WINNER_PARTY: stateInfo?.rulingParty ?? 'IND', // Color by ruling party of state
           SEATS: stateInfo?.assemblySeats ?? 0,
-          AC_NO: -1,
-          AC_NAME: stateInfo?.name ?? name,
-          DISTRICT: '',
-          MARGIN: 0,
-          RESERVATION: 'GEN',
-          BATTLEGROUND: 'safe',
-          IS_SWING: 'retained',
         },
       };
     }),

@@ -1158,16 +1158,18 @@ function FullMapScreen() {
                 <MapboxGL.FillLayer
                   id={`constituency-fill-${stateCode}`}
                   style={{
-                    fillColor: [
-                      'case',
-                      ['==', ['get', 'AC_NO'], selectedAcNo],
-                      '#FFD700',
-                      ['==', ['get', 'AC_NO'], compareSelectedAcNo],
-                      '#00E5FF',
-                      activeFillColor,
-                    ],
+                    fillColor: stateCode === 'IN'
+                      ? activeFillColor
+                      : [
+                          'case',
+                          ['==', ['get', 'AC_NO'], selectedAcNo],
+                          '#FFD700',
+                          ['==', ['get', 'AC_NO'], compareSelectedAcNo],
+                          '#00E5FF',
+                          activeFillColor,
+                        ],
                     fillOpacity: stateCode === 'IN'
-                      ? 0.7
+                      ? 0.75
                       : [
                           'case',
                           // District focus masking
@@ -1183,7 +1185,7 @@ function FullMapScreen() {
                 id={`constituency-border-${stateCode}`}
                 style={{
                   lineColor: stateCode === 'IN'
-                    ? '#FFFFFF'
+                    ? 'rgba(255,255,255,0.45)'
                     : [
                         'case',
                         ['==', ['get', 'AC_NO'], selectedAcNo],
@@ -1193,7 +1195,7 @@ function FullMapScreen() {
                         'rgba(255,255,255,0.4)',
                       ],
                   lineWidth: stateCode === 'IN'
-                    ? 1.2
+                    ? 0.8
                     : [
                         'case',
                         ['==', ['get', 'AC_NO'], selectedAcNo],

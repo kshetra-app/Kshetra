@@ -3,9 +3,9 @@
     "file": "india-states-overview.json",
     "count": 36,
     "hasPolygons": true,
-    "bytes": 35577,
+    "bytes": 1024198,
     "gzipBytes": 11420,
-    "version": "domain2-opt",
+    "version": "original-highres",
     "bundled": true
   },
   "TS": {
