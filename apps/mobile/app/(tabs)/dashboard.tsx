@@ -422,8 +422,33 @@ function DashboardContent() {
             {/* Issue list */}
             {issues.length === 0 ? (
               <View style={styles.emptyState}>
-                <Ionicons name="checkmark-circle-outline" size={48} color="#1F2937" />
-                <Text style={styles.emptyTitle}>{t('dashboard.noIssues')}</Text>
+                <Ionicons name="checkmark-circle-outline" size={48} color={colors.textMuted} />
+                <Text style={[styles.emptyTitle, { color: colors.text }]}>{t('dashboard.noIssues')}</Text>
+                <Text style={{ color: colors.textMuted, fontSize: 13, textAlign: 'center', marginTop: 4, paddingHorizontal: 32 }}>
+                  {t('dashboard.noIssuesHint', { defaultValue: 'No civic issues reported for this view. Report a local issue to notify representatives.' })}
+                </Text>
+                <Pressable
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    backgroundColor: colors.primary,
+                    paddingVertical: 12,
+                    paddingHorizontal: 20,
+                    borderRadius: 22,
+                    marginTop: 16,
+                    elevation: 3,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.15,
+                    shadowRadius: 4,
+                  }}
+                  onPress={() => setReportVisible(true)}
+                >
+                  <Ionicons name="add-circle-outline" size={18} color="#FFFFFF" style={{ marginRight: 6 }} />
+                  <Text style={{ color: '#FFFFFF', fontSize: 14, fontWeight: '800' }}>
+                    {t('civic.reportIssue', { defaultValue: 'Report a Civic Issue' })}
+                  </Text>
+                </Pressable>
               </View>
             ) : (
               issues.map((issue) => (

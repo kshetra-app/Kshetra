@@ -294,6 +294,41 @@ export default function ExploreScreen() {
           <Text style={[styles.emptyText, { color: colors.textMuted }]}>
             {t('exploreExtended.pleaseSelectState')}
           </Text>
+          <View style={{ marginTop: 16 }}>
+            <StateSwitcher />
+          </View>
+        </View>
+      );
+    }
+    if (showFavoritesOnly) {
+      return (
+        <View style={styles.emptyState}>
+          <View style={[styles.emptyIconWrap, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Ionicons name="heart-outline" size={34} color="#EF4444" />
+          </View>
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>
+            {t('explore.noFavoritesTitle', { defaultValue: 'No Favorite Constituencies Yet' })}
+          </Text>
+          <Text style={[styles.emptyText, { color: colors.textMuted }]}>
+            {t('explore.noFavoritesSubtitle', { defaultValue: 'Tap the heart icon on any constituency card to pin it here for quick access.' })}
+          </Text>
+          <Pressable
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: colors.primary,
+              paddingVertical: 10,
+              paddingHorizontal: 18,
+              borderRadius: 20,
+              marginTop: 14,
+            }}
+            onPress={() => setShowFavoritesOnly(false)}
+          >
+            <Ionicons name="list-outline" size={16} color="#FFFFFF" style={{ marginRight: 6 }} />
+            <Text style={{ color: '#FFFFFF', fontSize: 13, fontWeight: '800' }}>
+              {t('explore.showAll', { defaultValue: 'Browse All Constituencies' })}
+            </Text>
+          </Pressable>
         </View>
       );
     }
@@ -306,9 +341,30 @@ export default function ExploreScreen() {
         <Text style={[styles.emptyText, { color: colors.textMuted }]}>
           {t('explore.noResultsHint')}
         </Text>
+        {activeFilterCount > 0 && (
+          <Pressable
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+              borderWidth: 1,
+              paddingVertical: 8,
+              paddingHorizontal: 14,
+              borderRadius: 16,
+              marginTop: 12,
+            }}
+            onPress={clearAllFilters}
+          >
+            <Ionicons name="close-circle-outline" size={15} color={colors.primary} style={{ marginRight: 6 }} />
+            <Text style={{ color: colors.primary, fontSize: 12, fontWeight: '700' }}>
+              {t('explore.clearFilters', { defaultValue: 'Clear Active Filters' })}
+            </Text>
+          </Pressable>
+        )}
       </View>
     );
-  }, [stateCode, colors, t]);
+  }, [stateCode, colors, t, showFavoritesOnly, activeFilterCount, clearAllFilters]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>

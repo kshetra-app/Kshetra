@@ -168,6 +168,23 @@ export default function LiveTabScreen({ hideHeader = false }: LiveTabScreenProps
             <Ionicons name="videocam-off" size={40} color={colors.textMuted} />
             <Text style={[styles.emptyTitle, { color: colors.textSecondary }]}>{t('lmx.empty.title')}</Text>
             <Text style={[styles.emptySub, { color: colors.textMuted }]}>{t('lmx.empty.subtitle')}</Text>
+            <Pressable
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: colors.primary,
+                paddingVertical: 11,
+                paddingHorizontal: 20,
+                borderRadius: 22,
+                marginTop: 16,
+              }}
+              onPress={() => router.push('/live/go-live')}
+            >
+              <Ionicons name="radio" size={16} color="#FFFFFF" style={{ marginRight: 6 }} />
+              <Text style={{ color: '#FFFFFF', fontSize: 13, fontWeight: '800' }}>
+                {t('lmx.goLive', { defaultValue: 'Start a Broadcast' })}
+              </Text>
+            </Pressable>
           </View>
         }
       />

@@ -33,6 +33,7 @@ import DefectionBadge from '../../components/DefectionBadge';
 import AIAnalysisCard from '../../components/AIAnalysisCard';
 import AffidavitCard from '../../components/AffidavitCard';
 import PhotoViewerModal from '../../components/PhotoViewerModal';
+import ReportIssueSheet from '../../components/ReportIssueSheet';
 import ConstituencyTabBar, { type ConstituencyTab } from '../../components/ConstituencyTabBar';
 import PostCard from '../../components/PostCard';
 import PollCard from '../../components/PollCard';
@@ -164,6 +165,7 @@ export default function ConstituencyDetailScreen() {
   const localizedRunnerUp = getLocalizedPartyName(effectiveRunnerUp, i18n.language) || effectiveRunnerUp;
 
   const [activeTab, setActiveTab] = useState<ConstituencyTab>('overview');
+  const [reportIssueVisible, setReportIssueVisible] = useState(false);
   const [photoViewer, setPhotoViewer] = useState<{ uri: string | null; name: string; party: string } | null>(null);
   const isFavorite = useFavoritesStore((s) => s.isFavorite(acNo));
   const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
@@ -672,9 +674,18 @@ export default function ConstituencyDetailScreen() {
               </>
             ) : (
               <View style={styles.emptyState}>
-                <Ionicons name="checkmark-circle-outline" size={48} color="#374151" />
-                <Text style={styles.emptyTitle}>{t('constituencyExtended.noIssuesReported')}</Text>
-                <Text style={styles.emptySubtitle}>{t('constituencyExtended.noIssuesMsg', { defaultValue: 'No civic issues have been reported for this constituency yet. Be the first to report one!' })}</Text>
+                <Ionicons name="checkmark-circle-outline" size={48} color={colors.textMuted} />
+                <Text style={[styles.emptyTitle, { color: colors.text }]}>{t('constituencyExtended.noIssuesReported')}</Text>
+                <Text style={[styles.emptySubtitle, { color: colors.textMuted }]}>{t('constituencyExtended.noIssuesMsg', { defaultValue: 'No civic issues have been reported for this constituency yet. Be the first to report one!' })}</Text>
+                <Pressable
+                  style={[styles.emptyActionBtn, { backgroundColor: colors.primary }]}
+                  onPress={() => setReportIssueVisible(true)}
+                >
+                  <Ionicons name="add-circle-outline" size={18} color="#FFFFFF" style={{ marginRight: 6 }} />
+                  <Text style={styles.emptyActionBtnText}>
+                    {t('civic.reportIssue', { defaultValue: 'Report an Issue' })}
+                  </Text>
+                </Pressable>
               </View>
             )}
           </View>
@@ -736,9 +747,18 @@ export default function ConstituencyDetailScreen() {
               </>
             ) : (
               <View style={styles.emptyState}>
-                <Ionicons name="chatbubbles-outline" size={48} color="#374151" />
-                <Text style={styles.emptyTitle}>{t('constituencyExtended.noDiscussions')}</Text>
-                <Text style={styles.emptySubtitle}>{t('constituencyExtended.startConversation', { defaultValue: 'Start a conversation about this constituency on the Feed tab. Posts tagged to this area will appear here.' })}</Text>
+                <Ionicons name="chatbubbles-outline" size={48} color={colors.textMuted} />
+                <Text style={[styles.emptyTitle, { color: colors.text }]}>{t('constituencyExtended.noDiscussions')}</Text>
+                <Text style={[styles.emptySubtitle, { color: colors.textMuted }]}>{t('constituencyExtended.startConversation', { defaultValue: 'Start a conversation about this constituency on the Community Feed. Posts tagged to this area will appear here.' })}</Text>
+                <Pressable
+                  style={[styles.emptyActionBtn, { backgroundColor: colors.primary }]}
+                  onPress={() => router.push('/(tabs)/community')}
+                >
+                  <Ionicons name="chatbubble-ellipses-outline" size={18} color="#FFFFFF" style={{ marginRight: 6 }} />
+                  <Text style={styles.emptyActionBtnText}>
+                    {t('feed.startDiscussion', { defaultValue: 'Start a Discussion on Feed' })}
+                  </Text>
+                </Pressable>
               </View>
             )}
           </View>
@@ -988,6 +1008,14 @@ export default function ConstituencyDetailScreen() {
         subtitle={constituency ? `${constituency.name} · ${constituency.district}` : undefined}
         onClose={() => setPhotoViewer(null)}
       />
+
+      {reportIssueVisible && (
+        <ReportIssueSheet
+          visible={reportIssueVisible}
+          onClose={() => setReportIssueVisible(false)}
+          onSubmit={(iss) => addIssue(iss)}
+        />
+      )}
     </View>
   );
 }
@@ -1533,6 +1561,25 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#374151',
     marginTop: 14,
+  },
+  emptyActionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 22,
+    marginTop: 16,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+  },
+  emptyActionBtnText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '800',
   },
   emptySubtitle: {
     fontSize: 13,

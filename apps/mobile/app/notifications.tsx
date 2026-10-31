@@ -125,11 +125,30 @@ export default function NotificationsScreen() {
 
       {items.length === 0 ? (
         <View style={styles.emptyState}>
-          <Ionicons name="notifications-off" size={48} color="#4B5563" />
-          <Text style={styles.emptyTitle}>{t('notifications.noNotifications', { defaultValue: 'No notifications yet' })}</Text>
-          <Text style={styles.emptyText}>
+          <Ionicons name="notifications-off" size={48} color={colors.textMuted} />
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>{t('notifications.noNotifications', { defaultValue: 'No notifications yet' })}</Text>
+          <Text style={[styles.emptyText, { color: colors.textMuted }]}>
             {t('notifications.caughtUp', { defaultValue: "You're all caught up!" })}
           </Text>
+          <Pressable
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+              borderWidth: 1,
+              paddingVertical: 10,
+              paddingHorizontal: 18,
+              borderRadius: 20,
+              marginTop: 16,
+            }}
+            onPress={() => router.push('/notification-settings')}
+          >
+            <Ionicons name="options-outline" size={16} color={colors.primary} style={{ marginRight: 6 }} />
+            <Text style={{ color: colors.primary, fontSize: 13, fontWeight: '700' }}>
+              {t('notifications.configureAlerts', { defaultValue: 'Configure Alert Topics' })}
+            </Text>
+          </Pressable>
         </View>
       ) : (
         <FlashList

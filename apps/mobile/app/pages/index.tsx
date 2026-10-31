@@ -358,6 +358,23 @@ export default function PagesScreen() {
                     defaultValue: 'Official elected representatives and verified party leaders will appear here once authenticated on Poligram. Real public figures require KYC verification.',
                   })}
                 </Text>
+                <Pressable
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    backgroundColor: colors.primary,
+                    paddingVertical: 11,
+                    paddingHorizontal: 20,
+                    borderRadius: 22,
+                    marginTop: 14,
+                  }}
+                  onPress={() => setRegisterVisible(true)}
+                >
+                  <Ionicons name="person-add-outline" size={16} color="#FFFFFF" style={{ marginRight: 6 }} />
+                  <Text style={{ color: '#FFFFFF', fontSize: 13, fontWeight: '800' }}>
+                    {t('pages.registerAspirant', { defaultValue: 'Register as Candidate / Aspirant' })}
+                  </Text>
+                </Pressable>
               </View>
             )}
           </View>
