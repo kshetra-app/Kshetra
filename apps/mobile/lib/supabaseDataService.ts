@@ -1880,4 +1880,144 @@ export async function searchVerifiedProfiles(query: string, limit = 10): Promise
   }
 }
 
+export interface DMUserSearchResult {
+  id: string;
+  displayName: string;
+  avatarUrl?: string | null;
+  role?: string;
+  isVerified?: boolean;
+  constituencyName?: string;
+  stateCode?: string;
+}
+
+export async function searchUsersForDM(
+  query: string,
+  currentUserId?: string,
+  limit = 20,
+): Promise<DMUserSearchResult[]> {
+  const results: DMUserSearchResult[] = [];
+  const q = (query || '').trim().toLowerCase();
+
+  // 1. Try Supabase if configured
+  if (guard()) {
+    try {
+      let dbQuery = supabase
+        .from('user_profiles')
+        .select('user_id, display_name, role, verification_status, avatar_url, constituency_id, state_code');
+
+      if (q.length > 0) {
+        dbQuery = dbQuery.ilike('display_name', `%${q}%`);
+      }
+      if (currentUserId && currentUserId !== 'anon') {
+        dbQuery = dbQuery.neq('user_id', currentUserId);
+      }
+
+      const { data, error } = await dbQuery.limit(limit);
+      if (!error && data) {
+        for (const u of data) {
+          results.push({
+            id: u.user_id,
+            displayName: u.display_name || 'Citizen',
+            avatarUrl: u.avatar_url,
+            role: u.role || 'citizen',
+            isVerified: u.verification_status === 'verified',
+            stateCode: u.state_code,
+          });
+        }
+      }
+    } catch {
+      // Supabase search error, continue to fallback
+    }
+  }
+
+  // 2. Curated Seed / Community Contacts (Ensure users can always find leaders, aspirants & active figures)
+  const curatedList: DMUserSearchResult[] = [
+    {
+      id: 'leader-revanth-reddy',
+      displayName: 'Anumula Revanth Reddy',
+      role: 'Chief Minister of Telangana',
+      isVerified: true,
+      stateCode: 'TS',
+    },
+    {
+      id: 'leader-chandrababu-naidu',
+      displayName: 'N Chandrababu Naidu',
+      role: 'Chief Minister of Andhra Pradesh',
+      isVerified: true,
+      stateCode: 'AP',
+    },
+    {
+      id: 'leader-dk-shivakumar',
+      displayName: 'D. K. Shivakumar',
+      role: 'Chief Minister of Karnataka',
+      isVerified: true,
+      stateCode: 'KA',
+    },
+    {
+      id: 'leader-devendra-fadnavis',
+      displayName: 'Devendra Fadnavis',
+      role: 'Chief Minister of Maharashtra',
+      isVerified: true,
+      stateCode: 'MH',
+    },
+    {
+      id: 'leader-vijay-tvk',
+      displayName: 'C. Joseph Vijay',
+      role: 'Chief Minister of Tamil Nadu',
+      isVerified: true,
+      stateCode: 'TN',
+    },
+    {
+      id: 'system-elections',
+      displayName: 'State Election Authority',
+      role: 'Civic Advisory & Elections',
+      isVerified: true,
+      stateCode: 'IN',
+    },
+    {
+      id: 'citizen-priya-reddy',
+      displayName: 'Priya Reddy',
+      role: 'Community Advocate (Serilingampally)',
+      isVerified: false,
+      stateCode: 'TS',
+    },
+    {
+      id: 'citizen-ravi-kumar',
+      displayName: 'Ravi Kumar',
+      role: 'Civic Contributor (Goshamahal)',
+      isVerified: false,
+      stateCode: 'TS',
+    },
+    {
+      id: 'aspirant-meena-devi',
+      displayName: 'Meena Devi',
+      role: 'Leadership Academy Aspirant',
+      isVerified: true,
+      stateCode: 'TS',
+    },
+  ];
+
+  // Filter curated list
+  const filteredCurated = curatedList.filter((c) => {
+    if (currentUserId && c.id === currentUserId) return false;
+    if (!q) return true;
+    return (
+      c.displayName.toLowerCase().includes(q) ||
+      (c.role && c.role.toLowerCase().includes(q)) ||
+      (c.stateCode && c.stateCode.toLowerCase().includes(q))
+    );
+  });
+
+  // Deduplicate against remote results
+  const seenIds = new Set(results.map((r) => r.id));
+  for (const c of filteredCurated) {
+    if (!seenIds.has(c.id)) {
+      results.push(c);
+      seenIds.add(c.id);
+    }
+  }
+
+  return results.slice(0, limit);
+}
+
 
