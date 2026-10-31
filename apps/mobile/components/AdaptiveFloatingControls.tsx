@@ -1,25 +1,25 @@
-import React, { useRef, useState, useEffect, useMemo } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
   Pressable,
   StyleSheet,
-  Dimensions,
+  useWindowDimensions,
   Animated,
   PanResponder,
   ActivityIndicator,
+  type LayoutChangeEvent,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { tapLight, selectionChanged } from '../lib/haptics';
+import { tapLight } from '../lib/haptics';
 import {
   computeControlOrientation,
   type ControlOrientation,
 } from '../lib/adaptiveControlMath';
 
 export { computeControlOrientation, type ControlOrientation };
-
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export interface AdaptiveFloatingControlsProps {
   initialX?: number;
@@ -42,8 +42,8 @@ export interface AdaptiveFloatingControlsProps {
 }
 
 export default function AdaptiveFloatingControls({
-  initialX = SCREEN_WIDTH - 60,
-  initialY = 80,
+  initialX,
+  initialY,
   stateCode,
   selectedConstituency,
   mapCompareActive,
@@ -61,34 +61,73 @@ export default function AdaptiveFloatingControls({
   onLocateMe,
 }: AdaptiveFloatingControlsProps) {
   const { t } = useTranslation();
+  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+
+  // Sensible dynamic default positions flush to right side below header
+  const defaultX = initialX ?? Math.max(0, windowWidth - 58);
+  const defaultY = initialY ?? (insets.top > 0 ? insets.top + 75 : 85);
 
   // Floating coordinates and orientation
-  const pan = useRef(new Animated.ValueXY({ x: initialX, y: initialY })).current;
-  const currentPos = useRef({ x: initialX, y: initialY });
-  const [orientation, setOrientation] = useState<ControlOrientation>(() =>
-    computeControlOrientation(initialX, initialY, SCREEN_WIDTH, SCREEN_HEIGHT)
-  );
+  const pan = useRef(new Animated.ValueXY({ x: defaultX, y: defaultY })).current;
+  const currentPos = useRef({ x: defaultX, y: defaultY });
+
+  // Measured layout dimensions of the control cluster
+  const [layoutDimensions, setLayoutDimensions] = useState({ width: 48, height: 120 });
+  const layoutDimRef = useRef({ width: 48, height: 120 });
 
   // Minimized / collapsed state to provide 100% unobstructed view when desired
   const [isMinimized, setIsMinimized] = useState(false);
 
-  // Sync initial position when initialY or initialX changes
+  // Sync position if initial props explicitly change
   useEffect(() => {
-    currentPos.current = { x: initialX, y: initialY };
-    pan.setValue({ x: initialX, y: initialY });
-  }, [initialX, initialY]);
+    if (initialX != null || initialY != null) {
+      const nextX = initialX ?? currentPos.current.x;
+      const nextY = initialY ?? currentPos.current.y;
+      currentPos.current = { x: nextX, y: nextY };
+      pan.setValue({ x: nextX, y: nextY });
+    }
+  }, [initialX, initialY, pan]);
+
+  // Keep within screen bounds when window resizes or device rotates
+  useEffect(() => {
+    const curW = layoutDimRef.current.width;
+    const curH = layoutDimRef.current.height;
+    const minX = 0;
+    const maxX = Math.max(0, windowWidth - curW);
+    const minY = insets.top > 0 ? insets.top : 24;
+    const maxY = Math.max(minY, windowHeight - curH - (insets.bottom > 0 ? insets.bottom : 12) - 48);
+
+    const safeX = Math.max(minX, Math.min(maxX, currentPos.current.x));
+    const safeY = Math.max(minY, Math.min(maxY, currentPos.current.y));
+
+    if (safeX !== currentPos.current.x || safeY !== currentPos.current.y) {
+      currentPos.current = { x: safeX, y: safeY };
+      pan.setValue({ x: safeX, y: safeY });
+    }
+  }, [windowWidth, windowHeight, insets, pan]);
+
+  const handleLayout = useCallback((e: LayoutChangeEvent) => {
+    const { width, height } = e.nativeEvent.layout;
+    if (width > 0 && height > 0) {
+      layoutDimRef.current = { width, height };
+      setLayoutDimensions({ width, height });
+    }
+  }, []);
 
   const isResetVisible =
     isImmersive ||
     selectedConstituency != null ||
     mapCompareActive ||
     focusedDistrict !== '' ||
-    stateCode !== 'IN';
+    stateCode !== 'IN' ||
+    is3DMode;
 
-  // Glowing pulse animation for Reset button
+  // Glowing pulse & blinking halo animations for Reset button
   const pulseAnim = useRef(new Animated.Value(0)).current;
   const rippleScale = useRef(new Animated.Value(1)).current;
-  const rippleOpacity = useRef(new Animated.Value(0.8)).current;
+  const rippleOpacity = useRef(new Animated.Value(0.85)).current;
+  const blinkAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     if (!isResetVisible) return;
@@ -98,12 +137,12 @@ export default function AdaptiveFloatingControls({
       Animated.sequence([
         Animated.timing(pulseAnim, {
           toValue: 1,
-          duration: 900,
+          duration: 800,
           useNativeDriver: false,
         }),
         Animated.timing(pulseAnim, {
           toValue: 0,
-          duration: 900,
+          duration: 800,
           useNativeDriver: false,
         }),
       ])
@@ -114,8 +153,8 @@ export default function AdaptiveFloatingControls({
       Animated.parallel([
         Animated.sequence([
           Animated.timing(rippleScale, {
-            toValue: 1.45,
-            duration: 1600,
+            toValue: 1.55,
+            duration: 1400,
             useNativeDriver: true,
           }),
           Animated.timing(rippleScale, {
@@ -127,11 +166,11 @@ export default function AdaptiveFloatingControls({
         Animated.sequence([
           Animated.timing(rippleOpacity, {
             toValue: 0,
-            duration: 1600,
+            duration: 1400,
             useNativeDriver: true,
           }),
           Animated.timing(rippleOpacity, {
-            toValue: 0.8,
+            toValue: 0.85,
             duration: 0,
             useNativeDriver: true,
           }),
@@ -139,21 +178,39 @@ export default function AdaptiveFloatingControls({
       ])
     );
 
+    // Blinking icon intensity
+    const blinkLoop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(blinkAnim, {
+          toValue: 0.45,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+        Animated.timing(blinkAnim, {
+          toValue: 1,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+
     pulseLoop.start();
     rippleLoop.start();
+    blinkLoop.start();
 
     return () => {
       pulseLoop.stop();
       rippleLoop.stop();
+      blinkLoop.stop();
     };
-  }, [isResetVisible, pulseAnim, rippleScale, rippleOpacity]);
+  }, [isResetVisible, pulseAnim, rippleScale, rippleOpacity, blinkAnim]);
 
-  // PanResponder with magnetic snap-to-corner on release
+  // Zero-spring, 100% "stay put" PanResponder with true screen edge clamping
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => false,
       onMoveShouldSetPanResponder: (_, gestureState) => {
-        return Math.abs(gestureState.dx) > 5 || Math.abs(gestureState.dy) > 5;
+        return Math.abs(gestureState.dx) > 4 || Math.abs(gestureState.dy) > 4;
       },
       onPanResponderGrant: () => {
         pan.setOffset({
@@ -164,46 +221,31 @@ export default function AdaptiveFloatingControls({
       },
       onPanResponderMove: (_, gestureState) => {
         pan.setValue({ x: gestureState.dx, y: gestureState.dy });
-        const liveX = currentPos.current.x + gestureState.dx;
-        const liveY = currentPos.current.y + gestureState.dy;
-        const liveOrientation = computeControlOrientation(liveX, liveY, SCREEN_WIDTH, SCREEN_HEIGHT);
-        setOrientation((prev) => {
-          if (prev !== liveOrientation) {
-            selectionChanged();
-            return liveOrientation;
-          }
-          return prev;
-        });
       },
       onPanResponderRelease: (_, gestureState) => {
         pan.flattenOffset();
         const rawX = currentPos.current.x + gestureState.dx;
         const rawY = currentPos.current.y + gestureState.dy;
 
-        const unitWidth = isMinimized ? 48 : orientation === 'horizontal' ? 280 : orientation === 'corner-grid' ? 110 : 52;
-        const unitHeight = isMinimized ? 48 : orientation === 'horizontal' ? 52 : orientation === 'corner-grid' ? 160 : 310;
+        const curW = layoutDimRef.current.width;
+        const curH = layoutDimRef.current.height;
 
-        // Determine nearest magnetic corner dock
-        const isLeft = (rawX + unitWidth / 2) < (SCREEN_WIDTH / 2);
-        const isTop = (rawY + unitHeight / 2) < (SCREEN_HEIGHT / 2);
+        // True screen edge bounds:
+        // Left: 0 (flush against left bezel)
+        // Right: windowWidth - curW (flush against right bezel)
+        // Top: insets.top (flush below status bar)
+        // Bottom: windowHeight - curH - insets.bottom - 48 (flush above bottom tab bar)
+        const minX = 0;
+        const maxX = Math.max(0, windowWidth - curW);
+        const minY = insets.top > 0 ? insets.top : 24;
+        const maxY = Math.max(minY, windowHeight - curH - (insets.bottom > 0 ? insets.bottom : 12) - 48);
 
-        const targetX = isLeft ? 12 : (SCREEN_WIDTH - unitWidth - 12);
-        const targetY = isTop ? Math.max(initialY, 70) : Math.max(70, SCREEN_HEIGHT - unitHeight - 95);
+        const clampedX = Math.max(minX, Math.min(maxX, rawX));
+        const clampedY = Math.max(minY, Math.min(maxY, rawY));
 
-        Animated.spring(pan, {
-          toValue: { x: targetX, y: targetY },
-          bounciness: 6,
-          speed: 15,
-          useNativeDriver: false,
-        }).start();
-
-        currentPos.current = { x: targetX, y: targetY };
-
-        const finalOrientation = computeControlOrientation(targetX, targetY, SCREEN_WIDTH, SCREEN_HEIGHT);
-        if (finalOrientation !== orientation) {
-          selectionChanged();
-          setOrientation(finalOrientation);
-        }
+        // STAY PUT: Keep directly at user release coordinate, zero spring, zero bounce-back!
+        pan.setValue({ x: clampedX, y: clampedY });
+        currentPos.current = { x: clampedX, y: clampedY };
       },
     })
   ).current;
@@ -221,12 +263,12 @@ export default function AdaptiveFloatingControls({
   // Interpolated animated styles for Glowing Reset button
   const animatedBorderColor = pulseAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['#F59E0B', '#FCD34D'],
+    outputRange: ['#F59E0B', '#FEF08A'],
   });
 
   const animatedBackgroundColor = pulseAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['#1E293B', '#3E2F14'],
+    outputRange: ['#1E293B', '#451A03'],
   });
 
   const animatedBorderWidth = pulseAnim.interpolate({
@@ -243,6 +285,7 @@ export default function AdaptiveFloatingControls({
             transform: [{ translateX: pan.x }, { translateY: pan.y }],
           },
         ]}
+        onLayout={handleLayout}
         {...panResponder.panHandlers}
       >
         <Pressable
@@ -251,9 +294,7 @@ export default function AdaptiveFloatingControls({
           accessibilityLabel={t('mapExtended.expandControls', { defaultValue: 'Expand Controls' })}
         >
           <Ionicons name="apps" size={20} color="#FCD34D" />
-          {isResetVisible && (
-            <View style={styles.minimizedResetDot} />
-          )}
+          {isResetVisible && <View style={styles.minimizedResetDot} />}
         </Pressable>
       </Animated.View>
     );
@@ -263,13 +304,11 @@ export default function AdaptiveFloatingControls({
     <Animated.View
       style={[
         styles.container,
-        orientation === 'horizontal' && styles.containerHorizontal,
-        orientation === 'vertical' && styles.containerVertical,
-        orientation === 'corner-grid' && styles.containerCornerGrid,
         {
           transform: [{ translateX: pan.x }, { translateY: pan.y }],
         },
       ]}
+      onLayout={handleLayout}
       {...panResponder.panHandlers}
     >
       {/* Draggable Grip Handle & Minimize toggle */}
@@ -278,132 +317,124 @@ export default function AdaptiveFloatingControls({
           style={styles.dragHandlePill}
           onPress={handleToggleMinimize}
           accessibilityLabel={t('mapExtended.minimizeControls', { defaultValue: 'Minimize Controls' })}
+          hitSlop={8}
         >
-          <Ionicons
-            name={orientation === 'horizontal' ? 'reorder-two' : 'chevron-up'}
-            size={12}
-            color="#C5A059"
-          />
+          <View style={styles.dragHandleBar} />
         </Pressable>
       </View>
 
-      {/* Floating Action Cluster */}
-      <View
-        style={[
-          styles.actionsWrapper,
-          orientation === 'horizontal' && styles.actionsHorizontal,
-          orientation === 'vertical' && styles.actionsVertical,
-          orientation === 'corner-grid' && styles.actionsCornerGrid,
-        ]}
-      >
-        {/* Search */}
-        <View style={styles.actionItem}>
-          <Pressable
-            style={[styles.actionButton, styles.searchButton]}
-            onPress={() => {
-              tapLight();
-              onOpenSearch();
-            }}
-            accessibilityLabel={t('common.search')}
-          >
-            <Ionicons name="search" size={18} color="#60A5FA" />
-          </Pressable>
-          {orientation !== 'corner-grid' && (
-            <Text style={styles.actionButtonLabel} numberOfLines={1}>
-              {t('common.search')}
-            </Text>
-          )}
-        </View>
-
-        {/* Compare */}
+      {/* Floating Action Cluster - Transparent and Unobtrusive */}
+      <View style={styles.actionsWrapper}>
+        {/* Search (State & AC View) */}
         {stateCode !== 'IN' && (
           <View style={styles.actionItem}>
             <Pressable
-              style={[styles.actionButton, styles.compareButton]}
+              style={styles.actionItemPressable}
+              onPress={() => {
+                tapLight();
+                onOpenSearch();
+              }}
+              accessibilityRole="button"
+              accessibilityLabel={t('common.search')}
+            >
+              <View style={[styles.actionButton, styles.searchButton]}>
+                <Ionicons name="search" size={19} color="#60A5FA" />
+              </View>
+              <Text style={styles.actionButtonLabel} numberOfLines={1}>
+                {t('common.search')}
+              </Text>
+            </Pressable>
+          </View>
+        )}
+
+        {/* Compare (State & AC View) */}
+        {stateCode !== 'IN' && (
+          <View style={styles.actionItem}>
+            <Pressable
+              style={styles.actionItemPressable}
               onPress={() => {
                 tapLight();
                 onOpenCompare();
               }}
+              accessibilityRole="button"
               accessibilityLabel={t('common.compare', { defaultValue: 'Compare' })}
             >
-              <Ionicons name="git-compare" size={18} color="#A78BFA" />
-            </Pressable>
-            {orientation !== 'corner-grid' && (
+              <View style={[styles.actionButton, styles.compareButton]}>
+                <Ionicons name="git-compare" size={19} color="#A78BFA" />
+              </View>
               <Text style={styles.actionButtonLabel} numberOfLines={1}>
                 {t('common.compare', { defaultValue: 'Compare' })}
               </Text>
-            )}
+            </Pressable>
           </View>
         )}
 
         {/* Reset (with Glowing Pulse & Blinking Halo) */}
         {isResetVisible && (
           <View style={styles.actionItem}>
-            <View style={styles.resetButtonWrapper}>
-              {/* Outer Glowing Ripple Ring */}
-              <Animated.View
-                style={[
-                  styles.resetHaloRipple,
-                  {
-                    transform: [{ scale: rippleScale }],
-                    opacity: rippleOpacity,
-                  },
-                ]}
-                pointerEvents="none"
-              />
+            <Pressable
+              style={styles.actionItemPressable}
+              onPress={handleResetPress}
+              accessibilityRole="button"
+              accessibilityLabel={t('common.reset', { defaultValue: 'Reset' })}
+            >
+              <View style={styles.resetButtonWrapper}>
+                {/* Outer Glowing Ripple Ring */}
+                <Animated.View
+                  style={[
+                    styles.resetHaloRipple,
+                    {
+                      transform: [{ scale: rippleScale }],
+                      opacity: rippleOpacity,
+                    },
+                  ]}
+                  pointerEvents="none"
+                />
 
-              {/* Glowing Pulse Button */}
-              <Animated.View
-                style={[
-                  styles.actionButton,
-                  styles.resetButton,
-                  {
-                    borderColor: animatedBorderColor,
-                    backgroundColor: animatedBackgroundColor,
-                    borderWidth: animatedBorderWidth,
-                    elevation: 10,
-                  },
-                ]}
-              >
-                <Pressable
-                  style={styles.innerPressable}
-                  onPress={handleResetPress}
-                  accessibilityLabel={t('common.reset', { defaultValue: 'Reset' })}
+                {/* Glowing Pulse Button */}
+                <Animated.View
+                  style={[
+                    styles.actionButton,
+                    styles.resetButton,
+                    {
+                      borderColor: animatedBorderColor,
+                      backgroundColor: animatedBackgroundColor,
+                      borderWidth: animatedBorderWidth,
+                      elevation: 10,
+                    },
+                  ]}
                 >
-                  <Ionicons
-                    name="refresh"
-                    size={18}
-                    color="#FCD34D"
-                  />
-                </Pressable>
-              </Animated.View>
-            </View>
+                  <Animated.View style={{ opacity: blinkAnim }}>
+                    <Ionicons name="refresh" size={19} color="#FCD34D" />
+                  </Animated.View>
+                </Animated.View>
+              </View>
 
-            {orientation !== 'corner-grid' && (
               <Text style={[styles.actionButtonLabel, { color: '#FCD34D', fontWeight: '800' }]} numberOfLines={1}>
                 {t('common.reset', { defaultValue: 'Reset' })}
               </Text>
-            )}
+            </Pressable>
           </View>
         )}
 
-        {/* 3D Mode Toggle */}
+        {/* 3D Mode Toggle (Matching original 3D View button) */}
         <View style={styles.actionItem}>
           <Pressable
-            style={[styles.actionButton, is3DMode && styles.activeButton]}
+            style={styles.actionItemPressable}
             onPress={() => {
               tapLight();
               onToggle3D();
             }}
+            accessibilityRole="button"
             accessibilityLabel={t('mapExtended.mode3D', { defaultValue: '3D' })}
           >
-            <Ionicons
-              name={is3DMode ? 'cube' : 'cube-outline'}
-              size={18}
-              color={is3DMode ? '#FCD34D' : '#FFFFFF'}
-            />
-          </Pressable>
-          {orientation !== 'corner-grid' && (
+            <View style={[styles.actionButton, is3DMode && styles.activeButton]}>
+              <Ionicons
+                name={is3DMode ? 'cube' : 'cube-outline'}
+                size={19}
+                color={is3DMode ? '#FCD34D' : '#FFFFFF'}
+              />
+            </View>
             <Text
               style={[
                 styles.actionButtonLabel,
@@ -411,29 +442,30 @@ export default function AdaptiveFloatingControls({
               ]}
               numberOfLines={1}
             >
-              {is3DMode ? '3D ON' : '3D'}
+              {is3DMode ? '3D ON' : '3D View'}
             </Text>
-          )}
+          </Pressable>
         </View>
 
-        {/* District Focus Toggle */}
+        {/* District Focus Toggle (State View with selected AC) */}
         {stateCode !== 'IN' && selectedConstituency && (
           <View style={styles.actionItem}>
             <Pressable
-              style={[styles.actionButton, focusedDistrict !== '' && styles.activeButton]}
+              style={styles.actionItemPressable}
               onPress={() => {
                 tapLight();
                 onToggleDistrict();
               }}
+              accessibilityRole="button"
               accessibilityLabel={t('mapExtended.district', { defaultValue: 'District' })}
             >
-              <Ionicons
-                name="business"
-                size={18}
-                color={focusedDistrict !== '' ? '#FCD34D' : '#FFFFFF'}
-              />
-            </Pressable>
-            {orientation !== 'corner-grid' && (
+              <View style={[styles.actionButton, focusedDistrict !== '' && styles.activeButton]}>
+                <Ionicons
+                  name="business"
+                  size={19}
+                  color={focusedDistrict !== '' ? '#FCD34D' : '#FFFFFF'}
+                />
+              </View>
               <Text
                 style={[
                   styles.actionButtonLabel,
@@ -443,28 +475,29 @@ export default function AdaptiveFloatingControls({
               >
                 {t('mapExtended.district', { defaultValue: 'District' })}
               </Text>
-            )}
+            </Pressable>
           </View>
         )}
 
-        {/* Delimitation / Seat Density Toggle */}
+        {/* Delimitation / Seat Density Toggle (State View) */}
         {stateCode !== 'IN' && (
           <View style={styles.actionItem}>
             <Pressable
-              style={[styles.actionButton, showDelimitation && styles.delimButtonActive]}
+              style={styles.actionItemPressable}
               onPress={() => {
                 tapLight();
                 onToggleDelimitation();
               }}
+              accessibilityRole="button"
               accessibilityLabel={t('mapExtended.density', { defaultValue: 'Density' })}
             >
-              <Ionicons
-                name="layers"
-                size={18}
-                color={showDelimitation ? '#34D399' : '#FFFFFF'}
-              />
-            </Pressable>
-            {orientation !== 'corner-grid' && (
+              <View style={[styles.actionButton, showDelimitation && styles.delimButtonActive]}>
+                <Ionicons
+                  name="layers"
+                  size={19}
+                  color={showDelimitation ? '#34D399' : '#FFFFFF'}
+                />
+              </View>
               <Text
                 style={[
                   styles.actionButtonLabel,
@@ -474,36 +507,33 @@ export default function AdaptiveFloatingControls({
               >
                 {t('mapExtended.density', { defaultValue: 'Density' })}
               </Text>
-            )}
+            </Pressable>
           </View>
         )}
 
-        {/* Locate Me */}
+        {/* Locate Me (Deep Crimson circle matching original Locate button) */}
         <View style={styles.actionItem}>
           <Pressable
-            style={[
-              styles.actionButton,
-              styles.locateButton,
-              locating && styles.actionButtonDisabled,
-            ]}
+            style={[styles.actionItemPressable, locating && styles.actionButtonDisabled]}
             onPress={() => {
               tapLight();
               onLocateMe();
             }}
             disabled={locating}
+            accessibilityRole="button"
             accessibilityLabel={t('mapExtended.locate', { defaultValue: 'Locate' })}
           >
-            {locating ? (
-              <ActivityIndicator size="small" color="#FCD34D" />
-            ) : (
-              <Ionicons name="locate" size={18} color="#FCD34D" />
-            )}
-          </Pressable>
-          {orientation !== 'corner-grid' && (
+            <View style={[styles.actionButton, styles.locateButton]}>
+              {locating ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <Ionicons name="navigate" size={19} color="#FFFFFF" />
+              )}
+            </View>
             <Text style={styles.actionButtonLabel} numberOfLines={1}>
               {t('mapExtended.locate', { defaultValue: 'Locate' })}
             </Text>
-          )}
+          </Pressable>
         </View>
       </View>
     </Animated.View>
@@ -516,22 +546,16 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     zIndex: 95,
-    backgroundColor: 'rgba(15, 23, 42, 0.92)',
-    borderRadius: 18,
-    borderWidth: 1.5,
-    borderColor: 'rgba(197, 160, 89, 0.5)',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.45,
-    shadowRadius: 8,
-    elevation: 10,
-    padding: 5,
+    backgroundColor: 'transparent',
+    alignItems: 'center',
+    overflow: 'visible',
   },
   minimizedContainer: {
     position: 'absolute',
     top: 0,
     left: 0,
     zIndex: 95,
+    overflow: 'visible',
   },
   minimizedButton: {
     width: 44,
@@ -559,66 +583,60 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: '#0F172A',
   },
-  containerVertical: {
-    alignItems: 'center',
-  },
-  containerHorizontal: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  containerCornerGrid: {
-    maxWidth: 115,
-    alignItems: 'center',
-  },
   dragHandleContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 2,
-    paddingHorizontal: 4,
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    marginBottom: 3,
   },
   dragHandlePill: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 2,
+    paddingVertical: 3,
+    paddingHorizontal: 6,
+  },
+  dragHandleBar: {
+    width: 26,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: 'rgba(197, 160, 89, 0.8)',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.4,
+    shadowRadius: 2,
   },
   actionsWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  actionsVertical: {
     flexDirection: 'column',
-    gap: 6,
-  },
-  actionsHorizontal: {
-    flexDirection: 'row',
-    gap: 6,
-  },
-  actionsCornerGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: 6,
-    width: 100,
+    gap: 8,
+    overflow: 'visible',
   },
   actionItem: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 44,
+    width: 48,
+    overflow: 'visible',
+  },
+  actionItemPressable: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   actionButton: {
     backgroundColor: '#0F172A',
-    borderRadius: 20,
-    width: 38,
-    height: 38,
+    borderRadius: 22,
+    width: 44,
+    height: 44,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1.5,
     borderColor: '#C5A059',
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.35,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.45,
+    shadowRadius: 5,
+    elevation: 6,
   },
   innerPressable: {
     width: '100%',
@@ -628,16 +646,17 @@ const styles = StyleSheet.create({
   },
   resetButtonWrapper: {
     position: 'relative',
-    width: 38,
-    height: 38,
+    width: 44,
+    height: 44,
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'visible',
   },
   resetHaloRipple: {
     position: 'absolute',
-    width: 38,
-    height: 38,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     borderWidth: 2,
     borderColor: '#FCD34D',
   },
@@ -651,29 +670,30 @@ const styles = StyleSheet.create({
     borderColor: '#FCD34D',
   },
   activeButton: {
-    backgroundColor: '#C5A05930',
+    backgroundColor: '#B45309',
     borderColor: '#FCD34D',
     borderWidth: 2,
   },
   delimButtonActive: {
-    backgroundColor: '#34D39925',
+    backgroundColor: '#065F46',
     borderColor: '#34D399',
     borderWidth: 2,
   },
   locateButton: {
-    borderColor: '#FCD34D',
+    backgroundColor: '#991B1B',
+    borderColor: '#EF4444',
   },
   actionButtonDisabled: {
     opacity: 0.4,
   },
   actionButtonLabel: {
-    fontSize: 8.5,
+    fontSize: 9,
     fontWeight: '700',
     color: '#FFFFFF',
     marginTop: 2,
     textAlign: 'center',
     letterSpacing: 0.2,
-    textShadowColor: 'rgba(0, 0, 0, 0.9)',
+    textShadowColor: 'rgba(0, 0, 0, 0.95)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
   },
