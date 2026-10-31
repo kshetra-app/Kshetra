@@ -1,4 +1,4 @@
-﻿$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Stop"
 
 Write-Host "=========================================="
 Write-Host "  KSHETRA FULL FRESH RELEASE APK BUILD"
@@ -24,8 +24,14 @@ foreach ($p in $metroPaths) {
 if (Test-Path "C:\K\apps\mobile\android\app\src\main\assets\index.android.bundle*") {
     Remove-Item -Force "C:\K\apps\mobile\android\app\src\main\assets\index.android.bundle*"
 }
-if (Test-Path "C:\K\apps\mobile\android\app\build\outputs\apk") {
-    cmd /c "rd /s /q C:\K\apps\mobile\android\app\build\outputs\apk"
+if (Test-Path "C:\K\apps\mobile\android\app\build") {
+    cmd /c "rd /s /q C:\K\apps\mobile\android\app\build"
+}
+if (Test-Path "C:\K\apps\mobile\android\build") {
+    cmd /c "rd /s /q C:\K\apps\mobile\android\build"
+}
+if (Test-Path "C:\K\apps\mobile\android\app\.cxx") {
+    cmd /c "rd /s /q C:\K\apps\mobile\android\app\.cxx"
 }
 
 # 2. Prebuild Shared Package
@@ -71,7 +77,12 @@ Write-Host "Hermes Bytecode size: $([math]::Round($hbcSize / 1MB, 2)) MB (byteco
 
 # 5. Build Release APK with Gradle
 Write-Host "`n[5/6] Building release APK with Gradle..."
-$env:JAVA_HOME = 'C:\Program Files\Android\Android Studio\jbr'
+if (Test-Path 'C:\Program Files\Microsoft\jdk-17.0.18.8-hotspot') {
+    $env:JAVA_HOME = 'C:\Program Files\Microsoft\jdk-17.0.18.8-hotspot'
+} elseif (Test-Path 'C:\Program Files\Android\Android Studio\jbr') {
+    $env:JAVA_HOME = 'C:\Program Files\Android\Android Studio\jbr'
+}
+$env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 Set-Location "C:\K\apps\mobile\android"
 cmd /c "gradlew.bat assembleRelease --no-daemon"
 if ($LASTEXITCODE -ne 0) {
@@ -88,8 +99,12 @@ if (-not (Test-Path $apkSrc)) {
 $destinations = @(
     "c:\Users\Laven\OneDrive\Desktop\kshetra-release.apk",
     "c:\Users\Laven\OneDrive\Desktop\kshetra.apk",
+    "c:\Users\Laven\OneDrive\Desktop\Poligram.apk",
+    "c:\Users\Laven\OneDrive\Desktop\Poligram-release.apk",
     "c:\Users\Laven\Desktop\kshetra-release.apk",
-    "c:\Users\Laven\Desktop\kshetra.apk"
+    "c:\Users\Laven\Desktop\kshetra.apk",
+    "c:\Users\Laven\Desktop\Poligram.apk",
+    "c:\Users\Laven\Desktop\Poligram-release.apk"
 )
 
 foreach ($dest in $destinations) {
