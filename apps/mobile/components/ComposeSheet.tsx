@@ -10,8 +10,11 @@ import {
   Platform,
   ScrollView,
   StatusBar,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
+import * as ImagePicker from 'expo-image-picker';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../lib/theme';
 import type { PostType, Post, PostMedia, FeedScope } from '../lib/feedTypes';
@@ -121,6 +124,71 @@ export default function ComposeSheet({
   const isPoll = postType === 'poll';
   const validPollOptions = pollOptions.filter((o) => o.trim().length > 0);
   const canSubmitPoll = isPoll ? validPollOptions.length >= 2 : true;
+
+  const pickMedia = async () => {
+    if (mediaItems.length >= 5) {
+      Alert.alert(t('common.limitReached', { defaultValue: 'Limit reached' }), 'You can attach up to 5 media items.');
+      return;
+    }
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert(
+        t('reportIssueSheet.permissionNeeded', { defaultValue: 'Permission needed' }),
+        t('reportIssueSheet.permissionMsg', { defaultValue: 'Media library access is required to select photos or videos.' })
+      );
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images', 'videos'],
+      allowsMultipleSelection: true,
+      selectionLimit: 5 - mediaItems.length,
+      quality: 0.8,
+    });
+    if (!result.canceled && result.assets.length > 0) {
+      const newItems: PostMedia[] = result.assets.map((asset) => {
+        const isVideo = asset.type === 'video' || /\.(mp4|mov|m4v|webm|avi|mkv|3gp)(\?.*)?$/i.test(asset.uri);
+        return {
+          id: `media_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+          mediaType: isVideo ? 'video' : 'image',
+          url: asset.uri,
+          thumbnailUrl: asset.uri,
+          altText: asset.fileName || (isVideo ? 'Attached video' : 'Attached photo'),
+        };
+      });
+      setMediaItems((prev) => [...prev, ...newItems].slice(0, 5));
+    }
+  };
+
+  const takeCameraMedia = async (mode: 'image' | 'video' = 'image') => {
+    if (mediaItems.length >= 5) {
+      Alert.alert(t('common.limitReached', { defaultValue: 'Limit reached' }), 'You can attach up to 5 media items.');
+      return;
+    }
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert(
+        t('reportIssueSheet.permissionNeeded', { defaultValue: 'Permission needed' }),
+        t('reportIssueSheet.permissionMsg', { defaultValue: 'Camera permission is required to capture media.' })
+      );
+      return;
+    }
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: mode === 'video' ? ['videos'] : ['images'],
+      quality: 0.8,
+    });
+    if (!result.canceled && result.assets.length > 0) {
+      const asset = result.assets[0];
+      const isVideo = mode === 'video' || asset.type === 'video';
+      const newItem: PostMedia = {
+        id: `media_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+        mediaType: isVideo ? 'video' : 'image',
+        url: asset.uri,
+        thumbnailUrl: asset.uri,
+        altText: asset.fileName || (isVideo ? 'Attached video' : 'Attached photo'),
+      };
+      setMediaItems((prev) => [...prev, newItem].slice(0, 5));
+    }
+  };
 
   const addLinkMedia = () => {
     const url = linkUrl.trim();
@@ -486,20 +554,48 @@ export default function ComposeSheet({
             {/* Media attachments */}
             {mediaItems.length > 0 && (
               <View style={styles.mediaList}>
-                {mediaItems.map((m) => (
-                  <View
-                    key={m.id}
-                    style={[styles.mediaItem, { backgroundColor: colors.surface, borderColor: colors.border }]}
-                  >
-                    <Ionicons name="link" size={16} color={colors.primary} />
-                    <Text style={[styles.mediaItemText, { color: colors.text }]} numberOfLines={1}>
-                      {m.altText || m.url}
-                    </Text>
-                    <Pressable onPress={() => removeMedia(m.id)} hitSlop={8}>
-                      <Ionicons name="close-circle" size={18} color="#EF4444" />
-                    </Pressable>
-                  </View>
-                ))}
+                {/* Visual attachments (images / videos) */}
+                {mediaItems.some((m) => m.mediaType === 'image' || m.mediaType === 'video') && (
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.mediaThumbScroll}>
+                    <View style={styles.mediaThumbRow}>
+                      {mediaItems.map((m) => {
+                        if (m.mediaType === 'link') return null;
+                        return (
+                          <View key={m.id} style={styles.mediaThumbCard}>
+                            <Image source={{ uri: m.url }} style={styles.mediaThumbImage} contentFit="cover" />
+                            {m.mediaType === 'video' && (
+                              <View style={styles.videoBadge}>
+                                <Ionicons name="videocam" size={12} color="#FFFFFF" />
+                              </View>
+                            )}
+                            <Pressable style={styles.mediaThumbRemove} onPress={() => removeMedia(m.id)} hitSlop={6}>
+                              <Ionicons name="close-circle" size={18} color="#EF4444" />
+                            </Pressable>
+                          </View>
+                        );
+                      })}
+                    </View>
+                  </ScrollView>
+                )}
+
+                {/* Link attachments */}
+                {mediaItems.map((m) => {
+                  if (m.mediaType !== 'link') return null;
+                  return (
+                    <View
+                      key={m.id}
+                      style={[styles.mediaItem, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                    >
+                      <Ionicons name="link" size={16} color={colors.primary} />
+                      <Text style={[styles.mediaItemText, { color: colors.text }]} numberOfLines={1}>
+                        {m.altText || m.url}
+                      </Text>
+                      <Pressable onPress={() => removeMedia(m.id)} hitSlop={8}>
+                        <Ionicons name="close-circle" size={18} color="#EF4444" />
+                      </Pressable>
+                    </View>
+                  );
+                })}
               </View>
             )}
 
@@ -508,12 +604,45 @@ export default function ComposeSheet({
               <View style={[styles.mediaToolbar, { borderTopColor: colors.border }]}>
                 <Pressable
                   style={styles.mediaButton}
+                  onPress={pickMedia}
+                  hitSlop={8}
+                >
+                  <Ionicons name="images" size={18} color="#4F8EF7" />
+                  <Text style={[styles.mediaButtonText, { color: colors.textSecondary }]}>
+                    {t('compose.addMedia', { defaultValue: 'Gallery' })}
+                  </Text>
+                </Pressable>
+
+                <Pressable
+                  style={styles.mediaButton}
+                  onPress={() => takeCameraMedia('image')}
+                  hitSlop={8}
+                >
+                  <Ionicons name="camera" size={18} color="#10B981" />
+                  <Text style={[styles.mediaButtonText, { color: colors.textSecondary }]}>
+                    {t('reportIssueSheet.camera', { defaultValue: 'Camera' })}
+                  </Text>
+                </Pressable>
+
+                <Pressable
+                  style={styles.mediaButton}
+                  onPress={() => takeCameraMedia('video')}
+                  hitSlop={8}
+                >
+                  <Ionicons name="videocam" size={18} color="#EF4444" />
+                  <Text style={[styles.mediaButtonText, { color: colors.textSecondary }]}>
+                    Video
+                  </Text>
+                </Pressable>
+
+                <Pressable
+                  style={styles.mediaButton}
                   onPress={() => setShowLinkInput(!showLinkInput)}
                   hitSlop={8}
                 >
                   <Ionicons name="link" size={18} color={colors.primary} />
                   <Text style={[styles.mediaButtonText, { color: colors.textSecondary }]}>
-                    {t('compose.addLink')}
+                    {t('compose.addLink', { defaultValue: 'Link' })}
                   </Text>
                 </Pressable>
               </View>
@@ -765,6 +894,43 @@ const styles = StyleSheet.create({
   mediaList: {
     marginTop: 10,
     gap: 6,
+  },
+  mediaThumbScroll: {
+    marginBottom: 6,
+  },
+  mediaThumbRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  mediaThumbCard: {
+    position: 'relative',
+    width: 72,
+    height: 72,
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  mediaThumbImage: {
+    width: 72,
+    height: 72,
+    borderRadius: 10,
+  },
+  videoBadge: {
+    position: 'absolute',
+    bottom: 3,
+    left: 3,
+    backgroundColor: '#0A0A1ACC',
+    borderRadius: 4,
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  mediaThumbRemove: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    backgroundColor: '#0A0A1A99',
+    borderRadius: 10,
   },
   mediaItem: {
     flexDirection: 'row',

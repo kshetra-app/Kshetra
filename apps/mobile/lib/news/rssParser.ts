@@ -26,7 +26,7 @@ export async function fetchFeedXml(url: string): Promise<string | null> {
       headers: {
         // A browser-ish UA reduces 403s from CDNs that reject bots/empty UAs.
         'User-Agent':
-          'Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Mobile Safari/537.36 KshetraNews/1.0',
+          'Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Mobile Safari/537.36 PoligramNews/1.0',
         Accept:
           'application/rss+xml, application/atom+xml, application/xml, text/xml, */*',
       },
@@ -40,21 +40,107 @@ export async function fetchFeedXml(url: string): Promise<string | null> {
   }
 }
 
-function decodeEntities(input: string): string {
-  return input
-    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&apos;/g, "'")
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .trim();
+function unwrapCdata(input: string): string {
+  return input.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/gi, '$1');
+}
+
+const NAMED_ENTITIES: Record<string, string> = {
+  '&quot;': '"',
+  '&apos;': "'",
+  '&#39;': "'",
+  '&lt;': '<',
+  '&gt;': '>',
+  '&nbsp;': ' ',
+  '&amp;': '&',
+  '&lsquo;': "'",
+  '&rsquo;': "'",
+  '&sbquo;': "'",
+  '&ldquo;': '"',
+  '&rdquo;': '"',
+  '&bdquo;': '"',
+  '&ndash;': '–',
+  '&mdash;': '—',
+  '&hellip;': '…',
+  '&bull;': '•',
+  '&prime;': "'",
+  '&Prime;': '"',
+  '&trade;': '™',
+  '&copy;': '©',
+  '&reg;': '®',
+  '&middot;': '·',
+  '&lsaquo;': '‹',
+  '&rsaquo;': '›',
+  '&laquo;': '«',
+  '&raquo;': '»',
+  '&cent;': '¢',
+  '&pound;': '£',
+  '&yen;': '¥',
+  '&euro;': '€',
+  '&sect;': '§',
+  '&deg;': '°',
+  '&plusmn;': '±',
+};
+
+function decodeEntitiesOnce(input: string): string {
+  let str = input;
+
+  for (const [entity, replacement] of Object.entries(NAMED_ENTITIES)) {
+    if (str.includes(entity)) {
+      str = str.split(entity).join(replacement);
+    }
+  }
+
+  // Decimal character references: &#8216; or &#038;
+  str = str.replace(/&#(\d+);/g, (_, dec) => {
+    try {
+      const code = parseInt(dec, 10);
+      return code > 0 && code < 65536 ? String.fromCharCode(code) : '';
+    } catch {
+      return '';
+    }
+  });
+
+  // Hexadecimal character references: &#x2018; or &#x1F600;
+  str = str.replace(/&#x([0-9a-fA-F]+);/gi, (_, hex) => {
+    try {
+      const code = parseInt(hex, 16);
+      return code > 0 && code < 65536 ? String.fromCharCode(code) : '';
+    } catch {
+      return '';
+    }
+  });
+
+  return str;
+}
+
+export function decodeEntities(input: string): string {
+  if (!input) return '';
+  let str = unwrapCdata(input);
+  str = decodeEntitiesOnce(str);
+  // Second pass in case there was double escaping (e.g. &amp;#8217; or &amp;quot;)
+  if (str.includes('&')) {
+    str = decodeEntitiesOnce(str);
+  }
+  return str.trim();
 }
 
 function stripHtml(input: string): string {
-  return decodeEntities(input.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
+  if (!input) return '';
+  // 1. Unwrap CDATA first so tags inside CDATA are preserved or stripped properly
+  let str = unwrapCdata(input);
+  // 2. Strip scripts and styles
+  str = str.replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/gi, ' ');
+  // 3. Strip HTML tags
+  str = str.replace(/<[^>]+>/g, ' ');
+  // 4. Decode HTML entities and character references
+  str = decodeEntities(str);
+  // 5. Normalize fancy/curly quotes and dashes so all Android fonts render cleanly without missing glyphs
+  str = str
+    .replace(/[\u2018\u2019\u201A\u201B]/g, "'")
+    .replace(/[\u201C\u201D\u201E\u201F]/g, '"')
+    .replace(/[\u2013\u2014]/g, '-');
+  // 6. Clean invisible zero-width chars and normalize whitespace
+  return str.replace(/[\u200B-\u200D\uFEFF]/g, '').replace(/\s+/g, ' ').trim();
 }
 
 function firstMatch(block: string, patterns: RegExp[]): string | undefined {

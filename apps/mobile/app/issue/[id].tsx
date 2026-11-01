@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, Alert, Share, TextInput, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Alert, Share, TextInput, KeyboardAvoidingView, Platform, ActivityIndicator, Linking } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -16,6 +16,10 @@ import type { IssueComment, IssueStatusChange } from '../../lib/civicTypes';
 import { useTheme } from '../../lib/theme';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import { gateContentAction, logContentAction } from '../../lib/contentAccountability';
+
+function isVideoUri(uri: string): boolean {
+  return /\.(mp4|mov|m4v|webm|avi|mkv|3gp)(\?.*)?$/i.test(uri) || uri.includes('video');
+}
 
 function timeAgo(dateStr: string): string {
   const now = Date.now();
@@ -382,13 +386,32 @@ export default function IssueDetailScreen() {
               <Text style={styles.sectionTitle}>Evidence ({mediaUrls.length})</Text>
             </View>
             <View style={styles.mediaGrid}>
-              {displayMedia.map((url, idx) => (
-                <Image key={`${url}-${idx}`} source={{ uri: url }} style={styles.mediaGridItem} contentFit="cover" />
-              ))}
+              {displayMedia.map((url, idx) => {
+                const isVideo = isVideoUri(url);
+                return (
+                  <Pressable
+                    key={`${url}-${idx}`}
+                    style={styles.mediaGridItemWrap}
+                    onPress={() => {
+                      try {
+                        Linking.openURL(url);
+                      } catch (_) {}
+                    }}
+                    hitSlop={4}
+                  >
+                    <Image source={{ uri: url }} style={styles.mediaGridItem} contentFit="cover" />
+                    {isVideo && (
+                      <View style={styles.videoBadgeOverlay}>
+                        <Ionicons name="play-circle" size={26} color="#FFFFFF" />
+                      </View>
+                    )}
+                  </Pressable>
+                );
+              })}
             </View>
             {mediaUrls.length > 6 && !showAllMedia && (
               <Pressable style={styles.showMoreBtn} onPress={() => setShowAllMedia(true)}>
-                <Text style={styles.showMoreText}>Show all {mediaUrls.length} photos</Text>
+                <Text style={styles.showMoreText}>Show all {mediaUrls.length} media files</Text>
               </Pressable>
             )}
           </View>
@@ -590,7 +613,9 @@ const styles = StyleSheet.create({
 
   // Media grid
   mediaGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  mediaGridItem: { width: '31%' as any, aspectRatio: 1, borderRadius: 10 },
+  mediaGridItemWrap: { width: '31%' as any, aspectRatio: 1, borderRadius: 10, overflow: 'hidden', position: 'relative' },
+  mediaGridItem: { width: '100%', height: '100%', borderRadius: 10 },
+  videoBadgeOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.3)', justifyContent: 'center', alignItems: 'center' },
   showMoreBtn: { marginTop: 8, alignSelf: 'center' },
   showMoreText: { fontSize: 13, color: '#A8201A', fontWeight: '600' },
 

@@ -27,6 +27,10 @@ import { useUserProfileStore } from '../stores/userProfile';
 
 const MAX_MEDIA = 5;
 
+function isVideoUri(uri: string): boolean {
+  return /\.(mp4|mov|m4v|webm|avi|mkv|3gp)(\?.*)?$/i.test(uri) || uri.includes('video');
+}
+
 interface ReportIssueSheetProps {
   visible: boolean;
   onClose: () => void;
@@ -62,42 +66,62 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
 
   const pickFromGallery = useCallback(async () => {
     if (mediaUris.length >= MAX_MEDIA) {
-      Alert.alert(t('reportIssueSheet.limitReached'), `You can add up to ${MAX_MEDIA} photos.`);
+      Alert.alert(t('reportIssueSheet.limitReached', { defaultValue: 'Limit reached' }), `You can add up to ${MAX_MEDIA} media files.`);
       return;
     }
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert(t('reportIssueSheet.permissionNeeded'), t('reportIssueSheet.permissionMsg'));
+      Alert.alert(t('reportIssueSheet.permissionNeeded', { defaultValue: 'Permission needed' }), t('reportIssueSheet.permissionMsg', { defaultValue: 'Media library permission is required to select photos and videos.' }));
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      quality: 0.7,
+      mediaTypes: ['images', 'videos'],
+      quality: 0.8,
       allowsMultipleSelection: true,
       selectionLimit: MAX_MEDIA - mediaUris.length,
     });
     if (!result.canceled && result.assets.length > 0) {
       setMediaUris((prev) => [...prev, ...result.assets.map((a) => a.uri)].slice(0, MAX_MEDIA));
     }
-  }, [mediaUris]);
+  }, [mediaUris, t]);
 
   const takePhoto = useCallback(async () => {
     if (mediaUris.length >= MAX_MEDIA) {
-      Alert.alert(t('reportIssueSheet.limitReached'), `You can add up to ${MAX_MEDIA} photos.`);
+      Alert.alert(t('reportIssueSheet.limitReached', { defaultValue: 'Limit reached' }), `You can add up to ${MAX_MEDIA} media files.`);
       return;
     }
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert(t('reportIssueSheet.permissionNeeded'), t('reportIssueSheet.permissionMsg'));
+      Alert.alert(t('reportIssueSheet.permissionNeeded', { defaultValue: 'Permission needed' }), t('reportIssueSheet.permissionMsg', { defaultValue: 'Camera permission is required to capture photos.' }));
       return;
     }
     const result = await ImagePicker.launchCameraAsync({
-      quality: 0.7,
+      mediaTypes: ['images'],
+      quality: 0.8,
     });
     if (!result.canceled && result.assets.length > 0) {
       setMediaUris((prev) => [...prev, result.assets[0].uri].slice(0, MAX_MEDIA));
     }
-  }, [mediaUris]);
+  }, [mediaUris, t]);
+
+  const recordVideo = useCallback(async () => {
+    if (mediaUris.length >= MAX_MEDIA) {
+      Alert.alert(t('reportIssueSheet.limitReached', { defaultValue: 'Limit reached' }), `You can add up to ${MAX_MEDIA} media files.`);
+      return;
+    }
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert(t('reportIssueSheet.permissionNeeded', { defaultValue: 'Permission needed' }), t('reportIssueSheet.permissionMsg', { defaultValue: 'Camera permission is required to record video.' }));
+      return;
+    }
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['videos'],
+      quality: 0.8,
+    });
+    if (!result.canceled && result.assets.length > 0) {
+      setMediaUris((prev) => [...prev, result.assets[0].uri].slice(0, MAX_MEDIA));
+    }
+  }, [mediaUris, t]);
 
   const removeMedia = useCallback((index: number) => {
     setMediaUris((prev) => prev.filter((_, i) => i !== index));
@@ -239,31 +263,43 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
             </View>
 
             {/* Media Evidence */}
-            <Text style={styles.fieldLabel}>{t('reportIssueSheet.evidencePhotos')}</Text>
+            <Text style={styles.fieldLabel}>{t('reportIssueSheet.evidencePhotos', { defaultValue: 'Evidence (Photos & Videos)' })}</Text>
             <View style={styles.mediaRow}>
-              {mediaUris.map((uri, idx) => (
-                <View key={uri} style={styles.mediaThumbnailWrap}>
-                  <Image source={{ uri }} style={styles.mediaThumbnail} contentFit="cover" />
-                  <Pressable style={styles.mediaRemove} onPress={() => removeMedia(idx)} hitSlop={6}>
-                    <Ionicons name="close-circle" size={18} color="#EF4444" />
-                  </Pressable>
-                </View>
-              ))}
+              {mediaUris.map((uri, idx) => {
+                const isVideo = isVideoUri(uri);
+                return (
+                  <View key={`${uri}-${idx}`} style={styles.mediaThumbnailWrap}>
+                    <Image source={{ uri }} style={styles.mediaThumbnail} contentFit="cover" />
+                    {isVideo && (
+                      <View style={styles.videoBadge}>
+                        <Ionicons name="videocam" size={12} color="#FFFFFF" />
+                      </View>
+                    )}
+                    <Pressable style={styles.mediaRemove} onPress={() => removeMedia(idx)} hitSlop={6}>
+                      <Ionicons name="close-circle" size={18} color="#EF4444" />
+                    </Pressable>
+                  </View>
+                );
+              })}
               {mediaUris.length < MAX_MEDIA && (
                 <>
                   <Pressable style={styles.mediaAddButton} onPress={pickFromGallery}>
                     <Ionicons name="images" size={22} color="#4F8EF7" />
-                    <Text style={styles.mediaAddText}>{t('reportIssueSheet.gallery')}</Text>
+                    <Text style={styles.mediaAddText}>{t('reportIssueSheet.gallery', { defaultValue: 'Gallery' })}</Text>
                   </Pressable>
                   <Pressable style={styles.mediaAddButton} onPress={takePhoto}>
                     <Ionicons name="camera" size={22} color="#10B981" />
-                    <Text style={styles.mediaAddText}>{t('reportIssueSheet.camera')}</Text>
+                    <Text style={styles.mediaAddText}>{t('reportIssueSheet.camera', { defaultValue: 'Camera' })}</Text>
+                  </Pressable>
+                  <Pressable style={styles.mediaAddButton} onPress={recordVideo}>
+                    <Ionicons name="videocam" size={22} color="#EF4444" />
+                    <Text style={styles.mediaAddText}>Video</Text>
                   </Pressable>
                 </>
               )}
             </View>
             {mediaUris.length > 0 && (
-              <Text style={styles.charHint}>{t('reportIssueSheet.photosAdded', { count: mediaUris.length })}</Text>
+              <Text style={styles.charHint}>{mediaUris.length}/{MAX_MEDIA} media attached</Text>
             )}
 
             {/* Severity */}
@@ -440,6 +476,17 @@ const styles = StyleSheet.create({
     right: 2,
     backgroundColor: '#0A0A1A99',
     borderRadius: 10,
+  },
+  videoBadge: {
+    position: 'absolute',
+    bottom: 3,
+    left: 3,
+    backgroundColor: '#0A0A1ACC',
+    borderRadius: 4,
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   mediaAddButton: {
     width: 72,

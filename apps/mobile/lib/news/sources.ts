@@ -58,38 +58,38 @@ export const FEED_SOURCES: FeedSource[] = [
   { sourceId: 'ndtv-hindi', sourceName: 'NDTV India', domain: 'ndtv.in', accent: '#E4002B', verified: true, language: 'hi', category: 'top', scope: 'national', rssUrl: 'https://feeds.feedburner.com/ndtvkhabar-latest' },
 
   // ─────────────── Telugu ───────────────
-  { sourceId: 'news18-telugu', sourceName: 'News18 Telugu', domain: 'telugu.news18.com', accent: '#0A66C2', verified: true, language: 'te', category: 'top', scope: 'national', primary: true, rssUrl: 'https://telugu.news18.com/commonfeeds/v1/tel/rss/andhra-pradesh.xml' },
-  { sourceId: 'tv9-telugu', sourceName: 'TV9 Telugu', domain: 'tv9telugu.com', accent: '#E4002B', verified: true, language: 'te', category: 'top', scope: 'national', rssUrl: 'https://tv9telugu.com/feed' },
-  { sourceId: 'abp-desam', sourceName: 'ABP Desam', domain: 'telugu.abplive.com', accent: '#C8102E', verified: true, language: 'te', category: 'top', scope: 'national', rssUrl: 'https://telugu.abplive.com/home/feed' },
-  { sourceId: 'nt-news', sourceName: 'Namasthe Telangana', domain: 'ntnews.com', accent: '#E4002B', verified: true, language: 'te', category: 'top', scope: 'national', rssUrl: 'https://www.ntnews.com/feed' },
+  { sourceId: 'news18-telugu', sourceName: 'News18 Telugu', domain: 'telugu.news18.com', accent: '#0A66C2', verified: true, language: 'te', category: 'regional', scope: 'national', stateCode: 'AP', primary: true, rssUrl: 'https://telugu.news18.com/commonfeeds/v1/tel/rss/andhra-pradesh.xml' },
+  { sourceId: 'tv9-telugu', sourceName: 'TV9 Telugu', domain: 'tv9telugu.com', accent: '#E4002B', verified: true, language: 'te', category: 'top', scope: 'national', stateCode: 'TS', rssUrl: 'https://tv9telugu.com/feed' },
+  { sourceId: 'abp-desam', sourceName: 'ABP Desam', domain: 'telugu.abplive.com', accent: '#C8102E', verified: true, language: 'te', category: 'top', scope: 'national', stateCode: 'AP', rssUrl: 'https://telugu.abplive.com/home/feed' },
+  { sourceId: 'nt-news', sourceName: 'Namasthe Telangana', domain: 'ntnews.com', accent: '#E4002B', verified: true, language: 'te', category: 'regional', scope: 'national', stateCode: 'TS', rssUrl: 'https://www.ntnews.com/feed' },
 
   // ─────────────── Tamil ───────────────
-  { sourceId: 'news18-tamil', sourceName: 'News18 Tamil', domain: 'tamil.news18.com', accent: '#0A66C2', verified: true, language: 'ta', category: 'top', scope: 'national', primary: true, rssUrl: 'https://tamil.news18.com/commonfeeds/v1/tam/rss/tamil-nadu.xml' },
-  { sourceId: 'abp-tamil', sourceName: 'ABP Nadu', domain: 'tamil.abplive.com', accent: '#C8102E', verified: true, language: 'ta', category: 'top', scope: 'national', rssUrl: 'https://tamil.abplive.com/home/feed' },
-  { sourceId: 'vikatan', sourceName: 'Vikatan', domain: 'vikatan.com', accent: '#D32F2F', verified: true, language: 'ta', category: 'top', scope: 'national', rssUrl: 'https://www.vikatan.com/feed' },
-  { sourceId: 'maalaimalar', sourceName: 'Maalaimalar', domain: 'maalaimalar.com', accent: '#1F4E9B', verified: true, language: 'ta', category: 'top', scope: 'national', rssUrl: 'https://www.maalaimalar.com/feed' },
+  { sourceId: 'news18-tamil', sourceName: 'News18 Tamil', domain: 'tamil.news18.com', accent: '#0A66C2', verified: true, language: 'ta', category: 'regional', scope: 'national', stateCode: 'TN', primary: true, rssUrl: 'https://tamil.news18.com/commonfeeds/v1/tam/rss/tamil-nadu.xml' },
+  { sourceId: 'abp-tamil', sourceName: 'ABP Nadu', domain: 'tamil.abplive.com', accent: '#C8102E', verified: true, language: 'ta', category: 'top', scope: 'national', stateCode: 'TN', rssUrl: 'https://tamil.abplive.com/home/feed' },
+  { sourceId: 'vikatan', sourceName: 'Vikatan', domain: 'vikatan.com', accent: '#D32F2F', verified: true, language: 'ta', category: 'top', scope: 'national', stateCode: 'TN', rssUrl: 'https://www.vikatan.com/feed' },
+  { sourceId: 'maalaimalar', sourceName: 'Maalaimalar', domain: 'maalaimalar.com', accent: '#1F4E9B', verified: true, language: 'ta', category: 'top', scope: 'national', stateCode: 'TN', rssUrl: 'https://www.maalaimalar.com/feed' },
 
   // ─────────────── Kannada ───────────────
-  { sourceId: 'tv9-kannada', sourceName: 'TV9 Kannada', domain: 'tv9kannada.com', accent: '#E4002B', verified: true, language: 'kn', category: 'top', scope: 'national', primary: true, rssUrl: 'https://tv9kannada.com/feed' },
-  { sourceId: 'prajavani', sourceName: 'Prajavani', domain: 'prajavani.net', accent: '#0A6E3A', verified: true, language: 'kn', category: 'top', scope: 'national', rssUrl: 'https://www.prajavani.net/feed' },
+  { sourceId: 'tv9-kannada', sourceName: 'TV9 Kannada', domain: 'tv9kannada.com', accent: '#E4002B', verified: true, language: 'kn', category: 'top', scope: 'national', stateCode: 'KA', primary: true, rssUrl: 'https://tv9kannada.com/feed' },
+  { sourceId: 'prajavani', sourceName: 'Prajavani', domain: 'prajavani.net', accent: '#0A6E3A', verified: true, language: 'kn', category: 'top', scope: 'national', stateCode: 'KA', rssUrl: 'https://www.prajavani.net/feed' },
 
   // ─────────────── Malayalam ───────────────
-  { sourceId: 'news18-malayalam', sourceName: 'News18 Malayalam', domain: 'malayalam.news18.com', accent: '#0A66C2', verified: true, language: 'ml', category: 'top', scope: 'national', primary: true, rssUrl: 'https://malayalam.news18.com/commonfeeds/v1/mal/rss/kerala.xml' },
+  { sourceId: 'news18-malayalam', sourceName: 'News18 Malayalam', domain: 'malayalam.news18.com', accent: '#0A66C2', verified: true, language: 'ml', category: 'regional', scope: 'national', stateCode: 'KL', primary: true, rssUrl: 'https://malayalam.news18.com/commonfeeds/v1/mal/rss/kerala.xml' },
 
   // ─────────────── Marathi ───────────────
-  { sourceId: 'news18-marathi', sourceName: 'News18 Lokmat', domain: 'marathi.news18.com', accent: '#0A66C2', verified: true, language: 'mr', category: 'top', scope: 'national', primary: true, rssUrl: 'https://marathi.news18.com/commonfeeds/v1/mar/rss/maharashtra.xml' },
-  { sourceId: 'abp-majha', sourceName: 'ABP Majha', domain: 'marathi.abplive.com', accent: '#C8102E', verified: true, language: 'mr', category: 'top', scope: 'national', rssUrl: 'https://marathi.abplive.com/home/feed' },
-  { sourceId: 'tv9-marathi', sourceName: 'TV9 Marathi', domain: 'tv9marathi.com', accent: '#E4002B', verified: true, language: 'mr', category: 'top', scope: 'national', rssUrl: 'https://www.tv9marathi.com/feed' },
+  { sourceId: 'news18-marathi', sourceName: 'News18 Lokmat', domain: 'marathi.news18.com', accent: '#0A66C2', verified: true, language: 'mr', category: 'regional', scope: 'national', stateCode: 'MH', primary: true, rssUrl: 'https://marathi.news18.com/commonfeeds/v1/mar/rss/maharashtra.xml' },
+  { sourceId: 'abp-majha', sourceName: 'ABP Majha', domain: 'marathi.abplive.com', accent: '#C8102E', verified: true, language: 'mr', category: 'top', scope: 'national', stateCode: 'MH', rssUrl: 'https://marathi.abplive.com/home/feed' },
+  { sourceId: 'tv9-marathi', sourceName: 'TV9 Marathi', domain: 'tv9marathi.com', accent: '#E4002B', verified: true, language: 'mr', category: 'top', scope: 'national', stateCode: 'MH', rssUrl: 'https://www.tv9marathi.com/feed' },
 
   // ─────────────── Bengali ───────────────
-  { sourceId: 'news18-bangla', sourceName: 'News18 Bangla', domain: 'bengali.news18.com', accent: '#0A66C2', verified: true, language: 'bn', category: 'top', scope: 'national', primary: true, rssUrl: 'https://bengali.news18.com/commonfeeds/v1/ben/rss/west-bengal.xml' },
-  { sourceId: 'abp-ananda', sourceName: 'ABP Ananda', domain: 'bengali.abplive.com', accent: '#C8102E', verified: true, language: 'bn', category: 'top', scope: 'national', rssUrl: 'https://bengali.abplive.com/home/feed' },
-  { sourceId: 'tv9-bangla', sourceName: 'TV9 Bangla', domain: 'tv9bangla.com', accent: '#E4002B', verified: true, language: 'bn', category: 'top', scope: 'national', rssUrl: 'https://tv9bangla.com/feed' },
+  { sourceId: 'news18-bangla', sourceName: 'News18 Bangla', domain: 'bengali.news18.com', accent: '#0A66C2', verified: true, language: 'bn', category: 'regional', scope: 'national', stateCode: 'WB', primary: true, rssUrl: 'https://bengali.news18.com/commonfeeds/v1/ben/rss/west-bengal.xml' },
+  { sourceId: 'abp-ananda', sourceName: 'ABP Ananda', domain: 'bengali.abplive.com', accent: '#C8102E', verified: true, language: 'bn', category: 'top', scope: 'national', stateCode: 'WB', rssUrl: 'https://bengali.abplive.com/home/feed' },
+  { sourceId: 'tv9-bangla', sourceName: 'TV9 Bangla', domain: 'tv9bangla.com', accent: '#E4002B', verified: true, language: 'bn', category: 'top', scope: 'national', stateCode: 'WB', rssUrl: 'https://tv9bangla.com/feed' },
 
   // ─────────────── Gujarati ───────────────
-  { sourceId: 'news18-gujarati', sourceName: 'News18 Gujarati', domain: 'gujarati.news18.com', accent: '#0A66C2', verified: true, language: 'gu', category: 'top', scope: 'national', primary: true, rssUrl: 'https://gujarati.news18.com/commonfeeds/v1/guj/rss/gujarat.xml' },
-  { sourceId: 'tv9-gujarati', sourceName: 'TV9 Gujarati', domain: 'tv9gujarati.com', accent: '#E4002B', verified: true, language: 'gu', category: 'top', scope: 'national', rssUrl: 'https://tv9gujarati.com/feed' },
-  { sourceId: 'abp-asmita', sourceName: 'ABP Asmita', domain: 'gujarati.abplive.com', accent: '#C8102E', verified: true, language: 'gu', category: 'top', scope: 'national', rssUrl: 'https://gujarati.abplive.com/home/feed' },
+  { sourceId: 'news18-gujarati', sourceName: 'News18 Gujarati', domain: 'gujarati.news18.com', accent: '#0A66C2', verified: true, language: 'gu', category: 'regional', scope: 'national', stateCode: 'GJ', primary: true, rssUrl: 'https://gujarati.news18.com/commonfeeds/v1/guj/rss/gujarat.xml' },
+  { sourceId: 'tv9-gujarati', sourceName: 'TV9 Gujarati', domain: 'tv9gujarati.com', accent: '#E4002B', verified: true, language: 'gu', category: 'top', scope: 'national', stateCode: 'GJ', rssUrl: 'https://tv9gujarati.com/feed' },
+  { sourceId: 'abp-asmita', sourceName: 'ABP Asmita', domain: 'gujarati.abplive.com', accent: '#C8102E', verified: true, language: 'gu', category: 'top', scope: 'national', stateCode: 'GJ', rssUrl: 'https://gujarati.abplive.com/home/feed' },
 ];
 
 /** All feeds for a given language (used when a specific language is selected). */

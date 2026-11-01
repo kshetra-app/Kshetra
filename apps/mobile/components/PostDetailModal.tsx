@@ -14,6 +14,8 @@ import {
   StatusBar,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
+import * as Linking from 'expo-linking';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../lib/theme';
 import { useFeedStore } from '../stores/feed';
@@ -30,6 +32,10 @@ import {
   getLocalizedHashtag,
   formatLocalizedTimeAgo,
 } from '../lib/seedTranslations';
+
+function isVideoMedia(m: { mediaType: string; url: string }): boolean {
+  return m.mediaType === 'video' || /\.(mp4|mov|m4v|webm|avi|mkv|3gp)(\?.*)?$/i.test(m.url);
+}
 
 interface PostDetailModalProps {
   visible: boolean;
@@ -286,17 +292,50 @@ export default function PostDetailModal({
                 </View>
               )}
 
-              {/* Media links if present */}
+              {/* Media attachments */}
               {post.media && post.media.length > 0 && (
                 <View style={styles.mediaContainer}>
-                  {post.media.map((m) => (
-                    <View key={m.id} style={[styles.mediaItem, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                      <Ionicons name="link" size={16} color={colors.primary} />
-                      <Text style={[styles.mediaUrl, { color: colors.primary }]} numberOfLines={1}>
-                        {m.altText || m.url}
-                      </Text>
-                    </View>
-                  ))}
+                  {post.media.map((m) => {
+                    if (m.mediaType === 'link') {
+                      return (
+                        <Pressable
+                          key={m.id}
+                          style={[styles.mediaItem, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                          onPress={() => {
+                            try {
+                              Linking.openURL(m.url);
+                            } catch (_) {}
+                          }}
+                          hitSlop={6}
+                        >
+                          <Ionicons name="link" size={16} color={colors.primary} />
+                          <Text style={[styles.mediaUrl, { color: colors.primary }]} numberOfLines={1}>
+                            {m.altText || m.url}
+                          </Text>
+                        </Pressable>
+                      );
+                    }
+                    const isVideo = isVideoMedia(m);
+                    return (
+                      <Pressable
+                        key={m.id}
+                        style={styles.mediaPreviewWrap}
+                        onPress={() => {
+                          try {
+                            Linking.openURL(m.url);
+                          } catch (_) {}
+                        }}
+                        hitSlop={4}
+                      >
+                        <Image source={{ uri: m.url }} style={styles.mediaPreviewImage} contentFit="cover" />
+                        {isVideo && (
+                          <View style={styles.videoPlayOverlay}>
+                            <Ionicons name="play-circle" size={40} color="#FFFFFF" />
+                          </View>
+                        )}
+                      </Pressable>
+                    );
+                  })}
                 </View>
               )}
 
@@ -561,7 +600,30 @@ const styles = StyleSheet.create({
   },
   mediaContainer: {
     marginBottom: 14,
-    gap: 6,
+    gap: 8,
+  },
+  mediaPreviewWrap: {
+    width: '100%',
+    height: 220,
+    borderRadius: 12,
+    overflow: 'hidden',
+    position: 'relative',
+    backgroundColor: '#00000010',
+  },
+  mediaPreviewImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 12,
+  },
+  videoPlayOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   mediaItem: {
     flexDirection: 'row',

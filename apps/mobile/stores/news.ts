@@ -21,7 +21,7 @@ import type { NewsFeed, NewsItem, NewsCategory, NewsLanguageCode } from '../lib/
  */
 export const NEWS_FEED_URL = `${API_BASE_URL}/api/v1/news/feed`;
 
-const CACHE_PREFIX = 'kshetra-news-cache:';
+const CACHE_PREFIX = 'poligram-news-cache:';
 const cacheKey = (lang: NewsLanguageCode | null) => `${CACHE_PREFIX}${lang ?? 'all'}`;
 
 function readCache(lang: NewsLanguageCode | null): NewsFeed | null {
