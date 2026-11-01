@@ -224,7 +224,7 @@ export default function ConversationThreadScreen() {
   return (
     <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: colors.background }]}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
       {/* Header */}
@@ -305,7 +305,7 @@ export default function ConversationThreadScreen() {
       />
 
       {/* Input Bar */}
-      <View style={[styles.inputBar, { paddingBottom: insets.bottom + 8, borderTopColor: colors.border, backgroundColor: colors.surface }]}>
+      <View style={[styles.inputBar, { paddingBottom: Math.max(insets.bottom, 8) + 4, borderTopColor: colors.border, backgroundColor: colors.surface }]}>
         <TextInput
           style={[styles.input, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
           placeholder={t('messages.typePlaceholder', { defaultValue: 'Send a direct message...' })}
@@ -463,8 +463,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderWidth: 1,
-    maxHeight: 100,
-    fontSize: 14,
+    minHeight: 40,
+    maxHeight: 120,
+    fontSize: 15,
   },
   sendBtn: {
     width: 36,

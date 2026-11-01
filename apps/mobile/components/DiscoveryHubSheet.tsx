@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -28,10 +28,10 @@ export interface DiscoveryHubSheetProps {
   visible: boolean;
   onClose: () => void;
   sourceScreen?: string;
-  initialSection?: 'goals' | 'directory' | 'guide' | 'search';
+  initialSection?: 'guide' | 'goals' | 'directory' | 'search';
 }
 
-type HubSection = 'goals' | 'directory' | 'guide' | 'search';
+type HubSection = 'guide' | 'goals' | 'directory' | 'search';
 
 const GUIDE_ALIASES: Record<string, string> = {
   'delimitation': 'delimitation_index',
@@ -76,7 +76,7 @@ export default function DiscoveryHubSheet({
   visible,
   onClose,
   sourceScreen = 'map',
-  initialSection = 'goals',
+  initialSection = 'guide',
 }: DiscoveryHubSheetProps) {
   const { t } = useTranslation();
   const { colors } = useTheme();
@@ -91,6 +91,12 @@ export default function DiscoveryHubSheet({
 
   const [activeSection, setActiveSection] = useState<HubSection>(initialSection);
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    if (visible) {
+      setActiveSection(initialSection);
+    }
+  }, [visible, initialSection]);
 
   const currentGuide = useMemo<ScreenGuideEntry | undefined>(() => {
     const key = sourceScreen;
@@ -184,6 +190,13 @@ export default function DiscoveryHubSheet({
           {/* Navigation Tabs */}
           <View style={[styles.tabBar, { borderBottomColor: colors.border }]}>
             <TabButton
+              label={t('discovery.tabs.guide', { defaultValue: 'Page Help' })}
+              icon="help-circle"
+              active={activeSection === 'guide'}
+              onPress={() => setActiveSection('guide')}
+              color={colors.primary}
+            />
+            <TabButton
               label={t('discovery.tabs.goals', { defaultValue: 'Goals' })}
               icon="flag"
               active={activeSection === 'goals'}
@@ -195,13 +208,6 @@ export default function DiscoveryHubSheet({
               icon="grid"
               active={activeSection === 'directory'}
               onPress={() => setActiveSection('directory')}
-              color={colors.primary}
-            />
-            <TabButton
-              label={t('discovery.tabs.guide', { defaultValue: 'Page Help' })}
-              icon="help-circle"
-              active={activeSection === 'guide'}
-              onPress={() => setActiveSection('guide')}
               color={colors.primary}
             />
             <TabButton
@@ -219,6 +225,53 @@ export default function DiscoveryHubSheet({
             contentContainerStyle={styles.contentContainer}
             showsVerticalScrollIndicator={false}
           >
+            {/* PAGE HELP / CONTEXTUAL GUIDE */}
+            {activeSection === 'guide' && (
+              <View style={styles.sectionWrap}>
+                <View style={styles.guideHeader}>
+                  <View style={[styles.guideBadge, { backgroundColor: colors.primary + '20' }]}>
+                    <Ionicons name="compass" size={16} color={colors.primary} />
+                    <Text style={[styles.guideBadgeText, { color: colors.primary }]}>
+                      {t('discovery.currentScreen', { defaultValue: 'Current Screen' })}
+                    </Text>
+                  </View>
+                  <Text style={[styles.guideTitle, { color: colors.text }]}>
+                    {t(currentGuide?.titleKey || 'discovery.guides.map.title', { defaultValue: 'Page Guide' })}
+                  </Text>
+                  <Text style={[styles.guidePurpose, { color: colors.textSecondary }]}>
+                    {t(currentGuide?.purposeKey || 'discovery.guides.map.purpose', { defaultValue: '' })}
+                  </Text>
+                </View>
+
+                {/* Steps */}
+                <View style={[styles.guideCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                  <Text style={[styles.guideSubheading, { color: colors.text }]}>
+                    {t('discovery.howToUse', { defaultValue: 'How to use this screen:' })}
+                  </Text>
+                  {currentGuide?.stepsKeys.map((stepKey, idx) => (
+                    <View key={stepKey} style={styles.stepRow}>
+                      <View style={[styles.stepNumber, { backgroundColor: colors.primary }]}>
+                        <Text style={styles.stepNumberText}>{idx + 1}</Text>
+                      </View>
+                      <Text style={[styles.stepText, { color: colors.textSecondary }]}>
+                        {t(stepKey, { defaultValue: '' })}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+
+                {/* Caveat if available */}
+                {currentGuide?.caveatKey && (
+                  <View style={[styles.caveatCard, { backgroundColor: '#F59E0B15', borderColor: '#F59E0B40' }]}>
+                    <Ionicons name="shield-checkmark" size={16} color="#D97706" />
+                    <Text style={[styles.caveatText, { color: colors.text }]}>
+                      {t(currentGuide.caveatKey, { defaultValue: 'Data provenance and civic trust are verified.' })}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            )}
+
             {/* GOALS SECTION */}
             {activeSection === 'goals' && (
               <View style={styles.sectionWrap}>
@@ -318,53 +371,6 @@ export default function DiscoveryHubSheet({
                     </View>
                   </View>
                 ))}
-              </View>
-            )}
-
-            {/* PAGE HELP / CONTEXTUAL GUIDE */}
-            {activeSection === 'guide' && (
-              <View style={styles.sectionWrap}>
-                <View style={styles.guideHeader}>
-                  <View style={[styles.guideBadge, { backgroundColor: colors.primary + '20' }]}>
-                    <Ionicons name="compass" size={16} color={colors.primary} />
-                    <Text style={[styles.guideBadgeText, { color: colors.primary }]}>
-                      {t('discovery.currentScreen', { defaultValue: 'Current Screen' })}
-                    </Text>
-                  </View>
-                  <Text style={[styles.guideTitle, { color: colors.text }]}>
-                    {t(currentGuide?.titleKey || 'discovery.guides.map.title', { defaultValue: 'Page Guide' })}
-                  </Text>
-                  <Text style={[styles.guidePurpose, { color: colors.textSecondary }]}>
-                    {t(currentGuide?.purposeKey || 'discovery.guides.map.purpose', { defaultValue: '' })}
-                  </Text>
-                </View>
-
-                {/* Steps */}
-                <View style={[styles.guideCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                  <Text style={[styles.guideSubheading, { color: colors.text }]}>
-                    {t('discovery.howToUse', { defaultValue: 'How to use this screen:' })}
-                  </Text>
-                  {currentGuide?.stepsKeys.map((stepKey, idx) => (
-                    <View key={stepKey} style={styles.stepRow}>
-                      <View style={[styles.stepNumber, { backgroundColor: colors.primary }]}>
-                        <Text style={styles.stepNumberText}>{idx + 1}</Text>
-                      </View>
-                      <Text style={[styles.stepText, { color: colors.textSecondary }]}>
-                        {t(stepKey, { defaultValue: '' })}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-
-                {/* Caveat if available */}
-                {currentGuide?.caveatKey && (
-                  <View style={[styles.caveatCard, { backgroundColor: '#F59E0B15', borderColor: '#F59E0B40' }]}>
-                    <Ionicons name="shield-checkmark" size={16} color="#D97706" />
-                    <Text style={[styles.caveatText, { color: colors.text }]}>
-                      {t(currentGuide.caveatKey, { defaultValue: 'Data provenance and civic trust are verified.' })}
-                    </Text>
-                  </View>
-                )}
               </View>
             )}
 

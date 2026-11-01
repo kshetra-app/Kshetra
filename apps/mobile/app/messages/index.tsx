@@ -214,14 +214,6 @@ export default function MessagesInboxScreen() {
         <View style={styles.headerRightActions}>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={t('messages.newChat', { defaultValue: 'New conversation' })}
-            style={styles.headerIconBtn}
-            onPress={() => setNewChatModalVisible(true)}
-          >
-            <Ionicons name="create-outline" size={22} color={colors.primary} />
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
             accessibilityLabel={t('discovery.screenHelp', { defaultValue: 'Page guidance' })}
             style={styles.headerIconBtn}
             onPress={() => setHelpVisible(true)}

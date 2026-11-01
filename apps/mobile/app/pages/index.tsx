@@ -253,12 +253,18 @@ export default function PagesScreen() {
                     <View style={{ flex: 1, marginLeft: 12 }}>
                       <Text style={[styles.aspirantName, { color: colors.text }]}>{asp.displayName}</Text>
                       <Text style={[styles.aspirantSeat, { color: colors.textMuted }]}>
-                        {asp.targetConstituencyName ? `Aiming for ${asp.targetConstituencyName} · ${asp.targetElectionYear}` : 'Civic Candidate'}
+                        {asp.targetConstituencyName
+                          ? t('pages.aimingFor', {
+                              constituency: asp.targetConstituencyName,
+                              year: asp.targetElectionYear,
+                              defaultValue: `Aiming for ${asp.targetConstituencyName} · ${asp.targetElectionYear}`,
+                            })
+                          : t('pages.civicCandidate', { defaultValue: 'Civic Candidate' })}
                       </Text>
                     </View>
                     <View style={[styles.scoreBadge, { backgroundColor: '#F0FDF4' }]}>
                       <Ionicons name="trophy" size={12} color="#16A34A" />
-                      <Text style={styles.scoreText}>{asp.civicScore} pts</Text>
+                      <Text style={styles.scoreText}>{asp.civicScore} {t('pages.pts', { defaultValue: 'pts' })}</Text>
                     </View>
                   </View>
 
@@ -271,15 +277,21 @@ export default function PagesScreen() {
                   <View style={styles.aspirantStatsRow}>
                     <View style={styles.statItem}>
                       <Text style={[styles.statValue, { color: colors.text }]}>{asp.issuesReported}</Text>
-                      <Text style={[styles.statLabel, { color: colors.textMuted }]}>Issues</Text>
+                      <Text style={[styles.statLabel, { color: colors.textMuted }]}>
+                        {t('pages.issues', { defaultValue: 'Issues' })}
+                      </Text>
                     </View>
                     <View style={styles.statItem}>
                       <Text style={[styles.statValue, { color: colors.text }]}>{asp.communityEndorsements}</Text>
-                      <Text style={[styles.statLabel, { color: colors.textMuted }]}>Endorsements</Text>
+                      <Text style={[styles.statLabel, { color: colors.textMuted }]}>
+                        {t('pages.endorsements', { defaultValue: 'Endorsements' })}
+                      </Text>
                     </View>
                     <View style={styles.statItem}>
                       <Text style={[styles.statValue, { color: colors.text }]}>{asp.modulesCompleted}</Text>
-                      <Text style={[styles.statLabel, { color: colors.textMuted }]}>Modules</Text>
+                      <Text style={[styles.statLabel, { color: colors.textMuted }]}>
+                        {t('pages.modules', { defaultValue: 'Modules' })}
+                      </Text>
                     </View>
                   </View>
 
@@ -459,8 +471,12 @@ export default function PagesScreen() {
                         <Text style={[styles.profileMetaName, { color: colors.text }]}>{aspirantProfile.displayName}</Text>
                         <Text style={[styles.profileMetaSub, { color: colors.textMuted }]}>
                           {aspirantProfile.targetConstituencyName
-                            ? `Civic Candidate · ${aspirantProfile.targetConstituencyName} (${aspirantProfile.targetElectionYear})`
-                            : 'Civic Aspirant Profile Active'}
+                            ? t('pages.candidateForYear', {
+                                constituency: aspirantProfile.targetConstituencyName,
+                                year: aspirantProfile.targetElectionYear,
+                                defaultValue: `Candidate for ${aspirantProfile.targetConstituencyName} (${aspirantProfile.targetElectionYear})`,
+                              })
+                            : t('pages.aspirantProfileActive', { defaultValue: 'Civic Aspirant Profile Active' })}
                         </Text>
                       </View>
                     </View>
@@ -630,8 +646,12 @@ export default function PagesScreen() {
                   <Ionicons name="flag-outline" size={13} color={colors.primary} />
                   <Text style={[styles.pillTargetText, { color: colors.primary }]}>
                     {selectedAspirant.targetConstituencyName
-                      ? `Candidate for ${selectedAspirant.targetConstituencyName} (${selectedAspirant.targetElectionYear})`
-                      : 'Civic Aspirant'}
+                      ? t('pages.candidateForYear', {
+                          constituency: selectedAspirant.targetConstituencyName,
+                          year: selectedAspirant.targetElectionYear,
+                          defaultValue: `Candidate for ${selectedAspirant.targetConstituencyName} (${selectedAspirant.targetElectionYear})`,
+                        })
+                      : t('pages.civicCandidate', { defaultValue: 'Civic Candidate' })}
                   </Text>
                 </View>
                 {selectedAspirant.bio && (
@@ -647,10 +667,10 @@ export default function PagesScreen() {
                   <Ionicons name="trophy" size={22} color="#16A34A" />
                   <View style={{ marginLeft: 10 }}>
                     <Text style={[styles.scoreValue, { color: colors.text }]}>
-                      {selectedAspirant.civicScore} Points
+                      {selectedAspirant.civicScore} {t('pages.points', { defaultValue: 'Points' })}
                     </Text>
                     <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>
-                      Civic Standing Score
+                      {t('pages.civicStandingScore', { defaultValue: 'Civic Standing Score' })}
                     </Text>
                   </View>
                 </View>
@@ -660,7 +680,7 @@ export default function PagesScreen() {
                       {selectedAspirant.issuesReported}
                     </Text>
                     <Text style={[styles.metricTitle, { color: colors.textMuted }]}>
-                      Issues Raised
+                      {t('pages.issuesRaised', { defaultValue: 'Issues Raised' })}
                     </Text>
                   </View>
                   <View style={styles.metricBox}>
@@ -668,7 +688,7 @@ export default function PagesScreen() {
                       {selectedAspirant.communityEndorsements}
                     </Text>
                     <Text style={[styles.metricTitle, { color: colors.textMuted }]}>
-                      Endorsements
+                      {t('pages.endorsements', { defaultValue: 'Endorsements' })}
                     </Text>
                   </View>
                   <View style={styles.metricBox}>
@@ -676,7 +696,7 @@ export default function PagesScreen() {
                       {selectedAspirant.modulesCompleted}
                     </Text>
                     <Text style={[styles.metricTitle, { color: colors.textMuted }]}>
-                      Modules Done
+                      {t('pages.modulesDone', { defaultValue: 'Modules Done' })}
                     </Text>
                   </View>
                 </View>
