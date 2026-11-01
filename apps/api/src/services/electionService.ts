@@ -86,6 +86,10 @@ function mapDbElectionContest(row: any): ElectionContest {
     victoryMargin: row.victory_margin ?? 0,
     winningCandidacyId: row.winning_candidacy_id ?? null,
     runnerUpCandidacyId: row.runner_up_candidacy_id ?? null,
+    secondRunnerUpCandidacyId: row.second_runner_up_candidacy_id ?? null,
+    marginWinnerToRunnerUp1: row.margin_winner_runner_up_1 ?? row.victory_margin ?? 0,
+    marginWinnerToRunnerUp2: row.margin_winner_runner_up_2 ?? 0,
+    marginRunnerUp1ToRunnerUp2: row.margin_runner_up_1_runner_up_2 ?? 0,
     dataStatus: row.data_status,
     provenanceId: row.provenance_id ?? null,
     metadata: row.metadata || {},
@@ -312,28 +316,45 @@ export class ElectionService {
       candidates.find((c) => c.id === contest.winningCandidacyId) || candidates[0] || null;
     const runnerUpCand =
       candidates.find((c) => c.id === contest.runnerUpCandidacyId) || candidates[1] || null;
+    const secondRunnerUpCand =
+      candidates.find((c) => c.id === contest.secondRunnerUpCandidacyId) || candidates[2] || null;
+
+    const winnerEntry =
+      winnerCand && winnerCand.person
+        ? {
+            candidacy: winnerCand,
+            person: winnerCand.person,
+            party: winnerCand.party,
+          }
+        : null;
+
+    const runnerUpEntry =
+      runnerUpCand && runnerUpCand.person
+        ? {
+            candidacy: runnerUpCand,
+            person: runnerUpCand.person,
+            party: runnerUpCand.party,
+          }
+        : null;
+
+    const secondRunnerUpEntry =
+      secondRunnerUpCand && secondRunnerUpCand.person
+        ? {
+            candidacy: secondRunnerUpCand,
+            person: secondRunnerUpCand.person,
+            party: secondRunnerUpCand.party,
+          }
+        : null;
 
     return {
       ...contest,
       election,
       candidates,
       ballotChoices,
-      winner:
-        winnerCand && winnerCand.person
-          ? {
-              candidacy: winnerCand,
-              person: winnerCand.person,
-              party: winnerCand.party,
-            }
-          : null,
-      runnerUp:
-        runnerUpCand && runnerUpCand.person
-          ? {
-              candidacy: runnerUpCand,
-              person: runnerUpCand.person,
-              party: runnerUpCand.party,
-            }
-          : null,
+      winner: winnerEntry,
+      runnerUp: runnerUpEntry,
+      firstRunnerUp: runnerUpEntry,
+      secondRunnerUp: secondRunnerUpEntry,
     };
   }
 
