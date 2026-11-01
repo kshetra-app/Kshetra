@@ -4907,3 +4907,20 @@
   - Decision 5 (100% Boundary Spatial Topology Certification & Sliver Elimination): Option A (Programmatic nationwide PostGIS topology validator across 4,123 ACs + 543 PCs) vs Option B (Sample state spot checks).
 - **Next Steps:**
   Await user review, architectural decision ratification, and explicit implementation authorization under Control M before source code execution.
+
+
+---
+
+### DEC-204: User Ratification and Implementation Authorization for Domain 10 (JOB 077–JOB 085) under Control M
+- **Date:** 2026-11-01
+- **Status:** RATIFIED & AUTHORIZED (Control M Token Granted)
+- **Authority:** User Directive & Explicit Control M Authorization Token (`PLAN_STATUS: APPROVED`, `IMPLEMENTATION_AUTHORIZATION: YES`), DEC-203 & AGENT_EXECUTION_PROTOCOL.md
+- **Architectural Ratifications:**
+  1. **Decision 1 (Low-End Android Performance Simulation & Profiling Rig):** Option A ratified with Option B provisioned. In-engine synthetic CPU throttling & memory watermark profiler (`apps/mobile/lib/performanceProfiler.ts` + Node test harness `tests/performance-benchmarks.test.ts`) measuring cold boot $< 2.0\text{s}$, warm boot $< 800\text{ms}$, 60fps Map & Feed, RSS $< 120\text{MB}$, with a pluggable cloud device farm runner adapter (`scripts/qa/cloud-device-farm-adapter.mjs`) for external device testing when required.
+  2. **Decision 2 (Automated PostGIS Query Optimization & N+1 Cascade Shield):** Option A ratified with Option B provisioned. Composite GIST spatial indexing (`idx_boundaries_geom_gist`), bounding-box pre-filtering (`&&`), single-pass lateral joins and CTE aggregations eliminating N+1 cascades (P50 $< 5\text{ms}$, P95 $< 20\text{ms}$), coupled with an in-memory L2 query cache fallback adapter for rapid offline reads.
+  3. **Decision 3 (High-Concurrency API Load Rig & Adaptive Rate-Limiting Protection):** Option A ratified with Option B provisioned. Production-grade automated Autocannon concurrency load test harness (`tests/api-load-stress.test.ts`) stress testing 1,000 concurrent RPS across `/feed`, `/constituencies/:id`, `/representatives`, and `/offline-sync` with P50 $< 50\text{ms}$, P95 $< 150\text{ms}$, P99 $< 300\text{ms}$ and RFC 6585 429 headers, supplemented by a lightweight sequential latency benchmark for rapid local verification.
+  4. **Decision 4 (Zero-Downtime Expand-Contract Database Rollback & Multi-Region PITR DR):** Option A ratified with Option B provisioned. Strict two-phase expand-contract non-destructive schema migrations, automated rollback orchestrator (`scripts/sre/production-rollback.mjs`), and automated disaster recovery drill harness (`scripts/sre/disaster-recovery-drill.mjs`) validating Point-In-Time Recovery (PITR) with continuous WAL replay (RPO $< 1\text{h}$, RTO $< 30\text{m}$, 100% entity parity), plus a direct single-region snapshot restore adapter for quick recovery fallback.
+  5. **Decision 5 (100% Boundary Spatial Topology Certification & Sliver Elimination):** Option A ratified with Option B provisioned. Authoritative nationwide PostGIS topology validation engine (`scripts/gis/certify-spatial-topology.mjs` + `tests/spatial-topology-certification.test.ts`) guaranteeing 100% validity (`ST_IsValid`), zero slivers ($< 100\text{ m}^2$), zero overlaps (`ST_Overlaps`), and strict containment (`ST_Within`) across all 4,123 ACs and 543 PCs, along with an interactive targeted single-state/bounding-box spatial inspection capability for rapid debugging.
+- **Authorization Token:**
+  `PLAN_STATUS: APPROVED`
+  `IMPLEMENTATION_AUTHORIZATION: YES`
