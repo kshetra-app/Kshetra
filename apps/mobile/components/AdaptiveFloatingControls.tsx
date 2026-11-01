@@ -96,7 +96,7 @@ export default function AdaptiveFloatingControls({
     const minX = 0;
     const maxX = Math.max(0, windowWidth - curW);
     const minY = insets.top > 0 ? insets.top : 24;
-    const maxY = Math.max(minY, windowHeight - curH - (insets.bottom > 0 ? insets.bottom : 12) - 48);
+    const maxY = Math.max(minY, windowHeight - curH - (insets.bottom > 0 ? insets.bottom : 8));
 
     const safeX = Math.max(minX, Math.min(maxX, currentPos.current.x));
     const safeY = Math.max(minY, Math.min(maxY, currentPos.current.y));
@@ -238,7 +238,7 @@ export default function AdaptiveFloatingControls({
         const minX = 0;
         const maxX = Math.max(0, windowWidth - curW);
         const minY = insets.top > 0 ? insets.top : 24;
-        const maxY = Math.max(minY, windowHeight - curH - (insets.bottom > 0 ? insets.bottom : 12) - 48);
+        const maxY = Math.max(minY, windowHeight - curH - (insets.bottom > 0 ? insets.bottom : 8));
 
         const clampedX = Math.max(minX, Math.min(maxX, rawX));
         const clampedY = Math.max(minY, Math.min(maxY, rawY));

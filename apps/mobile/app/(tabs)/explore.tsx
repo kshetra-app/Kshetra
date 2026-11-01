@@ -373,7 +373,6 @@ export default function ExploreScreen() {
           <View style={styles.headerLeft}>
             <View style={styles.titleRow}>
               <Text style={[styles.title, { color: colors.text }]}>{t('explore.title')}</Text>
-              <StateSwitcher />
             </View>
             <Text style={[styles.subtitle, { color: colors.textMuted }]}>
               {query.trim()

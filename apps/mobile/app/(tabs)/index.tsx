@@ -469,8 +469,7 @@ function FullMapScreen() {
   }, [colorMode, selectedYear, stateCode]);
 
   const hasBottomContent = !!(
-    myHome ||
-    getAvailableYearsForState(stateCode).length > 1 ||
+    (myHome && stateCode !== 'IN') ||
     (stateIdleTrivia && stateIdleTrivia.length > 0)
   );
 
@@ -1386,7 +1385,7 @@ function FullMapScreen() {
             <View style={{ flex: 1, marginRight: 8, justifyContent: 'center' }}>
               <Image
                 source={require('../../assets/poligram_logo_lockup_transparent.png')}
-                style={{ width: 88, height: 26, marginBottom: 2 }}
+                style={{ width: 110, height: 32, marginBottom: 2 }}
                 resizeMode="contain"
                 accessibilityLabel="POLIGRAM"
                 accessible={true}
@@ -1398,7 +1397,8 @@ function FullMapScreen() {
               </Text>
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-              {/* Full Map / Clean view toggle */}
+              {/* Archived until further notice: Full/UI toggle (screen touch auto-hide replaces manual toggle) */}
+              {/*
               <Pressable
                 style={{
                   backgroundColor: hideOverlays ? colors.gold : colors.primary,
@@ -1437,6 +1437,7 @@ function FullMapScreen() {
                   {hideOverlays ? 'UI' : 'Full'}
                 </Text>
               </Pressable>
+              */}
               <StateSwitcher />
               <LanguageSwitcher compact />
               {/* Discovery & Guidance Hub trigger */}
@@ -1897,9 +1898,12 @@ function FullMapScreen() {
         </Animated.View>
       )}
 
-      {/* Bottom Dashboard: stacks timeline slider, idle trivia, and home button dynamically */}
+      {/* Bottom Dashboard: stacks idle trivia and home button dynamically (auto-hides with touch inactivity timer) */}
       {!broadcastMode && !mapOnlyMode && !selected && !selectedBooth && !showDelimitation && !mapCompareActive && hasBottomContent && !hideOverlays && (
-        <View style={styles.bottomDashboardContainer}>
+        <Animated.View
+          style={[styles.bottomDashboardContainer, { opacity: immersiveAnim }]}
+          pointerEvents={isScreenImmersive ? 'none' : 'box-none'}
+        >
           {/* My Constituency home marker */}
           {myHome && stateCode !== 'IN' && (
             <Pressable
@@ -1937,7 +1941,8 @@ function FullMapScreen() {
             </Pressable>
           )}
 
-          {/* Time-Travel History Slider (conditional on state data availability) */}
+          {/* Archived until further notice: MapTimeSlider election transition player */}
+          {/*
           {getAvailableYearsForState(stateCode).length > 1 && (
             <View style={styles.timeSliderWrapper}>
               <MapTimeSlider
@@ -1950,14 +1955,15 @@ function FullMapScreen() {
               />
             </View>
           )}
+          */}
 
-          {/* Idle trivia — state-specific */}
+          {/* Idle trivia — state-specific (hides on map touch, returns with controls) */}
           {stateIdleTrivia.length > 0 && (
             <View style={styles.idleTriviaWrapper}>
               <TriviaCard items={stateIdleTrivia} compact rotateInterval={5000} />
             </View>
           )}
-        </View>
+        </Animated.View>
       )}
 
       {/* Side-by-Side Map Comparison Panel */}
