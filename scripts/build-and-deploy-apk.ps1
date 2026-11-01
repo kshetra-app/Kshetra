@@ -30,9 +30,10 @@ if (Test-Path "C:\K\apps\mobile\android\app\build") {
 if (Test-Path "C:\K\apps\mobile\android\build") {
     cmd /c "rd /s /q C:\K\apps\mobile\android\build"
 }
-if (Test-Path "C:\K\apps\mobile\android\app\.cxx") {
-    cmd /c "rd /s /q C:\K\apps\mobile\android\app\.cxx"
-}
+# Keep .cxx cached to avoid re-compiling 100+ native C++ libraries from scratch
+# if (Test-Path "C:\K\apps\mobile\android\app\.cxx") {
+#     cmd /c "rd /s /q C:\K\apps\mobile\android\app\.cxx"
+# }
 
 # 2. Prebuild Shared Package
 Write-Host "`n[2/6] Building @kshetra/shared..."
