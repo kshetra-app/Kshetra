@@ -3,7 +3,7 @@
  */
 const or = {
   "common": {
-    "appName": "କ୍ଷେତ୍ର",
+    "appName": "ପୋଲିଗ୍ରାମ୍",
     "loading": "ଲୋଡ୍ ହେଉଛି...",
     "error": "କିଛି ଭୁଲ୍ ହୋଇଗଲା",
     "retry": "ପୁନର୍ବାର ଚେଷ୍ଟା କରନ୍ତୁ",
@@ -93,7 +93,7 @@ const or = {
   "map": {
     "loadingBoundaries": "ନକ୍ଶା ଲୋଡ ହୋ ରହା ହୈ…",
     "boundariesFailed": "ନକ୍ଶା ଲୋଡ ନହୀଂ ହୋ ସକା",
-    "title": "କ୍ଷେତ୍ର",
+    "title": "ପୋଲିଗ୍ରାମ୍",
     "searchPlaceholder": "ନିର୍ବାଚନ ମଣ୍ଡଳୀ ଖୋଜନ୍ତୁ...",
     "tapToExplore": "ଅନ୍ୱେଷଣ କରିବା ପାଇଁ ଏକ ନିର୍ବାଚନ ମଣ୍ଡଳୀ ଉପରେ ଟ୍ୟାପ୍ କରନ୍ତୁ",
     "locateMe": "ମୋର ସ୍ଥାନ ଖୋଜନ୍ତୁ",
@@ -422,7 +422,7 @@ const or = {
     "notifications": "ନୋଟିଫିକେସନ୍ ସେଟିଂସ",
     "favorites": "ପସନ୍ଦଦାୟକ",
     "language": "ଭାଷା",
-    "about": "କ୍ଷେତ୍ର ବିଷୟରେ",
+    "about": "ପୋଲିଗ୍ରାମ୍ ବିଷୟରେ",
     "version": "ସଂସ୍କରଣ",
     "settings": "ସେଟିଂସ",
     "appearance": "ଦୃଶ୍ୟ",
@@ -518,7 +518,7 @@ const or = {
     }
   },
   "onboarding": {
-    "welcome": "କ୍ଷେତ୍ରକୁ ସ୍ୱାଗତ",
+    "welcome": "ପୋଲିଗ୍ରାମ୍‌କୁ ସ୍ୱାଗତ",
     "welcomeSubtitle": "ଭାରତର ରାଜନୈତିକ ବୁଦ୍ଧିମତା ପ୍ଲାଟଫର୍ମ",
     "getStarted": "ଆରମ୍ଭ କରନ୍ତୁ",
     "nameStep": "ଆପଣଙ୍କ ନାମ କଣ?",
@@ -530,7 +530,7 @@ const or = {
     "interestsSubtitle": "ଅତି କମରେ ୨ଟି ବିଷୟ ବାଛନ୍ତୁ",
     "doneStep": "ଆପଣ ସମ୍ପୂର୍ଣ୍ଣ ପ୍ରସ୍ତୁତ!",
     "doneSubtitle": "ଆପଣଙ୍କର ବ୍ୟକ୍ତିଗତ ରାଜନୈତିକ ଫିଡ୍ ପ୍ରସ୍ତୁତ ଅଛି",
-    "finish": "କ୍ଷେତ୍ରକୁ ପ୍ରବେଶ କରନ୍ତୁ",
+    "finish": "ପୋଲିଗ୍ରାମ୍‌ରେ ପ୍ରବେଶ କରନ୍ତୁ",
     "skip": "ଏଡାଇ ଯାଆନ୍ତୁ",
     "interests": {
       "elections": "ନିର୍ବାଚନ",
@@ -548,7 +548,7 @@ const or = {
     }
   },
   "ai": {
-    "title": "ଏଆଈ ରାଜନୀତିକ ସହାଯକ",
+    "title": "ପୋଲିଗ୍ରାମ୍ AI ସହାୟକ",
     "askAboutConstituency": "{{name}} ଚୁନାୱ, ଉମ୍ମୀଦୱାରୋଂ ଔର ଜନସାଂଖ୍ଯିକୀ କେ ବାରେ ମେଂ କୁଛ ଭୀ ପୂଛେଂ",
     "askAboutState": "{{state}} ମେଂ ଚୁନାୱ, ପାର୍ଟିଯୋଂ ଔର ରାଜନୀତି କେ ବାରେ ମେଂ କୁଛ ଭୀ ପୂଛେଂ",
     "suggestedQuestions": "ସୁଝାଏ ଗଏ ପ୍ରଶ୍ନ",
@@ -579,7 +579,7 @@ const or = {
     "tryAsking": "ଯହ ପୂଛକର ଦେଖେଂ:",
     "thinkingSearch": "ଡେଟା କା ୱିଶ୍ଲେଷଣ କିଯା ଜା ରହା ହୈ…",
     "noResponse": "କୋଈ ପ୍ରତିକ୍ରିଯା ଉପଲବ୍ଧ ନହୀଂ",
-    "poweredBy": "କ୍ଷେତ୍ର AI ଦ୍ୱାରା ସଂଚାଲିତ • Google Gemini",
+    "poweredBy": "ପୋଲିଗ୍ରାମ୍ AI ଦ୍ୱାରା ପରିଚାଳିତ • Google Gemini",
     "qWinner2023": "2023 ମେଂ {{name}} କିସନେ ଜୀତା?",
     "qMarginTrend": "{{name}} ମେଂ ଅଂତର କା ରୁଝାନ କ୍ଯା ହୈ?",
     "qTellAboutMLA": "{{name}} କେ ୱିଧାଯକ କେ ବାରେ ମେଂ ବତାଏଂ",
@@ -1715,7 +1715,7 @@ const or = {
     "daysDelayed": "{{n}} ଦିନ ୱିଲଂବିତ"
   },
   "lmx": {
-    "screenTitle": "କ୍ଷେତ୍ର ଲାଇଭ",
+    "screenTitle": "ପୋଲିଗ୍ରାମ୍ ଲାଇଭ୍",
     "liveNow": "{{count}} ଲାଇଭ ବର୍ତ୍ତମାନ",
     "liveNow_one": "{{count}} ଲାଇଭ ବର୍ତ୍ତମାନ",
     "liveNow_other": "{{count}} ଲାଇଭ ବର୍ତ୍ତମାନ",
@@ -1743,7 +1743,7 @@ const or = {
       "clipRecorded": "କ୍ଲିପ୍ ରେକର୍ଡ ହୋଇଛି",
       "broadcastingAs": "ଭାବରେ ପ୍ରସାରଣ କରାଯାଉଛି",
       "independent": "ସ୍ୱାଧୀନ",
-      "neutralWatermark": "ନିରପେକ୍ଷ କ୍ଷେତ୍ର ୱାଟରମାର୍କ",
+      "neutralWatermark": "ନିରପେକ୍ଷ ପୋଲିଗ୍ରାମ୍ ୱାଟରମାର୍କ",
       "visibility": "ଦୃଶ୍ୟମାନତା",
       "alertDepartment": "ଏକ ସରକାରୀ ବିଭାଗକୁ ସତର୍କ କରନ୍ତୁ",
       "alertDepartmentDesc": "ଆପଣଙ୍କର ଲାଇଭ୍ ଫିଡ୍ ସିଧାସଳଖ ମନୋନୀତ ବିଭାଗକୁ ପଠାଯିବ।",

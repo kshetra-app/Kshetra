@@ -3,7 +3,7 @@
  */
 const as = {
   "common": {
-    "appName": "ক্ষেত্ৰ",
+    "appName": "পলিগ্ৰাম",
     "loading": "লোড হৈ আছে…",
     "error": "কিবা ভুল হ’ল",
     "retry": "পুনৰ চেষ্টা কৰক",
@@ -93,7 +93,7 @@ const as = {
   "map": {
     "loadingBoundaries": "নক্শা লোড হো ৰহা হৈ…",
     "boundariesFailed": "নক্শা লোড নহীং হো সকা",
-    "title": "ক্ষেত্ৰ",
+    "title": "পলিগ্ৰাম",
     "searchPlaceholder": "সমষ্টি অনুসন্ধান কৰক…",
     "tapToExplore": "অন্বেষণ কৰিবলৈ এটা সমষ্টিত স্পৰ্শ কৰক",
     "locateMe": "মোৰ স্থান নিৰ্ধাৰণ কৰক",
@@ -422,7 +422,7 @@ const as = {
     "notifications": "জাননীৰ ছেটিংছ",
     "favorites": "প্ৰিয়সমূহ",
     "language": "ভাষা",
-    "about": "ক্ষেত্ৰৰ বিষয়ে",
+    "about": "পলিগ্ৰামৰ বিষয়ে",
     "version": "সংস্কৰণ",
     "settings": "ছেটিংছ",
     "appearance": "চেহেৰা",
@@ -518,7 +518,7 @@ const as = {
     }
   },
   "onboarding": {
-    "welcome": "ক্ষেত্ৰলৈ আদৰণি জনাইছোঁ",
+    "welcome": "পলিগ্ৰামলৈ আদৰণি জনাইছোঁ",
     "welcomeSubtitle": "ভাৰতৰ ৰাজনৈতিক বুদ্ধিমান মঞ্চ",
     "getStarted": "আৰম্ভ কৰক",
     "nameStep": "আপোনাৰ নাম কি?",
@@ -530,7 +530,7 @@ const as = {
     "interestsSubtitle": "অতি কমেও ২টা বিষয় বাছনি কৰক",
     "doneStep": "আপুনি সাজু!",
     "doneSubtitle": "আপোনাৰ ব্যক্তিগত ৰাজনৈতিক ফিড প্ৰস্তুত হৈছে",
-    "finish": "ক্ষেত্ৰত প্ৰৱেশ কৰক",
+    "finish": "পলিগ্ৰামত প্ৰৱেশ কৰক",
     "skip": "এৰক (Skip)",
     "interests": {
       "elections": "নিৰ্বাচন",
@@ -548,7 +548,7 @@ const as = {
     }
   },
   "ai": {
-    "title": "এআঈ ৰাজনীতিক সহাযক",
+    "title": "পলিগ্ৰাম AI সহায়ক",
     "askAboutConstituency": "{{name}} চুনাব, উম্মীদবারোং ঔর জনসাংখ্যিকী কে বারে মেং কুছ ভী পূছেং",
     "askAboutState": "{{state}} মেং চুনাব, পার্টিযোং ঔর রাজনীতি কে বারে মেং কুছ ভী পূছেং",
     "suggestedQuestions": "সুঝাএ গএ প্ৰশ্ন",
@@ -579,7 +579,7 @@ const as = {
     "tryAsking": "যহ পূছকৰ দেখেং:",
     "thinkingSearch": "ডেটা কা ৱিশ্লেষণ কিযা জা ৰহা হৈ…",
     "noResponse": "কোঈ প্ৰতিক্ৰিযা উপলৱ্ধ নহীং",
-    "poweredBy": "ক্ষেত্ৰ AI দ্ৱাৰা সংচালিত • Google Gemini",
+    "poweredBy": "পলিগ্ৰাম AI দ্বাৰা পৰিচালিত • Google Gemini",
     "qWinner2023": "2023 মেং {{name}} কিসনে জীতা?",
     "qMarginTrend": "{{name}} মেং অংতর কা রুঝান ক্যা হৈ?",
     "qTellAboutMLA": "{{name}} কে বিধাযক কে বারে মেং বতাএং",
@@ -1715,7 +1715,7 @@ const as = {
     "daysDelayed": "{{n}} দিন বিলংবিত"
   },
   "lmx": {
-    "screenTitle": "ক্ষেত্ৰ লাইভ",
+    "screenTitle": "পলিগ্ৰাম লাইভ",
     "liveNow": "{{count}} লাইভ আছে",
     "liveNow_one": "{{count}} লাইভ আছে",
     "liveNow_other": "{{count}} লাইভ আছে",
@@ -1743,7 +1743,7 @@ const as = {
       "clipRecorded": "ক্লিপ ৰেকৰ্ড হৈছে",
       "broadcastingAs": "হিচাপে প্ৰসাৰণ কৰা হৈছে",
       "independent": "স্বতন্ত্ৰ",
-      "neutralWatermark": "নিৰপেক্ষ ক্ষেত্ৰ ওৱাটাৰমাৰ্ক",
+      "neutralWatermark": "নিৰপেক্ষ পলিগ্ৰাম ৱাটাৰমাৰ্ক",
       "visibility": "দৃশ্যমানতা",
       "alertDepartment": "চৰকাৰী বিভাগক সতৰ্ক কৰক",
       "alertDepartmentDesc": "আপোনাৰ লাইভ ফীড নিৰ্বাচিত বিভাগসমূহলৈ পোনপেটীয়াকৈ পঠোৱা হব।",

@@ -3,7 +3,7 @@
  */
 const kn = {
   "common": {
-    "appName": "ಕ್ಷೇತ್ರ",
+    "appName": "ಪಾಲಿಗ್ರಾಮ್",
     "loading": "ಲೋಡ್ ಆಗುತ್ತಿದೆ…",
     "error": "ಏನೋ ತಪ್ಪಾಗಿದೆ",
     "retry": "ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ",
@@ -93,7 +93,7 @@ const kn = {
   "map": {
     "loadingBoundaries": "ನಕ್ಷೆ ಲೋಡ್ ಆಗುತ್ತಿದೆ…",
     "boundariesFailed": "ನಕ್ಷೆ ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ",
-    "title": "ಕ್ಷೇತ್ರ",
+    "title": "ಪಾಲಿಗ್ರಾಮ್",
     "searchPlaceholder": "ಕ್ಷೇತ್ರಗಳನ್ನು ಹುಡುಕಿ…",
     "tapToExplore": "ಕ್ಷೇತ್ರವನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ ನೋಡಿ",
     "locateMe": "ನನ್ನ ಸ್ಥಳ",
@@ -422,7 +422,7 @@ const kn = {
     "notifications": "ಅಧಿಸೂಚನೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
     "favorites": "ಮೆಚ್ಚಿನವು",
     "language": "ಭಾಷೆ",
-    "about": "ಕ್ಷೇತ್ರ ಬಗ್ಗೆ",
+    "about": "ಪಾಲಿಗ್ರಾಮ್ ಬಗ್ಗೆ",
     "version": "ಆವೃತ್ತಿ",
     "settings": "ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
     "appearance": "ಗೋಚರ",
@@ -518,7 +518,7 @@ const kn = {
     }
   },
   "onboarding": {
-    "welcome": "ಕ್ಷೇತ್ರಕ್ಕೆ ಸ್ವಾಗತ",
+    "welcome": "ಪಾಲಿಗ್ರಾಮ್‌ಗೆ ಸ್ವಾಗತ",
     "welcomeSubtitle": "ಭಾರತದ ರಾಜಕೀಯ ಬುದ್ಧಿಮತ್ತೆ ವೇದಿಕೆ",
     "getStarted": "ಪ್ರಾರಂಭಿಸೋಣ",
     "nameStep": "ನಿಮ್ಮ ಹೆಸರೇನು?",
@@ -530,7 +530,7 @@ const kn = {
     "interestsSubtitle": "ಕನಿಷ್ಠ 2 ವಿಷಯಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಿ",
     "doneStep": "ಎಲ್ಲ ಸಿದ್ಧ!",
     "doneSubtitle": "ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ರಾಜಕೀಯ ಫೀಡ್ ಸಿದ್ಧವಾಗಿದೆ",
-    "finish": "ಕ್ಷೇತ್ರಕ್ಕೆ ಪ್ರವೇಶಿಸಿ",
+    "finish": "ಪಾಲಿಗ್ರಾಮ್ ಪ್ರವೇಶಿಸಿ",
     "skip": "ಬಿಟ್ಟುಬಿಡಿ",
     "interests": {
       "elections": "ಚುನಾವಣೆ",
@@ -548,7 +548,7 @@ const kn = {
     }
   },
   "ai": {
-    "title": "Poligram AI Assistant",
+    "title": "ಪಾಲಿಗ್ರಾಮ್ AI ಸಹಾಯಕ",
     "askAboutConstituency": "{{name}} ಎನ್ನಿಕಲು, ಅಭ್ಯర್ಥುಲು, ಜನಾಭಾ ವಿವరಾಲ ಗುరಿಂಚಿ ಏದೈನಾ ಅಡಗಂಡಿ",
     "askAboutState": "{{state}} ಲೋ ಎನ್ನಿಕಲು, ಪಾర್ಟೀಲು, రಾಜಕೀಯಾಲ ಗುరಿಂಚಿ ಏದೈನಾ ಅಡಗಂಡಿ",
     "suggestedQuestions": "Suggested Questions",
@@ -579,7 +579,7 @@ const kn = {
     "tryAsking": "Try asking",
     "thinkingSearch": "POLIGRAM AI is thinking...",
     "noResponse": "No response received. Try a different query.",
-    "poweredBy": "ಕ್ಷೇತ್ರ AI ಚಾಲಿತ • Google Gemini",
+    "poweredBy": "ಪಾಲಿಗ್ರಾಮ್ AI ಆಧಾರಿತ • Google Gemini",
     "qWinner2023": "2023 ಲೋ {{name}} ಎವరು ಗೆಲಿಚಾరು?",
     "qMarginTrend": "{{name}} ಲೋ ಆధಿಕ್ಯ ధೋరಣಿ ಏమಿಟಿ?",
     "qTellAboutMLA": "{{name}} ಎమ್మೆಲ್ಯೇ ಗುరಿಂಚಿ ಚೆಪ್ಪಂಡಿ",
@@ -1715,7 +1715,7 @@ const kn = {
     "daysDelayed": "{{n}} ದಿನ ವಿಳಂಬ"
   },
   "lmx": {
-    "screenTitle": "ಕ್ಷೇತ್ರ ಲೈವ್",
+    "screenTitle": "ಪಾಲಿಗ್ರಾಮ್ ಲೈವ್",
     "liveNow": "{{count}} ಈಗ ಲೈವ್",
     "liveNow_one": "{{count}} ಈಗ ಲೈವ್",
     "liveNow_other": "{{count}} ಈಗ ಲೈವ್",
@@ -1743,7 +1743,7 @@ const kn = {
       "clipRecorded": "ಕ್ಲಿಪ್ ರೆಕಾರ್ಡ್ ಮಾಡಲಾಗಿದೆ",
       "broadcastingAs": "ಪ್ರಸಾರ ಮಾಡುತ್ತಿರುವ ಹೆಸರು",
       "independent": "ಸ್ವತಂತ್ರ",
-      "neutralWatermark": "ತಟಸ್ಥ ಕ್ಷೇತ್ರ ವಾಟರ್‌ಮಾರ್ಕ್",
+      "neutralWatermark": "ತಟಸ್ಥ ಪಾಲಿಗ್ರಾಮ್ ವಾಟರ್‌ಮಾರ್ಕ್",
       "visibility": "ಗೋಚರತೆ",
       "alertDepartment": "ಸರ್ಕಾರಿ ಇಲಾಖೆಯನ್ನು ಎಚ್ಚರಿಸಿ",
       "alertDepartmentDesc": "ನಿಮ್ಮ ಲೈವ್ ಫೀಡ್ ಅನ್ನು ನೇರವಾಗಿ ಆಯ್ದ ಇಲಾಖೆಗಳಿಗೆ ರವಾನಿಸಲಾಗುತ್ತದೆ.",

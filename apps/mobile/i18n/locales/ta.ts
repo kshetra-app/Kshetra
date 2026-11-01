@@ -3,7 +3,7 @@
  */
 const ta = {
   "common": {
-    "appName": "க்ஷேத்ரா",
+    "appName": "பாலிகிராம்",
     "loading": "ஏற்றப்படுகிறது…",
     "error": "ஏதோ தவறு நடந்துவிட்டது",
     "retry": "மீண்டும் முயலவும்",
@@ -93,7 +93,7 @@ const ta = {
   "map": {
     "loadingBoundaries": "ஸரிஹத்துலு லோட் அவுதுந்நாயி…",
     "boundariesFailed": "ம்யாப் ஸரிஹத்துலநு லோட் சேயடம் விபலமைம்தி",
-    "title": "க்ஷேத்ரா",
+    "title": "பாலிகிராம்",
     "searchPlaceholder": "நியோஜகவர்க்கங்களை தேடு…",
     "tapToExplore": "ஆராய ஒரு நியோஜகவர்க்கத்தை தட்டவும்",
     "locateMe": "எனது இருப்பிடம்",
@@ -422,7 +422,7 @@ const ta = {
     "notifications": "அறிவிப்பு அமைப்புகள்",
     "favorites": "விருப்பமானவை",
     "language": "மொழி",
-    "about": "க்ஷேத்ரா பற்றி",
+    "about": "பாலிகிராம் பற்றி",
     "version": "பதிப்பு",
     "settings": "அமைப்புகள்",
     "appearance": "தோற்றம்",
@@ -518,7 +518,7 @@ const ta = {
     }
   },
   "onboarding": {
-    "welcome": "க்ஷேத்ரா-விற்கு வரவேற்கிறோம்",
+    "welcome": "பாலிகிராம்-இற்கு வரவேற்கிறோம்",
     "welcomeSubtitle": "இந்தியாவின் அரசியல் நுண்ணறிவு தளம்",
     "getStarted": "தொடங்குங்கள்",
     "nameStep": "உங்கள் பெயர் என்ன?",
@@ -530,7 +530,7 @@ const ta = {
     "interestsSubtitle": "Pick at least 2 topics",
     "doneStep": "நீங்கள் தயாராகிவிட்டீர்கள்!",
     "doneSubtitle": "Your personalized political feed is ready",
-    "finish": "Enter Poligram",
+    "finish": "பாலிகிராமில் நுழையுங்கள்",
     "skip": "Skip",
     "interests": {
       "elections": "தேர்தல்கள்",
@@ -548,7 +548,7 @@ const ta = {
     }
   },
   "ai": {
-    "title": "ஏஐ ராஜகீய ஸஹாயகுடு",
+    "title": "பாலிகிராம் AI உதவியாளர்",
     "askAboutConstituency": "{{name}} எந்நிகலு, அப்யர்துலு, ஜநாபா விவரால குரிம்சி ஏதைநா அடகம்டி",
     "askAboutState": "{{state}} லோ எந்நிகலு, பார்டீலு, ராஜகீயால குரிம்சி ஏதைநா அடகம்டி",
     "suggestedQuestions": "ஸூசிம்சிந ப்ரச்நலு",
@@ -579,7 +579,7 @@ const ta = {
     "tryAsking": "இலா அடிகி சூடம்டி:",
     "thinkingSearch": "ஸமாசாரம் விச்லேஷிஸ்தோம்தி…",
     "noResponse": "ஸமாதாநம் அம்துபாடுலோ லேது",
-    "poweredBy": "க்ஷேத்ர AI ஆதாரிதம் • Google Gemini",
+    "poweredBy": "பாலிகிராம் AI மூலம் இயக்கப்படுகிறது • Google Gemini",
     "qWinner2023": "2023 லோ {{name}} எவரு கெலிசாரு?",
     "qMarginTrend": "{{name}} லோ ஆதிக்ய தோரணி ஏமிடி?",
     "qTellAboutMLA": "{{name}} எம்மெல்யே குரிம்சி செப்பம்டி",
@@ -1715,7 +1715,7 @@ const ta = {
     "daysDelayed": "{{n}} ரோஜுலு ஆலஸ்யம்"
   },
   "lmx": {
-    "screenTitle": "க்ஷேத்ர நேரலை",
+    "screenTitle": "பாலிகிராம் நேரலை",
     "liveNow": "தற்போது {{count}} நேரலையில்",
     "liveNow_one": "தற்போது {{count}} நேரலையில்",
     "liveNow_other": "தற்போது {{count}} நேரலையில்",
@@ -1743,7 +1743,7 @@ const ta = {
       "clipRecorded": "காணொளி பதிவு செய்யப்பட்டது",
       "broadcastingAs": "இவ்வாறு ஒளிபரப்பப்படுகிறது",
       "independent": "சுயேச்சை",
-      "neutralWatermark": "நடுநிலையான க்ஷேத்ர வாட்டர்மார்க்",
+      "neutralWatermark": "நடுநிலையான பாலிகிராம் வாட்டர்மார்க்",
       "visibility": "பார்வைக்குட்பட்டவை",
       "alertDepartment": "அரசு துறைக்கு எச்சரிக்கை செய்",
       "alertDepartmentDesc": "உங்கள் நேரலை ஒளிபரப்பு தேர்ந்தெடுக்கப்பட்ட துறைகளுக்கு நேரடியாக அனுப்பப்படும்.",

@@ -321,6 +321,18 @@ export default function MessagesInboxScreen() {
                 </Text>
               </Pressable>
             )}
+
+            {activeTab === 'requests' && (
+              <Pressable
+                style={[styles.startChatCta, { backgroundColor: colors.surfaceElevated, borderWidth: 1, borderColor: colors.border }]}
+                onPress={() => useDMStore.getState().simulateIncomingRequest()}
+              >
+                <Ionicons name="mail-unread-outline" size={18} color={colors.primary} style={{ marginRight: 8 }} />
+                <Text style={[styles.startChatCtaText, { color: colors.primary }]}>
+                  {t('messages.simulateRequest', { defaultValue: 'Receive Sample Request' })}
+                </Text>
+              </Pressable>
+            )}
           </View>
         }
       />

@@ -228,7 +228,7 @@ export const DEFAULT_PRICING: CampaignServicePricing = {
       },
     ],
     guidance: {
-      howItWorks: 'Link your official Facebook Page once. Publish updates directly from Kshetra, or choose a targeted boost to reach voters in your exact constituency.',
+      howItWorks: 'Link your official Facebook Page once. Publish updates directly from Poligram, or choose a targeted boost to reach voters in your exact constituency.',
       prerequisites: 'Admin access to an official Facebook Page. Meta identity verification for political content.',
       dos: [
         'Always include high-quality images or speech video clips.',

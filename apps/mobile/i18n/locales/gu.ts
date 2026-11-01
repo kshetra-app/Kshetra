@@ -3,7 +3,7 @@
  */
 const gu = {
   "common": {
-    "appName": "ક્ષેત્ર",
+    "appName": "પોલિગ્રામ",
     "loading": "લોડ થઈ રહ્યું છે…",
     "error": "કંઈક ખોટું થયું",
     "retry": "ફરી પ્રયાસ કરો",
@@ -93,7 +93,7 @@ const gu = {
   "map": {
     "loadingBoundaries": "નક્શા લોડ હો રહા હૈ…",
     "boundariesFailed": "નક્શા લોડ નહીં હો સકા",
-    "title": "ક્ષેત્ર",
+    "title": "પોલિગ્રામ",
     "searchPlaceholder": "મતવિસ્તાર શોધો…",
     "tapToExplore": "અન્વેષણ કરવા માટે કોઈ પણ મતવિસ્તાર પર ટેપ કરો",
     "locateMe": "મારું સ્થાન શોધો",
@@ -422,7 +422,7 @@ const gu = {
     "notifications": "નોટિફિકેશન સેટિંગ્સ",
     "favorites": "મનપસંદ",
     "language": "ભાષા",
-    "about": "ક્ષેત્ર વિશે",
+    "about": "પોલિગ્રામ વિશે",
     "version": "સંસ્કરણ",
     "settings": "સેટિંગ્સ",
     "appearance": "દેખાવ",
@@ -518,7 +518,7 @@ const gu = {
     }
   },
   "onboarding": {
-    "welcome": "ક્ષેત્રમાં તમારું સ્વાગત છે",
+    "welcome": "પોલિગ્રામમાં તમારું સ્વાગત છે",
     "welcomeSubtitle": "ભારતનું રાજકીય માહિતી પ્લેટફોર્મ",
     "getStarted": "શરૂ કરો",
     "nameStep": "તમારું નામ શું છે?",
@@ -530,7 +530,7 @@ const gu = {
     "interestsSubtitle": "ઓછામાં ઓછા ૨ વિષયો પસંદ કરો",
     "doneStep": "તમે હવે તૈયાર છો!",
     "doneSubtitle": "તમારી વ્યક્તિગત રાજકીય ફીડ તૈયાર છે",
-    "finish": "ક્ષેત્રમાં પ્રવેશ કરો",
+    "finish": "પોલિગ્રામમાં પ્રવેશ કરો",
     "skip": "અવગણો",
     "interests": {
       "elections": "ચૂંટણીઓ",
@@ -548,7 +548,7 @@ const gu = {
     }
   },
   "ai": {
-    "title": "એઆઈ રાજનીતિક સહાયક",
+    "title": "પોલિગ્રામ AI સહાયક",
     "askAboutConstituency": "{{name}} ચુનાવ, ઉમ્મીદવારોં ઔર જનસાંખ્યિકી કે બારે મેં કુછ ભી પૂછેં",
     "askAboutState": "{{state}} મેં ચુનાવ, પાર્ટિયોં ઔર રાજનીતિ કે બારે મેં કુછ ભી પૂછેં",
     "suggestedQuestions": "સુઝાએ ગએ પ્રશ્ન",
@@ -579,7 +579,7 @@ const gu = {
     "tryAsking": "યહ પૂછકર દેખેં:",
     "thinkingSearch": "ડેટા કા વિશ્લેષણ કિયા જા રહા હૈ…",
     "noResponse": "કોઈ પ્રતિક્રિયા ઉપલબ્ધ નહીં",
-    "poweredBy": "ક્ષેત્ર AI દ્વારા સંચાલિત • Google Gemini",
+    "poweredBy": "પોલિગ્રામ AI દ્વારા સંચાલિત • Google Gemini",
     "qWinner2023": "2023 મેં {{name}} કિસને જીતા?",
     "qMarginTrend": "{{name}} મેં અંતર કા રુઝાન ક્યા હૈ?",
     "qTellAboutMLA": "{{name}} કે વિધાયક કે બારે મેં બતાએં",
@@ -1715,7 +1715,7 @@ const gu = {
     "daysDelayed": "{{n}} દિન વિલંબિત"
   },
   "lmx": {
-    "screenTitle": "ક્ષેત્ર લાઇવ",
+    "screenTitle": "પોલિગ્રામ લાઈવ",
     "liveNow": "હવે {{count}} લાઇવ",
     "liveNow_one": "હવે {{count}} લાઇવ",
     "liveNow_other": "હવે {{count}} લાઇવ",
@@ -1743,7 +1743,7 @@ const gu = {
       "clipRecorded": "વિડિઓ રેકોર્ડ થયો",
       "broadcastingAs": "તરીકે પ્રસારણ કરી રહ્યાં છે",
       "independent": "સ્વતંત્ર",
-      "neutralWatermark": "તટસ્થ ક્ષેત્ર વોટરમાર્ક",
+      "neutralWatermark": "તટસ્થ પોલિગ્રામ વૉટરમાર્ક",
       "visibility": "દૃશ્યતા",
       "alertDepartment": "સરકારી વિભાગને ચેતવણી આપો",
       "alertDepartmentDesc": "તમારી લાઇવ ફીડ સીધી પસંદ કરેલા વિભાગોને મોકલવામાં આવશે.",

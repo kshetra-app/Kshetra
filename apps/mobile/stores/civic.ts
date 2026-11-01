@@ -1047,7 +1047,7 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
   shareIssue: (issueId) => {
     const issue = get().issues.find((i) => i.id === issueId);
     if (!issue) return '';
-    return `🚨 ${issue.title}\n📍 ${issue.constituencyName ?? issue.stateCode}\n👥 ${issue.upvoteCount} citizens supporting\n\nReport civic issues on Kshetra — https://kshetra.app/issue/${issue.id}`;
+    return `🚨 ${issue.title}\n📍 ${issue.constituencyName ?? issue.stateCode}\n👥 ${issue.upvoteCount} citizens supporting\n\nReport civic issues on Poligram — https://poligram.app/issue/${issue.id}`;
   },
 
   getTopIssueCategories: () => {

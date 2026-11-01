@@ -3,7 +3,7 @@
  */
 const bn = {
   "common": {
-    "appName": "ক্ষেত্র",
+    "appName": "পলিগ্রাম",
     "loading": "লোড হচ্ছে…",
     "error": "কিছু ভুল হয়েছে",
     "retry": "আবার চেষ্টা করুন",
@@ -93,7 +93,7 @@ const bn = {
   "map": {
     "loadingBoundaries": "নক্শা লোড হো রহা হৈ…",
     "boundariesFailed": "নক্শা লোড নহীং হো সকা",
-    "title": "ক্ষেত্র",
+    "title": "পলিগ্রাম",
     "searchPlaceholder": "নির্বাচনী এলাকা অনুসন্ধান করুন…",
     "tapToExplore": "অন্বেষণ করতে একটি নির্বাচনী এলাকায় ট্যাপ করুন",
     "locateMe": "আমার অবস্থান চিহ্নিত করুন",
@@ -422,7 +422,7 @@ const bn = {
     "notifications": "বিজ্ঞপ্তির সেটিংস",
     "favorites": "পছন্দের তালিকা",
     "language": "ভাষা",
-    "about": "ক্ষেত্র সম্পর্কে",
+    "about": "পলিগ্রাম সম্পর্কে",
     "version": "সংস্করণ",
     "settings": "সেটিংস",
     "appearance": "অ্যাপিয়ারেন্স",
@@ -518,7 +518,7 @@ const bn = {
     }
   },
   "onboarding": {
-    "welcome": "ক্ষেত্র-এ আপনাকে স্বাগতম",
+    "welcome": "পলিগ্রাম-এ আপনাকে স্বাগতম",
     "welcomeSubtitle": "ভারতের রাজনৈতিক বুদ্ধিমত্তা প্ল্যাটফর্ম",
     "getStarted": "শুরু করুন",
     "nameStep": "আপনার নাম কি?",
@@ -530,7 +530,7 @@ const bn = {
     "interestsSubtitle": "Pick at least 2 topics",
     "doneStep": "সব প্রস্তুত!",
     "doneSubtitle": "আপনার ব্যক্তিগতকৃত রাজনৈতিক ফিড প্রস্তুত",
-    "finish": "ক্ষেত্র-এ প্রবেশ করুন",
+    "finish": "পলিগ্রামে প্রবেশ করুন",
     "skip": "এড়িয়ে যান",
     "interests": {
       "elections": "নির্বাচন",
@@ -548,7 +548,7 @@ const bn = {
     }
   },
   "ai": {
-    "title": "এআঈ রাজনীতিক সহাযক",
+    "title": "পলিগ্রাম AI সহকারী",
     "askAboutConstituency": "{{name}} চুনাব, উম্মীদবারোং ঔর জনসাংখ্যিকী কে বারে মেং কুছ ভী পূছেং",
     "askAboutState": "{{state}} মেং চুনাব, পার্টিযোং ঔর রাজনীতি কে বারে মেং কুছ ভী পূছেং",
     "suggestedQuestions": "সুঝাএ গএ প্রশ্ন",
@@ -579,7 +579,7 @@ const bn = {
     "tryAsking": "যহ পূছকর দেখেং:",
     "thinkingSearch": "ডেটা কা বিশ্লেষণ কিযা জা রহা হৈ…",
     "noResponse": "কোঈ প্রতিক্রিযা উপলব্ধ নহীং",
-    "poweredBy": "ক্ষেত্র AI দ্বারা সংচালিত • Google Gemini",
+    "poweredBy": "পলিগ্রাম AI দ্বারা চালিত • Google Gemini",
     "qWinner2023": "2023 মেং {{name}} কিসনে জীতা?",
     "qMarginTrend": "{{name}} মেং অংতর কা রুঝান ক্যা হৈ?",
     "qTellAboutMLA": "{{name}} কে বিধাযক কে বারে মেং বতাএং",
@@ -1715,7 +1715,7 @@ const bn = {
     "daysDelayed": "{{n}} দিন বিলংবিত"
   },
   "lmx": {
-    "screenTitle": "ক্ষেত্র লাইভ",
+    "screenTitle": "পলিগ্রাম লাইভ",
     "liveNow": "এখন {{count}} লাইভ",
     "liveNow_one": "এখন {{count}} লাইভ",
     "liveNow_other": "এখন {{count}} লাইভ",
@@ -1743,7 +1743,7 @@ const bn = {
       "clipRecorded": "ভিডিও রেকর্ড করা হয়েছে",
       "broadcastingAs": "সম্প্রচার করা হচ্ছে",
       "independent": "স্বতন্ত্র",
-      "neutralWatermark": "নিরপেক্ষ ক্ষেত্র জলছাপ",
+      "neutralWatermark": "নিরপেক্ষ পলিগ্রাম ওয়াটারমার্ক",
       "visibility": "দৃশ্যমানতা",
       "alertDepartment": "সরকারি বিভাগকে সতর্ক করুন",
       "alertDepartmentDesc": "আপনার লাইভ ফিড সরাসরি নির্বাচিত বিভাগে পাঠানো হবে。",

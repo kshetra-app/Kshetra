@@ -94,7 +94,7 @@ export default function GrassrootsBooths() {
           {
             text: t('campaignManager.sendWhatsAppInvite', { defaultValue: 'Send WhatsApp Invite' }),
             onPress: () => {
-              const text = `Namaste ${inchargeName}, you have been appointed as the In-charge for Polling Booth #${selectedBooth.boothNumber}. Please download Poligram to view your booth voter list: https://kshetra.app/download`;
+              const text = `Namaste ${inchargeName}, you have been appointed as the In-charge for Polling Booth #${selectedBooth.boothNumber}. Please download Poligram to view your booth voter list: https://poligram.app/download`;
               Linking.openURL(`whatsapp://send?phone=91${inchargePhone.replace(/\D/g, '').slice(-10)}&text=${encodeURIComponent(text)}`).catch(() => {});
             },
           },

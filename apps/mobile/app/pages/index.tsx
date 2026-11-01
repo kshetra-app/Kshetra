@@ -99,7 +99,7 @@ export default function PagesScreen() {
   const handleInviteEndorsements = useCallback(async () => {
     try {
       await Share.share({
-        message: `Support my civic journey as an aspirant on Poligram! Check out my profile and endorse my vision for ${aspirantProfile?.targetConstituencyName || 'our community'}: https://kshetra.app/aspirant/${aspirantProfile?.id || ''}`,
+        message: `Support my civic journey as an aspirant on Poligram! Check out my profile and endorse my vision for ${aspirantProfile?.targetConstituencyName || 'our community'}: https://poligram.app/aspirant/${aspirantProfile?.id || ''}`,
       });
     } catch {
       // User cancelled or share dismissed
@@ -768,7 +768,7 @@ export default function PagesScreen() {
                   style={[styles.secondaryActionBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
                   onPress={() => {
                     Share.share({
-                      message: `Check out ${selectedAspirant.displayName}'s civic candidate page on Poligram: https://kshetra.app/aspirant/${selectedAspirant.id}`,
+                      message: `Check out ${selectedAspirant.displayName}'s civic candidate page on Poligram: https://poligram.app/aspirant/${selectedAspirant.id}`,
                     }).catch(() => {});
                   }}
                 >

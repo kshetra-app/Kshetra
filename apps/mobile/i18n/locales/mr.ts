@@ -3,7 +3,7 @@
  */
 const mr = {
   "common": {
-    "appName": "क्षेत्र",
+    "appName": "पॉलीग्राम",
     "loading": "लोड होत आहे…",
     "error": "काहीतरी चूक झाली",
     "retry": "पुन्हा प्रयत्न करा",
@@ -93,7 +93,7 @@ const mr = {
   "map": {
     "loadingBoundaries": "नकाशा लोड होत आहे…",
     "boundariesFailed": "नकाशा लोड होऊ शकला नाही",
-    "title": "क्षेत्र",
+    "title": "पॉलीग्राम",
     "searchPlaceholder": "मतदारसंघ शोधा…",
     "tapToExplore": "एखाद्या मतदारसंघावर टॅप करा",
     "locateMe": "माझे स्थान",
@@ -422,7 +422,7 @@ const mr = {
     "notifications": "सूचना सेटिंग्ज",
     "favorites": "आवडते",
     "language": "भाषा",
-    "about": "क्षेत्र बद्दल",
+    "about": "पॉलीग्राम बद्दल",
     "version": "आवृत्ती",
     "settings": "सेटिंग्ज",
     "appearance": "स्वरूप",
@@ -518,7 +518,7 @@ const mr = {
     }
   },
   "onboarding": {
-    "welcome": "क्षेत्र मध्ये आपले स्वागत आहे",
+    "welcome": "पॉलीग्राम मध्ये आपले स्वागत आहे",
     "welcomeSubtitle": "भारताचे राजकीय बुद्धिमत्ता व्यासपीठ",
     "getStarted": "सुरू करा",
     "nameStep": "तुमचे नाव काय आहे?",
@@ -530,7 +530,7 @@ const mr = {
     "interestsSubtitle": "किमान 2 विषय निवडा",
     "doneStep": "सर्व तयार आहे!",
     "doneSubtitle": "तुमची वैयक्तिक राजकीय फीड तयार आहे",
-    "finish": "क्षेत्र मध्ये प्रवेश करा",
+    "finish": "पॉलीग्राम मध्ये प्रवेश करा",
     "skip": "वगळा",
     "interests": {
       "elections": "निवडणुका",
@@ -548,7 +548,7 @@ const mr = {
     }
   },
   "ai": {
-    "title": "Poligram AI Assistant",
+    "title": "पॉलीग्राम AI सहाय्यक",
     "askAboutConstituency": "{{name}} चुनाव, उम्मीदवारों और जनसांख्यिकी के बारे में कुछ भी पूछें",
     "askAboutState": "{{state}} में चुनाव, पार्टियों और राजनीति के बारे में कुछ भी पूछें",
     "suggestedQuestions": "Suggested Questions",
@@ -579,7 +579,7 @@ const mr = {
     "tryAsking": "Try asking",
     "thinkingSearch": "POLIGRAM AI is thinking...",
     "noResponse": "No response received. Try a different query.",
-    "poweredBy": "क्षेत्र AI द्वारे समर्थित • Google Gemini",
+    "poweredBy": "पॉलीग्राम AI द्वारा संचालित • Google Gemini",
     "qWinner2023": "2023 में {{name}} किसने जीता?",
     "qMarginTrend": "{{name}} में अंतर का रुझान क्या है?",
     "qTellAboutMLA": "{{name}} के विधायक के बारे में बताएं",
@@ -1715,7 +1715,7 @@ const mr = {
     "daysDelayed": "{{n}} दिवस विलंब"
   },
   "lmx": {
-    "screenTitle": "क्षेत्र लाइव्ह",
+    "screenTitle": "पॉलीग्राम लाइव्ह",
     "liveNow": "{{count}} आता लाइव्ह",
     "liveNow_one": "{{count}} आता लाइव्ह",
     "liveNow_other": "{{count}} आता लाइव्ह",
@@ -1743,7 +1743,7 @@ const mr = {
       "clipRecorded": "क्लिप रेकॉर्ड केली",
       "broadcastingAs": "या नावाने प्रसारण करत आहे",
       "independent": "स्वतंत्र",
-      "neutralWatermark": "तटस्थ क्षेत्र वॉटरमार्क",
+      "neutralWatermark": "तटस्थ पॉलीग्राम वॉटरमार्क",
       "visibility": "दृश्यमानता",
       "alertDepartment": "सरकारी विभागाला अलर्ट करा",
       "alertDepartmentDesc": "तुमचा लाइव्ह फीड थेट निवडलेल्या विभागांना पाठवला जाईल.",

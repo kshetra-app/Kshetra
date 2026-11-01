@@ -3,7 +3,7 @@
  */
 const pa = {
   "common": {
-    "appName": "ਖੇਤਰ",
+    "appName": "ਪੋਲੀਗ੍ਰਾਮ",
     "loading": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ…",
     "error": "ਕੁਝ ਗਲਤ ਹੋ ਗਿਆ",
     "retry": "ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ",
@@ -93,7 +93,7 @@ const pa = {
   "map": {
     "loadingBoundaries": "ਨਕ੍ਸ਼ਾ ਲੋਡ ਹੋ ਰਹਾ ਹੈ…",
     "boundariesFailed": "ਨਕ੍ਸ਼ਾ ਲੋਡ ਨਹੀਂ ਹੋ ਸਕਾ",
-    "title": "ਖੇਤਰ",
+    "title": "ਪੋਲੀਗ੍ਰਾਮ",
     "searchPlaceholder": "ਹਲਕੇ ਖੋਜੋ…",
     "tapToExplore": "ਖੋਜ ਕਰਨ ਲਈ ਕਿਸੇ ਹਲਕੇ 'ਤੇ ਟੈਪ ਕਰੋ",
     "locateMe": "ਮੇਰੀ ਸਥਿਤੀ",
@@ -422,7 +422,7 @@ const pa = {
     "notifications": "ਨੋਟੀਫਿਕੇਸ਼ਨ ਸੈਟਿੰਗਜ਼",
     "favorites": "ਪਸੰਦੀਦਾ",
     "language": "ਭਾਸ਼ਾ",
-    "about": "ਖੇਤਰ ਬਾਰੇ",
+    "about": "ਪੋਲੀਗ੍ਰਾਮ ਬਾਰੇ",
     "version": "ਵਰਜਨ",
     "settings": "ਸੈਟਿੰਗਜ਼",
     "appearance": "ਦਿੱਖ",
@@ -518,7 +518,7 @@ const pa = {
     }
   },
   "onboarding": {
-    "welcome": "ਖੇਤਰ ਵਿੱਚ ਤੁਹਾਡਾ ਸੁਆਗਤ ਹੈ",
+    "welcome": "ਪੋਲੀਗ੍ਰਾਮ ਵਿੱਚ ਤੁਹਾਡਾ ਸੁਆਗਤ ਹੈ",
     "welcomeSubtitle": "ਭਾਰਤ ਦਾ ਰਾਜਨੀਤਿਕ ਜਾਣਕਾਰੀ ਪਲੇਟਫਾਰਮ",
     "getStarted": "ਸ਼ੁਰੂ ਕਰੋ",
     "nameStep": "ਤੁਹਾਡਾ ਨਾਮ ਕੀ ਹੈ?",
@@ -530,7 +530,7 @@ const pa = {
     "interestsSubtitle": "ਘੱਟੋ-ਘੱਟ 2 ਵਿਸ਼ੇ ਚੁਣੋ",
     "doneStep": "ਤੁਸੀਂ ਪੂਰੀ ਤਰ੍ਹਾਂ ਤਿਆਰ ਹੋ!",
     "doneSubtitle": "ਤੁਹਾਡੀ ਨਿੱਜੀ ਰਾਜਨੀਤਿਕ ਫੀਡ ਤਿਆਰ ਹੈ",
-    "finish": "ਖੇਤਰ ਵਿੱਚ ਪ੍ਰਵੇਸ਼ ਕਰੋ",
+    "finish": "ਪੋਲੀਗ੍ਰਾਮ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ",
     "skip": "ਛੱਡੋ",
     "interests": {
       "elections": "ਚੋਣਾਂ",
@@ -548,7 +548,7 @@ const pa = {
     }
   },
   "ai": {
-    "title": "ਏਆਈ ਰਾਜਨੀਤਿਕ ਸਹਾਯਕ",
+    "title": "ਪੋਲੀਗ੍ਰਾਮ AI ਸਹਾਇਕ",
     "askAboutConstituency": "{{name}} ਚੁਨਾਵ, ਉਮ੍ਮੀਦਵਾਰੋਂ औਰ ਜਨਸਾਂਖ੍ਯਿਕੀ ਕੇ ਬਾਰੇ ਮੇਂ ਕੁਛ ਭੀ ਪੂਛੇਂ",
     "askAboutState": "{{state}} ਮੇਂ ਚੁਨਾਵ, ਪਾਰ੍ਟਿਯੋਂ औਰ ਰਾਜਨੀਤਿ ਕੇ ਬਾਰੇ ਮੇਂ ਕੁਛ ਭੀ ਪੂਛੇਂ",
     "suggestedQuestions": "ਸੁਝਾਏ ਗਏ ਪ੍ਰਸ਼੍ਨ",
@@ -579,7 +579,7 @@ const pa = {
     "tryAsking": "ਯਹ ਪੂਛਕਰ ਦੇਖੇਂ:",
     "thinkingSearch": "ਡੇਟਾ ਕਾ ਵਿਸ਼੍ਲੇਸ਼ਣ ਕਿਯਾ ਜਾ ਰਹਾ ਹੈ…",
     "noResponse": "ਕੋਈ ਪ੍ਰਤਿਕ੍ਰਿਯਾ ਉਪਲਬ੍ਧ ਨਹੀਂ",
-    "poweredBy": "ਕ੍ਸ਼ੇਤ੍ਰ AI ਦ੍ਵਾਰਾ ਸਂਚਾਲਿਤ • Google Gemini",
+    "poweredBy": "ਪੋਲੀਗ੍ਰਾਮ AI ਦੁਆਰਾ ਸੰਚਾਲਿਤ • Google Gemini",
     "qWinner2023": "2023 ਮੇਂ {{name}} ਕਿਸਨੇ ਜੀਤਾ?",
     "qMarginTrend": "{{name}} ਮੇਂ ਅਂਤਰ ਕਾ ਰੁਝਾਨ ਕ੍ਯਾ ਹੈ?",
     "qTellAboutMLA": "{{name}} ਕੇ ਵਿਧਾਯਕ ਕੇ ਬਾਰੇ ਮੇਂ ਬਤਾਏਂ",
@@ -1715,7 +1715,7 @@ const pa = {
     "daysDelayed": "{{n}} ਦਿਨ ਵਿਲਂਬਿਤ"
   },
   "lmx": {
-    "screenTitle": "ਕਸ਼ੇਤਰ ਲਾਈਵ",
+    "screenTitle": "ਪੋਲੀਗ੍ਰਾਮ ਲਾਈਵ",
     "liveNow": "{{count}} ਲਾਈਵ ਹੁਣ",
     "liveNow_one": "{{count}} ਲਾਈਵ ਹੁਣ",
     "liveNow_other": "{{count}} ਲਾਈਵ ਹੁਣ",
@@ -1743,7 +1743,7 @@ const pa = {
       "clipRecorded": "ਕਲਿੱਪ ਰਿਕਾਰਡ ਕੀਤੀ ਗਈ",
       "broadcastingAs": "ਵਜੋਂ ਪ੍ਰਸਾਰਿਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ",
       "independent": "ਸੁਤੰਤਰ",
-      "neutralWatermark": "ਨਿਰਪੱਖ ਕਸ਼ੇਤਰ ਵਾਟਰਮਾਰਕ",
+      "neutralWatermark": "ਨਿਰਪੱਖ ਪੋਲੀਗ੍ਰਾਮ ਵਾਟਰਮਾਰਕ",
       "visibility": "ਦਿਖਣਯੋਗਤਾ",
       "alertDepartment": "ਸਰਕਾਰੀ ਵਿਭਾਗ ਨੂੰ ਅਲਰਟ ਕਰੋ",
       "alertDepartmentDesc": "ਤੁਹਾਡੀ ਲਾਈਵ ਫੀਡ ਸਿੱਧੇ ਚੁਣੇ ਹੋਏ ਵਿਭਾਗਾਂ ਨੂੰ ਭੇਜੀ ਜਾਵੇਗੀ।",

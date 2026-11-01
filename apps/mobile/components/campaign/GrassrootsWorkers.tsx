@@ -85,7 +85,7 @@ export default function GrassrootsWorkers() {
           {
             text: t('campaignManager.sendWhatsAppInvite', { defaultValue: 'Send WhatsApp Invite' }),
             onPress: () => {
-              const text = `Namaste ${newName}, you have been enrolled into our campaign team on Poligram. Download the app to view your voter list: https://kshetra.app/download`;
+              const text = `Namaste ${newName}, you have been enrolled into our campaign team on Poligram. Download the app to view your voter list: https://poligram.app/download`;
               Linking.openURL(`whatsapp://send?phone=91${newPhone.replace(/\D/g, '').slice(-10)}&text=${encodeURIComponent(text)}`).catch(() => {});
             },
           },
