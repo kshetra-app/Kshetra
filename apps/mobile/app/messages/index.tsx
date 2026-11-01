@@ -25,12 +25,17 @@ import {
 } from '../../lib/supabaseDataService';
 import { useTimeAgo } from '../../lib/useTimeAgo';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
+import {
+  getLocalizedContactName,
+  getLocalizedContactRole,
+  getLocalizedDMPreview,
+} from '../../lib/dmLocalization';
 
 type InboxTab = 'chats' | 'requests';
 type CategoryFilter = 'all' | 'leaders' | 'aspirants' | 'citizens';
 
 export default function MessagesInboxScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { timeAgo } = useTimeAgo();
   const { colors } = useTheme();
   const router = useRouter();
@@ -150,6 +155,12 @@ export default function MessagesInboxScreen() {
       isVerified: false,
     };
 
+    const localizedDisplayName = getLocalizedContactName(other.displayName, i18n.language);
+    const localizedPreview = getLocalizedDMPreview(item.last_message_preview || '', i18n.language) ||
+      (item.status === 'pending'
+        ? t('messages.messageRequest', { defaultValue: 'Message request' })
+        : t('messages.noMessagesYet', { defaultValue: 'No messages yet' }));
+
     return (
       <Pressable
         style={[
@@ -164,7 +175,7 @@ export default function MessagesInboxScreen() {
             <Image source={{ uri: other.avatarUrl }} style={styles.avatarImg} />
           ) : (
             <Text style={[styles.avatarInitial, { color: colors.primary }]}>
-              {other.displayName.charAt(0).toUpperCase()}
+              {localizedDisplayName.charAt(0).toUpperCase()}
             </Text>
           )}
         </View>
@@ -174,7 +185,7 @@ export default function MessagesInboxScreen() {
           <View style={styles.topRow}>
             <View style={styles.nameRow}>
               <Text style={[styles.name, { color: colors.text }]} numberOfLines={1}>
-                {other.displayName}
+                {localizedDisplayName}
               </Text>
               {other.isVerified && (
                 <Ionicons name="checkmark-circle" size={14} color="#10B981" style={{ marginLeft: 4 }} />
@@ -192,7 +203,7 @@ export default function MessagesInboxScreen() {
             ]}
             numberOfLines={1}
           >
-            {item.last_message_preview || (item.status === 'pending' ? 'Message request' : 'No messages yet')}
+            {localizedPreview}
           </Text>
         </View>
 
@@ -404,12 +415,12 @@ export default function MessagesInboxScreen() {
               const isSelected = selectedCategory === cat;
               const label =
                 cat === 'all'
-                  ? 'All Contacts'
+                  ? t('messages.allContacts', { defaultValue: 'All Contacts' })
                   : cat === 'leaders'
-                  ? 'Leaders & Ministers'
+                  ? t('messages.leadersMinisters', { defaultValue: 'Leaders & Ministers' })
                   : cat === 'aspirants'
-                  ? 'Aspirants'
-                  : 'Citizens';
+                  ? t('messages.aspirants', { defaultValue: 'Aspirants' })
+                  : t('messages.citizens', { defaultValue: 'Citizens' });
 
               return (
                 <Pressable
@@ -451,6 +462,17 @@ export default function MessagesInboxScreen() {
               contentContainerStyle={[styles.contactsList, { paddingBottom: insets.bottom + 24 }]}
               renderItem={({ item }) => {
                 const isSelected = startingChatId === item.id;
+                const localizedDisplayName = getLocalizedContactName(item.displayName, i18n.language);
+                const localizedRole = getLocalizedContactRole(item.role || 'Citizen', i18n.language);
+                const isOfficialOrLeader =
+                  item.role?.toLowerCase().includes('minister') ||
+                  item.role?.toLowerCase().includes('authority') ||
+                  item.isVerified;
+                const actionLabel = isOfficialOrLeader
+                  ? t('messages.chat', { defaultValue: 'Chat' })
+                  : t('messages.request', { defaultValue: 'Request' });
+                const actionIcon = isOfficialOrLeader ? 'chatbubble-outline' : 'paper-plane-outline';
+
                 return (
                   <Pressable
                     style={[
@@ -466,7 +488,7 @@ export default function MessagesInboxScreen() {
                         <Image source={{ uri: item.avatarUrl }} style={styles.contactAvatarImg} />
                       ) : (
                         <Text style={[styles.avatarInitial, { color: colors.primary }]}>
-                          {item.displayName.charAt(0).toUpperCase()}
+                          {localizedDisplayName.charAt(0).toUpperCase()}
                         </Text>
                       )}
                     </View>
@@ -475,14 +497,14 @@ export default function MessagesInboxScreen() {
                     <View style={styles.contactDetails}>
                       <View style={styles.nameRow}>
                         <Text style={[styles.contactName, { color: colors.text }]} numberOfLines={1}>
-                          {item.displayName}
+                          {localizedDisplayName}
                         </Text>
                         {item.isVerified && (
                           <Ionicons name="checkmark-circle" size={14} color="#10B981" style={{ marginLeft: 4 }} />
                         )}
                       </View>
                       <Text style={[styles.contactRole, { color: colors.textMuted }]} numberOfLines={1}>
-                        {item.role || 'Citizen'} {item.stateCode ? `• ${item.stateCode}` : ''}
+                        {localizedRole} {item.stateCode ? `• ${item.stateCode}` : ''}
                       </Text>
                     </View>
 
@@ -497,9 +519,9 @@ export default function MessagesInboxScreen() {
                         <ActivityIndicator size="small" color={colors.primary} />
                       ) : (
                         <>
-                          <Ionicons name="chatbubble-outline" size={14} color={colors.primary} style={{ marginRight: 4 }} />
+                          <Ionicons name={actionIcon as any} size={14} color={colors.primary} style={{ marginRight: 4 }} />
                           <Text style={[styles.chatActionText, { color: colors.primary }]}>
-                            {t('messages.chat', { defaultValue: 'Chat' })}
+                            {actionLabel}
                           </Text>
                         </>
                       )}

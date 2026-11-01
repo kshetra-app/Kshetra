@@ -661,6 +661,25 @@ export function getLocalizedConstituencyName(
   lang: string,
   localNameCandidate?: string,
 ): string {
+  if (lang === 'en') return fallbackName;
+  if (localNameCandidate && (lang === 'te' || (stateCode === 'TS' && lang === 'te') || (stateCode === 'AP' && lang === 'te'))) {
+    return localNameCandidate;
+  }
+  // 1. Try historical podium localized names (supports all 13 languages)
+  try {
+    const { getHistoricalPodiumForConstituency } = require('./historicalPodiumStore');
+    const podiums = getHistoricalPodiumForConstituency(stateCode, acNo);
+    if (podiums && podiums.length > 0 && podiums[0].localizedConstituencyNames?.[lang]) {
+      return podiums[0].localizedConstituencyNames[lang];
+    }
+  } catch {}
+  // 2. Try seedTranslations dictionary
+  try {
+    const { CONSTITUENCY_NAME_LOCALES } = require('./seedTranslations');
+    if (CONSTITUENCY_NAME_LOCALES && CONSTITUENCY_NAME_LOCALES[fallbackName]?.[lang]) {
+      return CONSTITUENCY_NAME_LOCALES[fallbackName][lang];
+    }
+  } catch {}
   if (localNameCandidate && (lang === 'te' || lang === 'kn' || lang === 'ta' || lang === 'mr')) {
     return localNameCandidate;
   }

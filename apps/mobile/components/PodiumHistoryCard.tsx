@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { useRouter } from 'expo-router';
+import { getLocalizedCandidateName, getLocalizedPartyName } from '../lib/historicalPodiumStore';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { getPartyColor } from '../lib/constants';
@@ -14,6 +16,7 @@ interface PodiumHistoryCardProps {
 
 export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHistoryCardProps) {
   const { t, i18n } = useTranslation();
+  const router = useRouter();
   const { colors } = useTheme();
   const currentLang = i18n.language || 'en';
 
@@ -34,14 +37,14 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
   }, [item.localized_parties_json]);
 
   // Candidate Names
-  const winnerName = localizedNames?.winner?.[currentLang] || item.winner_name || item.winner || 'Winner';
-  const ru1Name = localizedNames?.ru1?.[currentLang] || item.first_runner_up_name || (item.first_runner_up_party ? `${item.first_runner_up_party} Candidate` : 'Runner Up 1');
-  const ru2Name = localizedNames?.ru2?.[currentLang] || item.second_runner_up_name || (item.second_runner_up_party ? `${item.second_runner_up_party} Candidate` : 'Runner Up 2');
+  const winnerName = localizedNames?.winner?.[currentLang] || getLocalizedCandidateName(item.winner_name || item.winner, currentLang) || 'Winner';
+  const ru1Name = localizedNames?.ru1?.[currentLang] || getLocalizedCandidateName(item.first_runner_up_name || (item.first_runner_up_party ? `${item.first_runner_up_party} Candidate` : 'Runner Up 1'), currentLang);
+  const ru2Name = localizedNames?.ru2?.[currentLang] || getLocalizedCandidateName(item.second_runner_up_name || (item.second_runner_up_party ? `${item.second_runner_up_party} Candidate` : 'Runner Up 2'), currentLang);
 
   // Parties
-  const winnerParty = localizedParties?.winner?.[currentLang] || item.winner_party || item.party || 'IND';
-  const ru1Party = localizedParties?.ru1?.[currentLang] || item.first_runner_up_party || 'IND';
-  const ru2Party = localizedParties?.ru2?.[currentLang] || item.second_runner_up_party || 'IND';
+  const winnerParty = localizedParties?.winner?.[currentLang] || getLocalizedPartyName(item.winner_party || item.party, currentLang) || 'IND';
+  const ru1Party = localizedParties?.ru1?.[currentLang] || getLocalizedPartyName(item.first_runner_up_party || 'IND', currentLang) || 'IND';
+  const ru2Party = localizedParties?.ru2?.[currentLang] || getLocalizedPartyName(item.second_runner_up_party || 'IND', currentLang) || 'IND';
 
   const winnerVotes = item.winner_votes || 0;
   const ru1Votes = item.first_runner_up_votes || 0;
@@ -64,6 +67,13 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
     : (ru1Votes > 0 && ru2Votes > 0 ? ru1Votes - ru2Votes : null);
 
   const hasPodium = Boolean(item.first_runner_up_name || item.first_runner_up_party);
+  const handleCandidatePress = () => {
+    if (item.ac_no) {
+      const stateCode = item.state_code || 'TS';
+      router.push(`/legislator/MLA_${stateCode}_${item.year}_${item.ac_no}` as any);
+    }
+  };
+
 
   return (
     <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }, isLatest && styles.latestCard]}>
@@ -94,7 +104,7 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
 
       {/* Podium Rows */}
       {/* ── 1. WINNER (RANK 1) ── */}
-      <View style={[styles.podiumRow, styles.winnerRow]}>
+      <Pressable style={({ pressed }) => [styles.podiumRow, styles.winnerRow, { opacity: pressed ? 0.85 : 1 }]} onPress={handleCandidatePress}>
         <View style={[styles.medalBadge, styles.goldBadge]}>
           <Text style={styles.goldBadgeText}>🥇 1st</Text>
         </View>
@@ -127,11 +137,12 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
             <Text style={[styles.voteShare, { color: '#F59E0B' }]}>{winnerVoteShare}%</Text>
           )}
         </View>
-      </View>
+        <Ionicons name="chevron-forward" size={14} color="#F59E0B" style={{ marginLeft: 4 }} />
+      </Pressable>
 
       {/* ── 2. 1ST RUNNER UP (RANK 2) ── */}
       {hasPodium && (
-        <View style={styles.podiumRow}>
+        <Pressable style={({ pressed }) => [styles.podiumRow, { opacity: pressed ? 0.85 : 1 }]} onPress={handleCandidatePress}>
           <View style={[styles.medalBadge, styles.silverBadge]}>
             <Text style={styles.silverBadgeText}>🥈 2nd</Text>
           </View>
@@ -160,12 +171,13 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
               </View>
             )}
           </View>
-        </View>
+          <Ionicons name="chevron-forward" size={14} color={colors.textMuted} style={{ marginLeft: 4 }} />
+        </Pressable>
       )}
 
       {/* ── 3. 2ND RUNNER UP (RANK 3) ── */}
       {Boolean(item.second_runner_up_name || item.second_runner_up_party) && (
-        <View style={styles.podiumRow}>
+        <Pressable style={({ pressed }) => [styles.podiumRow, { opacity: pressed ? 0.85 : 1 }]} onPress={handleCandidatePress}>
           <View style={[styles.medalBadge, styles.bronzeBadge]}>
             <Text style={styles.bronzeBadgeText}>🥉 3rd</Text>
           </View>
@@ -194,7 +206,8 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
               </View>
             )}
           </View>
-        </View>
+          <Ionicons name="chevron-forward" size={14} color={colors.textMuted} style={{ marginLeft: 4 }} />
+        </Pressable>
       )}
 
       {/* Comparative Vote Share Bar */}

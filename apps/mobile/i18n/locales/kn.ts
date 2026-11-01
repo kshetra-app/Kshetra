@@ -2831,184 +2831,226 @@ const kn = {
     "disputeFiled": "ವಿವಾದ ದಾಖಲಿಸಲಾಗಿದೆ",
     "disputeResolution": "ವಿವಾದ ಪರಿಹಾರ"
   },
+  "messages": {
+    "inbox": "ನೇರ ಸಂದೇಶಗಳು",
+    "chats": "ಚಾಟ್‌ಗಳು",
+    "requests": "ವಿನಂತಿಗಳು",
+    "requestsDesc": "ನೀವು ಅನುಸರಿಸದ ಖಾತೆಗಳಿಂದ ಬಂದ ಸಂದೇಶಗಳು. ನೀವು ಸ್ವೀಕರಿಸುವವರೆಗೆ ಕಳುಹಿಸುವವರಿಗೆ ತಿಳಿಯುವುದಿಲ್ಲ.",
+    "noChats": "ಯಾವುದೇ ಸಕ್ರಿಯ ಸಂಭಾಷಣೆಗಳಿಲ್ಲ",
+    "noChatsSub": "ನಾಗರಿಕರು, ನಾಯಕರು ಮತ್ತು ಆಕಾಂಕ್ಷಿಗಳೊಂದಿಗೆ ನೇರವಾಗಿ ಸಂಪರ್ಕ ಸಾಧಿಸಿ",
+    "noRequests": "ಯಾವುದೇ ಬಾಕಿ ವಿನಂತಿಗಳಿಲ್ಲ",
+    "noRequestsSub": "ಹೊಸ ಸಂದೇಶಗಳು ಇಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತವೆ",
+    "startChat": "ಸಂಭಾಷಣೆಯನ್ನು ಪ್ರಾರಂಭಿಸಿ",
+    "simulateRequest": "ಮಾದರಿ ವಿನಂತಿಯನ್ನು ಸ್ವೀಕರಿಸಿ",
+    "newChat": "ಹೊಸ ಸಂಭಾಷಣೆ",
+    "newConversation": "ಹೊಸ ಸಂಭಾಷಣೆ",
+    "searchPlaceholder": "ನಾಗರಿಕರು, ನಾಯಕರು ಅಥವಾ ಆಕಾಂಕ್ಷಿಗಳನ್ನು ಹುಡುಕಿ...",
+    "allContacts": "ಎಲ್ಲಾ ಸಂಪರ್ಕಗಳು",
+    "leadersMinisters": "ನಾಯಕರು ಮತ್ತು ಸಚಿವರು",
+    "aspirants": "ಆಕಾಂಕ್ಷಿಗಳು",
+    "citizens": "ನಾಗರಿಕರು",
+    "chat": "ಚಾಟ್",
+    "request": "ವಿನಂತಿ",
+    "sendRequest": "ವಿನಂತಿ ಕಳುಹಿಸಿ",
+    "requestSent": "ವಿನಂತಿ ಕಳುಹಿಸಲಾಗಿದೆ",
+    "declineTitle": "ಸಂದೇಶ ವಿನಂತಿಯನ್ನು ತಿರಸ್ಕರಿಸಿ",
+    "declineConfirm": "ಈ ಸಂಭಾಷಣೆಯನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ.",
+    "decline": "ತಿರಸ್ಕರಿಸಿ",
+    "accept": "ಸ್ವೀಕರಿಸಿ",
+    "safetyOptions": "ಸುರಕ್ಷತೆ ಮತ್ತು ನಿಯಂತ್ರಣ",
+    "safetyDesc": "ಸಂಭಾಷಣೆ ಆಯ್ಕೆಗಳು:",
+    "blockUser": "ಬಳಕೆದಾರರನ್ನು ನಿರ್ಬಂಧಿಸಿ",
+    "blockTitle": "ಬ್ಲಾಕ್ ದೃಢೀಕರಿಸಿ",
+    "blockConfirm": "ನಿರ್ಬಂಧಿಸಿದ ಬಳಕೆದಾರರು ಸಂದೇಶ ಕಳುಹಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.",
+    "block": "ಬ್ಲಾಕ್",
+    "reportUser": "ವರದಿ ಮಾಡಿ",
+    "reportedTitle": "ವರದಿ ಸಲ್ಲಿಸಲಾಗಿದೆ",
+    "reportedDesc": "ಪಾಲಿಗ್ರಾಮ್ ಅನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಿದ್ದಕ್ಕಾಗಿ ಧನ್ಯವಾದಗಳು.",
+    "requestPrompt": "ಸಂದೇಶ ವಿನಂತಿ: ಚಾಟ್‌ಗಳಿಗೆ ಸೇರಿಸಲು ಸ್ವೀಕರಿಸಿ, ಅಥವಾ ತಿರಸ್ಕರಿಸಿ.",
+    "typeMessage": "ಸಂದೇಶವನ್ನು ಟೈಪ್ ಮಾಡಿ...",
+    "send": "ಕಳುಹಿಸಿ",
+    "messageRequest": "ಸಂದೇಶ ವಿನಂತಿ",
+    "noMessagesYet": "ಇನ್ನೂ ಯಾವುದೇ ಸಂದೇಶಗಳಿಲ್ಲ",
+    "mediaLocked": "ಮಾಧ್ಯಮ ಲಾಕ್ ಆಗಿದೆ.",
+    "unlockMedia": "ಮಾಧ್ಯಮವನ್ನು ವೀಕ್ಷಿಸಿ"
+  },
   "discovery": {
-    "hubTitle": "POLIGRAM Discovery & Guide",
-    "hubSubtitle": "Explore goals, all features, and page guidance",
-    "goalsHeading": "What would you like to do?",
-    "directoryHeading": "Feature Directory",
-    "currentScreen": "Current Screen",
-    "howToUse": "How to use this screen:",
-    "searchPlaceholder": "Search features, goals, or help...",
-    "matchedGoals": "Matched Goals",
-    "matchedFeatures": "Matched Features",
-    "selectEntityRequired": "Select entity",
+    "hubTitle": "ಪಾಲಿಗ್ರಾಮ್ ಅನ್ವೇಷಣೆ ಮತ್ತು ಮಾರ್ಗದರ್ಶಿ",
+    "hubSubtitle": "ಗುರಿಗಳು, ಎಲ್ಲಾ ವೈಶಿಷ್ಟ್ಯಗಳು ಮತ್ತು ಪುಟ ಮಾರ್ಗದರ್ಶನವನ್ನು ಅನ್ವೇಷಿಸಿ",
+    "goalsHeading": "ನೀವು ಏನು ಮಾಡಲು ಬಯಸುತ್ತೀರಿ?",
+    "directoryHeading": "ವೈಶಿಷ್ಟ್ಯ ಡೈರೆಕ್ಟರಿ",
+    "currentScreen": "ಪ್ರಸ್ತುತ ಪರದೆ",
+    "howToUse": "ಈ ಪರದೆಯನ್ನು ಹೇಗೆ ಬಳಸುವುದು:",
+    "searchPlaceholder": "ವೈಶಿಷ್ಟ್ಯಗಳು, ಗುರಿಗಳು ಅಥವಾ ಸಹಾಯವನ್ನು ಹುಡುಕಿ...",
+    "matchedGoals": "ಹೊಂದಿಕೆಯಾದ ಗುರಿಗಳು",
+    "matchedFeatures": "ಹೊಂದಿಕೆಯಾದ ವೈಶಿಷ್ಟ್ಯಗಳು",
+    "selectEntityRequired": "ಘಟಕವನ್ನು ಆಯ್ಕೆಮಾಡಿ",
     "categories": {
-      "civic": "Civic & Representation",
-      "media": "Community & Media",
-      "leadership": "Leadership & Campaigns",
-      "tools": "Tools & Account"
+      "civic": "ನಾಗರಿಕ ಮತ್ತು ಪ್ರಾತಿನಿಧ್ಯ",
+      "media": "ಸಮುದಾಯ ಮತ್ತು ಮಾಧ್ಯಮ",
+      "leadership": "ನಾಯಕತ್ವ ಮತ್ತು ಅಭಿಯಾನಗಳು",
+      "tools": "ಉಪಕರಣಗಳು ಮತ್ತು ಖಾತೆ"
     },
     "tabs": {
-      "goals": "Goals",
-      "directory": "Features",
-      "guide": "Page Help"
+      "goals": "ಗುರಿಗಳು",
+      "directory": "ವೈಶಿಷ್ಟ್ಯಗಳು",
+      "guide": "ಪುಟ ಸಹಾಯ"
     },
     "goals": {
       "understandArea": {
-        "title": "Understand my area",
-        "desc": "Explore constituencies, mandals, local representatives, and live boundaries"
+        "title": "ನನ್ನ ಪ್ರದೇಶವನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ",
+        "desc": "ಕ್ಷೇತ್ರಗಳು, ಮಂಡಲಗಳು, ಸ್ಥಳೀಯ ಪ್ರತಿನಿಧಿಗಳು ಮತ್ತು ಗಡಿಗಳನ್ನು ಅನ್ವೇಷಿಸಿ"
       },
       "findRepresentatives": {
-        "title": "Find my representatives",
-        "desc": "Lookup MPs, MLAs, municipal councillors, and attendance records"
+        "title": "ನನ್ನ ಪ್ರತಿನಿಧಿಗಳನ್ನು ಹುಡುಕಿ",
+        "desc": "ಸಂಸದರು, ಶಾಸಕರು, ನಗರಸಭಾ ಸದಸ್ಯರು ಮತ್ತು ಹಾಜರಾತಿ ದಾಖಲೆಗಳನ್ನು ನೋಡಿ"
       },
       "stayInformed": {
-        "title": "Stay informed",
-        "desc": "Read verified news, watch civic live streams, and view policy briefs"
+        "title": "ಮಾಹಿತಿಯುಕ್ತರಾಗಿರಿ",
+        "desc": "ಪರಿಶೀಲಿಸಿದ ಸುದ್ದಿಗಳನ್ನು ಓದಿ, ನೇರ ಪ್ರಸಾರಗಳನ್ನು ವೀಕ್ಷಿಸಿ"
       },
       "participate": {
-        "title": "Participate in my community",
-        "desc": "Raise civic issues, engage in discussions, and vote in community polls"
+        "title": "ನನ್ನ ಸಮುದಾಯದಲ್ಲಿ ಭಾಗವಹಿಸಿ",
+        "desc": "ನಾಗರಿಕ ಸಮಸ್ಯೆಗಳನ್ನು ಎತ್ತಿ, ಚರ್ಚೆಗಳಲ್ಲಿ ತೊಡಗಿಸಿಕೊಳ್ಳಿ, ಸಮೀಕ್ಷೆಗಳಲ್ಲಿ ಮತ ಚಲಾಯಿಸಿ"
       },
       "electionsGov": {
-        "title": "Understand elections & governance",
-        "desc": "Track live election results, delimitation forecasts, and department alerts"
+        "title": "ಚುನಾವಣೆಗಳು ಮತ್ತು ಆಡಳಿತವನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಿ",
+        "desc": "ಲೈವ್ ಚುನಾವಣಾ ಫಲಿತಾಂಶಗಳು, ಡಿಲಿಮಿಟೇಷನ್ ಮತ್ತು ಇಲಾಖಾ ಸೂಚನೆಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ"
       },
       "leadershipJourney": {
-        "title": "Build a civic leadership journey",
-        "desc": "Enroll in Leadership Academy, verify as an aspirant, and create campaigns"
+        "title": "ನಾಗರಿಕ ನಾಯಕತ್ವದ ಪ್ರಯಾಣ",
+        "desc": "ಲೀಡರ್‌ಶಿಪ್ ಅಕಾಡೆಮಿಗೆ ಸೇರಿ, ಆಕಾಂಕ್ಷಿಯಾಗಿ ಪರಿಶೀಲನೆ ಪಡೆದು ಪ್ರಚಾರಗಳನ್ನು ರಚಿಸಿ"
       }
     },
     "features": {
       "civicDashboard": {
-        "desc": "Monitor local issues, political promises, and citizen sentiment"
+        "desc": "ಸ್ಥಳೀಯ ಸಮಸ್ಯೆಗಳು, ರಾಜಕೀಯ ಭರವಸೆಗಳು ಮತ್ತು ನಾಗರಿಕ ಅಭಿಪ್ರಾಯಗಳನ್ನು ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಿ"
       },
       "intelligence": {
-        "desc": "Statewide seat forecasts, party distribution, and defection analytics"
+        "desc": "ರಾಜ್ಯವ್ಯಾಪಿ ಸ್ಥಾನಗಳ ಮುನ್ಸೂಚನೆ, ಪಕ್ಷದ ಹಂಚಿಕೆ ಮತ್ತು ಪಕ್ಷಾಂತರ ವಿಶ್ಲೇಷಣೆ"
       },
       "parliament": {
-        "desc": "Lok Sabha and Rajya Sabha members, debates, and questions"
+        "desc": "ಲೋಕಸಭೆ ಮತ್ತು ರಾಜ್ಯಸಭೆ ಸದಸ್ಯರು, ಚರ್ಚೆಗಳು ಮತ್ತು ಪ್ರಶ್ನೆಗಳು"
       },
       "civicMetrics": {
-        "title": "Civic Metrics",
-        "desc": "Legislative attendance, fund utilization, and RTI disclosures"
+        "title": "ನಾಗರಿಕ ಮಾಪನಗಳು",
+        "desc": "ಶಾಸಕಾಂಗ ಹಾಜರಾತಿ, ನಿಧಿ ಬಳಕೆ ಮತ್ತು ಆರ್‌ಟಿಐ ಬಹಿರಂಗಪಡಿಸುವಿಕೆಗಳು"
       },
       "localBodies": {
-        "title": "Local Bodies",
-        "desc": "Panchayats, municipal wards, and grassroots representatives"
+        "title": "ಸ್ಥಳೀಯ ಸಂಸ್ಥೆಗಳು",
+        "desc": "ಪಂಚಾಯಿತಿಗಳು, ಪುರಸಭೆ ವಾರ್ಡ್‌ಗಳು ಮತ್ತು ತಳಮಟ್ಟದ ಪ್ರತಿನಿಧಿಗಳು"
       },
       "departments": {
-        "title": "Departments",
-        "desc": "Government department alerts, service delivery, and status tracking"
+        "title": "ಸರ್ಕಾರಿ ಇಲಾಖೆಗಳು",
+        "desc": "ಸರ್ಕಾರಿ ಇಲಾಖೆ ಸೂಚನೆಗಳು, ಸೇವಾ ವಿತರಣೆ ಮತ್ತು ಸ್ಥಿತಿ ಟ್ರ್ಯಾಕಿಂಗ್"
       },
       "delimitation": {
-        "desc": "Constituency boundary redrawing scenarios and demographic projections"
+        "desc": "ಕ್ಷೇತ್ರ ಪುನರ್ವಿಂಗಡಣೆ ಸನ್ನಿವೇಶಗಳು ಮತ್ತು ಜನಸಂಖ್ಯಾ ಪ್ರಕ್ಷೇಪಗಳು"
       },
       "liveElection": {
-        "desc": "Real-time vote shares, round-by-round counting, and seat leads"
+        "desc": "ನೈಜ-ಸಮಯದ ಮತ ಹಂಚಿಕೆಗಳು, ಸುತ್ತು-ಸುತ್ತಿನ ಎಣಿಕೆ ಮತ್ತು ಮುನ್ನಡೆಗಳು"
       },
       "communityFeed": {
-        "desc": "Hyperlocal feed with discussion, polls, questions, and civic alerts"
+        "desc": "ಸ್ಥಳೀಯ ಚರ್ಚೆಗಳು, ಸಮೀಕ್ಷೆಗಳು, ಪ್ರಶ್ನೆಗಳು ಮತ್ತು ನಾಗರಿಕ ಎಚ್ಚರಿಕೆಗಳು"
       },
       "news": {
-        "desc": "Curated multilingual regional and national political news"
+        "desc": "ಪರಿಶೀಲಿಸಿದ ಪ್ರಾದೇಶಿಕ ಮತ್ತು ರಾಷ್ಟ್ರೀಯ ರಾಜಕೀಯ ಸುದ್ದಿಗಳು"
       },
       "newsroom": {
-        "title": "Journalist Newsroom",
-        "desc": "Fact checks, investigative reporting, and breaking bulletins"
+        "title": "ಪತ್ರಕರ್ತರ ನ್ಯೂಸ್‌ರೂಮ್",
+        "desc": "ಸತ್ಯ ಪರಿಶೀಲನೆಗಳು, ತನಿಖಾ ವರದಿಗಳು ಮತ್ತು ಪ್ರಮುಖ ಪ್ರಕಟಣೆಗಳು"
       },
       "poligramLive": {
-        "desc": "Verified civic live streams, press briefings, and ground reports"
+        "desc": "ಪರಿಶೀಲಿಸಿದ ನಾಗರಿಕ ನೇರ ಪ್ರಸಾರಗಳು ಮತ್ತು ನೆಲಮಟ್ಟದ ವರದಿಗಳು"
       },
       "shorts": {
-        "desc": "Short civic video updates, youth commentary, and event highlights"
+        "desc": "ಸಣ್ಣ ನಾಗರಿಕ ವೀಡಿಯೊ ಅಪ್‌ಡೇಟ್‌ಗಳು ಮತ್ತು ಕಾರ್ಯಕ್ರಮ ಮುಖ್ಯಾಂಶಗಳು"
       },
       "pagesLeaders": {
-        "desc": "Candidate profiles, election manifestos, and verified aspirant pages"
+        "desc": "ಅಭ್ಯರ್ಥಿ ಪ್ರೊಫೈಲ್‌ಗಳು, ಪ್ರಣಾಳಿಕೆಗಳು ಮತ್ತು ಪರಿಶೀಲಿಸಿದ ಪುಟಗಳು"
       },
       "leadershipAcademy": {
-        "desc": "Civic curriculum, grassroots campaign skills, and aspirant scores"
+        "desc": "ನಾಗರಿಕ ಪಠ್ಯಕ್ರಮ, ಪ್ರಚಾರ ಕೌಶಲ್ಯಗಳು ಮತ್ತು ಆಕಾಂಕ್ಷಿ ಅಂಕಗಳು"
       },
       "politicianPortal": {
-        "title": "Politician Portal",
-        "desc": "Official statements, constituent outreach, and survey management"
+        "title": "ರಾಜಕಾರಣಿ ಪೋರ್ಟಲ್",
+        "desc": "ಅಧಿಕೃತ ಹೇಳಿಕೆಗಳು ಮತ್ತು ಮತದಾರರ ಸಮೀಕ್ಷೆಗಳು"
       },
       "campaignManager": {
-        "desc": "Voter outreach, cadre coordination, and booth-level management"
+        "desc": "ಮತದಾರರ ಸಂಪರ್ಕ ಮತ್ತು ಬೂತ್ ಮಟ್ಟದ ನಿರ್ವಹಣೆ"
       },
       "candidateXRay": {
-        "desc": "Electoral affidavit scanner and historical criminal/asset records"
+        "desc": "ಚುನಾವಣಾ ಅಫಿಡವಿಟ್ ಸ್ಕ್ಯಾನರ್ ಮತ್ತು ಅಪರಾಧ/ಆಸ್ತಿ ದಾಖಲೆಗಳು"
       },
       "search": {
-        "desc": "Global search across constituencies, representatives, issues, and posts"
+        "desc": "ಕ್ಷೇತ್ರಗಳು, ಪ್ರತಿನಿಧಿಗಳು, ಸಮಸ್ಯೆಗಳು ಮತ್ತು ಪೋಸ್ಟ್‌ಗಳ ಜಾಗತಿಕ ಹುಡುಕಾಟ"
       },
       "aiAssistant": {
-        "desc": "Responsible AI assistant for constituency data and parliamentary questions"
+        "desc": "ಕ್ಷೇತ್ರದ ಡೇಟಾ ಮತ್ತು ಸಂಸದೀಯ ಪ್ರಶ್ನೆಗಳಿಗೆ ಜವಾಬ್ದಾರಿಯುತ AI ಸಹಾಯಕ"
       },
       "profile": {
-        "desc": "Personalized settings, verified credentials, and activity ledger"
+        "desc": "ವೈಯಕ್ತಿಕಗೊಳಿಸಿದ ಸೆಟ್ಟಿಂಗ್‌ಗಳು, ಪರಿಶೀಲಿಸಿದ ರುಜುವಾತುಗಳು ಮತ್ತು ಇತಿಹಾಸ"
       },
       "messages": {
-        "title": "Messages",
-        "desc": "Direct citizen and constituent messaging with safety controls"
+        "title": "ಸಂದೇಶಗಳು",
+        "desc": "ನಾಗರಿಕರು ಮತ್ತು ಪ್ರತಿನಿಧಿಗಳ ನಡುವೆ ನೇರ ಸಂದೇಶ ಕಳುಹಿಸುವಿಕೆ"
       },
       "notifications": {
-        "desc": "Civic updates, emergency alerts, and legislative tracking notices"
+        "desc": "ನಾಗರಿಕ ನವೀಕರಣಗಳು, ತುರ್ತು ಎಚ್ಚರಿಕೆಗಳು ಮತ್ತು ಶಾಸಕಾಂಗ ಸೂಚನೆಗಳು"
       },
       "notificationSettings": {
-        "desc": "Custom notification categories, quiet hours, and frequency preferences"
+        "desc": "ಅಧಿಸೂಚನೆ ವರ್ಗಗಳು ಮತ್ತು ಆದ್ಯತೆಗಳು"
       },
       "moderation": {
-        "desc": "Grievance officer and moderator review queue for flagged content"
+        "desc": "ದೂರು ಅಧಿಕಾರಿ ಮತ್ತು ವಿಷಯ ಪರಿಶೀಲನೆ ಸರದಿ"
       }
     },
     "guides": {
       "map": {
-        "title": "Map Discovery Guide",
-        "purpose": "Navigate constituencies, election results, and geographic boundaries across India.",
-        "step1": "Pinch or scroll to zoom into any assembly or parliamentary constituency.",
-        "step2": "Tap a constituency polygon to view representative details, victory margin, and voting trends.",
-        "step3": "Use floating adaptive controls to toggle 3D terrain, historical elections, and delimitation impact.",
-        "caveat": "All boundaries are strictly validated against official Delimitation Commission schedules."
+        "title": "ನಕ್ಷೆ ಅನ್ವೇಷಣೆ ಮಾರ್ಗದರ್ಶಿ",
+        "purpose": "ಭಾರತದಾದ್ಯಂತ ಕ್ಷೇತ್ರಗಳು, ಚುನಾವಣಾ ಫಲಿತಾಂಶಗಳು ಮತ್ತು ಭೌಗೋಳಿಕ ಗಡಿಗಳನ್ನು ಅನ್ವೇಷಿಸಿ.",
+        "step1": "ಯಾವುದೇ ವಿಧಾನಸಭಾ ಅಥವಾ ಲೋಕಸಭಾ ಕ್ಷೇತ್ರವನ್ನು ವಿಸ್ತರಿಸಲು ಜೂಮ್ ಮಾಡಿ.",
+        "step2": "ಪ್ರತಿನಿಧಿ ವಿವರಗಳು, ವಿಜಯದ ಅಂತರ ಮತ್ತು ಮತದಾನದ ಪ್ರವೃತ್ತಿಗಳನ್ನು ನೋಡಲು ಕ್ಷೇತ್ರದ ಮೇಲೆ ಟ್ಯಾಪ್ ಮಾಡಿ.",
+        "step3": "3D ಭೂಪ್ರದೇಶ, ಐತಿಹಾಸಿಕ ಚುನಾವಣೆಗಳು ಮತ್ತು ಡಿಲಿಮಿಟೇಶನ್ ಪ್ರಭಾವವನ್ನು ನೋಡಲು ನಿಯಂತ್ರಣಗಳನ್ನು ಬಳಸಿ.",
+        "caveat": "ಎಲ್ಲಾ ಗಡಿಗಳನ್ನು ಅಧಿಕೃತ ಡಿಲಿಮಿಟೇಶನ್ ಕಮಿಷನ್ ವೇಳಾಪಟ್ಟಿಗಳ ವಿರುದ್ಧ ಪರಿಶೀಲಿಸಲಾಗಿದೆ."
       },
       "explore": {
-        "title": "Explore Constituencies Guide",
-        "purpose": "Search, filter, and compare all assembly constituencies within your active state.",
-        "step1": "Search by constituency name, AC number, or MLA candidate.",
-        "step2": "Filter by political party, district, or reservation status.",
-        "step3": "Tap any result to open its full civic intelligence and historical profile.",
-        "caveat": "State changes instantly clear invalid district and party filters to preserve data integrity."
+        "title": "ಕ್ಷೇತ್ರಗಳ ಅನ್ವೇಷಣೆ ಮಾರ್ಗದರ್ಶಿ",
+        "purpose": "ನಿಮ್ಮ ರಾಜ್ಯದ ಎಲ್ಲಾ ವಿಧಾನಸಭಾ ಕ್ಷೇತ್ರಗಳನ್ನು ಹುಡುಕಿ, ಫಿಲ್ಟರ್ ಮಾಡಿ ಮತ್ತು ಹೋಲಿಸಿ.",
+        "step1": "ಕ್ಷೇತ್ರದ ಹೆಸರು, ಸಂಖ್ಯೆ ಅಥವಾ ಶಾಸಕ ಅಭ್ಯರ್ಥಿಯ ಮೂಲಕ ಹುಡುಕಿ.",
+        "step2": "ರಾಜಕೀಯ ಪಕ್ಷ, ಜಿಲ್ಲೆ ಅಥವಾ ಮೀಸಲಾತಿ ಸ್ಥಿತಿಯ ಮೂಲಕ ಫಿಲ್ಟರ್ ಮಾಡಿ.",
+        "step3": "ಪೂರ್ಣ ನಾಗರಿಕ ಗುಪ್ತಚರ ಮತ್ತು ಐತಿಹಾಸಿಕ ಪ್ರೊಫೈಲ್ ತೆರೆಯಲು ಯಾವುದೇ ಫಲಿತಾಂಶವನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.",
+        "caveat": "ರಾಜ್ಯ ಬದಲಾವಣೆಗಳು ಡೇಟಾ ನಿಖರತೆಯನ್ನು ಕಾಪಾಡಲು ಫಿಲ್ಟರ್‌ಗಳನ್ನು ತಕ್ಷಣ ಮರುಹೊಂದಿಸುತ್ತವೆ."
       },
       "community": {
-        "title": "Community Hub Guide",
-        "purpose": "Connect with local citizens, watch civic live streams, and participate in grassroots dialogues.",
-        "step1": "Switch between Feed, Shorts, and Live broadcast segments.",
-        "step2": "Read discussions, answer polls, and report community civic issues.",
-        "step3": "Tap direct messages or notifications to interact securely with other verified citizens.",
-        "caveat": "All discussions adhere strictly to DPDP compliance and civic moderation standards."
+        "title": "ಸಮುದಾಯ ಕೇಂದ್ರ ಮಾರ್ಗದರ್ಶಿ",
+        "purpose": "ಸ್ಥಳೀಯ ನಾಗರಿಕರೊಂದಿಗೆ ಸಂಪರ್ಕ ಸಾಧಿಸಿ, ಲೈವ್ ಸ್ಟ್ರೀಮ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ ಮತ್ತು ಚರ್ಚೆಗಳಲ್ಲಿ ಭಾಗವಹಿಸಿ.",
+        "step1": "ಫೀಡ್, ಶಾರ್ಟ್ಸ್ ಮತ್ತು ಲೈವ್ ವಿಭಾಗಗಳ ನಡುವೆ ಬದಲಾಯಿಸಿ.",
+        "step2": "ಚರ್ಚೆಗಳನ್ನು ಓದಿ, ಸಮೀಕ್ಷೆಗಳಿಗೆ ಉತ್ತರಿಸಿ ಮತ್ತು ನಾಗರಿಕ ಸಮಸ್ಯೆಗಳನ್ನು ವರದಿ ಮಾಡಿ.",
+        "step3": "ಇತರ ಪರಿಶೀಲಿಸಿದ ನಾಗರಿಕರೊಂದಿಗೆ ಸುರಕ್ಷಿತವಾಗಿ ಸಂವಹನ ನಡೆಸಲು ನೇರ ಸಂದೇಶಗಳನ್ನು ಬಳಸಿ.",
+        "caveat": "ಎಲ್ಲಾ ಚರ್ಚೆಗಳು DPDP ನಿಯಮಗಳು ಮತ್ತು ನಾಗರಿಕ ಮಾನದಂಡಗಳಿಗೆ ಬದ್ಧವಾಗಿವೆ."
       },
       "news": {
-        "title": "News Feed Guide",
-        "purpose": "Read multi-source political and civic news curated for your constituency and state.",
-        "step1": "Filter stories by language, category, or geographic scope.",
-        "step2": "Tap any story to read in the reader view or bookmark for later.",
-        "step3": "Check verified journalist badges and fact-checking disclosures.",
-        "caveat": "Stories are aggregated from verified media publishers without algorithmic bias."
+        "title": "ಸುದ್ದಿ ಫೀಡ್ ಮಾರ್ಗದರ್ಶಿ",
+        "purpose": "ನಿಮ್ಮ ಕ್ಷೇತ್ರ ಮತ್ತು ರಾಜ್ಯಕ್ಕಾಗಿ ಆಯ್ಕೆಮಾಡಿದ ರಾಜಕೀಯ ಮತ್ತು ನಾಗರಿಕ ಸುದ್ದಿಗಳನ್ನು ಓದಿ.",
+        "step1": "ಭಾಷೆ, ವರ್ಗ ಅಥವಾ ಭೌಗೋಳಿಕ ವ್ಯಾಪ್ತಿಯ ಮೂಲಕ ಸುದ್ದಿಗಳನ್ನು ಫಿಲ್ಟರ್ ಮಾಡಿ.",
+        "step2": "ಪೂರ್ಣ ಲೇಖನವನ್ನು ಓದಲು ಅಥವಾ ನಂತರಕ್ಕಾಗಿ ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಲು ಟ್ಯಾಪ್ ಮಾಡಿ.",
+        "step3": "ಪರಿಶೀಲಿಸಿದ ಪತ್ರಕರ್ತರ ಬ್ಯಾಡ್ಜ್‌ಗಳು ಮತ್ತು ಸತ್ಯ ಪರಿಶೀಲನೆಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.",
+        "caveat": "ಸುದ್ದಿಗಳನ್ನು ವಿಶ್ವಾಸಾರ್ಹ ಮಾಧ್ಯಮ ಪ್ರಕಾಶಕರಿಂದ ಪಕ್ಷಪಾತವಿಲ್ಲದೆ ಸಂಗ್ರಹಿಸಲಾಗುತ್ತದೆ."
       },
       "more": {
-        "title": "Feature Directory Guide",
-        "purpose": "Access all specialized civic modules, election tools, and account preferences.",
-        "step1": "Browse categorized feature sections: Civic, Media, Leadership, and Tools.",
-        "step2": "Tap What would you like to do to explore goal-oriented guided pathways.",
-        "step3": "Access developer switches, language options, and grievance officer queues."
+        "title": "ವೈಶಿಷ್ಟ್ಯ ಡೈರೆಕ್ಟರಿ ಮಾರ್ಗದರ್ಶಿ",
+        "purpose": "ಎಲ್ಲಾ ವಿಶೇಷ ನಾಗರಿಕ ಮಾಡ್ಯೂಲ್‌ಗಳು, ಚುನಾವಣಾ ಪರಿಕರಗಳು ಮತ್ತು ಖಾತೆ ಆದ್ಯತೆಗಳನ್ನು ಪ್ರವೇಶಿಸಿ.",
+        "step1": "ವರ್ಗೀಕರಿಸಿದ ವಿಭಾಗಗಳನ್ನು ಬ್ರೌಸ್ ಮಾಡಿ: ನಾಗರಿಕ, ಮಾಧ್ಯಮ, ನಾಯಕತ್ವ ಮತ್ತು ಪರಿಕರಗಳು.",
+        "step2": "ಮಾರ್ಗದರ್ಶಿತ ಮಾರ್ಗಗಳನ್ನು ಅನ್ವೇಷಿಸಲು ನೀವು ಏನು ಮಾಡಲು ಬಯಸುತ್ತೀರಿ ಎಂಬುದನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.",
+        "step3": "ಡೆವಲಪರ್ ಆಯ್ಕೆಗಳು, ಭಾಷಾ ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಮತ್ತು ಕುಂದುಕೊರತೆ ಸರದಿಗಳನ್ನು ಪ್ರವೇಶಿಸಿ."
       },
       "profile": {
-        "title": "Profile & Settings Guide",
-        "purpose": "Manage your civic identity, notification preferences, language, and verification status.",
-        "step1": "Complete Contributor Verification (KYC) to participate in candidate details editing.",
-        "step2": "Configure language preferences across 13 supported Indian languages.",
-        "step3": "Manage push notification categories and inspect your activity history.",
-        "caveat": "Your personal data is encrypted and strictly protected under DPDP Act provisions."
+        "title": "ಪ್ರೊಫೈಲ್ ಮತ್ತು ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಮಾರ್ಗದರ್ಶಿ",
+        "purpose": "ನಿಮ್ಮ ನಾಗರಿಕ ಗುರುತು, ಅಧಿಸೂಚನೆ ಆದ್ಯತೆಗಳು, ಭಾಷೆ ಮತ್ತು ಪರಿಶೀಲನೆ ಸ್ಥಿತಿಯನ್ನು ನಿರ್ವಹಿಸಿ.",
+        "step1": "ಅಭ್ಯರ್ಥಿ ವಿವರಗಳನ್ನು ಸಂಪಾದಿಸಲು ಕೊಡುಗೆದಾರರ ಪರಿಶೀಲನೆ (KYC) ಪೂರ್ಣಗೊಳಿಸಿ.",
+        "step2": "13 ಬೆಂಬಲಿತ ಭಾರತೀಯ ಭಾಷೆಗಳಲ್ಲಿ ಭಾಷಾ ಆದ್ಯತೆಗಳನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಿ.",
+        "step3": "ಅಧಿಸೂಚನೆ ವಿಭಾಗಗಳನ್ನು ನಿರ್ವಹಿಸಿ ಮತ್ತು ನಿಮ್ಮ ಚಟುವಟಿಕೆಯ ಇತಿಹಾಸವನ್ನು ಪರಿಶೀಲಿಸಿ."
       }
     }
   },

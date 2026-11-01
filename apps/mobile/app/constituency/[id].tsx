@@ -1,4 +1,8 @@
 import PodiumHistoryCard from '../../components/PodiumHistoryCard';
+import {
+  getLatestPodiumForConstituency,
+  getLocalizedCandidateName,
+} from '../../lib/historicalPodiumStore';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Platform, Pressable, Share, Image } from 'react-native';
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
@@ -165,6 +169,10 @@ export default function ConstituencyDetailScreen() {
   const localizedWinnerParty = getLocalizedPartyName(effectiveWinnerParty, i18n.language) || effectiveWinnerParty;
   const localizedRunnerUp = getLocalizedPartyName(effectiveRunnerUp, i18n.language) || effectiveRunnerUp;
 
+
+  const latestPodium = useMemo(() => {
+    return getLatestPodiumForConstituency(stateCode, acNo);
+  }, [stateCode, acNo]);
   const [activeTab, setActiveTab] = useState<ConstituencyTab>('overview');
   const [reportIssueVisible, setReportIssueVisible] = useState(false);
   const [photoViewer, setPhotoViewer] = useState<{ uri: string | null; name: string; party: string } | null>(null);
@@ -415,68 +423,112 @@ export default function ConstituencyDetailScreen() {
         {/* ═══════════════════════════════════════════════════════════════ */}
         {activeTab === 'overview' && (<>
 
-        {/* Result Card with Temporally Correct Year and Non-Coerced Disclosures */}
+        {/* Result Card with Winner, Runner-up & 1st Runner-up Profiles */}
         <View style={styles.section}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
             <Text style={styles.sectionTitle}>
-              {effectiveElectionYear ? t('constituency.electionResult', { year: effectiveElectionYear }) : t('constituency.recentElectionResult', { defaultValue: 'Recent Election Result' })}
+              {latestPodium?.year
+                ? t('constituency.electionResult', { year: latestPodium.year })
+                : (effectiveElectionYear ? t('constituency.electionResult', { year: effectiveElectionYear }) : t('constituency.recentElectionResult', { defaultValue: 'Recent Election Result' }))}
             </Text>
-            <View style={[styles.provenancePill, { backgroundColor: apiDetail?.recentElection ? '#10B98115' : '#3B82F615', borderColor: apiDetail?.recentElection ? '#10B98140' : '#3B82F640', paddingVertical: 2, paddingHorizontal: 6 }]}>
-              <View style={[styles.provenanceDot, { backgroundColor: apiDetail?.recentElection ? '#10B981' : '#3B82F6', width: 5, height: 5 }]} />
-              <Text style={[styles.provenanceText, { color: apiDetail?.recentElection ? '#10B981' : '#3B82F6', fontSize: 10 }]}>
-                {apiDetail?.recentElection ? 'Verified Electoral API' : 'Offline Result Seed'}
+            <View style={[styles.provenancePill, { backgroundColor: '#10B98115', borderColor: '#10B98140', paddingVertical: 2, paddingHorizontal: 6 }]}>
+              <View style={[styles.provenanceDot, { backgroundColor: '#10B981', width: 5, height: 5 }]} />
+              <Text style={[styles.provenanceText, { color: '#10B981', fontSize: 10 }]}>
+                Official Podium Results
               </Text>
             </View>
           </View>
-          <View style={styles.resultCard}>
-            <View style={styles.resultRow}>
-              <View style={styles.resultLeft}>
-                <CandidateAvatar
-                  name={effectiveWinnerName}
-                  party={effectiveWinnerParty}
-                  size={52}
-                  onPress={(uri) => setPhotoViewer({ uri, name: effectiveWinnerName, party: effectiveWinnerParty })}
-                />
-                <View>
-                  <Text style={styles.resultParty}>
-                    {localizedWinnerParty}
+
+          {latestPodium ? (
+            <PodiumHistoryCard
+              item={{
+                id: `${stateCode}-AC-${acNo}-${latestPodium.year}`,
+                state_code: stateCode,
+                ac_no: acNo,
+                year: latestPodium.year,
+                delimitation_id: latestPodium.delimitationId,
+                total_valid_votes: latestPodium.totalValidVotes,
+                winner: latestPodium.winner?.name || effectiveWinnerName,
+                party: latestPodium.winner?.party || effectiveWinnerParty,
+                winner_name: latestPodium.winner?.name || effectiveWinnerName,
+                winner_party: latestPodium.winner?.party || effectiveWinnerParty,
+                winner_votes: latestPodium.winner?.votes || effectiveWinnerVotes || 0,
+                winner_vote_share: latestPodium.winner?.voteShare || 0,
+                winner_education: latestPodium.winner?.education || undefined,
+                first_runner_up_name: latestPodium.firstRunnerUp?.name || undefined,
+                first_runner_up_party: latestPodium.firstRunnerUp?.party || effectiveRunnerUp || undefined,
+                first_runner_up_votes: latestPodium.firstRunnerUp?.votes || 0,
+                first_runner_up_vote_share: latestPodium.firstRunnerUp?.voteShare || 0,
+                margin_winner_to_runner_up_1: latestPodium.marginWinnerToRunnerUp1 || effectiveMargin || 0,
+                second_runner_up_name: latestPodium.secondRunnerUp?.name || undefined,
+                second_runner_up_party: latestPodium.secondRunnerUp?.party || undefined,
+                second_runner_up_votes: latestPodium.secondRunnerUp?.votes || 0,
+                second_runner_up_vote_share: latestPodium.secondRunnerUp?.voteShare || 0,
+                margin_winner_to_runner_up_2: latestPodium.marginWinnerToRunnerUp2 || 0,
+                localized_names_json: JSON.stringify({
+                  winner: latestPodium.winner?.localizedNames,
+                  ru1: latestPodium.firstRunnerUp?.localizedNames,
+                  ru2: latestPodium.secondRunnerUp?.localizedNames,
+                }),
+                localized_parties_json: JSON.stringify({
+                  winner: latestPodium.winner?.localizedParties,
+                  ru1: latestPodium.firstRunnerUp?.localizedParties,
+                  ru2: latestPodium.secondRunnerUp?.localizedParties,
+                }),
+              } as any}
+              isLatest={true}
+            />
+          ) : (
+            <View style={styles.resultCard}>
+              <View style={styles.resultRow}>
+                <View style={styles.resultLeft}>
+                  <CandidateAvatar
+                    name={effectiveWinnerName}
+                    party={effectiveWinnerParty}
+                    size={52}
+                    onPress={(uri) => setPhotoViewer({ uri, name: effectiveWinnerName, party: effectiveWinnerParty })}
+                  />
+                  <View>
+                    <Text style={styles.resultParty}>
+                      {localizedWinnerParty}
+                    </Text>
+                    <Text style={styles.resultCandidate}>
+                      {getLocalizedCandidateName(effectiveWinnerName, i18n.language) || effectiveWinnerName}
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.resultRight}>
+                  <Text style={styles.resultVotes}>
+                    {effectiveWinnerVotes != null ? effectiveWinnerVotes.toLocaleString() : 'Not Reported'}
                   </Text>
-                  <Text style={styles.resultCandidate}>
-                    {effectiveWinnerName}
-                  </Text>
+                  <Text style={styles.resultLabel}>{t('constituency.votes')}</Text>
                 </View>
               </View>
-              <View style={styles.resultRight}>
-                <Text style={styles.resultVotes}>
-                  {effectiveWinnerVotes != null ? effectiveWinnerVotes.toLocaleString() : 'Not Reported'}
-                </Text>
-                <Text style={styles.resultLabel}>{t('constituency.votes')}</Text>
+
+              <View style={styles.divider} />
+
+              <View style={styles.statsRow}>
+                <View style={styles.statItem}>
+                  <Text style={styles.statValue}>
+                    {effectiveMargin != null ? (effectiveMargin === 0 && !effectiveRunnerUp ? '0 (Uncontested)' : effectiveMargin.toLocaleString()) : '—'}
+                  </Text>
+                  <Text style={styles.statLabel}>{t('constituency.margin')}</Text>
+                </View>
+                <View style={styles.statItem}>
+                  <Text style={styles.statValue}>
+                    {localizedRunnerUp || effectiveRunnerUp || '—'}
+                  </Text>
+                  <Text style={styles.statLabel}>{t('constituency.runnerUp')}</Text>
+                </View>
+                <View style={styles.statItem}>
+                  <Text style={styles.statValue}>
+                    {effectiveMarginPercent != null ? `${effectiveMarginPercent}%` : '—'}
+                  </Text>
+                  <Text style={styles.statLabel}>{t('constituency.margin')} %</Text>
+                </View>
               </View>
             </View>
-
-            <View style={styles.divider} />
-
-            <View style={styles.statsRow}>
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>
-                  {effectiveMargin != null ? (effectiveMargin === 0 && !effectiveRunnerUp ? '0 (Uncontested)' : effectiveMargin.toLocaleString()) : '—'}
-                </Text>
-                <Text style={styles.statLabel}>{t('constituency.margin')}</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>
-                  {localizedRunnerUp || effectiveRunnerUp || '—'}
-                </Text>
-                <Text style={styles.statLabel}>{t('constituency.runnerUp')}</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>
-                  {effectiveMarginPercent != null ? `${effectiveMarginPercent}%` : '—'}
-                </Text>
-                <Text style={styles.statLabel}>{t('constituency.margin')} %</Text>
-              </View>
-            </View>
-          </View>
+          )}
         </View>
 
         {/* MLA Profile */}
@@ -797,29 +849,17 @@ export default function ConstituencyDetailScreen() {
         {/* ═══════════════════════════════════════════════════════════════ */}
         {activeTab === 'history' && (<>
 
-        {/* Per-Constituency Election History */}
+        {/* Per-Constituency Election History (1999–2024 with Winner & Runner-up Podiums) */}
         {(() => {
-          let elections = [
-            ...getHistoryForState(stateCode, acNo),
-            { year: effectiveElectionYear ?? undefined, winner: effectiveWinnerName, party: effectiveWinnerParty },
-          ];
-
-          if (apiDetail?.elections && apiDetail.elections.length > 0) {
-            elections = [...apiDetail.elections]
-              .sort((a, b) => (a.electionYear ?? 0) - (b.electionYear ?? 0))
-              .map((e) => ({
-                year: e.electionYear ?? undefined,
-                winner: e.winnerName || e.winner,
-                party: e.winner,
-              }));
-          }
-
+          const rawHistory = getHistoryForState(stateCode, acNo);
+          // Sort descending: newest first down to 1999
+          const elections = [...rawHistory].sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
           const currentParty = constituency?.currentParty ?? effectiveWinnerParty;
           const stronghold = isStrongholdForState(stateCode, acNo, currentParty);
           const normalize = (p: string) => (p === 'TRS' ? 'BRS' : p);
 
           const partyChanged = elections.length >= 2 &&
-            normalize(elections[elections.length - 1].party) !== normalize(elections[elections.length - 2].party);
+            normalize(elections[0].party) !== normalize(elections[1].party);
 
           return (
             <View style={styles.section}>
@@ -839,67 +879,17 @@ export default function ConstituencyDetailScreen() {
                 )}
               </View>
 
-              {elections.map((e, idx) => {
-                const isCurrent = idx === elections.length - 1;
-                if ((e as any).first_runner_up_name || (e as any).first_runner_up_party || (e as any).winner_votes) {
-                  return (
-                    <PodiumHistoryCard
-                      key={e.year}
-                      item={e as any}
-                      isLatest={isCurrent}
-                    />
-                  );
-                }
-                const prevParty = idx > 0 ? normalize(elections[idx - 1].party) : null;
-                const flipped = prevParty !== null && normalize(e.party) !== prevParty;
-
-                return (
-                  <View
-                    key={e.year}
-                    style={[
-                      styles.histCard,
-                      isCurrent && styles.histCardCurrent,
-                    ]}
-                  >
-                    <View style={styles.histCardLeft}>
-                      <Text style={[styles.histYear, isCurrent && styles.histYearCurrent]}>
-                        {e.year}
-                      </Text>
-                      {isCurrent && (
-                        <Text style={styles.histCurrentLabel}>{t('constituency.current')}</Text>
-                      )}
-                    </View>
-                    <View style={styles.histCardCenter}>
-                      <View style={styles.histPartyRow}>
-                        <CandidateAvatar
-                          name={e.winner}
-                          party={e.party === 'TRS' ? 'BRS' : e.party}
-                          size={36}
-                        />
-                        <View>
-                          <View style={styles.histPartyInner}>
-                            <View
-                              style={[
-                                styles.histPartyDot,
-                                { backgroundColor: getPartyColor(e.party === 'TRS' ? 'BRS' : e.party) },
-                              ]}
-                            />
-                            <Text style={styles.histPartyName}>{e.party}</Text>
-                            {flipped && (
-                              <View style={styles.histFlipBadge}>
-                                <Ionicons name="arrow-forward" size={10} color="#F59E0B" />
-                              </View>
-                            )}
-                          </View>
-                          <Text style={styles.histWinnerName} numberOfLines={1}>
-                            {e.winner}
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-                );
-              })}
+              {elections.map((e, idx) => (
+                <PodiumHistoryCard
+                  key={e.year}
+                  item={{
+                    ...e,
+                    state_code: stateCode,
+                    ac_no: acNo,
+                  } as any}
+                  isLatest={idx === 0}
+                />
+              ))}
             </View>
           );
         })()}

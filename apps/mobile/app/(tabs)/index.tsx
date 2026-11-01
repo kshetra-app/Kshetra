@@ -1090,7 +1090,7 @@ function FullMapScreen() {
   const mapTopOffset = Math.max(insets.top, 24);
 
   return (
-    <View style={styles.container} onTouchStart={handleTouchActivity} onTouchMove={handleTouchActivity}>
+    <View style={styles.container}>
       <MapboxGL.MapView
         style={styles.map}
         onTouchStart={handleTouchActivity}

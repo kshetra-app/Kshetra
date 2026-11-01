@@ -9,7 +9,7 @@
  *   compact    — if true, renders a smaller inline strip (for map overlay)
  */
 import React, { memo, useState, useCallback } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import CandidateAvatar from './CandidateAvatar';
 import PhotoViewerModal from './PhotoViewerModal';
 import { getChiefMinister, getPrimeMinister } from '../lib/chiefMinisters';
@@ -52,7 +52,14 @@ export default memo(function ChiefMinisterBadge({
 
   return (
     <>
-      <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }, compact && styles.containerCompact]}>
+      <Pressable
+        onPress={() => setViewerVisible(true)}
+        style={({ pressed }) => [
+          styles.container,
+          { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, opacity: pressed ? 0.9 : 1 },
+          compact && styles.containerCompact,
+        ]}
+      >
         <CandidateAvatar
           name={person.name}
           party={person.party}
@@ -79,7 +86,7 @@ export default memo(function ChiefMinisterBadge({
             {localizedDesignation}
           </Text>
         </View>
-      </View>
+      </Pressable>
 
       <PhotoViewerModal
         visible={viewerVisible}

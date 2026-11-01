@@ -65,9 +65,9 @@ describe('MLA Profiles — Party tallies', () => {
       tally[p.party] = (tally[p.party] ?? 0) + 1;
     });
     // INC: 64 elected + 10 defections = 74
-    expect(tally['INC']).toBe(74);
+    expect(tally['INC']).toBe(75);
     // BRS: 39 elected - 10 defections = 29
-    expect(tally['BRS']).toBe(29);
+    expect(tally['BRS']).toBe(28);
     // BJP: 8
     expect(tally['BJP']).toBe(8);
     // AIMIM: 7
@@ -95,8 +95,8 @@ describe('MLA Profiles — Utility functions', () => {
   });
 
   it('getMLAsByParty should return correct counts', () => {
-    expect(getMLAsByParty('INC').length).toBe(74);
-    expect(getMLAsByParty('BRS').length).toBe(29);
+    expect(getMLAsByParty('INC').length).toBe(75);
+    expect(getMLAsByParty('BRS').length).toBe(28);
     expect(getMLAsByParty('BJP').length).toBe(8);
     expect(getMLAsByParty('AIMIM').length).toBe(7);
     expect(getMLAsByParty('CPI').length).toBe(1);
@@ -113,14 +113,13 @@ describe('MLA Profiles — Utility functions', () => {
 
   it('getFemaleMLAs should return known female MLAs', () => {
     const females = getFemaleMLAs();
-    expect(females.length).toBeGreaterThanOrEqual(8);
+    expect(females.length).toBeGreaterThanOrEqual(7);
     const names = females.map((f) => f.name);
     expect(names).toContain('Kova Laxmi');
     expect(names).toContain('Seethakka');
     expect(names).toContain('Konda Surekha');
     expect(names).toContain('Sabitha Indra Reddy');
     expect(names).toContain('Chittem Parnika Reddy');
-    expect(names).toContain('G. Lasya Nanditha');
   });
 
   it('getVeteranMLAs should include KCR, KTR, Harish Rao', () => {

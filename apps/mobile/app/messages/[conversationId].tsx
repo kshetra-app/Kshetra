@@ -23,10 +23,14 @@ import { REPORT_REASONS, type ReportReason } from '../../lib/moderationTypes';
 import type { DMMessageItem } from '../../lib/supabaseDataService';
 import { useTimeAgo } from '../../lib/useTimeAgo';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
+import {
+  getLocalizedContactName,
+  getLocalizedDMPreview,
+} from '../../lib/dmLocalization';
 
 export default function ConversationThreadScreen() {
   const { conversationId } = useLocalSearchParams<{ conversationId: string }>();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { timeAgo } = useTimeAgo();
   const { colors } = useTheme();
   const router = useRouter();
@@ -58,6 +62,7 @@ export default function ConversationThreadScreen() {
     role: 'citizen',
     isVerified: false,
   };
+  const localizedOtherName = getLocalizedContactName(otherUser.displayName, i18n.language);
 
   const messages = (conversationId ? activeMessages[conversationId] : []) || [];
   const flatListRef = useRef<FlatList>(null);
@@ -203,7 +208,7 @@ export default function ConversationThreadScreen() {
                 { color: isMine ? '#FFFFFF' : colors.text },
               ]}
             >
-              {item.content}
+              {getLocalizedDMPreview(item.content, i18n.language)}
             </Text>
           ) : null}
 
@@ -224,7 +229,7 @@ export default function ConversationThreadScreen() {
   return (
     <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: colors.background }]}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
       {/* Header */}
@@ -238,7 +243,7 @@ export default function ConversationThreadScreen() {
           onPress={() => otherUser.id && router.push(`/user/${otherUser.id}` as any)}
         >
           <Text style={[styles.headerTitle, { color: colors.text }]} numberOfLines={1}>
-            {otherUser.displayName}
+            {localizedOtherName}
           </Text>
           {otherUser.isVerified && (
             <Ionicons name="checkmark-circle" size={14} color="#10B981" style={{ marginLeft: 4 }} />

@@ -1,3 +1,4 @@
+import { getHistoricalPodiumForConstituency, getLatestPodiumForConstituency } from './historicalPodiumStore';
 import { getHistoricalResults } from './seedDataLoader';
 /**
  * State Data Dispatcher — Unified routing for all state-specific data
@@ -407,6 +408,41 @@ export function getHistoryForState(
   stateCode: string,
   acNo: number,
 ): ConstituencyHistoryEntry[] {
+  // 1. First priority: Pre-indexed, offline-verified podium store (1999–2024)
+  const podiumList = getHistoricalPodiumForConstituency(stateCode, acNo);
+  if (podiumList && podiumList.length > 0) {
+    return podiumList.map((p) => ({
+      year: p.year,
+      winner: p.winner?.name || '',
+      party: p.winner?.party || '',
+      winner_votes: p.winner?.votes,
+      winner_vote_share: p.winner?.voteShare,
+      first_runner_up_name: p.firstRunnerUp?.name,
+      first_runner_up_party: p.firstRunnerUp?.party,
+      first_runner_up_votes: p.firstRunnerUp?.votes,
+      first_runner_up_vote_share: p.firstRunnerUp?.voteShare,
+      margin_winner_to_runner_up_1: p.marginWinnerToRunnerUp1 ?? p.firstRunnerUp?.marginToWinner,
+      second_runner_up_name: p.secondRunnerUp?.name,
+      second_runner_up_party: p.secondRunnerUp?.party,
+      second_runner_up_votes: p.secondRunnerUp?.votes,
+      second_runner_up_vote_share: p.secondRunnerUp?.voteShare,
+      margin_winner_to_runner_up_2: p.marginWinnerToRunnerUp2 ?? p.secondRunnerUp?.marginToWinner,
+      margin_runner_up_1_to_runner_up_2: p.marginRunnerUp1ToRunnerUp2 ?? p.secondRunnerUp?.marginToFirstRunnerUp,
+      delimitation_id: p.delimitationId,
+      total_valid_votes: p.totalValidVotes,
+      localized_names_json: JSON.stringify({
+        winner: p.winner?.localizedNames,
+        ru1: p.firstRunnerUp?.localizedNames,
+        ru2: p.secondRunnerUp?.localizedNames,
+      }),
+      localized_parties_json: JSON.stringify({
+        winner: p.winner?.localizedParties,
+        ru1: p.firstRunnerUp?.localizedParties,
+        ru2: p.secondRunnerUp?.localizedParties,
+      }),
+    }));
+  }
+
   const sqliteRows = getHistoricalResults(stateCode, acNo);
   if (sqliteRows && sqliteRows.length > 0) {
     return sqliteRows.map((r) => ({

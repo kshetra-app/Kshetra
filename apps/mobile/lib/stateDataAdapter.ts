@@ -168,6 +168,19 @@ function genericAdapter(
     };
   }
 
+  if (stateCode === 'TS' && (c.acNo === 71 || c.name === 'Secunderabad Cantonment')) { // Secunderabad Cantonment (AC 71) by-election June 2024
+    effectiveCurrentParty = 'INC';
+    effectiveCurrentMLA = 'Sri Ganesh Narayanan';
+    officeholderStatus = 'BY_ELECTION_SEATED';
+    byElection = {
+      year: 2024,
+      month: 'June',
+      winnerName: 'Sri Ganesh Narayanan',
+      winnerParty: 'INC',
+      defeatedCandidateOrParty: 'BJP / BRS',
+    };
+  }
+
   const isStalePending = ['TN', 'KL', 'WB', 'AS', 'PY'].includes(stateCode);
   const isBiharPending = stateCode === 'BR';
   const dataStatus: 'CURRENT' | 'STALE_PENDING_INGESTION' | 'BY_ELECTION_UPDATED' = 

@@ -2831,184 +2831,226 @@ const ta = {
     "disputeFiled": "விவாதம் தாகலு சேயபடிம்தி",
     "disputeResolution": "விவாத பரிஷ்காரம்"
   },
+  "messages": {
+    "inbox": "நேரடிச் செய்திகள்",
+    "chats": "அரட்டைகள்",
+    "requests": "கோரிக்கைகள்",
+    "requestsDesc": "நீங்கள் பின்தொடராத கணக்குகளிலிருந்து வரும் செய்திகள். நீங்கள் ஏற்கும் வரை அனுப்புநருக்குத் தெரியாது.",
+    "noChats": "செயலில் உள்ள உரையாடல்கள் இல்லை",
+    "noChatsSub": "குடிமக்கள், தலைவர்கள் மற்றும் ஆர்வலர்களுடன் நேரடியாக இணையுங்கள்",
+    "noRequests": "நிலுவையில் உள்ள கோரிக்கைகள் இல்லை",
+    "noRequestsSub": "புதிய செய்திகள் இங்கு தோன்றும்",
+    "startChat": "உரையாடலைத் தொடங்குங்கள்",
+    "simulateRequest": "மாதிரிக் கோரிக்கையைப் பெறுங்கள்",
+    "newChat": "புதிய உரையாடல்",
+    "newConversation": "புதிய உரையாடல்",
+    "searchPlaceholder": "குடிமக்கள், தலைவர்கள் அல்லது ஆர்வலர்களைத் தேடுங்கள்...",
+    "allContacts": "அனைத்து தொடர்புகள்",
+    "leadersMinisters": "தலைவர்கள் & அமைச்சர்கள்",
+    "aspirants": "ஆர்வலர்கள்",
+    "citizens": "குடிமக்கள்",
+    "chat": "அரட்டை",
+    "request": "கோரிக்கை",
+    "sendRequest": "கோரிக்கை அனுப்பு",
+    "requestSent": "கோரிக்கை அனுப்பப்பட்டது",
+    "declineTitle": "செய்திக் கோரிக்கையை நிராகரி",
+    "declineConfirm": "இந்த உரையாடல் நீக்கப்படும். அனுப்புநருக்குத் தெரிவிக்கப்படாது.",
+    "decline": "நிராகரி",
+    "accept": "ஏற்றுக்கொள்",
+    "safetyOptions": "பாதுகாப்பு & கட்டுப்பாடு",
+    "safetyDesc": "உரையாடல் விருப்பங்கள்:",
+    "blockUser": "பயனரை முடக்கு",
+    "blockTitle": "முடக்குதலை உறுதிசெய்க",
+    "blockConfirm": "முடக்கப்பட்ட பயனர்கள் செய்தி அனுப்ப முடியாது.",
+    "block": "முடக்கு",
+    "reportUser": "புகாரளி",
+    "reportedTitle": "புகார் சமர்ப்பிக்கப்பட்டது",
+    "reportedDesc": "பாலிகிராமைப் பாதுகாப்பாக வைத்திருப்பதற்கு நன்றி.",
+    "requestPrompt": "செய்திக் கோரிக்கை: அரட்டைகளில் சேர்க்க ஏற்கவும், அல்லது நிராகரிக்கவும்.",
+    "typeMessage": "செய்தியைத் தட்டச்சு செய்க...",
+    "send": "அனுப்பு",
+    "messageRequest": "செய்திக் கோரிக்கை",
+    "noMessagesYet": "செய்திகள் எதுவும் இல்லை",
+    "mediaLocked": "மீடியா பூட்டப்பட்டுள்ளது.",
+    "unlockMedia": "மீடியாவைப் பார்"
+  },
   "discovery": {
-    "hubTitle": "POLIGRAM Discovery & Guide",
-    "hubSubtitle": "Explore goals, all features, and page guidance",
-    "goalsHeading": "What would you like to do?",
-    "directoryHeading": "Feature Directory",
-    "currentScreen": "Current Screen",
-    "howToUse": "How to use this screen:",
-    "searchPlaceholder": "Search features, goals, or help...",
-    "matchedGoals": "Matched Goals",
-    "matchedFeatures": "Matched Features",
-    "selectEntityRequired": "Select entity",
+    "hubTitle": "பாலிகிராம் கண்டறிதல் மற்றும் வழிகாட்டி",
+    "hubSubtitle": "இலக்குகள், அனைத்து அம்சங்கள் மற்றும் பக்க வழிகாட்டல்களை ஆராயுங்கள்",
+    "goalsHeading": "நீங்கள் என்ன செய்ய விரும்புகிறீர்கள்?",
+    "directoryHeading": "அம்சங்கள் அடைவு",
+    "currentScreen": "தற்போதைய திரை",
+    "howToUse": "இந்தத் திரையை எவ்வாறு பயன்படுத்துவது:",
+    "searchPlaceholder": "அம்சங்கள், இலக்குகள் அல்லது உதவியைத் தேடுங்கள்...",
+    "matchedGoals": "பொருந்திய இலக்குகள்",
+    "matchedFeatures": "பொருந்திய அம்சங்கள்",
+    "selectEntityRequired": "பிரிவைத் தேர்ந்தெடுக்கவும்",
     "categories": {
-      "civic": "Civic & Representation",
-      "media": "Community & Media",
-      "leadership": "Leadership & Campaigns",
-      "tools": "Tools & Account"
+      "civic": "குடிமை & பிரதிநிதித்துவம்",
+      "media": "சமூகம் & ஊடகம்",
+      "leadership": "தலைமைத்துவம் & பிரச்சாரங்கள்",
+      "tools": "கருவிகள் & கணக்கு"
     },
     "tabs": {
-      "goals": "Goals",
-      "directory": "Features",
-      "guide": "Page Help"
+      "goals": "இலக்குகள்",
+      "directory": "அம்சங்கள்",
+      "guide": "பக்க உதவி"
     },
     "goals": {
       "understandArea": {
-        "title": "Understand my area",
-        "desc": "Explore constituencies, mandals, local representatives, and live boundaries"
+        "title": "என் பகுதியை அறிந்து கொள்ளுங்கள்",
+        "desc": "தொகுதிகள், மண்டலங்கள், உள்ளூர் பிரதிநிதிகள் மற்றும் எல்லைகளை ஆராயுங்கள்"
       },
       "findRepresentatives": {
-        "title": "Find my representatives",
-        "desc": "Lookup MPs, MLAs, municipal councillors, and attendance records"
+        "title": "என் பிரதிநிதிகளைக் கண்டறியவும்",
+        "desc": "எம்.பி.க்கள், எம்.எல்.ஏ.க்கள், கவுன்சிலர்கள் மற்றும் வருகைப் பதிவேடுகளைத் தேடுங்கள்"
       },
       "stayInformed": {
-        "title": "Stay informed",
-        "desc": "Read verified news, watch civic live streams, and view policy briefs"
+        "title": "தகவலறிந்து இருங்கள்",
+        "desc": "சரிபார்க்கப்பட்ட செய்திகளைப் படியுங்கள், நேரலை ஒளிபரப்புகளைப் பாருங்கள்"
       },
       "participate": {
-        "title": "Participate in my community",
-        "desc": "Raise civic issues, engage in discussions, and vote in community polls"
+        "title": "என் சமூகத்தில் பங்கேற்கவும்",
+        "desc": "குடிமைப் பிரச்சனைகளை எழுப்புங்கள், விவாதங்களில் ஈடுபடுங்கள், வாக்கெடுப்பில் வாக்களியுங்கள்"
       },
       "electionsGov": {
-        "title": "Understand elections & governance",
-        "desc": "Track live election results, delimitation forecasts, and department alerts"
+        "title": "தேர்தல்கள் & நிர்வாகத்தைப் புரிந்து கொள்ளுங்கள்",
+        "desc": "நேரலைத் தேர்தல் முடிவுகள், தொகுதி மறுசீரமைப்பு மற்றும் துறைசார் அறிவிப்புகளைக் கண்காணிக்கவும்"
       },
       "leadershipJourney": {
-        "title": "Build a civic leadership journey",
-        "desc": "Enroll in Leadership Academy, verify as an aspirant, and create campaigns"
+        "title": "குடிமைத் தலைமைத்துவப் பயணம்",
+        "desc": "தலைமைத்துவ அகாடமியில் சேருங்கள், ஆர்வலராகச் சரிபார்க்கப்பட்டுப் பிரச்சாரங்களை உருவாக்குங்கள்"
       }
     },
     "features": {
       "civicDashboard": {
-        "desc": "Monitor local issues, political promises, and citizen sentiment"
+        "desc": "உள்ளூர் பிரச்சினைகள், அரசியல் வாக்குறுதிகள் மற்றும் குடிமக்கள் கருத்துக்களைக் கண்காணிக்கவும்"
       },
       "intelligence": {
-        "desc": "Statewide seat forecasts, party distribution, and defection analytics"
+        "desc": "மாநில அளவிலான இட முன்னறிவிப்புகள், கட்சி விநியோகம் மற்றும் கட்சித் தாவல் பகுப்பாய்வு"
       },
       "parliament": {
-        "desc": "Lok Sabha and Rajya Sabha members, debates, and questions"
+        "desc": "மக்களவை மற்றும் மாநிலங்களவை உறுப்பினர்கள், விவாதங்கள் மற்றும் கேள்விகள்"
       },
       "civicMetrics": {
-        "title": "Civic Metrics",
-        "desc": "Legislative attendance, fund utilization, and RTI disclosures"
+        "title": "குடிமை அளவீடுகள்",
+        "desc": "சட்டமன்ற வருகை, நிதிப் பயன்பாடு மற்றும் தகவல் அறியும் உரிமை வெளிப்பாடுகள்"
       },
       "localBodies": {
-        "title": "Local Bodies",
-        "desc": "Panchayats, municipal wards, and grassroots representatives"
+        "title": "உள்ளாட்சி அமைப்புகள்",
+        "desc": "பஞ்சாயத்துகள், நகராட்சி வார்டுகள் மற்றும் அடிமட்டப் பிரதிநிதிகள்"
       },
       "departments": {
-        "title": "Departments",
-        "desc": "Government department alerts, service delivery, and status tracking"
+        "title": "அரசுத் துறைகள்",
+        "desc": "அரசுத் துறை அறிவிப்புகள், சேவை வழங்கல் மற்றும் நிலை கண்காணிப்பு"
       },
       "delimitation": {
-        "desc": "Constituency boundary redrawing scenarios and demographic projections"
+        "desc": "தொகுதி மறுசீரமைப்பு காட்சிகள் மற்றும் மக்கள்தொகை கணிப்புகள்"
       },
       "liveElection": {
-        "desc": "Real-time vote shares, round-by-round counting, and seat leads"
+        "desc": "நிகழ்நேர வாக்கு சதவீதங்கள், சுற்று வாரியான வாக்கு எண்ணிக்கை மற்றும் முன்னிலை நிலவரம்"
       },
       "communityFeed": {
-        "desc": "Hyperlocal feed with discussion, polls, questions, and civic alerts"
+        "desc": "உள்ளூர் விவாதங்கள், வாக்கெடுப்புகள், கேள்விகள் மற்றும் குடிமை எச்சரிக்கைகள்"
       },
       "news": {
-        "desc": "Curated multilingual regional and national political news"
+        "desc": "சரிபார்க்கப்பட்ட பிராந்திய மற்றும் தேசிய அரசியல் செய்திகள்"
       },
       "newsroom": {
-        "title": "Journalist Newsroom",
-        "desc": "Fact checks, investigative reporting, and breaking bulletins"
+        "title": "பத்திரிகையாளர் செய்தியறை",
+        "desc": "உண்மைச் சரிபார்ப்புகள், புலனாய்வு அறிக்கைகள் மற்றும் முக்கியச் செய்திகள்"
       },
       "poligramLive": {
-        "desc": "Verified civic live streams, press briefings, and ground reports"
+        "desc": "சரிபார்க்கப்பட்ட குடிமை நேரலை ஒளிபரப்புகள் மற்றும் கள அறிக்கைகள்"
       },
       "shorts": {
-        "desc": "Short civic video updates, youth commentary, and event highlights"
+        "desc": "குறுகிய குடிமை வீடியோ புதுப்பிப்புகள் மற்றும் நிகழ்வு சிறப்பம்சங்கள்"
       },
       "pagesLeaders": {
-        "desc": "Candidate profiles, election manifestos, and verified aspirant pages"
+        "desc": "வேட்பாளர் சுயவிவரங்கள், தேர்தல் அறிக்கைகள் மற்றும் சரிபார்க்கப்பட்ட பக்கங்கள்"
       },
       "leadershipAcademy": {
-        "desc": "Civic curriculum, grassroots campaign skills, and aspirant scores"
+        "desc": "குடிமைப் பாடத்திட்டம், பிரச்சாரத் திறன்கள் மற்றும் மதிப்பீடுகள்"
       },
       "politicianPortal": {
-        "title": "Politician Portal",
-        "desc": "Official statements, constituent outreach, and survey management"
+        "title": "அரசியல்வாதி தளம்",
+        "desc": "அதிகாரப்பூர்வ அறிக்கைகள் மற்றும் வாக்காளர் கருத்துக்கணிப்புகள்"
       },
       "campaignManager": {
-        "desc": "Voter outreach, cadre coordination, and booth-level management"
+        "desc": "வாக்காளர் தொடர்பு மற்றும் பூத் அளவிலான மேலாண்மை"
       },
       "candidateXRay": {
-        "desc": "Electoral affidavit scanner and historical criminal/asset records"
+        "desc": "வேட்பாளர் தேர்தல் பிரமாணப் பத்திரம் மற்றும் சொத்து/குற்றப் பதிவுகள்"
       },
       "search": {
-        "desc": "Global search across constituencies, representatives, issues, and posts"
+        "desc": "தொகுதிகள், பிரதிநிதிகள், பிரச்சனைகள் மற்றும் பதிவுகளுக்கான உலகளாவிய தேடல்"
       },
       "aiAssistant": {
-        "desc": "Responsible AI assistant for constituency data and parliamentary questions"
+        "desc": "தொகுதித் தரவுகள் மற்றும் பாராளுமன்றக் கேள்விகளுக்கான பொறுப்பான AI உதவியாளர்"
       },
       "profile": {
-        "desc": "Personalized settings, verified credentials, and activity ledger"
+        "desc": "தனிப்பயனாக்கப்பட்ட அமைப்புகள், சரிபார்க்கப்பட்ட சான்றுகள் மற்றும் செயல்பாட்டுப் பதிவு"
       },
       "messages": {
-        "title": "Messages",
-        "desc": "Direct citizen and constituent messaging with safety controls"
+        "title": "செய்திகள்",
+        "desc": "குடிமக்கள் மற்றும் பிரதிநிதிகளுக்கிடையேயான நேரடிச் செய்திப் பரிமாற்றம்"
       },
       "notifications": {
-        "desc": "Civic updates, emergency alerts, and legislative tracking notices"
+        "desc": "குடிமைப் புதுப்பிப்புகள், அவசர எச்சரிக்கைகள் மற்றும் சட்டமன்ற அறிவிப்புகள்"
       },
       "notificationSettings": {
-        "desc": "Custom notification categories, quiet hours, and frequency preferences"
+        "desc": "தனிப்பயன் அறிவிப்பு வகைகள் மற்றும் விருப்பத்தேர்வுகள்"
       },
       "moderation": {
-        "desc": "Grievance officer and moderator review queue for flagged content"
+        "desc": "புகார் தீர்க்கும் அதிகாரி மற்றும் உள்ளடக்க மதிப்பாய்வு வரிசை"
       }
     },
     "guides": {
       "map": {
-        "title": "Map Discovery Guide",
-        "purpose": "Navigate constituencies, election results, and geographic boundaries across India.",
-        "step1": "Pinch or scroll to zoom into any assembly or parliamentary constituency.",
-        "step2": "Tap a constituency polygon to view representative details, victory margin, and voting trends.",
-        "step3": "Use floating adaptive controls to toggle 3D terrain, historical elections, and delimitation impact.",
-        "caveat": "All boundaries are strictly validated against official Delimitation Commission schedules."
+        "title": "வரைபடக் கண்டறிதல் வழிகாட்டி",
+        "purpose": "இந்தியா முழுவதும் உள்ள தொகுதிகள், தேர்தல் முடிவுகள் மற்றும் புவியியல் எல்லைகளை ஆராயுங்கள்.",
+        "step1": "எந்தவொரு சட்டமன்ற அல்லது நாடாளுமன்றத் தொகுதியையும் பெரிதாக்க விரிக்கவும் அல்லது உருட்டவும்.",
+        "step2": "பிரதிநிதி விவரங்கள், வெற்றி விளிம்பு மற்றும் வாக்களிப்புப் போக்குகளைக் காண ஒரு தொகுதியைத் தட்டவும்.",
+        "step3": "3D நிலப்பரப்பு, வரலாற்றுத் தேர்தல்கள் மற்றும் எல்லை மாற்றங்களைக் காண மிதக்கும் கட்டுப்பாடுகளைப் பயன்படுத்தவும்.",
+        "caveat": "அனைத்து எல்லைகளும் அதிகாரப்பூர்வ தொகுதி மறுசீரமைப்பு ஆணைய அட்டவணைகளின்படி சரிபார்க்கப்பட்டவை."
       },
       "explore": {
-        "title": "Explore Constituencies Guide",
-        "purpose": "Search, filter, and compare all assembly constituencies within your active state.",
-        "step1": "Search by constituency name, AC number, or MLA candidate.",
-        "step2": "Filter by political party, district, or reservation status.",
-        "step3": "Tap any result to open its full civic intelligence and historical profile.",
-        "caveat": "State changes instantly clear invalid district and party filters to preserve data integrity."
+        "title": "தொகுதிகள் ஆய்வு வழிகாட்டி",
+        "purpose": "உங்கள் மாநிலத்தில் உள்ள அனைத்து சட்டமன்றத் தொகுதிகளையும் தேடவும், வடிகட்டவும் மற்றும் ஒப்பிடவும்.",
+        "step1": "தொகுதி பெயர், எண் அல்லது எம்எல்ஏ வேட்பாளர் மூலம் தேடுங்கள்.",
+        "step2": "அரசியல் கட்சி, மாவட்டம் அல்லது இடஒதுக்கீடு நிலை மூலம் வடிகட்டவும்.",
+        "step3": "முழுமையான குடிமை நுண்ணறிவு மற்றும் வரலாற்று விவரங்களைக் காண ஏதேனும் ஒரு முடிவைத் தட்டவும்.",
+        "caveat": "மாநிலத்தை மாற்றும்போது தரவு ஒருமைப்பாட்டைப் பாதுகாக்க வடிகட்டிகள் தானாக மீட்டமைக்கப்படும்."
       },
       "community": {
-        "title": "Community Hub Guide",
-        "purpose": "Connect with local citizens, watch civic live streams, and participate in grassroots dialogues.",
-        "step1": "Switch between Feed, Shorts, and Live broadcast segments.",
-        "step2": "Read discussions, answer polls, and report community civic issues.",
-        "step3": "Tap direct messages or notifications to interact securely with other verified citizens.",
-        "caveat": "All discussions adhere strictly to DPDP compliance and civic moderation standards."
+        "title": "சமூக மையம் வழிகாட்டி",
+        "purpose": "உள்ளூர் குடிமக்களுடன் இணையுங்கள், நேரலை ஸ்ட்ரீம்களைப் பாருங்கள் மற்றும் விவாதங்களில் பங்கேற்கவும்.",
+        "step1": "ஃபீட், ஷார்ட்ஸ் மற்றும் நேரலை ஒளிபரப்புப் பிரிவுகளுக்கு இடையே மாறவும்.",
+        "step2": "விவாதங்களைப் படியுங்கள், கருத்துக்கணிப்புகளுக்குப் பதிலளியுங்கள் மற்றும் குடிமைப் பிரச்சனைகளைப் புகாரளிக்கவும்.",
+        "step3": "பிற சரிபார்க்கப்பட்ட குடிமக்களுடன் பாதுகாப்பாகத் தொடர்பு கொள்ள நேரடிச் செய்திகளைத் தட்டவும்.",
+        "caveat": "அனைத்து விவாதங்களும் DPDP இணக்கம் மற்றும் குடிமை நெறிமுறைகளுக்கு உட்பட்டவை."
       },
       "news": {
-        "title": "News Feed Guide",
-        "purpose": "Read multi-source political and civic news curated for your constituency and state.",
-        "step1": "Filter stories by language, category, or geographic scope.",
-        "step2": "Tap any story to read in the reader view or bookmark for later.",
-        "step3": "Check verified journalist badges and fact-checking disclosures.",
-        "caveat": "Stories are aggregated from verified media publishers without algorithmic bias."
+        "title": "செய்தி ஓடை வழிகாட்டி",
+        "purpose": "உங்கள் தொகுதி மற்றும் மாநிலத்திற்கான தேர்ந்தெடுக்கப்பட்ட அரசியல் மற்றும் குடிமைச் செய்திகளைப் படியுங்கள்.",
+        "step1": "மொழி, வகை அல்லது புவியியல் வரம்பு மூலம் செய்திகளை வடிகட்டவும்.",
+        "step2": "செய்தியை முழுமையாகப் படிக்க அல்லது பின்னர் படிக்க சேமிக்க தட்டவும்.",
+        "step3": "சரிபார்க்கப்பட்ட பத்திரிகையாளர் பேட்ஜ்கள் மற்றும் உண்மைச் சரிபார்ப்புகளைச் சரிபார்க்கவும்.",
+        "caveat": "செய்திகள் அல்காரிதமிக் சார்பு இல்லாமல் நம்பகமான ஊடக நிறுவனங்களிலிருந்து தொகுக்கப்படுகின்றன."
       },
       "more": {
-        "title": "Feature Directory Guide",
-        "purpose": "Access all specialized civic modules, election tools, and account preferences.",
-        "step1": "Browse categorized feature sections: Civic, Media, Leadership, and Tools.",
-        "step2": "Tap What would you like to do to explore goal-oriented guided pathways.",
-        "step3": "Access developer switches, language options, and grievance officer queues."
+        "title": "அம்சங்கள் அடைவு வழிகாட்டி",
+        "purpose": "அனைத்து சிறப்பு குடிமை தொகுதிகள், தேர்தல் கருவிகள் மற்றும் கணக்கு விருப்பங்களை அணுகவும்.",
+        "step1": "பிரிவுகளாகப் பிரிக்கப்பட்ட அம்சங்களை உலாவுக: குடிமை, ஊடகம், தலைமைத்துவம் மற்றும் கருவிகள்.",
+        "step2": "வழிகாட்டப்பட்ட பாதைகளை ஆராய நீங்கள் என்ன செய்ய விரும்புகிறீர்கள் என்பதைத் தட்டவும்.",
+        "step3": "டெவலப்பர் சுவிட்சுகள், மொழி விருப்பங்கள் மற்றும் குறைதீர்க்கும் வரிசைகளை அணுகவும்."
       },
       "profile": {
-        "title": "Profile & Settings Guide",
-        "purpose": "Manage your civic identity, notification preferences, language, and verification status.",
-        "step1": "Complete Contributor Verification (KYC) to participate in candidate details editing.",
-        "step2": "Configure language preferences across 13 supported Indian languages.",
-        "step3": "Manage push notification categories and inspect your activity history.",
-        "caveat": "Your personal data is encrypted and strictly protected under DPDP Act provisions."
+        "title": "சுயவிவரம் & அமைப்புகள் வழிகாட்டி",
+        "purpose": "உங்கள் குடிமை அடையாளம், அறிவிப்பு விருப்பங்கள், மொழி மற்றும் சரிபார்ப்பு நிலையை நிர்வகிக்கவும்.",
+        "step1": "வேட்பாளர் விவரங்களைத் திருத்த பங்களிப்பாளர் சரிபார்ப்பை (KYC) முடிக்கவும்.",
+        "step2": "13 ஆதரிக்கப்படும் இந்திய மொழிகளில் மொழி விருப்பங்களை உள்ளமைக்கவும்.",
+        "step3": "புஷ் அறிவிப்பு வகைகளை நிர்வகிக்கவும் மற்றும் உங்கள் செயல்பாட்டு வரலாற்றை ஆய்வு செய்யவும்."
       }
     }
   },

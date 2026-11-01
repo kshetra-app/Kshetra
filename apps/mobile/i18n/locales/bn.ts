@@ -2831,184 +2831,226 @@ const bn = {
     "disputeFiled": "বিবাদ দর্জ কিযা গযা",
     "disputeResolution": "বিবাদ সমাধান"
   },
+  "messages": {
+    "inbox": "সরাসরি বার্তা",
+    "chats": "চ্যাট",
+    "requests": "অনুরোধ",
+    "requestsDesc": "যে অ্যাকাউন্টগুলি আপনি অনুসরণ করেন না তাদের বার্তা।",
+    "noChats": "কোনো কথোপকথন নেই",
+    "noChatsSub": "নাগরিক এবং নেতাদের সাথে সরাসরি যোগাযোগ করুন",
+    "noRequests": "কোনো মুলতুবি অনুরোধ নেই",
+    "noRequestsSub": "নতুন বার্তা এখানে উপস্থিত হবে",
+    "startChat": "কথোপকথন শুরু করুন",
+    "simulateRequest": "নমুনা অনুরোধ পান",
+    "newChat": "নতুন কথোপকথন",
+    "newConversation": "নতুন কথোপকথন",
+    "searchPlaceholder": "নাগরিক বা নেতাদের অনুসন্ধান করুন...",
+    "allContacts": "সমস্ত পরিচিতি",
+    "leadersMinisters": "নেতা ও মন্ত্রীগণ",
+    "aspirants": "প্রার্থী",
+    "citizens": "নাগরিক",
+    "chat": "চ্যাট",
+    "request": "অনুরোধ",
+    "sendRequest": "অনুরোধ পাঠান",
+    "requestSent": "অনুরোধ পাঠানো হয়েছে",
+    "declineTitle": "বার্তা অনুরোধ প্রত্যাখ্যান করুন",
+    "declineConfirm": "এই কথোপকথন সরানো হবে।",
+    "decline": "প্রত্যাখ্যান করুন",
+    "accept": "গ্রহণ করুন",
+    "safetyOptions": "নিরাপত্তা ও সংযম",
+    "safetyDesc": "কথোপকথন বিকল্প:",
+    "blockUser": "ব্যবহারকারীকে ব্লক করুন",
+    "blockTitle": "ব্লক নিশ্চিত করুন",
+    "blockConfirm": "ব্লক করা ব্যবহারকারীরা বার্তা পাঠাতে পারবেন না।",
+    "block": "ব্লক",
+    "reportUser": "রিপোর্ট করুন",
+    "reportedTitle": "রিপোর্ট জমা হয়েছে",
+    "reportedDesc": "পলিগ্রাম নিরাপদ রাখার জন্য ধন্যবাদ।",
+    "requestPrompt": "বার্তা অনুরোধ: গ্রহণ করুন বা প্রত্যাখ্যান করুন।",
+    "typeMessage": "একটি বার্তা টাইপ করুন...",
+    "send": "পাঠান",
+    "messageRequest": "বার্তা অনুরোধ",
+    "noMessagesYet": "এখনও কোনো বার্তা নেই",
+    "mediaLocked": "মিডিয়া লক করা আছে।",
+    "unlockMedia": "মিডিয়া দেখুন"
+  },
   "discovery": {
-    "hubTitle": "POLIGRAM Discovery & Guide",
-    "hubSubtitle": "Explore goals, all features, and page guidance",
-    "goalsHeading": "What would you like to do?",
-    "directoryHeading": "Feature Directory",
-    "currentScreen": "Current Screen",
-    "howToUse": "How to use this screen:",
-    "searchPlaceholder": "Search features, goals, or help...",
-    "matchedGoals": "Matched Goals",
-    "matchedFeatures": "Matched Features",
-    "selectEntityRequired": "Select entity",
+    "hubTitle": "পলিগ্রাম আবিষ্কার ও নির্দেশিকা",
+    "hubSubtitle": "লক্ষ্য, সমস্ত বৈশিষ্ট্য এবং পৃষ্ঠা নির্দেশিকা অন্বেষণ করুন",
+    "goalsHeading": "আপনি কি করতে চান?",
+    "directoryHeading": "বৈশিষ্ট্য ডিরেক্টরি",
+    "currentScreen": "বর্তমান পর্দা",
+    "howToUse": "এই স্ক্রিনটি কীভাবে ব্যবহার করবেন:",
+    "searchPlaceholder": "বৈশিষ্ট্য, লক্ষ্য বা সাহায্য অনুসন্ধান করুন...",
+    "matchedGoals": "মিলে যাওয়া লক্ষ্য",
+    "matchedFeatures": "মিলে যাওয়া বৈশিষ্ট্য",
+    "selectEntityRequired": "বিভাগ নির্বাচন করুন",
     "categories": {
-      "civic": "Civic & Representation",
-      "media": "Community & Media",
-      "leadership": "Leadership & Campaigns",
-      "tools": "Tools & Account"
+      "civic": "নাগরিক ও প্রতিনিধিত্ব",
+      "media": "সম্প্রদায় ও মিডিয়া",
+      "leadership": "নেতৃত্ব ও প্রচারণা",
+      "tools": "টুলস ও অ্যাকাউন্ট"
     },
     "tabs": {
-      "goals": "Goals",
-      "directory": "Features",
-      "guide": "Page Help"
+      "goals": "লক্ষ্য",
+      "directory": "বৈশিষ্ট্য",
+      "guide": "পৃষ্ঠা সাহায্য"
     },
     "goals": {
       "understandArea": {
-        "title": "Understand my area",
-        "desc": "Explore constituencies, mandals, local representatives, and live boundaries"
+        "title": "আমার এলাকা বুঝুন",
+        "desc": "নির্বাচনী এলাকা, স্থানীয় প্রতিনিধি এবং সীমানা অন্বেষণ করুন"
       },
       "findRepresentatives": {
-        "title": "Find my representatives",
-        "desc": "Lookup MPs, MLAs, municipal councillors, and attendance records"
+        "title": "আমার প্রতিনিধিদের খুঁজুন",
+        "desc": "সাংসদ, বিধায়ক, কাউন্সিলর এবং উপস্থিতির রেকর্ড দেখুন"
       },
       "stayInformed": {
-        "title": "Stay informed",
-        "desc": "Read verified news, watch civic live streams, and view policy briefs"
+        "title": "অবগত থাকুন",
+        "desc": "যাচাইকৃত খবর পড়ুন, নাগরিক লাইভ স্ট্রিম দেখুন"
       },
       "participate": {
-        "title": "Participate in my community",
-        "desc": "Raise civic issues, engage in discussions, and vote in community polls"
+        "title": "আমার সম্প্রদায়ে অংশ নিন",
+        "desc": "নাগরিক সমস্যা উত্থাপন করুন, আলোচনায় যোগ দিন, পোলে ভোট দিন"
       },
       "electionsGov": {
-        "title": "Understand elections & governance",
-        "desc": "Track live election results, delimitation forecasts, and department alerts"
+        "title": "নির্বাচন ও শাসনব্যবস্থা বুঝুন",
+        "desc": "লাইভ নির্বাচনের ফলাফল, সীমানা পুনর্নির্ধারণ পূর্বাভাস দেখুন"
       },
       "leadershipJourney": {
-        "title": "Build a civic leadership journey",
-        "desc": "Enroll in Leadership Academy, verify as an aspirant, and create campaigns"
+        "title": "নাগরিক নেতৃত্বের যাত্রা",
+        "desc": "লিডারশিপ একাডেমিতে যোগ দিন এবং প্রচারণা তৈরি করুন"
       }
     },
     "features": {
       "civicDashboard": {
-        "desc": "Monitor local issues, political promises, and citizen sentiment"
+        "desc": "স্থানীয় সমস্যা, রাজনৈতিক প্রতিশ্রুতি এবং জনমত পর্যবেক্ষণ করুন"
       },
       "intelligence": {
-        "desc": "Statewide seat forecasts, party distribution, and defection analytics"
+        "desc": "রাজ্যব্যাপী আসন পূর্বাভাস, দলীয় বণ্টন ও দলবদল বিশ্লেষণ"
       },
       "parliament": {
-        "desc": "Lok Sabha and Rajya Sabha members, debates, and questions"
+        "desc": "লোকসভা ও রাজ্যসভার সদস্য, বিতর্ক এবং প্রশ্নাবলী"
       },
       "civicMetrics": {
-        "title": "Civic Metrics",
-        "desc": "Legislative attendance, fund utilization, and RTI disclosures"
+        "title": "নাগরিক পরিমাপক",
+        "desc": "বিধানসভার উপস্থিতি, তহবিল ব্যবহার ও তথ্যের অধিকার প্রকাশ"
       },
       "localBodies": {
-        "title": "Local Bodies",
-        "desc": "Panchayats, municipal wards, and grassroots representatives"
+        "title": "স্থানীয় সংস্থা",
+        "desc": "পঞ্চায়েত, পৌর ওয়ার্ড এবং তৃণমূল স্তরের প্রতিনিধি"
       },
       "departments": {
-        "title": "Departments",
-        "desc": "Government department alerts, service delivery, and status tracking"
+        "title": "সরকারি বিভাগ",
+        "desc": "সরকারি বিভাগের সতর্কতা, পরিষেবা প্রদান ও স্থিতি ট্র্যাকিং"
       },
       "delimitation": {
-        "desc": "Constituency boundary redrawing scenarios and demographic projections"
+        "desc": "সীমানা পুনর্নির্ধারণ পরিস্থিতি ও জনসংখ্যার প্রক্ষেপণ"
       },
       "liveElection": {
-        "desc": "Real-time vote shares, round-by-round counting, and seat leads"
+        "desc": "রিয়েল-টাইম ভোট শেয়ার ও রাউন্ড অনুযায়ী ফলাফল"
       },
       "communityFeed": {
-        "desc": "Hyperlocal feed with discussion, polls, questions, and civic alerts"
+        "desc": "স্থানীয় আলোচনা, পোল, প্রশ্ন এবং সতর্কতা"
       },
       "news": {
-        "desc": "Curated multilingual regional and national political news"
+        "desc": "যাচাইকৃত আঞ্চলিক ও জাতীয় রাজনৈতিক সংবাদ"
       },
       "newsroom": {
-        "title": "Journalist Newsroom",
-        "desc": "Fact checks, investigative reporting, and breaking bulletins"
+        "title": "সাংবাদিক নিউজরুম",
+        "desc": "ফ্যাক্ট চেক, অনুসন্ধানী প্রতিবেদন ও ব্রেকিং নিউজ"
       },
       "poligramLive": {
-        "desc": "Verified civic live streams, press briefings, and ground reports"
+        "desc": "যাচাইকৃত নাগরিক লাইভ স্ট্রিম ও ফিল্ড রিপোর্ট"
       },
       "shorts": {
-        "desc": "Short civic video updates, youth commentary, and event highlights"
+        "desc": "সংক্ষিপ্ত নাগরিক ভিডিও আপডেট"
       },
       "pagesLeaders": {
-        "desc": "Candidate profiles, election manifestos, and verified aspirant pages"
+        "desc": "প্রার্থী প্রোফাইল, ইশতেহার ও যাচাইকৃত পেজ"
       },
       "leadershipAcademy": {
-        "desc": "Civic curriculum, grassroots campaign skills, and aspirant scores"
+        "desc": "নাগরিক পাঠ্যক্রম ও প্রচারণা দক্ষতা"
       },
       "politicianPortal": {
-        "title": "Politician Portal",
-        "desc": "Official statements, constituent outreach, and survey management"
+        "title": "রাজনীতিবিদ পোর্টাল",
+        "desc": "অফিসিয়াল বিবৃতি ও ভোটার সমীক্ষা"
       },
       "campaignManager": {
-        "desc": "Voter outreach, cadre coordination, and booth-level management"
+        "desc": "ভোটারদের কাছে পৌঁছানো ও বুথ স্তরের ব্যবস্থাপনা"
       },
       "candidateXRay": {
-        "desc": "Electoral affidavit scanner and historical criminal/asset records"
+        "desc": "নির্বাচনী হলফনামা ও অপরাধ/সম্পদ রেকর্ড"
       },
       "search": {
-        "desc": "Global search across constituencies, representatives, issues, and posts"
+        "desc": "নির্বাচনী এলাকা, প্রতিনিধি ও পোস্টের বৈশ্বিক অনুসন্ধান"
       },
       "aiAssistant": {
-        "desc": "Responsible AI assistant for constituency data and parliamentary questions"
+        "desc": "নির্বাচনী ডেটার জন্য দায়িত্বশীল এআই সহকারী"
       },
       "profile": {
-        "desc": "Personalized settings, verified credentials, and activity ledger"
+        "desc": "ব্যক্তিগতকৃত সেটিংস ও যাচাইকৃত প্রমাণপত্র"
       },
       "messages": {
-        "title": "Messages",
-        "desc": "Direct citizen and constituent messaging with safety controls"
+        "title": "বার্তা",
+        "desc": "নাগরিক ও প্রতিনিধিদের মধ্যে সরাসরি বার্তা"
       },
       "notifications": {
-        "desc": "Civic updates, emergency alerts, and legislative tracking notices"
+        "desc": "নাগরিক আপডেট ও জরুরি সতর্কতা"
       },
       "notificationSettings": {
-        "desc": "Custom notification categories, quiet hours, and frequency preferences"
+        "desc": "বিজ্ঞপ্তি বিভাগ ও পছন্দসমূহ"
       },
       "moderation": {
-        "desc": "Grievance officer and moderator review queue for flagged content"
+        "desc": "অভিযোগ কর্মকর্তা ও বিষয়বস্তু পর্যালোচনা"
       }
     },
     "guides": {
       "map": {
-        "title": "Map Discovery Guide",
-        "purpose": "Navigate constituencies, election results, and geographic boundaries across India.",
-        "step1": "Pinch or scroll to zoom into any assembly or parliamentary constituency.",
-        "step2": "Tap a constituency polygon to view representative details, victory margin, and voting trends.",
-        "step3": "Use floating adaptive controls to toggle 3D terrain, historical elections, and delimitation impact.",
-        "caveat": "All boundaries are strictly validated against official Delimitation Commission schedules."
+        "title": "মানচিত্র অন্বেষণ নির্দেশিকা",
+        "purpose": "ভারত জুড়ে নির্বাচনী এলাকা, নির্বাচনের ফলাফল এবং ভৌগোলিক সীমানা অন্বেষণ করুন।",
+        "step1": "যেকোনো নির্বাচনী এলাকায় জুম করতে পিঞ্চ বা স্ক্রোল করুন।",
+        "step2": "প্রতিনিধি বিবরণ এবং ভোটের প্রবণতা দেখতে একটি এলাকায় ট্যাপ করুন।",
+        "step3": "3D দৃশ্য এবং ঐতিহাসিক নির্বাচন দেখতে নিয়ন্ত্রণ ব্যবহার করুন।",
+        "caveat": "সমস্ত সীমানা আনুষ্ঠানিকভাবে যাচাইকৃত।"
       },
       "explore": {
-        "title": "Explore Constituencies Guide",
-        "purpose": "Search, filter, and compare all assembly constituencies within your active state.",
-        "step1": "Search by constituency name, AC number, or MLA candidate.",
-        "step2": "Filter by political party, district, or reservation status.",
-        "step3": "Tap any result to open its full civic intelligence and historical profile.",
-        "caveat": "State changes instantly clear invalid district and party filters to preserve data integrity."
+        "title": "নির্বাচনী এলাকা নির্দেশিকা",
+        "purpose": "আপনার রাজ্যের সমস্ত নির্বাচনী এলাকা খুঁজুন, ফিল্টার করুন এবং তুলনা করুন।",
+        "step1": "এলাকার নাম, নম্বর বা বিধায়ক প্রার্থীর দ্বারা অনুসন্ধান করুন।",
+        "step2": "রাজনৈতিক দল বা জেলা অনুযায়ী ফিল্টার করুন।",
+        "step3": "সম্পূর্ণ প্রোফাইল দেখতে যেকোনো ফলাফলে ট্যাপ করুন।",
+        "caveat": "রাজ্য পরিবর্তন করলে ফিল্টার স্বয়ংক্রিয়ভাবে রিসেট হবে।"
       },
       "community": {
-        "title": "Community Hub Guide",
-        "purpose": "Connect with local citizens, watch civic live streams, and participate in grassroots dialogues.",
-        "step1": "Switch between Feed, Shorts, and Live broadcast segments.",
-        "step2": "Read discussions, answer polls, and report community civic issues.",
-        "step3": "Tap direct messages or notifications to interact securely with other verified citizens.",
-        "caveat": "All discussions adhere strictly to DPDP compliance and civic moderation standards."
+        "title": "কমিউনিটি হাব নির্দেশিকা",
+        "purpose": "স্থানীয় নাগরিকদের সাথে সংযোগ করুন এবং আলোচনায় অংশ নিন।",
+        "step1": "ফিড, শর্টস এবং লাইভ বিভাগের মধ্যে পরিবর্তন করুন।",
+        "step2": "আলোচনা পড়ুন এবং সমস্যা রিপোর্ট করুন।",
+        "step3": "অন্যান্য যাচাইকৃত নাগরিকদের সাথে নিরাপদ বার্তা পাঠান।",
+        "caveat": "সমস্ত আলোচনা নাগরিক শালীনতা মেনে চলা আবশ্যক।"
       },
       "news": {
-        "title": "News Feed Guide",
-        "purpose": "Read multi-source political and civic news curated for your constituency and state.",
-        "step1": "Filter stories by language, category, or geographic scope.",
-        "step2": "Tap any story to read in the reader view or bookmark for later.",
-        "step3": "Check verified journalist badges and fact-checking disclosures.",
-        "caveat": "Stories are aggregated from verified media publishers without algorithmic bias."
+        "title": "সংবাদ ফিড নির্দেশিকা",
+        "purpose": "আপনার এলাকার জন্য রাজনৈতিক সংবাদ পড়ুন।",
+        "step1": "ভাষা বা বিভাগ অনুসারে ফিল্টার করুন।",
+        "step2": "সম্পূর্ণ খবর পড়তে ট্যাপ করুন।",
+        "step3": "ফ্যাক্ট চেক ও সাংবাদিক ব্যাজ পরীক্ষা করুন।",
+        "caveat": "সংবাদ বিশ্বস্ত সূত্র থেকে সংগৃহীত হয়।"
       },
       "more": {
-        "title": "Feature Directory Guide",
-        "purpose": "Access all specialized civic modules, election tools, and account preferences.",
-        "step1": "Browse categorized feature sections: Civic, Media, Leadership, and Tools.",
-        "step2": "Tap What would you like to do to explore goal-oriented guided pathways.",
-        "step3": "Access developer switches, language options, and grievance officer queues."
+        "title": "বৈশিষ্ট্য ডিরেক্টরি নির্দেশিকা",
+        "purpose": "সমস্ত নাগরিক মডিউল এবং নির্বাচন সরঞ্জাম অ্যাক্সেস করুন।",
+        "step1": "বিভাগ ব্রাউজ করুন।",
+        "step2": "নির্দেশিত পথ অন্বেষণ করুন।",
+        "step3": "ভাষা এবং সেটিংস পরিবর্তন করুন।"
       },
       "profile": {
-        "title": "Profile & Settings Guide",
-        "purpose": "Manage your civic identity, notification preferences, language, and verification status.",
-        "step1": "Complete Contributor Verification (KYC) to participate in candidate details editing.",
-        "step2": "Configure language preferences across 13 supported Indian languages.",
-        "step3": "Manage push notification categories and inspect your activity history.",
-        "caveat": "Your personal data is encrypted and strictly protected under DPDP Act provisions."
+        "title": "প্রোফাইল ও সেটিংস নির্দেশিকা",
+        "purpose": "আপনার নাগরিক পরিচয় ও ভাষা পরিচালনা করুন।",
+        "step1": "তথ্য সম্পাদনা করতে যাচাইকরণ সম্পূর্ণ করুন।",
+        "step2": "১৩টি ভারতীয় ভাষার মধ্যে ভাষা বেছে নিন।",
+        "step3": "বিজ্ঞপ্তি পরিচালনা করুন।"
       }
     }
   },
