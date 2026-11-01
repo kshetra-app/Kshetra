@@ -24,9 +24,10 @@ type ShortsScope = 'constituency' | 'state' | 'national';
 
 export interface ShortsScreenProps {
   hideHeader?: boolean;
+  searchQuery?: string;
 }
 
-export default function ShortsScreen({ hideHeader = false }: ShortsScreenProps = {}) {
+export default function ShortsScreen({ hideHeader = false, searchQuery = '' }: ShortsScreenProps = {}) {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
@@ -53,8 +54,19 @@ export default function ShortsScreen({ hideHeader = false }: ShortsScreenProps =
     } else {
       list = list.filter((s) => s.visibilityLevel === 'national');
     }
+    if (searchQuery && searchQuery.trim().length > 0) {
+      const q = searchQuery.trim().toLowerCase();
+      list = list.filter(
+        (s) =>
+          (s.title && s.title.toLowerCase().includes(q)) ||
+          (s.channelName && s.channelName.toLowerCase().includes(q)) ||
+          (s.description && s.description.toLowerCase().includes(q)) ||
+          (s.hashtags && s.hashtags.some((tag: string) => tag.toLowerCase().includes(q))) ||
+          (s.districtName && s.districtName.toLowerCase().includes(q)),
+      );
+    }
     return list;
-  }, [allShorts, scope, stateCode, userConstituencyId]);
+  }, [allShorts, scope, stateCode, userConstituencyId, searchQuery]);
 
   const openShort = useCallback((index: number) => {
     setSelectedIndex(index);

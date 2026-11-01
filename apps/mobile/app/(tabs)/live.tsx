@@ -33,9 +33,10 @@ const CATEGORY_ORDER: CategoryFilter[] = [
 
 export interface LiveTabScreenProps {
   hideHeader?: boolean;
+  searchQuery?: string;
 }
 
-export default function LiveTabScreen({ hideHeader = false }: LiveTabScreenProps = {}) {
+export default function LiveTabScreen({ hideHeader = false, searchQuery = '' }: LiveTabScreenProps = {}) {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -56,9 +57,18 @@ export default function LiveTabScreen({ hideHeader = false }: LiveTabScreenProps
       if (freshness === 'live' && e.status !== 'live') return false;
       if (freshness === 'replay' && e.status === 'live') return false;
       if (verifiedOnly && e.accreditationTier === 'citizen') return false;
+      if (searchQuery && searchQuery.trim().length > 0) {
+        const q = searchQuery.trim().toLowerCase();
+        const matchesReporter = e.reporterName?.toLowerCase().includes(q);
+        const matchesOrg = e.organizationName?.toLowerCase().includes(q);
+        const matchesLoc = e.districtName?.toLowerCase().includes(q) || e.locality?.toLowerCase().includes(q);
+        const matchesTag = e.tags?.some((t: string) => t.toLowerCase().includes(q));
+        const matchesHeadline = e.ai?.autoHeadline?.toLowerCase().includes(q) || e.ai?.summary?.toLowerCase().includes(q);
+        if (!matchesReporter && !matchesOrg && !matchesLoc && !matchesTag && !matchesHeadline) return false;
+      }
       return true;
     });
-  }, [events, category, freshness, verifiedOnly]);
+  }, [events, category, freshness, verifiedOnly, searchQuery]);
 
   const liveCount = events.filter((e) => e.status === 'live').length;
 

@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, TextInput } from 'react-native';
+import { useFeedStore } from '../../stores/feed';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -50,6 +51,8 @@ export default function CommunityScreen() {
   // In-memory state only (never persisted, resets to feed on unmount/entry)
   const [activeSegment, setActiveSegment] = useState<CommunitySegment>('feed');
   const [showDiscoveryHub, setShowDiscoveryHub] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [universalSearchQuery, setUniversalSearchQuery] = useState('');
 
   // Live count for real-time red dot badge
   const liveEvents = useLiveExchangeStore(useShallow((s) => s.getLiveTabFeed()));
@@ -97,6 +100,19 @@ export default function CommunityScreen() {
     }
     return activeSegment;
   }, [activeSegment, visibleSegments]);
+
+  const searchPlaceholder = useMemo(() => {
+    if (effectiveSegment === 'feed') return t('feed.searchPlaceholder', { defaultValue: 'Search discussions, news, #tags...' });
+    if (effectiveSegment === 'shorts') return t('shorts.searchPlaceholder', { defaultValue: 'Search shorts, creators, topics...' });
+    return t('lmx.searchPlaceholder', { defaultValue: 'Search live rooms, issues, speakers...' });
+  }, [effectiveSegment, t]);
+
+  const handleSearchChange = (text: string) => {
+    setUniversalSearchQuery(text);
+    if (effectiveSegment === 'feed') {
+      useFeedStore.getState().setSearchQuery(text);
+    }
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -148,6 +164,24 @@ export default function CommunityScreen() {
             )}
           </Pressable>
 
+          {/* Universal Search (Search across Feed, Shorts, Live) */}
+          <Pressable
+            style={[
+              styles.headerIconButton,
+              { backgroundColor: colors.background, borderColor: colors.border },
+              (searchOpen || universalSearchQuery.length > 0) && { borderColor: colors.primary, backgroundColor: colors.primary + '18' },
+            ]}
+            onPress={() => setSearchOpen((v) => !v)}
+            hitSlop={8}
+            accessibilityLabel="Universal Search"
+          >
+            <Ionicons
+              name={searchOpen ? 'close' : 'search'}
+              size={19}
+              color={(searchOpen || universalSearchQuery.length > 0) ? colors.primary : colors.text}
+            />
+          </Pressable>
+
           {/* DM Paper-Plane -> /messages (Dedicated Unread Count, never merged) */}
           <Pressable
             style={[styles.headerIconButton, { backgroundColor: colors.background, borderColor: colors.border }]}
@@ -166,6 +200,27 @@ export default function CommunityScreen() {
           </Pressable>
         </View>
       </View>
+
+      {/* Universal Expandable Search Bar */}
+      {searchOpen && (
+        <View style={[styles.universalSearchBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+          <Ionicons name="search" size={16} color={colors.primary} />
+          <TextInput
+            style={[styles.universalSearchInput, { color: colors.text }]}
+            placeholder={searchPlaceholder}
+            placeholderTextColor={colors.textMuted}
+            value={universalSearchQuery}
+            onChangeText={handleSearchChange}
+            autoFocus
+            clearButtonMode="while-editing"
+          />
+          {universalSearchQuery.length > 0 && (
+            <Pressable onPress={() => handleSearchChange('')} hitSlop={6}>
+              <Ionicons name="close-circle" size={16} color={colors.textMuted} />
+            </Pressable>
+          )}
+        </View>
+      )}
 
       {/* Horizontal Segmented Control (Feed | Shorts | Live) */}
       <View
@@ -232,8 +287,8 @@ export default function CommunityScreen() {
       {/* Content Area */}
       <View style={styles.contentArea}>
         {effectiveSegment === 'feed' && <FeedScreen hideHeader />}
-        {effectiveSegment === 'shorts' && <ShortsScreen hideHeader />}
-        {effectiveSegment === 'live' && <LiveTabScreen hideHeader />}
+        {effectiveSegment === 'shorts' && <ShortsScreen hideHeader searchQuery={universalSearchQuery} />}
+        {effectiveSegment === 'live' && <LiveTabScreen hideHeader searchQuery={universalSearchQuery} />}
       </View>
     
       <DiscoveryHubSheet
@@ -296,6 +351,19 @@ const styles = StyleSheet.create({
   },
   contentArea: {
     flex: 1,
+  },
+  universalSearchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    gap: 10,
+  },
+  universalSearchInput: {
+    flex: 1,
+    fontSize: 13,
+    paddingVertical: 4,
   },
   persistentHeader: {
     flexDirection: 'row',

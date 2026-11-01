@@ -225,7 +225,7 @@ export default function ExploreScreen() {
           >
             <Ionicons name="sparkles" size={20} color={colors.gold} />
             <Text style={[styles.quickNavText, { color: colors.text }]} numberOfLines={2}>
-              {t('exploreExtended.aiChat', { defaultValue: 'AI Chat' })}
+              {t('exploreExtended.aiChatAndSearch', { defaultValue: 'AI Chat & AI Search' })}
             </Text>
           </Pressable>
           <Pressable
@@ -248,7 +248,8 @@ export default function ExploreScreen() {
           </Pressable>
         </View>
 
-        {/* AI Smart Search toggle */}
+        {/* Archived until further notice: AI Smart Search (consolidated into AI Chat & AI Search) */}
+        {/*
         <View style={styles.aiSearchToggleRow}>
           <Pressable
             style={[
@@ -279,6 +280,7 @@ export default function ExploreScreen() {
             }} />
           </View>
         )}
+        */}
       </View>
     );
   }, [stateCode, query, filtered.length, colors, t, router, showAISearch]);

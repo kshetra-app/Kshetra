@@ -7,7 +7,12 @@ import {
   Pressable,
   RefreshControl,
   Share,
+  Modal,
 } from 'react-native';
+import { getUnifiedConstituenciesForState } from '../../lib/stateDataAdapter';
+import { useActiveStateStore } from '../../stores/activeState';
+import StateSwitcher from '../../components/StateSwitcher';
+import type { AspirantProfile } from '../../lib/aspirantTypes';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -43,6 +48,13 @@ export default function PagesScreen() {
   const [helpVisible, setHelpVisible] = useState(false);
   const [verifiedPoliticians, setVerifiedPoliticians] = useState<any[]>([]);
   const [loadingPoliticians, setLoadingPoliticians] = useState(false);
+  const [selectedAspirant, setSelectedAspirant] = useState<AspirantProfile | null>(null);
+
+  const stateCode = useActiveStateStore((s) => s.stateCode);
+  const stateRepresentatives = useMemo(() => {
+    const list = getUnifiedConstituenciesForState(stateCode === 'IN' ? 'AP' : stateCode);
+    return list.slice(0, 35);
+  }, [stateCode]);
 
   const authUser = useAuthStore((s) => s.user);
   const userProfile = useUserProfileStore((s) => s.profile);
@@ -227,7 +239,11 @@ export default function PagesScreen() {
             {publicAspirants.map((asp) => {
               const isEndorsed = endorsedIds.includes(asp.id);
               return (
-                <View key={asp.id} style={[styles.aspirantCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <Pressable
+                  key={asp.id}
+                  style={[styles.aspirantCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                  onPress={() => setSelectedAspirant(asp)}
+                >
                   <View style={styles.aspirantTopRow}>
                     <View style={[styles.aspirantAvatar, { backgroundColor: colors.primary + '20' }]}>
                       <Text style={[styles.avatarInitial, { color: colors.primary }]}>
@@ -269,6 +285,16 @@ export default function PagesScreen() {
 
                   <View style={styles.cardActions}>
                     <Pressable
+                      style={[styles.btnViewPage, { borderColor: colors.primary }]}
+                      onPress={() => setSelectedAspirant(asp)}
+                    >
+                      <Ionicons name="person-outline" size={14} color={colors.primary} />
+                      <Text style={[styles.btnViewPageText, { color: colors.primary }]}>
+                        {t('pages.viewPage', { defaultValue: 'View Page' })}
+                      </Text>
+                    </Pressable>
+
+                    <Pressable
                       style={[
                         styles.btnEndorse,
                         isEndorsed
@@ -295,7 +321,7 @@ export default function PagesScreen() {
                       </Text>
                     </Pressable>
                   </View>
-                </View>
+                </Pressable>
               );
             })}
           </View>
@@ -304,77 +330,114 @@ export default function PagesScreen() {
         {/* ─── TAB 2: POLITICIANS & REPRESENTATIVES ─── */}
         {activeTab === 'politicians' && (
           <View style={styles.tabContent}>
-            <Text style={[styles.sectionHeading, { color: colors.text }]}>
-              {t('pages.registeredPoliticians', { defaultValue: 'Registered Representatives & Parties' })}
-            </Text>
-            {verifiedPoliticians.length > 0 ? (
-              verifiedPoliticians.map((p) => (
-                <View
-                  key={p.id || p.user_id}
-                  style={[styles.aspirantCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
-                >
-                  <View style={styles.aspirantTopRow}>
-                    <View style={[styles.aspirantAvatar, { backgroundColor: colors.primary }]}>
-                      <Text style={[styles.avatarInitial, { color: '#FFFFFF' }]}>
-                        {(p.display_name || 'R').charAt(0).toUpperCase()}
-                      </Text>
-                    </View>
-                    <View style={{ flex: 1, marginLeft: 12 }}>
-                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Text style={[styles.aspirantName, { color: colors.text }]}>{p.display_name}</Text>
-                        <Ionicons name="checkmark-circle" size={16} color="#10B981" style={{ marginLeft: 4 }} />
-                      </View>
-                      <Text style={[styles.aspirantSeat, { color: colors.textMuted }]}>
-                        {p.constituency ? `${p.constituency} · ` : ''}{p.state || t('pages.verifiedOfficial', { defaultValue: 'Verified Representative' })}
-                      </Text>
-                    </View>
-                  </View>
-                  {p.bio ? (
-                    <Text style={[styles.aspirantBio, { color: colors.textSecondary }]} numberOfLines={2}>
-                      {p.bio}
-                    </Text>
-                  ) : null}
-                  <View style={styles.cardActions}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+              <Text style={[styles.sectionHeading, { color: colors.text, marginBottom: 0 }]}>
+                {t('pages.registeredPoliticians', { defaultValue: 'Elected Representatives & Leaders' })}
+              </Text>
+              <StateSwitcher />
+            </View>
+
+            {/* State Elected MLAs & Officials */}
+            {stateRepresentatives.length > 0 && (
+              <View style={{ marginBottom: 16 }}>
+                <Text style={{ fontSize: 11, fontWeight: '700', color: colors.textMuted, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                  {t('pages.sittingMlas', { defaultValue: 'Sitting MLAs & Officials' })} ({stateRepresentatives.length})
+                </Text>
+                {stateRepresentatives.map((c) => {
+                  const repName = c.currentMLA || c.winnerName;
+                  const partyName = c.currentParty || c.winnerParty;
+                  const legislatorId = `${c.stateCode}-AC-${c.acNo}`;
+                  return (
                     <Pressable
-                      style={[styles.btnEndorse, { backgroundColor: colors.primary, borderColor: colors.primary }]}
-                      onPress={() => router.push(`/user/${p.user_id}` as any)}
+                      key={c.acNo}
+                      style={[styles.aspirantCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                      onPress={() => router.push(`/legislator/${legislatorId}` as any)}
                     >
-                      <Ionicons name="person-outline" size={14} color="#FFFFFF" />
-                      <Text style={[styles.btnEndorseText, { color: '#FFFFFF' }]}>
-                        {t('pages.viewProfile', { defaultValue: 'View Profile' })}
-                      </Text>
+                      <View style={styles.aspirantTopRow}>
+                        <View style={[styles.aspirantAvatar, { backgroundColor: colors.primary }]}>
+                          <Text style={[styles.avatarInitial, { color: '#FFFFFF' }]}>
+                            {repName.charAt(0)}
+                          </Text>
+                        </View>
+                        <View style={{ flex: 1, marginLeft: 12 }}>
+                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                            <Text style={[styles.aspirantName, { color: colors.text }]}>{repName}</Text>
+                            <Ionicons name="checkmark-circle" size={15} color="#10B981" />
+                          </View>
+                          <Text style={[styles.aspirantSeat, { color: colors.textMuted }]}>
+                            {c.name} ({c.district}) · MLA
+                          </Text>
+                        </View>
+                        <View style={[styles.scoreBadge, { backgroundColor: colors.primaryLight }]}>
+                          <Text style={[styles.scoreText, { color: colors.primary, fontWeight: '800' }]}>
+                            {partyName}
+                          </Text>
+                        </View>
+                      </View>
+
+                      <View style={styles.cardActions}>
+                        <Pressable
+                          style={[styles.btnEndorse, { backgroundColor: colors.primary, borderColor: colors.primary }]}
+                          onPress={() => router.push(`/legislator/${legislatorId}` as any)}
+                        >
+                          <Ionicons name="document-text-outline" size={14} color="#FFFFFF" />
+                          <Text style={[styles.btnEndorseText, { color: '#FFFFFF' }]}>
+                            {t('pages.viewDossier', { defaultValue: 'View Dossier & Track Record' })}
+                          </Text>
+                        </Pressable>
+                      </View>
                     </Pressable>
-                  </View>
-                </View>
-              ))
-            ) : (
-              <View style={[styles.createPromptCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                <Ionicons name="shield-checkmark-outline" size={44} color={colors.textMuted} />
-                <Text style={[styles.promptTitle, { color: colors.text }]}>
-                  {t('pages.noPoliticiansTitle', { defaultValue: 'No Verified Representatives Yet' })}
+                  );
+                })}
+              </View>
+            )}
+
+            {/* Verified Supabase Politicians if any */}
+            {verifiedPoliticians.length > 0 && (
+              <View>
+                <Text style={{ fontSize: 11, fontWeight: '700', color: colors.textMuted, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                  {t('pages.verifiedLeaders', { defaultValue: 'Verified Party Profiles' })}
                 </Text>
-                <Text style={[styles.promptDesc, { color: colors.textMuted }]}>
-                  {t('pages.noPoliticiansDesc', {
-                    defaultValue: 'Official elected representatives and verified party leaders will appear here once authenticated on Poligram. Real public figures require KYC verification.',
-                  })}
-                </Text>
-                <Pressable
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    backgroundColor: colors.primary,
-                    paddingVertical: 11,
-                    paddingHorizontal: 20,
-                    borderRadius: 22,
-                    marginTop: 14,
-                  }}
-                  onPress={() => setRegisterVisible(true)}
-                >
-                  <Ionicons name="person-add-outline" size={16} color="#FFFFFF" style={{ marginRight: 6 }} />
-                  <Text style={{ color: '#FFFFFF', fontSize: 13, fontWeight: '800' }}>
-                    {t('pages.registerAspirant', { defaultValue: 'Register as Candidate / Aspirant' })}
-                  </Text>
-                </Pressable>
+                {verifiedPoliticians.map((p) => (
+                  <Pressable
+                    key={p.id || p.user_id}
+                    style={[styles.aspirantCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                    onPress={() => router.push(`/user/${p.user_id}` as any)}
+                  >
+                    <View style={styles.aspirantTopRow}>
+                      <View style={[styles.aspirantAvatar, { backgroundColor: colors.primary }]}>
+                        <Text style={[styles.avatarInitial, { color: '#FFFFFF' }]}>
+                          {(p.display_name || 'R').charAt(0).toUpperCase()}
+                        </Text>
+                      </View>
+                      <View style={{ flex: 1, marginLeft: 12 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          <Text style={[styles.aspirantName, { color: colors.text }]}>{p.display_name}</Text>
+                          <Ionicons name="checkmark-circle" size={16} color="#10B981" style={{ marginLeft: 4 }} />
+                        </View>
+                        <Text style={[styles.aspirantSeat, { color: colors.textMuted }]}>
+                          {p.constituency ? `${p.constituency} · ` : ''}{p.state || t('pages.verifiedOfficial', { defaultValue: 'Verified Representative' })}
+                        </Text>
+                      </View>
+                    </View>
+                    {p.bio ? (
+                      <Text style={[styles.aspirantBio, { color: colors.textSecondary }]} numberOfLines={2}>
+                        {p.bio}
+                      </Text>
+                    ) : null}
+                    <View style={styles.cardActions}>
+                      <Pressable
+                        style={[styles.btnEndorse, { backgroundColor: colors.primary, borderColor: colors.primary }]}
+                        onPress={() => router.push(`/user/${p.user_id}` as any)}
+                      >
+                        <Ionicons name="person-outline" size={14} color="#FFFFFF" />
+                        <Text style={[styles.btnEndorseText, { color: '#FFFFFF' }]}>
+                          {t('pages.viewProfile', { defaultValue: 'View Profile' })}
+                        </Text>
+                      </Pressable>
+                    </View>
+                  </Pressable>
+                ))}
               </View>
             )}
           </View>
@@ -535,6 +598,170 @@ export default function PagesScreen() {
         onClose={() => setHelpVisible(false)}
         sourceScreen="pages"
       />
+
+      {/* Interactive Aspirant Dossier & Manifesto Modal */}
+      <Modal
+        visible={!!selectedAspirant}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setSelectedAspirant(null)}
+      >
+        {selectedAspirant && (
+          <View style={[styles.modalContainer, { backgroundColor: colors.background }]}>
+            <View style={[styles.modalHeaderRow, { borderBottomColor: colors.border, backgroundColor: colors.surface }]}>
+              <Text style={[styles.modalHeaderTitle, { color: colors.text }]}>
+                {t('pages.candidateProfile', { defaultValue: 'Civic Candidate Page' })}
+              </Text>
+              <Pressable onPress={() => setSelectedAspirant(null)} hitSlop={10}>
+                <Ionicons name="close" size={22} color={colors.text} />
+              </Pressable>
+            </View>
+
+            <ScrollView contentContainerStyle={styles.modalScrollContent}>
+              {/* Profile Hero */}
+              <View style={[styles.modalHeroCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <View style={[styles.modalAvatar, { backgroundColor: colors.primary + '20' }]}>
+                  <Text style={[styles.modalAvatarInitial, { color: colors.primary }]}>
+                    {selectedAspirant.displayName.charAt(0)}
+                  </Text>
+                </View>
+                <Text style={[styles.modalName, { color: colors.text }]}>{selectedAspirant.displayName}</Text>
+                <View style={[styles.pillTarget, { backgroundColor: colors.primary + '18' }]}>
+                  <Ionicons name="flag-outline" size={13} color={colors.primary} />
+                  <Text style={[styles.pillTargetText, { color: colors.primary }]}>
+                    {selectedAspirant.targetConstituencyName
+                      ? `Candidate for ${selectedAspirant.targetConstituencyName} (${selectedAspirant.targetElectionYear})`
+                      : 'Civic Aspirant'}
+                  </Text>
+                </View>
+                {selectedAspirant.bio && (
+                  <Text style={[styles.modalBio, { color: colors.textSecondary }]}>
+                    {selectedAspirant.bio}
+                  </Text>
+                )}
+              </View>
+
+              {/* Civic Score & Track Record */}
+              <View style={[styles.modalSectionCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <View style={styles.scoreTopRow}>
+                  <Ionicons name="trophy" size={22} color="#16A34A" />
+                  <View style={{ marginLeft: 10 }}>
+                    <Text style={[styles.scoreValue, { color: colors.text }]}>
+                      {selectedAspirant.civicScore} Points
+                    </Text>
+                    <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>
+                      Civic Standing Score
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.metricsGrid}>
+                  <View style={styles.metricBox}>
+                    <Text style={[styles.metricNumber, { color: colors.primary }]}>
+                      {selectedAspirant.issuesReported}
+                    </Text>
+                    <Text style={[styles.metricTitle, { color: colors.textMuted }]}>
+                      Issues Raised
+                    </Text>
+                  </View>
+                  <View style={styles.metricBox}>
+                    <Text style={[styles.metricNumber, { color: '#16A34A' }]}>
+                      {selectedAspirant.communityEndorsements}
+                    </Text>
+                    <Text style={[styles.metricTitle, { color: colors.textMuted }]}>
+                      Endorsements
+                    </Text>
+                  </View>
+                  <View style={styles.metricBox}>
+                    <Text style={[styles.metricNumber, { color: '#D97706' }]}>
+                      {selectedAspirant.modulesCompleted}
+                    </Text>
+                    <Text style={[styles.metricTitle, { color: colors.textMuted }]}>
+                      Modules Done
+                    </Text>
+                  </View>
+                </View>
+              </View>
+
+              {/* Primary Action Buttons */}
+              <View style={styles.modalActionButtons}>
+                {/* 1. Endorse */}
+                <Pressable
+                  style={[
+                    styles.primaryActionBtn,
+                    endorsedIds.includes(selectedAspirant.id)
+                      ? { backgroundColor: '#DCFCE7', borderColor: '#86EFAC' }
+                      : { backgroundColor: colors.primary },
+                  ]}
+                  onPress={() => endorseAspirant(selectedAspirant.id, authUser?.id)}
+                  disabled={endorsedIds.includes(selectedAspirant.id)}
+                >
+                  <Ionicons
+                    name={endorsedIds.includes(selectedAspirant.id) ? 'checkmark-circle' : 'thumbs-up'}
+                    size={18}
+                    color={endorsedIds.includes(selectedAspirant.id) ? '#16A34A' : '#FFFFFF'}
+                  />
+                  <Text
+                    style={[
+                      styles.primaryActionText,
+                      { color: endorsedIds.includes(selectedAspirant.id) ? '#16A34A' : '#FFFFFF' },
+                    ]}
+                  >
+                    {endorsedIds.includes(selectedAspirant.id)
+                      ? t('pages.endorsed', { defaultValue: 'Endorsed' })
+                      : t('pages.endorseCandidate', { defaultValue: 'Endorse Candidate (+5 pts)' })}
+                  </Text>
+                </Pressable>
+
+                {/* 2. Direct Message / Chat */}
+                <Pressable
+                  style={[styles.secondaryActionBtn, { backgroundColor: colors.surface, borderColor: colors.primary }]}
+                  onPress={() => {
+                    setSelectedAspirant(null);
+                    router.push('/messages' as any);
+                  }}
+                >
+                  <Ionicons name="chatbubbles-outline" size={18} color={colors.primary} />
+                  <Text style={[styles.secondaryActionText, { color: colors.primary }]}>
+                    {t('pages.directMessage', { defaultValue: 'Message Candidate' })}
+                  </Text>
+                </Pressable>
+
+                {/* 3. View Target Constituency */}
+                {selectedAspirant.targetConstituencyAcNo ? (
+                  <Pressable
+                    style={[styles.secondaryActionBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                    onPress={() => {
+                      const acId = `${selectedAspirant.stateCode || 'TS'}-AC-${selectedAspirant.targetConstituencyAcNo}`;
+                      setSelectedAspirant(null);
+                      router.push(`/constituency/${acId}` as any);
+                    }}
+                  >
+                    <Ionicons name="map-outline" size={18} color={colors.text} />
+                    <Text style={[styles.secondaryActionText, { color: colors.text }]}>
+                      {t('pages.viewConstituency', { defaultValue: 'View Constituency Map & Data' })}
+                    </Text>
+                  </Pressable>
+                ) : null}
+
+                {/* 4. Share */}
+                <Pressable
+                  style={[styles.secondaryActionBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                  onPress={() => {
+                    Share.share({
+                      message: `Check out ${selectedAspirant.displayName}'s civic candidate page on Poligram: https://kshetra.app/aspirant/${selectedAspirant.id}`,
+                    }).catch(() => {});
+                  }}
+                >
+                  <Ionicons name="share-outline" size={18} color={colors.text} />
+                  <Text style={[styles.secondaryActionText, { color: colors.text }]}>
+                    {t('common.share', { defaultValue: 'Share Page' })}
+                  </Text>
+                </Pressable>
+              </View>
+            </ScrollView>
+          </View>
+        )}
+      </Modal>
     </View>
   );
 }
@@ -616,7 +843,89 @@ const styles = StyleSheet.create({
   statItem: { alignItems: 'center' },
   statValue: { fontSize: 14, fontWeight: '800' },
   statLabel: { fontSize: 11, marginTop: 2 },
-  cardActions: { marginTop: 10, flexDirection: 'row', justifyContent: 'flex-end' },
+  cardActions: { marginTop: 10, flexDirection: 'row', justifyContent: 'flex-end', gap: 8 },
+  btnViewPage: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  btnViewPageText: { fontSize: 12, fontWeight: '700' },
+  modalContainer: { flex: 1 },
+  modalHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+  },
+  modalHeaderTitle: { fontSize: 16, fontWeight: '800' },
+  modalScrollContent: { padding: 16, paddingBottom: 60 },
+  modalHeroCard: {
+    borderRadius: 14,
+    padding: 18,
+    borderWidth: 1,
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  modalAvatar: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10,
+  },
+  modalAvatarInitial: { fontSize: 26, fontWeight: '900' },
+  modalName: { fontSize: 18, fontWeight: '800', marginBottom: 4 },
+  pillTarget: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginVertical: 6,
+  },
+  pillTargetText: { fontSize: 12, fontWeight: '700' },
+  modalBio: { fontSize: 13, lineHeight: 19, textAlign: 'center', marginTop: 8 },
+  modalSectionCard: {
+    borderRadius: 14,
+    padding: 16,
+    borderWidth: 1,
+    marginBottom: 14,
+  },
+  scoreTopRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
+  scoreValue: { fontSize: 16, fontWeight: '800' },
+  scoreLabel: { fontSize: 11 },
+  metricsGrid: { flexDirection: 'row', justifyContent: 'space-around', paddingTop: 8, borderTopWidth: 0.5, borderColor: '#CBD5E1' },
+  metricBox: { alignItems: 'center' },
+  metricNumber: { fontSize: 16, fontWeight: '800' },
+  metricTitle: { fontSize: 11, marginTop: 2 },
+  modalActionButtons: { gap: 10, marginTop: 8 },
+  primaryActionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 13,
+    borderRadius: 12,
+  },
+  primaryActionText: { fontSize: 14, fontWeight: '800' },
+  secondaryActionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  secondaryActionText: { fontSize: 13, fontWeight: '700' },
   btnEndorse: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -114,6 +114,7 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
   const userId = user?.id ?? 'anon';
 
   const stateCode = useActiveStateStore((s) => s.stateCode);
+  const setStateCode = useActiveStateStore((s) => s.setStateCode);
   const rawStateName = (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode;
   const stateName = getLocalizedStateName(stateCode, i18n.language, rawStateName);
   const myHome = useMyConstituencyStore((s) => s.home);
@@ -244,13 +245,15 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
     i18n.language,
   ]);
 
-  // Scope label in header
-  const scopeLabel = useMemo(() => {
+  // Unified Location / Region label in header
+  const unifiedLocationLabel = useMemo(() => {
     if (scopeFilter === 'constituency') {
-      return effectiveConstituencyName || t('feed.selectConstituency');
+      return `📍 ${effectiveConstituencyName || t('common.scopes.myConstituency', { defaultValue: 'My Area' })}`;
     }
-    if (scopeFilter === 'state') return stateName;
-    return t('common.scopes.allIndia');
+    if (scopeFilter === 'state') {
+      return `🏛️ ${stateName}`;
+    }
+    return t('common.scopes.allIndia', { defaultValue: '🇮🇳 All India' });
   }, [scopeFilter, effectiveConstituencyName, stateName, t]);
 
   const handleRefresh = useCallback(async () => {
@@ -346,55 +349,49 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
         </View>
       )}
 
-      {/* Unified Compact Control Strip (Replaces 2 stacked headers & rails) */}
-      <View
-        style={[
-          styles.compactControlStrip,
-          {
-            paddingTop: hideHeader ? 6 : 8,
-            borderBottomColor: colors.border,
-            backgroundColor: colors.surface,
-          },
-        ]}
-      >
-        {/* Left: Scope Selector Pill */}
-        <Pressable
-          style={[
-            styles.scopePill,
-            { backgroundColor: colors.background, borderColor: colors.goldBorder || colors.border },
-            scopeFilter !== 'national' && { borderColor: colors.primary, backgroundColor: colors.primary + '18' },
+      {/* Sliding Control Strip (Horizontally scrollable — handles Telugu, long labels, and multiple items smoothly) */}
+      <View style={{ backgroundColor: colors.surface, borderBottomWidth: 1, borderBottomColor: colors.border }}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={[
+            styles.compactControlStrip,
+            {
+              paddingTop: hideHeader ? 6 : 8,
+              backgroundColor: colors.surface,
+            },
           ]}
-          onPress={() => {
-            tapLight();
-            if (scopeFilter === 'constituency' && !effectiveConstituencyId) {
-              setConstituencySheetVisible(true);
-            } else {
-              setShowScopeModal(true);
-            }
-          }}
-          accessibilityRole="button"
-          accessibilityLabel="Feed Scope"
         >
-          <Ionicons
-            name={scopeFilter === 'national' ? 'globe-outline' : scopeFilter === 'state' ? 'map-outline' : 'location-outline'}
-            size={13}
-            color={scopeFilter !== 'national' ? colors.primary : colors.textSecondary}
-          />
-          <Text
+          {/* Unified Location & Scope Selector Pill */}
+          <Pressable
             style={[
-              styles.scopePillText,
-              { color: scopeFilter !== 'national' ? colors.primary : colors.textSecondary },
+              styles.scopePill,
+              { backgroundColor: colors.background, borderColor: colors.goldBorder || colors.border },
+              scopeFilter !== 'national' && { borderColor: colors.primary, backgroundColor: colors.primary + '18' },
             ]}
-            numberOfLines={1}
+            onPress={() => {
+              tapLight();
+              setShowScopeModal(true);
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Feed Location"
           >
-            {scopeLabel}
-          </Text>
-          <Ionicons name="chevron-down" size={10} color={colors.textMuted} />
-        </Pressable>
-
-        {/* Right: Actions (State Switcher, Sort, Verified, Search, Pages) */}
-        <View style={styles.stripActions}>
-          <StateSwitcher />
+            <Ionicons
+              name={scopeFilter === 'national' ? 'globe-outline' : scopeFilter === 'state' ? 'map-outline' : 'location-outline'}
+              size={13}
+              color={scopeFilter !== 'national' ? colors.primary : colors.textSecondary}
+            />
+            <Text
+              style={[
+                styles.scopePillText,
+                { color: scopeFilter !== 'national' ? colors.primary : colors.textSecondary },
+              ]}
+              numberOfLines={1}
+            >
+              {unifiedLocationLabel}
+            </Text>
+            <Ionicons name="chevron-down" size={10} color={colors.textMuted} />
+          </Pressable>
 
           {/* Sort Selector Pill */}
           <Pressable
@@ -458,32 +455,11 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
             />
           </Pressable>
 
-          {/* Search Toggle */}
+          {/* Pages & Leaders Shortcut (Moved here where Search was) */}
           <Pressable
             style={[
               styles.iconBtnSmall,
-              { backgroundColor: colors.background, borderColor: colors.border },
-              (searchOpen || searchQuery.length > 0) && { borderColor: colors.primary, backgroundColor: colors.primary + '20' },
-            ]}
-            onPress={() => {
-              tapLight();
-              setSearchOpen(!searchOpen);
-            }}
-            accessibilityRole="button"
-            accessibilityLabel="Search Feed"
-          >
-            <Ionicons
-              name={searchOpen ? 'close' : 'search'}
-              size={15}
-              color={searchOpen || searchQuery.length > 0 ? colors.primary : colors.textMuted}
-            />
-          </Pressable>
-
-          {/* Pages & Leaders Shortcut */}
-          <Pressable
-            style={[
-              styles.iconBtnSmall,
-              { backgroundColor: colors.background, borderColor: colors.border },
+              { backgroundColor: colors.background, borderColor: colors.goldBorder || colors.border },
             ]}
             onPress={() => {
               tapLight();
@@ -494,29 +470,8 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
           >
             <Ionicons name="people-outline" size={15} color={colors.primary} />
           </Pressable>
-        </View>
+        </ScrollView>
       </View>
-
-      {/* Expandable Live Search Bar */}
-      {searchOpen && (
-        <View style={[styles.searchBarRow, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
-          <Ionicons name="search" size={15} color={colors.textMuted} />
-          <TextInput
-            style={[styles.searchInput, { color: colors.text }]}
-            placeholder={t('feed.searchPlaceholder', 'Search discussions, news, #tags...')}
-            placeholderTextColor={colors.textMuted}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            autoFocus
-            clearButtonMode="while-editing"
-          />
-          {searchQuery.length > 0 && (
-            <Pressable onPress={() => setSearchQuery('')}>
-              <Ionicons name="close-circle" size={15} color={colors.textMuted} />
-            </Pressable>
-          )}
-        </View>
-      )}
 
       {/* Single Clean Post Type Category Rail */}
       <View style={styles.categoryRailContainer}>
@@ -756,7 +711,7 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
         <Ionicons name="create" size={22} color="#FFFFFF" />
       </Pressable>
 
-      {/* Modal: Scope Selector */}
+      {/* Modal: Unified Feed Region & Location Selector */}
       <Modal
         visible={showScopeModal}
         transparent
@@ -764,58 +719,107 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
         onRequestClose={() => setShowScopeModal(false)}
       >
         <Pressable style={styles.modalBackdrop} onPress={() => setShowScopeModal(false)}>
-          <View style={[styles.modalSheet, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <View style={[styles.modalSheet, { backgroundColor: colors.surface, borderColor: colors.border, maxHeight: '82%' }]}>
             <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: colors.text }]}>Select Geographic Scope</Text>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>
+                {t('feed.selectRegion', { defaultValue: 'Select Feed Location' })}
+              </Text>
               <Pressable onPress={() => setShowScopeModal(false)} hitSlop={10}>
                 <Ionicons name="close" size={20} color={colors.textMuted} />
               </Pressable>
             </View>
-            <View style={styles.modalList}>
-              {SCOPE_OPTIONS.map((opt) => {
-                const active = scopeFilter === opt.key;
-                const disabled = stateCode === 'IN' && (opt.key === 'state' || opt.key === 'constituency');
-                let label = t(opt.tKey);
-                if (opt.key === 'state') label = stateName;
-                if (opt.key === 'constituency' && effectiveConstituencyName) label = effectiveConstituencyName;
 
-                return (
-                  <Pressable
-                    key={opt.key}
-                    disabled={disabled}
-                    style={[
-                      styles.modalOption,
-                      { borderColor: colors.border },
-                      active && { backgroundColor: colors.primary + '15', borderColor: colors.primary },
-                      disabled && { opacity: 0.4 },
-                    ]}
-                    onPress={() => {
-                      tapLight();
-                      setShowScopeModal(false);
-                      handleScopePress(opt.key);
-                    }}
-                  >
-                    <View style={styles.modalOptionLeft}>
-                      <Ionicons
-                        name={opt.icon as any}
-                        size={18}
-                        color={active ? colors.primary : colors.textSecondary}
-                      />
-                      <Text
-                        style={[
-                          styles.modalOptionText,
-                          { color: active ? colors.primary : colors.text },
-                          active && { fontWeight: '700' },
-                        ]}
-                      >
-                        {label}
+            <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 400 }}>
+              <View style={styles.modalList}>
+                {/* 1. All India */}
+                <Pressable
+                  style={[
+                    styles.modalOption,
+                    { borderColor: colors.border },
+                    scopeFilter === 'national' && { backgroundColor: colors.primary + '15', borderColor: colors.primary },
+                  ]}
+                  onPress={() => {
+                    tapLight();
+                    setScopeFilter('national');
+                    setShowScopeModal(false);
+                  }}
+                >
+                  <View style={styles.modalOptionLeft}>
+                    <Ionicons name="globe-outline" size={18} color={scopeFilter === 'national' ? colors.primary : colors.textSecondary} />
+                    <View style={{ marginLeft: 10 }}>
+                      <Text style={[styles.modalOptionText, { color: scopeFilter === 'national' ? colors.primary : colors.text, fontWeight: scopeFilter === 'national' ? '700' : '500' }]}>
+                        {t('common.scopes.allIndia', { defaultValue: '🇮🇳 All India (National)' })}
                       </Text>
+                      <Text style={{ fontSize: 11, color: colors.textMuted }}>National political discussions & news</Text>
                     </View>
-                    {active && <Ionicons name="checkmark-circle" size={18} color={colors.primary} />}
-                  </Pressable>
-                );
-              })}
-            </View>
+                  </View>
+                  {scopeFilter === 'national' && <Ionicons name="checkmark-circle" size={18} color={colors.primary} />}
+                </Pressable>
+
+                {/* 2. State Feed Selector */}
+                <View style={{ marginTop: 10, marginBottom: 4 }}>
+                  <Text style={{ fontSize: 11, fontWeight: '700', color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>
+                    {t('common.scopes.state', { defaultValue: '🏛️ State Discussions & Feeds' })}
+                  </Text>
+                  {Object.values(STATES).map((st) => {
+                    const isCurrent = stateCode === st.code && scopeFilter === 'state';
+                    return (
+                      <Pressable
+                        key={st.code}
+                        style={[
+                          styles.modalOption,
+                          { borderColor: colors.border, paddingVertical: 10 },
+                          isCurrent && { backgroundColor: colors.primary + '15', borderColor: colors.primary },
+                        ]}
+                        onPress={() => {
+                          tapLight();
+                          setStateCode(st.code);
+                          setScopeFilter('state');
+                          setShowScopeModal(false);
+                        }}
+                      >
+                        <View style={styles.modalOptionLeft}>
+                          <Ionicons name="map-outline" size={16} color={isCurrent ? colors.primary : colors.textSecondary} />
+                          <Text style={[styles.modalOptionText, { color: isCurrent ? colors.primary : colors.text, marginLeft: 10, fontWeight: isCurrent ? '700' : '500' }]}>
+                            {st.name}
+                          </Text>
+                        </View>
+                        {isCurrent && <Ionicons name="checkmark-circle" size={16} color={colors.primary} />}
+                      </Pressable>
+                    );
+                  })}
+                </View>
+
+                {/* 3. My Constituency */}
+                <Pressable
+                  style={[
+                    styles.modalOption,
+                    { borderColor: colors.border, marginTop: 6 },
+                    scopeFilter === 'constituency' && { backgroundColor: colors.primary + '15', borderColor: colors.primary },
+                  ]}
+                  onPress={() => {
+                    tapLight();
+                    setShowScopeModal(false);
+                    if (!effectiveConstituencyId) {
+                      setConstituencySheetVisible(true);
+                    } else {
+                      setScopeFilter('constituency');
+                    }
+                  }}
+                >
+                  <View style={styles.modalOptionLeft}>
+                    <Ionicons name="location-outline" size={18} color={scopeFilter === 'constituency' ? colors.primary : colors.textSecondary} />
+                    <View style={{ marginLeft: 10 }}>
+                      <Text style={[styles.modalOptionText, { color: scopeFilter === 'constituency' ? colors.primary : colors.text, fontWeight: scopeFilter === 'constituency' ? '700' : '500' }]}>
+                        📍 {effectiveConstituencyName || t('common.scopes.myConstituency', { defaultValue: 'My Constituency / Local Area' })}
+                      </Text>
+                      <Text style={{ fontSize: 11, color: colors.textMuted }}>Hyper-local grassroots feed</Text>
+                    </View>
+                  </View>
+                  {scopeFilter === 'constituency' && <Ionicons name="checkmark-circle" size={18} color={colors.primary} />}
+                </Pressable>
+              </View>
+            </ScrollView>
           </View>
         </Pressable>
       </Modal>

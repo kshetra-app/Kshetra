@@ -243,15 +243,17 @@ export default function PostCard({
             </Text>
           </Pressable>
 
-          {/* Reply Button */}
+          {/* Comment / Reply Button */}
           <Pressable
             style={styles.actionButton}
             onPress={onReply}
             hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={t('feed.comment', 'Comment')}
           >
-            <Ionicons name="chatbubble-outline" size={17} color={colors.textMuted} />
-            <Text style={[styles.actionText, { color: colors.textSecondary }]}>
-              {post.replyCount}
+            <Ionicons name="chatbubble-ellipses-outline" size={17} color={colors.primary} />
+            <Text style={[styles.actionText, { color: colors.textSecondary, fontWeight: '700' }]}>
+              {post.replyCount > 0 ? `${post.replyCount} ` : ''}{t('postCard.comment', 'Comment')}
             </Text>
           </Pressable>
 
@@ -273,6 +275,21 @@ export default function PostCard({
             />
           </View>
         </View>
+
+        {/* Quick Comment Tap Bar */}
+        <Pressable
+          style={[
+            styles.quickCommentBar,
+            { backgroundColor: colors.background, borderColor: colors.goldBorder || colors.border },
+          ]}
+          onPress={onReply}
+        >
+          <Ionicons name="chatbox-ellipses-outline" size={14} color={colors.primary} />
+          <Text style={[styles.quickCommentPlaceholder, { color: colors.textMuted }]} numberOfLines={1}>
+            {t('feed.writeAComment', 'Add a comment or thought...')}
+          </Text>
+          <Ionicons name="arrow-forward-circle" size={16} color={colors.primary} />
+        </Pressable>
       </Pressable>
 
       {/* 3-Dots Action Sheet */}
@@ -424,6 +441,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+  },
+  quickCommentBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 12,
+    marginBottom: 10,
+    marginTop: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 20,
+    borderWidth: 1,
+    gap: 8,
+  },
+  quickCommentPlaceholder: {
+    flex: 1,
+    fontSize: 12,
+    fontWeight: '500',
   },
   actionText: {
     fontSize: 13,
