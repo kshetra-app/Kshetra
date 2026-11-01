@@ -1,0 +1,36 @@
+name: Mobile App Size Regression Gate
+
+on:
+  pull_request:
+    paths:
+      - 'apps/mobile/**'
+      - 'packages/shared/**'
+  push:
+    branches:
+      - master
+    paths:
+      - 'apps/mobile/**'
+
+jobs:
+  size-gate:
+    name: Mobile Size & Bundle Ceiling Gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Size Regression Gate
+        run: node scripts/ci/mobile-size-gate.mjs
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}

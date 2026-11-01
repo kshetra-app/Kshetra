@@ -55,6 +55,7 @@ import { complianceRoutes } from './modules/compliance';
 import { mediaRoutes } from './routes/media';
 import { adminRoutes } from './routes/admin';
 import { dataPipelineRoutes } from './routes/dataPipelines';
+import { systemAuditRoutes } from './routes/systemAudit';
 import { startNewsScheduler } from './services/news/newsService';
 
 const envToLogger: Record<string, object | boolean> = {
@@ -292,6 +293,7 @@ export async function buildApp() {
   await app.register(mediaRoutes);
   await app.register(adminRoutes);
   await app.register(dataPipelineRoutes);
+  await app.register(systemAuditRoutes);
 
   return app;
 }

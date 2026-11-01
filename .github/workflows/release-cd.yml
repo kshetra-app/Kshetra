@@ -1,0 +1,44 @@
+name: Automated Tag-to-Store CD Release Pipeline
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  release-cd:
+    name: Build, Sign, Audit & Store Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Tag
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js & Java
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Full Workspace Verification
+        run: |
+          npm run build
+          node tests/governance-consistency.test.mjs
+
+      - name: Execute Tag-to-Store Release Orchestrator
+        run: node scripts/ci/release-pipeline.mjs ${{ github.ref_name }}
+        env:
+          POLIGRAM_KEYSTORE_BASE64: ${{ secrets.POLIGRAM_KEYSTORE_BASE64 }}
+          POLIGRAM_KEY_ALIAS: ${{ secrets.POLIGRAM_KEY_ALIAS }}
+          POLIGRAM_KEY_PASSWORD: ${{ secrets.POLIGRAM_KEY_PASSWORD }}
+          PLAY_STORE_JSON_KEY: ${{ secrets.PLAY_STORE_JSON_KEY }}

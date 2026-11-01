@@ -19,3 +19,4 @@ export * from './screenResilience';
 export * from './adminControl';
 export * from './dataPipeline';
 export * from './delimitationPipeline';
+export * from './systemAudit';
