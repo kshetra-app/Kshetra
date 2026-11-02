@@ -25,6 +25,7 @@ import RedFlagsBanner from '../../components/legislator/RedFlagsBanner';
 import DefectionJourneyCard from '../../components/legislator/DefectionJourneyCard';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import PhotoViewerModal from '../../components/PhotoViewerModal';
+import ShareableCardModal from '../../components/ShareableCardModal';
 import { useTheme } from '../../lib/theme';
 import i18n from '../../i18n';
 
@@ -84,6 +85,7 @@ export default function LegislatorProfileScreen() {
   const acNo = parsedAcNo;
 
   const [, setPodiumTick] = useState(0);
+  const [showShareModal, setShowShareModal] = useState(false);
   React.useEffect(() => {
     let active = true;
     if (acNo > 0) {
@@ -246,12 +248,8 @@ export default function LegislatorProfileScreen() {
   }, [stateCode, acNo, name]);
 
 
-  const handleShare = async () => {
-    try {
-      await Share.share({
-        message: `${name} (${party})\n${constName}, ${district}\nMLA · ${terms} term${terms > 1 ? 's' : ''}\n\nExplore on Poligram`,
-      });
-    } catch (_) {}
+  const handleShare = () => {
+    setShowShareModal(true);
   };
 
   const handleSourceLink = () => {
@@ -450,6 +448,26 @@ export default function LegislatorProfileScreen() {
         party={party}
         subtitle={`${constName}${district ? `, ${district}` : ''} · MLA`}
         onClose={() => setPhotoViewerVisible(false)}
+      />
+      <ShareableCardModal
+        visible={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        data={{
+          type: 'legislator',
+          title: name,
+          subtitle: `${constName}${district ? `, ${district}` : ''}`,
+          stateCode,
+          district,
+          acNo,
+          winnerName: name,
+          winnerParty: party,
+          terms,
+          photoUrl: photoUrl,
+          education: winnerAffidavit?.education ?? undefined,
+          criminalCases: winnerAffidavit?.criminalCases ?? undefined,
+          totalAssets: winnerAffidavit?.totalAssets ?? undefined,
+          shareUrl: `https://poligram.in/legislator/${id}`,
+        }}
       />
     </View>
   );

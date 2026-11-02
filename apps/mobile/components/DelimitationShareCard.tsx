@@ -51,8 +51,23 @@ export function DelimitationShareCard({
       const shareId = `share_${(impact.stateCode || 'ts').toLowerCase()}_${impact.currentAcNo}_${impact.pinCode}`;
       const shareUrl = `${host}/share/delimitation/${shareId}`;
 
+      const summaryText = buildCitizenImpactSummary(impact);
       const shareTitle = `${impact.currentAcName} Delimitation Assessment`;
-      const shareMessage = `I just checked my delimitation impact for ${impact.currentAcName} (AC #${impact.currentAcNo}, PIN ${impact.pinCode}) on Poligram! See what happens under constitutional seat rebalancing: ${shareUrl}`;
+      const shareMessage = [
+        '🏛️  POLIGRAM CIVIC REPORT — DELIMITATION IMPACT',
+        '═══════════════════════════════════════════════════════',
+        `📍 ${impact.currentAcName} (AC #${impact.currentAcNo}, PIN ${impact.pinCode})`,
+        `📌 Severity: ${severityConfig.label} Impact`,
+        impact.currentMLA ? `👤 Sitting MLA: ${impact.currentMLA} (${impact.currentParty || 'IND'})` : '',
+        '',
+        '📊 REBALANCING ASSESSMENT:',
+        summaryText ? `• ${summaryText}` : '',
+        impact.proposedAcName ? `• Proposed Seat: ${impact.proposedAcName} ${impact.proposedReservation ? `(${impact.proposedReservation})` : ''}` : '',
+        '',
+        '🔍 Based on 2026 Constitutional Delimitation Parameters',
+        '═══════════════════════════════════════════════════════',
+        `📲 See your interactive boundary impact: ${shareUrl}`,
+      ].filter(Boolean).join('\n');
 
       const result = await Share.share(
         {

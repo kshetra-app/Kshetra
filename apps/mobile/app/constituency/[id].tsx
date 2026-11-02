@@ -39,6 +39,7 @@ import DefectionBadge from '../../components/DefectionBadge';
 import AIAnalysisCard from '../../components/AIAnalysisCard';
 import AffidavitCard from '../../components/AffidavitCard';
 import PhotoViewerModal from '../../components/PhotoViewerModal';
+import ShareableCardModal from '../../components/ShareableCardModal';
 import ReportIssueSheet from '../../components/ReportIssueSheet';
 import ConstituencyTabBar, { type ConstituencyTab } from '../../components/ConstituencyTabBar';
 import PostCard from '../../components/PostCard';
@@ -170,10 +171,11 @@ export default function ConstituencyDetailScreen() {
   const localizedWinnerParty = getLocalizedPartyName(effectiveWinnerParty, i18n.language) || effectiveWinnerParty;
   const localizedRunnerUp = getLocalizedPartyName(effectiveRunnerUp, i18n.language) || effectiveRunnerUp;
 
-
   const [latestPodium, setLatestPodium] = useState(() => {
     return getLatestPodiumForConstituency(stateCode, acNo);
   });
+  const effectiveRunnerUpName = latestPodium?.firstRunnerUp?.name || constituency?.runnerUpName || '';
+  const demo = useMemo(() => getDemographicsForState(stateCode, acNo), [stateCode, acNo]);
 
   useEffect(() => {
     let isMounted = true;
@@ -191,6 +193,7 @@ export default function ConstituencyDetailScreen() {
   const [activeTab, setActiveTab] = useState<ConstituencyTab>('overview');
   const [reportIssueVisible, setReportIssueVisible] = useState(false);
   const [photoViewer, setPhotoViewer] = useState<{ uri: string | null; name: string; party: string } | null>(null);
+  const [showShareModal, setShowShareModal] = useState(false);
   const isFavorite = useFavoritesStore((s) => s.isFavorite(acNo));
   const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
   const addRecent = useRecentsStore((s) => s.addRecent);
@@ -348,14 +351,10 @@ export default function ConstituencyDetailScreen() {
             <View style={styles.heroButtons}>
               <Pressable
                 style={styles.heroButton}
-                onPress={async () => {
-                  try {
-                    await Share.share({
-                      message: `${effectiveConstituencyName} (AC #${acNo})\n${effectiveDistrict} District · ${effectiveReservation}\nWinner: ${effectiveWinnerName} (${effectiveWinnerParty})\nMargin: ${effectiveMargin != null ? effectiveMargin.toLocaleString() + ' votes' : 'Not Reported'}\n\nExplore more on Poligram`,
-                    });
-                  } catch (_) {}
-                }}
+                onPress={() => setShowShareModal(true)}
                 hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel="Share Constituency Card"
               >
                 <Ionicons name="share-outline" size={20} color="#6B7280" />
               </Pressable>
@@ -470,7 +469,7 @@ export default function ConstituencyDetailScreen() {
                 winner_votes: latestPodium.winner?.votes || effectiveWinnerVotes || 0,
                 winner_vote_share: latestPodium.winner?.voteShare || 0,
                 winner_education: latestPodium.winner?.education || undefined,
-                first_runner_up_name: latestPodium.firstRunnerUp?.name || undefined,
+                first_runner_up_name: latestPodium.firstRunnerUp?.name || effectiveRunnerUpName || undefined,
                 first_runner_up_party: latestPodium.firstRunnerUp?.party || effectiveRunnerUp || undefined,
                 first_runner_up_votes: latestPodium.firstRunnerUp?.votes || 0,
                 first_runner_up_vote_share: latestPodium.firstRunnerUp?.voteShare || 0,
@@ -531,7 +530,7 @@ export default function ConstituencyDetailScreen() {
                 </View>
                 <View style={styles.statItem}>
                   <Text style={styles.statValue}>
-                    {localizedRunnerUp || effectiveRunnerUp || '—'}
+                    {effectiveRunnerUpName ? `${effectiveRunnerUpName} (${localizedRunnerUp || effectiveRunnerUp})` : (localizedRunnerUp || effectiveRunnerUp || '—')}
                   </Text>
                   <Text style={styles.statLabel}>{t('constituency.runnerUp')}</Text>
                 </View>
@@ -1025,6 +1024,29 @@ export default function ConstituencyDetailScreen() {
         party={photoViewer?.party ?? ''}
         subtitle={constituency ? `${constituency.name} · ${constituency.district}` : undefined}
         onClose={() => setPhotoViewer(null)}
+      />
+
+      <ShareableCardModal
+        visible={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        data={{
+          type: 'constituency',
+          title: localizedConstName,
+          stateCode,
+          district: localizedDistrict,
+          category: localizedReservation,
+          acNo,
+          winnerName: effectiveWinnerName,
+          winnerParty: effectiveWinnerParty,
+          winnerVotes: effectiveWinnerVotes ?? undefined,
+          winnerVoteShare: latestPodium?.winner?.voteShare ?? undefined,
+          runnerUpName: effectiveRunnerUpName || undefined,
+          runnerUpParty: effectiveRunnerUp || undefined,
+          runnerUpVotes: latestPodium?.firstRunnerUp?.votes ?? undefined,
+          margin: effectiveMargin ?? undefined,
+          turnoutPercent: demo?.turnout2023 ?? undefined,
+          shareUrl: `https://poligram.in/constituency/${stateCode}-AC-${acNo}`,
+        }}
       />
 
       {reportIssueVisible && (

@@ -403,31 +403,36 @@ export default function ExploreScreen() {
                 : `${filtered.length} / ${allConstituencies.length} ${t('explore.constituencies')}${showFavoritesOnly ? ` (${t('explore.favoritesOnly')})` : ''}`}
             </Text>
           </View>
-          <Pressable
-            style={[
-              styles.favFilterButton,
-              { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
-              showFavoritesOnly && { backgroundColor: colors.primaryLight },
-            ]}
-            onPress={() => setShowFavoritesOnly((v) => !v)}
-          >
-            <Ionicons
-              name={showFavoritesOnly ? 'heart' : 'heart-outline'}
-              size={18}
-              color={showFavoritesOnly ? colors.primary : colors.textMuted}
-            />
-          </Pressable>
-          <Pressable
-            style={[
-              styles.favFilterButton,
-              { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, marginLeft: 8 },
-            ]}
-            onPress={() => setShowDiscoveryHub(true)}
-            accessibilityRole="button"
-            accessibilityLabel={t('discovery.tabs.guide', { defaultValue: 'Explore Guide' })}
-          >
-            <Ionicons name="sparkles" size={18} color={colors.gold || colors.primary} />
-          </Pressable>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <StateSwitcher />
+            <Pressable
+              style={[
+                styles.favFilterButton,
+                { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
+                showFavoritesOnly && { backgroundColor: colors.primaryLight },
+              ]}
+              onPress={() => setShowFavoritesOnly((v) => !v)}
+              accessibilityRole="button"
+              accessibilityLabel={t('explore.favoritesOnly', { defaultValue: 'Favorites' })}
+            >
+              <Ionicons
+                name={showFavoritesOnly ? 'heart' : 'heart-outline'}
+                size={18}
+                color={showFavoritesOnly ? colors.primary : colors.textMuted}
+              />
+            </Pressable>
+            <Pressable
+              style={[
+                styles.favFilterButton,
+                { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
+              ]}
+              onPress={() => setShowDiscoveryHub(true)}
+              accessibilityRole="button"
+              accessibilityLabel={t('discovery.tabs.guide', { defaultValue: 'Explore Guide' })}
+            >
+              <Ionicons name="sparkles" size={18} color={colors.gold || colors.primary} />
+            </Pressable>
+          </View>
         </View>
 
         {/* Platform Discovery & Directory Card */}

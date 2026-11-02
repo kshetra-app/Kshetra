@@ -36,10 +36,30 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
     }
   }, [item.localized_parties_json]);
 
+  const isGenericCandidate = (name?: string | null) => {
+    if (!name) return true;
+    const lower = name.trim().toLowerCase();
+    return (
+      lower.includes('candidate') ||
+      lower.includes('runner up') ||
+      lower === 'winner' ||
+      lower === 'ind' ||
+      lower === 'nota' ||
+      lower === 'none of the above'
+    );
+  };
+
   // Candidate Names
-  const winnerName = localizedNames?.winner?.[currentLang] || getLocalizedCandidateName(item.winner_name || item.winner, currentLang) || 'Winner';
-  const ru1Name = localizedNames?.ru1?.[currentLang] || getLocalizedCandidateName(item.first_runner_up_name || (item.first_runner_up_party ? `${item.first_runner_up_party} Candidate` : 'Runner Up 1'), currentLang);
-  const ru2Name = localizedNames?.ru2?.[currentLang] || getLocalizedCandidateName(item.second_runner_up_name || (item.second_runner_up_party ? `${item.second_runner_up_party} Candidate` : 'Runner Up 2'), currentLang);
+  const cleanWinner = !isGenericCandidate(item.winner_name || item.winner) ? (item.winner_name || item.winner) : 'Winner';
+  const winnerName = localizedNames?.winner?.[currentLang] || getLocalizedCandidateName(cleanWinner, currentLang) || cleanWinner;
+
+  const rawRu1 = item.first_runner_up_name;
+  const cleanRu1 = !isGenericCandidate(rawRu1) ? rawRu1 : null;
+  const ru1Name = localizedNames?.ru1?.[currentLang] || (cleanRu1 ? getLocalizedCandidateName(cleanRu1, currentLang) : null) || cleanRu1 || (item.first_runner_up_party ? `${item.first_runner_up_party}` : 'Runner Up');
+
+  const rawRu2 = item.second_runner_up_name;
+  const cleanRu2 = !isGenericCandidate(rawRu2) ? rawRu2 : null;
+  const ru2Name = localizedNames?.ru2?.[currentLang] || (cleanRu2 ? getLocalizedCandidateName(cleanRu2, currentLang) : null) || cleanRu2;
 
   // Parties
   const winnerParty = localizedParties?.winner?.[currentLang] || getLocalizedPartyName(item.winner_party || item.party, currentLang) || 'IND';
@@ -66,7 +86,8 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
     ? item.margin_runner_up_1_to_runner_up_2
     : (ru1Votes > 0 && ru2Votes > 0 ? ru1Votes - ru2Votes : null);
 
-  const hasPodium = Boolean(item.first_runner_up_name || item.first_runner_up_party);
+  const hasPodium = Boolean(cleanRu1 || (item.first_runner_up_votes && item.first_runner_up_votes > 0));
+  const hasThirdPlace = Boolean(cleanRu2);
   const handlePressCandidate = (rank: 'W' | 'RU1' | 'RU2') => {
     if (item.ac_no) {
       const stateCode = item.state_code || 'TS';
@@ -176,7 +197,7 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
       )}
 
       {/* ── 3. 2ND RUNNER UP (RANK 3) ── */}
-      {Boolean(item.second_runner_up_name || item.second_runner_up_party) && (
+      {hasThirdPlace && ru2Name && (
         <Pressable style={({ pressed }) => [styles.podiumRow, { opacity: pressed ? 0.85 : 1 }]} onPress={() => handlePressCandidate('RU2')}>
           <View style={[styles.medalBadge, styles.bronzeBadge]}>
             <Text style={styles.bronzeBadgeText}>🥉 3rd</Text>

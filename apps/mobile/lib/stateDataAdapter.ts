@@ -87,6 +87,7 @@ export interface UnifiedConstituency {
   winnerName: string;
   winnerVotes: number;
   runnerUp: string;
+  runnerUpName?: string;
   margin: number;
   /** Current verified party of sitting representative */
   currentParty: string;
@@ -202,6 +203,7 @@ function genericAdapter(
     winnerName: rawWinnerName ?? '',
     winnerVotes: rawWinnerVotes ?? 0,
     runnerUp: rawRunnerUp ?? '',
+    runnerUpName: (c as any)[`runnerUpName${year}`] ?? (c as any).runnerUpName ?? '',
     margin: rawMargin ?? 0,
     currentParty: effectiveCurrentParty,
     currentMLA: effectiveCurrentMLA,
@@ -231,6 +233,7 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
         winnerName: c.winnerName2023,
         winnerVotes: c.winnerVotes2023,
         runnerUp: c.runnerUp2023,
+        runnerUpName: (c as any).runnerUpName2023 || '',
         margin: c.margin2023,
         currentParty: c.currentParty ?? c.winner2023,
         electionYear: 2023,
@@ -269,6 +272,7 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
         winnerName: c.winnerName2023,
         winnerVotes: c.winnerVotes2023,
         runnerUp: c.runnerUp2023,
+        runnerUpName: (c as any).runnerUpName2023 || '',
         margin: c.margin2023,
         currentParty: c.currentParty ?? c.winner2023,
         electionYear: 2023,
