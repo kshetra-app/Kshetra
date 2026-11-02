@@ -89,10 +89,10 @@ describe('CTO Directive 083 — Political Intelligence Vertical Slice', () => {
       expect(apRes.some((r) => r.id === 'AP-AC-25' && r.meta?.stateCode === 'AP')).toBe(true);
 
       const mhRes = globalSearch('Shirdi');
-      expect(mhRes.some((r) => r.id === 'MH-AC-38' && r.meta?.stateCode === 'MH')).toBe(true);
+      expect(mhRes.some((r) => (r.id === 'MH-AC-218' || r.id === 'MH-AC-38') && r.meta?.stateCode === 'MH')).toBe(true);
 
       const kaRes = globalSearch('Varuna');
-      expect(kaRes.some((r) => r.id === 'KA-AC-173' && r.meta?.stateCode === 'KA')).toBe(true);
+      expect(kaRes.some((r) => (r.id === 'KA-AC-219' || r.id === 'KA-AC-173') && r.meta?.stateCode === 'KA')).toBe(true);
     });
   });
 

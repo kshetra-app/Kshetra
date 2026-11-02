@@ -799,36 +799,126 @@ export async function constituencyRoutes(app: FastifyInstance) {
     },
   );
 
+const PODIUM_DIR = path.resolve(__dirname, '../../../../data/historical/podiums');
+const serverPodiumCache = new Map<string, any>();
+
+function loadServerPodium(stateCode: string): any | null {
+  const code = stateCode.toUpperCase();
+  if (serverPodiumCache.has(code)) return serverPodiumCache.get(code);
+  const file = path.join(PODIUM_DIR, `${code.toLowerCase()}-podium.json`);
+  if (!fs.existsSync(file)) return null;
+  try {
+    const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+    serverPodiumCache.set(code, data);
+    return data;
+  } catch {
+    return null;
+  }
+}
+
   /** 6. GET /states/:stateCode/mla */
   app.get<{ Params: { stateCode: string } }>(
     '/states/:stateCode/mla',
-    {
-      schema: mlaListSchema,
-    },
     async (request, reply) => {
       const { stateCode } = request.params;
       const code = stateCode.toUpperCase();
+      const profiles = await getCanonicalMLAProfiles(code);
 
-      if (code !== 'TS') {
+      if (!profiles || profiles.length === 0) {
         return sendApiError(
           reply,
           request,
           404,
           'Not Found',
-          `State ${stateCode} not supported yet`,
+          `State ${stateCode} has no MLA profiles available`,
           {
             code: 'NOT_FOUND',
           },
         );
       }
 
-      const profiles = getMLAProfilesForState('TS');
-
       return {
-        state: 'TS',
+        state: code,
         count: profiles.length,
         profiles,
       };
+    },
+  );
+
+  /** 6b. GET /states/:stateCode/constituencies/:acNo/mla */
+  app.get<{ Params: { stateCode: string; acNo: string } }>(
+    '/states/:stateCode/constituencies/:acNo/mla',
+    async (request, reply) => {
+      const { stateCode, acNo } = request.params;
+      const code = stateCode.toUpperCase();
+      const acNum = parseInt(acNo, 10);
+      const profile = await getCanonicalMLAProfile(code, acNum);
+
+      if (!profile) {
+        return sendApiError(
+          reply,
+          request,
+          404,
+          'Not Found',
+          `MLA profile not found for state ${code} AC ${acNo}`,
+          {
+            code: 'NOT_FOUND',
+          },
+        );
+      }
+
+      return profile;
+    },
+  );
+
+  /** 6c. GET /states/:stateCode/podium */
+  app.get<{ Params: { stateCode: string } }>(
+    '/states/:stateCode/podium',
+    async (request, reply) => {
+      const { stateCode } = request.params;
+      const code = stateCode.toUpperCase();
+      const data = loadServerPodium(code);
+
+      if (!data) {
+        return sendApiError(
+          reply,
+          request,
+          404,
+          'Not Found',
+          `Podium records not found for state ${code}`,
+          {
+            code: 'NOT_FOUND',
+          },
+        );
+      }
+
+      return data;
+    },
+  );
+
+  /** 6d. GET /states/:stateCode/constituencies/:acNo/podium */
+  app.get<{ Params: { stateCode: string; acNo: string } }>(
+    '/states/:stateCode/constituencies/:acNo/podium',
+    async (request, reply) => {
+      const { stateCode, acNo } = request.params;
+      const code = stateCode.toUpperCase();
+      const data = loadServerPodium(code);
+
+      if (!data) {
+        return sendApiError(
+          reply,
+          request,
+          404,
+          'Not Found',
+          `Podium records not found for state ${code}`,
+          {
+            code: 'NOT_FOUND',
+          },
+        );
+      }
+
+      const contests = data[acNo] || data[parseInt(acNo, 10)] || [];
+      return contests;
     },
   );
 

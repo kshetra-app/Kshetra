@@ -37,65 +37,79 @@ export interface HistoricalPodiumContest {
   secondRunnerUp: CandidatePodiumDetail | null;
 }
 
-// In-memory cache for parsed state podium files
+import { API_BASE_URL } from './constants';
+
+// In-memory cache for parsed state podium files (hydrated on demand from API or local cache)
 const stateCache = new Map<string, Record<string, HistoricalPodiumContest[]>>();
 let lokSabhaNameIndex: Map<string, HistoricalPodiumContest[]> | null = null;
 let lokSabhaNoIndex: Map<number, HistoricalPodiumContest[]> | null = null;
 
-const STATE_LOADERS: Record<string, () => any> = {
-  TS: () => require('../data/historical/ts-podium.json'),
-  AP: () => require('../data/historical/ap-podium.json'),
-  KA: () => require('../data/historical/ka-podium.json'),
-  MH: () => require('../data/historical/mh-podium.json'),
-  TN: () => require('../data/historical/tn-podium.json'),
-  UP: () => require('../data/historical/up-podium.json'),
-  WB: () => require('../data/historical/wb-podium.json'),
-  DL: () => require('../data/historical/dl-podium.json'),
-  GJ: () => require('../data/historical/gj-podium.json'),
-  RJ: () => require('../data/historical/rj-podium.json'),
-  KL: () => require('../data/historical/kl-podium.json'),
-  MP: () => require('../data/historical/mp-podium.json'),
-  PB: () => require('../data/historical/pb-podium.json'),
-  BR: () => require('../data/historical/br-podium.json'),
-  HR: () => require('../data/historical/hr-podium.json'),
-  OD: () => require('../data/historical/od-podium.json'),
-  CG: () => require('../data/historical/cg-podium.json'),
-  JH: () => require('../data/historical/jh-podium.json'),
-  AS: () => require('../data/historical/as-podium.json'),
-  HP: () => require('../data/historical/hp-podium.json'),
-  UK: () => require('../data/historical/uk-podium.json'),
-  GA: () => require('../data/historical/ga-podium.json'),
-  TR: () => require('../data/historical/tr-podium.json'),
-  MN: () => require('../data/historical/mn-podium.json'),
-  ML: () => require('../data/historical/ml-podium.json'),
-  MZ: () => require('../data/historical/mz-podium.json'),
-  NL: () => require('../data/historical/nl-podium.json'),
-  SK: () => require('../data/historical/sk-podium.json'),
-  AR: () => require('../data/historical/ar-podium.json'),
-  JK: () => require('../data/historical/jk-podium.json'),
-  PY: () => require('../data/historical/py-podium.json'),
-  IN: () => require('../data/historical/lok-sabha-podium.json'),
-};
+/**
+ * Hydrates state podium data into in-memory cache
+ */
+export function setCachedStatePodium(stateCode: string, data: Record<string, HistoricalPodiumContest[]>): void {
+  const code = (stateCode || 'TS').toUpperCase();
+  stateCache.set(code, data);
+}
 
-function getStateData(stateCode: string): Record<string, HistoricalPodiumContest[]> {
+/**
+ * On-demand asynchronous fetch for an entire state's historical podium data.
+ */
+export async function fetchStatePodium(stateCode: string): Promise<Record<string, HistoricalPodiumContest[]>> {
   const code = (stateCode || 'TS').toUpperCase();
   if (stateCache.has(code)) {
     return stateCache.get(code)!;
   }
 
-  const loader = STATE_LOADERS[code];
-  if (!loader) {
-    return {};
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/v1/states/${code}/podium`);
+    if (res.ok) {
+      const data = await res.json();
+      stateCache.set(code, data);
+      return data;
+    }
+  } catch (err) {
+    console.warn(`[historicalPodiumStore] Failed to fetch state podium for ${code}:`, err);
+  }
+  return {};
+}
+
+/**
+ * On-demand asynchronous fetch for a single constituency's historical podium data (~4 KB).
+ */
+export async function fetchHistoricalPodiumForConstituency(
+  stateCode: string,
+  acNoOrName: number | string,
+): Promise<HistoricalPodiumContest[]> {
+  const code = (stateCode || 'TS').toUpperCase();
+  const cached = getHistoricalPodiumForConstituency(code, acNoOrName);
+  if (cached && cached.length > 0) {
+    return cached;
   }
 
   try {
-    const raw = loader();
-    stateCache.set(code, raw);
-    return raw;
+    const res = await fetch(`${API_BASE_URL}/api/v1/states/${code}/constituencies/${acNoOrName}/podium`);
+    if (res.ok) {
+      const contests = await res.json();
+      if (Array.isArray(contests) && contests.length > 0) {
+        let stateMap = stateCache.get(code);
+        if (!stateMap) {
+          stateMap = {};
+          stateCache.set(code, stateMap);
+        }
+        stateMap[String(acNoOrName)] = contests;
+        return contests;
+      }
+    }
   } catch (err) {
-    console.warn(`[historicalPodiumStore] Failed to load podium data for state ${code}:`, err);
-    return {};
+    console.warn(`[historicalPodiumStore] Failed to fetch AC podium for ${code} ${acNoOrName}:`, err);
   }
+  return cached || [];
+}
+
+function getStateData(stateCode: string): Record<string, HistoricalPodiumContest[]> {
+  const code = (stateCode || 'TS').toUpperCase();
+  return stateCache.get(code) || {};
 }
 
 function buildLokSabhaIndexes() {

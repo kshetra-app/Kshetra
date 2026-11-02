@@ -13,6 +13,7 @@ import { getMLAProfileForState, getTimelineForState } from '../../lib/stateDataD
 import { getUnifiedConstituenciesForState } from '../../lib/stateDataAdapter';
 import {
   getCandidatePodiumDetail,
+  fetchHistoricalPodiumForConstituency,
   getLocalizedCandidateName,
   getLocalizedPartyName,
 } from '../../lib/historicalPodiumStore';
@@ -78,6 +79,21 @@ export default function LegislatorProfileScreen() {
 
   const stateCode = parsedStateCode;
   const acNo = parsedAcNo;
+
+  const [, setPodiumTick] = useState(0);
+  React.useEffect(() => {
+    let active = true;
+    if (acNo > 0) {
+      fetchHistoricalPodiumForConstituency(stateCode, acNo).then((contests) => {
+        if (active && contests && contests.length > 0) {
+          setPodiumTick((t) => t + 1);
+        }
+      });
+    }
+    return () => {
+      active = false;
+    };
+  }, [stateCode, acNo]);
 
   // All data access is wrapped in try-catch useMemo to prevent crashes
   const { mla, constituency, winnerAffidavit, financialRecords, redFlags, dataCompleteness, electionYear, podiumDetail } = useMemo(() => {

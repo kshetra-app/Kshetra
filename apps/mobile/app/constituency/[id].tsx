@@ -1,6 +1,7 @@
 import PodiumHistoryCard from '../../components/PodiumHistoryCard';
 import {
   getLatestPodiumForConstituency,
+  fetchHistoricalPodiumForConstituency,
   getLocalizedCandidateName,
 } from '../../lib/historicalPodiumStore';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -170,8 +171,22 @@ export default function ConstituencyDetailScreen() {
   const localizedRunnerUp = getLocalizedPartyName(effectiveRunnerUp, i18n.language) || effectiveRunnerUp;
 
 
-  const latestPodium = useMemo(() => {
+  const [latestPodium, setLatestPodium] = useState(() => {
     return getLatestPodiumForConstituency(stateCode, acNo);
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+    const initial = getLatestPodiumForConstituency(stateCode, acNo);
+    if (initial) {
+      setLatestPodium(initial);
+    }
+    fetchHistoricalPodiumForConstituency(stateCode, acNo).then((contests) => {
+      if (isMounted && contests && contests.length > 0) {
+        setLatestPodium(contests[0]);
+      }
+    });
+    return () => { isMounted = false; };
   }, [stateCode, acNo]);
   const [activeTab, setActiveTab] = useState<ConstituencyTab>('overview');
   const [reportIssueVisible, setReportIssueVisible] = useState(false);

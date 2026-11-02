@@ -74,8 +74,12 @@ $raw = "C:\K\apps\mobile\android\app\src\main\assets\index.android.bundle.raw"
 if (-not (Test-Path $hbc)) {
     throw "hermesc failed to compile bytecode file $hbc"
 }
-Move-Item $bundle $raw -Force
+$rawBackup = "C:\K\scratch\index.android.bundle.raw"
+Move-Item $bundle $rawBackup -Force
 Move-Item $hbc $bundle -Force
+if (Test-Path $raw) {
+    Remove-Item $raw -Force
+}
 
 # Verify Hermes magic header (C6-1F-BC-03)
 $bytes = [System.IO.File]::ReadAllBytes($bundle)[0..3]
