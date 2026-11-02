@@ -18,6 +18,105 @@ import { mmkv, isMMKVAvailable } from './storage';
 const PHOTO_CACHE_PREFIX = 'cand_photo:';
 const STATIC_PHOTO_MAP: Record<string, string> = {};
 
+/**
+ * Curated high-resolution static portraits for the Prime Minister,
+ * Chief Ministers of all Indian States & UTs, and key political figures.
+ * These load instantaneously with zero network latency.
+ */
+export const STATIC_LEADER_PHOTOS: Record<string, string> = {
+  // Prime Minister of India
+  'Narendra Modi': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/ba/Narendra_Modi_Portrait_2026.jpg/330px-Narendra_Modi_Portrait_2026.jpg',
+
+  // Chief Ministers
+  'Anumula Revanth Reddy': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/03/Telangana_CM_Revanth_Reddy_at_Gaddar_Awards_2025_-_1.jpg/330px-Telangana_CM_Revanth_Reddy_at_Gaddar_Awards_2025_-_1.jpg',
+  'A. Revanth Reddy': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/03/Telangana_CM_Revanth_Reddy_at_Gaddar_Awards_2025_-_1.jpg/330px-Telangana_CM_Revanth_Reddy_at_Gaddar_Awards_2025_-_1.jpg',
+  'Revanth Reddy': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/03/Telangana_CM_Revanth_Reddy_at_Gaddar_Awards_2025_-_1.jpg/330px-Telangana_CM_Revanth_Reddy_at_Gaddar_Awards_2025_-_1.jpg',
+
+  'N. Chandrababu Naidu': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a8/The_portrait_of_CM_Shri_Nara_Chandrababu_Naidu.jpg/330px-The_portrait_of_CM_Shri_Nara_Chandrababu_Naidu.jpg',
+  'N Chandrababu Naidu': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a8/The_portrait_of_CM_Shri_Nara_Chandrababu_Naidu.jpg/330px-The_portrait_of_CM_Shri_Nara_Chandrababu_Naidu.jpg',
+  'Chandrababu Naidu': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a8/The_portrait_of_CM_Shri_Nara_Chandrababu_Naidu.jpg/330px-The_portrait_of_CM_Shri_Nara_Chandrababu_Naidu.jpg',
+
+  'Siddaramaiah': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ac/Siddaramaiah_at_the_function_to_commemorate_the_serving_of_2_billion_meals_of_the_Akshaya_Patra_Foundation_in_Karnataka_%28cropped%29.jpg/330px-Siddaramaiah_at_the_function_to_commemorate_the_serving_of_2_billion_meals_of_the_Akshaya_Patra_Foundation_in_Karnataka_%28cropped%29.jpg',
+  'D. K. Shivakumar': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/D._K._Shivakumar.jpg/330px-D._K._Shivakumar.jpg',
+  'D.K. Shivakumar': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/D._K._Shivakumar.jpg/330px-D._K._Shivakumar.jpg',
+
+  'Devendra Fadnavis': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/be/Shri_Devendra_Gangadharrao_Fadnavis.jpg/330px-Shri_Devendra_Gangadharrao_Fadnavis.jpg',
+  'Eknath Shinde': 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Eknath_Shinde_2022.jpg/330px-Eknath_Shinde_2022.jpg',
+
+  'M. K. Stalin': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/The_Chief_Minister_of_Tamil_Nadu%2C_Thiru_MK_Stalin.jpg/330px-The_Chief_Minister_of_Tamil_Nadu%2C_Thiru_MK_Stalin.jpg',
+  'M.K. Stalin': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/The_Chief_Minister_of_Tamil_Nadu%2C_Thiru_MK_Stalin.jpg/330px-The_Chief_Minister_of_Tamil_Nadu%2C_Thiru_MK_Stalin.jpg',
+
+  'Pinarayi Vijayan': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ec/Chief_Minister_Pinarayi_Vijayan_2023.jpg/330px-Chief_Minister_Pinarayi_Vijayan_2023.jpg',
+
+  'Mamata Banerjee': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4d/Official_portrait_of_Mamata_Banerjee.jpg/330px-Official_portrait_of_Mamata_Banerjee.jpg',
+
+  'Yogi Adityanath': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/05/Yogi_Adityanath_2026.jpg/330px-Yogi_Adityanath_2026.jpg',
+
+  'Bhajan Lal Sharma': 'https://upload.wikimedia.org/wikipedia/commons/9/9c/Bhajan_Lal_Sharma_and_deputies_meets_VP_of_India.jpg',
+
+  'Bhupendra Patel': 'https://upload.wikimedia.org/wikipedia/commons/4/4b/Bhupendra_Patel_%28cropped%29.jpg',
+
+  'Atishi': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0c/Moments_of_Lieutenant_Governor_and_Chief_Minister_%28cropped%29.jpg/330px-Moments_of_Lieutenant_Governor_and_Chief_Minister_%28cropped%29.jpg',
+  'Rekha Gupta': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0c/Moments_of_Lieutenant_Governor_and_Chief_Minister_%28cropped%29.jpg/330px-Moments_of_Lieutenant_Governor_and_Chief_Minister_%28cropped%29.jpg',
+
+  'Mohan Charan Majhi': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/42/Shri_Mohan_Charan_Majhi.jpg/330px-Shri_Mohan_Charan_Majhi.jpg',
+
+  'Hemant Soren': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/69/Hemant_Soren_2024.jpg/330px-Hemant_Soren_2024.jpg',
+
+  'Nitish Kumar': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/04/Nitish_Kumar_August_2026.jpg/330px-Nitish_Kumar_August_2026.jpg',
+
+  'Bhagwant Mann': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b9/Bhagwant_Mann_2026.jpg/330px-Bhagwant_Mann_2026.jpg',
+
+  'Nayab Singh Saini': 'https://upload.wikimedia.org/wikipedia/commons/b/b7/Nayab_Singh_Saini_October_2024.jpg',
+
+  'Pushkar Singh Dhami': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/95/Pushkar_Singh_Dhami%2C_Chief_Minister_of_Uttarakhand.jpg/330px-Pushkar_Singh_Dhami%2C_Chief_Minister_of_Uttarakhand.jpg',
+
+  'Vishnu Deo Sai': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a4/Vishnu_Deo_Sai%2C_Chief_Minister_of_Chhattisgarh.jpg/330px-Vishnu_Deo_Sai%2C_Chief_Minister_of_Chhattisgarh.jpg',
+
+  'Mohan Yadav': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/58/Mohan_Yadav%2C_Chief_Minister_of_Madhya_Pradesh.jpg/330px-Mohan_Yadav%2C_Chief_Minister_of_Madhya_Pradesh.jpg',
+
+  'Himanta Biswa Sarma': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8c/Himanta_Biswa_Sarma_in_2026.jpg/330px-Himanta_Biswa_Sarma_in_2026.jpg',
+
+  'Pramod Sawant': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9e/Pramod_Sawant_at_the_inauguration_of_the_Chhatrapati_Shivaji_Maharaj_Chair_in_Goa_University_%28cropped%29.jpg/330px-Pramod_Sawant_at_the_inauguration_of_the_Chhatrapati_Shivaji_Maharaj_Chair_in_Goa_University_%28cropped%29.jpg',
+
+  'Sukhvinder Singh Sukhu': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b0/Sukhvinder_Singh_Sukhu.jpg/330px-Sukhvinder_Singh_Sukhu.jpg',
+
+  'Omar Abdullah': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/68/Omar_Abdullah%2C_Chief_Minister_of_Jammu_%26_Kashmir.jpg/330px-Omar_Abdullah%2C_Chief_Minister_of_Jammu_%26_Kashmir.jpg',
+
+  'N. Biren Singh': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/02/The_Chief_Minister_of_Manipur%2C_Shri_Biren_Singh_calling_on_the_Vice_President%2C_Shri_M._Venkaiah_Naidu%2C_in_New_Delhi_on_September_06%2C_2017_%28cropped%29.jpg/330px-The_Chief_Minister_of_Manipur%2C_Shri_Biren_Singh_calling_on_the_Vice_President%2C_Shri_M._Venkaiah_Naidu%2C_in_New_Delhi_on_September_06%2C_2017_%28cropped%29.jpg',
+
+  'Conrad Sangma': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/04/Conrad_Sangma_%28cropped%29.jpg/330px-Conrad_Sangma_%28cropped%29.jpg',
+
+  'Lalduhoma': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6e/Lalduhoma.jpg/330px-Lalduhoma.jpg',
+
+  'Neiphiu Rio': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4d/Neiphiu_Rio.jpg/330px-Neiphiu_Rio.jpg',
+
+  'Manik Saha': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d3/Dr._Manik_Saha.jpg/330px-Dr._Manik_Saha.jpg',
+
+  'Prem Singh Tamang': 'https://upload.wikimedia.org/wikipedia/commons/7/72/Prem_Singh_Tamang%2C_Chief_Minister_of_Sikkim.jpg',
+
+  'Pema Khandu': 'https://upload.wikimedia.org/wikipedia/commons/2/2b/Pema_Khandu_in_2018.jpg',
+
+  'N. Rangaswamy': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ee/N._Rangaswamy_%28cropped%29.jpg/330px-N._Rangaswamy_%28cropped%29.jpg',
+
+  // Additional National Leaders
+  'Rahul Gandhi': 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Rahul_Gandhi_in_2023.jpg/330px-Rahul_Gandhi_in_2023.jpg',
+  'Amit Shah': 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Amit_Shah_in_2024.jpg/330px-Amit_Shah_in_2024.jpg',
+  'Rajnath Singh': 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Rajnath_Singh_in_2023.jpg/330px-Rajnath_Singh_in_2023.jpg',
+  'Nitin Gadkari': 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Nitin_Gadkari_in_2024.jpg/330px-Nitin_Gadkari_in_2024.jpg',
+  'Mallikarjun Kharge': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Mallikarjun_Kharge_in_2023.jpg/330px-Mallikarjun_Kharge_in_2023.jpg',
+  'Asaduddin Owaisi': 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Asaduddin_Owaisi_in_2023.jpg/330px-Asaduddin_Owaisi_in_2023.jpg',
+  'Pawan Kalyan': 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Pawan_Kalyan_2024.jpg/330px-Pawan_Kalyan_2024.jpg',
+  'Nara Lokesh': 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Nara_Lokesh_in_2024.jpg/330px-Nara_Lokesh_in_2024.jpg',
+  'K. Chandrashekar Rao': 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/K._Chandrashekar_Rao.jpg/330px-K._Chandrashekar_Rao.jpg',
+  'K.T. Rama Rao': 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/K._T._Rama_Rao_in_2023.jpg/330px-K._T._Rama_Rao_in_2023.jpg',
+  'T. Harish Rao': 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/T._Harish_Rao.jpg/330px-T._Harish_Rao.jpg',
+  'Y.S. Jagan Mohan Reddy': 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Y._S._Jagan_Mohan_Reddy_in_2024.jpg/330px-Y._S._Jagan_Mohan_Reddy_in_2024.jpg',
+  'Sharad Pawar': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Sharad_Pawar_in_2023.jpg/330px-Sharad_Pawar_in_2023.jpg',
+  'Uddhav Thackeray': 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Uddhav_Thackeray_in_2023.jpg/330px-Uddhav_Thackeray_in_2023.jpg',
+  'Akhilesh Yadav': 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Akhilesh_Yadav_in_2024.jpg/330px-Akhilesh_Yadav_in_2024.jpg',
+};
+
 export function getCachedCandidatePhoto(name: string): string | undefined {
   const norm = normaliseName(name);
   if (STATIC_PHOTO_MAP[norm]) return STATIC_PHOTO_MAP[norm];
@@ -159,15 +258,23 @@ function processQueue() {
 }
 
 /**
- * Look up a photo from the static scraped map (MyNeta affidavit photos).
+ * Look up a photo from the static curated leaders map or scraped map.
  * Returns the photo URL or undefined if not found.
  */
 export function getStaticPhoto(name: string): string | undefined {
-  if (name === 'Narendra Modi') {
-    return 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/The_official_portrait_of_Shri_Narendra_Modi%2C_the_Prime_Minister_of_the_Republic_of_India.jpg/330px-The_official_portrait_of_Shri_Narendra_Modi%2C_the_Prime_Minister_of_the_Republic_of_India.jpg';
+  if (!name) return undefined;
+
+  // 1. Check exact key in curated leaders map
+  if (STATIC_LEADER_PHOTOS[name]) return STATIC_LEADER_PHOTOS[name];
+
+  // 2. Check normalised key in curated leaders map
+  const norm = normaliseName(name);
+  for (const [key, url] of Object.entries(STATIC_LEADER_PHOTOS)) {
+    if (normaliseName(key) === norm) return url;
   }
-  // Try dynamic cache first, then exact or normalised key
-  const url = getCachedCandidatePhoto(name) ?? STATIC_PHOTO_MAP[name] ?? STATIC_PHOTO_MAP[normaliseName(name)];
+
+  // 3. Try dynamic cache first, then exact or normalised key in static photo map
+  const url = getCachedCandidatePhoto(name) ?? STATIC_PHOTO_MAP[name] ?? STATIC_PHOTO_MAP[norm];
   if (!url) return undefined;
   // Skip SVG URLs — React Native Image cannot render SVG
   if (url.includes('.svg')) return undefined;

@@ -8,11 +8,12 @@
  *   stateCode  — active state code (e.g. 'TS', 'KA')
  *   compact    — if true, renders a smaller inline strip (for map overlay)
  */
-import React, { memo, useState, useCallback } from 'react';
+import React, { memo, useState, useCallback, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import CandidateAvatar from './CandidateAvatar';
 import PhotoViewerModal from './PhotoViewerModal';
 import { getChiefMinister, getPrimeMinister } from '../lib/chiefMinisters';
+import { getStaticPhoto, getCachedPhoto } from '../lib/candidatePhotos';
 import { getPartyColor } from '../lib/constants';
 import { useTheme } from '../lib/theme';
 
@@ -33,10 +34,17 @@ export default memo(function ChiefMinisterBadge({
   const { colors } = useTheme();
   const isIndia = stateCode === 'IN';
   const person = isIndia ? getPrimeMinister() : getChiefMinister(stateCode);
-  const [viewerVisible, setViewerVisible] = useState(false);
-  const [resolvedUri, setResolvedUri] = useState<string | null>(null);
 
   if (!person) return null;
+
+  const staticPhoto = getStaticPhoto(person.name) || getCachedPhoto(person.name) || null;
+  const [viewerVisible, setViewerVisible] = useState(false);
+  const [resolvedUri, setResolvedUri] = useState<string | null>(staticPhoto);
+
+  useEffect(() => {
+    const photo = getStaticPhoto(person.name) || getCachedPhoto(person.name) || null;
+    setResolvedUri(photo);
+  }, [person.name]);
 
   const localizedDesignation = isIndia
     ? (getLocalizedRole('PrimeMinister', i18n.language) || 'Prime Minister')
@@ -46,14 +54,17 @@ export default memo(function ChiefMinisterBadge({
   const partyColor = getPartyColor(person.party);
 
   const handlePress = useCallback((uri: string | null) => {
-    setResolvedUri(uri);
+    setResolvedUri(uri || staticPhoto);
     setViewerVisible(true);
-  }, []);
+  }, [staticPhoto]);
 
   return (
     <>
       <Pressable
-        onPress={() => setViewerVisible(true)}
+        onPress={() => {
+          setResolvedUri(staticPhoto || resolvedUri);
+          setViewerVisible(true);
+        }}
         style={({ pressed }) => [
           styles.container,
           { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, opacity: pressed ? 0.9 : 1 },
@@ -61,9 +72,11 @@ export default memo(function ChiefMinisterBadge({
         ]}
       >
         <CandidateAvatar
+          key={`${stateCode}-${person.name}`}
           name={person.name}
           party={person.party}
           size={avatarSize}
+          photoUrl={staticPhoto || undefined}
           borderWidth={1.5}
           onPress={handlePress}
         />
@@ -89,8 +102,9 @@ export default memo(function ChiefMinisterBadge({
       </Pressable>
 
       <PhotoViewerModal
+        key={`${person.name}-${resolvedUri || staticPhoto || 'none'}`}
         visible={viewerVisible}
-        imageUri={resolvedUri}
+        imageUri={resolvedUri || staticPhoto}
         name={person.name}
         party={person.party}
         subtitle={person.designation}

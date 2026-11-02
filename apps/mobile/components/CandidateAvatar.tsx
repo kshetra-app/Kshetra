@@ -8,10 +8,10 @@
  * Usage:
  *   <CandidateAvatar name="Narendra Modi" party="BJP" size={64} />
  */
-import React, { useState, useEffect, memo } from 'react';
+import React, { useState, useEffect, memo, useMemo } from 'react';
 import { View, Image, Text, Pressable, StyleSheet } from 'react-native';
 import { getPartyColor } from '../lib/constants';
-import { fetchWikipediaPhoto, getCachedPhoto, hasKnownPhoto } from '../lib/candidatePhotos';
+import { fetchWikipediaPhoto, getCachedPhoto, getStaticPhoto, hasKnownPhoto } from '../lib/candidatePhotos';
 
 interface CandidateAvatarProps {
   name: string;
@@ -43,48 +43,43 @@ export default memo(function CandidateAvatar({
   borderWidth = 2,
   onPress,
 }: CandidateAvatarProps) {
-  const [wikiUrl, setWikiUrl] = useState<string | null>(() => getCachedPhoto(name) ?? null);
+  // 1. Instant static resolution (e.g. Chief Ministers, PM, seed photos, MMKV cache)
+  const staticPhoto = useMemo(() => {
+    return photoUrl || getStaticPhoto(name) || getCachedPhoto(name) || null;
+  }, [name, photoUrl]);
+
+  const [remoteUrl, setRemoteUrl] = useState<string | null>(null);
   const [imgError, setImgError] = useState(false);
-  const [prevName, setPrevName] = useState(name);
 
-  const isRecycled = name !== prevName;
-  const currentWikiUrl = isRecycled ? (getCachedPhoto(name) ?? null) : wikiUrl;
-  const currentImgError = isRecycled ? false : imgError;
-
-  if (isRecycled) {
-    setPrevName(name);
-    setWikiUrl(currentWikiUrl);
-    setImgError(currentImgError);
-  }
-
-  const partyColor = getPartyColor(party);
-  const initials = getInitials(name);
-  const innerSize = size - borderWidth * 2;
-
+  // Clear previous remoteUrl and errors when name or static photo changes
   useEffect(() => {
-    if (photoUrl) return; // already have a photo
+    setRemoteUrl(null);
+    setImgError(false);
+  }, [name, staticPhoto]);
 
-    // Resolve from cache first
-    const cached = getCachedPhoto(name);
-    if (cached) {
-      setWikiUrl(cached);
-      return;
-    }
-
-    // Only fetch for known politicians (avoids unnecessary API calls)
+  // 2. Fallback to Wikipedia API only if static photo is absent and politician is known
+  useEffect(() => {
+    if (staticPhoto) return;
     if (!hasKnownPhoto(name)) return;
 
     let mounted = true;
     fetchWikipediaPhoto(name).then((url) => {
       if (mounted && url) {
-        setWikiUrl(url);
+        setRemoteUrl(url);
         setImgError(false);
       }
     });
-    return () => { mounted = false; };
-  }, [name, photoUrl]);
+    return () => {
+      mounted = false;
+    };
+  }, [name, staticPhoto]);
 
-  const imageUri = photoUrl || (currentWikiUrl && !currentImgError ? currentWikiUrl : null);
+  const partyColor = getPartyColor(party);
+  const initials = getInitials(name);
+  const innerSize = size - borderWidth * 2;
+
+  const resolvedUri = staticPhoto || remoteUrl;
+  const imageUri = !imgError && resolvedUri ? resolvedUri : null;
 
   const containerStyle = [
     styles.container,
@@ -125,6 +120,7 @@ export default memo(function CandidateAvatar({
       {/* Real photo overlay */}
       {imageUri && (
         <Image
+          key={imageUri}
           source={{
             uri: imageUri,
             headers: {
@@ -140,6 +136,7 @@ export default memo(function CandidateAvatar({
             borderRadius: innerSize / 2,
           }}
           resizeMode="cover"
+          fadeDuration={0}
           onError={() => setImgError(true)}
         />
       )}
@@ -148,7 +145,7 @@ export default memo(function CandidateAvatar({
 
   if (onPress) {
     return (
-      <Pressable onPress={() => onPress(imageUri)} style={containerStyle}>
+      <Pressable onPress={() => onPress(imageUri || resolvedUri)} style={containerStyle}>
         {content}
       </Pressable>
     );

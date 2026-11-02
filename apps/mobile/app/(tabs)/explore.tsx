@@ -29,6 +29,13 @@ import AdCard from '../../components/AdCard';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import { AD_INSERT_INTERVAL } from '../../lib/adConfig';
 import { useTheme } from '../../lib/theme';
+import {
+  getLocalizedConstituencyName,
+  getLocalizedDistrictName,
+  getLocalizedReservation,
+  getLocalizedPartyName,
+} from '../../lib/stateTranslations';
+import { getLocalizedCandidateName } from '../../lib/historicalPodiumStore';
 
 type SortKey = 'acNo' | 'name' | 'margin_asc' | 'margin_desc';
 
@@ -40,7 +47,7 @@ const SORT_OPTION_KEYS: { key: SortKey; tKey: string }[] = [
 ];
 
 export default function ExploreScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const router = useRouter();
   const [query, setQuery] = useState('');
@@ -103,17 +110,31 @@ export default function ExploreScreen() {
 
     if (query.trim()) {
       const q = query.toLowerCase().trim();
-      results = results.filter(
-        (c) =>
+      results = results.filter((c) => {
+        const locName = getLocalizedConstituencyName(
+          c.acNo,
+          c.stateCode || stateCode,
+          c.name,
+          i18n.language,
+          c.localName,
+        );
+        const locDist = getLocalizedDistrictName(c.district, i18n.language) || c.district;
+        const locWinner = getLocalizedCandidateName(c.winnerName, i18n.language) || c.winnerName;
+        return (
           c.name.toLowerCase().includes(q) ||
+          locName.toLowerCase().includes(q) ||
+          (c.localName && c.localName.toLowerCase().includes(q)) ||
           c.district.toLowerCase().includes(q) ||
+          locDist.toLowerCase().includes(q) ||
           c.winnerName.toLowerCase().includes(q) ||
+          locWinner.toLowerCase().includes(q) ||
           c.winnerParty.toLowerCase().includes(q) ||
           (c.runnerUp && c.runnerUp.toLowerCase().includes(q)) ||
           c.type.toLowerCase() === q ||
           String(c.acNo) === q ||
-          String(c.acNo).includes(q),
-      );
+          String(c.acNo).includes(q)
+        );
+      });
     }
 
     if (partyFilter) {
@@ -166,7 +187,7 @@ export default function ExploreScreen() {
     }
 
     return sorted;
-  }, [query, showFavoritesOnly, favoriteIds, allConstituencies, partyFilter, districtFilter, typeFilter, sortKey]);
+  }, [query, showFavoritesOnly, favoriteIds, allConstituencies, partyFilter, districtFilter, typeFilter, sortKey, i18n.language, stateCode]);
 
   const renderItem = useCallback(
     ({ item, index }: { item: UnifiedConstituency; index: number }) => (
@@ -510,7 +531,9 @@ export default function ExploreScreen() {
                   style={[styles.activeChip, { borderColor: getPartyColor(partyFilter) }]}
                   onPress={() => setPartyFilter(null)}
                 >
-                  <Text style={{ fontSize: 11, fontWeight: '700', color: getPartyColor(partyFilter) }}>{partyFilter}</Text>
+                  <Text style={{ fontSize: 11, fontWeight: '700', color: getPartyColor(partyFilter) }}>
+                    {getLocalizedPartyName(partyFilter, i18n.language) || partyFilter}
+                  </Text>
                   <Ionicons name="close" size={12} color={getPartyColor(partyFilter)} />
                 </Pressable>
               )}
@@ -519,7 +542,9 @@ export default function ExploreScreen() {
                   style={[styles.activeChip, { borderColor: colors.primary }]}
                   onPress={() => setDistrictFilter(null)}
                 >
-                  <Text style={{ fontSize: 11, fontWeight: '700', color: colors.primary }}>{districtFilter}</Text>
+                  <Text style={{ fontSize: 11, fontWeight: '700', color: colors.primary }}>
+                    {getLocalizedDistrictName(districtFilter, i18n.language) || districtFilter}
+                  </Text>
                   <Ionicons name="close" size={12} color={colors.primary} />
                 </Pressable>
               )}
@@ -528,7 +553,9 @@ export default function ExploreScreen() {
                   style={[styles.activeChip, { borderColor: colors.gold }]}
                   onPress={() => setTypeFilter(null)}
                 >
-                  <Text style={{ fontSize: 11, fontWeight: '700', color: colors.gold }}>{typeFilter}</Text>
+                  <Text style={{ fontSize: 11, fontWeight: '700', color: colors.gold }}>
+                    {getLocalizedReservation(typeFilter, i18n.language) || typeFilter}
+                  </Text>
                   <Ionicons name="close" size={12} color={colors.gold} />
                 </Pressable>
               )}
@@ -583,7 +610,9 @@ export default function ExploreScreen() {
                       onPress={() => setPartyFilter(partyFilter === p ? null : p)}
                     >
                       <View style={[styles.partyDot, { backgroundColor: getPartyColor(p) }]} />
-                      <Text style={[styles.chipText, partyFilter === p && { color: getPartyColor(p) }]}>{p}</Text>
+                      <Text style={[styles.chipText, partyFilter === p && { color: getPartyColor(p) }]}>
+                        {getLocalizedPartyName(p, i18n.language) || p}
+                      </Text>
                     </Pressable>
                   ))}
                 </View>
@@ -607,7 +636,9 @@ export default function ExploreScreen() {
                       style={[styles.chip, districtFilter === d && styles.chipActive]}
                       onPress={() => setDistrictFilter(districtFilter === d ? null : d)}
                     >
-                      <Text style={[styles.chipText, districtFilter === d && styles.chipTextActive]}>{d}</Text>
+                      <Text style={[styles.chipText, districtFilter === d && styles.chipTextActive]}>
+                        {getLocalizedDistrictName(d, i18n.language) || d}
+                      </Text>
                     </Pressable>
                   ))}
                 </View>
@@ -630,7 +661,9 @@ export default function ExploreScreen() {
                     style={[styles.chip, typeFilter === tp && styles.chipActive]}
                     onPress={() => setTypeFilter(typeFilter === tp ? null : tp)}
                   >
-                    <Text style={[styles.chipText, typeFilter === tp && styles.chipTextActive]}>{tp}</Text>
+                    <Text style={[styles.chipText, typeFilter === tp && styles.chipTextActive]}>
+                      {getLocalizedReservation(tp, i18n.language) || tp}
+                    </Text>
                   </Pressable>
                 ))}
               </View>
@@ -694,8 +727,20 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
   onToggleFav?: () => void;
 }) {
   const partyColor = getPartyColor(item.winnerParty);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors } = useTheme();
+
+  const localizedName = getLocalizedConstituencyName(
+    item.acNo,
+    item.stateCode,
+    item.name,
+    i18n.language,
+    item.localName,
+  );
+  const localizedDistrict = getLocalizedDistrictName(item.district, i18n.language) || item.district;
+  const localizedType = getLocalizedReservation(item.type, i18n.language) || item.type;
+  const localizedWinnerParty = getLocalizedPartyName(item.winnerParty, i18n.language) || item.winnerParty;
+  const localizedWinnerName = getLocalizedCandidateName(item.winnerName, i18n.language) || item.winnerName;
 
   // Rich data badges from affidavit store
   const winnerAffidavit = useAffidavitStore.getState().getWinnerAffidavit(item.stateCode || 'TS', item.acNo, item.electionYear || 2023);
@@ -715,16 +760,16 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
         />
       </View>
       <View style={styles.cardContent}>
-        <Text style={[styles.cardName, { color: colors.text }]}>{item.name}</Text>
+        <Text style={[styles.cardName, { color: colors.text }]}>{localizedName}</Text>
         <Text style={[styles.cardMeta, { color: colors.textMuted }]}>
-          #{item.acNo} · {item.district} · {item.type}
+          #{item.acNo} · {localizedDistrict} · {localizedType}
         </Text>
         <View style={styles.cardWinnerRow}>
           <View style={[styles.partyBadge, { backgroundColor: partyColor }]}>
-            <Text style={styles.partyBadgeText}>{item.winnerParty}</Text>
+            <Text style={styles.partyBadgeText}>{localizedWinnerParty}</Text>
           </View>
           <Text style={[styles.cardWinner, { color: colors.textSecondary }]} numberOfLines={1}>
-            {item.winnerName} · {item.margin.toLocaleString()}
+            {localizedWinnerName} · {item.margin.toLocaleString()}
           </Text>
         </View>
         {/* Transparency badges row */}

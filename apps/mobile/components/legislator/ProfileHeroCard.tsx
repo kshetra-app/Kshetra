@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getPartyColor } from '../../lib/constants';
 import { moderateScale as ms } from '../../lib/responsive';
 import { useTheme } from '../../lib/theme';
+import { getStaticPhoto, getCachedPhoto } from '../../lib/candidatePhotos';
 
 import { useTranslation } from 'react-i18next';
 import {
@@ -58,6 +59,11 @@ export default function ProfileHeroCard({
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const partyColor = getPartyColor(party);
+
+  const effectivePhoto = useMemo(() => {
+    return photoUrl || getStaticPhoto(fullName) || getStaticPhoto(displayName) || getCachedPhoto(fullName) || getCachedPhoto(displayName) || null;
+  }, [photoUrl, fullName, displayName]);
+
   // Known legislator houses map to short labels; any other value (e.g. a
   // local-body office label like 'Mayor', 'Corporator', 'Sarpanch', 'ZPTC
   // Member') is displayed verbatim so the SAME hero card renders every tier.
@@ -82,9 +88,9 @@ export default function ProfileHeroCard({
       {/* Content */}
       <View style={styles.content}>
         {/* Photo */}
-        <Pressable style={styles.photoContainer} onPress={() => onPhotoPress?.(photoUrl)}>
-          {photoUrl ? (
-            <Image source={{ uri: photoUrl }} style={styles.photo} resizeMode="cover" />
+        <Pressable style={styles.photoContainer} onPress={() => onPhotoPress?.(effectivePhoto)}>
+          {effectivePhoto ? (
+            <Image key={effectivePhoto} source={{ uri: effectivePhoto }} style={styles.photo} resizeMode="cover" />
           ) : (
             <View style={[styles.photoPlaceholder, { backgroundColor: partyColor + '30' }]}>
               <Text style={[styles.initials, { color: partyColor }]}>

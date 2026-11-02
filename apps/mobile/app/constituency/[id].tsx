@@ -560,7 +560,10 @@ export default function ConstituencyDetailScreen() {
                   </Text>
                 </View>
               </View>
-              <MLACard profile={mla} />
+              <MLACard
+                profile={mla}
+                onAvatarPress={(uri) => setPhotoViewer({ uri, name: mla.name, party: mla.party })}
+              />
               <Pressable
                 style={styles.fullProfileBtn}
                 onPress={() => router.push(effectiveElectionYear ? `/legislator/MLA_${stateCode}_${effectiveElectionYear}_${effectiveConstituencyName}_${acNo}` as any : `/legislator/MLA_${stateCode}_${effectiveConstituencyName}_${acNo}` as any)}

@@ -1497,14 +1497,7 @@ function FullMapScreen() {
           {/* Prime Minister (National) / Chief Minister (State) Leader badge */}
           {!hideOverlays && !selected && (
             <View style={{ marginTop: 4, marginRight: 54 }}>
-              <ChiefMinisterBadge stateCode={stateCode} compact />
-            </View>
-          )}
-
-          {/* Thematic Color Mode Toggle (Full Width — No Overlap) */}
-          {stateCode !== 'IN' && (
-            <View style={{ marginTop: 5, marginRight: 54 }}>
-              <MapColorToggle mode={colorMode} onModeChange={setColorMode} />
+              <ChiefMinisterBadge key={stateCode} stateCode={stateCode} compact />
             </View>
           )}
 
@@ -1543,12 +1536,30 @@ function FullMapScreen() {
         </Animated.View>
       )}
 
+      {/* Thematic Color Mode Toggle (Party, Margin, Type, Data) — Stays visible along with Map Controls on Map Touch */}
+      {!broadcastMode && stateCode !== 'IN' && (
+        <View
+          style={{
+            position: 'absolute',
+            top: isScreenImmersive
+              ? mapTopOffset + 8
+              : mapTopOffset + (!hideOverlays && !selected ? 94 : 52),
+            left: 14,
+            right: 64,
+            zIndex: 1000,
+          }}
+          pointerEvents="box-none"
+        >
+          <MapColorToggle mode={colorMode} onModeChange={setColorMode} />
+        </View>
+      )}
+
       {/* Floating Draggable Map Legend (Moved downwards, fully movable anywhere on screen) */}
       {!broadcastMode && !selectedBooth && (
         <MapLegend
           colorMode={colorMode}
           stateCode={stateCode}
-          initialTop={mapTopOffset + (!hideOverlays && !selected && stateCode !== 'IN' ? 148 : 98)}
+          initialTop={mapTopOffset + (isScreenImmersive ? 54 : (!hideOverlays && !selected && stateCode !== 'IN' ? 148 : 98))}
         />
       )}
 

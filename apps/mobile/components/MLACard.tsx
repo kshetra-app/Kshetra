@@ -26,9 +26,10 @@ import {
 
 interface MLACardProps {
   profile: MLAProfile;
+  onAvatarPress?: (uri: string | null) => void;
 }
 
-export default function MLACard({ profile }: MLACardProps) {
+export default function MLACard({ profile, onAvatarPress }: MLACardProps) {
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const partyColor = getPartyColor(profile.party);
@@ -52,6 +53,7 @@ export default function MLACard({ profile }: MLACardProps) {
           party={profile.party}
           size={52}
           photoUrl={profile.photoUrl}
+          onPress={onAvatarPress}
         />
         <View style={styles.headerInfo}>
           <Text style={[styles.name, { color: colors.text }]}>{profile.name}</Text>

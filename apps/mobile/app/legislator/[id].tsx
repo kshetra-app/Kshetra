@@ -24,6 +24,7 @@ import PerformanceCard from '../../components/legislator/PerformanceCard';
 import RedFlagsBanner from '../../components/legislator/RedFlagsBanner';
 import DefectionJourneyCard from '../../components/legislator/DefectionJourneyCard';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
+import PhotoViewerModal from '../../components/PhotoViewerModal';
 import { useTheme } from '../../lib/theme';
 import i18n from '../../i18n';
 
@@ -34,6 +35,8 @@ export default function LegislatorProfileScreen() {
   const { colors } = useTheme();
   const { contentPaddingBottom } = useResponsive();
   const [helpVisible, setHelpVisible] = useState(false);
+  const [photoViewerVisible, setPhotoViewerVisible] = useState(false);
+  const [photoViewerUri, setPhotoViewerUri] = useState<string | null>(null);
 
   // Parse ID: handles formats like:
   // - "MLA_TS_2023_Kodangal_65"
@@ -295,6 +298,10 @@ export default function LegislatorProfileScreen() {
           termsServed={terms}
           isCurrentMember={isWinner}
           reservationType={constType.toLowerCase()}
+          onPhotoPress={(uri) => {
+            setPhotoViewerUri(uri);
+            setPhotoViewerVisible(true);
+          }}
           onSharePress={handleShare}
         />
 
@@ -435,6 +442,14 @@ export default function LegislatorProfileScreen() {
         visible={helpVisible}
         onClose={() => setHelpVisible(false)}
         sourceScreen="legislator"
+      />
+      <PhotoViewerModal
+        visible={photoViewerVisible}
+        imageUri={photoViewerUri}
+        name={name}
+        party={party}
+        subtitle={`${constName}${district ? `, ${district}` : ''} · MLA`}
+        onClose={() => setPhotoViewerVisible(false)}
       />
     </View>
   );

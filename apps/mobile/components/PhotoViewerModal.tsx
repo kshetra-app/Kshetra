@@ -2,7 +2,7 @@
  * PhotoViewerModal — Full-screen photo viewer with zoom support.
  * Shown when user taps a candidate thumbnail to see the larger image.
  */
-import React, { memo } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import {
   Modal,
   View,
@@ -37,6 +37,14 @@ export default memo(function PhotoViewerModal({
   subtitle,
   onClose,
 }: PhotoViewerModalProps) {
+  const [imgLoading, setImgLoading] = useState(true);
+
+  useEffect(() => {
+    if (visible) {
+      setImgLoading(true);
+    }
+  }, [visible, imageUri]);
+
   const partyColor = getPartyColor(party);
   const initials = name
     .split(' ')
@@ -72,6 +80,7 @@ export default memo(function PhotoViewerModal({
             {imageUri ? (
               <>
                 <Image
+                  key={imageUri}
                   source={{
                     uri: imageUri,
                     headers: {
@@ -84,13 +93,16 @@ export default memo(function PhotoViewerModal({
                     borderRadius: (IMAGE_SIZE - 8) / 2,
                   }}
                   resizeMode="cover"
-                  loadingIndicatorSource={{ uri: '' }}
+                  onLoadStart={() => setImgLoading(true)}
+                  onLoadEnd={() => setImgLoading(false)}
                 />
-                <ActivityIndicator
-                  style={styles.loadingIndicator}
-                  size="large"
-                  color={partyColor}
-                />
+                {imgLoading && (
+                  <ActivityIndicator
+                    style={styles.loadingIndicator}
+                    size="large"
+                    color={partyColor}
+                  />
+                )}
               </>
             ) : (
               <View

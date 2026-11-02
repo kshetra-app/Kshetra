@@ -653,6 +653,8 @@ export function getLocalizedDetail(value: string, lang: string): string {
   return translations[lang] || translations['en'] || value;
 }
 
+import { transliterateToIndic } from './indicTransliteration';
+
 /** Localized constituency name resolver */
 export function getLocalizedConstituencyName(
   acNo: number,
@@ -661,11 +663,36 @@ export function getLocalizedConstituencyName(
   lang: string,
   localNameCandidate?: string,
 ): string {
-  if (lang === 'en') return fallbackName;
-  if (localNameCandidate && (lang === 'te' || (stateCode === 'TS' && lang === 'te') || (stateCode === 'AP' && lang === 'te'))) {
-    return localNameCandidate;
+  if (!lang || lang === 'en') return fallbackName;
+
+  // 1. If regional local name matches the target script / state:
+  if (localNameCandidate) {
+    if (lang === 'te' && (stateCode === 'TS' || stateCode === 'AP')) return localNameCandidate;
+    if (lang === 'kn' && stateCode === 'KA') return localNameCandidate;
+    if (lang === 'ta' && stateCode === 'TN') return localNameCandidate;
+    if (lang === 'mr' && stateCode === 'MH') return localNameCandidate;
+    if (lang === 'ml' && stateCode === 'KL') return localNameCandidate;
+    if (lang === 'bn' && stateCode === 'WB') return localNameCandidate;
+    if (lang === 'gu' && stateCode === 'GJ') return localNameCandidate;
+    if (lang === 'pa' && stateCode === 'PB') return localNameCandidate;
+    if (lang === 'or' && stateCode === 'OD') return localNameCandidate;
+    if (lang === 'as' && stateCode === 'AS') return localNameCandidate;
+    if (lang === 'hi' && ['UP', 'MP', 'RJ', 'BR', 'CG', 'HR', 'HP', 'UK', 'JH', 'DL'].includes(stateCode)) {
+      return localNameCandidate;
+    }
+    // Also if localNameCandidate is non-ASCII (already in an Indic script) and matches lang script:
+    if (lang === 'te' && /[\u0C00-\u0C7F]/.test(localNameCandidate)) return localNameCandidate;
+    if (lang === 'kn' && /[\u0C80-\u0CFF]/.test(localNameCandidate)) return localNameCandidate;
+    if (lang === 'ta' && /[\u0B80-\u0BFF]/.test(localNameCandidate)) return localNameCandidate;
+    if ((lang === 'hi' || lang === 'mr' || lang === 'ne') && /[\u0900-\u097F]/.test(localNameCandidate)) return localNameCandidate;
+    if ((lang === 'bn' || lang === 'as') && /[\u0980-\u09FF]/.test(localNameCandidate)) return localNameCandidate;
+    if (lang === 'gu' && /[\u0A80-\u0AFF]/.test(localNameCandidate)) return localNameCandidate;
+    if (lang === 'ml' && /[\u0D00-\u0D7F]/.test(localNameCandidate)) return localNameCandidate;
+    if (lang === 'pa' && /[\u0A00-\u0A7F]/.test(localNameCandidate)) return localNameCandidate;
+    if (lang === 'or' && /[\u0B00-\u0B7F]/.test(localNameCandidate)) return localNameCandidate;
   }
-  // 1. Try historical podium localized names (supports all 13 languages)
+
+  // 2. Try historical podium localized names (supports all 13 languages)
   try {
     const { getHistoricalPodiumForConstituency } = require('./historicalPodiumStore');
     const podiums = getHistoricalPodiumForConstituency(stateCode, acNo);
@@ -673,15 +700,25 @@ export function getLocalizedConstituencyName(
       return podiums[0].localizedConstituencyNames[lang];
     }
   } catch {}
-  // 2. Try seedTranslations dictionary
+
+  // 3. Try seedTranslations dictionary
   try {
     const { CONSTITUENCY_NAME_LOCALES } = require('./seedTranslations');
     if (CONSTITUENCY_NAME_LOCALES && CONSTITUENCY_NAME_LOCALES[fallbackName]?.[lang]) {
       return CONSTITUENCY_NAME_LOCALES[fallbackName][lang];
     }
   } catch {}
-  if (localNameCandidate && (lang === 'te' || lang === 'kn' || lang === 'ta' || lang === 'mr')) {
+
+  // 4. If localNameCandidate exists and is in native script, prefer it over English
+  if (localNameCandidate && !/^[\x00-\x7F]*$/.test(localNameCandidate)) {
     return localNameCandidate;
   }
+
+  // 5. Automatic phonetic transliteration fallback for Indian languages
+  const transliterated = transliterateToIndic(fallbackName, lang);
+  if (transliterated && transliterated !== fallbackName) {
+    return transliterated;
+  }
+
   return fallbackName;
 }
