@@ -27,6 +27,8 @@ export interface MLAProfile {
   constituencyName?: string;
   district?: string;
   sourceUrl?: string;
+  citation?: string;
+  verifiedAt?: string;
 }
 
 export const MN_MLA_PROFILES: MLAProfile[] = [
@@ -38,6 +40,9 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     terms: 1,
     constituencyName: 'Khundrakpam',
     district: 'Imphal East',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/Thokchom_Lokeshwar_Singh.jpg/330px-Thokchom_Lokeshwar_Singh.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Thokchom_Lokeshwar_Singh',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 2,
@@ -57,6 +62,9 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Heingang',
     district: 'Imphal East',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=37',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/02/The_Chief_Minister_of_Manipur%2C_Shri_Biren_Singh_calling_on_the_Vice_President%2C_Shri_M._Venkaiah_Naidu%2C_in_New_Delhi_on_September_06%2C_2017_%28cropped%29.jpg/330px-The_Chief_Minister_of_Manipur%2C_Shri_Biren_Singh_calling_on_the_Vice_President%2C_Shri_M._Venkaiah_Naidu%2C_in_New_Delhi_on_September_06%2C_2017_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/N._Biren_Singh',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 3,
@@ -76,6 +84,9 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Khurai',
     district: 'Imphal East',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=33',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/L_Susindro_meitei.jpg/330px-L_Susindro_meitei.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Leishangthem_Susindro_Meitei',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 4,
@@ -255,6 +266,9 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Singjamei',
     district: 'Imphal West',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=69',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fc/YumnamKhemchandSingh_%28cropped%29.webp/330px-YumnamKhemchandSingh_%28cropped%29.webp?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Yumnam_Khemchand_Singh',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 14,
@@ -367,6 +381,9 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Patsoi',
     district: 'Imphal West',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=154',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/Sapam_Keba_portrait.png/330px-Sapam_Keba_portrait.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Sapam_Kunjakeswor_Singh',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 20,
@@ -386,6 +403,9 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Langthabal',
     district: 'Imphal West',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=52',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f0/Karam_shyam.jpg/330px-Karam_shyam.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Karam_Shyam',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 21,
@@ -489,6 +509,9 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Bishenpur',
     district: 'Bishnupur',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=83',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/96/Govindas_Konthoujam.jpg/330px-Govindas_Konthoujam.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Govindas_Konthoujam',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 27,
@@ -582,6 +605,9 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Thoubal',
     district: 'Thoubal',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=262',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/42/Okram_Ibobi_Singh_Official.jpg/330px-Okram_Ibobi_Singh_Official.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Okram_Ibobi_Singh',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 32,
@@ -601,6 +627,9 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Wangkhem',
     district: 'Thoubal',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=199',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/93/Keisham_Meghachandra.jpg/330px-Keisham_Meghachandra.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Keisham_Meghachandra_Singh',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 33,
@@ -891,6 +920,9 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Mao',
     district: 'Senapati',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=224',
+    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/a/ab/Losii_Dikho.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled',
+    citation: 'https://en.wikipedia.org/wiki/Losii_Dikho',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 49,
@@ -928,6 +960,9 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Kangpokpi',
     district: 'Senapati',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=95',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d2/Nemcha_Kipgen.jpg/330px-Nemcha_Kipgen.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Nemcha_Kipgen',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 51,

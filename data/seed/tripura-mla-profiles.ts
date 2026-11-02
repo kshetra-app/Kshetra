@@ -27,6 +27,8 @@ export interface MLAProfile {
   constituencyName?: string;
   district?: string;
   sourceUrl?: string;
+  citation?: string;
+  verifiedAt?: string;
 }
 
 export const TR_MLA_PROFILES: MLAProfile[] = [
@@ -717,6 +719,9 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Hrishyamukh',
     district: 'South Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6781',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/60/Asoke_Chandra_Mitra.jpg/330px-Asoke_Chandra_Mitra.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Asoke_Chandra_Mitra',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 38,
@@ -735,6 +740,9 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Jolaibari',
     district: 'South Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6907',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a9/Sukla_Charan_Noatia_on_the_dias_delivering_a_speech.jpg/330px-Sukla_Charan_Noatia_on_the_dias_delivering_a_speech.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Sukla_Charan_Noatia',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 39,
@@ -772,6 +780,9 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Sabroom',
     district: 'South Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6804',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9f/Jitendra_Chaudhury_at_CPI%28M%29_rally_in_Chailengta%2C_5_February_2023.jpg/330px-Jitendra_Chaudhury_at_CPI%28M%29_rally_in_Chailengta%2C_5_February_2023.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Jitendra_Chaudhury',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 41,
@@ -1014,6 +1025,9 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     terms: 1,
     constituencyName: 'Kailasahar',
     district: 'North Tripura',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7d/Birajit_Sinha_portrait.jpg/330px-Birajit_Sinha_portrait.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Birajit_Sinha',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 54,
@@ -1135,6 +1149,9 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Kanchanpur',
     district: 'North Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=7034',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/Philip_Kumar_Reang.jpg/330px-Philip_Kumar_Reang.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Philip_Kumar_Reang',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
 ];
 

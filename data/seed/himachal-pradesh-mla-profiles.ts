@@ -28,6 +28,8 @@ export interface MLAProfile {
   district?: string;
   reservationType?: 'General' | 'SC' | 'ST' | string;
   sourceUrl?: string;
+  citation?: string;
+  verifiedAt?: string;
 }
 
 export const HP_MLA_PROFILES: MLAProfile[] = [
@@ -205,6 +207,9 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Bilaspur',
     district: 'Bilaspur',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=225',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8d/Chander_Kumar-Ex_Member_of_Parliament-Kangra_Chamba_Constituency-_2014-05-21_23-26.jpg/330px-Chander_Kumar-Ex_Member_of_Parliament-Kangra_Chamba_Constituency-_2014-05-21_23-26.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Chander_Kumar',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 10,
@@ -320,6 +325,9 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Darang',
     district: 'Mandi',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=85',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/db/RS_Bali_File_Photo.png/330px-RS_Bali_File_Photo.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Raghubir_Singh_Bali',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 16,
@@ -377,6 +385,9 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Doon',
     district: 'Solan',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=24',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/74/Sudhir_Sharma_Himachal.jpg/330px-Sudhir_Sharma_Himachal.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Sudhir_Sharma',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 19,
@@ -415,6 +426,9 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Gagret',
     district: 'Una',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=184',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/63/MLA_Kishori_Lal_CPS_HP_Government.jpg/330px-MLA_Kishori_Lal_CPS_HP_Government.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Kishori_Lal_(Baijnath_politician)',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 21,
@@ -568,6 +582,9 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     district: 'Bilaspur',
     reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=116',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/87/Vinod_Kumar_MLA_Nachan-28.png/330px-Vinod_Kumar_MLA_Nachan-28.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Vinod_Kumar_(politician)',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 29,
@@ -586,6 +603,9 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Jogindernagar',
     district: 'Mandi',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=88',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/63/The_Chief_Minister_of_Himachal_Pradesh%2C_Shri_Jai_Ram_Thakur_calling_on_the_Union_Minister_for_Human_Resource_Development%2C_Shri_Prakash_Javadekar%2C_in_New_Delhi_on_September_06%2C_2018.JPG_%281%29.jpg/330px-thumbnail.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Jai_Ram_Thakur',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 30,
@@ -797,6 +817,9 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     district: 'Mandi',
     reservationType: 'SC',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=97',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b0/Sukhvinder_Singh_Sukhu.jpg/330px-Sukhvinder_Singh_Sukhu.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Sukhvinder_Singh_Sukhu',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 41,
@@ -834,6 +857,9 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Nahan',
     district: 'Sirmour',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=199',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/76/Office_of_CS_Wiki_Profile_Photo.png/330px-Office_of_CS_Wiki_Profile_Photo.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Chaitanya_Sharma',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 43,
@@ -853,6 +879,9 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Nalagarh',
     district: 'Solan',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=189',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/47/Mukesh_Agnihotri_%28cropped%29.jpg/330px-Mukesh_Agnihotri_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Mukesh_Agnihotri',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 44,
@@ -987,6 +1016,9 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Seraj',
     district: 'Mandi',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=10',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/de/Arkiblockcongress.jpg/330px-Arkiblockcongress.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Sanjay_Awasthy',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 51,
@@ -1044,6 +1076,9 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Shimla',
     district: 'Shimla',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=212',
+    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/5/5c/Dhaniram_shandil.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled',
+    citation: 'https://en.wikipedia.org/wiki/Dhani_Ram_Shandil',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 54,
@@ -1121,6 +1156,9 @@ export const HP_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Sujanpur',
     district: 'Hamirpur',
     sourceUrl: 'https://www.myneta.info/HimachalPradesh2022/candidate.php?candidate_id=75',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7d/Vinay_Kumar_of_Sri_Renukaji%2C_Deputy_speeker_of_Himachal_Pradesh_Vidhan_sabha_l.jpg/330px-Vinay_Kumar_of_Sri_Renukaji%2C_Deputy_speeker_of_Himachal_Pradesh_Vidhan_sabha_l.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Vinay_Kumar_(politician)',
+    verifiedAt: '2026-11-02T15:15:00+05:30',
   },
   {
     acNo: 58,
