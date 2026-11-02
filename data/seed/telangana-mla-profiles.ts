@@ -31,9 +31,16 @@ export interface MLAProfile {
   photoUrl?: string;
   constituencyName?: string;
   district?: string;
-  sourceUrl?: string;
   phone?: string;
   email?: string;
+  sourceUrl?: string;
+  citation?: string;
+  verifiedAt?: string;
+  reservationType?: string;
+  isBypoll?: boolean;
+  isCurrentMember?: boolean;
+  assetsDeclared?: boolean;
+  liabilitiesDeclared?: boolean;
 }
 
 export const TS_MLA_PROFILES: MLAProfile[] = [

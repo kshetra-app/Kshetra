@@ -27,6 +27,7 @@ const ALIASES = {
   NL: {},
   UK: { dehraduncantonment: 'dehraduncantt', devprayag: 'deoprayag', haridwar: 'hardwar', haridwarrural: 'hardwarrural', karanprayag: 'karnprayag', lalkuan: 'lalkuwa' },
   PY: {},
+  UP: { agracantt: 'agracantonment', madhaugarh: 'madhogarh', paniyra: 'paniyara', bangermau: 'bangarmau', ghazipur: 'ghazipursadar' },
 };
 const ALIAS = ALIASES[CODE] || {};
 

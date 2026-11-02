@@ -20,19 +20,26 @@ export interface MLAProfile {
   profession?: string;
   terms: number;
   criminalCases?: number;
-  totalAssets?: number;
-  totalLiabilities?: number;
+  totalAssets?: number | null;
+  totalLiabilities?: number | null;
   maritalStatus?: 'Single' | 'Married' | 'Widowed' | 'Divorced';
   photoUrl?: string;
   constituencyName?: string;
   district?: string;
+  phone?: string;
+  email?: string;
   sourceUrl?: string;
   citation?: string;
   verifiedAt?: string;
+  reservationType?: string;
+  isBypoll?: boolean;
+  isCurrentMember?: boolean;
+  assetsDeclared?: boolean;
+  liabilitiesDeclared?: boolean;
 }
 
 export const MN_MLA_PROFILES: MLAProfile[] = [
-  {
+{
     acNo: 1,
     name: 'Thokchom Lokeshwar Singh',
     party: 'INC',
@@ -44,7 +51,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     citation: 'https://en.wikipedia.org/wiki/Thokchom_Lokeshwar_Singh',
     verifiedAt: '2026-11-02T15:15:00+05:30',
   },
-  {
+{
     acNo: 2,
     name: 'Nongthombam Biren Singh',
     party: 'BJP',
@@ -66,7 +73,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     citation: 'https://en.wikipedia.org/wiki/N._Biren_Singh',
     verifiedAt: '2026-11-02T15:15:00+05:30',
   },
-  {
+{
     acNo: 3,
     name: 'Leishangthem Susindro Meitei',
     party: 'BJP',
@@ -88,7 +95,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     citation: 'https://en.wikipedia.org/wiki/Leishangthem_Susindro_Meitei',
     verifiedAt: '2026-11-02T15:15:00+05:30',
   },
-  {
+{
     acNo: 4,
     name: 'Sheikh Noorul Hassan',
     party: 'NPP',
@@ -103,11 +110,11 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     totalAssets: 8925869,
     totalLiabilities: 1034170,
     maritalStatus: 'Married',
-    constituencyName: 'Khetrigao',
+    constituencyName: 'Kshetrigao',
     district: 'Imphal East',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=130',
   },
-  {
+{
     acNo: 5,
     name: 'Thongam Biswajit Singh',
     party: 'BJP',
@@ -126,7 +133,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Imphal East',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=124',
   },
-  {
+{
     acNo: 6,
     name: 'Lourembam Rameshwor Meetei',
     party: 'BJP',
@@ -145,7 +152,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Imphal East',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=27',
   },
-  {
+{
     acNo: 7,
     name: 'Thounaojam Shyamkumar',
     party: 'BJP',
@@ -164,7 +171,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Imphal East',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=21',
   },
-  {
+{
     acNo: 8,
     name: 'Khongbantabam Ibomcha',
     party: 'BJP',
@@ -182,7 +189,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Imphal East',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=16',
   },
-  {
+{
     acNo: 9,
     name: 'Khumukcham Joykisan Singh',
     party: 'JD(U)',
@@ -201,7 +208,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Imphal West',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=45',
   },
-  {
+{
     acNo: 10,
     name: 'Khwairakpam Raghumani Singh',
     party: 'BJP',
@@ -210,7 +217,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Uripok',
     district: 'Imphal West',
   },
-  {
+{
     acNo: 11,
     name: 'Rajkumar Imo Singh',
     party: 'BJP',
@@ -229,7 +236,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Imphal West',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=77',
   },
-  {
+{
     acNo: 12,
     name: 'Sapam Nishikant Singh',
     party: 'IND',
@@ -244,11 +251,11 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     totalAssets: 293105380,
     totalLiabilities: 24808642,
     maritalStatus: 'Married',
-    constituencyName: 'Keisamthong',
+    constituencyName: 'Keishamthong',
     district: 'Imphal West',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=75',
   },
-  {
+{
     acNo: 13,
     name: 'Yumnam Khemchand Singh',
     party: 'BJP',
@@ -270,7 +277,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     citation: 'https://en.wikipedia.org/wiki/Yumnam_Khemchand_Singh',
     verifiedAt: '2026-11-02T15:15:00+05:30',
   },
-  {
+{
     acNo: 14,
     name: 'Thokchom Satyabrata Singh',
     party: 'BJP',
@@ -288,7 +295,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Imphal East',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=136',
   },
-  {
+{
     acNo: 15,
     name: 'Thangjam Arunkumar',
     party: 'JD(U)',
@@ -307,7 +314,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Imphal East',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=135',
   },
-  {
+{
     acNo: 16,
     name: 'Heikham Dingo Singh',
     party: 'BJP',
@@ -326,7 +333,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Imphal West',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=62',
   },
-  {
+{
     acNo: 17,
     name: 'Sorokhaibam Rajen Singh',
     party: 'BJP',
@@ -344,7 +351,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Imphal West',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=56',
   },
-  {
+{
     acNo: 18,
     name: 'Dr. Sapam Ranjan Singh',
     party: 'BJP',
@@ -363,7 +370,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Imphal West',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=159',
   },
-  {
+{
     acNo: 19,
     name: 'Sapam Kunjakeswor',
     party: 'BJP',
@@ -385,7 +392,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     citation: 'https://en.wikipedia.org/wiki/Sapam_Kunjakeswor_Singh',
     verifiedAt: '2026-11-02T15:15:00+05:30',
   },
-  {
+{
     acNo: 20,
     name: 'Karam Shyam',
     party: 'BJP',
@@ -407,7 +414,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     citation: 'https://en.wikipedia.org/wiki/Karam_Shyam',
     verifiedAt: '2026-11-02T15:15:00+05:30',
   },
-  {
+{
     acNo: 21,
     name: 'Sagolshem Kebi Devi',
     party: 'BJP',
@@ -422,11 +429,11 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     totalAssets: 63552175,
     totalLiabilities: 18085949,
     maritalStatus: 'Married',
-    constituencyName: 'Naoria Pakhanglakpa',
+    constituencyName: 'Naoriya Pakhanglakpa',
     district: 'Imphal West',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=46',
   },
-  {
+{
     acNo: 22,
     name: 'Khuraijam Loken Singh',
     party: 'NPP',
@@ -445,7 +452,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Imphal West',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=7',
   },
-  {
+{
     acNo: 23,
     name: 'Kongkham Robindro Singh',
     party: 'BJP',
@@ -454,7 +461,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Mayang Imphal',
     district: 'Imphal West',
   },
-  {
+{
     acNo: 24,
     name: 'Thounaojam Basanta Kumar Singh',
     party: 'BJP',
@@ -473,7 +480,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Bishnupur',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=93',
   },
-  {
+{
     acNo: 25,
     name: 'Irengbam Nalini Devi',
     party: 'NPP',
@@ -491,7 +498,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Bishnupur',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=86',
   },
-  {
+{
     acNo: 26,
     name: 'Konthoujam Govindas Singh',
     party: 'BJP',
@@ -506,14 +513,14 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     totalAssets: 83217094,
     totalLiabilities: 3093815,
     maritalStatus: 'Married',
-    constituencyName: 'Bishenpur',
+    constituencyName: 'Bishnupur',
     district: 'Bishnupur',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=83',
     photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/96/Govindas_Konthoujam.jpg/330px-Govindas_Konthoujam.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
     citation: 'https://en.wikipedia.org/wiki/Govindas_Konthoujam',
     verifiedAt: '2026-11-02T15:15:00+05:30',
   },
-  {
+{
     acNo: 27,
     name: 'Thongam Shanti Singh',
     party: 'NPP',
@@ -531,7 +538,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Bishnupur',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=111',
   },
-  {
+{
     acNo: 28,
     name: 'Tongbram Robindro Singh',
     party: 'BJP',
@@ -550,7 +557,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Bishnupur',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=4',
   },
-  {
+{
     acNo: 29,
     name: 'Sanasam Premchandra Singh',
     party: 'BJP',
@@ -568,7 +575,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Bishnupur',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=108',
   },
-  {
+{
     acNo: 30,
     name: 'Mohd Abdul Nasir',
     party: 'JD(U)',
@@ -587,7 +594,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Thoubal',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=203',
   },
-  {
+{
     acNo: 31,
     name: 'Okram Ibobi Singh',
     party: 'INC',
@@ -609,7 +616,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     citation: 'https://en.wikipedia.org/wiki/Okram_Ibobi_Singh',
     verifiedAt: '2026-11-02T15:15:00+05:30',
   },
-  {
+{
     acNo: 32,
     name: 'Keisham Meghachandra Singh',
     party: 'INC',
@@ -631,7 +638,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     citation: 'https://en.wikipedia.org/wiki/Keisham_Meghachandra_Singh',
     verifiedAt: '2026-11-02T15:15:00+05:30',
   },
-  {
+{
     acNo: 33,
     name: 'Thokchom Radheshyam Singh',
     party: 'BJP',
@@ -650,7 +657,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Thoubal',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=248',
   },
-  {
+{
     acNo: 34,
     name: 'Paonam Brojen Singh',
     party: 'BJP',
@@ -669,7 +676,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Thoubal',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=246',
   },
-  {
+{
     acNo: 35,
     name: 'Surjakumar Okram',
     party: 'INC',
@@ -688,7 +695,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Thoubal',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=243',
   },
-  {
+{
     acNo: 36,
     name: 'Dr.Usham Deben Singh',
     party: 'BJP',
@@ -707,7 +714,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Thoubal',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=188',
   },
-  {
+{
     acNo: 37,
     name: 'Mayanglambam Rameshwar Singh',
     party: 'NPP',
@@ -726,7 +733,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Thoubal',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=182',
   },
-  {
+{
     acNo: 38,
     name: 'Dr. Yumnam Radheshyam Singh',
     party: 'BJP',
@@ -735,7 +742,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Hiyanglam',
     district: 'Thoubal',
   },
-  {
+{
     acNo: 39,
     name: 'Kangujam Ranjit Singh',
     party: 'INC',
@@ -750,11 +757,11 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     totalAssets: 42583380,
     totalLiabilities: 3974951,
     maritalStatus: 'Married',
-    constituencyName: 'Sugnoo',
+    constituencyName: 'Sugnu',
     district: 'Thoubal',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=174',
   },
-  {
+{
     acNo: 40,
     name: 'Md. Achab Uddin',
     party: 'JD(U)',
@@ -773,7 +780,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Imphal East',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=241',
   },
-  {
+{
     acNo: 41,
     name: 'Ss. Olish',
     party: 'BJP',
@@ -791,7 +798,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Chandel',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=207',
   },
-  {
+{
     acNo: 42,
     name: 'Letpao Haokip',
     party: 'BJP',
@@ -810,7 +817,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Chandel',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=257',
   },
-  {
+{
     acNo: 43,
     name: 'Leishiyo Keishing',
     party: 'NPF',
@@ -829,7 +836,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Ukhrul',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=216',
   },
-  {
+{
     acNo: 44,
     name: 'Ram Muivah',
     party: 'NPF',
@@ -847,7 +854,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Ukhrul',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=213',
   },
-  {
+{
     acNo: 45,
     name: 'Khashim Vashum',
     party: 'NPF',
@@ -866,7 +873,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Ukhrul',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=208',
   },
-  {
+{
     acNo: 46,
     name: 'Kimneo Haokip Hangshing',
     party: 'KPA',
@@ -884,7 +891,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Senapati',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=103',
   },
-  {
+{
     acNo: 47,
     name: 'J Kumo Sha',
     party: 'IND',
@@ -902,7 +909,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Senapati',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=230',
   },
-  {
+{
     acNo: 48,
     name: 'Losii Dikho',
     party: 'NPF',
@@ -924,7 +931,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     citation: 'https://en.wikipedia.org/wiki/Losii_Dikho',
     verifiedAt: '2026-11-02T15:15:00+05:30',
   },
-  {
+{
     acNo: 49,
     name: 'N. Kayisii',
     party: 'NPP',
@@ -942,7 +949,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Senapati',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=221',
   },
-  {
+{
     acNo: 50,
     name: 'Nemcha Kipgen',
     party: 'BJP',
@@ -964,7 +971,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     citation: 'https://en.wikipedia.org/wiki/Nemcha_Kipgen',
     verifiedAt: '2026-11-02T15:15:00+05:30',
   },
-  {
+{
     acNo: 51,
     name: 'Haokholet Kipgen',
     party: 'IND',
@@ -982,7 +989,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Senapati',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=13',
   },
-  {
+{
     acNo: 52,
     name: 'Awangbow Newmai',
     party: 'NPF',
@@ -1001,7 +1008,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Tamenglong',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=252',
   },
-  {
+{
     acNo: 53,
     name: 'Janghemlung Panmei',
     party: 'NPP',
@@ -1010,7 +1017,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Tamenglong',
     district: 'Tamenglong',
   },
-  {
+{
     acNo: 54,
     name: 'Dinganglung Gangmei',
     party: 'BJP',
@@ -1028,7 +1035,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Tamenglong',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=232',
   },
-  {
+{
     acNo: 55,
     name: 'Ngursanglur Sanate',
     party: 'JD(U)',
@@ -1047,7 +1054,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Churachandpur',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=151',
   },
-  {
+{
     acNo: 56,
     name: 'Vungzagin Valte',
     party: 'BJP',
@@ -1065,7 +1072,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Churachandpur',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=162',
   },
-  {
+{
     acNo: 57,
     name: 'Letzamang Haokip',
     party: 'BJP',
@@ -1083,7 +1090,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Churachandpur',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=118',
   },
-  {
+{
     acNo: 58,
     name: 'L.M. Khaute',
     party: 'JD(U)',
@@ -1102,7 +1109,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     district: 'Churachandpur',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=171',
   },
-  {
+{
     acNo: 59,
     name: 'Paolienlal Haokip',
     party: 'BJP',
@@ -1111,7 +1118,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Saikot',
     district: 'Churachandpur',
   },
-  {
+{
     acNo: 60,
     name: 'Chinlunthang',
     party: 'KPA',
@@ -1128,7 +1135,7 @@ export const MN_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Singhat',
     district: 'Churachandpur',
     sourceUrl: 'https://www.myneta.info/manipur2022/candidate.php?candidate_id=116',
-  },
+  }
 ];
 
 export function getMNMLAProfile(acNo: number): MLAProfile | undefined {

@@ -20,19 +20,26 @@ export interface MLAProfile {
   profession?: string;
   terms: number;
   criminalCases?: number;
-  totalAssets?: number;
-  totalLiabilities?: number;
+  totalAssets?: number | null;
+  totalLiabilities?: number | null;
   maritalStatus?: 'Single' | 'Married' | 'Widowed' | 'Divorced';
   photoUrl?: string;
   constituencyName?: string;
   district?: string;
+  phone?: string;
+  email?: string;
   sourceUrl?: string;
   citation?: string;
   verifiedAt?: string;
+  reservationType?: string;
+  isBypoll?: boolean;
+  isCurrentMember?: boolean;
+  assetsDeclared?: boolean;
+  liabilitiesDeclared?: boolean;
 }
 
 export const TR_MLA_PROFILES: MLAProfile[] = [
-  {
+{
     acNo: 1,
     name: 'Brishaketu Debbarma',
     party: 'TMP',
@@ -52,7 +59,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6957',
   },
-  {
+{
     acNo: 2,
     name: 'Ratan Lal Nath',
     party: 'BJP',
@@ -72,7 +79,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=7051',
   },
-  {
+{
     acNo: 3,
     name: 'Nayan Sarkar',
     party: 'CPIM',
@@ -81,7 +88,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Bamutia',
     district: 'West Tripura',
   },
-  {
+{
     acNo: 4,
     name: 'Sudip Sarkar',
     party: 'CPIM',
@@ -100,7 +107,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6770',
   },
-  {
+{
     acNo: 5,
     name: 'Ratan Chakraborty',
     party: 'BJP',
@@ -119,7 +126,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6927',
   },
-  {
+{
     acNo: 6,
     name: 'Sudip Roy Barman',
     party: 'INC',
@@ -139,7 +146,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6877',
   },
-  {
+{
     acNo: 7,
     name: 'Dipak Majumder',
     party: 'BJP',
@@ -158,7 +165,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=7076',
   },
-  {
+{
     acNo: 8,
     name: 'Manik Saha',
     party: 'BJP',
@@ -174,11 +181,11 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     totalLiabilities: 1327977,
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/tripura2023/f198c074a3dbd104b17f0932417fe46ad3639873.jpg',
-    constituencyName: 'Town Bardowali',
+    constituencyName: 'Town Bordowali',
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6874',
   },
-  {
+{
     acNo: 9,
     name: 'Gopal Chandra Roy',
     party: 'INC',
@@ -198,7 +205,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6892',
   },
-  {
+{
     acNo: 10,
     name: 'Sushanta Chowdhury',
     party: 'BJP',
@@ -218,7 +225,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=7048',
   },
-  {
+{
     acNo: 11,
     name: 'Swapna Debbarma',
     party: 'TMP',
@@ -234,11 +241,11 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     totalLiabilities: 150000,
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Tripura2023/e9551e2b0c9f2461164ac97bddd74a20fa5f9ef9.jpg',
-    constituencyName: 'Mandai Bazar',
+    constituencyName: 'Mandaibazar',
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6978',
   },
-  {
+{
     acNo: 12,
     name: 'Biswajit Kalai',
     party: 'TMP',
@@ -257,7 +264,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=7063',
   },
-  {
+{
     acNo: 13,
     name: 'Ramu Das',
     party: 'CPIM',
@@ -276,7 +283,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6797',
   },
-  {
+{
     acNo: 14,
     name: 'Mina Rani Sarkar',
     party: 'BJP',
@@ -295,7 +302,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6994',
   },
-  {
+{
     acNo: 15,
     name: 'Antara Sarkar Deb',
     party: 'BJP',
@@ -314,7 +321,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=7031',
   },
-  {
+{
     acNo: 16,
     name: 'Sushanta Deb',
     party: 'BJP',
@@ -334,7 +341,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6985',
   },
-  {
+{
     acNo: 17,
     name: 'Manab Debbarma',
     party: 'TMP',
@@ -353,7 +360,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=7017',
   },
-  {
+{
     acNo: 18,
     name: 'Ram Prasad Paul',
     party: 'BJP',
@@ -373,7 +380,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6962',
   },
-  {
+{
     acNo: 19,
     name: 'Subodh Deb Barma',
     party: 'TMP',
@@ -392,7 +399,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=7005',
   },
-  {
+{
     acNo: 20,
     name: 'Tafajjal Hossain',
     party: 'BJP',
@@ -411,7 +418,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=7069',
   },
-  {
+{
     acNo: 21,
     name: 'Kishor Barman',
     party: 'BJP',
@@ -430,7 +437,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6937',
   },
-  {
+{
     acNo: 22,
     name: 'Shyamal Chakraborty',
     party: 'CPIM',
@@ -449,7 +456,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6807',
   },
-  {
+{
     acNo: 23,
     name: 'Bindu Debnath',
     party: 'BJP',
@@ -469,7 +476,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=7075',
   },
-  {
+{
     acNo: 24,
     name: 'Ranjit Debbarma',
     party: 'TMP',
@@ -488,7 +495,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6951',
   },
-  {
+{
     acNo: 25,
     name: 'Nirmal Biswas',
     party: 'CPIM',
@@ -497,7 +504,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Khowai',
     district: 'West Tripura',
   },
-  {
+{
     acNo: 26,
     name: 'Animesh Debbarma',
     party: 'TMP',
@@ -517,7 +524,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6973',
   },
-  {
+{
     acNo: 27,
     name: 'Pinaki Das Chowdhury',
     party: 'BJP',
@@ -533,11 +540,11 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     totalLiabilities: 2298800,
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Tripura2023/c350af6cc7747e8d4c2d6fbf8e5d5277f6f9677d.jpg',
-    constituencyName: 'Kalyanpur-Pramodnagar',
+    constituencyName: 'Kalyanpur-Pramodenagar',
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6914',
   },
-  {
+{
     acNo: 28,
     name: 'Kalyani Saha Roy',
     party: 'BJP',
@@ -557,7 +564,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6965',
   },
-  {
+{
     acNo: 29,
     name: 'Bikash Debbarma',
     party: 'BJP',
@@ -577,7 +584,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'West Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=7045',
   },
-  {
+{
     acNo: 30,
     name: 'Ram Pada Jamatia',
     party: 'BJP',
@@ -597,7 +604,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'South Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6834',
   },
-  {
+{
     acNo: 31,
     name: 'Pranajit Singha Roy',
     party: 'BJP',
@@ -613,11 +620,11 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     totalLiabilities: 2104600,
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Tripura2023/3b265f76e017ed404011fc9bd0d55deb047c8bcc.jpg',
-    constituencyName: 'Radhakishorpur',
+    constituencyName: 'Radhakishorepur',
     district: 'South Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6861',
   },
-  {
+{
     acNo: 32,
     name: 'Abhishek Debroy',
     party: 'BJP',
@@ -637,7 +644,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'South Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6983',
   },
-  {
+{
     acNo: 33,
     name: 'Jitendra Majumder',
     party: 'BJP',
@@ -653,11 +660,11 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     totalLiabilities: 3500000,
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Tripura2023/39c7da0c0bf1b26c96c2fbd1b7bc23d9251c908d.jpg',
-    constituencyName: 'Kakraban-Shalgara',
+    constituencyName: 'Kakraban-Salgarah',
     district: 'South Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6911',
   },
-  {
+{
     acNo: 34,
     name: 'Swapna Majumder',
     party: 'BJP',
@@ -675,7 +682,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'South Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6864',
   },
-  {
+{
     acNo: 35,
     name: 'Dipankar Sen',
     party: 'CPIM',
@@ -693,7 +700,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'South Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6771',
   },
-  {
+{
     acNo: 36,
     name: 'Pramod Reang',
     party: 'BJP',
@@ -702,7 +709,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Santirbazar',
     district: 'South Tripura',
   },
-  {
+{
     acNo: 37,
     name: 'Asoke Ch. Mitra',
     party: 'CPIM',
@@ -723,7 +730,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     citation: 'https://en.wikipedia.org/wiki/Asoke_Chandra_Mitra',
     verifiedAt: '2026-11-02T15:15:00+05:30',
   },
-  {
+{
     acNo: 38,
     name: 'Sukla Charan Noatia',
     party: 'IPFT',
@@ -744,7 +751,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     citation: 'https://en.wikipedia.org/wiki/Sukla_Charan_Noatia',
     verifiedAt: '2026-11-02T15:15:00+05:30',
   },
-  {
+{
     acNo: 39,
     name: 'Mailafru Mog',
     party: 'BJP',
@@ -762,7 +769,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'South Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6855',
   },
-  {
+{
     acNo: 40,
     name: 'Jitendra Chaudhury',
     party: 'CPIM',
@@ -784,7 +791,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     citation: 'https://en.wikipedia.org/wiki/Jitendra_Chaudhury',
     verifiedAt: '2026-11-02T15:15:00+05:30',
   },
-  {
+{
     acNo: 41,
     name: 'Pathan Lal Jamatia',
     party: 'TMP',
@@ -804,7 +811,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'South Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6830',
   },
-  {
+{
     acNo: 42,
     name: 'Ranjit Das',
     party: 'BJP',
@@ -823,7 +830,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'South Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6880',
   },
-  {
+{
     acNo: 43,
     name: 'Sanjoy Manik Tripura',
     party: 'TMP',
@@ -843,7 +850,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'South Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6926',
   },
-  {
+{
     acNo: 44,
     name: 'Nandita Debbarma',
     party: 'TMP',
@@ -863,7 +870,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'Dhalai',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=7057',
   },
-  {
+{
     acNo: 45,
     name: 'Manoj Kanti Deb',
     party: 'BJP',
@@ -882,7 +889,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'Dhalai',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6917',
   },
-  {
+{
     acNo: 46,
     name: 'Swapna Das Paul',
     party: 'BJP',
@@ -902,7 +909,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'Dhalai',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6872',
   },
-  {
+{
     acNo: 47,
     name: 'Chitta Ranjan Debbarma',
     party: 'TMP',
@@ -921,7 +928,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'Dhalai',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6884',
   },
-  {
+{
     acNo: 48,
     name: 'Paul Dangshu',
     party: 'TMP',
@@ -936,11 +943,11 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     totalAssets: 834427,
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Tripura2023/98262080b72fd401fed01bc37bc361fadad3c338.jpg',
-    constituencyName: 'Karamchara',
+    constituencyName: 'Karamchhara',
     district: 'Dhalai',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=7039',
   },
-  {
+{
     acNo: 49,
     name: 'Sambhu Lal Chakma',
     party: 'BJP',
@@ -956,11 +963,11 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     totalLiabilities: 2390257,
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Tripura2023/872a38bb4d0411be17a56e5710707b02bc907361.jpg',
-    constituencyName: 'Chawmanu',
+    constituencyName: 'Chhawmanu',
     district: 'Dhalai',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=7010',
   },
-  {
+{
     acNo: 50,
     name: 'Bhagaban Chandra Das',
     party: 'BJP',
@@ -975,11 +982,11 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     totalAssets: 9860757,
     totalLiabilities: 5318810,
     maritalStatus: 'Married',
-    constituencyName: 'Pabiachara',
+    constituencyName: 'Pabiachhara',
     district: 'North Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6826',
   },
-  {
+{
     acNo: 51,
     name: 'Sudhangshu Das',
     party: 'BJP',
@@ -998,7 +1005,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'North Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6848',
   },
-  {
+{
     acNo: 52,
     name: 'Tinku Roy',
     party: 'BJP',
@@ -1017,7 +1024,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'North Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6894',
   },
-  {
+{
     acNo: 53,
     name: 'Birajit Sinha',
     party: 'INC',
@@ -1029,7 +1036,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     citation: 'https://en.wikipedia.org/wiki/Birajit_Sinha',
     verifiedAt: '2026-11-02T15:15:00+05:30',
   },
-  {
+{
     acNo: 54,
     name: 'Islam Uddin',
     party: 'CPIM',
@@ -1044,11 +1051,11 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     totalAssets: 1876972,
     totalLiabilities: 2236766,
     maritalStatus: 'Married',
-    constituencyName: 'Kadamtala-Kurti',
+    constituencyName: 'Kadamtala - Kurti',
     district: 'North Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6817',
   },
-  {
+{
     acNo: 55,
     name: 'Jadab Lal Debnath',
     party: 'BJP',
@@ -1066,7 +1073,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'North Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6887',
   },
-  {
+{
     acNo: 56,
     name: 'Biswa Bandhu Sen',
     party: 'BJP',
@@ -1085,7 +1092,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'North Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6903',
   },
-  {
+{
     acNo: 57,
     name: 'Sailendra Chandra Nath',
     party: 'CPIM',
@@ -1104,7 +1111,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     district: 'North Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6816',
   },
-  {
+{
     acNo: 58,
     name: 'Binay Bhushan Das',
     party: 'BJP',
@@ -1113,7 +1120,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Panisagar',
     district: 'North Tripura',
   },
-  {
+{
     acNo: 59,
     name: 'Santana Chakma',
     party: 'BJP',
@@ -1128,11 +1135,11 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     totalAssets: 477002,
     totalLiabilities: 2194442,
     maritalStatus: 'Married',
-    constituencyName: 'Pecharthal',
+    constituencyName: 'Pencharthal',
     district: 'North Tripura',
     sourceUrl: 'https://www.myneta.info/Tripura2023/candidate.php?candidate_id=6941',
   },
-  {
+{
     acNo: 60,
     name: 'Philip Kumar Reang',
     party: 'TMP',
@@ -1152,7 +1159,7 @@ export const TR_MLA_PROFILES: MLAProfile[] = [
     photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/Philip_Kumar_Reang.jpg/330px-Philip_Kumar_Reang.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
     citation: 'https://en.wikipedia.org/wiki/Philip_Kumar_Reang',
     verifiedAt: '2026-11-02T15:15:00+05:30',
-  },
+  }
 ];
 
 export function getTRMLAProfile(acNo: number): MLAProfile | undefined {

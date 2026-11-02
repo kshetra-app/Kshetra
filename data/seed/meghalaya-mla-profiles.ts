@@ -20,13 +20,22 @@ export interface MLAProfile {
   profession?: string;
   terms: number;
   criminalCases?: number;
-  totalAssets?: number;
-  totalLiabilities?: number;
+  totalAssets?: number | null;
+  totalLiabilities?: number | null;
   maritalStatus?: 'Single' | 'Married' | 'Widowed' | 'Divorced';
   photoUrl?: string;
   constituencyName?: string;
   district?: string;
+  phone?: string;
+  email?: string;
   sourceUrl?: string;
+  citation?: string;
+  verifiedAt?: string;
+  reservationType?: string;
+  isBypoll?: boolean;
+  isCurrentMember?: boolean;
+  assetsDeclared?: boolean;
+  liabilitiesDeclared?: boolean;
 }
 
 export const ML_MLA_PROFILES: MLAProfile[] = [
@@ -859,7 +868,7 @@ export const ML_MLA_PROFILES: MLAProfile[] = [
     totalAssets: 8843366,
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/Meghalaya2023/2b912ab1666bb04b0f9a8d21ac491791d1164d2d.jpg',
-    constituencyName: 'Tikrikilla',
+    constituencyName: 'Tikrikila',
     district: 'West Garo Hills',
     sourceUrl: 'https://www.myneta.info/Meghalaya2023/candidate.php?candidate_id=6837',
   },

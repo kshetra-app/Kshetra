@@ -143,7 +143,7 @@ export const TELANGANA_CONSTITUENCIES: ConstituencySeed[] = [
   { acNo: 68, name: 'Yakutpura', localName: 'యాకుత్పురా', district: 'Hyderabad', type: 'GEN', winner2023: 'AIMIM', winnerName2023: 'Jaffer Hussain', winnerVotes2023: 72345, runnerUp2023: 'BRS', margin2023: 34216 },
   { acNo: 69, name: 'Bahadurpura', localName: 'బహదూర్పురా', district: 'Hyderabad', type: 'GEN', winner2023: 'AIMIM', winnerName2023: 'Mohammed Mubeen', winnerVotes2023: 74812, runnerUp2023: 'BRS', margin2023: 31524 },
   { acNo: 70, name: 'Secunderabad', localName: 'సికింద్రాబాద్', district: 'Hyderabad', type: 'GEN', winner2023: 'BRS', winnerName2023: 'T. Padma Rao Goud', winnerVotes2023: 71234, runnerUp2023: 'INC', margin2023: 3842 },
-  { acNo: 71, name: 'Secunderabad Cantonment', localName: 'సికింద్రాబాద్ కంటోన్మెంట్', district: 'Hyderabad', type: 'SC', winner2023: 'BRS', winnerName2023: 'Sri Ganesh Narayanan', winnerVotes2023: 53651, runnerUp2023: 'BJP', margin2023: 13256, currentParty: 'INC' },
+  { acNo: 71, name: 'Secunderabad Cantonment', localName: 'సికింద్రాబాద్ కంటోన్మెంట్', district: 'Hyderabad', type: 'SC', winner2023: 'INC', winnerName2023: 'Sri Ganesh Narayanan', winnerVotes2023: 53651, runnerUp2023: 'BJP', margin2023: 13256, currentParty: 'INC' },
 
   // ─── VIKARABAD (KODANGAL) / NARAYANPET / MAHABUBNAGAR / WANAPARTHY / JOGULAMBA GADWAL ───
   { acNo: 72, name: 'Kodangal', localName: 'కొడంగల్', district: 'Vikarabad', type: 'GEN', winner2023: 'INC', winnerName2023: 'Anumula Revanth Reddy', winnerVotes2023: 108547, runnerUp2023: 'BRS', margin2023: 57814 },

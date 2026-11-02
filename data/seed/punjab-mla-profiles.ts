@@ -20,16 +20,22 @@ export interface MLAProfile {
   profession?: string;
   terms: number;
   criminalCases?: number;
-  totalAssets?: number;
-  totalLiabilities?: number;
+  totalAssets?: number | null;
+  totalLiabilities?: number | null;
   maritalStatus?: 'Single' | 'Married' | 'Widowed' | 'Divorced';
   photoUrl?: string;
   constituencyName?: string;
   district?: string;
-  reservationType?: 'General' | 'SC' | 'ST' | string;
+  phone?: string;
+  email?: string;
   sourceUrl?: string;
   citation?: string;
   verifiedAt?: string;
+  reservationType?: string;
+  isBypoll?: boolean;
+  isCurrentMember?: boolean;
+  assetsDeclared?: boolean;
+  liabilitiesDeclared?: boolean;
 }
 
 export const PB_MLA_PROFILES: MLAProfile[] = [

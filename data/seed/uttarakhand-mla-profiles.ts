@@ -20,17 +20,26 @@ export interface MLAProfile {
   profession?: string;
   terms: number;
   criminalCases?: number;
-  totalAssets?: number;
-  totalLiabilities?: number;
+  totalAssets?: number | null;
+  totalLiabilities?: number | null;
   maritalStatus?: 'Single' | 'Married' | 'Widowed' | 'Divorced';
   photoUrl?: string;
   constituencyName?: string;
   district?: string;
+  phone?: string;
+  email?: string;
   sourceUrl?: string;
+  citation?: string;
+  verifiedAt?: string;
+  reservationType?: string;
+  isBypoll?: boolean;
+  isCurrentMember?: boolean;
+  assetsDeclared?: boolean;
+  liabilitiesDeclared?: boolean;
 }
 
 export const UK_MLA_PROFILES: MLAProfile[] = [
-  {
+{
     acNo: 1,
     name: 'Durgeshwar Lal',
     party: 'BJP',
@@ -49,7 +58,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Uttarkashi',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=389',
   },
-  {
+{
     acNo: 2,
     name: 'Sanjay Dobhal',
     party: 'IND',
@@ -69,7 +78,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Uttarkashi',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=288',
   },
-  {
+{
     acNo: 3,
     name: 'Suresh Singh Chauhan',
     party: 'BJP',
@@ -88,7 +97,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Uttarkashi',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=122',
   },
-  {
+{
     acNo: 4,
     name: 'Lakhapat Singh Butola',
     party: 'INC',
@@ -108,7 +117,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Chamoli',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=770',
   },
-  {
+{
     acNo: 5,
     name: 'Bhupal Ram Tamta',
     party: 'BJP',
@@ -128,7 +137,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Chamoli',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=279',
   },
-  {
+{
     acNo: 6,
     name: 'Anil Nautiyal',
     party: 'BJP',
@@ -142,11 +151,11 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     criminalCases: 0,
     totalAssets: 10721066,
     maritalStatus: 'Married',
-    constituencyName: 'Karanprayag',
+    constituencyName: 'Karnprayag',
     district: 'Chamoli',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=71',
   },
-  {
+{
     acNo: 7,
     name: 'Asha Nautiyal',
     party: 'BJP',
@@ -166,7 +175,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Rudraprayag',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=779',
   },
-  {
+{
     acNo: 8,
     name: 'Bharat Singh Chaudhary',
     party: 'BJP',
@@ -186,7 +195,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Rudraprayag',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=92',
   },
-  {
+{
     acNo: 9,
     name: 'Shakti Lal Shah',
     party: 'BJP',
@@ -206,7 +215,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Tehri Garhwal',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=16',
   },
-  {
+{
     acNo: 10,
     name: 'Vinod Kandari',
     party: 'BJP',
@@ -222,11 +231,11 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     totalLiabilities: 750053,
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/uttarakhand2022/117a0767c1fda44f87250b7ccad5b0b8b4d7485b.jpeg',
-    constituencyName: 'Devprayag',
+    constituencyName: 'Deoprayag',
     district: 'Tehri Garhwal',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=30',
   },
-  {
+{
     acNo: 11,
     name: 'Subodh Uniyal',
     party: 'BJP',
@@ -246,7 +255,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Tehri Garhwal',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=232',
   },
-  {
+{
     acNo: 12,
     name: 'Vikram Singh Negi',
     party: 'INC',
@@ -266,7 +275,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Tehri Garhwal',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=237',
   },
-  {
+{
     acNo: 13,
     name: 'Kishore Upadhyay',
     party: 'BJP',
@@ -286,7 +295,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Tehri Garhwal',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=736',
   },
-  {
+{
     acNo: 14,
     name: 'Pritam Singh Panwar',
     party: 'BJP',
@@ -306,7 +315,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Tehri Garhwal',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=112',
   },
-  {
+{
     acNo: 15,
     name: 'Pritam Singh',
     party: 'INC',
@@ -326,7 +335,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Dehradun',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=320',
   },
-  {
+{
     acNo: 16,
     name: 'Munna Singh Chauhan',
     party: 'BJP',
@@ -346,7 +355,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Dehradun',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=285',
   },
-  {
+{
     acNo: 17,
     name: 'Sahdev Singh Pundir',
     party: 'BJP',
@@ -366,7 +375,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Dehradun',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=264',
   },
-  {
+{
     acNo: 18,
     name: 'Vinod Chamoli',
     party: 'BJP',
@@ -386,7 +395,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Dehradun',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=532',
   },
-  {
+{
     acNo: 19,
     name: 'Umesh Sharma Kau',
     party: 'BJP',
@@ -406,7 +415,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Dehradun',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=8',
   },
-  {
+{
     acNo: 20,
     name: 'Khajan Dass',
     party: 'BJP',
@@ -415,7 +424,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Rajpur Road',
     district: 'Dehradun',
   },
-  {
+{
     acNo: 21,
     name: 'Savita Kapoor',
     party: 'BJP',
@@ -431,11 +440,11 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     totalLiabilities: 3934000,
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/uttarakhand2022/9f777b45344b72d5a2cb70ac30bf39f2d90ead2f.jpeg',
-    constituencyName: 'Dehradun Cantonment',
+    constituencyName: 'Dehradun Cantt.',
     district: 'Dehradun',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=6',
   },
-  {
+{
     acNo: 22,
     name: 'Ganesh Joshi',
     party: 'BJP',
@@ -455,7 +464,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Dehradun',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=659',
   },
-  {
+{
     acNo: 23,
     name: 'Brij Bhushan Gairola',
     party: 'BJP',
@@ -474,7 +483,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Dehradun',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=599',
   },
-  {
+{
     acNo: 24,
     name: 'Prem Chand Aggarwal',
     party: 'BJP',
@@ -493,7 +502,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Dehradun',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=91',
   },
-  {
+{
     acNo: 25,
     name: 'Madan Kaushik',
     party: 'BJP',
@@ -509,11 +518,11 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     totalLiabilities: 5229131,
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/uttarakhand2022/12fcdb4b7d0f81b592517646bc606da9579b9563.jpg',
-    constituencyName: 'Haridwar',
+    constituencyName: 'Hardwar',
     district: 'Haridwar',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=63',
   },
-  {
+{
     acNo: 26,
     name: 'Adesh Chauhan',
     party: 'BJP',
@@ -533,7 +542,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Haridwar',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=105',
   },
-  {
+{
     acNo: 27,
     name: 'Er. Ravi Bahadur',
     party: 'INC',
@@ -553,7 +562,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Haridwar',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=621',
   },
-  {
+{
     acNo: 28,
     name: 'Mamta Rakesh',
     party: 'INC',
@@ -572,7 +581,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Haridwar',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=162',
   },
-  {
+{
     acNo: 29,
     name: 'Virendra Kumar',
     party: 'INC',
@@ -592,7 +601,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Haridwar',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=464',
   },
-  {
+{
     acNo: 30,
     name: 'Furkan Ahmad',
     party: 'INC',
@@ -612,7 +621,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Haridwar',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=234',
   },
-  {
+{
     acNo: 31,
     name: 'Pradeep Batra',
     party: 'BJP',
@@ -632,7 +641,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Haridwar',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=23',
   },
-  {
+{
     acNo: 32,
     name: 'Umesh Kumar',
     party: 'IND',
@@ -652,7 +661,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Haridwar',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=757',
   },
-  {
+{
     acNo: 33,
     name: 'Qazi Mohammad Nizamuddin',
     party: 'INC',
@@ -672,7 +681,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Haridwar',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=775',
   },
-  {
+{
     acNo: 34,
     name: 'Shahzad',
     party: 'BSP',
@@ -691,7 +700,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Haridwar',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=11',
   },
-  {
+{
     acNo: 35,
     name: 'Anupama Rawat',
     party: 'INC',
@@ -707,11 +716,11 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     totalLiabilities: 2009250,
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/uttarakhand2022/2998a7821f989c1438e1edefddd62673072d88c0.jpeg',
-    constituencyName: 'Haridwar Rural',
+    constituencyName: 'Hardwar Rural',
     district: 'Haridwar',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=485',
   },
-  {
+{
     acNo: 36,
     name: 'Renu Bisht',
     party: 'BJP',
@@ -730,7 +739,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Pauri Garhwal',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=159',
   },
-  {
+{
     acNo: 37,
     name: 'Rajkumar Pori',
     party: 'BJP',
@@ -750,7 +759,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Pauri Garhwal',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=81',
   },
-  {
+{
     acNo: 38,
     name: 'Dr. Dhan Singh Rawat',
     party: 'BJP',
@@ -769,7 +778,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Pauri Garhwal',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=96',
   },
-  {
+{
     acNo: 39,
     name: 'Satpal Maharaj',
     party: 'BJP',
@@ -788,7 +797,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Pauri Garhwal',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=165',
   },
-  {
+{
     acNo: 40,
     name: 'Daleep Singh Rawat',
     party: 'BJP',
@@ -808,7 +817,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Pauri Garhwal',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=142',
   },
-  {
+{
     acNo: 41,
     name: 'Ritu Khanduri Bhushan',
     party: 'BJP',
@@ -827,7 +836,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Pauri Garhwal',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=637',
   },
-  {
+{
     acNo: 42,
     name: 'Harish Singh Dhami',
     party: 'INC',
@@ -847,7 +856,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Pithoragarh',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=32',
   },
-  {
+{
     acNo: 43,
     name: 'Vishan Singh',
     party: 'BJP',
@@ -867,7 +876,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Pithoragarh',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=169',
   },
-  {
+{
     acNo: 44,
     name: 'Mayukh Mahar',
     party: 'INC',
@@ -887,7 +896,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Pithoragarh',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=1',
   },
-  {
+{
     acNo: 45,
     name: 'Fakeer Ram',
     party: 'BJP',
@@ -907,7 +916,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Pithoragarh',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=40',
   },
-  {
+{
     acNo: 46,
     name: 'Suresh Gariya',
     party: 'BJP',
@@ -927,7 +936,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Bageshwar',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=128',
   },
-  {
+{
     acNo: 47,
     name: 'Chandan Ram Dass',
     party: 'BJP',
@@ -947,7 +956,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Bageshwar',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=337',
   },
-  {
+{
     acNo: 48,
     name: 'Madan Singh Bisht',
     party: 'INC',
@@ -956,7 +965,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Dwarahat',
     district: 'Almora',
   },
-  {
+{
     acNo: 49,
     name: 'Mahesh Jeena',
     party: 'BJP',
@@ -975,7 +984,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Almora',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=156',
   },
-  {
+{
     acNo: 50,
     name: 'Pramod Nainwal',
     party: 'BJP',
@@ -995,7 +1004,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Almora',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=252',
   },
-  {
+{
     acNo: 51,
     name: 'Rekha Arya',
     party: 'BJP',
@@ -1015,7 +1024,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Almora',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=273',
   },
-  {
+{
     acNo: 52,
     name: 'Manoj Tewari',
     party: 'INC',
@@ -1034,7 +1043,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Almora',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=100',
   },
-  {
+{
     acNo: 53,
     name: 'Mohan Singh',
     party: 'BJP',
@@ -1053,7 +1062,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Almora',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=479',
   },
-  {
+{
     acNo: 54,
     name: 'Khushal Singh Adhikari',
     party: 'INC',
@@ -1073,7 +1082,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Champawat',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=20',
   },
-  {
+{
     acNo: 55,
     name: 'Pushkar Singh Dhami',
     party: 'BJP',
@@ -1093,7 +1102,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Champawat',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=758',
   },
-  {
+{
     acNo: 56,
     name: 'Dr. Mohan Singh Bisht',
     party: 'BJP',
@@ -1108,11 +1117,11 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     totalAssets: 29904277,
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/uttarakhand2022/849bda33e38b43e5b11eb43e2a7a9c5e31ca661e.jpeg',
-    constituencyName: 'Lalkuan',
+    constituencyName: 'Lalkuwa',
     district: 'Nainital',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=409',
   },
-  {
+{
     acNo: 57,
     name: 'Ram Singh Kaira',
     party: 'BJP',
@@ -1132,7 +1141,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Nainital',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=314',
   },
-  {
+{
     acNo: 58,
     name: 'Sarita Arya',
     party: 'BJP',
@@ -1141,7 +1150,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Nainital',
     district: 'Nainital',
   },
-  {
+{
     acNo: 59,
     name: 'Sumit Hridayesh',
     party: 'INC',
@@ -1161,7 +1170,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Nainital',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=501',
   },
-  {
+{
     acNo: 60,
     name: 'Banshidhar Bhagat',
     party: 'BJP',
@@ -1180,7 +1189,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Nainital',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=459',
   },
-  {
+{
     acNo: 61,
     name: 'Diwan Singh Bisht',
     party: 'BJP',
@@ -1200,7 +1209,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Nainital',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=7',
   },
-  {
+{
     acNo: 62,
     name: 'Adesh Singh Chauhan',
     party: 'INC',
@@ -1209,7 +1218,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Jaspur',
     district: 'Udham Singh Nagar',
   },
-  {
+{
     acNo: 63,
     name: 'Trilok Singh Cheema',
     party: 'BJP',
@@ -1229,7 +1238,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Udham Singh Nagar',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=198',
   },
-  {
+{
     acNo: 64,
     name: 'Yashpal Arya',
     party: 'INC',
@@ -1248,7 +1257,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Udham Singh Nagar',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=103',
   },
-  {
+{
     acNo: 65,
     name: 'Arvind Pandey',
     party: 'BJP',
@@ -1267,7 +1276,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Udham Singh Nagar',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=516',
   },
-  {
+{
     acNo: 66,
     name: 'Shiv Arora',
     party: 'BJP',
@@ -1287,7 +1296,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Udham Singh Nagar',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=717',
   },
-  {
+{
     acNo: 67,
     name: 'Tilak Raj Behar',
     party: 'INC',
@@ -1306,7 +1315,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     district: 'Udham Singh Nagar',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=209',
   },
-  {
+{
     acNo: 68,
     name: 'Saurabh Bahuguna',
     party: 'BJP',
@@ -1315,7 +1324,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Sitarganj',
     district: 'Udham Singh Nagar',
   },
-  {
+{
     acNo: 69,
     name: 'Gopal Singh Rana',
     party: 'INC',
@@ -1331,11 +1340,11 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     totalLiabilities: 4525000,
     maritalStatus: 'Married',
     photoUrl: 'https://www.myneta.info/images_candidate/uttarakhand2022/b9d1fce828d62a0be528688a745b4327ec7c6a2c.jpg',
-    constituencyName: 'Nanakmatta',
+    constituencyName: 'Nanak Matta',
     district: 'Udham Singh Nagar',
     sourceUrl: 'https://www.myneta.info/uttarakhand2022/candidate.php?candidate_id=229',
   },
-  {
+{
     acNo: 70,
     name: 'Bhuwan Chandra Kapri',
     party: 'INC',
@@ -1343,7 +1352,7 @@ export const UK_MLA_PROFILES: MLAProfile[] = [
     terms: 1,
     constituencyName: 'Khatima',
     district: 'Udham Singh Nagar',
-  },
+  }
 ];
 
 export function getUKMLAProfile(acNo: number): MLAProfile | undefined {

@@ -4,12 +4,34 @@
  */
 
 export interface MLAProfile {
-  acNo: number; name: string; party: string; age?: number; dob?: string;
-  dobEstimated?: boolean; gender: 'M' | 'F'; education?: string; profession?: string;
-  terms: number; criminalCases?: number; totalAssets?: number; totalLiabilities?: number;
-  maritalStatus?: 'Single'|'Married'|'Widowed'|'Divorced'; photoUrl?: string;
-  constituencyName?: string; district?: string;
-  reservationType?: 'General' | 'SC' | 'ST' | string; sourceUrl?: string;
+  acNo: number;
+  name: string;
+  party: string;
+  electedParty?: string;
+  age?: number;
+  dob?: string;
+  dobEstimated?: boolean;
+  gender: 'M' | 'F';
+  education?: string;
+  profession?: string;
+  terms: number;
+  criminalCases?: number;
+  totalAssets?: number | null;
+  totalLiabilities?: number | null;
+  maritalStatus?: 'Single' | 'Married' | 'Widowed' | 'Divorced';
+  photoUrl?: string;
+  constituencyName?: string;
+  district?: string;
+  phone?: string;
+  email?: string;
+  sourceUrl?: string;
+  citation?: string;
+  verifiedAt?: string;
+  reservationType?: string;
+  isBypoll?: boolean;
+  isCurrentMember?: boolean;
+  assetsDeclared?: boolean;
+  liabilitiesDeclared?: boolean;
 }
 
 export const BR_MLA_PROFILES: MLAProfile[] = [

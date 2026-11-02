@@ -165,6 +165,105 @@ import type {
 
 export const CONFIRMED_BY_ELECTIONS: ByElectionScheduleItem[] = [
   {
+    stateCode: 'UP',
+    acNo: 354,
+    constituencyName: 'Ghosi',
+    party: 'SP',
+    mlaName: 'Sudhakar Singh',
+    status: 'CONFIRMED',
+    termYear: 2023,
+    gazetteReference: 'ECI UP By-Election Gazette Sept 2023',
+  },
+
+  {
+    stateCode: 'UP',
+    acNo: 15,
+    constituencyName: 'Khatauli',
+    party: 'RLD',
+    mlaName: 'Madan Bhaiya',
+    status: 'CONFIRMED',
+    termYear: 2022,
+    gazetteReference: 'ECI UP By-Election Gazette Dec 2022',
+  },
+
+  {
+    stateCode: 'UP',
+    acNo: 34,
+    constituencyName: 'Suar',
+    party: 'ADAL',
+    mlaName: 'Shafeek Ahmed Ansari',
+    status: 'CONFIRMED',
+    termYear: 2023,
+    gazetteReference: 'ECI UP By-Election Gazette May 2023',
+  },
+
+  {
+    stateCode: 'UP',
+    acNo: 37,
+    constituencyName: 'Rampur',
+    party: 'BJP',
+    mlaName: 'Akash Saxena (Honey)',
+    status: 'CONFIRMED',
+    termYear: 2022,
+    gazetteReference: 'ECI UP By-Election Gazette Dec 2022',
+  },
+
+  {
+    stateCode: 'KA',
+    acNo: 36,
+    constituencyName: 'Shorapur',
+    party: 'INC',
+    mlaName: 'Raja Venugopal Naik',
+    status: 'CONFIRMED',
+    termYear: 2024,
+    gazetteReference: 'ECI Karnataka By-Election Gazette May 2024',
+  },
+
+  {
+    stateCode: 'KA',
+    acNo: 95,
+    constituencyName: 'Sandur',
+    party: 'INC',
+    mlaName: 'E Annapoorna',
+    status: 'CONFIRMED',
+    termYear: 2024,
+    gazetteReference: 'ECI Karnataka By-Election Gazette Nov 2024',
+  },
+
+  {
+    stateCode: 'KA',
+    acNo: 185,
+    constituencyName: 'Channapatna',
+    party: 'INC',
+    mlaName: 'C P Yogeeshwara',
+    status: 'CONFIRMED',
+    termYear: 2024,
+    gazetteReference: 'ECI Karnataka By-Election Gazette Nov 2024',
+  },
+
+  {
+    stateCode: 'KA',
+    acNo: 83,
+    constituencyName: 'Shiggaon',
+    party: 'INC',
+    mlaName: 'Pathan Yasirahmedkhan',
+    status: 'CONFIRMED',
+    termYear: 2024,
+    gazetteReference: 'ECI Karnataka By-Election Gazette Nov 2024',
+  },
+
+  {
+    stateCode: 'TS',
+    acNo: 71,
+    constituencyName: 'Secunderabad Cantonment',
+    party: 'INC',
+    mlaName: 'Sri Ganesh Narayanan',
+    status: 'CONFIRMED',
+    termYear: 2024,
+    gazetteReference: 'ECI Telangana By-Election Gazette June 2024',
+  },
+
+  {
     stateCode: 'TN',
     acNo: 35,
     constituencyName: 'Madurantakam',
