@@ -28,6 +28,8 @@ export interface MLAProfile {
   district?: string;
   reservationType?: 'General' | 'SC' | 'ST' | string;
   sourceUrl?: string;
+  citation?: string;
+  verifiedAt?: string;
 }
 
 export const GJ_MLA_PROFILES: MLAProfile[] = [
@@ -181,6 +183,9 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Ankleshwar',
     district: 'Bharuch',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/74/SC_Pro_Pic_10-04-2016.jpg/330px-SC_Pro_Pic_10-04-2016.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Shankar_Chaudhary',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5081',
   },
   {
@@ -200,6 +205,9 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Balasinor',
     district: 'Mahisagar',
+    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/4/41/Mavjibhai_Desai.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled',
+    citation: 'https://en.wikipedia.org/wiki/Mavji_Desai',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=6141',
   },
   {
@@ -239,6 +247,9 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Bapunagar',
     district: 'Ahmedabad',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2c/Jignesh_Mevani_Social_activist.jpg/330px-Jignesh_Mevani_Social_activist.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Jignesh_Mevani',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=6257',
   },
   {
@@ -278,6 +289,9 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Bayad',
     district: 'Arvalli',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9a/Pravin_Mali.jpg/330px-Pravin_Mali.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Pravinkumar_Gordhanji_Mali',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=6439',
   },
   {
@@ -565,6 +579,9 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Dangs',
     district: 'Dangs',
     reservationType: 'ST',
+    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/80/Ramanlal_Vora_thumbnail.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled',
+    citation: 'https://en.wikipedia.org/wiki/Ramanlal_Vora',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5159',
   },
   {
@@ -813,6 +830,9 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Dhoraji',
     district: 'Rajkot',
+    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/4/4b/Bhupendra_Patel_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled',
+    citation: 'https://en.wikipedia.org/wiki/Bhupendrabhai_Patel',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5141',
   },
   {
@@ -909,6 +929,9 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Gadhada',
     district: 'Ahmedabad',
     reservationType: 'SC',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/08/Jagdish_Vishwakarma_%28Panchal%29.png/330px-Jagdish_Vishwakarma_%28Panchal%29.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Jagdish_Vishwakarma',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5179',
   },
   {
@@ -1006,6 +1029,9 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Gariadhar',
     district: 'Bhavnagar',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/67/Kaushik_Jain.png/330px-Kaushik_Jain.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Kaushik_Jain',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=4881',
   },
   {
@@ -1192,6 +1218,9 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Jamnagar North',
     district: 'Jamnagar',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/22/Kiritsinh_Rana_MLA_Limbdi_Minister_%28cropped%29.jpg/330px-Kiritsinh_Rana_MLA_Limbdi_Minister_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Kiritsinh_Rana',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5734',
   },
   {
@@ -1520,6 +1549,9 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Katargam',
     district: 'Surat',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1a/Rivaba_Jadeja_in_PMO_New_Delhi.jpg/330px-Rivaba_Jadeja_in_PMO_New_Delhi.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Rivaba_Jadeja',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=4961',
   },
   {
@@ -1577,6 +1609,9 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Khedbrahma',
     district: 'Devbhumi Dwarka',
     reservationType: 'ST',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f7/Mulu_Bera_by_Rangilo.JPG/330px-Mulu_Bera_by_Rangilo.JPG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Mulu_Ayar_Bera',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=6190',
   },
   {
@@ -2055,6 +2090,9 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Nandod',
     district: 'Botad',
     reservationType: 'ST',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e2/Shambhuprasad_Tundiya.jpg/330px-Shambhuprasad_Tundiya.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Shambhuprasad_Tundiya',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5068',
   },
   {
@@ -2207,6 +2245,9 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Palitana',
     district: 'Bhavnagar',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/53/Vipul_Patel_6738.jpg/330px-Vipul_Patel_6738.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Vipul_Patel',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=5566',
   },
   {
@@ -2967,6 +3008,9 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Vatva',
     district: 'Ahmedabad',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2d/Ishwarsinh_Patel.jpg/330px-Ishwarsinh_Patel.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Ishwarsinh_Patel',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=6236',
   },
   {
@@ -3005,6 +3049,9 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Vejalpur',
     district: 'Ahmedabad',
+    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Ganpatsinh_Vasava.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled',
+    citation: 'https://en.wikipedia.org/wiki/Ganpatsinh_Vestabhai_Vasava',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=6235',
   },
   {
@@ -3043,6 +3090,9 @@ export const GJ_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Viramgam',
     district: 'Ahmedabad',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/1/17/Praful_Pansheriya.jpg/330px-Praful_Pansheriya.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Praful_Pansheriya',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/Gujarat2022/candidate.php?candidate_id=6223',
   },
   {

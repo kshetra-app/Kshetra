@@ -90,7 +90,7 @@ export default function PostDetailModal({
     const newComment: Comment = {
       id: clientToken,
       clientToken,
-      syncStatus: 'SYNCED',
+      syncStatus: 'SYNCING',
       postId: post.id,
       author: {
         id: userId,

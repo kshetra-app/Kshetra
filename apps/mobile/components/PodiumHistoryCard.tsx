@@ -67,10 +67,10 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
     : (ru1Votes > 0 && ru2Votes > 0 ? ru1Votes - ru2Votes : null);
 
   const hasPodium = Boolean(item.first_runner_up_name || item.first_runner_up_party);
-  const handleCandidatePress = () => {
+  const handlePressCandidate = (rank: 'W' | 'RU1' | 'RU2') => {
     if (item.ac_no) {
       const stateCode = item.state_code || 'TS';
-      router.push(`/legislator/MLA_${stateCode}_${item.year}_${item.ac_no}` as any);
+      router.push(`/legislator/MLA_${stateCode}_${item.year}_${item.ac_no}_${rank}` as any);
     }
   };
 
@@ -104,7 +104,7 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
 
       {/* Podium Rows */}
       {/* ── 1. WINNER (RANK 1) ── */}
-      <Pressable style={({ pressed }) => [styles.podiumRow, styles.winnerRow, { opacity: pressed ? 0.85 : 1 }]} onPress={handleCandidatePress}>
+      <Pressable style={({ pressed }) => [styles.podiumRow, styles.winnerRow, { opacity: pressed ? 0.85 : 1 }]} onPress={() => handlePressCandidate('W')}>
         <View style={[styles.medalBadge, styles.goldBadge]}>
           <Text style={styles.goldBadgeText}>🥇 1st</Text>
         </View>
@@ -142,7 +142,7 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
 
       {/* ── 2. 1ST RUNNER UP (RANK 2) ── */}
       {hasPodium && (
-        <Pressable style={({ pressed }) => [styles.podiumRow, { opacity: pressed ? 0.85 : 1 }]} onPress={handleCandidatePress}>
+        <Pressable style={({ pressed }) => [styles.podiumRow, { opacity: pressed ? 0.85 : 1 }]} onPress={() => handlePressCandidate('RU1')}>
           <View style={[styles.medalBadge, styles.silverBadge]}>
             <Text style={styles.silverBadgeText}>🥈 2nd</Text>
           </View>
@@ -177,7 +177,7 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
 
       {/* ── 3. 2ND RUNNER UP (RANK 3) ── */}
       {Boolean(item.second_runner_up_name || item.second_runner_up_party) && (
-        <Pressable style={({ pressed }) => [styles.podiumRow, { opacity: pressed ? 0.85 : 1 }]} onPress={handleCandidatePress}>
+        <Pressable style={({ pressed }) => [styles.podiumRow, { opacity: pressed ? 0.85 : 1 }]} onPress={() => handlePressCandidate('RU2')}>
           <View style={[styles.medalBadge, styles.bronzeBadge]}>
             <Text style={styles.bronzeBadgeText}>🥉 3rd</Text>
           </View>

@@ -11,6 +11,11 @@ import { useResponsive } from '../../lib/responsive';
 import { useAffidavitStore } from '../../stores/affidavits';
 import { getMLAProfileForState, getTimelineForState } from '../../lib/stateDataDispatcher';
 import { getUnifiedConstituenciesForState } from '../../lib/stateDataAdapter';
+import {
+  getCandidatePodiumDetail,
+  getLocalizedCandidateName,
+  getLocalizedPartyName,
+} from '../../lib/historicalPodiumStore';
 import ProfileHeroCard from '../../components/legislator/ProfileHeroCard';
 import FinancialBreakdownCard from '../../components/legislator/FinancialBreakdownCard';
 import CriminalRecordCard from '../../components/legislator/CriminalRecordCard';
@@ -31,6 +36,9 @@ export default function LegislatorProfileScreen() {
 
   // Parse ID: handles formats like:
   // - "MLA_TS_2023_Kodangal_65"
+  // - "MLA_TS_2023_65_RU1"
+  // - "MLA_TS_2023_65_RU2"
+  // - "MLA_TS_2023_65_W"
   // - "MLA_TS_2023_65"
   // - "MLA_TS_65"
   // - "TS-AC-65"
@@ -39,13 +47,24 @@ export default function LegislatorProfileScreen() {
   let parsedStateCode = 'TS';
   let parsedElectionYear: number | null = null;
   let parsedAcNo = 0;
+  let parsedRank: 'winner' | 'ru1' | 'ru2' = 'winner';
 
-  if (idStr.includes('-AC-')) {
-    const segs = idStr.split('-AC-');
+  if (idStr.endsWith('_RU1')) {
+    parsedRank = 'ru1';
+  } else if (idStr.endsWith('_RU2')) {
+    parsedRank = 'ru2';
+  } else if (idStr.endsWith('_W')) {
+    parsedRank = 'winner';
+  }
+
+  const cleanId = idStr.replace(/_(?:RU1|RU2|W)$/, '');
+
+  if (cleanId.includes('-AC-')) {
+    const segs = cleanId.split('-AC-');
     parsedStateCode = segs[0].toUpperCase();
     parsedAcNo = parseInt(segs[1], 10) || 0;
-  } else if (idStr.startsWith('MLA_')) {
-    const segs = idStr.split('_');
+  } else if (cleanId.startsWith('MLA_')) {
+    const segs = cleanId.split('_');
     parsedStateCode = segs[1] || 'TS';
     if (segs.length >= 4) {
       parsedElectionYear = parseInt(segs[2], 10) || null;
@@ -54,22 +73,47 @@ export default function LegislatorProfileScreen() {
       parsedAcNo = parseInt(segs[2], 10) || 0;
     }
   } else {
-    parsedAcNo = parseInt(idStr, 10) || 0;
+    parsedAcNo = parseInt(cleanId, 10) || 0;
   }
 
   const stateCode = parsedStateCode;
   const acNo = parsedAcNo;
 
   // All data access is wrapped in try-catch useMemo to prevent crashes
-  const { mla, constituency, winnerAffidavit, financialRecords, redFlags, dataCompleteness, electionYear } = useMemo(() => {
+  const { mla, constituency, winnerAffidavit, financialRecords, redFlags, dataCompleteness, electionYear, podiumDetail } = useMemo(() => {
     try {
-      const _mla = getMLAProfileForState(stateCode, acNo) ?? null;
       const _allConst = getUnifiedConstituenciesForState(stateCode) || [];
       const _constituency = _allConst.find(c => c.acNo === acNo) ?? null;
-
       const effectiveYear = parsedElectionYear ?? _constituency?.electionYear ?? 2023;
+
+      // Check historical podium contest
+      const { candidate: _podiumCand, contest: _podiumContest } = getCandidatePodiumDetail(stateCode, acNo, effectiveYear, parsedRank);
+
+      let _mla = getMLAProfileForState(stateCode, acNo) ?? null;
+
+      // If viewing a runner-up, synthesize candidate profile from podium records
+      if (parsedRank !== 'winner' && _podiumCand) {
+        _mla = {
+          acNo,
+          name: _podiumCand.name,
+          party: _podiumCand.party,
+          gender: 'M',
+          terms: 0,
+          photoUrl: _podiumCand.photoUrl || undefined,
+          age: _podiumCand.age || undefined,
+          education: _podiumCand.education || undefined,
+          profession: _podiumCand.profession || undefined,
+          criminalCases: _podiumCand.criminalCases || 0,
+          totalAssets: _podiumCand.totalAssets || undefined,
+          totalLiabilities: _podiumCand.totalLiabilities || undefined,
+          constituencyName: _podiumContest?.constituencyName || _constituency?.name,
+          district: _constituency?.district,
+          sourceUrl: _podiumCand.affidavitUrl || undefined,
+        } as any;
+      }
+
       const _store = useAffidavitStore.getState();
-      const _winnerAffidavit = _store.getWinnerAffidavit(stateCode, acNo, effectiveYear);
+      const _winnerAffidavit = parsedRank === 'winner' ? _store.getWinnerAffidavit(stateCode, acNo, effectiveYear) : null;
 
       // Financial records matching FinancialRecord interface in FinancialBreakdownCard
       let _financialRecords: any[] = [];
@@ -90,38 +134,34 @@ export default function LegislatorProfileScreen() {
             spouseIncome: _winnerAffidavit.spouseIncome,
           },
         ];
+      } else if (_podiumCand && (_podiumCand.totalAssets != null || _podiumCand.totalLiabilities != null)) {
+        const assets = _podiumCand.totalAssets || 0;
+        const liab = _podiumCand.totalLiabilities || 0;
+        _financialRecords = [
+          {
+            electionYear: effectiveYear,
+            totalAssets: assets,
+            totalLiabilities: liab,
+            netWorth: assets - liab,
+          },
+        ];
       }
 
       // Red flags calculation
       const _redFlags: { type: string; severity: string; description: string; value?: string }[] = [];
-      if (_winnerAffidavit) {
-        if (_winnerAffidavit.criminalCases > 0) {
-          _redFlags.push({
-            type: 'multiple_cases',
-            severity: 'warning',
-            description: `${_winnerAffidavit.criminalCases} criminal case${_winnerAffidavit.criminalCases > 1 ? 's' : ''} declared in affidavit`,
-          });
-        }
-        if (_winnerAffidavit.seriousCriminalCases > 0) {
-          _redFlags.push({
-            type: 'serious_criminal_cases',
-            severity: 'critical',
-            description: `${_winnerAffidavit.seriousCriminalCases} serious IPC charge${_winnerAffidavit.seriousCriminalCases > 1 ? 's' : ''}`,
-          });
-        }
-        if (_winnerAffidavit.totalLiabilities != null && _winnerAffidavit.totalAssets != null && _winnerAffidavit.totalAssets > 0 && _winnerAffidavit.totalLiabilities > _winnerAffidavit.totalAssets) {
-          _redFlags.push({
-            type: 'zero_liability_anomaly',
-            severity: 'warning',
-            description: 'Liabilities exceed declared assets',
-          });
-        }
+      const targetCriminalCases = _winnerAffidavit?.criminalCases ?? _podiumCand?.criminalCases ?? _mla?.criminalCases ?? 0;
+      if (targetCriminalCases > 0) {
+        _redFlags.push({
+          type: 'multiple_cases',
+          severity: 'warning',
+          description: `${targetCriminalCases} criminal case${targetCriminalCases > 1 ? 's' : ''} declared in election affidavit`,
+        });
       }
 
       // Data completeness score (0-100)
       let score = 0;
       if (_mla) score += 40;
-      if (_winnerAffidavit) score += 40;
+      if (_winnerAffidavit || _podiumCand) score += 40;
       if (_constituency) score += 20;
 
       return {
@@ -132,12 +172,13 @@ export default function LegislatorProfileScreen() {
         redFlags: _redFlags,
         dataCompleteness: score,
         electionYear: effectiveYear,
+        podiumDetail: _podiumCand,
       };
     } catch (e) {
       console.error('[LegislatorProfile] Data load error:', e);
-      return { mla: null, constituency: null, winnerAffidavit: null, financialRecords: [], redFlags: [], dataCompleteness: 0, electionYear: parsedElectionYear ?? 2023 };
+      return { mla: null, constituency: null, winnerAffidavit: null, financialRecords: [], redFlags: [], dataCompleteness: 0, electionYear: parsedElectionYear ?? 2023, podiumDetail: null };
     }
-  }, [stateCode, acNo, parsedElectionYear]);
+  }, [stateCode, acNo, parsedElectionYear, parsedRank]);
 
   // Fall through — need at least MLA or constituency data
   if (!mla && !constituency) {
@@ -157,15 +198,22 @@ export default function LegislatorProfileScreen() {
     );
   }
 
-  const name = mla?.name || constituency?.winnerName || 'Unknown';
-  const party = mla?.party || constituency?.winnerParty || '—';
+  const rawName = mla?.name || constituency?.winnerName || 'Unknown';
+  const rawParty = mla?.party || constituency?.winnerParty || '—';
+  const name = podiumDetail
+    ? (getLocalizedCandidateName(podiumDetail, i18n.language) || rawName)
+    : (getLocalizedCandidateName(rawName, i18n.language) || rawName);
+  const party = podiumDetail
+    ? (getLocalizedPartyName(podiumDetail, i18n.language) || rawParty)
+    : (getLocalizedPartyName(rawParty, i18n.language) || rawParty);
   const constName = mla?.constituencyName || constituency?.name || '';
   const district = constituency?.district || '';
   const gender = mla?.gender === 'F' ? 'female' : 'male';
-  const age = winnerAffidavit?.age || mla?.age || null;
-  const terms = mla?.terms || 1;
-  const photoUrl = mla?.photoUrl || null;
+  const age = podiumDetail?.age || winnerAffidavit?.age || mla?.age || null;
+  const terms = parsedRank === 'winner' ? (mla?.terms || 1) : 0;
+  const photoUrl = podiumDetail?.photoUrl || mla?.photoUrl || null;
   const constType = constituency?.type || 'GEN';
+  const isWinner = parsedRank === 'winner';
 
   const defectionEvent = useMemo(() => {
     try {
@@ -229,7 +277,7 @@ export default function LegislatorProfileScreen() {
           gender={gender}
           age={age}
           termsServed={terms}
-          isCurrentMember={true}
+          isCurrentMember={isWinner}
           reservationType={constType.toLowerCase()}
           onSharePress={handleShare}
         />

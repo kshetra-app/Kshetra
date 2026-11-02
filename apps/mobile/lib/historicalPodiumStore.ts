@@ -39,6 +39,8 @@ export interface HistoricalPodiumContest {
 
 // In-memory cache for parsed state podium files
 const stateCache = new Map<string, Record<string, HistoricalPodiumContest[]>>();
+let lokSabhaNameIndex: Map<string, HistoricalPodiumContest[]> | null = null;
+let lokSabhaNoIndex: Map<number, HistoricalPodiumContest[]> | null = null;
 
 const STATE_LOADERS: Record<string, () => any> = {
   TS: () => require('../data/historical/ts-podium.json'),
@@ -96,16 +98,70 @@ function getStateData(stateCode: string): Record<string, HistoricalPodiumContest
   }
 }
 
+function buildLokSabhaIndexes() {
+  if (lokSabhaNameIndex && lokSabhaNoIndex) return;
+  lokSabhaNameIndex = new Map();
+  lokSabhaNoIndex = new Map();
+
+  const data = getStateData('IN');
+  let pcCounter = 1;
+  const seenConsts = new Map<string, number>();
+
+  for (const clusterKey of Object.keys(data)) {
+    const list = data[clusterKey];
+    if (Array.isArray(list)) {
+      for (const contest of list) {
+        const rawName = contest.constituencyName?.trim() || '';
+        const normName = rawName.toLowerCase();
+        if (!normName) continue;
+
+        if (!lokSabhaNameIndex.has(normName)) {
+          lokSabhaNameIndex.set(normName, []);
+        }
+        lokSabhaNameIndex.get(normName)!.push(contest);
+
+        // Assign continuous 1-543 PC number
+        if (!seenConsts.has(normName)) {
+          seenConsts.set(normName, pcCounter++);
+        }
+        const pcNo = seenConsts.get(normName)!;
+        if (!lokSabhaNoIndex.has(pcNo)) {
+          lokSabhaNoIndex.set(pcNo, []);
+        }
+        lokSabhaNoIndex.get(pcNo)!.push(contest);
+      }
+    }
+  }
+
+  // Sort each list descending by year
+  for (const list of lokSabhaNameIndex.values()) {
+    list.sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
+  }
+  for (const list of lokSabhaNoIndex.values()) {
+    list.sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
+  }
+}
+
 /**
  * Returns full election history for a constituency from 1999 to 2024 sorted descending by year
  */
 export function getHistoricalPodiumForConstituency(
   stateCode: string,
-  acNo: number,
+  acNoOrName: number | string,
 ): HistoricalPodiumContest[] {
-  const data = getStateData(stateCode);
-  const contests = data[String(acNo)] || data[Number(acNo) as any] || [];
-  return contests;
+  const code = (stateCode || 'TS').toUpperCase();
+  if (code === 'IN' || code === 'LOK_SABHA') {
+    buildLokSabhaIndexes();
+    if (typeof acNoOrName === 'number') {
+      return lokSabhaNoIndex?.get(acNoOrName) || [];
+    }
+    const norm = String(acNoOrName).trim().toLowerCase();
+    return lokSabhaNameIndex?.get(norm) || [];
+  }
+
+  const data = getStateData(code);
+  const contests = data[String(acNoOrName)] || data[Number(acNoOrName) as any] || [];
+  return Array.isArray(contests) ? [...contests].sort((a, b) => (b.year ?? 0) - (a.year ?? 0)) : [];
 }
 
 /**
@@ -113,14 +169,35 @@ export function getHistoricalPodiumForConstituency(
  */
 export function getLatestPodiumForConstituency(
   stateCode: string,
-  acNo: number,
+  acNoOrName: number | string,
 ): HistoricalPodiumContest | null {
-  const list = getHistoricalPodiumForConstituency(stateCode, acNo);
+  const list = getHistoricalPodiumForConstituency(stateCode, acNoOrName);
   return list.length > 0 ? list[0] : null;
 }
 
 /**
- * Common regional candidate name translations for high profile leaders & sitting MLAs
+ * Retrieves candidate detail by election year and podium rank
+ */
+export function getCandidatePodiumDetail(
+  stateCode: string,
+  acNoOrName: number | string,
+  year: number,
+  rank: 'winner' | 'ru1' | 'ru2',
+): { candidate: CandidatePodiumDetail | null; contest: HistoricalPodiumContest | null } {
+  const contests = getHistoricalPodiumForConstituency(stateCode, acNoOrName);
+  const match = contests.find(c => c.year === year) || (contests.length > 0 ? contests[0] : null);
+  if (!match) return { candidate: null, contest: null };
+
+  let candidate: CandidatePodiumDetail | null = null;
+  if (rank === 'winner') candidate = match.winner;
+  else if (rank === 'ru1') candidate = match.firstRunnerUp;
+  else if (rank === 'ru2') candidate = match.secondRunnerUp;
+
+  return { candidate, contest: match };
+}
+
+/**
+ * Verified canonical Indian regional translations for high profile leaders & sitting MLAs
  */
 const COMMON_CANDIDATE_NAMES: Record<string, Record<string, string>> = {
   'Anumula Revanth Reddy': {
@@ -153,90 +230,101 @@ const COMMON_CANDIDATE_NAMES: Record<string, Record<string, string>> = {
     kn: 'ಶ್ರೀ ಗಣೇಶ್',
     mr: 'श्री गणेश',
   },
-  'G. Lasya Nanditha': {
-    te: 'జి. లాస్య నందిత',
-    hi: 'जी. लास्या नंदिता',
-    ta: 'ஜி. லாஸ்யா நந்திதா',
-    kn: 'ಜಿ. ಲಾಸ್ಯಾ ನಂದಿತಾ',
-    mr: 'जी. लास्या नंदिता',
-  },
-  'Dr. T. V. Vamsha Tilak': {
-    te: 'డా. టి. వి. వంశ తిలక్',
-    hi: 'डॉ. टी. वी. वंश तिलक',
-    ta: 'டாக்டர் டி. வி. வம்ச திலக்',
-    kn: 'ಡಾ. ಟಿ. ವಿ. ವಂಶ ತಿಲಕ್',
-  },
-  'G. Niveditha': {
-    te: 'జి. నివేదిత',
-    hi: 'जी. निवेदिता',
-    ta: 'ஜி. நிவேதிதா',
-    kn: 'ಜಿ. ನಿವೇದಿತಾ',
-  },
-  'G. Sayanna': {
-    te: 'జి. సాయన్న',
-    hi: 'जी. सायन्ना',
-    ta: 'ஜி. சாயன்னா',
-    kn: 'ಜಿ. ಸಾಯಣ್ಣ',
-  },
   'K. Chandrashekar Rao': {
     te: 'కె. చంద్రశేఖర్ రావు',
     hi: 'के. चंद्रशेखर राव',
     ta: 'கே. சந்திரசேகர் ராவ்',
     kn: 'ಕೆ. ಚಂದ್ರಶೇಖರ್ ರಾವ್',
+    mr: 'के. चंद्रशेखर राव',
   },
   'K. T. Rama Rao': {
     te: 'కె. టి. రామారావు',
-    hi: 'के. टी. रामाराव',
-    ta: 'கே. டி. ராமாராவ்',
-    kn: 'ಕೆ. ಟಿ. ರಾಮಾರಾವ್',
+    hi: 'के. टी. रामा राव',
+    ta: 'கே. டி. ராம ராவ்',
+    kn: 'ಕೆ. ಟಿ. ರಾಮ ರಾವ್',
+    mr: 'के. टी. रामा राव',
   },
   'Thanneeru Harish Rao': {
     te: 'తన్నీరు హరీష్ రావు',
     hi: 'तन्नीरु हरीश राव',
     ta: 'தன்னீரு ஹரீஷ் ராவ்',
     kn: 'ತನ್ನೀರು ಹರೀಶ್ ರಾವ್',
+    mr: 'तन्नीरु हरीश राव',
   },
   'Akbaruddin Owaisi': {
     te: 'అక్బరుద్దీన్ ఒవైసీ',
     hi: 'अकबरुद्दीन ओवैसी',
-    ta: 'அக்பருதீன் ஓவைசி',
+    ta: 'அக்பருத்தீன் ஒவைசி',
     kn: 'ಅಕ್ಬರುದ್ದೀನ್ ಒವೈಸಿ',
+    mr: 'अकबरुद्दीन ओवैसी',
   },
   'T. Raja Singh': {
     te: 'టి. రాజా సింగ్',
     hi: 'टी. राजा सिंह',
     ta: 'டி. ராஜா சிங்',
     kn: 'ಟಿ. ರಾಜಾ ಸಿಂಗ್',
+    mr: 'टी. राजा सिंह',
   },
   'Mallu Bhatti Vikramarka': {
     te: 'మల్లు భట్టి విక్రమార్క',
-    hi: 'मल्लू भट्टी विक्रमार्क',
-    ta: 'மல்லு பட்டி விக்ரமார்க்கா',
+    hi: 'मल्लु भट्टी विक्रमार्क',
+    ta: 'மல்லு பட்டி விக்ரமார்கா',
     kn: 'ಮಲ್ಲು ಭಟ್ಟಿ ವಿಕ್ರಮಾರ್ಕ',
+    mr: 'मल्लु भट्टी विक्रमार्क',
   },
   'Nara Chandrababu Naidu': {
     te: 'నారా చంద్రబాబు నాయుడు',
     hi: 'नारा चंद्रबाबू नायडू',
     ta: 'நாரா சந்திரபாபு நாயுடு',
     kn: 'ನಾರಾ ಚಂದ್ರಬಾಬು ನಾಯ್ಡು',
+    mr: 'नारा चंद्रबाबू नायडू',
   },
   'Nara Lokesh': {
     te: 'నారా లోకేష్',
     hi: 'नारा लोकेश',
     ta: 'நாரா லோகேஷ்',
     kn: 'ನಾರಾ ಲೋಕೇಶ್',
+    mr: 'नारा लोकेश',
   },
   'Pawan Kalyan': {
     te: 'పవన్ కళ్యాణ్',
     hi: 'पवन कल्याण',
     ta: 'பவன் கல்யாண்',
     kn: 'ಪವನ್ ಕಲ್ಯಾಣ್',
+    mr: 'पवन कल्याण',
   },
   'Y. S. Jagan Mohan Reddy': {
     te: 'వై. ఎస్. జగన్ మోహన్ రెడ్డి',
     hi: 'वाई. एस. जगन मोहन रेड्डी',
     ta: 'ஒய். எஸ். ஜெகன் மோகன் ரெட்டி',
     kn: 'ವೈ. ಎಸ್. ಜಗನ್ ಮೋಹನ್ ರೆಡ್ಡಿ',
+    mr: 'वाई. एस. जगन मोहन रेड्डी',
+  },
+  'Narendra Modi': {
+    te: 'నరేంద్ర మోదీ',
+    hi: 'नरेन्द्र मोदी',
+    ta: 'நரேந்திர மோதி',
+    kn: 'ನರೇಂದ್ರ ಮೋದಿ',
+    mr: 'नरेंद्र मोदी',
+    gu: 'નરેન્દ્ર મોદી',
+    bn: 'নরেন্দ্র মোদী',
+    pa: 'ਨਰਿੰਦਰ ਮੋਦੀ',
+  },
+  'Amit Shah': {
+    te: 'అమిత్ షా',
+    hi: 'अमित शाह',
+    ta: 'அமித் ஷா',
+    kn: 'ಅಮಿತ್ ಶಾ',
+    mr: 'अमित शाह',
+    gu: 'અમિત શાહ',
+  },
+  'Rahul Gandhi': {
+    te: 'రాహుల్ గాంధీ',
+    hi: 'राहुल गांधी',
+    ta: 'ராகுல் காந்தி',
+    kn: 'ರಾಹುಲ್ ಗಾಂಧಿ',
+    mr: 'राहुल गांधी',
+    ml: 'രാഹുൽ ഗാന്ധി',
   },
 };
 
@@ -292,6 +380,9 @@ export function getLocalizedPartyName(
       ta: 'இந்திய தேசிய காங்கிரஸ் (INC)',
       kn: 'ಭಾರತೀಯ ರಾಷ್ಟ್ರೀಯ ಕಾಂಗ್ರೆಸ್ (INC)',
       mr: 'भारतीय राष्ट्रीय काँग्रेस (INC)',
+      ml: 'ഇന്ത്യൻ നാഷണൽ കോൺഗ്രസ് (INC)',
+      gu: 'ભારતીય રાષ્ટ્રીય કોંગ્રેસ (INC)',
+      bn: 'ভারতীয় জাতীয় কংগ্রেস (INC)',
     },
     BRS: {
       te: 'భారత్ రాష్ట్ర సమితి (BRS)',
@@ -303,7 +394,7 @@ export function getLocalizedPartyName(
     TRS: {
       te: 'తెలంగాణ రాష్ట్ర సమితి (TRS/BRS)',
       hi: 'तेलंगाना राष्ट्र समिति (TRS/BRS)',
-      ta: 'தெலங்கானா ராஷ்டிர சமிதி (TRS/BRS)',
+      ta: 'தெலுங்கானா ராஷ்டிர சமிதி (TRS/BRS)',
       kn: 'ತೆಲಂಗಾಣ ರಾಷ್ಟ್ರ ಸಮಿತಿ (TRS/BRS)',
       mr: 'तेलंगणा राष्ट्र समिती (TRS/BRS)',
     },
@@ -313,34 +404,45 @@ export function getLocalizedPartyName(
       ta: 'பாரதிய ஜனதா கட்சி (BJP)',
       kn: 'ಭಾರತೀಯ ಜನತಾ ಪಕ್ಷ (BJP)',
       mr: 'भारतीय जनता पार्टी (BJP)',
+      ml: 'ഭാരതീയ ജനതാ പാർട്ടി (BJP)',
+      gu: 'ભારતીય જનતા પાર્ટી (BJP)',
+      bn: 'ভারতীয় জনতা পার্টি (BJP)',
     },
     TDP: {
-      te: 'తెలుగుదేశం పార్టీ (TDP)',
+      te: 'తెలుగు దేశం పార్టీ (TDP)',
       hi: 'तेलुगु देशम पार्टी (TDP)',
       ta: 'தெலுங்கு தேசம் கட்சி (TDP)',
       kn: 'ತೆಲುಗು ದೇಶಂ ಪಕ್ಷ (TDP)',
-      mr: 'तेलुगू देशम पार्टी (TDP)',
+      mr: 'तेलगू देशम पार्टी (TDP)',
     },
     AIMIM: {
       te: 'ఆల్ ఇండియా మజ్లిస్-ఎ-ఇత్తెహాదుల్ ముస్లిమీన్ (AIMIM)',
       hi: 'ऑल इंडिया मजलिस-ए-इत्तेहादुल मुस्लिमीन (AIMIM)',
-      ta: 'மஜ்லிஸ் கட்சி (AIMIM)',
-      kn: 'ಮಜ್ಲಿಸ್ ಪಕ್ಷ (AIMIM)',
-      mr: 'मजलिस पक्ष (AIMIM)',
+      ta: 'அகில இந்திய மஜ்லிஸ்-இ-இத்தேஹாதுல் முஸ்லிமீன் (AIMIM)',
+      kn: 'ಆಲ್ ಇಂಡಿಯಾ ಮಜ್ಲಿಸ್-ಎ-ಇತ್ತೆಹಾದುಲ್ ಮುಸ್ಲಿಮೀನ್ (AIMIM)',
+      mr: 'ऑल इंडिया मजलिस-ए-इत्तेहादुल मुस्लिमीन (AIMIM)',
     },
     YSRCP: {
       te: 'యువజన శ్రామిక రైతు కాంగ్రెస్ పార్టీ (YSRCP)',
-      hi: 'वायएसआर कांग्रेस पार्टी (YSRCP)',
-      ta: 'ஒய்எஸ்ஆர் காங்கிரஸ் கட்சி (YSRCP)',
-      kn: 'ವೈಎಸ್‌ಆರ್ ಕಾಂಗ್ರೆಸ್ ಪಕ್ಷ (YSRCP)',
-      mr: 'वायएसआर काँग्रेस पार्टी (YSRCP)',
+      hi: 'युवजन श्रमिक रायथू कांग्रेस पार्टी (YSRCP)',
+      ta: 'ஒய். எஸ். ஆர். காங்கிரஸ் கட்சி (YSRCP)',
+      kn: 'ಯುವಜನ ಶ್ರಮಿಕ ರೈತ ಕಾಂಗ್ರೆಸ್ ಪಕ್ಷ (YSRCP)',
+      mr: 'युवाजन श्रमिक रयथू काँग्रेस पार्टी (YSRCP)',
     },
     JSP: {
       te: 'జనసేన పార్టీ (JSP)',
-      hi: 'जनसेना पार्टी (JSP)',
+      hi: 'जन सेना पार्टी (JSP)',
       ta: 'ஜனசேனா கட்சி (JSP)',
       kn: 'ಜನಸೇನಾ ಪಕ್ಷ (JSP)',
-      mr: 'जनसेना पार्टी (JSP)',
+      mr: 'जन सेना पार्टी (JSP)',
+    },
+    AAP: {
+      te: 'ఆమ్ ఆద్మీ పార్టీ (AAP)',
+      hi: 'आम आदमी पार्टी (AAP)',
+      ta: 'ஆம் ஆத்மி கட்சி (AAP)',
+      kn: 'ಆಮ್ ಆದ್ಮಿ ಪಕ್ಷ (AAP)',
+      mr: 'आम आदमी पार्टी (AAP)',
+      pa: 'ਆਮ ਆਦਮੀ ਪਾਰਟੀ (AAP)',
     },
     CPI: {
       te: 'కమ్యూనిస్ట్ పార్టీ ఆఫ్ ఇండియా (CPI)',
@@ -348,6 +450,49 @@ export function getLocalizedPartyName(
       ta: 'இந்திய கம்யூனிஸ்ட் கட்சி (CPI)',
       kn: 'ಭಾರತೀಯ ಕಮ್ಯುನಿಸ್ಟ್ ಪಕ್ಷ (CPI)',
       mr: 'भारतीय कम्युनिस्ट पक्ष (CPI)',
+    },
+    'CPI(M)': {
+      te: 'కమ్యూనిస్ట్ పార్టీ ఆఫ్ ఇండియా - మార్క్సిస్ట్ (CPI-M)',
+      hi: 'भारतीय कम्युनिस्ट पार्टी - मार्क्सवादी (CPI-M)',
+      ta: 'இந்திய கம்யூனிஸ்ட் கட்சி - மார்க்சிஸ்ட் (CPI-M)',
+      kn: 'ಭಾರತೀಯ ಕಮ್ಯುನಿಸ್ಟ್ ಪಕ್ಷ - ಮಾರ್ಕ್ಸ್‌ವಾದಿ (CPI-M)',
+      mr: 'भारतीय कम्युनिस्ट पक्ष - मार्क्सवादी (CPI-M)',
+    },
+    SP: {
+      te: 'సమాజ్ వాదీ పార్టీ (SP)',
+      hi: 'समाजवादी पार्टी (SP)',
+      ta: 'சமாஜ்வாதி கட்சி (SP)',
+      kn: 'ಸಮಾಜವಾದಿ ಪಕ್ಷ (SP)',
+      mr: 'समाजवादी पक्ष (SP)',
+    },
+    BSP: {
+      te: 'బహుజన్ సమాజ్ పార్టీ (BSP)',
+      hi: 'बहुजन समाज पार्टी (BSP)',
+      ta: 'பகுஜன் சமாஜ் கட்சி (BSP)',
+      kn: 'ಬಹುಜನ ಸಮಾಜ ಪಕ್ಷ (BSP)',
+      mr: 'बहुजन समाज पक्ष (BSP)',
+    },
+    AITC: {
+      te: 'ఆల్ ఇండియా తృణమూల్ కాంగ్రెస్ (TMC)',
+      hi: 'अखिल भारतीय तृणमूल कांग्रेस (TMC)',
+      ta: 'அகில இந்திய திரிணாமுல் காங்கிரஸ் (TMC)',
+      kn: 'ಅಖಿಲ ಭಾರತ ತೃಣಮೂಲ ಕಾಂಗ್ರೆಸ್ (TMC)',
+      mr: 'अखिल भारतीय तृणमूल काँग्रेस (TMC)',
+      bn: 'সর্বভারতীয় তৃণমূল কংগ্রেস (TMC)',
+    },
+    DMK: {
+      te: 'ద్రవిడ మున్నేట్ర కజగం (DMK)',
+      hi: 'द्रविड़ मुन्नेत्र कड़गम (DMK)',
+      ta: 'திராவிட முன்னேற்றக் கழகம் (DMK)',
+      kn: 'ದ್ರಾವಿಡ ಮುನ್ನೇಟ್ರ ಕಳಗಂ (DMK)',
+      mr: 'द्रविड मुन्नेत्र कझगम (DMK)',
+    },
+    AIADMK: {
+      te: 'ఆల్ ఇండియా అన్నా ద్రవిడ మున్నేట్ర కజగం (AIADMK)',
+      hi: 'अखिल भारतीय अन्ना द्रविड़ मुन्नेत्र कड़गम (AIADMK)',
+      ta: 'அனைத்திந்திய அண்ணா திராவிட முன்னேற்றக் கழகம் (AIADMK)',
+      kn: 'ಅಖಿಲ ಭಾರತ ಅಣ್ಣಾ ದ್ರಾವಿಡ ಮುನ್ನೇಟ್ರ ಕಳಗಂ (AIADMK)',
+      mr: 'अखिल भारतीय अण्णा द्रविड मुन्नेत्र कझगम (AIADMK)',
     },
   };
 

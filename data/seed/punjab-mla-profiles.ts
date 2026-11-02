@@ -28,6 +28,8 @@ export interface MLAProfile {
   district?: string;
   reservationType?: 'General' | 'SC' | 'ST' | string;
   sourceUrl?: string;
+  citation?: string;
+  verifiedAt?: string;
 }
 
 export const PB_MLA_PROFILES: MLAProfile[] = [
@@ -104,6 +106,9 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Amargarh',
     district: 'Malerkotla',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9f/BarindermeetSingh_Pahra.jpg/330px-BarindermeetSingh_Pahra.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Barindermeet_Singh_Pahra',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=284',
   },
   {
@@ -142,6 +147,9 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Amritsar Central',
     district: 'Amritsar',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d3/Pratap_Singh_Bajwa.jpg/330px-Pratap_Singh_Bajwa.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Partap_Singh_Bajwa',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=7',
   },
   {
@@ -238,6 +246,9 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Atam Nagar',
     district: 'Ludhiana',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/Kuldeep_Singh_Dhaliwal.jpg/330px-Kuldeep_Singh_Dhaliwal.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Kuldeep_Singh_Dhaliwal',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=14',
   },
   {
@@ -314,6 +325,9 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Balachaur',
     district: 'Shaheed Bhagat Singh Nagar',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/88/Kunwar_Vijay_Pratap_Singh.jpg/330px-Kunwar_Vijay_Pratap_Singh.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Kunwar_Vijay_Pratap_Singh',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=806',
   },
   {
@@ -371,6 +385,9 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Bassi Pathana',
     district: 'Amritsar',
     reservationType: 'SC',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/Jeevan_Jyot_Kaur.jpg/330px-Jeevan_Jyot_Kaur.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Jeevan_Jyot_Kaur',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=850',
   },
   {
@@ -390,6 +407,9 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Batala',
     district: 'Gurdaspur',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/08/Inderbir_Singh_Nijjar.jpg/330px-Inderbir_Singh_Nijjar.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Inderbir_Singh_Nijjar',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=490',
   },
   {
@@ -466,6 +486,9 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Bhoa',
     district: 'Tarn Taran',
     reservationType: 'SC',
+    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/ee/Laljit_Singh_Bhullar.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled',
+    citation: 'https://en.wikipedia.org/wiki/Laljit_Singh_Bhullar',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=264',
   },
   {
@@ -524,6 +547,9 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Chabbewal',
     district: 'Sangrur',
     reservationType: 'SC',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dd/Sukhpalsingh.jpeg/330px-Sukhpalsingh.jpeg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Sukhpal_Singh_Khaira',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=772',
   },
   {
@@ -735,6 +761,9 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Fatehgarh Sahib',
     district: 'Fatehgarh Sahib',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7d/During_oath_taking_ceremony.jpg/330px-During_oath_taking_ceremony.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Pargat_Singh',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=862',
   },
   {
@@ -984,6 +1013,9 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Jalandhar Central',
     district: 'Jalandhar',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2f/Dinesh_Chadha_MLA_Rupnagar.jpg/330px-Dinesh_Chadha_MLA_Rupnagar.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Dinesh_Chadha',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=996',
   },
   {
@@ -1022,6 +1054,9 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Jalandhar West',
     district: 'Patiala',
     reservationType: 'SC',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c7/Anmol_Gagan_Maan.jpg/330px-Anmol_Gagan_Maan.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Anmol_Gagan_Maan',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=530',
   },
   {
@@ -1175,6 +1210,9 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Lambi',
     district: 'Sri Muktsar Sahib',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/be/Daljit.singh.grewal.interview.2022.jpg/330px-Daljit.singh.grewal.interview.2022.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Daljit_Singh_Grewal',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=236',
   },
   {
@@ -1250,6 +1288,9 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Ludhiana North',
     district: 'Ludhiana',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/Arora_Sanjeev.jpg/330px-Arora_Sanjeev.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Sanjeev_Arora_(politician)',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=1187',
   },
   {
@@ -1325,6 +1366,9 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     constituencyName: 'Malout',
     district: 'Ludhiana',
     reservationType: 'SC',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/Manpreet_Singh_Ayali_new.jpg/330px-Manpreet_Singh_Ayali_new.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Manpreet_Singh_Ayali',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=218',
   },
   {
@@ -1533,6 +1577,9 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Patiala',
     district: 'Patiala',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c0/Jagdeep_Kamboj_Goldy.jpg/330px-Jagdeep_Kamboj_Goldy.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Jagdeep_Kamboj_Goldy',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=693',
   },
   {
@@ -1705,6 +1752,9 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Rampura Phul',
     district: 'Bathinda',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/S._Kultar_Singh_Sandhwan_%28cropped%29.jpg/330px-S._Kultar_Singh_Sandhwan_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Kultar_Singh_Sandhwan',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=159',
   },
   {
@@ -1931,6 +1981,9 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Sultanpur Lodhi',
     district: 'Kapurthala',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/68/Harpal_Singh_Cheema.jpg/330px-Harpal_Singh_Cheema.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Harpal_Singh_Cheema',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=1111',
   },
   {
@@ -1950,6 +2003,9 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Sunam',
     district: 'Sangrur',
+    photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/5/56/Cabinet_Minister_Aman_Arora_at_Chandigarh_office_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled',
+    citation: 'https://en.wikipedia.org/wiki/Aman_Arora',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=122',
   },
   {
@@ -2007,6 +2063,9 @@ export const PB_MLA_PROFILES: MLAProfile[] = [
     maritalStatus: 'Married',
     constituencyName: 'Urmar',
     district: 'Hoshiarpur',
+    photoUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b9/Bhagwant_Mann_2026.jpg/330px-Bhagwant_Mann_2026.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail',
+    citation: 'https://en.wikipedia.org/wiki/Bhagwant_Mann',
+    verifiedAt: '2026-11-02T14:45:00+05:30',
     sourceUrl: 'https://www.myneta.info/punjab2022/candidate.php?candidate_id=114',
   },
   {
