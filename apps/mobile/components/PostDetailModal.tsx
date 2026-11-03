@@ -12,12 +12,14 @@ import {
   Share,
   Alert,
   StatusBar,
+  Keyboard,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import * as Linking from 'expo-linking';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../lib/theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFeedStore } from '../stores/feed';
 import { useAuthStore } from '../stores/auth';
 import type { Post, Comment } from '../lib/feedTypes';
@@ -54,9 +56,26 @@ export default function PostDetailModal({
 }: PostDetailModalProps) {
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   const [commentText, setCommentText] = useState('');
   const [reportVisible, setReportVisible] = useState(false);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const inputRef = useRef<TextInput>(null);
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      () => setIsKeyboardVisible(true),
+    );
+    const hideSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => setIsKeyboardVisible(false),
+    );
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   const rawComments = useFeedStore((s) => (post ? s.comments[post.id] ?? [] : []));
   const addComment = useFeedStore((s) => s.addComment);
@@ -185,7 +204,8 @@ export default function PostDetailModal({
           { backgroundColor: colors.background },
           Platform.OS === 'android' && { paddingTop: StatusBar.currentHeight || 20 },
         ]}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 25}
       >
         {/* Header */}
         <View style={[styles.header, { borderBottomColor: colors.border }]}>
@@ -227,6 +247,7 @@ export default function PostDetailModal({
           data={comments}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
           contentContainerStyle={styles.listContent}
           ListHeaderComponent={
             <View style={styles.postBodyContainer}>
@@ -471,7 +492,16 @@ export default function PostDetailModal({
         />
 
         {/* Bottom Reply Bar */}
-        <View style={[styles.replyBar, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
+        <View
+          style={[
+            styles.replyBar,
+            {
+              backgroundColor: colors.surface,
+              borderTopColor: colors.border,
+              paddingBottom: isKeyboardVisible ? 12 : Math.max(insets.bottom, 12),
+            },
+          ]}
+        >
           <TextInput
             ref={inputRef}
             style={[styles.replyInput, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}

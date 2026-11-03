@@ -127,6 +127,8 @@ export interface Headline {
   id: string;
   stateCode: string;
   constituencyId?: string;
+  district?: string;
+  scope?: 'constituency' | 'district' | 'state';
   title: string;
   summary?: string;
   sourceName: string;

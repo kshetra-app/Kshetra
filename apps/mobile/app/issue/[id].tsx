@@ -1,5 +1,5 @@
-import { useState, useCallback, useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, Alert, Share, TextInput, KeyboardAvoidingView, Platform, ActivityIndicator, Linking } from 'react-native';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Pressable, Alert, Share, TextInput, KeyboardAvoidingView, Platform, ActivityIndicator, Linking, Keyboard } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -71,6 +71,23 @@ export default function IssueDetailScreen() {
   const [showAllMedia, setShowAllMedia] = useState(false);
   const [helpVisible, setHelpVisible] = useState(false);
   const insets = useSafeAreaInsets();
+  const scrollViewRef = useRef<ScrollView>(null);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      () => setIsKeyboardVisible(true),
+    );
+    const hideSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => setIsKeyboardVisible(false),
+    );
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   if (!issue) {
     return (
@@ -166,6 +183,9 @@ export default function IssueDetailScreen() {
         screenName: 'issue_detail',
       });
       setCommentText('');
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+      }, 200);
     } catch (err: any) {
       setCommentError('Could not post comment. Please try again.');
     } finally {
@@ -177,7 +197,11 @@ export default function IssueDetailScreen() {
   const displayMedia = showAllMedia ? mediaUrls : mediaUrls.slice(0, 6);
 
   return (
-    <KeyboardAvoidingView style={[styles.container, { backgroundColor: colors.background }]} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 25}
+    >
       <Stack.Screen
         options={{
           headerShown: true,
@@ -197,7 +221,12 @@ export default function IssueDetailScreen() {
         }}
       />
 
-      <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        ref={scrollViewRef}
+        style={styles.scroll}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         {/* ── Header Badges ── */}
         <View style={styles.badgeRow}>
           <View style={[styles.badge, { backgroundColor: catConfig.color + '20' }]}>
@@ -482,15 +511,36 @@ export default function IssueDetailScreen() {
       ) : null}
 
       {/* ── Comment Input ── */}
-      <View style={[styles.commentInputBar, { paddingBottom: Math.max(insets.bottom, 10) }]}>
+      <View
+        style={[
+          styles.commentInputBar,
+          {
+            paddingBottom: isKeyboardVisible ? 12 : Math.max(insets.bottom, 10),
+            backgroundColor: colors.surface || '#FFFFFF',
+            borderTopColor: colors.border || '#E8DED1',
+          },
+        ]}
+      >
         <TextInput
-          style={styles.commentInput}
+          style={[
+            styles.commentInput,
+            {
+              backgroundColor: colors.background || '#FAF6EE',
+              color: colors.text || '#241814',
+              borderColor: colors.border || '#E8DED1',
+            },
+          ]}
           placeholder="Add a comment..."
           placeholderTextColor="#6B7280"
           value={commentText}
           onChangeText={(text) => {
             setCommentText(text);
             if (commentError) setCommentError(null);
+          }}
+          onFocus={() => {
+            setTimeout(() => {
+              scrollViewRef.current?.scrollToEnd({ animated: true });
+            }, 250);
           }}
           multiline
           maxLength={1000}

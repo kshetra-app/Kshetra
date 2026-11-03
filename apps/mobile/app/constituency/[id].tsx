@@ -46,6 +46,10 @@ import PostCard from '../../components/PostCard';
 import PollCard from '../../components/PollCard';
 import IssueCard from '../../components/IssueCard';
 import HeadlineCard from '../../components/HeadlineCard';
+import PostDetailModal from '../../components/PostDetailModal';
+import ComposeSheet from '../../components/ComposeSheet';
+import { getHierarchicalNewsForConstituency } from '../../lib/constituencyNewsService';
+import type { Post } from '../../lib/feedTypes';
 import PoliticalTimelineCard from '../../components/PoliticalTimelineCard';
 import { ConstituencyCardSkeleton, TextSkeleton } from '../../components/SkeletonLoaders';
 import { useTheme } from '../../lib/theme';
@@ -276,15 +280,28 @@ export default function ConstituencyDetailScreen() {
     [civicIssues, constituency, stateCode],
   );
 
-  const constituencyPosts = useMemo(
-    () => feedPosts.filter((p) => p.constituencyName === constituency?.name || p.stateCode === stateCode),
-    [feedPosts, constituency, stateCode],
-  );
+  const [detailPost, setDetailPost] = useState<Post | null>(null);
+  const [autoFocusReply, setAutoFocusReply] = useState(false);
+  const [composeVisible, setComposeVisible] = useState(false);
+  const [newsScopeFilter, setNewsScopeFilter] = useState<'all' | 'constituency' | 'district' | 'state'>('all');
 
-  const constituencyHeadlines = useMemo(
-    () => civicHeadlines.filter((h) => (constituency ? h.constituencyId === `${stateCode}-AC-${constituency.acNo}` : false) || h.stateCode === stateCode),
-    [civicHeadlines, constituency, stateCode],
-  );
+  const constituencyPosts = useMemo(() => {
+    const direct = feedPosts.filter((p) => p.constituencyName === constituency?.name || p.constituencyId === `${stateCode}-AC-${constituency?.acNo}`);
+    const stateLevel = feedPosts.filter((p) => p.stateCode === stateCode && !p.constituencyName);
+    const combined = [...direct, ...stateLevel];
+    return combined.length > 0 ? combined : feedPosts.filter((p) => p.stateCode === stateCode || p.stateCode === 'IN');
+  }, [feedPosts, constituency, stateCode]);
+
+  const hierarchicalNews = useMemo(() => {
+    return getHierarchicalNewsForConstituency(stateCode, constituency, i18n.language);
+  }, [stateCode, constituency, i18n.language]);
+
+  const constituencyHeadlines = useMemo(() => {
+    if (newsScopeFilter === 'constituency') return hierarchicalNews.constituencyNews;
+    if (newsScopeFilter === 'district') return hierarchicalNews.districtNews;
+    if (newsScopeFilter === 'state') return hierarchicalNews.stateNews;
+    return hierarchicalNews.allNews;
+  }, [hierarchicalNews, newsScopeFilter]);
 
   const [issueFilter, setIssueFilter] = useState<'all' | 'open' | 'resolved'>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
@@ -823,14 +840,34 @@ export default function ConstituencyDetailScreen() {
             {constituencyPosts.length > 0 ? (
               <>
                 <View style={styles.tabHeader}>
-                  <Text style={styles.tabHeaderTitle}>{t('constituencyExtended.communityPulse')}</Text>
-                  <Text style={styles.tabHeaderCount}>{constituencyPosts.length} {constituencyPosts.length === 1 ? t('common.post') : t('common.posts')}</Text>
+                  <View>
+                    <Text style={[styles.tabHeaderTitle, { color: colors.text }]}>{t('constituencyExtended.communityPulse')}</Text>
+                    <Text style={styles.tabHeaderCount}>{constituencyPosts.length} {constituencyPosts.length === 1 ? t('common.post') : t('common.posts')}</Text>
+                  </View>
+                  <Pressable
+                    style={[styles.newPostHeaderBtn, { backgroundColor: colors.primary }]}
+                    onPress={() => setComposeVisible(true)}
+                  >
+                    <Ionicons name="add-circle" size={15} color="#FFFFFF" style={{ marginRight: 4 }} />
+                    <Text style={styles.newPostHeaderBtnText}>{t('feed.compose', { defaultValue: 'Post' })}</Text>
+                  </Pressable>
                 </View>
                 {constituencyPosts.map((post) => (
                   <View key={post.id}>
                     <PostCard
                       post={post}
                       compact
+                      onPress={() => {
+                        setDetailPost(post);
+                        setAutoFocusReply(false);
+                      }}
+                      onReply={() => {
+                        setDetailPost(post);
+                        setAutoFocusReply(true);
+                      }}
+                      onTagPress={(tag) => {
+                        router.push({ pathname: '/(tabs)/feed', params: { hashtag: tag } } as any);
+                      }}
                       onReact={() => {
                         if (!gateContentAction('react_post')) return;
                         feedToggleReaction(post.id, 'like');
@@ -876,7 +913,7 @@ export default function ConstituencyDetailScreen() {
                 <Text style={[styles.emptySubtitle, { color: colors.textMuted }]}>{t('constituencyExtended.startConversation', { defaultValue: 'Start a conversation about this constituency on the Community Feed. Posts tagged to this area will appear here.' })}</Text>
                 <Pressable
                   style={[styles.emptyActionBtn, { backgroundColor: colors.primary }]}
-                  onPress={() => router.push('/(tabs)/community')}
+                  onPress={() => setComposeVisible(true)}
                 >
                   <Ionicons name="chatbubble-ellipses-outline" size={18} color="#FFFFFF" style={{ marginRight: 6 }} />
                   <Text style={styles.emptyActionBtnText}>
@@ -893,17 +930,112 @@ export default function ConstituencyDetailScreen() {
         {/* ═══════════════════════════════════════════════════════════════ */}
         {activeTab === 'news' && (
           <View style={styles.tabContent}>
-            {constituencyHeadlines.length > 0 ? (
+            {hierarchicalNews.allNews.length > 0 ? (
               <>
                 <View style={styles.tabHeader}>
-                  <Text style={styles.tabHeaderTitle}>{t('constituencyExtended.newsAndHeadlines')}</Text>
-                  <Text style={styles.tabHeaderCount}>{constituencyHeadlines.length} {constituencyHeadlines.length === 1 ? t('constituencyExtended.article', { defaultValue: 'article' }) : t('constituencyExtended.articles', { defaultValue: 'articles' })}</Text>
+                  <View>
+                    <Text style={[styles.tabHeaderTitle, { color: colors.text }]}>{t('constituencyExtended.newsAndHeadlines')}</Text>
+                    <Text style={styles.tabHeaderCount}>{hierarchicalNews.allNews.length} {hierarchicalNews.allNews.length === 1 ? t('constituencyExtended.article', { defaultValue: 'article' }) : t('constituencyExtended.articles', { defaultValue: 'articles' })}</Text>
+                  </View>
                 </View>
-                <View style={{ paddingHorizontal: 16 }}>
-                  {constituencyHeadlines.map((hl) => (
-                    <HeadlineCard key={hl.id} headline={hl} />
-                  ))}
-                </View>
+
+                {/* Hierarchy Tier Filter Pills */}
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.newsFilterScroll}>
+                  <Pressable
+                    style={[styles.newsFilterPill, newsScopeFilter === 'all' && styles.newsFilterPillActive]}
+                    onPress={() => setNewsScopeFilter('all')}
+                  >
+                    <Text style={[styles.newsFilterPillText, newsScopeFilter === 'all' && styles.newsFilterPillTextActive]}>
+                      {t('common.all', { defaultValue: 'All' })} ({hierarchicalNews.allNews.length})
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    style={[styles.newsFilterPill, newsScopeFilter === 'constituency' && styles.newsFilterPillActive]}
+                    onPress={() => setNewsScopeFilter('constituency')}
+                  >
+                    <Ionicons name="location" size={13} color={newsScopeFilter === 'constituency' ? '#FFFFFF' : '#2563EB'} style={{ marginRight: 4 }} />
+                    <Text style={[styles.newsFilterPillText, newsScopeFilter === 'constituency' && styles.newsFilterPillTextActive]}>
+                      {localizedConstName} ({hierarchicalNews.constituencyNews.length})
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    style={[styles.newsFilterPill, newsScopeFilter === 'district' && styles.newsFilterPillActive]}
+                    onPress={() => setNewsScopeFilter('district')}
+                  >
+                    <Ionicons name="business" size={13} color={newsScopeFilter === 'district' ? '#FFFFFF' : '#7C3AED'} style={{ marginRight: 4 }} />
+                    <Text style={[styles.newsFilterPillText, newsScopeFilter === 'district' && styles.newsFilterPillTextActive]}>
+                      {localizedDistrict} ({hierarchicalNews.districtNews.length})
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    style={[styles.newsFilterPill, newsScopeFilter === 'state' && styles.newsFilterPillActive]}
+                    onPress={() => setNewsScopeFilter('state')}
+                  >
+                    <Ionicons name="globe" size={13} color={newsScopeFilter === 'state' ? '#FFFFFF' : '#059669'} style={{ marginRight: 4 }} />
+                    <Text style={[styles.newsFilterPillText, newsScopeFilter === 'state' && styles.newsFilterPillTextActive]}>
+                      {getLocalizedStateName(stateCode, i18n.language)} ({hierarchicalNews.stateNews.length})
+                    </Text>
+                  </Pressable>
+                </ScrollView>
+
+                {/* News Display by Strict Hierarchy: Constituency -> District -> State */}
+                {newsScopeFilter === 'all' ? (
+                  <>
+                    {/* Tier 1: Constituency */}
+                    {hierarchicalNews.constituencyNews.length > 0 && (
+                      <View style={styles.newsHierarchySection}>
+                        <View style={styles.newsSectionHeaderRow}>
+                          <Ionicons name="location" size={15} color="#2563EB" />
+                          <Text style={[styles.newsSectionHeaderTitle, { color: colors.text }]}>
+                            {localizedConstName} {t('common.scopes.constituency', { defaultValue: 'Constituency News' })}
+                          </Text>
+                          <Text style={styles.newsSectionCountBadge}>{hierarchicalNews.constituencyNews.length}</Text>
+                        </View>
+                        {hierarchicalNews.constituencyNews.map((hl) => (
+                          <HeadlineCard key={hl.id} headline={hl} />
+                        ))}
+                      </View>
+                    )}
+
+                    {/* Tier 2: District */}
+                    {hierarchicalNews.districtNews.length > 0 && (
+                      <View style={styles.newsHierarchySection}>
+                        <View style={styles.newsSectionHeaderRow}>
+                          <Ionicons name="business" size={15} color="#7C3AED" />
+                          <Text style={[styles.newsSectionHeaderTitle, { color: colors.text }]}>
+                            {localizedDistrict} {t('common.scopes.district', { defaultValue: 'District News' })}
+                          </Text>
+                          <Text style={styles.newsSectionCountBadge}>{hierarchicalNews.districtNews.length}</Text>
+                        </View>
+                        {hierarchicalNews.districtNews.map((hl) => (
+                          <HeadlineCard key={hl.id} headline={hl} />
+                        ))}
+                      </View>
+                    )}
+
+                    {/* Tier 3: State */}
+                    {hierarchicalNews.stateNews.length > 0 && (
+                      <View style={styles.newsHierarchySection}>
+                        <View style={styles.newsSectionHeaderRow}>
+                          <Ionicons name="globe" size={15} color="#059669" />
+                          <Text style={[styles.newsSectionHeaderTitle, { color: colors.text }]}>
+                            {getLocalizedStateName(stateCode, i18n.language)} {t('common.scopes.state', { defaultValue: 'State News' })}
+                          </Text>
+                          <Text style={styles.newsSectionCountBadge}>{hierarchicalNews.stateNews.length}</Text>
+                        </View>
+                        {hierarchicalNews.stateNews.map((hl) => (
+                          <HeadlineCard key={hl.id} headline={hl} />
+                        ))}
+                      </View>
+                    )}
+                  </>
+                ) : (
+                  <View style={{ paddingHorizontal: 16 }}>
+                    {constituencyHeadlines.map((hl) => (
+                      <HeadlineCard key={hl.id} headline={hl} />
+                    ))}
+                  </View>
+                )}
               </>
             ) : (
               <View style={styles.emptyState}>
@@ -1108,6 +1240,26 @@ export default function ConstituencyDetailScreen() {
           visible={reportIssueVisible}
           onClose={() => setReportIssueVisible(false)}
           onSubmit={(iss) => addIssue(iss)}
+        />
+      )}
+
+      {detailPost && (
+        <PostDetailModal
+          visible={!!detailPost}
+          post={detailPost}
+          autoFocusReply={autoFocusReply}
+          onClose={() => setDetailPost(null)}
+        />
+      )}
+
+      {composeVisible && (
+        <ComposeSheet
+          visible={composeVisible}
+          onClose={() => setComposeVisible(false)}
+          onSubmit={(post) => {
+            useFeedStore.getState().addPost(post);
+            setComposeVisible(false);
+          }}
         />
       )}
     </View>
@@ -1618,6 +1770,70 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     color: '#6B7280',
+  },
+  newPostHeaderBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+  newPostHeaderBtnText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  newsFilterScroll: {
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+  },
+  newsFilterPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: '#FAF6EE',
+    borderWidth: 1,
+    borderColor: '#E8DED1',
+    marginRight: 8,
+  },
+  newsFilterPillActive: {
+    backgroundColor: '#A8201A',
+    borderColor: '#A8201A',
+  },
+  newsFilterPillText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#6D5549',
+  },
+  newsFilterPillTextActive: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+  },
+  newsHierarchySection: {
+    marginBottom: 16,
+    paddingHorizontal: 16,
+  },
+  newsSectionHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+    gap: 6,
+  },
+  newsSectionHeaderTitle: {
+    fontSize: 14,
+    fontWeight: '800',
+    flex: 1,
+  },
+  newsSectionCountBadge: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#6B7280',
+    backgroundColor: '#F3F4F6',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 10,
   },
   issueStatsRow: {
     flexDirection: 'row',

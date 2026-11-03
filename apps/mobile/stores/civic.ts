@@ -1,3 +1,7 @@
+function seedDate(daysAgo: number, hoursOffset: number = 0): string {
+  return new Date(Date.now() - (daysAgo * 24 + hoursOffset) * 3600 * 1000).toISOString();
+}
+
 import { create } from 'zustand';
 import type {
   CivicIssue,
@@ -40,8 +44,8 @@ const SEED_ISSUES: CivicIssue[] = [
     mlaTagged: true,
     mlaResponded: false,
     isVerifiedReport: false,
-    createdAt: '2026-04-28T06:00:00Z',
-    updatedAt: '2026-04-28T06:00:00Z',
+    createdAt: seedDate(1, 6),
+    updatedAt: seedDate(1, 6),
   },
   {
     id: 'issue-2',
@@ -64,8 +68,8 @@ const SEED_ISSUES: CivicIssue[] = [
     mlaResponded: true,
     mlaResponseNote: 'HMWSSB has been directed to restore daily supply. Additional 20 tankers deployed to Old City starting tomorrow. — MLA Office',
     isVerifiedReport: true,
-    createdAt: '2026-04-27T08:00:00Z',
-    updatedAt: '2026-04-28T14:00:00Z',
+    createdAt: seedDate(2, 4),
+    updatedAt: seedDate(1, 10),
   },
   {
     id: 'issue-3',
@@ -87,8 +91,8 @@ const SEED_ISSUES: CivicIssue[] = [
     mlaTagged: false,
     mlaResponded: false,
     isVerifiedReport: false,
-    createdAt: '2026-04-26T10:00:00Z',
-    updatedAt: '2026-04-29T05:00:00Z',
+    createdAt: seedDate(3, 2),
+    updatedAt: seedDate(0, 7),
   },
   {
     id: 'issue-4',
@@ -111,8 +115,8 @@ const SEED_ISSUES: CivicIssue[] = [
     mlaTagged: true,
     mlaResponded: false,
     isVerifiedReport: true,
-    createdAt: '2026-04-28T12:00:00Z',
-    updatedAt: '2026-04-28T12:00:00Z',
+    createdAt: seedDate(1, 1),
+    updatedAt: seedDate(1, 1),
   },
   {
     id: 'issue-5',
@@ -131,13 +135,13 @@ const SEED_ISSUES: CivicIssue[] = [
     followCount: 8,
     evidenceCount: 0,
     disputeCount: 0,
-    resolvedAt: '2026-04-28T20:00:00Z',
+    resolvedAt: seedDate(1, 4),
     resolutionNote: 'GHMC replaced all faulty streetlights on the Abids-MJ Market stretch. 18 new LED lights installed.',
     mlaTagged: false,
     mlaResponded: false,
     isVerifiedReport: false,
-    createdAt: '2026-04-22T15:00:00Z',
-    updatedAt: '2026-04-28T20:00:00Z',
+    createdAt: seedDate(7, 9),
+    updatedAt: seedDate(1, 4),
   },
   // ── Telangana (reopened — dispute showcase) ──
   {
@@ -161,8 +165,8 @@ const SEED_ISSUES: CivicIssue[] = [
     mlaTagged: true,
     mlaResponded: false,
     isVerifiedReport: false,
-    createdAt: '2026-04-15T10:00:00Z',
-    updatedAt: '2026-04-29T16:00:00Z',
+    createdAt: seedDate(14, 2),
+    updatedAt: seedDate(0, 8),
     userDisputed: false,
   },
   // ── Andhra Pradesh ──
@@ -187,8 +191,8 @@ const SEED_ISSUES: CivicIssue[] = [
     mlaResponded: true,
     mlaResponseNote: 'Have written to Union Fisheries Ministry requesting urgent release of Central funds. State matching share will be released within 15 days. — MLA K. Rammohan Naidu',
     isVerifiedReport: true,
-    createdAt: '2026-04-27T04:00:00Z',
-    updatedAt: '2026-04-27T04:00:00Z',
+    createdAt: seedDate(2, 8),
+    updatedAt: seedDate(2, 8),
   },
   {
     id: 'issue-ap-2',
@@ -212,8 +216,8 @@ const SEED_ISSUES: CivicIssue[] = [
     mlaResponded: true,
     mlaResponseNote: 'Rs 50,000 disbursement resumed. Remaining 140 families to receive within 2 weeks. Personal supervision. — MLA Kesineni Srinivas',
     isVerifiedReport: true,
-    createdAt: '2026-04-20T08:00:00Z',
-    updatedAt: '2026-04-29T10:00:00Z',
+    createdAt: seedDate(9, 4),
+    updatedAt: seedDate(0, 2),
   },
   {
     id: 'issue-ap-3',
@@ -235,8 +239,8 @@ const SEED_ISSUES: CivicIssue[] = [
     mlaTagged: true,
     mlaResponded: false,
     isVerifiedReport: false,
-    createdAt: '2026-04-26T06:30:00Z',
-    updatedAt: '2026-04-28T09:00:00Z',
+    createdAt: seedDate(3, 6),
+    updatedAt: seedDate(1, 3),
   },
   // ── Karnataka ──
   {
@@ -260,8 +264,8 @@ const SEED_ISSUES: CivicIssue[] = [
     mlaTagged: true,
     mlaResponded: false,
     isVerifiedReport: false,
-    createdAt: '2026-04-25T05:00:00Z',
-    updatedAt: '2026-04-25T05:00:00Z',
+    createdAt: seedDate(4, 7),
+    updatedAt: seedDate(4, 7),
   },
   {
     id: 'issue-ka-2',
@@ -283,8 +287,8 @@ const SEED_ISSUES: CivicIssue[] = [
     mlaTagged: false,
     mlaResponded: false,
     isVerifiedReport: false,
-    createdAt: '2026-04-23T07:00:00Z',
-    updatedAt: '2026-04-29T12:00:00Z',
+    createdAt: seedDate(6, 5),
+    updatedAt: seedDate(0, 1),
   },
   {
     id: 'issue-ka-3',
@@ -308,8 +312,8 @@ const SEED_ISSUES: CivicIssue[] = [
     mlaResponded: true,
     mlaResponseNote: 'BBMP has been directed to fast-track STP commissioning. Rs 200 crore emergency fund released. Monthly progress review mandated. — MLA Aravind Limbavali',
     isVerifiedReport: true,
-    createdAt: '2026-04-22T08:30:00Z',
-    updatedAt: '2026-04-28T16:00:00Z',
+    createdAt: seedDate(7, 4),
+    updatedAt: seedDate(1, 8),
   },
   {
     id: 'issue-ka-4',
@@ -328,14 +332,14 @@ const SEED_ISSUES: CivicIssue[] = [
     followCount: 45,
     evidenceCount: 0,
     disputeCount: 2,
-    resolvedAt: '2026-04-29T08:00:00Z',
+    resolvedAt: seedDate(0, 4),
     resolutionNote: '4 additional doctors posted. OPD hours extended to 8pm. New token system reduces wait to <1 hour.',
     mlaTagged: true,
     mlaResponded: true,
     mlaResponseNote: 'Met Health Secretary. 4 doctors posted within 48 hours. Will monitor weekly. — MLA Suresh Kumar',
     isVerifiedReport: false,
-    createdAt: '2026-04-18T09:00:00Z',
-    updatedAt: '2026-04-29T08:00:00Z',
+    createdAt: seedDate(11, 3),
+    updatedAt: seedDate(0, 4),
   },
   // ── Maharashtra ──
   {
@@ -358,8 +362,8 @@ const SEED_ISSUES: CivicIssue[] = [
     mlaTagged: false,
     mlaResponded: false,
     isVerifiedReport: false,
-    createdAt: '2026-04-29T02:00:00Z',
-    updatedAt: '2026-04-29T02:00:00Z',
+    createdAt: seedDate(0, 10),
+    updatedAt: seedDate(0, 10),
   },
   {
     id: 'issue-mh-2',
@@ -383,8 +387,8 @@ const SEED_ISSUES: CivicIssue[] = [
     mlaResponded: true,
     mlaResponseNote: 'Raised the matter in Parliament. Railway Minister has ordered structural audit of all Mumbai suburban stations. Report expected in 30 days. — MP Varsha Gaikwad',
     isVerifiedReport: true,
-    createdAt: '2026-04-24T04:00:00Z',
-    updatedAt: '2026-04-28T18:00:00Z',
+    createdAt: seedDate(5, 8),
+    updatedAt: seedDate(1, 6),
   },
   {
     id: 'issue-mh-3',
@@ -406,8 +410,8 @@ const SEED_ISSUES: CivicIssue[] = [
     mlaTagged: true,
     mlaResponded: false,
     isVerifiedReport: true,
-    createdAt: '2026-04-26T06:00:00Z',
-    updatedAt: '2026-04-26T06:00:00Z',
+    createdAt: seedDate(3, 6),
+    updatedAt: seedDate(3, 6),
   },
   {
     id: 'issue-mh-4',
@@ -426,13 +430,13 @@ const SEED_ISSUES: CivicIssue[] = [
     followCount: 89,
     evidenceCount: 0,
     disputeCount: 1,
-    resolvedAt: '2026-04-27T14:00:00Z',
+    resolvedAt: seedDate(2, 10),
     resolutionNote: 'MSRDC restored all 6 FASTag lanes. Additional staff deployed during 7-10am and 5-9pm peak. Average passage time reduced to 3 minutes.',
     mlaTagged: false,
     mlaResponded: false,
     isVerifiedReport: false,
-    createdAt: '2026-04-19T05:00:00Z',
-    updatedAt: '2026-04-27T14:00:00Z',
+    createdAt: seedDate(10, 7),
+    updatedAt: seedDate(2, 10),
   },
   // ── Maharashtra (closed — full lifecycle) ──
   {
@@ -452,14 +456,14 @@ const SEED_ISSUES: CivicIssue[] = [
     followCount: 45,
     evidenceCount: 4,
     disputeCount: 0,
-    resolvedAt: '2026-04-20T10:00:00Z',
+    resolvedAt: seedDate(9, 2),
     resolutionNote: 'PMC conducted anti-encroachment drive. Designated hawker zone created 200m away with proper stalls.',
     mlaTagged: true,
     mlaResponded: true,
     mlaResponseNote: 'Coordinated with PMC Commissioner. Permanent hawker zone established to balance livelihoods and pedestrian access. — MLA Girish Bapat',
     isVerifiedReport: false,
-    createdAt: '2026-04-01T08:00:00Z',
-    updatedAt: '2026-04-27T10:00:00Z',
+    createdAt: seedDate(28, 4),
+    updatedAt: seedDate(2, 2),
   },
 ];
 
@@ -475,7 +479,7 @@ const SEED_HEADLINES: Headline[] = [
     sourceName: 'Telangana Today',
     sourceUrl: 'https://telanganatoday.com',
     category: 'development',
-    publishedAt: '2026-04-29T04:30:00Z',
+    publishedAt: seedDate(0, 8),
   },
   {
     id: 'hl-2',
@@ -486,7 +490,7 @@ const SEED_HEADLINES: Headline[] = [
     sourceName: 'The Hindu',
     sourceUrl: 'https://thehindu.com',
     category: 'governance',
-    publishedAt: '2026-04-28T22:00:00Z',
+    publishedAt: seedDate(1, 2),
   },
   {
     id: 'hl-3',
@@ -496,7 +500,7 @@ const SEED_HEADLINES: Headline[] = [
     sourceName: 'Indian Express',
     sourceUrl: 'https://indianexpress.com',
     category: 'law_and_order',
-    publishedAt: '2026-04-28T14:00:00Z',
+    publishedAt: seedDate(1, 10),
   },
   {
     id: 'hl-4',
@@ -506,7 +510,7 @@ const SEED_HEADLINES: Headline[] = [
     sourceName: 'Times of India',
     sourceUrl: 'https://timesofindia.com',
     category: 'environment',
-    publishedAt: '2026-04-27T12:00:00Z',
+    publishedAt: seedDate(2, 1),
   },
   // ── Andhra Pradesh ──
   {
@@ -517,7 +521,7 @@ const SEED_HEADLINES: Headline[] = [
     sourceName: 'Eenadu',
     sourceUrl: 'https://eenadu.net',
     category: 'development',
-    publishedAt: '2026-04-29T03:30:00Z',
+    publishedAt: seedDate(0, 9),
   },
   {
     id: 'hl-ap-2',
@@ -528,7 +532,7 @@ const SEED_HEADLINES: Headline[] = [
     sourceName: 'Andhra Jyothy',
     sourceUrl: 'https://andhrajyothy.com',
     category: 'governance',
-    publishedAt: '2026-04-28T08:00:00Z',
+    publishedAt: seedDate(1, 4),
   },
   {
     id: 'hl-ap-3',
@@ -538,7 +542,7 @@ const SEED_HEADLINES: Headline[] = [
     sourceName: 'Deccan Chronicle',
     sourceUrl: 'https://deccanchronicle.com',
     category: 'governance',
-    publishedAt: '2026-04-27T14:00:00Z',
+    publishedAt: seedDate(2, 10),
   },
   // ── Karnataka ──
   {
@@ -549,7 +553,7 @@ const SEED_HEADLINES: Headline[] = [
     sourceName: 'Deccan Herald',
     sourceUrl: 'https://deccanherald.com',
     category: 'development',
-    publishedAt: '2026-04-29T05:00:00Z',
+    publishedAt: seedDate(0, 7),
   },
   {
     id: 'hl-ka-2',
@@ -560,7 +564,7 @@ const SEED_HEADLINES: Headline[] = [
     sourceName: 'The Hindu',
     sourceUrl: 'https://thehindu.com',
     category: 'environment',
-    publishedAt: '2026-04-28T10:30:00Z',
+    publishedAt: seedDate(1, 2),
   },
   {
     id: 'hl-ka-3',
@@ -570,7 +574,7 @@ const SEED_HEADLINES: Headline[] = [
     sourceName: 'Kannada Prabha',
     sourceUrl: 'https://kannadaprabha.com',
     category: 'economy',
-    publishedAt: '2026-04-27T06:00:00Z',
+    publishedAt: seedDate(2, 6),
   },
   // ── Maharashtra ──
   {
@@ -581,7 +585,7 @@ const SEED_HEADLINES: Headline[] = [
     sourceName: 'Mumbai Mirror',
     sourceUrl: 'https://mumbaimirror.com',
     category: 'development',
-    publishedAt: '2026-04-29T04:00:00Z',
+    publishedAt: seedDate(0, 8),
   },
   {
     id: 'hl-mh-2',
@@ -592,7 +596,7 @@ const SEED_HEADLINES: Headline[] = [
     sourceName: 'Indian Express',
     sourceUrl: 'https://indianexpress.com',
     category: 'governance',
-    publishedAt: '2026-04-28T20:00:00Z',
+    publishedAt: seedDate(1, 4),
   },
   {
     id: 'hl-mh-3',
@@ -602,7 +606,7 @@ const SEED_HEADLINES: Headline[] = [
     sourceName: 'Loksatta',
     sourceUrl: 'https://loksatta.com',
     category: 'corruption',
-    publishedAt: '2026-04-27T09:00:00Z',
+    publishedAt: seedDate(2, 3),
   },
 ];
 
@@ -634,53 +638,53 @@ const SEED_SENTIMENT: ConstituencySentiment[] = [
 
 const SEED_COMMENTS: IssueComment[] = [
   // issue-2 (Charminar water crisis — MLA responded, active discussion)
-  { id: 'cmt-1', issueId: 'issue-2', userId: 'demo-5', userName: 'Fatima Begum', body: 'Day 3 without water. My elderly mother-in-law is diabetic and needs regular hydration. This is a health emergency now.', isOfficial: false, createdAt: '2026-04-27T10:00:00Z' },
-  { id: 'cmt-2', issueId: 'issue-2', userId: 'demo-20', userName: 'Syed Naser', body: 'Same situation in Shalibanda. The tanker came once in 3 days and the queue was 200+ families.', imageUrl: 'https://picsum.photos/seed/tanker1/400/300', isOfficial: false, createdAt: '2026-04-27T14:30:00Z' },
-  { id: 'cmt-3', issueId: 'issue-2', userId: 'official-1', userName: 'HMWSSB Helpdesk', body: 'Complaint #HYD-W-2026-8812 registered. 20 additional tankers being deployed to Old City starting 29 April. Daily schedule: 6am-8am, 5pm-7pm.', isOfficial: true, createdAt: '2026-04-28T09:00:00Z' },
-  { id: 'cmt-4', issueId: 'issue-2', userId: 'demo-21', userName: 'Mohammed Imran', body: 'The MLA responded! First time we are seeing any action. Let\u2019s keep the pressure on.', isOfficial: false, createdAt: '2026-04-28T16:00:00Z' },
+  { id: 'cmt-1', issueId: 'issue-2', userId: 'demo-5', userName: 'Fatima Begum', body: 'Day 3 without water. My elderly mother-in-law is diabetic and needs regular hydration. This is a health emergency now.', isOfficial: false, createdAt: seedDate(2, 2) },
+  { id: 'cmt-2', issueId: 'issue-2', userId: 'demo-20', userName: 'Syed Naser', body: 'Same situation in Shalibanda. The tanker came once in 3 days and the queue was 200+ families.', imageUrl: 'https://picsum.photos/seed/tanker1/400/300', isOfficial: false, createdAt: seedDate(2, 10) },
+  { id: 'cmt-3', issueId: 'issue-2', userId: 'official-1', userName: 'HMWSSB Helpdesk', body: 'Complaint #HYD-W-2026-8812 registered. 20 additional tankers being deployed to Old City starting 29 April. Daily schedule: 6am-8am, 5pm-7pm.', isOfficial: true, createdAt: seedDate(1, 3) },
+  { id: 'cmt-4', issueId: 'issue-2', userId: 'demo-21', userName: 'Mohammed Imran', body: 'The MLA responded! First time we are seeing any action. Let\u2019s keep the pressure on.', isOfficial: false, createdAt: seedDate(1, 8) },
   // issue-ka-3 (Bellandur foam — high engagement)
-  { id: 'cmt-5', issueId: 'issue-ka-3', userId: 'demo-ka-3', userName: 'Divya S', body: 'Posted new photos today. The foam is worse than last month. Schools nearby are complaining about respiratory issues in children.', imageUrl: 'https://picsum.photos/seed/foam6/400/300', isOfficial: false, createdAt: '2026-04-28T08:00:00Z' },
-  { id: 'cmt-6', issueId: 'issue-ka-3', userId: 'demo-ka-10', userName: 'Dr. Anil Kumar (Environmentalist)', body: 'I have tested water samples. BOD levels are 8x the safe limit. This is carcinogenic. Sharing lab report.', imageUrl: 'https://picsum.photos/seed/labtest/400/300', isOfficial: false, createdAt: '2026-04-28T12:00:00Z' },
-  { id: 'cmt-7', issueId: 'issue-ka-3', userId: 'official-ka-1', userName: 'BBMP Ward Office — Bommanahalli', body: 'STP Phase-2 commissioning expedited to July 2026. Daily foam dispersal crew deployed. Citizen monitoring committee meeting scheduled for 5 May.', isOfficial: true, createdAt: '2026-04-28T18:00:00Z' },
+  { id: 'cmt-5', issueId: 'issue-ka-3', userId: 'demo-ka-3', userName: 'Divya S', body: 'Posted new photos today. The foam is worse than last month. Schools nearby are complaining about respiratory issues in children.', imageUrl: 'https://picsum.photos/seed/foam6/400/300', isOfficial: false, createdAt: seedDate(1, 4) },
+  { id: 'cmt-6', issueId: 'issue-ka-3', userId: 'demo-ka-10', userName: 'Dr. Anil Kumar (Environmentalist)', body: 'I have tested water samples. BOD levels are 8x the safe limit. This is carcinogenic. Sharing lab report.', imageUrl: 'https://picsum.photos/seed/labtest/400/300', isOfficial: false, createdAt: seedDate(1, 1) },
+  { id: 'cmt-7', issueId: 'issue-ka-3', userId: 'official-ka-1', userName: 'BBMP Ward Office — Bommanahalli', body: 'STP Phase-2 commissioning expedited to July 2026. Daily foam dispersal crew deployed. Citizen monitoring committee meeting scheduled for 5 May.', isOfficial: true, createdAt: seedDate(1, 6) },
   // issue-mh-2 (Kurla station — safety critical)
-  { id: 'cmt-8', issueId: 'issue-mh-2', userId: 'demo-mh-10', userName: 'Prashant Naik', body: 'I commute through Platform 5 daily. Today I saw new cracks near pillar 7. This is genuinely terrifying.', imageUrl: 'https://picsum.photos/seed/crack1/400/300', isOfficial: false, createdAt: '2026-04-28T06:00:00Z' },
-  { id: 'cmt-9', issueId: 'issue-mh-2', userId: 'official-mh-1', userName: 'Western Railway PRO', body: 'Structural audit team from IIT Bombay will inspect Platform 5 on 1 May. Temporary speed restriction applied. Alternative routing being explored.', isOfficial: true, createdAt: '2026-04-28T20:00:00Z' },
+  { id: 'cmt-8', issueId: 'issue-mh-2', userId: 'demo-mh-10', userName: 'Prashant Naik', body: 'I commute through Platform 5 daily. Today I saw new cracks near pillar 7. This is genuinely terrifying.', imageUrl: 'https://picsum.photos/seed/crack1/400/300', isOfficial: false, createdAt: seedDate(1, 6) },
+  { id: 'cmt-9', issueId: 'issue-mh-2', userId: 'official-mh-1', userName: 'Western Railway PRO', body: 'Structural audit team from IIT Bombay will inspect Platform 5 on 1 May. Temporary speed restriction applied. Alternative routing being explored.', isOfficial: true, createdAt: seedDate(1, 4) },
   // issue-6 (Reopened — dispute showcase)
-  { id: 'cmt-10', issueId: 'issue-6', userId: 'demo-15', userName: 'Harish Chandra', body: 'They marked it resolved but look at these photos from today. Only 3 of 12 potholes filled and those are already crumbling.', imageUrl: 'https://picsum.photos/seed/dispute3/400/300', isOfficial: false, createdAt: '2026-04-29T10:00:00Z' },
-  { id: 'cmt-11', issueId: 'issue-6', userId: 'demo-16', userName: 'Anjali Sharma', body: 'I filed a dispute too. My car\u2019s suspension broke on this road yesterday. Attaching repair bill as evidence.', isOfficial: false, createdAt: '2026-04-29T14:00:00Z' },
+  { id: 'cmt-10', issueId: 'issue-6', userId: 'demo-15', userName: 'Harish Chandra', body: 'They marked it resolved but look at these photos from today. Only 3 of 12 potholes filled and those are already crumbling.', imageUrl: 'https://picsum.photos/seed/dispute3/400/300', isOfficial: false, createdAt: seedDate(0, 2) },
+  { id: 'cmt-11', issueId: 'issue-6', userId: 'demo-16', userName: 'Anjali Sharma', body: 'I filed a dispute too. My car\u2019s suspension broke on this road yesterday. Attaching repair bill as evidence.', isOfficial: false, createdAt: seedDate(0, 10) },
   // issue-ka-4 (Resolved — success story)
-  { id: 'cmt-12', issueId: 'issue-ka-4', userId: 'demo-ka-4', userName: 'Prasad K', body: 'Incredible! 4 new doctors started today. Wait time dropped to 40 minutes. Thank you to everyone who upvoted and to the MLA for acting.', isOfficial: false, createdAt: '2026-04-29T10:00:00Z' },
-  { id: 'cmt-13', issueId: 'issue-ka-4', userId: 'demo-ka-11', userName: 'Kavitha R', body: 'I was there today. The new token system is working well. They even have a separate queue for elderly. A real win for the community.', isOfficial: false, createdAt: '2026-04-29T14:00:00Z' },
+  { id: 'cmt-12', issueId: 'issue-ka-4', userId: 'demo-ka-4', userName: 'Prasad K', body: 'Incredible! 4 new doctors started today. Wait time dropped to 40 minutes. Thank you to everyone who upvoted and to the MLA for acting.', isOfficial: false, createdAt: seedDate(0, 2) },
+  { id: 'cmt-13', issueId: 'issue-ka-4', userId: 'demo-ka-11', userName: 'Kavitha R', body: 'I was there today. The new token system is working well. They even have a separate queue for elderly. A real win for the community.', isOfficial: false, createdAt: seedDate(0, 10) },
   // issue-1 (ORR — newly tagged MLA)
-  { id: 'cmt-14', issueId: 'issue-1', userId: 'demo-1', userName: 'Priya Reddy', body: 'Tagged the MLA 3 days ago. No response yet. The traffic jams are getting worse during monsoon prep. NHAI contractor has vanished.', isOfficial: false, createdAt: '2026-04-29T08:00:00Z' },
+  { id: 'cmt-14', issueId: 'issue-1', userId: 'demo-1', userName: 'Priya Reddy', body: 'Tagged the MLA 3 days ago. No response yet. The traffic jams are getting worse during monsoon prep. NHAI contractor has vanished.', isOfficial: false, createdAt: seedDate(0, 4) },
 ];
 
 // ─── Seed Status History ───
 
 const SEED_STATUS_HISTORY: IssueStatusChange[] = [
   // issue-2 lifecycle
-  { id: 'sh-1', issueId: 'issue-2', fromStatus: 'open', toStatus: 'acknowledged', changedByName: 'Moderator', note: 'Verified by 4 independent reports from Old City area', createdAt: '2026-04-28T09:00:00Z' },
+  { id: 'sh-1', issueId: 'issue-2', fromStatus: 'open', toStatus: 'acknowledged', changedByName: 'Moderator', note: 'Verified by 4 independent reports from Old City area', createdAt: seedDate(1, 3) },
   // issue-3 lifecycle
-  { id: 'sh-2', issueId: 'issue-3', fromStatus: 'open', toStatus: 'acknowledged', changedByName: 'TSSPDCL Officer', note: 'Complaint forwarded to Rajendranagar sub-station', createdAt: '2026-04-27T12:00:00Z' },
-  { id: 'sh-3', issueId: 'issue-3', fromStatus: 'acknowledged', toStatus: 'in_progress', changedByName: 'TSSPDCL Officer', note: 'Transformer replacement approved. Parts ordered.', createdAt: '2026-04-29T05:00:00Z' },
+  { id: 'sh-2', issueId: 'issue-3', fromStatus: 'open', toStatus: 'acknowledged', changedByName: 'TSSPDCL Officer', note: 'Complaint forwarded to Rajendranagar sub-station', createdAt: seedDate(2, 1) },
+  { id: 'sh-3', issueId: 'issue-3', fromStatus: 'acknowledged', toStatus: 'in_progress', changedByName: 'TSSPDCL Officer', note: 'Transformer replacement approved. Parts ordered.', createdAt: seedDate(0, 7) },
   // issue-5 lifecycle (resolved)
-  { id: 'sh-4', issueId: 'issue-5', fromStatus: 'open', toStatus: 'acknowledged', changedByName: 'GHMC Ward Office', note: 'Inspection scheduled', createdAt: '2026-04-23T10:00:00Z' },
-  { id: 'sh-5', issueId: 'issue-5', fromStatus: 'acknowledged', toStatus: 'in_progress', changedByName: 'GHMC Ward Office', note: 'LED replacement crew deployed', createdAt: '2026-04-26T08:00:00Z' },
-  { id: 'sh-6', issueId: 'issue-5', fromStatus: 'in_progress', toStatus: 'resolved', changedByName: 'GHMC Ward Office', note: '18 new LED lights installed on Abids-MJ Market stretch', createdAt: '2026-04-28T20:00:00Z' },
+  { id: 'sh-4', issueId: 'issue-5', fromStatus: 'open', toStatus: 'acknowledged', changedByName: 'GHMC Ward Office', note: 'Inspection scheduled', createdAt: seedDate(6, 2) },
+  { id: 'sh-5', issueId: 'issue-5', fromStatus: 'acknowledged', toStatus: 'in_progress', changedByName: 'GHMC Ward Office', note: 'LED replacement crew deployed', createdAt: seedDate(3, 4) },
+  { id: 'sh-6', issueId: 'issue-5', fromStatus: 'in_progress', toStatus: 'resolved', changedByName: 'GHMC Ward Office', note: '18 new LED lights installed on Abids-MJ Market stretch', createdAt: seedDate(1, 4) },
   // issue-6 lifecycle (reopened via dispute)
-  { id: 'sh-7', issueId: 'issue-6', fromStatus: 'open', toStatus: 'acknowledged', changedByName: 'Moderator', createdAt: '2026-04-16T10:00:00Z' },
-  { id: 'sh-8', issueId: 'issue-6', fromStatus: 'acknowledged', toStatus: 'in_progress', changedByName: 'GHMC Road Dept', createdAt: '2026-04-20T08:00:00Z' },
-  { id: 'sh-9', issueId: 'issue-6', fromStatus: 'in_progress', toStatus: 'resolved', changedByName: 'GHMC Road Dept', note: 'Potholes filled with hot-mix', createdAt: '2026-04-25T14:00:00Z' },
-  { id: 'sh-10', issueId: 'issue-6', fromStatus: 'resolved', toStatus: 'reopened', note: 'Auto-reopened: 7 community disputes. Ground verification shows incomplete repair.', createdAt: '2026-04-29T16:00:00Z' },
+  { id: 'sh-7', issueId: 'issue-6', fromStatus: 'open', toStatus: 'acknowledged', changedByName: 'Moderator', createdAt: seedDate(13, 2) },
+  { id: 'sh-8', issueId: 'issue-6', fromStatus: 'acknowledged', toStatus: 'in_progress', changedByName: 'GHMC Road Dept', createdAt: seedDate(9, 4) },
+  { id: 'sh-9', issueId: 'issue-6', fromStatus: 'in_progress', toStatus: 'resolved', changedByName: 'GHMC Road Dept', note: 'Potholes filled with hot-mix', createdAt: seedDate(4, 10) },
+  { id: 'sh-10', issueId: 'issue-6', fromStatus: 'resolved', toStatus: 'reopened', note: 'Auto-reopened: 7 community disputes. Ground verification shows incomplete repair.', createdAt: seedDate(0, 8) },
   // issue-ka-4 lifecycle (resolved successfully)
-  { id: 'sh-11', issueId: 'issue-ka-4', fromStatus: 'open', toStatus: 'acknowledged', changedByName: 'Health Department', createdAt: '2026-04-19T10:00:00Z' },
-  { id: 'sh-12', issueId: 'issue-ka-4', fromStatus: 'acknowledged', toStatus: 'in_progress', changedByName: 'MLA Suresh Kumar', note: 'Met Health Secretary. Action initiated.', createdAt: '2026-04-22T14:00:00Z' },
-  { id: 'sh-13', issueId: 'issue-ka-4', fromStatus: 'in_progress', toStatus: 'resolved', changedByName: 'Health Department', note: '4 doctors posted, OPD hours extended, token system deployed', createdAt: '2026-04-29T08:00:00Z' },
+  { id: 'sh-11', issueId: 'issue-ka-4', fromStatus: 'open', toStatus: 'acknowledged', changedByName: 'Health Department', createdAt: seedDate(10, 2) },
+  { id: 'sh-12', issueId: 'issue-ka-4', fromStatus: 'acknowledged', toStatus: 'in_progress', changedByName: 'MLA Suresh Kumar', note: 'Met Health Secretary. Action initiated.', createdAt: seedDate(7, 10) },
+  { id: 'sh-13', issueId: 'issue-ka-4', fromStatus: 'in_progress', toStatus: 'resolved', changedByName: 'Health Department', note: '4 doctors posted, OPD hours extended, token system deployed', createdAt: seedDate(0, 4) },
   // issue-mh-5 lifecycle (closed — full lifecycle)
-  { id: 'sh-14', issueId: 'issue-mh-5', fromStatus: 'open', toStatus: 'acknowledged', changedByName: 'PMC Ward Officer', createdAt: '2026-04-05T10:00:00Z' },
-  { id: 'sh-15', issueId: 'issue-mh-5', fromStatus: 'acknowledged', toStatus: 'in_progress', changedByName: 'PMC Anti-Encroachment', createdAt: '2026-04-12T08:00:00Z' },
-  { id: 'sh-16', issueId: 'issue-mh-5', fromStatus: 'in_progress', toStatus: 'resolved', changedByName: 'PMC Anti-Encroachment', note: 'Drive completed. Hawker zone established.', createdAt: '2026-04-20T10:00:00Z' },
-  { id: 'sh-17', issueId: 'issue-mh-5', fromStatus: 'resolved', toStatus: 'closed', note: 'Auto-closed after 7 days with no disputes', createdAt: '2026-04-27T10:00:00Z' },
+  { id: 'sh-14', issueId: 'issue-mh-5', fromStatus: 'open', toStatus: 'acknowledged', changedByName: 'PMC Ward Officer', createdAt: seedDate(24, 2) },
+  { id: 'sh-15', issueId: 'issue-mh-5', fromStatus: 'acknowledged', toStatus: 'in_progress', changedByName: 'PMC Anti-Encroachment', createdAt: seedDate(17, 4) },
+  { id: 'sh-16', issueId: 'issue-mh-5', fromStatus: 'in_progress', toStatus: 'resolved', changedByName: 'PMC Anti-Encroachment', note: 'Drive completed. Hawker zone established.', createdAt: seedDate(9, 2) },
+  { id: 'sh-17', issueId: 'issue-mh-5', fromStatus: 'resolved', toStatus: 'closed', note: 'Auto-closed after 7 days with no disputes', createdAt: seedDate(2, 2) },
 ];
 
 // ─── Civic Store ───

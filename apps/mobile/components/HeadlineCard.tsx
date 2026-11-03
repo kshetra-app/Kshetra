@@ -16,15 +16,19 @@ const CATEGORY_COLORS: Record<string, string> = {
   opinion: '#EA580C',
 };
 
-function timeAgo(dateStr: string): string {
+function formatTimeAgo(dateStr: string, t: any): string {
   const now = Date.now();
   const then = new Date(dateStr).getTime();
-  const diffMs = now - then;
-  const hours = Math.floor(diffMs / 3600000);
-  if (hours < 1) return 'Just now';
-  if (hours < 24) return `${hours}h ago`;
+  if (isNaN(then)) return '';
+  const diffMs = Math.max(0, now - then);
+  const mins = Math.floor(diffMs / 60000);
+  if (mins < 1) return t('common.justNow', { defaultValue: 'Just now' });
+  if (mins < 60) return `${mins}${t('common.minutesShort', { defaultValue: 'm' })} ${t('common.ago', { defaultValue: 'ago' })}`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}${t('common.hoursShort', { defaultValue: 'h' })} ${t('common.ago', { defaultValue: 'ago' })}`;
   const days = Math.floor(hours / 24);
-  return `${days}d ago`;
+  if (days < 7) return `${days}${t('common.daysShort', { defaultValue: 'd' })} ${t('common.ago', { defaultValue: 'ago' })}`;
+  return new Date(dateStr).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
 interface HeadlineCardProps {
@@ -39,16 +43,36 @@ export default function HeadlineCard({ headline }: HeadlineCardProps) {
   const hlTitle = t(`content.headlines.${headline.id}.title`, headline.title);
   const hlSummary = headline.summary ? t(`content.headlines.${headline.id}.summary`, headline.summary) : undefined;
 
+  const scopeConfig = headline.scope === 'constituency'
+    ? { icon: 'location', color: '#2563EB', bg: '#2563EB18', label: t('common.scopes.constituency', { defaultValue: 'Constituency' }) }
+    : headline.scope === 'district'
+    ? { icon: 'business', color: '#7C3AED', bg: '#7C3AED18', label: t('common.scopes.district', { defaultValue: 'District' }) }
+    : headline.scope === 'state'
+    ? { icon: 'globe', color: '#059669', bg: '#05966918', label: t('common.scopes.state', { defaultValue: 'State' }) }
+    : null;
+
   return (
     <Pressable
       style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}
-      onPress={() => Linking.openURL(headline.sourceUrl).catch(() => {})}
+      onPress={() => {
+        if (headline.sourceUrl) {
+          Linking.openURL(headline.sourceUrl).catch(() => {});
+        }
+      }}
     >
       <View style={styles.topRow}>
-        <View style={[styles.categoryBadge, { backgroundColor: catColor + '18' }]}>
-          <Text style={[styles.categoryText, { color: catColor }]}>{catLabel}</Text>
+        <View style={styles.badgeRow}>
+          {scopeConfig && (
+            <View style={[styles.scopeBadge, { backgroundColor: scopeConfig.bg }]}>
+              <Ionicons name={scopeConfig.icon as any} size={11} color={scopeConfig.color} style={{ marginRight: 3 }} />
+              <Text style={[styles.scopeText, { color: scopeConfig.color }]}>{scopeConfig.label}</Text>
+            </View>
+          )}
+          <View style={[styles.categoryBadge, { backgroundColor: catColor + '18' }]}>
+            <Text style={[styles.categoryText, { color: catColor }]}>{catLabel}</Text>
+          </View>
         </View>
-        <Text style={[styles.timeText, { color: colors.textMuted }]}>{timeAgo(headline.publishedAt)}</Text>
+        <Text style={[styles.timeText, { color: colors.textMuted }]}>{formatTimeAgo(headline.publishedAt, t)}</Text>
       </View>
 
       <Text style={[styles.title, { color: colors.text }]} numberOfLines={3}>{hlTitle}</Text>
@@ -60,7 +84,7 @@ export default function HeadlineCard({ headline }: HeadlineCardProps) {
       <View style={styles.sourceRow}>
         <Ionicons name="newspaper-outline" size={12} color={colors.textMuted} style={{ marginRight: 4 }} />
         <Text style={[styles.sourceName, { color: colors.textMuted }]}>{headline.sourceName}</Text>
-        <Ionicons name="open-outline" size={12} color={colors.primary} style={styles.externalIcon} />
+        <Ionicons name="open-outline" size={13} color={colors.primary} style={styles.externalIcon} />
       </View>
     </Pressable>
   );
@@ -77,7 +101,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: 8,
+  },
+  badgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    flexWrap: 'wrap',
+  },
+  scopeBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  scopeText: {
+    fontSize: 10,
+    fontWeight: '700',
   },
   categoryBadge: {
     paddingHorizontal: 8,
@@ -97,23 +138,21 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#FFFFFF',
-    lineHeight: 20,
-    marginBottom: 4,
+    lineHeight: 21,
+    marginBottom: 6,
   },
   summary: {
     fontSize: 13,
-    color: '#9CA3AF',
     lineHeight: 18,
     marginBottom: 8,
   },
   sourceRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginTop: 2,
   },
   sourceName: {
     fontSize: 12,
-    color: '#6B7280',
     fontWeight: '600',
   },
   externalIcon: {
