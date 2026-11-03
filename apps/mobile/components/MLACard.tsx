@@ -23,6 +23,7 @@ import {
   getLocalizedConstituencyName,
   getLocalizedDetail,
 } from '../lib/stateTranslations';
+import { getLocalizedCandidateName } from '../lib/historicalPodiumStore';
 
 interface MLACardProps {
   profile: MLAProfile;
@@ -40,8 +41,9 @@ export default function MLACard({ profile, onAvatarPress }: MLACardProps) {
     : t('mla.term_n', { n: profile.terms });
 
   const localizedParty = getLocalizedPartyName(profile.party, i18n.language) || profile.party;
+  const stateCode = (profile as any).stateCode || (profile as any).state_code || 'TS';
   const localizedConstName = profile.constituencyName
-    ? getLocalizedConstituencyName(profile.acNo, 'TS', profile.constituencyName, i18n.language)
+    ? getLocalizedConstituencyName(profile.acNo, stateCode, profile.constituencyName, i18n.language)
     : '';
 
   return (
@@ -56,7 +58,9 @@ export default function MLACard({ profile, onAvatarPress }: MLACardProps) {
           onPress={onAvatarPress}
         />
         <View style={styles.headerInfo}>
-          <Text style={[styles.name, { color: colors.text }]}>{profile.name}</Text>
+          <Text style={[styles.name, { color: colors.text }]}>
+            {getLocalizedCandidateName(profile.name, i18n.language) || profile.name}
+          </Text>
           {localizedConstName ? (
             <Text style={[styles.constituencyLabel, { color: colors.textMuted }]}>
               AC #{profile.acNo} · {localizedConstName}

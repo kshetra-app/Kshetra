@@ -107,9 +107,58 @@ export async function fetchHistoricalPodiumForConstituency(
   return cached || [];
 }
 
+const LOCAL_PODIUM_LOADERS: Record<string, () => any> = {
+  AP: () => require('../data/historical/ap-podium.json'),
+  AR: () => require('../data/historical/ar-podium.json'),
+  AS: () => require('../data/historical/as-podium.json'),
+  BR: () => require('../data/historical/br-podium.json'),
+  CG: () => require('../data/historical/cg-podium.json'),
+  DL: () => require('../data/historical/dl-podium.json'),
+  GA: () => require('../data/historical/ga-podium.json'),
+  GJ: () => require('../data/historical/gj-podium.json'),
+  HP: () => require('../data/historical/hp-podium.json'),
+  HR: () => require('../data/historical/hr-podium.json'),
+  JH: () => require('../data/historical/jh-podium.json'),
+  JK: () => require('../data/historical/jk-podium.json'),
+  KA: () => require('../data/historical/ka-podium.json'),
+  KL: () => require('../data/historical/kl-podium.json'),
+  MH: () => require('../data/historical/mh-podium.json'),
+  ML: () => require('../data/historical/ml-podium.json'),
+  MN: () => require('../data/historical/mn-podium.json'),
+  MP: () => require('../data/historical/mp-podium.json'),
+  MZ: () => require('../data/historical/mz-podium.json'),
+  NL: () => require('../data/historical/nl-podium.json'),
+  OD: () => require('../data/historical/od-podium.json'),
+  PB: () => require('../data/historical/pb-podium.json'),
+  PY: () => require('../data/historical/py-podium.json'),
+  RJ: () => require('../data/historical/rj-podium.json'),
+  SK: () => require('../data/historical/sk-podium.json'),
+  TN: () => require('../data/historical/tn-podium.json'),
+  TR: () => require('../data/historical/tr-podium.json'),
+  TS: () => require('../data/historical/ts-podium.json'),
+  UK: () => require('../data/historical/uk-podium.json'),
+  UP: () => require('../data/historical/up-podium.json'),
+  WB: () => require('../data/historical/wb-podium.json'),
+  IN: () => require('../data/historical/lok-sabha-podium.json'),
+  LOK_SABHA: () => require('../data/historical/lok-sabha-podium.json'),
+};
+
 function getStateData(stateCode: string): Record<string, HistoricalPodiumContest[]> {
   const code = (stateCode || 'TS').toUpperCase();
-  return stateCache.get(code) || {};
+  if (stateCache.has(code)) {
+    return stateCache.get(code)!;
+  }
+  const loader = LOCAL_PODIUM_LOADERS[code];
+  if (loader) {
+    try {
+      const data = loader();
+      stateCache.set(code, data);
+      return data;
+    } catch (e) {
+      console.warn(`[historicalPodiumStore] Failed to load local podium data for ${code}:`, e);
+    }
+  }
+  return {};
 }
 
 function buildLokSabhaIndexes() {
@@ -355,15 +404,29 @@ export function getLocalizedCandidateName(
   }
 
   if (typeof candidateOrName === 'object' && candidateOrName.localizedNames) {
-    if (candidateOrName.localizedNames[lang]) {
-      return candidateOrName.localizedNames[lang];
+    const loc = candidateOrName.localizedNames[lang];
+    if (loc && !/^[\x00-\x7F]*$/.test(loc)) {
+      return loc;
     }
   }
 
   const nameStr = typeof candidateOrName === 'string' ? candidateOrName : candidateOrName.name;
   if (!nameStr) return '';
 
-  return COMMON_CANDIDATE_NAMES[nameStr]?.[lang] || nameStr;
+  if (COMMON_CANDIDATE_NAMES[nameStr]?.[lang]) {
+    return COMMON_CANDIDATE_NAMES[nameStr][lang];
+  }
+
+  // Automatic high-fidelity phonetic transliteration fallback for Indian languages
+  try {
+    const { transliterateToIndic } = require('./indicTransliteration');
+    const res = transliterateToIndic(nameStr, lang);
+    if (res && res !== nameStr) {
+      return res;
+    }
+  } catch {}
+
+  return nameStr;
 }
 
 /**

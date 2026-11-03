@@ -12,14 +12,30 @@ export interface DLElectionResult {
 
 export const DL_ELECTION_HISTORY: DLElectionResult[] = [
   {
-    year: 2022,
+    year: 2025,
     partyResults: {
-      'AAP': 117,
-      'BJP': 93,
-      'INC': 8,
-      'IND': 3,
+      'BJP': 48,
+      'AAP': 22,
     },
-    totalSeats: 221,
+    totalSeats: 70,
+    rulingParty: 'BJP',
+  },
+  {
+    year: 2020,
+    partyResults: {
+      'AAP': 62,
+      'BJP': 8,
+    },
+    totalSeats: 70,
+    rulingParty: 'AAP',
+  },
+  {
+    year: 2015,
+    partyResults: {
+      'AAP': 67,
+      'BJP': 3,
+    },
+    totalSeats: 70,
     rulingParty: 'AAP',
   },
 ];

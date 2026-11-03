@@ -135,6 +135,7 @@ import { GJ_ELECTION_HISTORY } from '../../../data/seed/gujarat-election-history
 import { JH_ELECTION_HISTORY } from '../../../data/seed/jharkhand-election-history';
 import { OD_ELECTION_HISTORY } from '../../../data/seed/odisha-election-history';
 import { DL_ELECTION_HISTORY } from '../../../data/seed/delhi-election-history';
+import { DL_CONSTITUENCIES } from '../../../data/seed/delhi-constituencies';
 import { PB_ELECTION_HISTORY } from '../../../data/seed/punjab-election-history';
 import { HR_ELECTION_HISTORY } from '../../../data/seed/haryana-election-history';
 import { CG_ELECTION_HISTORY } from '../../../data/seed/chhattisgarh-election-history';
@@ -493,24 +494,33 @@ export function getHistoryForState(
       const r2016 = getTN2016Result(acNo);
       const c = TN_CONSTITUENCIES.find(x => x.acNo === acNo);
       const results: ConstituencyHistoryEntry[] = [];
+      if (c && c.winnerName2026) results.push({ year: 2026, winner: c.winnerName2026, party: c.winner2026 });
+      if (c && c.winnerName2021) results.push({ year: 2021, winner: c.winnerName2021, party: c.winner2021 });
       if (r2016) results.push({ year: 2016, winner: r2016.winner, party: r2016.party });
-      if (c) results.push({ year: 2021, winner: c.winnerName2021, party: c.winner2021 });
       return results;
     }
     case 'KL': {
       const r2016 = getKL2016Result(acNo);
       const c = KL_CONSTITUENCIES.find(x => x.acNo === acNo);
       const results: ConstituencyHistoryEntry[] = [];
+      if (c && c.winnerName2026) results.push({ year: 2026, winner: c.winnerName2026, party: c.winner2026 });
+      if (c && c.winnerName2021) results.push({ year: 2021, winner: c.winnerName2021, party: c.winner2021 });
       if (r2016) results.push({ year: 2016, winner: r2016.winner, party: r2016.party });
-      if (c) results.push({ year: 2021, winner: c.winnerName2021, party: c.winner2021 });
       return results;
     }
     case 'WB': {
       const r2016 = getWB2016Result(acNo);
       const c = WB_CONSTITUENCIES.find(x => x.acNo === acNo);
       const results: ConstituencyHistoryEntry[] = [];
+      if (c && c.winnerName2026) results.push({ year: 2026, winner: c.winnerName2026, party: c.winner2026 });
+      if (c && c.winnerName2021) results.push({ year: 2021, winner: c.winnerName2021, party: c.winner2021 });
       if (r2016) results.push({ year: 2016, winner: r2016.winner, party: r2016.party });
-      if (c) results.push({ year: 2021, winner: c.winnerName2021, party: c.winner2021 });
+      return results;
+    }
+    case 'DL': {
+      const c = DL_CONSTITUENCIES.find(x => x.acNo === acNo);
+      const results: ConstituencyHistoryEntry[] = [];
+      if (c && c.winnerName2025) results.push({ year: 2025, winner: c.winnerName2025, party: c.winner2025 });
       return results;
     }
     case 'UP': {

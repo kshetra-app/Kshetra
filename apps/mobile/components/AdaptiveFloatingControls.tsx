@@ -79,6 +79,15 @@ export default function AdaptiveFloatingControls({
   // Minimized / collapsed state to provide 100% unobstructed view when desired
   const [isMinimized, setIsMinimized] = useState(false);
 
+  // Auto-minimize when a constituency popup is open so the popup card is completely unobstructed
+  useEffect(() => {
+    if (selectedConstituency != null) {
+      setIsMinimized(true);
+    } else {
+      setIsMinimized(false);
+    }
+  }, [selectedConstituency != null]);
+
   // Sync position if initial props explicitly change
   useEffect(() => {
     if (initialX != null || initialY != null) {

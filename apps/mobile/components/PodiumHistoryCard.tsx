@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { getLocalizedCandidateName, getLocalizedPartyName } from '../lib/historicalPodiumStore';
+import { getLocalizedDetail } from '../lib/stateTranslations';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { getPartyColor } from '../lib/constants';
@@ -145,7 +146,9 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
               {winnerParty}
             </Text>
             {item.winner_education && (
-              <Text style={[styles.metaText, { color: colors.textMuted }]}>· {item.winner_education}</Text>
+              <Text style={[styles.metaText, { color: colors.textMuted }]} numberOfLines={1}>
+                · {getLocalizedDetail(item.winner_education, currentLang) || item.winner_education}
+              </Text>
             )}
           </View>
         </View>
@@ -342,6 +345,7 @@ const styles = StyleSheet.create({
   },
   candInfo: {
     flex: 1,
+    marginRight: 8,
   },
   candNameRow: {
     flexDirection: 'row',

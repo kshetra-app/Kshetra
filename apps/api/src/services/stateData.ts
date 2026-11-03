@@ -392,8 +392,9 @@ export const canonicalGeographyService = {
 function genericToBrief(stateCode: string, c: any): ConstituencyBrief {
   const code = stateCode.toUpperCase();
   let currentParty =
-    c.winner2025 ?? c.winner2024 ?? c.winner2023 ?? c.winner2022 ?? c.winner2021 ?? c.winner ?? '';
+    c.winner2026 ?? c.winner2025 ?? c.winner2024 ?? c.winner2023 ?? c.winner2022 ?? c.winner2021 ?? c.winner ?? '';
   let currentMLA =
+    c.winnerName2026 ??
     c.winnerName2025 ??
     c.winnerName2024 ??
     c.winnerName2023 ??
@@ -755,7 +756,14 @@ export function getConstituencyElectionData(
   let margin: number | null = null;
 
   if (raw) {
-    if (raw.winner2025 !== undefined || raw.winnerName2025 !== undefined) {
+    if (raw.winner2026 !== undefined || raw.winnerName2026 !== undefined) {
+      year = 2026;
+      winner = raw.winner2026 ?? '';
+      winnerName = raw.winnerName2026 ?? '';
+      winnerVotes = typeof raw.winnerVotes2026 === 'number' ? raw.winnerVotes2026 : null;
+      runnerUp = raw.runnerUp2026 ?? '';
+      margin = typeof raw.margin2026 === 'number' ? raw.margin2026 : null;
+    } else if (raw.winner2025 !== undefined || raw.winnerName2025 !== undefined) {
       year = 2025;
       winner = raw.winner2025 ?? '';
       winnerName = raw.winnerName2025 ?? '';

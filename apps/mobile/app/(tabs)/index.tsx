@@ -80,6 +80,7 @@ import {
   getLocalizedReservation,
   getLocalizedConstituencyName,
 } from '../../lib/stateTranslations';
+import { getLocalizedCandidateName } from '../../lib/historicalPodiumStore';
 import { getBoothsForConstituency, hasHierarchyData, hasBoothData } from '../../lib/hierarchyData';
 import { useHasRepresentativeData } from '../../lib/representativesData';
 
@@ -90,6 +91,7 @@ interface SelectedConstituency {
   winner: string;
   winnerName: string;
   runnerUp: string;
+  runnerUpName?: string;
   margin: number;
   votes: number;
   type: string;
@@ -493,6 +495,7 @@ function FullMapScreen() {
         winner: seed?.winnerParty ?? 'IND',
         winnerName: seed?.winnerName ?? '',
         runnerUp: seed?.runnerUp ?? '',
+        runnerUpName: seed?.runnerUpName ?? '',
         margin: seed?.margin ?? 0,
         votes: seed?.winnerVotes ?? 0,
         type: seed?.type ?? 'GEN',
@@ -513,10 +516,23 @@ function FullMapScreen() {
       setSheetTab('mla');
       if (!broadcastMode) {
         bottomSheetRef.current?.snapToIndex(0);
+        setTimeout(() => {
+          bottomSheetRef.current?.snapToIndex(0);
+        }, 50);
       }
     },
     [getSelectedConstituencyObject, broadcastMode],
   );
+
+  // Guarantee BottomSheet snaps open reliably on first tap when a constituency is selected
+  useEffect(() => {
+    if (selected && !broadcastMode) {
+      const timer = setTimeout(() => {
+        bottomSheetRef.current?.snapToIndex(0);
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [selected?.acNo, broadcastMode]);
 
   const BOOTH_ZOOM_THRESHOLD = 12.5;
 
@@ -750,7 +766,15 @@ function FullMapScreen() {
         }
 
         if (selectedRef.current?.acNo === acNo) {
-          router.push(`/constituency/${stateCode}-AC-${acNo}` as any);
+          // Ensure bottom sheet popup remains open without force navigating away from the map
+          bottomSheetRef.current?.snapToIndex(0);
+          if (clickLng != null && clickLat != null) {
+            cameraRef.current?.setCamera({
+              centerCoordinate: [clickLng, clickLat],
+              zoomLevel: CONSTITUENCY_ZOOM,
+              animationDuration: 600,
+            });
+          }
           return;
         }
         selectConstituency(acNo, acName, distName);
@@ -2160,7 +2184,9 @@ function FullMapScreen() {
                       size={36}
                       onPress={(uri) => setPhotoViewer({ uri, name: selected.winnerName, party: selected.winner })}
                     />
-                    <Text style={styles.resultValue}>{selected.winnerName}</Text>
+                    <Text style={styles.resultValue}>
+                      {getLocalizedCandidateName(selected.winnerName, i18n.language) || selected.winnerName}
+                    </Text>
                   </View>
                 </View>
 
@@ -2178,8 +2204,10 @@ function FullMapScreen() {
                     <Text style={styles.statLabel}>{t('mapSheet.margin')}</Text>
                   </View>
                   <View style={styles.statBox}>
-                    <Text style={styles.statValue}>
-                      {getLocalizedPartyName(selected.runnerUp, i18n.language) || selected.runnerUp}
+                    <Text style={styles.statValue} numberOfLines={2}>
+                      {selected.runnerUpName
+                        ? `${getLocalizedCandidateName(selected.runnerUpName, i18n.language) || selected.runnerUpName}\n(${getLocalizedPartyName(selected.runnerUp, i18n.language) || selected.runnerUp})`
+                        : (getLocalizedPartyName(selected.runnerUp, i18n.language) || selected.runnerUp)}
                     </Text>
                     <Text style={styles.statLabel}>{t('mapSheet.runnerUp')}</Text>
                   </View>

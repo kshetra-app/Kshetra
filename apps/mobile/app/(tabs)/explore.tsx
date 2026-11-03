@@ -227,7 +227,7 @@ export default function ExploreScreen() {
 
     return (
       <View>
-        <ChiefMinisterBadge stateCode={stateCode} />
+        <ChiefMinisterBadge key={stateCode} stateCode={stateCode} />
 
         {/* Quick Nav — Parliament, AI Chat, Delimitation */}
         <View style={styles.quickNavRow}>
