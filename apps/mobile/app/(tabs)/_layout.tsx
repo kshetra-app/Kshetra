@@ -31,7 +31,7 @@ export default function TabLayout() {
 
   // Adapt tab bar to device: bottom inset covers gesture bar / soft nav
   const tabBarPaddingBottom = Math.max(insets.bottom, 6);
-  const tabBarHeight = 56 + tabBarPaddingBottom;
+  const tabBarHeight = Math.max(62, 56 + tabBarPaddingBottom);
 
   return (
     <Tabs
@@ -56,7 +56,10 @@ export default function TabLayout() {
         tabBarLabelStyle: {
           fontSize: moderateScale(10),
           fontWeight: '700',
-          letterSpacing: 0.2,
+          letterSpacing: 0,
+          includeFontPadding: false,
+          textAlignVertical: 'center',
+          marginTop: 2,
         },
       }}
     >

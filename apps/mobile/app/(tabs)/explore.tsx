@@ -395,15 +395,17 @@ export default function ExploreScreen() {
         <View style={styles.headerRow}>
           <View style={styles.headerLeft}>
             <View style={styles.titleRow}>
-              <Text style={[styles.title, { color: colors.text }]}>{t('explore.title')}</Text>
+              <Text style={[styles.title, { color: colors.text }]} numberOfLines={1} ellipsizeMode="tail">
+                {t('explore.title')}
+              </Text>
             </View>
-            <Text style={[styles.subtitle, { color: colors.textMuted }]}>
+            <Text style={[styles.subtitle, { color: colors.textMuted }]} numberOfLines={1} ellipsizeMode="tail">
               {query.trim()
                 ? `${filtered.length} ${t('explore.constituencies')}`
                 : `${filtered.length} / ${allConstituencies.length} ${t('explore.constituencies')}${showFavoritesOnly ? ` (${t('explore.favoritesOnly')})` : ''}`}
             </Text>
           </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5, flexShrink: 0 }}>
             <StateSwitcher />
             <Pressable
               style={[
@@ -417,7 +419,7 @@ export default function ExploreScreen() {
             >
               <Ionicons
                 name={showFavoritesOnly ? 'heart' : 'heart-outline'}
-                size={18}
+                size={16}
                 color={showFavoritesOnly ? colors.primary : colors.textMuted}
               />
             </Pressable>
@@ -430,7 +432,7 @@ export default function ExploreScreen() {
               accessibilityRole="button"
               accessibilityLabel={t('discovery.tabs.guide', { defaultValue: 'Explore Guide' })}
             >
-              <Ionicons name="sparkles" size={18} color={colors.gold || colors.primary} />
+              <Ionicons name="sparkles" size={16} color={colors.gold || colors.primary} />
             </Pressable>
           </View>
         </View>
@@ -828,6 +830,8 @@ const styles = StyleSheet.create({
   },
   headerLeft: {
     flex: 1,
+    minWidth: 0,
+    marginRight: 6,
   },
   titleRow: {
     flexDirection: 'row',
@@ -840,9 +844,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   favFilterButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#D8BC7E',
@@ -864,31 +868,34 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 5,
+    gap: 4,
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 4,
-    minHeight: 68,
+    paddingVertical: 8,
+    paddingHorizontal: 3,
+    minHeight: 70,
     borderWidth: 1,
     borderColor: '#D8BC7E',
   },
   quickNavText: {
-    fontSize: 11.5,
+    fontSize: 11,
     fontWeight: '700',
     color: '#241814',
     textAlign: 'center',
-    lineHeight: 14,
+    lineHeight: 13,
+    includeFontPadding: false,
   },
   title: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: '800',
     color: '#241814',
+    includeFontPadding: false,
   },
   subtitle: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#6D5549',
-    marginTop: 4,
+    marginTop: 2,
+    includeFontPadding: false,
   },
   searchRow: {
     flexDirection: 'row',
@@ -1102,30 +1109,37 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '800',
     color: '#FFFFFF',
+    includeFontPadding: false,
   },
   cardWinnerRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
     marginTop: 3,
+    minWidth: 0,
   },
   cardContent: {
     flex: 1,
+    minWidth: 0,
   },
   cardName: {
     fontSize: 16,
     fontWeight: '700',
     color: '#241814',
+    includeFontPadding: false,
   },
   cardMeta: {
     fontSize: 12,
     color: '#6D5549',
     marginTop: 2,
+    includeFontPadding: false,
   },
   cardWinner: {
     fontSize: 11,
     color: '#8E7B6F',
     flex: 1,
+    minWidth: 0,
+    includeFontPadding: false,
   },
   aiSearchToggleRow: {
     paddingHorizontal: 16,

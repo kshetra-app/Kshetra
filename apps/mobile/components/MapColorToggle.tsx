@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../lib/theme';
@@ -34,38 +34,50 @@ export default function MapColorToggle({ mode, onModeChange }: MapColorTogglePro
   return (
     <View style={styles.wrapper}>
       <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
-        {PRIMARY_MODES.map((m) => {
-          const active = mode === m.key;
-          return (
-            <Pressable
-              key={m.key}
-              style={[styles.button, active && { backgroundColor: colors.primary }]}
-              onPress={() => { onModeChange(m.key); setExpanded(false); }}
-            >
-              <Ionicons
-                name={m.icon as any}
-                size={14}
-                color={active ? '#FFFFFF' : colors.textSecondary}
-              />
-              <Text style={[styles.label, { color: active ? '#FFFFFF' : colors.textSecondary }, active && styles.labelActive]}>
-                {t(m.tKey, m.fallbackText)}
-              </Text>
-            </Pressable>
-          );
-        })}
-        <Pressable
-          style={[styles.button, (expanded || isDataMode) && { backgroundColor: colors.tealLight || '#145C6820' }]}
-          onPress={() => setExpanded((v) => !v)}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
         >
-          <Ionicons
-            name="analytics"
-            size={14}
-            color={(expanded || isDataMode) ? colors.teal : colors.textSecondary}
-          />
-          <Text style={[styles.label, { color: (expanded || isDataMode) ? colors.teal : colors.textSecondary }]}>
-            {t('map.colorModes.data', 'Data')}
-          </Text>
-        </Pressable>
+          {PRIMARY_MODES.map((m) => {
+            const active = mode === m.key;
+            return (
+              <Pressable
+                key={m.key}
+                style={[styles.button, active && { backgroundColor: colors.primary }]}
+                onPress={() => { onModeChange(m.key); setExpanded(false); }}
+              >
+                <Ionicons
+                  name={m.icon as any}
+                  size={13}
+                  color={active ? '#FFFFFF' : colors.textSecondary}
+                />
+                <Text
+                  style={[styles.label, { color: active ? '#FFFFFF' : colors.textSecondary }, active && styles.labelActive]}
+                  numberOfLines={1}
+                >
+                  {t(m.tKey, m.fallbackText)}
+                </Text>
+              </Pressable>
+            );
+          })}
+          <Pressable
+            style={[styles.button, (expanded || isDataMode) && { backgroundColor: colors.tealLight || '#145C6820' }]}
+            onPress={() => setExpanded((v) => !v)}
+          >
+            <Ionicons
+              name="analytics"
+              size={13}
+              color={(expanded || isDataMode) ? colors.teal : colors.textSecondary}
+            />
+            <Text
+              style={[styles.label, { color: (expanded || isDataMode) ? colors.teal : colors.textSecondary }]}
+              numberOfLines={1}
+            >
+              {t('map.colorModes.data', 'Data')}
+            </Text>
+          </Pressable>
+        </ScrollView>
       </View>
       {expanded && (
         <View style={[styles.dataRow, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
@@ -82,7 +94,7 @@ export default function MapColorToggle({ mode, onModeChange }: MapColorTogglePro
                   size={12}
                   color={active ? colors.teal : colors.textSecondary}
                 />
-                <Text style={[styles.subLabel, { color: active ? colors.teal : colors.textSecondary }]}>
+                <Text style={[styles.subLabel, { color: active ? colors.teal : colors.textSecondary }]} numberOfLines={1}>
                   {t(m.tKey, m.fallbackText)}
                 </Text>
               </Pressable>
@@ -98,16 +110,21 @@ const styles = StyleSheet.create({
   wrapper: {
     marginBottom: 3,
     alignSelf: 'flex-start',
+    maxWidth: '100%',
   },
   container: {
-    flexDirection: 'row',
     borderRadius: 10,
-    padding: 3,
+    padding: 2,
+    maxWidth: '100%',
     shadowColor: '#2C1810',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+  },
+  scrollContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   dataRow: {
     flexDirection: 'row',
@@ -126,7 +143,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 8,
-    paddingVertical: 6,
+    paddingVertical: 5,
     borderRadius: 8,
     marginRight: 2,
   },
@@ -134,7 +151,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 6,
-    paddingVertical: 5,
+    paddingVertical: 4,
     borderRadius: 6,
     marginRight: 2,
     marginBottom: 2,
@@ -143,11 +160,15 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '700',
     marginLeft: 4,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
   },
   subLabel: {
     fontSize: 10,
     fontWeight: '600',
     marginLeft: 3,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
   },
   labelActive: {
     fontWeight: '800',

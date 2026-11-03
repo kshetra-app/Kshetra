@@ -50,7 +50,11 @@ export default function LanguageSwitcher({ compact = false }: LanguageSwitcherPr
         onPress={() => setVisible(true)}
       >
         <Ionicons name="language" size={compact ? 14 : 16} color={colors.primary} />
-        <Text style={[styles.triggerText, { color: colors.text }, compact && styles.compactTriggerText]}>
+        <Text
+          style={[styles.triggerText, { color: colors.text }, compact && styles.compactTriggerText]}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
           {currentLang?.nativeLabel ?? 'English'}
         </Text>
         <Ionicons name="chevron-down" size={compact ? 10 : 12} color={colors.textMuted} />
@@ -115,25 +119,38 @@ const styles = StyleSheet.create({
   trigger: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 10,
+    borderRadius: 8,
     borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    gap: 6,
-  },
-  compactTrigger: {
     paddingHorizontal: 8,
     paddingVertical: 5,
-    borderRadius: 8,
     gap: 4,
+    maxWidth: 110,
+    shadowColor: '#2C1810',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  compactTrigger: {
+    paddingHorizontal: 7,
+    paddingVertical: 4,
+    borderRadius: 8,
+    gap: 3,
+    maxWidth: 95,
   },
   triggerText: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 12,
+    fontWeight: '700',
+    maxWidth: 70,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
   },
   compactTriggerText: {
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: 11,
+    fontWeight: '700',
+    maxWidth: 60,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
   },
   overlay: {
     flex: 1,
@@ -163,12 +180,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '800',
     textAlign: 'center',
+    includeFontPadding: false,
   },
   sheetSubtitle: {
     fontSize: 13,
     textAlign: 'center',
     marginTop: 4,
     marginBottom: 20,
+    includeFontPadding: false,
   },
   langRow: {
     flexDirection: 'row',
@@ -185,9 +204,11 @@ const styles = StyleSheet.create({
   langNative: {
     fontSize: 16,
     fontWeight: '700',
+    includeFontPadding: false,
   },
   langEnglish: {
     fontSize: 12,
     marginTop: 2,
+    includeFontPadding: false,
   },
 });

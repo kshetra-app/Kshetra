@@ -57,6 +57,15 @@ export default function ConstituencyTabBar({
     [issueBadge, pulseBadge, newsBadge],
   );
 
+  useEffect(() => {
+    const idx = TABS.findIndex((t) => t.key === activeTab);
+    if (idx > 0 && scrollRef.current) {
+      scrollRef.current.scrollTo({ x: Math.max(0, (idx - 1) * 95), animated: true });
+    } else if (idx === 0 && scrollRef.current) {
+      scrollRef.current.scrollTo({ x: 0, animated: true });
+    }
+  }, [activeTab]);
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
       <ScrollView
@@ -84,7 +93,10 @@ export default function ConstituencyTabBar({
                 size={16}
                 color={isActive ? colors.primary : colors.textSecondary}
               />
-              <Text style={[styles.tabLabel, { color: isActive ? colors.primary : colors.textSecondary }, isActive && styles.tabLabelActive]}>
+              <Text
+                style={[styles.tabLabel, { color: isActive ? colors.primary : colors.textSecondary }, isActive && styles.tabLabelActive]}
+                numberOfLines={1}
+              >
                 {t(tab.label)}
               </Text>
               {badge !== undefined && badge > 0 && (
@@ -123,6 +135,8 @@ const styles = StyleSheet.create({
   tabLabel: {
     fontSize: 13,
     fontWeight: '600',
+    includeFontPadding: false,
+    textAlignVertical: 'center',
   },
   tabLabelActive: {
     fontWeight: '700',
@@ -140,5 +154,7 @@ const styles = StyleSheet.create({
     fontSize: 9,
     fontWeight: '800',
     color: '#FFFFFF',
+    includeFontPadding: false,
+    textAlignVertical: 'center',
   },
 });

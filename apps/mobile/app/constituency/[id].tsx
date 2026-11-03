@@ -396,46 +396,48 @@ export default function ConstituencyDetailScreen() {
           <Text style={[styles.name, { color: colors.text }]}>{localizedConstName || effectiveConstituencyName}</Text>
           <Text style={[styles.district, { color: colors.textSecondary }]}>{localizedDistrict} {t('constituency.districtLabel')}</Text>
           <View style={styles.heroActions}>
-            <View style={[styles.typeBadge, { backgroundColor: colors.surfaceElevated, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
-              <Text style={[styles.typeBadgeText, { color: colors.textSecondary }]}>{localizedReservation}</Text>
-            </View>
-            <View style={[
-              styles.provenancePill,
-              {
-                backgroundColor: dataSource === 'LIVE_API' ? '#10B98115' : '#3B82F615',
-                borderColor: dataSource === 'LIVE_API' ? '#10B98140' : '#3B82F640',
-              }
-            ]}>
+            <View style={styles.heroBadges}>
+              <View style={[styles.typeBadge, { backgroundColor: colors.surfaceElevated, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
+                <Text style={[styles.typeBadgeText, { color: colors.textSecondary }]}>{localizedReservation}</Text>
+              </View>
               <View style={[
-                styles.provenanceDot,
-                { backgroundColor: dataSource === 'LIVE_API' ? '#10B981' : '#3B82F6' }
-              ]} />
-              <Text style={[
-                styles.provenanceText,
-                { color: dataSource === 'LIVE_API' ? '#10B981' : '#3B82F6' }
+                styles.provenancePill,
+                {
+                  backgroundColor: dataSource === 'LIVE_API' ? '#10B98115' : '#3B82F615',
+                  borderColor: dataSource === 'LIVE_API' ? '#10B98140' : '#3B82F640',
+                }
               ]}>
-                {dataSource === 'LIVE_API' ? 'Live API (Electoral) + Seed Data' : (dataSource === 'OFFLINE_SEED' ? 'Offline Seed Data' : 'Data Unavailable')}
-              </Text>
+                <View style={[
+                  styles.provenanceDot,
+                  { backgroundColor: dataSource === 'LIVE_API' ? '#10B981' : '#3B82F6' }
+                ]} />
+                <Text style={[
+                  styles.provenanceText,
+                  { color: dataSource === 'LIVE_API' ? '#10B981' : '#3B82F6' }
+                ]} numberOfLines={1}>
+                  {dataSource === 'LIVE_API' ? 'Live API + Seed' : (dataSource === 'OFFLINE_SEED' ? 'Offline Seed' : 'Unavailable')}
+                </Text>
+              </View>
             </View>
             <View style={styles.heroButtons}>
               <Pressable
-                style={styles.heroButton}
+                style={[styles.heroButton, { borderColor: colors.goldBorder || colors.border, backgroundColor: colors.surface }]}
                 onPress={() => setShowShareModal(true)}
                 hitSlop={8}
                 accessibilityRole="button"
                 accessibilityLabel="Share Constituency Card"
               >
-                <Ionicons name="share-outline" size={20} color="#6B7280" />
+                <Ionicons name="share-outline" size={18} color={colors.textSecondary} />
               </Pressable>
               <Pressable
-                style={styles.heroButton}
+                style={[styles.heroButton, { borderColor: isFavorite ? '#EF4444' : (colors.goldBorder || colors.border), backgroundColor: colors.surface }]}
                 onPress={() => toggleFavorite(acNo)}
                 hitSlop={8}
               >
                 <Ionicons
                   name={isFavorite ? 'heart' : 'heart-outline'}
-                  size={22}
-                  color={isFavorite ? '#EF4444' : '#6B7280'}
+                  size={19}
+                  color={isFavorite ? '#EF4444' : colors.textSecondary}
                 />
               </Pressable>
             </View>
@@ -1309,21 +1311,32 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 8,
     marginTop: 12,
+  },
+  heroBadges: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 6,
+    flex: 1,
+    minWidth: 0,
   },
   typeBadge: {
     borderRadius: 6,
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
     paddingVertical: 4,
   },
   heroButtons: {
     flexDirection: 'row',
     gap: 8,
+    flexShrink: 0,
   },
   heroButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
@@ -1331,14 +1344,17 @@ const styles = StyleSheet.create({
   typeBadgeText: {
     fontSize: 12,
     fontWeight: '700',
+    includeFontPadding: false,
+    textAlignVertical: 'center',
   },
   homeButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal: 20,
+    marginHorizontal: 16,
     marginTop: 12,
     paddingVertical: 12,
+    paddingHorizontal: 16,
     borderRadius: 12,
     borderWidth: 1,
     gap: 8,
@@ -1347,15 +1363,18 @@ const styles = StyleSheet.create({
   homeButtonText: {
     fontSize: 14,
     fontWeight: '700',
+    includeFontPadding: false,
+    textAlignVertical: 'center',
   },
   homeButtonTextActive: {},
   followButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal: 20,
+    marginHorizontal: 16,
     marginTop: 8,
     paddingVertical: 12,
+    paddingHorizontal: 16,
     borderRadius: 12,
     backgroundColor: '#FAF6EE',
     borderWidth: 1,
@@ -1370,6 +1389,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: '#6D5549',
+    includeFontPadding: false,
+    textAlignVertical: 'center',
   },
   followButtonTextActive: {
     color: '#A8201A',

@@ -345,53 +345,72 @@ const styles = StyleSheet.create({
   },
   candInfo: {
     flex: 1,
+    minWidth: 0,
     marginRight: 8,
+    justifyContent: 'center',
   },
   candNameRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+    minWidth: 0,
   },
   candName: {
     fontSize: 13,
     fontWeight: '700',
+    flexShrink: 1,
+    includeFontPadding: false,
   },
   candNameSecondary: {
     fontSize: 12,
     fontWeight: '600',
+    flexShrink: 1,
+    includeFontPadding: false,
   },
   partyRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
     marginTop: 1,
+    minWidth: 0,
+    flexShrink: 1,
   },
   partyDot: {
     width: 6,
     height: 6,
     borderRadius: 3,
+    flexShrink: 0,
   },
   partyText: {
     fontSize: 11,
     fontWeight: '500',
+    flexShrink: 1,
+    includeFontPadding: false,
   },
   metaText: {
     fontSize: 10,
+    flexShrink: 1,
+    includeFontPadding: false,
   },
   voteStats: {
     alignItems: 'flex-end',
+    flexShrink: 0,
+    minWidth: 68,
   },
   voteCount: {
     fontSize: 13,
     fontWeight: '700',
+    includeFontPadding: false,
   },
   voteCountSecondary: {
     fontSize: 12,
     fontWeight: '500',
+    includeFontPadding: false,
   },
   voteShare: {
     fontSize: 10,
     fontWeight: '700',
+    includeFontPadding: false,
   },
   marginBadge: {
     backgroundColor: '#FEE2E2',
@@ -404,6 +423,7 @@ const styles = StyleSheet.create({
     fontSize: 9,
     fontWeight: '700',
     color: '#DC2626',
+    includeFontPadding: false,
   },
   barContainer: {
     marginTop: 6,

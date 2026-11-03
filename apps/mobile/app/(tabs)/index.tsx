@@ -1406,21 +1406,21 @@ function FullMapScreen() {
           pointerEvents={isScreenImmersive ? 'none' : 'box-none'}
         >
           <View style={styles.headerTop}>
-            <View style={{ flex: 1, marginRight: 8, justifyContent: 'center' }}>
+            <View style={{ flex: 1, minWidth: 0, marginRight: 6, justifyContent: 'center' }}>
               <Image
                 source={require('../../assets/poligram_logo_lockup_transparent.png')}
-                style={{ width: 110, height: 32, marginBottom: 2 }}
+                style={{ width: 96, height: 28, marginBottom: 2 }}
                 resizeMode="contain"
                 accessibilityLabel="POLIGRAM"
                 accessible={true}
               />
-              <Text style={styles.headerSubtitle} numberOfLines={1}>
+              <Text style={styles.headerSubtitle} numberOfLines={1} ellipsizeMode="tail">
                 {stateCode === 'IN'
                   ? t('mapExtended.nationalOverview')
                   : `${getLocalizedStateName(stateCode, i18n.language) || currentState?.name || stateCode} · ${currentState?.assemblySeats ?? '?'} ${t('explore.constituencies')}`}
               </Text>
             </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5, flexShrink: 0 }}>
               {/* Archived until further notice: Full/UI toggle (screen touch auto-hide replaces manual toggle) */}
               {/*
               <Pressable
@@ -1468,9 +1468,9 @@ function FullMapScreen() {
               <Pressable
                 style={{
                   backgroundColor: 'rgba(15, 23, 42, 0.92)',
-                  borderRadius: 16,
-                  width: 32,
-                  height: 32,
+                  borderRadius: 15,
+                  width: 30,
+                  height: 30,
                   justifyContent: 'center',
                   alignItems: 'center',
                   borderWidth: 1.5,
@@ -1488,7 +1488,7 @@ function FullMapScreen() {
                 accessibilityRole="button"
                 accessibilityLabel={t('discovery.hubTitle', { defaultValue: 'Discovery and Guide' })}
               >
-                <Ionicons name="sparkles" size={17} color="#FCD34D" />
+                <Ionicons name="sparkles" size={16} color="#FCD34D" />
               </Pressable>
             </View>
           </View>
@@ -1567,9 +1567,9 @@ function FullMapScreen() {
             position: 'absolute',
             top: isScreenImmersive
               ? mapTopOffset + 8
-              : mapTopOffset + (!hideOverlays && !selected ? 94 : 52),
+              : mapTopOffset + (!hideOverlays && !selected ? 94 : (selected && selectedHasBoothData && currentZoom < BOOTH_ZOOM_THRESHOLD ? 94 : 52)),
             left: 14,
-            right: 64,
+            right: 74,
             zIndex: 1000,
           }}
           pointerEvents="box-none"

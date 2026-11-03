@@ -43,7 +43,7 @@ export default function StateSwitcher() {
     <>
       <Pressable style={[styles.trigger, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]} onPress={() => setVisible(true)}>
         <Ionicons name="location" size={14} color={colors.primary} />
-        <Text style={[styles.triggerText, { color: colors.text }]}>{triggerLabel}</Text>
+        <Text style={[styles.triggerText, { color: colors.text }]} numberOfLines={1} ellipsizeMode="tail">{triggerLabel}</Text>
         <Ionicons name="chevron-down" size={12} color={colors.textSecondary} />
       </Pressable>
 
@@ -149,9 +149,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    gap: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    gap: 4,
+    maxWidth: 130,
     shadowColor: '#2C1810',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -159,8 +160,11 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   triggerText: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '700',
+    maxWidth: 90,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
   },
   overlay: {
     flex: 1,
