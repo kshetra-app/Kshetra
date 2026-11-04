@@ -107,7 +107,7 @@ const or = {
       "data": "ତଥ୍ୟ"
     },
     "compare": "ତୁଳନା କରନ୍ତୁ",
-    "setAsHome": "ମୋ ନିର୍ବାଚନ ମଣ୍ଡଳୀ ଭାବରେ ସେଟ୍ କରନ୍ତୁ",
+    "setAsHome": "ଗୃହ ନିର୍ବାଚନ ମଣ୍ଡଳୀ ସେଟ୍ କରନ୍ତୁ",
     "removeHome": "ମୋ ନିର୍ବାଚନ ମଣ୍ଡଳୀ ଭାବରେ ହଟାନ୍ତୁ",
     "myConstituency": "ମୋ ନିର୍ବାଚନ ମଣ୍ଡଳୀ",
     "didYouKnow": "ଆପଣ ଜାଣିଛନ୍ତି କି?",
@@ -214,7 +214,7 @@ const or = {
     "districtLabel": "ଜିଲ୍ଲା",
     "notFound": "ମିଳିଲା ନାହିଁ",
     "notFoundMsg": "ନିର୍ବାଚନ ମଣ୍ଡଳୀ #{{id}} ମିଳିଲା ନାହିଁ",
-    "myHome": "ମୋର ମୁଖ୍ୟ ନିର୍ବାଚନ ମଣ୍ଡଳୀ",
+    "myHome": "ମୋ ଗୃହ ନିର୍ବାଚନ ମଣ୍ଡଳୀ",
     "setAsHome": "ମୋ ନିର୍ବାଚନ ମଣ୍ଡଳୀ ଭାବରେ ସେଟ୍ କରନ୍ତୁ",
     "constituencyHistory": "ନିର୍ବାଚନ ମଣ୍ଡଳୀର ଇତିହାସ",
     "stronghold": "ଗଡ଼",
@@ -2250,12 +2250,15 @@ const or = {
     "challenges": "ଚୁନୌତିଯାଁ"
   },
   "constituencyTabBar": {
-    "overview": "ସମୀକ୍ଷା",
+    "results": "ଫଳାଫଳ",
+    "overview": "ଫଳାଫଳ",
     "issues": "ସମସ୍ୟା",
-    "pulse": "ନାଡ଼ି",
+    "pulse": "Pulse",
     "news": "ସମ୍ବାଦ",
-    "history": "ଇତିହାସ",
-    "xray": "ଏକ୍ସ-ରେ"
+    "affidavits": "ଶପଥପତ୍ର",
+    "demographics": "ଜନସଂଖ୍ୟା",
+    "history": "ଫଳାଫଳ",
+    "xray": "ଶପଥପତ୍ର"
   },
   "challengeCard": {
     "points": "ଅଂକ",

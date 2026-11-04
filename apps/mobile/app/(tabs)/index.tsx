@@ -68,6 +68,7 @@ import {
 } from '../../lib/stateDataAdapter';
 import { getTriviaForConstituencyInState, getAllTriviaForState } from '../../lib/stateTriviaAdapter';
 import { getHistoryForState } from '../../lib/stateDataDispatcher';
+import { getCanonicalElectionYear } from '../../lib/canonicalElections';
 import { selectFreshTrivia } from '../../lib/triviaSelector';
 import { computeAllSeatAllocations } from '../../lib/delimitation/seatCalculator';
 import { styles } from '../../lib/mapScreenStyles';
@@ -2175,7 +2176,7 @@ function FullMapScreen() {
               <>
                 {/* Election result */}
                 <View style={styles.resultSection}>
-                  <Text style={styles.resultLabel}>{t('mapSheet.winnerYear', { year: selected.electionYear })}</Text>
+                  <Text style={styles.resultLabel}>{t('mapSheet.winnerYear', { year: getCanonicalElectionYear(stateCode, selected.electionYear) })}</Text>
                   <View style={styles.resultWinnerRow}>
                     <CandidateAvatar
                       key={selected.winnerName}

@@ -107,7 +107,7 @@ const ne = {
       "data": "डाटा"
     },
     "compare": "तुलना गर्नुहोस्",
-    "setAsHome": "मेरो निर्वाचन क्षेत्रको रूपमा सेट गर्नुहोस्",
+    "setAsHome": "गृह निर्वाचन क्षेत्र सेट गर्नुहोस्",
     "removeHome": "मेरो निर्वाचन क्षेत्रको रूपमा हटाउनुहोस्",
     "myConstituency": "मेरो निर्वाचन क्षेत्र",
     "didYouKnow": "के तपाईंलाई थाहा छ?",
@@ -2250,12 +2250,15 @@ const ne = {
     "challenges": "चुनौतियाँ"
   },
   "constituencyTabBar": {
-    "overview": "अवलोकन",
+    "results": "नतिजा",
+    "overview": "नतिजा",
     "issues": "मुद्दा",
-    "pulse": "नाडी",
+    "pulse": "Pulse",
     "news": "समाचार",
-    "history": "इतिहास",
-    "xray": "एक्स-रे"
+    "affidavits": "शपथपत्र",
+    "demographics": "जनसांख्यिकी",
+    "history": "नतिजा",
+    "xray": "शपथपत्र"
   },
   "challengeCard": {
     "points": "अंक",

@@ -131,7 +131,12 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
           <Text style={styles.goldBadgeText}>🥇 1st</Text>
         </View>
 
-        <CandidateAvatar name={winnerName} party={item.winner_party || item.party} size={36} />
+        <CandidateAvatar
+          name={winnerName}
+          party={item.winner_party || item.party}
+          size={36}
+          photoUrl={item.winner_photo_url}
+        />
 
         <View style={styles.candInfo}>
           <View style={styles.candNameRow}>
@@ -171,7 +176,12 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
             <Text style={styles.silverBadgeText}>🥈 2nd</Text>
           </View>
 
-          <CandidateAvatar name={ru1Name} party={item.first_runner_up_party || 'IND'} size={32} />
+          <CandidateAvatar
+            name={ru1Name}
+            party={item.first_runner_up_party || 'IND'}
+            size={32}
+            photoUrl={item.first_runner_up_photo_url}
+          />
 
           <View style={styles.candInfo}>
             <Text style={[styles.candNameSecondary, { color: colors.text }]} numberOfLines={1}>
@@ -206,7 +216,12 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
             <Text style={styles.bronzeBadgeText}>🥉 3rd</Text>
           </View>
 
-          <CandidateAvatar name={ru2Name} party={item.second_runner_up_party || 'IND'} size={32} />
+          <CandidateAvatar
+            name={ru2Name}
+            party={item.second_runner_up_party || 'IND'}
+            size={32}
+            photoUrl={item.second_runner_up_photo_url}
+          />
 
           <View style={styles.candInfo}>
             <Text style={[styles.candNameSecondary, { color: colors.text }]} numberOfLines={1}>

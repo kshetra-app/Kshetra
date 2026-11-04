@@ -107,7 +107,7 @@ const pa = {
       "data": "ਡਾਟਾ"
     },
     "compare": "ਤੁਲਨਾ ਕਰੋ",
-    "setAsHome": "ਮੇਰੇ ਹਲਕੇ ਵਜੋਂ ਸੈੱਟ ਕਰੋ",
+    "setAsHome": "ਗ੍ਰਹਿ ਹਲਕਾ ਸੈੱਟ ਕਰੋ",
     "removeHome": "ਮੇਰੇ ਹਲਕੇ ਵਜੋਂ hਟਾਓ",
     "myConstituency": "ਮੇਰਾ ਹਲਕਾ",
     "didYouKnow": "ਕੀ ਤੁਸੀਂ ਜਾਣਦੇ ਹੋ?",
@@ -214,7 +214,7 @@ const pa = {
     "districtLabel": "ਜ਼ਿਲ੍ਹਾ",
     "notFound": "ਨਹੀਂ ਲੱਭਿਆ",
     "notFoundMsg": "ਹਲਕਾ #{{id}} ਨਹੀਂ ਲੱਭਿਆ",
-    "myHome": "ਮੇਰਾ ਘਰੇਲੂ ਹਲਕਾ",
+    "myHome": "ਮੇਰਾ ਗ੍ਰਹਿ ਹਲਕਾ",
     "setAsHome": "ਮੇਰੇ ਹਲਕੇ ਵਜੋਂ ਸੈੱਟ ਕਰੋ",
     "constituencyHistory": "ਹਲਕੇ ਦਾ ਇਤਿਹਾਸ",
     "stronghold": "ਗੜ੍ਹ",
@@ -2250,12 +2250,15 @@ const pa = {
     "challenges": "ਚੁਨੌਤਿਯਾਁ"
   },
   "constituencyTabBar": {
-    "overview": "ਸੰਖੇਪ",
+    "results": "ਨਤੀਜੇ",
+    "overview": "ਨਤੀਜੇ",
     "issues": "ਮੁੱਦੇ",
-    "pulse": "ਨਬਜ਼",
+    "pulse": "Pulse",
     "news": "ਖ਼ਬਰਾਂ",
-    "history": "ਇਤਿਹਾਸ",
-    "xray": "ਐਕਸ-ਰੇ"
+    "affidavits": "ਹਲਫ਼ਨਾਮਾ",
+    "demographics": "ਜਨਸੰਖਿਆ",
+    "history": "ਨਤੀਜੇ",
+    "xray": "ਹਲਫ਼ਨਾਮਾ"
   },
   "challengeCard": {
     "points": "ਅਂਕ",

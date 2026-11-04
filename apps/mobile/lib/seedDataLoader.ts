@@ -96,6 +96,9 @@ export interface HistoricalResultRow {
   second_runner_up_total_liabilities?: number;
   localized_names_json?: string;
   localized_parties_json?: string;
+  winner_photo_url?: string;
+  first_runner_up_photo_url?: string;
+  second_runner_up_photo_url?: string;
 }
 
 export interface PoliticalTimelineRow {

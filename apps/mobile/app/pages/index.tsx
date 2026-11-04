@@ -27,6 +27,7 @@ import { fetchVerifiedPoliticians } from '../../lib/supabaseDataService';
 import RegisterAspirantModal from '../../components/RegisterAspirantModal';
 import CivicScoreCard from '../../components/CivicScoreCard';
 import CivicBadgeGrid from '../../components/CivicBadgeGrid';
+import LeaderProfileModal from '../../components/LeaderProfileModal';
 
 type PageTab = 'aspirants' | 'politicians' | 'my_page';
 
@@ -49,6 +50,7 @@ export default function PagesScreen() {
   const [verifiedPoliticians, setVerifiedPoliticians] = useState<any[]>([]);
   const [loadingPoliticians, setLoadingPoliticians] = useState(false);
   const [selectedAspirant, setSelectedAspirant] = useState<AspirantProfile | null>(null);
+  const [myPageModalVisible, setMyPageModalVisible] = useState(false);
 
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const stateRepresentatives = useMemo(() => {
@@ -107,43 +109,44 @@ export default function PagesScreen() {
   }, [aspirantProfile]);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: '#F8FAFC' }]}>
       <Stack.Screen
         options={{
           title: t('pages.screenTitle', { defaultValue: 'Pages & Leaders' }),
           headerShown: true,
-          headerStyle: { backgroundColor: colors.surface },
-          headerTintColor: colors.primary,
+          headerStyle: { backgroundColor: '#002B7F' },
+          headerTintColor: '#FFFFFF',
+          headerTitleStyle: { fontWeight: '900', color: '#FFFFFF', fontSize: 17 },
           headerRight: () => (
             <Pressable
               accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
-              style={{ padding: 4 }}
+              style={{ padding: 6, borderRadius: 20, backgroundColor: 'rgba(255, 255, 255, 0.15)' }}
               onPress={() => setHelpVisible(true)}
             >
-              <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
+              <Ionicons name="help-circle-outline" size={20} color="#FFFFFF" />
             </Pressable>
           ),
         }}
       />
 
-      {/* Tabs */}
-      <View style={[styles.tabBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+      {/* Tabs in Navy Blue & White */}
+      <View style={[styles.tabBar, { backgroundColor: '#FFFFFF', borderBottomColor: '#E2E8F0' }]}>
         <Pressable
           style={[
             styles.tab,
-            activeTab === 'aspirants' && { borderBottomColor: colors.primary, borderBottomWidth: 2 },
+            activeTab === 'aspirants' && { borderBottomColor: '#002B7F', borderBottomWidth: 2.5 },
           ]}
           onPress={() => setActiveTab('aspirants')}
         >
           <Ionicons
             name={activeTab === 'aspirants' ? 'rocket' : 'rocket-outline'}
             size={18}
-            color={activeTab === 'aspirants' ? colors.primary : colors.textMuted}
+            color={activeTab === 'aspirants' ? '#002B7F' : '#64748B'}
           />
           <Text
             style={[
               styles.tabLabel,
-              { color: activeTab === 'aspirants' ? colors.primary : colors.textMuted },
+              { color: activeTab === 'aspirants' ? '#002B7F' : '#64748B', fontWeight: activeTab === 'aspirants' ? '900' : '600' },
             ]}
           >
             {t('pages.tabAspirants', { defaultValue: 'Civic Aspirants' })}
@@ -153,19 +156,19 @@ export default function PagesScreen() {
         <Pressable
           style={[
             styles.tab,
-            activeTab === 'politicians' && { borderBottomColor: colors.primary, borderBottomWidth: 2 },
+            activeTab === 'politicians' && { borderBottomColor: '#002B7F', borderBottomWidth: 2.5 },
           ]}
           onPress={() => setActiveTab('politicians')}
         >
           <Ionicons
             name={activeTab === 'politicians' ? 'people' : 'people-outline'}
             size={18}
-            color={activeTab === 'politicians' ? colors.primary : colors.textMuted}
+            color={activeTab === 'politicians' ? '#002B7F' : '#64748B'}
           />
           <Text
             style={[
               styles.tabLabel,
-              { color: activeTab === 'politicians' ? colors.primary : colors.textMuted },
+              { color: activeTab === 'politicians' ? '#002B7F' : '#64748B', fontWeight: activeTab === 'politicians' ? '900' : '600' },
             ]}
           >
             {t('pages.tabPoliticians', { defaultValue: 'Representatives' })}
@@ -175,19 +178,19 @@ export default function PagesScreen() {
         <Pressable
           style={[
             styles.tab,
-            activeTab === 'my_page' && { borderBottomColor: colors.primary, borderBottomWidth: 2 },
+            activeTab === 'my_page' && { borderBottomColor: '#002B7F', borderBottomWidth: 2.5 },
           ]}
           onPress={() => setActiveTab('my_page')}
         >
           <Ionicons
             name={activeTab === 'my_page' ? 'person-circle' : 'person-circle-outline'}
             size={18}
-            color={activeTab === 'my_page' ? colors.primary : colors.textMuted}
+            color={activeTab === 'my_page' ? '#002B7F' : '#64748B'}
           />
           <Text
             style={[
               styles.tabLabel,
-              { color: activeTab === 'my_page' ? colors.primary : colors.textMuted },
+              { color: activeTab === 'my_page' ? '#002B7F' : '#64748B', fontWeight: activeTab === 'my_page' ? '900' : '600' },
             ]}
           >
             {t('pages.tabMyPage', { defaultValue: 'My Page' })}
@@ -297,11 +300,11 @@ export default function PagesScreen() {
 
                   <View style={styles.cardActions}>
                     <Pressable
-                      style={[styles.btnViewPage, { borderColor: colors.primary }]}
+                      style={[styles.btnViewPage, { borderColor: '#002B7F' }]}
                       onPress={() => setSelectedAspirant(asp)}
                     >
-                      <Ionicons name="person-outline" size={14} color={colors.primary} />
-                      <Text style={[styles.btnViewPageText, { color: colors.primary }]}>
+                      <Ionicons name="document-text-outline" size={14} color="#002B7F" />
+                      <Text style={[styles.btnViewPageText, { color: '#002B7F' }]}>
                         {t('pages.viewPage', { defaultValue: 'View Page' })}
                       </Text>
                     </Pressable>
@@ -311,7 +314,7 @@ export default function PagesScreen() {
                         styles.btnEndorse,
                         isEndorsed
                           ? { backgroundColor: '#DCFCE7', borderColor: '#86EFAC' }
-                          : { backgroundColor: colors.primary },
+                          : { backgroundColor: '#002B7F' },
                       ]}
                       onPress={() => endorseAspirant(asp.id, authUser?.id)}
                       disabled={isEndorsed}
@@ -466,7 +469,7 @@ export default function PagesScreen() {
                       <CivicScoreCard score={civicScore} displayName={aspirantProfile.displayName} />
                     ) : null}
                     <View style={[styles.profileMetaCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                      <Ionicons name="rocket" size={20} color="#06B6D4" />
+                      <Ionicons name="rocket" size={20} color="#002B7F" />
                       <View style={{ flex: 1, marginLeft: 12 }}>
                         <Text style={[styles.profileMetaName, { color: colors.text }]}>{aspirantProfile.displayName}</Text>
                         <Text style={[styles.profileMetaSub, { color: colors.textMuted }]}>
@@ -480,6 +483,19 @@ export default function PagesScreen() {
                         </Text>
                       </View>
                     </View>
+
+                    {/* Launch Full Leader Dossier & Studio */}
+                    <Pressable
+                      style={[styles.btnOpenDossier, { backgroundColor: '#002B7F' }]}
+                      onPress={() => setMyPageModalVisible(true)}
+                    >
+                      <Ionicons name="sparkles" size={16} color="#FFFFFF" />
+                      <Text style={styles.btnOpenDossierText}>
+                        {t('pages.openFullDossier', { defaultValue: 'పూర్తి లీడర్ పేజీ & ప్రైవేట్ స్టూడియో తెరవండి' })}
+                      </Text>
+                      <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />
+                    </Pressable>
+
                     <CivicBadgeGrid earned={badges} />
 
                     {/* Next Steps Card (FIX-14) */}
@@ -615,173 +631,16 @@ export default function PagesScreen() {
         sourceScreen="pages"
       />
 
-      {/* Interactive Aspirant Dossier & Manifesto Modal */}
-      <Modal
-        visible={!!selectedAspirant}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={() => setSelectedAspirant(null)}
-      >
-        {selectedAspirant && (
-          <View style={[styles.modalContainer, { backgroundColor: colors.background }]}>
-            <View style={[styles.modalHeaderRow, { borderBottomColor: colors.border, backgroundColor: colors.surface }]}>
-              <Text style={[styles.modalHeaderTitle, { color: colors.text }]}>
-                {t('pages.candidateProfile', { defaultValue: 'Civic Candidate Page' })}
-              </Text>
-              <Pressable onPress={() => setSelectedAspirant(null)} hitSlop={10}>
-                <Ionicons name="close" size={22} color={colors.text} />
-              </Pressable>
-            </View>
-
-            <ScrollView contentContainerStyle={styles.modalScrollContent}>
-              {/* Profile Hero */}
-              <View style={[styles.modalHeroCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                <View style={[styles.modalAvatar, { backgroundColor: colors.primary + '20' }]}>
-                  <Text style={[styles.modalAvatarInitial, { color: colors.primary }]}>
-                    {selectedAspirant.displayName.charAt(0)}
-                  </Text>
-                </View>
-                <Text style={[styles.modalName, { color: colors.text }]}>{selectedAspirant.displayName}</Text>
-                <View style={[styles.pillTarget, { backgroundColor: colors.primary + '18' }]}>
-                  <Ionicons name="flag-outline" size={13} color={colors.primary} />
-                  <Text style={[styles.pillTargetText, { color: colors.primary }]}>
-                    {selectedAspirant.targetConstituencyName
-                      ? t('pages.candidateForYear', {
-                          constituency: selectedAspirant.targetConstituencyName,
-                          year: selectedAspirant.targetElectionYear,
-                          defaultValue: `Candidate for ${selectedAspirant.targetConstituencyName} (${selectedAspirant.targetElectionYear})`,
-                        })
-                      : t('pages.civicCandidate', { defaultValue: 'Civic Candidate' })}
-                  </Text>
-                </View>
-                {selectedAspirant.bio && (
-                  <Text style={[styles.modalBio, { color: colors.textSecondary }]}>
-                    {selectedAspirant.bio}
-                  </Text>
-                )}
-              </View>
-
-              {/* Civic Score & Track Record */}
-              <View style={[styles.modalSectionCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                <View style={styles.scoreTopRow}>
-                  <Ionicons name="trophy" size={22} color="#16A34A" />
-                  <View style={{ marginLeft: 10 }}>
-                    <Text style={[styles.scoreValue, { color: colors.text }]}>
-                      {selectedAspirant.civicScore} {t('pages.points', { defaultValue: 'Points' })}
-                    </Text>
-                    <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>
-                      {t('pages.civicStandingScore', { defaultValue: 'Civic Standing Score' })}
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.metricsGrid}>
-                  <View style={styles.metricBox}>
-                    <Text style={[styles.metricNumber, { color: colors.primary }]}>
-                      {selectedAspirant.issuesReported}
-                    </Text>
-                    <Text style={[styles.metricTitle, { color: colors.textMuted }]}>
-                      {t('pages.issuesRaised', { defaultValue: 'Issues Raised' })}
-                    </Text>
-                  </View>
-                  <View style={styles.metricBox}>
-                    <Text style={[styles.metricNumber, { color: '#16A34A' }]}>
-                      {selectedAspirant.communityEndorsements}
-                    </Text>
-                    <Text style={[styles.metricTitle, { color: colors.textMuted }]}>
-                      {t('pages.endorsements', { defaultValue: 'Endorsements' })}
-                    </Text>
-                  </View>
-                  <View style={styles.metricBox}>
-                    <Text style={[styles.metricNumber, { color: '#D97706' }]}>
-                      {selectedAspirant.modulesCompleted}
-                    </Text>
-                    <Text style={[styles.metricTitle, { color: colors.textMuted }]}>
-                      {t('pages.modulesDone', { defaultValue: 'Modules Done' })}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-
-              {/* Primary Action Buttons */}
-              <View style={styles.modalActionButtons}>
-                {/* 1. Endorse */}
-                <Pressable
-                  style={[
-                    styles.primaryActionBtn,
-                    endorsedIds.includes(selectedAspirant.id)
-                      ? { backgroundColor: '#DCFCE7', borderColor: '#86EFAC' }
-                      : { backgroundColor: colors.primary },
-                  ]}
-                  onPress={() => endorseAspirant(selectedAspirant.id, authUser?.id)}
-                  disabled={endorsedIds.includes(selectedAspirant.id)}
-                >
-                  <Ionicons
-                    name={endorsedIds.includes(selectedAspirant.id) ? 'checkmark-circle' : 'thumbs-up'}
-                    size={18}
-                    color={endorsedIds.includes(selectedAspirant.id) ? '#16A34A' : '#FFFFFF'}
-                  />
-                  <Text
-                    style={[
-                      styles.primaryActionText,
-                      { color: endorsedIds.includes(selectedAspirant.id) ? '#16A34A' : '#FFFFFF' },
-                    ]}
-                  >
-                    {endorsedIds.includes(selectedAspirant.id)
-                      ? t('pages.endorsed', { defaultValue: 'Endorsed' })
-                      : t('pages.endorseCandidate', { defaultValue: 'Endorse Candidate (+5 pts)' })}
-                  </Text>
-                </Pressable>
-
-                {/* 2. Direct Message / Chat */}
-                <Pressable
-                  style={[styles.secondaryActionBtn, { backgroundColor: colors.surface, borderColor: colors.primary }]}
-                  onPress={() => {
-                    setSelectedAspirant(null);
-                    router.push('/messages' as any);
-                  }}
-                >
-                  <Ionicons name="chatbubbles-outline" size={18} color={colors.primary} />
-                  <Text style={[styles.secondaryActionText, { color: colors.primary }]}>
-                    {t('pages.directMessage', { defaultValue: 'Message Candidate' })}
-                  </Text>
-                </Pressable>
-
-                {/* 3. View Target Constituency */}
-                {selectedAspirant.targetConstituencyAcNo ? (
-                  <Pressable
-                    style={[styles.secondaryActionBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
-                    onPress={() => {
-                      const acId = `${selectedAspirant.stateCode || 'TS'}-AC-${selectedAspirant.targetConstituencyAcNo}`;
-                      setSelectedAspirant(null);
-                      router.push(`/constituency/${acId}` as any);
-                    }}
-                  >
-                    <Ionicons name="map-outline" size={18} color={colors.text} />
-                    <Text style={[styles.secondaryActionText, { color: colors.text }]}>
-                      {t('pages.viewConstituency', { defaultValue: 'View Constituency Map & Data' })}
-                    </Text>
-                  </Pressable>
-                ) : null}
-
-                {/* 4. Share */}
-                <Pressable
-                  style={[styles.secondaryActionBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
-                  onPress={() => {
-                    Share.share({
-                      message: `Check out ${selectedAspirant.displayName}'s civic candidate page on Poligram: https://poligram.app/aspirant/${selectedAspirant.id}`,
-                    }).catch(() => {});
-                  }}
-                >
-                  <Ionicons name="share-outline" size={18} color={colors.text} />
-                  <Text style={[styles.secondaryActionText, { color: colors.text }]}>
-                    {t('common.share', { defaultValue: 'Share Page' })}
-                  </Text>
-                </Pressable>
-              </View>
-            </ScrollView>
-          </View>
-        )}
-      </Modal>
+      {/* Interactive Leader Dossier & Activity Modal */}
+      <LeaderProfileModal
+        visible={!!selectedAspirant || myPageModalVisible}
+        aspirant={selectedAspirant || aspirantProfile}
+        onClose={() => {
+          setSelectedAspirant(null);
+          setMyPageModalVisible(false);
+        }}
+        isOwner={myPageModalVisible || (selectedAspirant ? authUser?.id === selectedAspirant.userId : false)}
+      />
     </View>
   );
 }
@@ -966,6 +825,26 @@ const styles = StyleSheet.create({
   },
   profileMetaName: { fontSize: 15, fontWeight: '700' },
   profileMetaSub: { fontSize: 12, marginTop: 2 },
+  btnOpenDossier: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginBottom: 14,
+    shadowColor: '#002B7F',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  btnOpenDossierText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '800',
+  },
   createPromptCard: {
     borderRadius: 14,
     padding: 24,

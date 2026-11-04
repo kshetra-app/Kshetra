@@ -199,8 +199,8 @@ export default function IssueDetailScreen() {
   return (
     <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: colors.background }]}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 25}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
       <Stack.Screen
         options={{
@@ -289,7 +289,7 @@ export default function IssueDetailScreen() {
           </View>
         </View>
 
-        {/* ── Action Buttons ── */}
+        {/* ── Action Buttons (Disciplined Flex 1: Zero Overflow) ── */}
         <View style={styles.actionRow}>
           <Pressable
             style={[styles.actionBtn, issue.userUpvoted && styles.actionBtnActive]}
@@ -304,8 +304,10 @@ export default function IssueDetailScreen() {
               });
             }}
           >
-            <Ionicons name={issue.userUpvoted ? 'arrow-up-circle' : 'arrow-up-circle-outline'} size={20} color={issue.userUpvoted ? '#10B981' : '#9CA3AF'} />
-            <Text style={[styles.actionBtnText, issue.userUpvoted && { color: '#10B981' }]}>{t('issueDetail.upvote', { defaultValue: 'Upvote' })}</Text>
+            <Ionicons name={issue.userUpvoted ? 'arrow-up-circle' : 'arrow-up-circle-outline'} size={18} color={issue.userUpvoted ? '#059669' : '#64748B'} />
+            <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.actionBtnText, issue.userUpvoted && { color: '#059669' }]}>
+              {t('issueDetail.upvote', { defaultValue: 'Upvote' })}
+            </Text>
           </Pressable>
           <Pressable
             style={[styles.actionBtn, issue.userFollowing && styles.actionBtnActive]}
@@ -320,21 +322,23 @@ export default function IssueDetailScreen() {
               });
             }}
           >
-            <Ionicons name={issue.userFollowing ? 'notifications' : 'notifications-outline'} size={18} color={issue.userFollowing ? '#3B82F6' : '#9CA3AF'} />
-            <Text style={[styles.actionBtnText, issue.userFollowing && { color: '#3B82F6' }]}>
-              {issue.userFollowing ? t('common.following') : t('common.follow', { defaultValue: 'Follow' })}
+            <Ionicons name={issue.userFollowing ? 'notifications' : 'notifications-outline'} size={18} color={issue.userFollowing ? '#002B7F' : '#64748B'} />
+            <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.actionBtnText, issue.userFollowing && { color: '#002B7F' }]}>
+              {issue.userFollowing ? t('common.following', { defaultValue: 'Following' }) : t('common.follow', { defaultValue: 'Follow' })}
             </Text>
           </Pressable>
           <Pressable style={styles.actionBtn} onPress={handleShare}>
-            <Ionicons name="share-outline" size={18} color="#9CA3AF" />
-            <Text style={styles.actionBtnText}>{t('common.share')}</Text>
+            <Ionicons name="share-outline" size={18} color="#64748B" />
+            <Text numberOfLines={1} ellipsizeMode="tail" style={styles.actionBtnText}>
+              {t('common.share', { defaultValue: 'Share' })}
+            </Text>
           </Pressable>
           <Pressable
             style={[styles.actionBtn, issue.mlaTagged && styles.actionBtnActive]}
             onPress={handleTagMLA}
           >
-            <Ionicons name="megaphone" size={18} color={issue.mlaTagged ? '#F59E0B' : '#9CA3AF'} />
-            <Text style={[styles.actionBtnText, issue.mlaTagged && { color: '#F59E0B' }]}>
+            <Ionicons name="megaphone" size={18} color={issue.mlaTagged ? '#D97706' : '#64748B'} />
+            <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.actionBtnText, issue.mlaTagged && { color: '#D97706' }]}>
               {issue.mlaTagged ? t('issueDetail.mlaTagged', { defaultValue: 'MLA Tagged' }) : t('issueDetail.tagMla', { defaultValue: 'Tag MLA' })}
             </Text>
           </Pressable>
@@ -630,10 +634,10 @@ const styles = StyleSheet.create({
   statLabel: { fontSize: 10, color: '#8E7B6F', fontWeight: '600' },
 
   // Actions
-  actionRow: { flexDirection: 'row', justifyContent: 'space-around', paddingHorizontal: 8, paddingVertical: 12, marginTop: 8, marginHorizontal: 16, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E8DED1', borderRadius: 12 },
-  actionBtn: { alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 6, borderRadius: 8 },
-  actionBtnActive: { backgroundColor: '#F5EFE4' },
-  actionBtnText: { fontSize: 10, fontWeight: '600', color: '#6D5549' },
+  actionRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 6, paddingVertical: 10, marginTop: 8, marginHorizontal: 16, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 12, gap: 4 },
+  actionBtn: { flex: 1, minWidth: 0, alignItems: 'center', justifyContent: 'center', gap: 3, paddingHorizontal: 4, paddingVertical: 6, borderRadius: 8 },
+  actionBtnActive: { backgroundColor: '#EEF2FF' },
+  actionBtnText: { fontSize: 10, fontWeight: '700', color: '#475569', textAlign: 'center' },
 
   // MLA section
   mlaSection: { marginTop: 16, paddingHorizontal: 16 },

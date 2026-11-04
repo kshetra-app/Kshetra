@@ -107,7 +107,7 @@ const gu = {
       "data": "માહિતી"
     },
     "compare": "સરખામણી કરો",
-    "setAsHome": "મારો મતવિસ્તાર તરીકે સેટ કરો",
+    "setAsHome": "ગૃહ મતક્ષેત્ર સેટ કરો",
     "removeHome": "મારા મતવિસ્તારમાંથી દૂર કરો",
     "myConstituency": "મારો મતવિસ્તાર",
     "didYouKnow": "શું તમે જાણો છો?",
@@ -214,7 +214,7 @@ const gu = {
     "districtLabel": "જિલ્લો",
     "notFound": "મળ્યું નથી",
     "notFoundMsg": "મતવિસ્તાર #{{id}} મળ્યો નથી",
-    "myHome": "મારો ઘરનો મતવિસ્તાર",
+    "myHome": "મારું ગૃહ મતક્ષેત્ર",
     "setAsHome": "મારો મતવિસ્તાર તરીકે સેટ કરો",
     "constituencyHistory": "મતવિસ્તારનો ઇતિહાસ",
     "stronghold": "ગઢ",
@@ -2250,12 +2250,15 @@ const gu = {
     "challenges": "ચુનૌતિયાઁ"
   },
   "constituencyTabBar": {
-    "overview": "સમીક્ષા",
+    "results": "પરિણામ",
+    "overview": "પરિણામ",
     "issues": "મુદ્દાઓ",
-    "pulse": "ધબકાર",
+    "pulse": "Pulse",
     "news": "સમાચાર",
-    "history": "ઇતિહાસ",
-    "xray": "એક્સ-રે"
+    "affidavits": "સોગંદનામું",
+    "demographics": "વસ્તી વિષયક",
+    "history": "પરિણામ",
+    "xray": "સોગંદનામું"
   },
   "challengeCard": {
     "points": "અંક",

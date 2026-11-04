@@ -107,7 +107,7 @@ const bn = {
       "data": "তথ্য"
     },
     "compare": "তুলনা করুন",
-    "setAsHome": "আমার নির্বাচনী এলাকা হিসেবে সেট করুন",
+    "setAsHome": "নিজস্ব কেন্দ্র হিসেবে সেট করুন",
     "removeHome": "আমার নির্বাচনী এলাকা হিসেবে বাদ দিন",
     "myConstituency": "আমার নির্বাচনী এলাকা",
     "didYouKnow": "আপনি কি জানতেন?",
@@ -214,7 +214,7 @@ const bn = {
     "districtLabel": "জেলা",
     "notFound": "পাওয়া যায়নি",
     "notFoundMsg": "নির্বাচনী এলাকা #{{id}} পাওয়া যায়নি",
-    "myHome": "আমার নিজ নির্বাচনী এলাকা",
+    "myHome": "আমার নিজস্ব কেন্দ্র",
     "setAsHome": "আমার নির্বাচনী এলাকা হিসেবে সেট করুন",
     "constituencyHistory": "নির্বাচনী এলাকার ইতিহাস",
     "stronghold": "দুর্গ",
@@ -2250,12 +2250,15 @@ const bn = {
     "challenges": "চুনৌতিযাঁ"
   },
   "constituencyTabBar": {
-    "overview": "পর্যালোচনা",
+    "results": "ফলাফল",
+    "overview": "ফলাফল",
     "issues": "সমস্যা",
-    "pulse": "নাড়ি",
+    "pulse": "Pulse",
     "news": "সংবাদ",
-    "history": "ইতিহাস",
-    "xray": "এক্স-রে"
+    "affidavits": "হলফনামা",
+    "demographics": "জনসংখ্যা",
+    "history": "ফলাফল",
+    "xray": "হলফনামা"
   },
   "challengeCard": {
     "points": "অংক",

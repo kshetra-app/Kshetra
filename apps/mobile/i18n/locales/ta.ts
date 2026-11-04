@@ -107,7 +107,7 @@ const ta = {
       "data": "தரவு"
     },
     "compare": "ஒப்பிடு",
-    "setAsHome": "எனது நியோஜகவர்க்கமாக அமை",
+    "setAsHome": "சொந்த தொகுதியாக அமை",
     "removeHome": "எனது நியோஜகவர்க்கத்திலிருந்து நீக்கு",
     "myConstituency": "எனது நியோஜகவர்க்கம்",
     "didYouKnow": "உங்களுக்குத் தெரியுமா?",
@@ -214,7 +214,7 @@ const ta = {
     "districtLabel": "மாவட்டம்",
     "notFound": "கண்டறியப்படவில்லை",
     "notFoundMsg": "நியோஜகவர்க்கம் #{{id}} கண்டறியப்படவில்லை",
-    "myHome": "எனது சொந்த நியோஜகவர்க்கம்",
+    "myHome": "என் சொந்த தொகுதி",
     "setAsHome": "எனது நியோஜகவர்க்கமாக அமை",
     "constituencyHistory": "நியோஜகவர்க்க வரலாறு",
     "stronghold": "கோட்டை",
@@ -2250,12 +2250,15 @@ const ta = {
     "challenges": "ஸவாள்ளு"
   },
   "constituencyTabBar": {
-    "overview": "மேலோட்டம்",
+    "results": "முடிவுகள்",
+    "overview": "முடிவுகள்",
     "issues": "சிக்கல்கள்",
-    "pulse": "துடிப்பு",
+    "pulse": "Pulse",
     "news": "செய்திகள்",
-    "history": "வரலாறு",
-    "xray": "எக்ஸ்-ரே"
+    "affidavits": "பிரமாணப் பத்திரம்",
+    "demographics": "மக்கள்தொகை",
+    "history": "முடிவுகள்",
+    "xray": "பிரமாணப் பத்திரம்"
   },
   "challengeCard": {
     "points": "பாயிம்ட்லு",

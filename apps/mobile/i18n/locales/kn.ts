@@ -107,7 +107,7 @@ const kn = {
       "data": "ಡೇಟಾ"
     },
     "compare": "ಹೋಲಿಸಿ",
-    "setAsHome": "ನನ್ನ ಕ್ಷೇತ್ರವಾಗಿ ಹೊಂದಿಸಿ",
+    "setAsHome": "ಸ್ವಂತ ಕ್ಷೇತ್ರವಾಗಿ ಹೊಂದಿಸಿ",
     "removeHome": "ನನ್ನ ಕ್ಷೇತ್ರದಿಂದ ತೆಗೆಯಿರಿ",
     "myConstituency": "ನನ್ನ ಕ್ಷೇತ್ರ",
     "didYouKnow": "ನಿಮಗೆ ಗೊತ್ತೇ?",
@@ -214,7 +214,7 @@ const kn = {
     "districtLabel": "ಜಿಲ್ಲೆ",
     "notFound": "ಕಂಡುಬಂದಿಲ್ಲ",
     "notFoundMsg": "ಕ್ಷೇತ್ರ #{{id}} ಕಂಡುಬಂದಿಲ್ಲ",
-    "myHome": "ನನ್ನ ಗೃಹ ಕ್ಷೇತ್ರ",
+    "myHome": "ನನ್ನ ಸ್ವಂತ ಕ್ಷೇತ್ರ",
     "setAsHome": "ನನ್ನ ಕ್ಷೇತ್ರವಾಗಿ ಹೊಂದಿಸಿ",
     "constituencyHistory": "ಕ್ಷೇತ್ರದ ಇತಿಹಾಸ",
     "stronghold": "ಭದ್ರಕೋಟೆ",
@@ -2250,12 +2250,15 @@ const kn = {
     "challenges": "ಸವಾಲುಗಳು"
   },
   "constituencyTabBar": {
-    "overview": "ಅವಲೋಕನ",
+    "results": "ಫಲಿತಾಂಶ",
+    "overview": "ಫಲಿತಾಂಶ",
     "issues": "ಸಮಸ್ಯೆಗಳು",
-    "pulse": "ನಾಡಿ",
+    "pulse": "Pulse",
     "news": "ಸುದ್ದಿ",
-    "history": "ಇತಿಹಾಸ",
-    "xray": "ಎಕ್ಸ್-ರೇ"
+    "affidavits": "ಪ್ರಮಾಣಪತ್ರ",
+    "demographics": "ಜನಸಂಖ್ಯಾ",
+    "history": "ಫಲಿತಾಂಶ",
+    "xray": "ಪ್ರಮಾಣಪತ್ರ"
   },
   "challengeCard": {
     "points": "ಅಂಕಗಳು",

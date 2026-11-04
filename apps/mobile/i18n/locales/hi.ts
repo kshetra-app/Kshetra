@@ -107,7 +107,7 @@ const hi = {
       "data": "डेटा"
     },
     "compare": "तुलना करें",
-    "setAsHome": "मेरा निर्वाचन क्षेत्र बनाएँ",
+    "setAsHome": "गृह निर्वाचन क्षेत्र सेट करें",
     "removeHome": "मेरे निर्वाचन क्षेत्र से हटाएँ",
     "myConstituency": "मेरा निर्वाचन क्षेत्र",
     "didYouKnow": "क्या आप जानते हैं?",
@@ -2250,12 +2250,15 @@ const hi = {
     "challenges": "चुनौतियाँ"
   },
   "constituencyTabBar": {
-    "overview": "अवलोकन",
+    "results": "परिणाम",
+    "overview": "परिणाम",
     "issues": "मुद्दे",
-    "pulse": "धड़कन",
+    "pulse": "Pulse",
     "news": "समाचार",
-    "history": "इतिहास",
-    "xray": "एक्स-रे"
+    "affidavits": "शपथ पत्र",
+    "demographics": "जनसांख्यिकी",
+    "history": "परिणाम",
+    "xray": "शपथ पत्र"
   },
   "challengeCard": {
     "points": "अंक",

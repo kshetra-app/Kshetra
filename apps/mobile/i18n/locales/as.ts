@@ -107,7 +107,7 @@ const as = {
       "data": "তথ্য"
     },
     "compare": "তুলনা কৰক",
-    "setAsHome": "মোৰ সমষ্টি হিচাপে ছেট কৰক",
+    "setAsHome": "নিজা সমষ্টি হিচাপে ছেট কৰক",
     "removeHome": "মোৰ সমষ্টি হিচাপে আঁতৰাওক",
     "myConstituency": "মোৰ সমষ্টি",
     "didYouKnow": "আপুনি জানেনে?",
@@ -2250,12 +2250,15 @@ const as = {
     "challenges": "চুনৌতিযাঁ"
   },
   "constituencyTabBar": {
-    "overview": "পৰ্যালোচনা",
+    "results": "ফলাফল",
+    "overview": "ফলাফল",
     "issues": "সমস্যা",
-    "pulse": "নাড়ি",
+    "pulse": "Pulse",
     "news": "বাতৰি",
-    "history": "ইতিহাস",
-    "xray": "এক্স-ৰে"
+    "affidavits": "শপতনামা",
+    "demographics": "জনগাঁথনি",
+    "history": "ফলাফল",
+    "xray": "শপতনামা"
   },
   "challengeCard": {
     "points": "অংক",

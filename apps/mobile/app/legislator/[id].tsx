@@ -20,7 +20,6 @@ import {
 import ProfileHeroCard from '../../components/legislator/ProfileHeroCard';
 import FinancialBreakdownCard from '../../components/legislator/FinancialBreakdownCard';
 import CriminalRecordCard from '../../components/legislator/CriminalRecordCard';
-import PerformanceCard from '../../components/legislator/PerformanceCard';
 import RedFlagsBanner from '../../components/legislator/RedFlagsBanner';
 import DefectionJourneyCard from '../../components/legislator/DefectionJourneyCard';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
@@ -38,6 +37,7 @@ export default function LegislatorProfileScreen() {
   const [helpVisible, setHelpVisible] = useState(false);
   const [photoViewerVisible, setPhotoViewerVisible] = useState(false);
   const [photoViewerUri, setPhotoViewerUri] = useState<string | null>(null);
+  const [activeProfileTab, setActiveProfileTab] = useState<'bio' | 'assets' | 'legal' | 'elections'>('bio');
 
   // Parse ID: handles formats like:
   // - "MLA_TS_2023_Kodangal_65"
@@ -316,71 +316,150 @@ export default function LegislatorProfileScreen() {
           <Text style={styles.completenessText}>{dataCompleteness}% verified</Text>
         </View>
 
-        {/* Section Navigation Chips */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.navChips}>
-          <NavChip icon="wallet" label="Finances" color="#4F8EF7" />
-          <NavChip icon="alert-circle" label="Criminal" color="#EF4444" />
-          <NavChip icon="bar-chart" label="Performance" color="#8B5CF6" />
-          <NavChip icon="school" label="Education" color="#10B981" />
-        </ScrollView>
+        {/* ── 4-Segmented Pill Navigation (Bio, Assets, Legal, Elections) ── */}
+        <View style={styles.tabBarContainer}>
+          <View style={styles.tabBar}>
+            <Pressable
+              style={[styles.tabButton, activeProfileTab === 'bio' && styles.tabButtonActive]}
+              onPress={() => setActiveProfileTab('bio')}
+            >
+              <Ionicons
+                name="person"
+                size={14}
+                color={activeProfileTab === 'bio' ? '#FFFFFF' : '#475569'}
+              />
+              <Text
+                style={[styles.tabButtonText, activeProfileTab === 'bio' && styles.tabButtonTextActive]}
+                numberOfLines={1}
+              >
+                {i18n.t('legislator.tabBio', { defaultValue: 'Bio' })}
+              </Text>
+            </Pressable>
 
-        {/* Defection Journey Card */}
-        {constituency && (constituency.currentParty !== constituency.winnerParty || defectionEvent) && (
-          <DefectionJourneyCard
-            electedParty={constituency.winnerParty}
-            currentParty={constituency.currentParty}
-            defectionEvent={defectionEvent || undefined}
+            <Pressable
+              style={[styles.tabButton, activeProfileTab === 'assets' && styles.tabButtonActive]}
+              onPress={() => setActiveProfileTab('assets')}
+            >
+              <Ionicons
+                name="wallet"
+                size={14}
+                color={activeProfileTab === 'assets' ? '#FFFFFF' : '#475569'}
+              />
+              <Text
+                style={[styles.tabButtonText, activeProfileTab === 'assets' && styles.tabButtonTextActive]}
+                numberOfLines={1}
+              >
+                {i18n.t('legislator.tabAssets', { defaultValue: 'Assets' })}
+              </Text>
+            </Pressable>
+
+            <Pressable
+              style={[styles.tabButton, activeProfileTab === 'legal' && styles.tabButtonActive]}
+              onPress={() => setActiveProfileTab('legal')}
+            >
+              <Ionicons
+                name="shield-checkmark"
+                size={14}
+                color={activeProfileTab === 'legal' ? '#FFFFFF' : '#475569'}
+              />
+              <Text
+                style={[styles.tabButtonText, activeProfileTab === 'legal' && styles.tabButtonTextActive]}
+                numberOfLines={1}
+              >
+                {i18n.t('legislator.tabLegal', { defaultValue: 'Legal' })}
+              </Text>
+            </Pressable>
+
+            <Pressable
+              style={[styles.tabButton, activeProfileTab === 'elections' && styles.tabButtonActive]}
+              onPress={() => setActiveProfileTab('elections')}
+            >
+              <Ionicons
+                name="trophy"
+                size={14}
+                color={activeProfileTab === 'elections' ? '#FFFFFF' : '#475569'}
+              />
+              <Text
+                style={[styles.tabButtonText, activeProfileTab === 'elections' && styles.tabButtonTextActive]}
+                numberOfLines={1}
+              >
+                {i18n.t('legislator.tabElections', { defaultValue: 'Elections' })}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+
+        {/* ── TAB CONTENT: BIO ── */}
+        {activeProfileTab === 'bio' && (
+          <>
+            {/* Defection Journey Card */}
+            {constituency && (constituency.currentParty !== constituency.winnerParty || defectionEvent) && (
+              <DefectionJourneyCard
+                electedParty={constituency.winnerParty}
+                currentParty={constituency.currentParty}
+                defectionEvent={defectionEvent || undefined}
+              />
+            )}
+
+            {/* Education & Profession */}
+            {(winnerAffidavit || mla?.education) && (
+              <View style={styles.sectionCard}>
+                <View style={styles.sectionHeader}>
+                  <Ionicons name="school" size={18} color="#002B7F" />
+                  <Text style={styles.sectionTitle}>{i18n.t('legislator.educationProfession')}</Text>
+                </View>
+                <View style={styles.infoGrid}>
+                  <InfoRow label="Education" value={formatEducation(winnerAffidavit?.education || mla?.education)} />
+                  <InfoRow label="Profession" value={winnerAffidavit?.profession || mla?.profession || '—'} />
+                  {mla?.gender && <InfoRow label="Gender" value={mla.gender === 'F' ? 'Female' : 'Male'} />}
+                  {mla?.maritalStatus && <InfoRow label="Marital Status" value={mla.maritalStatus} />}
+                  {mla?.dob && <InfoRow label="Date of Birth" value={mla.dob} />}
+                  {mla?.phone && <InfoRow label="Contact" value={mla.phone} />}
+                </View>
+              </View>
+            )}
+
+            {/* Legislative Assembly Term */}
+            <View style={styles.sectionCard}>
+              <View style={styles.sectionHeader}>
+                <Ionicons name="business" size={18} color="#002B7F" />
+                <Text style={styles.sectionTitle}>Assembly Term & Status</Text>
+              </View>
+              <View style={styles.infoGrid}>
+                <InfoRow label="Constituency" value={`#${acNo} ${constName}`} />
+                <InfoRow label="State" value={stateCode} />
+                <InfoRow label="Term" value={isWinner ? 'Current Incumbent' : 'Contesting Candidate'} />
+                <InfoRow label="Category" value={constType} />
+              </View>
+            </View>
+          </>
+        )}
+
+        {/* ── TAB CONTENT: ASSETS (FORM 26 SWORN FINANCIALS) ── */}
+        {activeProfileTab === 'assets' && (
+          <FinancialBreakdownCard records={financialRecords} />
+        )}
+
+        {/* ── TAB CONTENT: LEGAL (FORM 26 SWORN DISCLOSURES) ── */}
+        {activeProfileTab === 'legal' && (
+          <CriminalRecordCard
+            totalCases={winnerAffidavit?.criminalCases || mla?.criminalCases || 0}
+            seriousCases={winnerAffidavit?.seriousCriminalCases || 0}
+            convictions={0}
+            caseDetails={(winnerAffidavit?.caseDetails || []).map(c => ({
+              caseNo: c.caseNo,
+              court: c.court,
+              ipcSections: c.ipcSections,
+              status: c.status,
+            }))}
           />
         )}
 
-        {/* Financial Disclosure */}
-        <FinancialBreakdownCard records={financialRecords} />
-
-
-        {/* Criminal Record */}
-        <CriminalRecordCard
-          totalCases={winnerAffidavit?.criminalCases || mla?.criminalCases || 0}
-          seriousCases={winnerAffidavit?.seriousCriminalCases || 0}
-          convictions={0}
-          caseDetails={(winnerAffidavit?.caseDetails || []).map(c => ({
-            caseNo: c.caseNo,
-            court: c.court,
-            ipcSections: c.ipcSections,
-            status: c.status,
-          }))}
-        />
-
-        {/* Legislative Performance (placeholder — data from PRS) */}
-        <PerformanceCard
-          questionsAsked={0}
-          debatesParticipated={0}
-          privateMemberBills={0}
-          attendancePercent={0}
-        />
-
-        {/* Education & Profession */}
-        {(winnerAffidavit || mla?.education) && (
+        {/* ── TAB CONTENT: ELECTIONS (OFFICIAL ECI RESULTS) ── */}
+        {activeProfileTab === 'elections' && constituency && (
           <View style={styles.sectionCard}>
             <View style={styles.sectionHeader}>
-              <Ionicons name="school" size={18} color="#10B981" />
-              <Text style={styles.sectionTitle}>{i18n.t('legislator.educationProfession')}</Text>
-            </View>
-            <View style={styles.infoGrid}>
-              <InfoRow label="Education" value={formatEducation(winnerAffidavit?.education || mla?.education)} />
-              <InfoRow label="Profession" value={winnerAffidavit?.profession || mla?.profession || '—'} />
-              {mla?.gender && <InfoRow label="Gender" value={mla.gender === 'F' ? 'Female' : 'Male'} />}
-              {mla?.maritalStatus && <InfoRow label="Marital Status" value={mla.maritalStatus} />}
-              {mla?.dob && <InfoRow label="Date of Birth" value={mla.dob} />}
-              {mla?.phone && <InfoRow label="Contact" value={mla.phone} />}
-            </View>
-          </View>
-        )}
-
-        {/* Election Info */}
-        {constituency && (
-          <View style={styles.sectionCard}>
-            <View style={styles.sectionHeader}>
-              <Ionicons name="trophy" size={18} color="#F59E0B" />
+              <Ionicons name="trophy" size={18} color="#002B7F" />
               <Text style={styles.sectionTitle}>Election {electionYear}</Text>
             </View>
             <View style={styles.infoGrid}>
@@ -562,6 +641,47 @@ const styles = StyleSheet.create({
   completenessText: {
     fontSize: 10,
     fontWeight: '600',
+  },
+  tabBarContainer: {
+    marginHorizontal: 16,
+    marginTop: 14,
+    marginBottom: 6,
+  },
+  tabBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F1F5F9',
+    padding: 4,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    gap: 4,
+  },
+  tabButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    borderRadius: 10,
+    gap: 5,
+  },
+  tabButtonActive: {
+    backgroundColor: '#002B7F',
+    shadowColor: '#002B7F',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  tabButtonText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#475569',
+  },
+  tabButtonTextActive: {
+    color: '#FFFFFF',
+    fontWeight: '800',
   },
   navChips: {
     paddingHorizontal: 16,

@@ -153,6 +153,28 @@ export interface AspirantProfile {
   challengesCompleted: number;
 
   isPublic: boolean;
+
+  // ─── Leader 2.0 Extended Civic Dossier ───
+  motto?: string;
+  liveStatus?: string;
+  liveStatusTime?: string;
+  journeyBio?: string;
+  visionPledges?: { id: string; title: string; desc: string; supportCount: number }[];
+  fieldInitiatives?: { id: string; title: string; desc: string; date: string; isResolved: boolean }[];
+  disclosures?: {
+    cleanAffidavit: boolean;
+    zeroCriminalCases: boolean;
+    assetsDeclared: boolean;
+    accountabilityPledge: string;
+  };
+  privateTelemetry?: {
+    boothCoverageText: string;
+    grassrootsReachPercent: number;
+    avgResponseHours: number;
+    responseRatePercent: number;
+    profileViews30Days: number;
+    pendingRequestsCount: number;
+  };
 }
 
 // ─── CIVIC SCORE BREAKDOWN ───

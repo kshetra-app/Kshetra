@@ -107,7 +107,7 @@ const mr = {
       "data": "डेटा"
     },
     "compare": "तुलना करा",
-    "setAsHome": "माझा मतदारसंघ म्हणून सेट करा",
+    "setAsHome": "गृह मतदारसंघ सेट करा",
     "removeHome": "माझ्या मतदारसंघातून काढा",
     "myConstituency": "माझा मतदारसंघ",
     "didYouKnow": "तुम्हाला माहीत आहे का?",
@@ -2250,12 +2250,15 @@ const mr = {
     "challenges": "आव्हाने"
   },
   "constituencyTabBar": {
-    "overview": "आढावा",
+    "results": "निकाल",
+    "overview": "निकाल",
     "issues": "समस्या",
-    "pulse": "नाडी",
+    "pulse": "Pulse",
     "news": "बातम्या",
-    "history": "इतिहास",
-    "xray": "एक्स-रे"
+    "affidavits": "प्रतिज्ञापत्र",
+    "demographics": "लोकसंख्याशास्त्र",
+    "history": "निकाल",
+    "xray": "प्रतिज्ञापत्र"
   },
   "challengeCard": {
     "points": "गुण",

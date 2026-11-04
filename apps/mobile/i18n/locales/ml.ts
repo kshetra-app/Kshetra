@@ -107,7 +107,7 @@ const ml = {
       "data": "ഡാറ്റ"
     },
     "compare": "താരതമ്യം ചെയ്യുക",
-    "setAsHome": "എന്റെ നിയോജകമണ്ഡലമായി സജ്ജീകരിക്കുക",
+    "setAsHome": "സ്വന്തം മണ്ഡലമാക്കുക",
     "removeHome": "എന്റെ നിയോജകമണ്ഡലത്തിൽ നിന്ന് ഒഴിവാക്കുക",
     "myConstituency": "എന്റെ നിയോജകമണ്ഡലം",
     "didYouKnow": "നിങ്ങൾക്കറിയാമോ?",
@@ -214,7 +214,7 @@ const ml = {
     "districtLabel": "ജില്ല",
     "notFound": "കണ്ടെത്തിയില്ല",
     "notFoundMsg": "നിയോജകമണ്ഡലം #{{id}} കണ്ടെത്തിയില്ല",
-    "myHome": "എന്റെ സ്വന്തം നിയോജകമണ്ഡലം",
+    "myHome": "എന്റെ സ്വന്തം മണ്ഡലം",
     "setAsHome": "എന്റെ നിയോജകമണ്ഡലമായി സജ്ജീകരിക്കുക",
     "constituencyHistory": "നിയോജകമണ്ഡല ചരിത്രം",
     "stronghold": "ശക്തമായ മണ്ഡലം",
@@ -2250,12 +2250,15 @@ const ml = {
     "challenges": "സവാള്ളു"
   },
   "constituencyTabBar": {
-    "overview": "അവലോകനം",
+    "results": "ഫലങ്ങൾ",
+    "overview": "ഫലങ്ങൾ",
     "issues": "പ്രശ്നങ്ങൾ",
-    "pulse": "പൾസ്",
-    "news": "വാർത്ത",
-    "history": "ചരിത്രം",
-    "xray": "എക്സ്-റേ"
+    "pulse": "Pulse",
+    "news": "വാർത്തകൾ",
+    "affidavits": "സത്യവാങ്മൂലം",
+    "demographics": "ജനസംഖ്യാശാസ്ത്രം",
+    "history": "ഫലങ്ങൾ",
+    "xray": "സത്യവാങ്മൂലം"
   },
   "challengeCard": {
     "points": "പായിംട്ലു",

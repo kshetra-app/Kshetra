@@ -1,104 +1,103 @@
 /**
- * Poligram Theme System - Raja Ravi Varma Heritage Edition
+ * Poligram Theme System - National Ashoka Chakra Navy Blue & Pure White Edition
  *
- * Infuses the visual depth, warm chiaroscuro, natural pigments (sindoori vermilion,
- * kasavu gold, peacock teal, aged rosewood, ivory parchment) of Raja Ravi Varma's
- * classical masterworks into a human-crafted digital civic experience.
+ * Infuses the patriotic Ashoka Chakra Navy Blue (#002B7F) and Pure White (#FFFFFF),
+ * representing truth, dignity, and civic transparency across India.
  */
 
 export type ThemeMode = 'dark' | 'light' | 'system';
 
 export interface ThemeColors {
-  /** Primary canvas background (Parchment in light, Rosewood in dark) */
+  /** Primary canvas background (Pure White in light, Deep Navy in dark) */
   background: string;
-  /** Elevated card/surface background (Ivory in light, Teakwood in dark) */
+  /** Elevated card/surface background (White in light, Navy Card in dark) */
   surface: string;
   /** More elevated surface / highlighted card */
   surfaceElevated: string;
-  /** Primary text (Walnut Ink in light, Antique Silk in dark) */
+  /** Primary text (High-contrast slate in light, Pure white in dark) */
   text: string;
   /** Secondary text */
   textSecondary: string;
   /** Muted/tertiary text */
   textMuted: string;
-  /** Sindoori Vermilion - Primary Royal Accent */
+  /** Ashoka Chakra Navy Blue - Primary Royal Accent */
   primary: string;
   /** Primary accent with transparency / soft wash */
   primaryLight: string;
-  /** Kasavu / Zari Gold - Trims, Accents, Emblems */
+  /** Civic Gold / Saffron Trim */
   gold: string;
   /** Soft gold highlight background */
   goldLight: string;
   /** Zari border stroke */
   goldBorder: string;
-  /** Mayil Peacock Teal - Secondary Regal Accent */
+  /** Civic Teal - Secondary Accent */
   teal: string;
   /** Soft teal highlight background */
   tealLight: string;
-  /** Warm parchment surface */
+  /** Warm parchment surface fallback */
   parchment: string;
-  /** Danger/error - Crimson Lacquer */
+  /** Danger/error - Crimson */
   danger: string;
-  /** Success - Temple Emerald */
+  /** Success - Tiranga Green */
   success: string;
-  /** Warning - Marigold Saffron */
+  /** Warning - Saffron/Amber */
   warning: string;
-  /** Linen / Teak divider border */
+  /** Slate divider border */
   border: string;
   /** Map style URL */
   mapStyle: string;
   /** Status bar style */
   statusBar: 'light-content' | 'dark-content';
-  /** Warm ambient shadow color */
+  /** Ambient shadow color */
   shadowColor: string;
 }
 
 export const DARK_THEME: ThemeColors = {
-  background: '#16100E',
-  surface: '#221916',
-  surfaceElevated: '#2D221E',
-  text: '#F5EBE1',
-  textSecondary: '#C4B1A2',
-  textMuted: '#8E7B6F',
-  primary: '#D3453E',
-  primaryLight: '#3D1B19',
-  gold: '#D8BC7E',
+  background: '#070D18',
+  surface: '#0F1A2E',
+  surfaceElevated: '#172540',
+  text: '#F8FAFC',
+  textSecondary: '#94A3B8',
+  textMuted: '#64748B',
+  primary: '#3B82F6',
+  primaryLight: '#1E293B',
+  gold: '#FBBF24',
   goldLight: '#2C2114',
-  goldBorder: '#8A6D3B',
-  teal: '#268596',
-  tealLight: '#122E34',
-  parchment: '#1E1613',
-  danger: '#E74C3C',
-  success: '#388E3C',
+  goldBorder: '#D97706',
+  teal: '#14B8A6',
+  tealLight: '#134E4A',
+  parchment: '#0B1324',
+  danger: '#EF4444',
+  success: '#10B981',
   warning: '#F59E0B',
-  border: '#382A24',
+  border: '#1E293B',
   mapStyle: 'mapbox://styles/mapbox/dark-v11',
   statusBar: 'light-content',
-  shadowColor: '#0A0605',
+  shadowColor: '#000000',
 };
 
 export const LIGHT_THEME: ThemeColors = {
-  background: '#FAF6EE',
+  background: '#FFFFFF',
   surface: '#FFFFFF',
-  surfaceElevated: '#F5EFE4',
-  text: '#241814',
-  textSecondary: '#6D5549',
-  textMuted: '#988275',
-  primary: '#A8201A',
-  primaryLight: '#FBE8E7',
-  gold: '#C5A059',
-  goldLight: '#F9F4E8',
-  goldBorder: '#D8BC7E',
-  teal: '#145C68',
-  tealLight: '#E6F4F6',
-  parchment: '#F4EFE6',
-  danger: '#C0392B',
-  success: '#2E7D32',
+  surfaceElevated: '#F8FAFC',
+  text: '#0F172A',
+  textSecondary: '#475569',
+  textMuted: '#64748B',
+  primary: '#002B7F',
+  primaryLight: '#EEF2FF',
+  gold: '#D97706',
+  goldLight: '#FEF3C7',
+  goldBorder: '#F59E0B',
+  teal: '#0D9488',
+  tealLight: '#CCFBF1',
+  parchment: '#F8FAFC',
+  danger: '#DC2626',
+  success: '#059669',
   warning: '#D97706',
-  border: '#E8DED1',
+  border: '#E2E8F0',
   mapStyle: 'mapbox://styles/mapbox/light-v11',
   statusBar: 'dark-content',
-  shadowColor: '#2A1810',
+  shadowColor: '#0F172A',
 };
 
 export { useTheme } from './useTheme';

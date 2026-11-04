@@ -30,6 +30,20 @@ if (Test-Path "C:\K\apps\mobile\android\app\build") {
 if (Test-Path "C:\K\apps\mobile\android\build") {
     cmd /c "rd /s /q C:\K\apps\mobile\android\build"
 }
+# Clean old desktop APKs
+$destinations = @(
+    "c:\Users\Laven\OneDrive\Desktop\Poligram.apk",
+    "c:\Users\Laven\Desktop\Poligram.apk",
+    "c:\Users\Laven\OneDrive\Desktop\kshetra-release.apk",
+    "c:\Users\Laven\Desktop\kshetra-release.apk",
+    "c:\Users\Laven\OneDrive\Desktop\kshetra.apk",
+    "c:\Users\Laven\Desktop\kshetra.apk"
+)
+foreach ($d in $destinations) {
+    if (Test-Path $d) {
+        Remove-Item -Force $d -ErrorAction SilentlyContinue
+    }
+}
 # Keep .cxx cached to avoid re-compiling 100+ native C++ libraries from scratch
 # if (Test-Path "C:\K\apps\mobile\android\app\.cxx") {
 #     cmd /c "rd /s /q C:\K\apps\mobile\android\app\.cxx"
@@ -114,7 +128,11 @@ if (-not (Test-Path $apkSrc)) {
 
 $destinations = @(
     "c:\Users\Laven\OneDrive\Desktop\Poligram.apk",
-    "c:\Users\Laven\Desktop\Poligram.apk"
+    "c:\Users\Laven\Desktop\Poligram.apk",
+    "c:\Users\Laven\OneDrive\Desktop\kshetra-release.apk",
+    "c:\Users\Laven\Desktop\kshetra-release.apk",
+    "c:\Users\Laven\OneDrive\Desktop\kshetra.apk",
+    "c:\Users\Laven\Desktop\kshetra.apk"
 )
 
 foreach ($dest in $destinations) {
