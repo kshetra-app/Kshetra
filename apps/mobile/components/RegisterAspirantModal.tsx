@@ -117,11 +117,14 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        {/* Header */}
+        {/* Header with prominent Back navigation */}
         <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+          <Pressable onPress={onClose} hitSlop={12} style={styles.backButton} accessibilityLabel="Back">
+            <Ionicons name="arrow-back" size={24} color="#002B7F" />
+          </Pressable>
           <Text style={styles.headerTitle}>{t('aspirantReg.title')}</Text>
-          <Pressable onPress={onClose} hitSlop={12}>
-            <Ionicons name="close" size={24} color="#FFFFFF" />
+          <Pressable onPress={onClose} hitSlop={12} accessibilityLabel="Close">
+            <Ionicons name="close" size={24} color="#475569" />
           </Pressable>
         </View>
 
@@ -260,7 +263,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#E8DED1',
   },
-  headerTitle: { fontSize: 20, fontWeight: '800', color: '#241814' },
+  backButton: {
+    padding: 4,
+    marginRight: 8,
+  },
+  headerTitle: { fontSize: 18, fontWeight: '800', color: '#002B7F', flex: 1 },
   introBox: {
     flexDirection: 'row',
     gap: 12,

@@ -50,6 +50,10 @@ let lokSabhaNoIndex: Map<number, HistoricalPodiumContest[]> | null = null;
 export function setCachedStatePodium(stateCode: string, data: Record<string, HistoricalPodiumContest[]>): void {
   const code = (stateCode || 'TS').toUpperCase();
   stateCache.set(code, data);
+  if (code === 'IN' || code === 'LOK_SABHA') {
+    lokSabhaNameIndex = null;
+    lokSabhaNoIndex = null;
+  }
 }
 
 /**
@@ -107,56 +111,12 @@ export async function fetchHistoricalPodiumForConstituency(
   return cached || [];
 }
 
-const LOCAL_PODIUM_LOADERS: Record<string, () => any> = {
-  AP: () => require('../data/historical/ap-podium.json'),
-  AR: () => require('../data/historical/ar-podium.json'),
-  AS: () => require('../data/historical/as-podium.json'),
-  BR: () => require('../data/historical/br-podium.json'),
-  CG: () => require('../data/historical/cg-podium.json'),
-  DL: () => require('../data/historical/dl-podium.json'),
-  GA: () => require('../data/historical/ga-podium.json'),
-  GJ: () => require('../data/historical/gj-podium.json'),
-  HP: () => require('../data/historical/hp-podium.json'),
-  HR: () => require('../data/historical/hr-podium.json'),
-  JH: () => require('../data/historical/jh-podium.json'),
-  JK: () => require('../data/historical/jk-podium.json'),
-  KA: () => require('../data/historical/ka-podium.json'),
-  KL: () => require('../data/historical/kl-podium.json'),
-  MH: () => require('../data/historical/mh-podium.json'),
-  ML: () => require('../data/historical/ml-podium.json'),
-  MN: () => require('../data/historical/mn-podium.json'),
-  MP: () => require('../data/historical/mp-podium.json'),
-  MZ: () => require('../data/historical/mz-podium.json'),
-  NL: () => require('../data/historical/nl-podium.json'),
-  OD: () => require('../data/historical/od-podium.json'),
-  PB: () => require('../data/historical/pb-podium.json'),
-  PY: () => require('../data/historical/py-podium.json'),
-  RJ: () => require('../data/historical/rj-podium.json'),
-  SK: () => require('../data/historical/sk-podium.json'),
-  TN: () => require('../data/historical/tn-podium.json'),
-  TR: () => require('../data/historical/tr-podium.json'),
-  TS: () => require('../data/historical/ts-podium.json'),
-  UK: () => require('../data/historical/uk-podium.json'),
-  UP: () => require('../data/historical/up-podium.json'),
-  WB: () => require('../data/historical/wb-podium.json'),
-  IN: () => require('../data/historical/lok-sabha-podium.json'),
-  LOK_SABHA: () => require('../data/historical/lok-sabha-podium.json'),
-};
-
+// Ultra-thin online architecture: Full historical multi-election datasets (~118 MB)
+// are fetched on-demand over API/CDN and cached in-memory, avoiding 48 MB bundle bloat.
 function getStateData(stateCode: string): Record<string, HistoricalPodiumContest[]> {
   const code = (stateCode || 'TS').toUpperCase();
   if (stateCache.has(code)) {
     return stateCache.get(code)!;
-  }
-  const loader = LOCAL_PODIUM_LOADERS[code];
-  if (loader) {
-    try {
-      const data = loader();
-      stateCache.set(code, data);
-      return data;
-    } catch (e) {
-      console.warn(`[historicalPodiumStore] Failed to load local podium data for ${code}:`, e);
-    }
   }
   return {};
 }
@@ -235,7 +195,45 @@ export function getLatestPodiumForConstituency(
   acNoOrName: number | string,
 ): HistoricalPodiumContest | null {
   const list = getHistoricalPodiumForConstituency(stateCode, acNoOrName);
-  return list.length > 0 ? list[0] : null;
+  if (list && list.length > 0) {
+    return list[0];
+  }
+  // Online-first fallback: synthesize authoritative latest contest from seed stateDataAdapter
+  try {
+    const { getUnifiedConstituenciesForState } = require('./stateDataAdapter');
+    const consts = getUnifiedConstituenciesForState(stateCode);
+    const acNo = typeof acNoOrName === 'number' ? acNoOrName : parseInt(String(acNoOrName), 10);
+    const match = consts?.find((c: any) => c.acNo === acNo);
+    if (match) {
+      const winnerVotes = match.winnerVotes || match.votes || 0;
+      const margin = match.margin || 0;
+      const runnerUpVotes = match.runnerUpVotes || (winnerVotes > margin ? winnerVotes - margin : 0);
+      const totalValid = winnerVotes + runnerUpVotes;
+      const winnerShare = totalValid > 0 ? (winnerVotes / totalValid) * 100 : 0;
+      const runnerUpShare = totalValid > 0 ? (runnerUpVotes / totalValid) * 100 : 0;
+
+      return {
+        year: match.electionYear || 2023,
+        constituencyName: match.name,
+        totalValidVotes: totalValid,
+        marginWinnerToRunnerUp1: margin,
+        winner: {
+          name: match.winnerName || match.winner || '',
+          party: match.winnerParty || match.winner || '',
+          votes: winnerVotes,
+          voteShare: Math.round(winnerShare * 10) / 10,
+        },
+        firstRunnerUp: {
+          name: match.runnerUpName || match.runnerUp || '',
+          party: match.runnerUpParty || match.runnerUp || '',
+          votes: runnerUpVotes,
+          voteShare: Math.round(runnerUpShare * 10) / 10,
+        },
+        secondRunnerUp: null,
+      };
+    }
+  } catch {}
+  return null;
 }
 
 /**

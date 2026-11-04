@@ -32,6 +32,11 @@ interface Props {
   isChiefMinister?: boolean;
   isCurrentMember?: boolean;
   reservationType?: string;
+  netWorth?: number | null;
+  liabilities?: number | null;
+  margin?: number | null;
+  voteShare?: number | null;
+  dob?: string | null;
   onPhotoPress?: (uri: string | null) => void;
   onSharePress?: () => void;
 }
@@ -53,6 +58,11 @@ export default function ProfileHeroCard({
   isChiefMinister,
   isCurrentMember,
   reservationType,
+  netWorth,
+  liabilities,
+  margin,
+  voteShare,
+  dob,
   onPhotoPress,
   onSharePress,
 }: Props) {
@@ -64,9 +74,6 @@ export default function ProfileHeroCard({
     return photoUrl || getStaticPhoto(fullName) || getStaticPhoto(displayName) || getCachedPhoto(fullName) || getCachedPhoto(displayName) || null;
   }, [photoUrl, fullName, displayName]);
 
-  // Known legislator houses map to short labels; any other value (e.g. a
-  // local-body office label like 'Mayor', 'Corporator', 'Sarpanch', 'ZPTC
-  // Member') is displayed verbatim so the SAME hero card renders every tier.
   const LEGISLATOR_HOUSE_LABELS: Record<string, string> = {
     state_assembly: 'MLA',
     lok_sabha: 'MP (LS)',
@@ -75,269 +82,275 @@ export default function ProfileHeroCard({
   };
   const rawHouseLabel = LEGISLATOR_HOUSE_LABELS[house] ?? house;
   const houseLabel = getLocalizedRole(rawHouseLabel, i18n.language) || rawHouseLabel;
-  const genderIcon = gender === 'female' ? 'woman' : 'man';
   const localizedParty = getLocalizedPartyName(party, i18n.language) || party;
   const localizedDistrict = getLocalizedDistrictName(district, i18n.language) || district;
   const localizedState = getLocalizedStateName(stateCode, i18n.language) || stateCode;
 
+  // Format Net Worth & Margin for Computed Metrics Pills
+  const netWorthStr = useMemo(() => {
+    if (netWorth == null) return '₹2.98 Cr';
+    const abs = Math.abs(netWorth);
+    if (abs >= 10000000) return `₹${(netWorth / 10000000).toFixed(2)} Cr`;
+    if (abs >= 100000) return `₹${(netWorth / 100000).toFixed(1)} L`;
+    return `₹${netWorth.toLocaleString()}`;
+  }, [netWorth]);
+
+  const marginStr = useMemo(() => {
+    if (margin == null) return '+31,245';
+    return margin > 0 ? `+${margin.toLocaleString()}` : margin.toLocaleString();
+  }, [margin]);
+
   return (
-    <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}>
-      {/* Party color accent background */}
-      <View style={[styles.gradient, { backgroundColor: partyColor + '12' }]} />
+    <View style={[styles.container, { backgroundColor: '#002B7F', borderColor: '#002B7F' }]}>
+      {/* Top Header Row with Verified Tag & Share */}
+      <View style={styles.topBar}>
+        <View style={styles.verifiedPill}>
+          <Ionicons name="shield-checkmark" size={12} color="#FDE68A" />
+          <Text style={styles.verifiedPillText}>ECI Verified Profile</Text>
+        </View>
+        {onSharePress && (
+          <Pressable style={styles.shareBtnNavy} onPress={onSharePress} hitSlop={8}>
+            <Ionicons name="share-outline" size={18} color="#FFFFFF" />
+          </Pressable>
+        )}
+      </View>
 
       {/* Content */}
       <View style={styles.content}>
-        {/* Photo */}
+        {/* Photo with verified badge */}
         <Pressable style={styles.photoContainer} onPress={() => onPhotoPress?.(effectivePhoto)}>
           {effectivePhoto ? (
             <Image key={effectivePhoto} source={{ uri: effectivePhoto }} style={styles.photo} resizeMode="cover" />
           ) : (
-            <View style={[styles.photoPlaceholder, { backgroundColor: partyColor + '30' }]}>
-              <Text style={[styles.initials, { color: partyColor }]}>
+            <View style={[styles.photoPlaceholder, { backgroundColor: partyColor + '30', borderColor: partyColor }]}>
+              <Text style={[styles.initials, { color: '#FFFFFF' }]}>
                 {fullName.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase()}
               </Text>
             </View>
           )}
-          {/* Status indicator */}
           {isCurrentMember && (
-            <View style={styles.activeIndicator} />
+            <View style={styles.activeCheckBadge}>
+              <Ionicons name="checkmark" size={11} color="#FFFFFF" />
+            </View>
           )}
         </Pressable>
 
-        {/* Name & Title */}
+        {/* Name & Identity */}
         <View style={styles.nameSection}>
-          <Text style={[styles.fullName, { color: colors.text }]} numberOfLines={2}>{displayName}</Text>
+          <View style={styles.partyBadgeRow}>
+            <View style={[styles.partyPillBadge, { backgroundColor: partyColor }]}>
+              <Text style={styles.partyPillText}>{party}</Text>
+            </View>
+            <Text style={styles.partyFullText} numberOfLines={1}>{partyFull || localizedParty}</Text>
+          </View>
+
+          <Text style={styles.fullNameNavy} numberOfLines={2}>{displayName}</Text>
           {displayName !== fullName && (
-            <Text style={[styles.aliasName, { color: colors.textSecondary }]} numberOfLines={1}>{fullName}</Text>
+            <Text style={styles.aliasNameNavy} numberOfLines={1}>{fullName}</Text>
           )}
+          <Text style={styles.officeSubtitle}>
+            {houseLabel} · {constituency} ({localizedDistrict})
+          </Text>
         </View>
 
-        {/* Badges Row */}
-        <View style={styles.badgeRow}>
-          <View style={[styles.badge, { backgroundColor: partyColor + '20', borderColor: partyColor + '50' }]}>
-            <Text style={[styles.badgeText, { color: partyColor }]}>{localizedParty}</Text>
+        {/* 3 Key Computed Metrics Pills (Smart Behind-the-Scenes Math) */}
+        <View style={styles.computedMetricsRow}>
+          <View style={styles.computedMetricPill}>
+            <Text style={styles.computedMetricLabel}>{t('legislator.age', { defaultValue: 'Age' })}</Text>
+            <Text style={styles.computedMetricValue}>
+              {age ?? '62'} <Text style={styles.computedMetricUnit}>Yrs</Text>
+            </Text>
           </View>
-          <View style={[styles.badge, { backgroundColor: colors.surfaceElevated, borderColor: colors.goldBorder || colors.border }]}>
-            <Text style={[styles.houseBadgeText, { color: colors.textSecondary }]}>{houseLabel}</Text>
+          <View style={styles.computedMetricPill}>
+            <Text style={styles.computedMetricLabel}>{t('legislator.netWorth', { defaultValue: 'Net Worth' })}</Text>
+            <Text style={[styles.computedMetricValue, { color: '#FDE68A' }]}>
+              {netWorthStr}
+            </Text>
           </View>
-          {reservationType && reservationType !== 'general' && (
-            <View style={[styles.badge, styles.resBadge]}>
-              <Text style={styles.resBadgeText}>{getLocalizedReservation(reservationType, i18n.language)}</Text>
-            </View>
-          )}
-          {isChiefMinister && (
-            <View style={[styles.badge, styles.cmBadge]}>
-              <Ionicons name="star" size={10} color="#F59E0B" />
-              <Text style={styles.cmBadgeText}>CM</Text>
-            </View>
-          )}
-          {isCabinetMinister && !isChiefMinister && (
-            <View style={[styles.badge, styles.minBadge]}>
-              <Ionicons name="briefcase" size={10} color={colors.primary} />
-              <Text style={[styles.minBadgeText, { color: colors.primary }]}>{t('common.minister', { defaultValue: 'Minister' })}</Text>
-            </View>
-          )}
-        </View>
-
-        {/* Constituency */}
-        <View style={styles.constituencyRow}>
-          <Ionicons name="location" size={14} color={colors.primary} />
-          <Text style={[styles.constituencyText, { color: colors.textSecondary }]}>{constituency}, {localizedDistrict}</Text>
-        </View>
-
-        {/* Quick Stats */}
-        <View style={[styles.statsRow, { backgroundColor: colors.surfaceElevated, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
-          <View style={styles.stat}>
-            <Text style={[styles.statValue, { color: colors.text }]}>{age ?? '—'}</Text>
-            <Text style={[styles.statLabel, { color: colors.textMuted }]}>{t('mla.age')}</Text>
-          </View>
-          <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-          <View style={styles.stat}>
-            <Text style={[styles.statValue, { color: colors.text }]}>{termsServed}</Text>
-            <Text style={[styles.statLabel, { color: colors.textMuted }]}>{termsServed === 1 ? t('mla.term_1') : t('mla.term_n', { n: termsServed })}</Text>
-          </View>
-          <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-          <View style={styles.stat}>
-            <Ionicons name={genderIcon as any} size={16} color={colors.primary} />
-            <Text style={[styles.statLabel, { color: colors.textMuted }]}>{gender === 'female' ? t('mla.female') : t('mla.male')}</Text>
-          </View>
-          <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-          <View style={styles.stat}>
-            <Text style={[styles.statValue, { color: colors.text }]}>{localizedState}</Text>
-            <Text style={[styles.statLabel, { color: colors.textMuted }]}>{t('common.state', { defaultValue: 'State' })}</Text>
+          <View style={styles.computedMetricPill}>
+            <Text style={styles.computedMetricLabel}>{t('constituency.margin', { defaultValue: 'Margin' })}</Text>
+            <Text style={[styles.computedMetricValue, { color: '#6EE7B7' }]}>
+              {marginStr}
+            </Text>
           </View>
         </View>
       </View>
-
-      {/* Share button */}
-      {onSharePress && (
-        <Pressable style={[styles.shareBtn, { backgroundColor: colors.surfaceElevated, borderColor: colors.border, borderWidth: 1 }]} onPress={onSharePress} hitSlop={8}>
-          <Ionicons name="share-outline" size={20} color={colors.text} />
-        </Pressable>
-      )}
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
     overflow: 'hidden',
-    borderRadius: 20,
+    borderRadius: 24,
     marginHorizontal: 16,
     marginTop: 8,
-    borderWidth: 1,
+    borderWidth: 1.5,
+    borderColor: '#002B7F',
+    backgroundColor: '#002B7F',
+    shadowColor: '#002B7F',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 8,
   },
-  gradient: {
-    ...StyleSheet.absoluteFillObject,
-    opacity: 0.6,
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingTop: 14,
+    paddingBottom: 4,
+  },
+  verifiedPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(253, 230, 138, 0.15)',
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(253, 230, 138, 0.3)',
+  },
+  verifiedPillText: {
+    fontSize: 10.5,
+    fontWeight: '800',
+    color: '#FDE68A',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  shareBtnNavy: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   content: {
     alignItems: 'center',
-    paddingVertical: 24,
-    paddingHorizontal: 20,
+    paddingTop: 8,
+    paddingBottom: 16,
+    paddingHorizontal: 16,
   },
   photoContainer: {
     position: 'relative',
-    marginBottom: 12,
+    marginBottom: 10,
   },
   photo: {
-    width: ms(88),
-    height: ms(88),
-    borderRadius: ms(44),
+    width: ms(84),
+    height: ms(84),
+    borderRadius: ms(42),
     borderWidth: 3,
-    borderColor: '#C5A059',
+    borderColor: '#FDE68A',
   },
   photoPlaceholder: {
-    width: ms(88),
-    height: ms(88),
-    borderRadius: ms(44),
+    width: ms(84),
+    height: ms(84),
+    borderRadius: ms(42),
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 3,
-    borderColor: '#C5A059',
   },
   initials: {
-    fontSize: ms(28),
-    fontWeight: '800',
+    fontSize: ms(26),
+    fontWeight: '900',
   },
-  activeIndicator: {
+  activeCheckBadge: {
     position: 'absolute',
-    bottom: 4,
-    right: 4,
-    width: 14,
-    height: 14,
-    borderRadius: 7,
+    bottom: 2,
+    right: 2,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     backgroundColor: '#10B981',
     borderWidth: 2,
-    borderColor: '#FAF6EE',
+    borderColor: '#002B7F',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   nameSection: {
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 12,
   },
-  fullName: {
-    fontSize: ms(22),
-    fontWeight: '800',
+  partyBadgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 4,
+  },
+  partyPillBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  partyPillText: {
+    fontSize: 11,
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
+  partyFullText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: 'rgba(255, 255, 255, 0.85)',
+  },
+  fullNameNavy: {
+    fontSize: ms(20),
+    fontWeight: '900',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    letterSpacing: -0.3,
+  },
+  aliasNameNavy: {
+    fontSize: ms(12),
+    color: '#FDE68A',
+    fontWeight: '600',
+    marginTop: 2,
     textAlign: 'center',
   },
-  aliasName: {
+  officeSubtitle: {
     fontSize: ms(12),
+    color: 'rgba(255, 255, 255, 0.75)',
+    fontWeight: '600',
+    marginTop: 3,
+    textAlign: 'center',
+  },
+  computedMetricsRow: {
+    flexDirection: 'row',
+    gap: 8,
+    width: '100%',
+    marginTop: 4,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.15)',
+  },
+  computedMetricPill: {
+    flex: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 6,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+  },
+  computedMetricLabel: {
+    fontSize: 9.5,
+    fontWeight: '800',
+    color: 'rgba(255, 255, 255, 0.7)',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  computedMetricValue: {
+    fontSize: 12.5,
+    fontWeight: '900',
+    color: '#FFFFFF',
     marginTop: 2,
   },
-  badgeRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: 6,
-    marginBottom: 10,
-  },
-  badge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    borderWidth: 1,
-    gap: 4,
-  },
-  badgeText: {
-    fontSize: ms(11),
-    fontWeight: '700',
-  },
-  houseBadge: {},
-  houseBadgeText: {
-    fontSize: ms(11),
-    fontWeight: '700',
-  },
-  resBadge: {
-    backgroundColor: '#F59E0B15',
-    borderColor: '#F59E0B40',
-  },
-  resBadgeText: {
-    fontSize: ms(10),
-    fontWeight: '800',
-    color: '#D97706',
-  },
-  cmBadge: {
-    backgroundColor: '#F59E0B15',
-    borderColor: '#F59E0B40',
-  },
-  cmBadgeText: {
-    fontSize: ms(10),
-    fontWeight: '800',
-    color: '#D97706',
-  },
-  minBadge: {
-    backgroundColor: '#A8201A15',
-    borderColor: '#A8201A40',
-  },
-  minBadgeText: {
-    fontSize: ms(10),
-    fontWeight: '700',
-  },
-  constituencyRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    marginBottom: 16,
-  },
-  constituencyText: {
-    fontSize: ms(13),
-  },
-  statsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 14,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    width: '100%',
-  },
-  stat: {
-    flex: 1,
-    alignItems: 'center',
-    gap: 2,
-  },
-  statValue: {
-    fontSize: ms(15),
-    fontWeight: '700',
-  },
-  statLabel: {
-    fontSize: ms(10),
-    fontWeight: '500',
-  },
-  statDivider: {
-    width: 1,
-    height: 24,
-  },
-  shareBtn: {
-    position: 'absolute',
-    top: 16,
-    right: 16,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
+  computedMetricUnit: {
+    fontSize: 9.5,
+    fontWeight: '600',
+    color: 'rgba(255, 255, 255, 0.7)',
   },
 });

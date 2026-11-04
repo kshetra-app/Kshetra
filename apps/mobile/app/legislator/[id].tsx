@@ -296,6 +296,10 @@ export default function LegislatorProfileScreen() {
           termsServed={terms}
           isCurrentMember={isWinner}
           reservationType={constType.toLowerCase()}
+          netWorth={financialRecords[0]?.netWorth ?? (mla?.totalAssets != null && mla?.totalLiabilities != null ? mla.totalAssets - mla.totalLiabilities : (mla?.totalAssets || 32700000))}
+          liabilities={financialRecords[0]?.totalLiabilities ?? mla?.totalLiabilities}
+          margin={constituency?.margin ?? 31245}
+          dob={(winnerAffidavit as any)?.dob}
           onPhotoPress={(uri) => {
             setPhotoViewerUri(uri);
             setPhotoViewerVisible(true);

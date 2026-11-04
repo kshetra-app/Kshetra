@@ -684,10 +684,16 @@ export default function ConstituencyDetailScreen() {
           </View>
         )}
 
-        {/* Trivia */}
+        {/* Trivia strictly filtered to this constituency */}
         {hasFull && (() => {
           const allTrivia = getTriviaForConstituencyInState(stateCode, acNo).filter(
-            (ti) => !ti.contexts.every((c) => c.type === 'GLOBAL'),
+            (ti) => {
+              const acContexts = ti.contexts.filter((c) => c.type === 'CONSTITUENCY');
+              if (acContexts.length > 0) {
+                return acContexts.some((c) => (c as any).acNo === acNo);
+              }
+              return !ti.contexts.every((c) => c.type === 'GLOBAL');
+            },
           );
           const triviaItems = selectFreshTrivia(allTrivia, 5);
           return triviaItems.length > 0 ? (
@@ -698,92 +704,38 @@ export default function ConstituencyDetailScreen() {
           ) : null;
         })()}
 
-        {/* Demographics */}
-        {hasFull && (() => {
-          const demo = getDemographicsForState(stateCode, acNo);
-          if (!demo) return null;
-          return (
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>{t('constituency.demographicsSection')}</Text>
-              <View style={styles.demoCard}>
-                <View style={styles.demoRow}>
-                  <View style={styles.demoItem}>
-                    <Ionicons name="people" size={18} color="#4F8EF7" />
-                    <Text style={styles.demoValue}>{(demo.population / 1000).toFixed(0)}K</Text>
-                    <Text style={styles.demoLabel}>{t('constituency.populationLabel')}</Text>
-                  </View>
-                  <View style={styles.demoItem}>
-                    <Ionicons name="document-text" size={18} color="#10B981" />
-                    <Text style={styles.demoValue}>{demo.literacy}%</Text>
-                    <Text style={styles.demoLabel}>{t('constituency.literacyLabel')}</Text>
-                  </View>
-                  <View style={styles.demoItem}>
-                    <Ionicons name="business" size={18} color="#F59E0B" />
-                    <Text style={styles.demoValue}>{demo.urbanPercent}%</Text>
-                    <Text style={styles.demoLabel}>{t('constituency.urbanLabel')}</Text>
-                  </View>
-                  <View style={styles.demoItem}>
-                    <Ionicons name="map" size={18} color="#8B5CF6" />
-                    <Text style={styles.demoValue}>{demo.areaSqKm}</Text>
-                    <Text style={styles.demoLabel}>{t('constituency.areaSqKm')}</Text>
-                  </View>
-                </View>
-
-                <View style={styles.demoDivider} />
-
-                <Text style={styles.demoSubTitle}>
-                  {effectiveElectionYear ? t('constituency.voterProfile', { year: effectiveElectionYear }) : t('constituency.recentVoterProfile', { defaultValue: 'Voter Profile' })}
-                </Text>
-                <View style={styles.demoRow}>
-                  <View style={styles.demoItem}>
-                    <Text style={styles.demoValue}>{(demo.totalVoters / 1000).toFixed(0)}K</Text>
-                    <Text style={styles.demoLabel}>{t('constituency.totalVoters')}</Text>
-                  </View>
-                  <View style={styles.demoItem}>
-                    <Text style={styles.demoValue}>{demo.turnout2023}%</Text>
-                    <Text style={styles.demoLabel}>{t('constituency.turnoutLabel')}</Text>
-                  </View>
-                  <View style={styles.demoItem}>
-                    <Text style={styles.demoValue}>{(demo.maleVoters / 1000).toFixed(0)}K</Text>
-                    <Text style={styles.demoLabel}>{t('constituency.male')}</Text>
-                  </View>
-                  <View style={styles.demoItem}>
-                    <Text style={styles.demoValue}>{(demo.femaleVoters / 1000).toFixed(0)}K</Text>
-                    <Text style={styles.demoLabel}>{t('constituency.female')}</Text>
-                  </View>
-                </View>
-
-                <View style={styles.demoDivider} />
-
-                <Text style={styles.demoSubTitle}>{t('constituency.socialComposition')}</Text>
-                <View style={styles.demoBarGroup}>
-                  <View style={styles.demoBarRow}>
-                    <Text style={styles.demoBarLabel}>{t('constituencyExtended.scLabel')}</Text>
-                    <View style={styles.demoBarTrack}>
-                      <View style={[styles.demoBarFill, { width: `${demo.scPercent}%`, backgroundColor: '#F59E0B' }]} />
-                    </View>
-                    <Text style={styles.demoBarValue}>{demo.scPercent}%</Text>
-                  </View>
-                  <View style={styles.demoBarRow}>
-                    <Text style={styles.demoBarLabel}>{t('constituencyExtended.stLabel')}</Text>
-                    <View style={styles.demoBarTrack}>
-                      <View style={[styles.demoBarFill, { width: `${demo.stPercent}%`, backgroundColor: '#10B981' }]} />
-                    </View>
-                    <Text style={styles.demoBarValue}>{demo.stPercent}%</Text>
-                  </View>
-                  <View style={styles.demoBarRow}>
-                    <Text style={styles.demoBarLabel}>{t('constituencyExtended.urbanLabel')}</Text>
-                    <View style={styles.demoBarTrack}>
-                      <View style={[styles.demoBarFill, { width: `${demo.urbanPercent}%`, backgroundColor: '#4F8EF7' }]} />
-                    </View>
-                    <Text style={styles.demoBarValue}>{demo.urbanPercent}%</Text>
-                  </View>
-                </View>
-              </View>
-              <Text style={styles.demoDisclaimer}>{t('constituency.demoDisclaimer')}</Text>
-            </View>
-          );
-        })()}
+        {/* Community Sync Callout */}
+        <View style={styles.communitySyncCard}>
+          <View style={styles.communitySyncHeader}>
+            <Ionicons name="chatbubbles" size={20} color="#002B7F" />
+            <Text style={styles.communitySyncTitle}>
+              {t('constituency.communityPulseTitle', { defaultValue: 'Constituency Civic Forum' })}
+            </Text>
+          </View>
+          <Text style={styles.communitySyncDesc}>
+            {t('constituency.communityPulseDesc', { defaultValue: 'Connect with local voters, report civic issues, or view grassroots community discussions for this constituency.' })}
+          </Text>
+          <View style={styles.communitySyncBtnRow}>
+            <Pressable
+              style={styles.reportIssueBtn}
+              onPress={() => setActiveTab('issues')}
+            >
+              <Ionicons name="alert-circle-outline" size={16} color="#FFFFFF" />
+              <Text style={styles.reportIssueBtnText}>
+                {t('constituencyExtended.reportIssue', { defaultValue: 'Report Issue' })}
+              </Text>
+            </Pressable>
+            <Pressable
+              style={styles.discussFeedBtn}
+              onPress={() => setActiveTab('news')}
+            >
+              <Ionicons name="newspaper-outline" size={16} color="#002B7F" />
+              <Text style={styles.discussFeedBtnText}>
+                {t('constituencyExtended.viewNews', { defaultValue: 'Local News' })}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
 
         </>)}
 
@@ -1313,6 +1265,32 @@ export default function ConstituencyDetailScreen() {
                 </View>
               </View>
             </View>
+
+            {/* Locality & Habitat Distribution (Urban vs Rural) */}
+            {demo && demo.urbanPercent != null && (
+              <View style={[styles.demoCard, { marginTop: 14 }]}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                  <Ionicons name="business" size={18} color="#002B7F" />
+                  <Text style={styles.demoSubTitle}>{t('constituency.localityDistribution', { defaultValue: 'Locality & Habitat Distribution' })}</Text>
+                </View>
+                <View style={styles.demoBarGroup}>
+                  <View style={styles.demoBarRow}>
+                    <Text style={styles.demoBarLabel}>{t('constituency.urban', { defaultValue: 'Urban' })}</Text>
+                    <View style={styles.demoBarTrack}>
+                      <View style={[styles.demoBarFill, { width: `${demo.urbanPercent}%`, backgroundColor: '#3B82F6' }]} />
+                    </View>
+                    <Text style={styles.demoBarValue}>{demo.urbanPercent}%</Text>
+                  </View>
+                  <View style={styles.demoBarRow}>
+                    <Text style={styles.demoBarLabel}>{t('constituency.rural', { defaultValue: 'Rural' })}</Text>
+                    <View style={styles.demoBarTrack}>
+                      <View style={[styles.demoBarFill, { width: `${Math.max(0, 100 - demo.urbanPercent)}%`, backgroundColor: '#10B981' }]} />
+                    </View>
+                    <Text style={styles.demoBarValue}>{Math.max(0, 100 - demo.urbanPercent)}%</Text>
+                  </View>
+                </View>
+              </View>
+            )}
 
             {/* Social Composition: SC / ST Official Gazette Roll */}
             {demo && (demo.scPercent > 0 || demo.stPercent > 0) && (

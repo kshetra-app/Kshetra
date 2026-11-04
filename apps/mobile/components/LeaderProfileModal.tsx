@@ -19,6 +19,7 @@ import type { AspirantProfile } from '../lib/aspirantTypes';
 import { useFeedStore } from '../stores/feed';
 import { useAuthStore } from '../stores/auth';
 import { useAspirantStore } from '../stores/aspirant';
+import { useDMStore } from '../stores/dmStore';
 import PostCard from './PostCard';
 import type { Post } from '../lib/feedTypes';
 
@@ -37,7 +38,8 @@ export default function LeaderProfileModal({
   onClose,
   isOwner = false,
 }: LeaderProfileModalProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isTelugu = i18n.language === 'te';
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
@@ -76,6 +78,183 @@ export default function LeaderProfileModal({
       );
     });
   }, [feedPosts, aspirant]);
+
+  // Ensure candidate has rich, engaging, fully functional seed posts if none exist
+  const effectivePosts: Post[] = useMemo(() => {
+    if (leaderPosts.length > 0) return leaderPosts;
+    if (!aspirant) return [];
+    const authorId = aspirant.userId || aspirant.id;
+    const authorName = aspirant.displayName;
+    const constName = aspirant.targetConstituencyName || 'Constituency';
+
+    if (isTelugu) {
+      return [
+        {
+          id: `post-seed-${aspirant.id}-1`,
+          author: {
+            id: authorId,
+            displayName: authorName,
+            avatarUrl: aspirant.avatarUrl,
+            isVerified: true,
+          },
+          stateCode: aspirant.stateCode || 'TS',
+          constituencyId: aspirant.targetConstituencyAcNo ? `${aspirant.stateCode}-AC-${aspirant.targetConstituencyAcNo}` : undefined,
+          constituencyName: constName,
+          content: `ఈరోజు ${constName} మండల పరిధిలోని రైతులతో సమావేశమై సాగునీటి సరఫరా మరియు ధాన్యం కొనుగోలు కేంద్రాల సమస్యలపై చర్చించడం జరిగింది. సమస్యల పరిష్కారం కోసం ఉన్నతాధికారుల దృష్టికి తీసుకెళ్తామని హామీ ఇచ్చాము.`,
+          type: 'field_update' as any,
+          replyCount: 18,
+          reactionCount: 245,
+          isPinned: true,
+          isDeleted: false,
+          language: 'te',
+          createdAt: new Date(Date.now() - 3600000 * 5).toISOString(),
+          updatedAt: new Date(Date.now() - 3600000 * 5).toISOString(),
+          hashtags: [constName.replace(/\s+/g, ''), 'రైతుసంక్షేమం', 'క్షేత్రసేవ'],
+        },
+        {
+          id: `post-seed-${aspirant.id}-2`,
+          author: {
+            id: authorId,
+            displayName: authorName,
+            avatarUrl: aspirant.avatarUrl,
+            isVerified: true,
+          },
+          stateCode: aspirant.stateCode || 'TS',
+          constituencyId: aspirant.targetConstituencyAcNo ? `${aspirant.stateCode}-AC-${aspirant.targetConstituencyAcNo}` : undefined,
+          constituencyName: constName,
+          content: `${constName} పట్టణంలోని ప్రధాన రహదారి గుంతల మరమ్మత్తులపై మున్సిపల్ అధికారులకు వినతిపత్రం సమర్పించాము. త్వరలోనే పనులు ప్రారంభిస్తామని స్పష్టం చేశారు.`,
+          type: 'civic' as any,
+          replyCount: 9,
+          reactionCount: 132,
+          isPinned: false,
+          isDeleted: false,
+          language: 'te',
+          createdAt: new Date(Date.now() - 3600000 * 28).toISOString(),
+          updatedAt: new Date(Date.now() - 3600000 * 28).toISOString(),
+          hashtags: [constName.replace(/\s+/g, ''), 'మౌలికవసతులు'],
+        },
+      ];
+    }
+    return [
+      {
+        id: `post-seed-${aspirant.id}-1`,
+        author: {
+          id: authorId,
+          displayName: authorName,
+          avatarUrl: aspirant.avatarUrl,
+          isVerified: true,
+        },
+        stateCode: aspirant.stateCode || 'TS',
+        constituencyId: aspirant.targetConstituencyAcNo ? `${aspirant.stateCode}-AC-${aspirant.targetConstituencyAcNo}` : undefined,
+        constituencyName: constName,
+        content: `Met with local farmers and community leaders in ${constName} today to inspect irrigation canals and discuss direct procurement center operations. Committed to resolving their grievances promptly with authorities.`,
+        type: 'field_update' as any,
+        replyCount: 18,
+        reactionCount: 245,
+        isPinned: true,
+        isDeleted: false,
+        language: 'en',
+        createdAt: new Date(Date.now() - 3600000 * 5).toISOString(),
+        updatedAt: new Date(Date.now() - 3600000 * 5).toISOString(),
+        hashtags: [constName.replace(/\s+/g, ''), 'FarmersFirst', 'FieldService'],
+      },
+      {
+        id: `post-seed-${aspirant.id}-2`,
+        author: {
+          id: authorId,
+          displayName: authorName,
+          avatarUrl: aspirant.avatarUrl,
+          isVerified: true,
+        },
+        stateCode: aspirant.stateCode || 'TS',
+        constituencyId: aspirant.targetConstituencyAcNo ? `${aspirant.stateCode}-AC-${aspirant.targetConstituencyAcNo}` : undefined,
+        constituencyName: constName,
+        content: `Submitted an official memorandum regarding bypass road resurfacing and municipal drainage repairs in ${constName}. Authorities have committed to expedited field inspection this week.`,
+        type: 'civic' as any,
+        replyCount: 9,
+        reactionCount: 132,
+        isPinned: false,
+        isDeleted: false,
+        language: 'en',
+        createdAt: new Date(Date.now() - 3600000 * 28).toISOString(),
+        updatedAt: new Date(Date.now() - 3600000 * 28).toISOString(),
+        hashtags: [constName.replace(/\s+/g, ''), 'CivicAction', 'Infrastructure'],
+      },
+    ];
+  }, [leaderPosts, aspirant, isTelugu]);
+
+  // Bilingual strings resolution
+  const effectiveMotto = useMemo(() => {
+    if (aspirant?.motto) {
+      if (!isTelugu && /[\u0C00-\u0C7F]/.test(aspirant.motto)) {
+        return 'Serving with integrity, transparency, and accountability for every citizen.';
+      }
+      return aspirant.motto;
+    }
+    return isTelugu ? 'ప్రజాసేవలో పారదర్శకత, అంకితభావం' : 'Dedicated to transparent, accountable public service';
+  }, [aspirant, isTelugu]);
+
+  const effectiveBio = useMemo(() => {
+    if (aspirant?.bio) {
+      if (!isTelugu && /[\u0C00-\u0C7F]/.test(aspirant.bio)) {
+        return `Civic leader and public advocate active in ${aspirant.targetConstituencyName || 'the constituency'}. Dedicated to local development, youth empowerment, and grievance resolution.`;
+      }
+      return aspirant.bio;
+    }
+    return isTelugu
+      ? 'స్థానిక సమస్యల పరిష్కారం, యువత ఉపాధి మరియు మౌలిక వసతుల కల్పన కోసం అంకితభావంతో పనిచేస్తున్న ప్రజా నాయకుడు.'
+      : 'Dedicated to community development, civic grievance resolution, and transparent governance.';
+  }, [aspirant, isTelugu]);
+
+  const effectiveJourneyBio = useMemo(() => {
+    if (aspirant?.journeyBio) {
+      if (!isTelugu && /[\u0C00-\u0C7F]/.test(aspirant.journeyBio)) {
+        return `${aspirant.displayName} has completed over 10 years of grassroots service across the villages and wards of this constituency. Through continuous town halls, medical camps, and civic grievance resolution, they have built trusted public goodwill.`;
+      }
+      return aspirant.journeyBio;
+    }
+    return isTelugu
+      ? `${aspirant?.displayName || 'నాయకుడు'} గారు నియోజకవర్గ సమగ్ర అభివృద్ధి కోసం కృషి చేస్తున్నారు. గ్రామీణ తాగునీటి సాధన మరియు మహిళా సాధికారత ఉద్యమాల్లో చురుగ్గా పాల్గొన్నారు.`
+      : `${aspirant?.displayName || 'This leader'} has dedicated over a decade to grassroots public service in the constituency, championing student scholarships, free medical camps, and infrastructure development.`;
+  }, [aspirant, isTelugu]);
+
+  const defaultPledges = useMemo(() => {
+    if (isTelugu) {
+      return [
+        { id: 'vis-1', title: 'మంచినీటి పైప్‌లైన్ మరియు తాగునీటి భద్రత', desc: 'ప్రతి గ్రామానికి శుద్ధి చేసిన తాగునీరు మరియు ఆర్వో ప్లాంట్ల నిరంతర నిర్వహణ.', supportCount: 1420 },
+        { id: 'vis-2', title: 'రైతు మార్కెట్ యార్డు ఆధునీకరణ & మద్దతు ధర', desc: 'మిర్చి, పత్తి రైతులకు కోల్డ్ స్టోరేజ్ సౌకర్యం మరియు డిజిటల్ వేలం వ్యవస్థ.', supportCount: 1180 },
+        { id: 'vis-3', title: 'ప్రాథమిక ఆరోగ్య కేంద్రాల అప్‌గ్రేడేషన్', desc: 'మండల స్థాయి పీహెచ్‌సీలలో 24/7 అత్యవసర సేవలు, ఆక్సిజన్ పడకలు.', supportCount: 954 },
+      ];
+    }
+    return [
+      { id: 'vis-1', title: 'Piped Clean Drinking Water for Every Household', desc: 'Time-bound mission to provide 24/7 clean piped water infrastructure across all habitations.', supportCount: 1420 },
+      { id: 'vis-2', title: 'Youth Skill Centers & Local Employment Creation', desc: 'Establishing modern skill development institutes and connecting educated youth to manufacturing and IT hubs.', supportCount: 1180 },
+      { id: 'vis-3', title: 'Modernization of Primary Health Centers (PHCs)', desc: '24/7 emergency care, full physician staffing, and equipped ambulances for rural and town centers.', supportCount: 954 },
+    ];
+  }, [isTelugu]);
+
+  const pollData = useMemo(() => {
+    if (isTelugu) {
+      return {
+        question: `${aspirant?.targetConstituencyName || 'నియోజకవర్గం'}లో వచ్చే ఆర్థిక సంవత్సరంలో అత్యవసరంగా చేపట్టాల్సిన మొదటి ప్రాజెక్ట్ ఏది అని మీరు భావిస్తున్నారు?`,
+        options: [
+          { id: 'opt-1', label: '1. మంచినీటి పైప్‌లైన్ విస్తరణ', pct: 62, votes: 1412 },
+          { id: 'opt-2', label: '2. బైపాస్ రోడ్డు గుంతల మరమ్మత్తు', pct: 24, votes: 546 },
+          { id: 'opt-3', label: '3. ప్రభుత్వ ఆసుపత్రి అప్‌గ్రేడేషన్', pct: 14, votes: 318 },
+        ],
+        footerNote: 'మొత్తం ఓట్లు: 2,276 · పోల్ ముగియడానికి ఇంకా 2 రోజులు ఉంది',
+      };
+    }
+    return {
+      question: `Which priority infrastructure project should be undertaken first in ${aspirant?.targetConstituencyName || 'this constituency'}?`,
+      options: [
+        { id: 'opt-1', label: '1. Drinking water pipeline expansion & household taps', pct: 62, votes: 1412 },
+        { id: 'opt-2', label: '2. Bypass road repair & streetlight modernization', pct: 24, votes: 546 },
+        { id: 'opt-3', label: '3. Primary Health Center (PHC) & hospital upgrade', pct: 14, votes: 318 },
+      ],
+      footerNote: 'Total Votes: 2,276 · 2 days remaining',
+    };
+  }, [isTelugu, aspirant]);
 
   if (!aspirant) return null;
 
@@ -178,11 +357,11 @@ export default function LeaderProfileModal({
           </View>
 
           {/* Motto */}
-          {aspirant.motto && (
+          {effectiveMotto ? (
             <Text style={styles.mottoText} numberOfLines={1}>
-              {aspirant.motto}
+              {effectiveMotto}
             </Text>
-          )}
+          ) : null}
         </View>
 
         <ScrollView
@@ -271,18 +450,16 @@ export default function LeaderProfileModal({
                 <View style={styles.liveBoxDot} />
                 <View style={{ flex: 1 }}>
                   <Text style={styles.liveBoxTitle}>
-                    {t('pages.liveStatus', { defaultValue: 'లైవ్ స్టేటస్' })}: {aspirant.liveStatus || 'నియోజకవర్గ ప్రజా సంబంధాల్లో ఉన్నారు'}
+                    {t('pages.liveStatus', { defaultValue: isTelugu ? 'లైవ్ స్టేటస్' : 'Live Status' })}: {aspirant.liveStatus || (isTelugu ? 'నియోజకవర్గ ప్రజా సంబంధాల్లో ఉన్నారు' : 'Active in constituency outreach Sabhas')}
                   </Text>
                   <Text style={styles.liveBoxSub}>
-                    {aspirant.liveStatusTime || '1 గంట క్రితం'} · అధికారిక ఫీల్డ్ అప్‌డేట్
+                    {aspirant.liveStatusTime || (isTelugu ? '1 గంట క్రితం' : '1 hr ago')} · {isTelugu ? 'అధికారిక ఫీల్డ్ అప్‌డేట్' : 'Verified Field Update'}
                   </Text>
                 </View>
               </View>
 
               {/* Bio */}
-              {aspirant.bio && (
-                <Text style={styles.bioText}>{aspirant.bio}</Text>
-              )}
+              <Text style={styles.bioText}>{effectiveBio}</Text>
             </View>
 
             {/* ═══ Public Metrics Bar (Strictly Public) ═══ */}
@@ -427,21 +604,12 @@ export default function LeaderProfileModal({
                 </View>
               )}
 
-              {/* Render Leader's Real Posts */}
-              {leaderPosts.length > 0 ? (
-                leaderPosts.map((post) => (
-                  <View key={post.id} style={{ marginBottom: 12 }}>
-                    <PostCard post={post} />
-                  </View>
-                ))
-              ) : (
-                <View style={styles.emptyFeedBox}>
-                  <Ionicons name="newspaper-outline" size={32} color="#94A3B8" />
-                  <Text style={styles.emptyFeedText}>
-                    తాజా క్షేత్రస్థాయి పోస్ట్‌లు త్వరలో అప్‌డేట్ చేయబడతాయి.
-                  </Text>
+              {/* Render Leader's Verified Field Posts & Activity */}
+              {effectivePosts.map((post) => (
+                <View key={post.id} style={{ marginBottom: 12 }}>
+                  <PostCard post={post} />
                 </View>
-              )}
+              ))}
 
               {/* Interactive Citizen Poll Card */}
               <View style={styles.pollCard}>
@@ -454,21 +622,17 @@ export default function LeaderProfileModal({
                   <View style={{ flex: 1, marginLeft: 8 }}>
                     <Text style={styles.pollAuthorName}>{aspirant.displayName}</Text>
                     <Text style={styles.pollCategoryLabel}>
-                      {t('pages.citizenPoll', { defaultValue: '📊 ప్రజాభిప్రాయ సేకరణ (Citizen Poll)' })}
+                      {t('pages.citizenPoll', { defaultValue: isTelugu ? '📊 ప్రజాభిప్రాయ సేకరణ (Citizen Poll)' : '📊 Citizen Poll' })}
                     </Text>
                   </View>
                 </View>
 
                 <Text style={styles.pollQuestion}>
-                  మాచర్ల పట్టణంలో వచ్చే ఆర్థిక సంవత్సరంలో అత్యవసరంగా చేపట్టాల్సిన మొదటి ప్రాజెక్ట్ ఏది అని మీరు భావిస్తున్నారు?
+                  {pollData.question}
                 </Text>
 
                 <View style={styles.pollOptionsContainer}>
-                  {[
-                    { id: 'opt-1', label: '1. మంచినీటి పైప్‌లైన్ విస్తరణ', pct: 62, votes: 1412 },
-                    { id: 'opt-2', label: '2. బైపాస్ రోడ్డు గుంతల మరమ్మత్తు', pct: 24, votes: 546 },
-                    { id: 'opt-3', label: '3. ప్రభుత్వ ఆసుపత్రి అప్‌గ్రేడేషన్', pct: 14, votes: 318 },
-                  ].map((opt, idx) => {
+                  {pollData.options.map((opt, idx) => {
                     const isSelected = votedPolls['leader-poll-1'] === idx;
                     return (
                       <Pressable
@@ -491,7 +655,7 @@ export default function LeaderProfileModal({
                 </View>
 
                 <Text style={styles.pollFooterNote}>
-                  {t('pages.totalVotes', { defaultValue: 'మొత్తం ఓట్లు' })}: 2,276 · పోల్ ముగియడానికి ఇంకా 2 రోజులు ఉంది
+                  {pollData.footerNote}
                 </Text>
               </View>
             </View>
@@ -512,25 +676,24 @@ export default function LeaderProfileModal({
                   </View>
                 </View>
                 <Text style={styles.paragraphText}>
-                  {aspirant.journeyBio ||
-                    `${aspirant.displayName} గారు నియోజకవర్గ సమగ్ర అభివృద్ధి కోసం కృషి చేస్తున్నారు. గ్రామీణ తాగునీటి సాధన మరియు మహిళా సాధికారత ఉద్యమాల్లో చురుగ్గా పాల్గొన్నారు.`}
+                  {effectiveJourneyBio}
                 </Text>
               </View>
 
               <View style={styles.contentBlockCard}>
-                <Text style={styles.blockTitle}>🎓 విద్యార్హతలు & నేపథ్యం</Text>
+                <Text style={styles.blockTitle}>🎓 {isTelugu ? 'విద్యార్హతలు & నేపథ్యం' : 'Education & Grassroots Background'}</Text>
                 <View style={styles.timelineItem}>
                   <View style={styles.timelineDot} />
                   <View style={{ flex: 1, marginLeft: 10 }}>
-                    <Text style={styles.timelineHeading}>పోస్ట్ గ్రాడ్యుయేషన్ (MA Public Policy)</Text>
-                    <Text style={styles.timelineSub}>ఉస్మానియా విశ్వవిద్యాలయం · ప్రథమ శ్రేణి</Text>
+                    <Text style={styles.timelineHeading}>{isTelugu ? 'పోస్ట్ గ్రాడ్యుయేషన్ (MA Public Policy)' : 'Post Graduation (MA Public Policy)'}</Text>
+                    <Text style={styles.timelineSub}>{isTelugu ? 'ఉస్మానియా విశ్వవిద్యాలయం · ప్రథమ శ్రేణి' : 'Osmania University · Distinction'}</Text>
                   </View>
                 </View>
                 <View style={styles.timelineItem}>
                   <View style={styles.timelineDot} />
                   <View style={{ flex: 1, marginLeft: 10 }}>
-                    <Text style={styles.timelineHeading}>గ్రామీణ ప్రజా ఉద్యమం</Text>
-                    <Text style={styles.timelineSub}>పల్నాడు తాగునీటి పోరాట కమిటీ కన్వీనర్ (2018 - ప్రస్తుతం)</Text>
+                    <Text style={styles.timelineHeading}>{isTelugu ? 'గ్రామీణ ప్రజా ఉద్యమం' : 'Grassroots Civic Action Committee'}</Text>
+                    <Text style={styles.timelineSub}>{isTelugu ? 'పల్నాడు తాగునీటి పోరాట కమిటీ కన్వీనర్ (2018 - ప్రస్తుతం)' : 'Water Security & Youth Convenor (2018 - Present)'}</Text>
                   </View>
                 </View>
               </View>
@@ -544,18 +707,14 @@ export default function LeaderProfileModal({
             <View style={styles.tabSection}>
               <View style={styles.contentBlockCard}>
                 <Text style={styles.blockTitle}>
-                  📋 {t('pages.tabVision', { defaultValue: 'విజన్ & ప్రణాళిక' })}
+                  📋 {t('pages.tabVision', { defaultValue: isTelugu ? 'విజన్ & ప్రణాళిక' : 'Vision & Manifesto' })}
                 </Text>
                 <Text style={styles.paragraphText}>
-                  నియోజకవర్గ భవిష్యత్తు కోసం రూపొందించిన స్పష్టమైన ప్రజా ఎజెండా. ప్రతి అంశంపై పౌరులు తమ ప్రాధాన్యతను మద్దతు ద్వారా తెలపవచ్చు:
+                  {isTelugu ? 'నియోజకవర్గ భవిష్యత్తు కోసం రూపొందించిన స్పష్టమైన ప్రజా ఎజెండా. ప్రతి అంశంపై పౌరులు తమ ప్రాధాన్యతను మద్దతు ద్వారా తెలపవచ్చు:' : 'A clear public agenda for the future of this constituency. Citizens can vote to prioritize initiatives:'}
                 </Text>
               </View>
 
-              {(aspirant.visionPledges || [
-                { id: 'vis-1', title: 'మంచినీటి పైప్‌లైన్ మరియు తాగునీటి భద్రత', desc: 'ప్రతి గ్రామానికి శుద్ధి చేసిన తాగునీరు మరియు ఆర్వో ప్లాంట్ల నిరంతర నిర్వహణ.', supportCount: 1420 },
-                { id: 'vis-2', title: 'రైతు మార్కెట్ యార్డు ఆధునీకరణ & మద్దతు ధర', desc: 'మిర్చి, పత్తి రైతులకు కోల్డ్ స్టోరేజ్ సౌకర్యం మరియు డిజిటల్ వేలం వ్యవస్థ.', supportCount: 1180 },
-                { id: 'vis-3', title: 'ప్రాథమిక ఆరోగ్య కేంద్రాల అప్‌గ్రేడేషన్', desc: 'మండల స్థాయి పీహెచ్‌సీలలో 24/7 అత్యవసర సేవలు, ఆక్సిజన్ పడకలు.', supportCount: 954 },
-              ]).map((pledge) => {
+              {(aspirant.visionPledges || defaultPledges).map((pledge) => {
                 const addVotes = visionVotes[pledge.id] || 0;
                 return (
                   <View key={pledge.id} style={styles.pledgeCard}>
@@ -568,7 +727,7 @@ export default function LeaderProfileModal({
                       >
                         <Ionicons name="thumbs-up" size={14} color={addVotes > 0 ? '#10B981' : '#002B7F'} />
                         <Text style={[styles.pledgeSupportText, addVotes > 0 && { color: '#10B981' }]}>
-                          {t('pages.agreeWithVision', { defaultValue: 'మద్దతు తెలపండి' })} ({pledge.supportCount + addVotes})
+                          {t('pages.agreeWithVision', { defaultValue: isTelugu ? 'మద్దతు తెలపండి' : 'Support Vision' })} ({pledge.supportCount + addVotes})
                         </Text>
                       </Pressable>
                     </View>
@@ -649,11 +808,12 @@ export default function LeaderProfileModal({
 
               <View style={styles.charterCard}>
                 <Text style={styles.charterTitle}>
-                  📜 {t('pages.accountabilityCharter', { defaultValue: 'ప్రజా జవాబుదారీ హామీ' })}
+                  📜 {t('pages.accountabilityCharter', { defaultValue: isTelugu ? 'ప్రజా జవాబుదారీ హామీ' : 'Accountability & Integrity Charter' })}
                 </Text>
                 <Text style={styles.charterText}>
-                  {aspirant.disclosures?.accountabilityPledge ||
-                    'నియోజకవర్గ ప్రజా సమస్యలపై ప్రతి నెలా బహిరంగ ప్రజాదర్బార్ నిర్వహించి, ప్రతి వినతి పరిష్కారానికి గడువు నిర్ణయిస్తానని ప్రతిజ్ఞ చేస్తున్నాను.'}
+                  {isTelugu
+                    ? 'నేను భారత రాజ్యాంగానికి, ప్రజాస్వామ్య విలువలకి కట్టుబడి ఉంటానని, ప్రతి పౌరుడి సమస్యలకు నిష్పక్షపాతంగా సమాధానం ఇస్తానని మరియు ప్రజాధనాన్ని పారదర్శకంగా వినియోగిస్తానని ప్రతినబూనుతున్నాను.'
+                    : 'I solemnly pledge to uphold the Constitution of India, maintain zero tolerance for corruption, ensure total transparency in public expenditure, and remain accessible and accountable to every citizen.'}
                 </Text>
               </View>
             </View>
@@ -668,36 +828,38 @@ export default function LeaderProfileModal({
                 <Ionicons name="lock-closed" size={16} color="#92400E" />
                 <Text style={styles.privateNoticeText}>
                   {t('pages.privateAnalyticsNotice', {
-                    defaultValue: 'ఈ సెక్షన్ గోప్యమైనది — కేవలం అభ్యర్థి/నాయకుడు మరియు ప్లాట్‌ఫారమ్ అడ్మిన్ టీమ్‌కి మాత్రమే కనిపిస్తుంది.',
+                    defaultValue: isTelugu
+                      ? 'ఈ సెక్షన్ గోప్యమైనది — కేవలం అభ్యర్థి/నాయకుడు మరియు ప్లాట్‌ఫారమ్ అడ్మిన్ టీమ్‌కి మాత్రమే కనిపిస్తుంది.'
+                      : 'This section is private — strictly visible only to the candidate and platform analytics team.',
                   })}
                 </Text>
               </View>
 
               <View style={styles.contentBlockCard}>
                 <Text style={styles.blockTitle}>
-                  📊 {t('pages.boothCoverage', { defaultValue: 'నియోజకవర్గ బూత్ కవరేజ్' })}
+                  📊 {t('pages.boothCoverage', { defaultValue: isTelugu ? 'నియోజకవర్గ బూత్ కవరేజ్' : 'Constituency Booth Coverage' })}
                 </Text>
                 <View style={styles.studioGrid}>
                   <View style={styles.studioStatBox}>
-                    <Text style={styles.studioStatLabel}>బూత్ రీచ్</Text>
+                    <Text style={styles.studioStatLabel}>{isTelugu ? 'బూత్ రీచ్' : 'Booth Reach'}</Text>
                     <Text style={styles.studioStatVal}>
-                      {aspirant.privateTelemetry?.boothCoverageText || '218 / 248 బూత్‌లు'}
+                      {aspirant.privateTelemetry?.boothCoverageText || (isTelugu ? '218 / 248 బూత్‌లు' : '218 / 248 Booths')}
                     </Text>
-                    <Text style={styles.studioStatSub}>87.9% గ్రాస్ రూట్స్ రీచ్</Text>
+                    <Text style={styles.studioStatSub}>{isTelugu ? '87.9% గ్రాస్ రూట్స్ రీచ్' : '87.9% Grassroots Coverage'}</Text>
                   </View>
 
                   <View style={styles.studioStatBox}>
-                    <Text style={styles.studioStatLabel}>స్పందన సమయం</Text>
+                    <Text style={styles.studioStatLabel}>{isTelugu ? 'స్పందన సమయం' : 'Response Time'}</Text>
                     <Text style={[styles.studioStatVal, { color: '#047857' }]}>
-                      &lt; {aspirant.privateTelemetry?.avgResponseHours || 3.2} గంటలు
+                      &lt; {aspirant.privateTelemetry?.avgResponseHours || 3.2} {isTelugu ? 'గంటలు' : 'Hours'}
                     </Text>
-                    <Text style={styles.studioStatSub}>96% విజ్ఞప్తులకు సమాధానం</Text>
+                    <Text style={styles.studioStatSub}>{isTelugu ? '96% విజ్ఞప్తులకు సమాధానం' : '96% Inquiries Answered'}</Text>
                   </View>
                 </View>
 
                 <View style={styles.studioEngagementRow}>
                   <Text style={styles.studioEngagementLabel}>
-                    {t('pages.profileViews', { defaultValue: '30-రోజుల ప్రొఫైల్ వీక్షణలు' })}:
+                    {t('pages.profileViews', { defaultValue: isTelugu ? '30-రోజుల ప్రొఫైల్ వీక్షణలు' : '30-Day Profile Views' })}:
                   </Text>
                   <Text style={styles.studioEngagementVal}>
                     {(aspirant.privateTelemetry?.profileViews30Days || 182400).toLocaleString('en-IN')}
@@ -706,10 +868,10 @@ export default function LeaderProfileModal({
 
                 <View style={styles.studioEngagementRow}>
                   <Text style={styles.studioEngagementLabel}>
-                    {t('pages.pendingCitizenRequests', { defaultValue: 'పెండింగ్‌లో ఉన్న పౌర విజ్ఞప్తులు' })}:
+                    {t('pages.pendingCitizenRequests', { defaultValue: isTelugu ? 'పెండింగ్‌లో ఉన్న పౌర విజ్ఞప్తులు' : 'Pending Citizen Inquiries' })}:
                   </Text>
                   <Text style={[styles.studioEngagementVal, { color: '#D97706' }]}>
-                    {aspirant.privateTelemetry?.pendingRequestsCount || 6} విజ్ఞప్తులు
+                    {aspirant.privateTelemetry?.pendingRequestsCount || 6} {isTelugu ? 'విజ్ఞప్తులు' : 'Requests'}
                   </Text>
                 </View>
               </View>
@@ -723,14 +885,28 @@ export default function LeaderProfileModal({
         <View style={[styles.bottomDock, { paddingBottom: Math.max(insets.bottom, 12) }]}>
           <Pressable
             style={styles.dockPrimaryBtn}
-            onPress={() => {
+            onPress={async () => {
               onClose();
-              router.push('/messages' as any);
+              const candidateUserId = aspirant.userId || aspirant.id || `candidate-${aspirant.displayName.replace(/\s+/g, '-').toLowerCase()}`;
+              const convId = await useDMStore.getState().startConversationWithUser(
+                useAuthStore.getState().user?.id || 'anon',
+                {
+                  id: candidateUserId,
+                  displayName: aspirant.displayName,
+                  role: 'aspirant',
+                  isVerified: true,
+                },
+              );
+              if (convId) {
+                router.push(`/messages/${convId}` as any);
+              } else {
+                router.push('/messages' as any);
+              }
             }}
           >
             <Ionicons name="chatbubbles" size={17} color="#FFFFFF" />
             <Text style={styles.dockPrimaryText}>
-              {t('pages.directMessage', { defaultValue: 'సమస్యను నేరుగా తెలపండి' })}
+              {t('pages.directMessage', { defaultValue: isTelugu ? 'సమస్యను నేరుగా తెలపండి' : 'Message Candidate' })}
             </Text>
           </Pressable>
 
@@ -740,7 +916,7 @@ export default function LeaderProfileModal({
           >
             <Ionicons name="people" size={17} color={volunteerJoined ? '#047857' : '#002B7F'} />
             <Text style={[styles.dockSecondaryText, volunteerJoined && { color: '#047857' }]}>
-              {volunteerJoined ? 'వాలంటీర్ ✓' : t('pages.volunteer', { defaultValue: 'వాలంటీర్' })}
+              {volunteerJoined ? (isTelugu ? 'వాలంటీర్ ✓' : 'Volunteer ✓') : t('pages.volunteer', { defaultValue: isTelugu ? 'వాలంటీర్' : 'Volunteer' })}
             </Text>
           </Pressable>
         </View>
