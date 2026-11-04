@@ -1563,14 +1563,12 @@ function FullMapScreen() {
         </Animated.View>
       )}
 
-      {/* Thematic Color Mode Toggle (Party, Margin, Type, Data) — Stays visible along with Map Controls on Map Touch */}
-      {!broadcastMode && stateCode !== 'IN' && (
+      {/* Thematic Color Mode Toggle (Party, Margin, Type, Data) — Hidden when a constituency is selected to prevent overlapping the card */}
+      {!broadcastMode && stateCode !== 'IN' && !selected && (
         <View
           style={{
             position: 'absolute',
-            top: isScreenImmersive
-              ? mapTopOffset + 8
-              : mapTopOffset + (!hideOverlays && !selected ? 94 : (selected && selectedHasBoothData && currentZoom < BOOTH_ZOOM_THRESHOLD ? 94 : 52)),
+            top: isScreenImmersive ? mapTopOffset + 8 : mapTopOffset + (!hideOverlays ? 94 : 52),
             left: 14,
             right: 74,
             zIndex: 1000,
@@ -2111,6 +2109,7 @@ function FullMapScreen() {
         ref={bottomSheetRef}
         index={-1}
         snapPoints={snapPoints}
+        style={{ zIndex: 5000 }}
         enablePanDownToClose
         backgroundStyle={styles.sheetBackground}
         handleIndicatorStyle={styles.sheetHandle}
@@ -2531,26 +2530,34 @@ function FullMapScreen() {
                     ) : null;
                   })()}
 
-                  {/* Historical snapshot — Deduplicated to ensure no duplicate current year */}
+                  {/* Historical snapshot — Deduplicated and type-safe to ensure no duplicate current year */}
                   {(() => {
                     const pastElections = getHistoryForState(stateCode, selected.acNo);
                     if (pastElections.length === 0) return null;
-                    const hasCurrent = pastElections.some((e) => e.year === selected.electionYear);
+                    const targetYear = Number(selected.electionYear);
+                    const hasCurrent = pastElections.some((e) => Number(e.year) === targetYear);
+                    const seenYears = new Set<number>();
+                    const uniquePast = pastElections.filter((e) => {
+                      const yr = Number(e.year);
+                      if (seenYears.has(yr)) return false;
+                      seenYears.add(yr);
+                      return true;
+                    });
                     return (
                       <View style={[styles.histRow, { marginTop: 12 }]}>
-                        {pastElections.map((e) => (
+                        {uniquePast.map((e) => (
                           <View
                             key={e.year}
                             style={[
                               styles.histMiniCard,
-                              e.year === selected.electionYear && styles.histMiniCardCurrent,
+                              Number(e.year) === targetYear && styles.histMiniCardCurrent,
                             ]}
                           >
                             <Text style={styles.histMiniYear}>{e.year}</Text>
                             <Text style={styles.histMiniParty}>{e.party}</Text>
                           </View>
                         ))}
-                        {!hasCurrent && (
+                        {!hasCurrent && targetYear > 0 && !seenYears.has(targetYear) && (
                           <View style={[styles.histMiniCard, styles.histMiniCardCurrent]}>
                             <Text style={styles.histMiniYear}>{selected.electionYear}</Text>
                             <Text style={styles.histMiniParty}>{selected.winner}</Text>
