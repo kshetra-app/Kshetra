@@ -14,33 +14,73 @@ import React from 'react';
 let MapboxGL: any = null;
 let mapboxAvailable = false;
 
-try {
-  const ML = require('@maplibre/maplibre-react-native');
+/**
+ * Robust helper: extract [lng, lat] from any MapLibre / @rnmapbox / React Native press-event shape.
+ * Performs type checks, extracts numeric primitives, and detects/fixes inverted Indian coordinates.
+ */
+export function extractLngLat(raw: any): [number, number] | null {
+  if (!raw) return null;
+  const ne = raw.nativeEvent ?? raw;
 
-  // ── Helper: extract [lng, lat] from any press-event shape ──
-  function extractLngLat(raw: any): [number, number] | null {
-    if (!raw) return null;
-    const ne = raw.nativeEvent ?? raw;
-    const ll = ne?.lngLat ?? raw?.lngLat;
-    if (Array.isArray(ll) && ll.length >= 2) return [ll[0], ll[1]];
-    if (ll && typeof ll.lng === 'number' && typeof ll.lat === 'number') return [ll.lng, ll.lat];
-    if (ll && typeof ll.longitude === 'number' && typeof ll.latitude === 'number') return [ll.longitude, ll.latitude];
+  let lng: number | undefined;
+  let lat: number | undefined;
 
-    const coord = ne?.coordinate ?? raw?.coordinate;
-    if (Array.isArray(coord) && coord.length >= 2) return [coord[0], coord[1]];
-    if (coord && typeof coord.longitude === 'number') return [coord.longitude, coord.latitude];
+  // 1. Direct array lngLat [lng, lat]
+  const ll = ne?.lngLat ?? raw?.lngLat;
+  if (Array.isArray(ll) && typeof ll[0] === 'number' && typeof ll[1] === 'number') {
+    lng = ll[0];
+    lat = ll[1];
+  } else if (ll && typeof ll === 'object') {
+    if (typeof ll.lng === 'number') lng = ll.lng;
+    else if (typeof ll.longitude === 'number') lng = ll.longitude;
 
-    const coords = ne?.coordinates ?? raw?.coordinates;
-    if (Array.isArray(coords) && coords.length >= 2) return [coords[0], coords[1]];
-    if (coords && typeof coords.longitude === 'number') return [coords.longitude, coords.latitude];
+    if (typeof ll.lat === 'number') lat = ll.lat;
+    else if (typeof ll.latitude === 'number') lat = ll.latitude;
+  }
 
-    if (raw?.geometry?.coordinates && Array.isArray(raw.geometry.coordinates)) {
-      const gc = raw.geometry.coordinates;
-      if (typeof gc[0] === 'number' && typeof gc[1] === 'number') return [gc[0], gc[1]];
+  // 2. Direct array coordinates or coordinate
+  if (lng === undefined || lat === undefined) {
+    const coords = ne?.coordinates ?? raw?.coordinates ?? ne?.coordinate ?? raw?.coordinate;
+    if (Array.isArray(coords) && typeof coords[0] === 'number' && typeof coords[1] === 'number') {
+      lng = coords[0];
+      lat = coords[1];
+    } else if (coords && typeof coords === 'object') {
+      if (typeof coords.longitude === 'number') lng = coords.longitude;
+      else if (typeof coords.lng === 'number') lng = coords.lng;
+
+      if (typeof coords.latitude === 'number') lat = coords.latitude;
+      else if (typeof coords.lat === 'number') lat = coords.lat;
     }
+  }
 
+  // 3. Point geometry { type: 'Point', coordinates: [lng, lat] }
+  // Strictly accept Point only (never Polygon or MultiPolygon whose coordinates are nested rings)
+  if (lng === undefined || lat === undefined) {
+    const geom = ne?.geometry ?? raw?.geometry;
+    if (geom && Array.isArray(geom.coordinates) && typeof geom.coordinates[0] === 'number' && typeof geom.coordinates[1] === 'number') {
+      lng = geom.coordinates[0];
+      lat = geom.coordinates[1];
+    }
+  }
+
+  if (lng === undefined || lat === undefined || isNaN(lng) || isNaN(lat)) {
     return null;
   }
+
+  // Safeguard: India coordinate swap detection
+  // Longitude in India is ~68°E to 98°E, Latitude is ~6°N to 38°N.
+  // If lng is between 5 and 40 and lat is between 65 and 100, they were inverted as [lat, lng]
+  if (lng >= 5 && lng <= 40 && lat >= 65 && lat <= 100) {
+    const temp = lng;
+    lng = lat;
+    lat = temp;
+  }
+
+  return [lng, lat];
+}
+
+try {
+  const ML = require('@maplibre/maplibre-react-native');
 
   // MapView compat — maps old @rnmapbox/maps prop names to v11 API
   const MapViewCompat = (props: any) => {
@@ -83,7 +123,10 @@ try {
           const ne = e?.nativeEvent ?? e;
           if (coords) {
             onPress({
-              geometry: { coordinates: coords },
+              ...ne,
+              geometry: { type: 'Point', coordinates: coords },
+              coordinates: coords,
+              lngLat: coords,
               features: ne?.features ?? [],
             });
           }
@@ -146,40 +189,44 @@ try {
 
   // ShapeSource compat — passes onPress through to GeoJSONSource
   const ShapeSourceCompat = (props: any) => {
-    const { shape, onPress, ...rest } = props;
+    const { shape, onPress, hitbox, ...rest } = props;
     const wrappedOnPress = onPress
       ? (e: any) => {
           const coords = extractLngLat(e);
           const ne = e?.nativeEvent ?? e;
+          // IMPORTANT: ...ne goes FIRST so canonical point coordinates & geometry are NEVER overwritten by ne.geometry (Polygon)
           onPress({
-            geometry: coords ? { coordinates: coords } : undefined,
+            ...ne,
+            geometry: coords ? { type: 'Point', coordinates: coords } : (ne?.geometry?.type === 'Point' ? ne.geometry : undefined),
             coordinates: coords,
             lngLat: coords,
             features: ne?.features ?? [],
-            ...ne,
           });
         }
       : undefined;
-    return <ML.GeoJSONSource data={shape} onPress={wrappedOnPress} {...rest} />;
+    // Set minimal hitbox by default (4x4 px) so taps don't query 44px across state borders
+    const effectiveHitbox = hitbox ?? { top: 4, bottom: 4, left: 4, right: 4 };
+    return <ML.GeoJSONSource data={shape} onPress={wrappedOnPress} hitbox={effectiveHitbox} {...rest} />;
   };
 
   // VectorSource compat — provides MapLibre vector tile source support for canonical PostGIS MVT
   const VectorSourceCompat = (props: any) => {
-    const { url, tileUrlTemplates, onPress, ...rest } = props;
+    const { url, tileUrlTemplates, onPress, hitbox, ...rest } = props;
     const wrappedOnPress = onPress
       ? (e: any) => {
           const coords = extractLngLat(e);
           const ne = e?.nativeEvent ?? e;
           onPress({
-            geometry: coords ? { coordinates: coords } : undefined,
+            ...ne,
+            geometry: coords ? { type: 'Point', coordinates: coords } : (ne?.geometry?.type === 'Point' ? ne.geometry : undefined),
             coordinates: coords,
             lngLat: coords,
             features: ne?.features ?? [],
-            ...ne,
           });
         }
       : undefined;
-    return <ML.VectorSource url={url} tileUrlTemplates={tileUrlTemplates} onPress={wrappedOnPress} {...rest} />;
+    const effectiveHitbox = hitbox ?? { top: 4, bottom: 4, left: 4, right: 4 };
+    return <ML.VectorSource url={url} tileUrlTemplates={tileUrlTemplates} onPress={wrappedOnPress} hitbox={effectiveHitbox} {...rest} />;
   };
 
   // FillLayer compat — uses deprecated `style` prop (camelCase, works in v11)

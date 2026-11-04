@@ -24,12 +24,13 @@ import {
 } from '../../lib/constants';
 import CandidateAvatar from '../../components/CandidateAvatar';
 import { useUserLocation } from '../../lib/useUserLocation';
-import { findConstituencyAtPoint, STATES } from '@kshetra/shared';
+import { findConstituencyAtPoint, pointInPolygon, pointInMultiPolygon, STATES } from '@kshetra/shared';
 import { useActiveStateStore } from '../../stores/activeState';
 import { usePreferencesStore } from '../../stores/preferences';
 import { useFeedStore } from '../../stores/feed';
 import { isStateSupported, getStateData } from '../../lib/stateRegistry';
-import { MapboxGL, mapboxAvailable } from '../../lib/maplibreCompat';
+import { MapboxGL, mapboxAvailable, extractLngLat } from '../../lib/maplibreCompat';
+import { getStateCodeFromName } from '../../lib/enrichGeoJSON';
 import { apiClient, type SpatialProvenance } from '../../lib/api';
 import { telemetry } from '../../lib/telemetry';
 import { useEnrichedGeo } from '../../lib/useEnrichedGeo';
@@ -713,29 +714,19 @@ function FullMapScreen() {
       if (now - lastPressTimeRef.current < 250) return;
       lastPressTimeRef.current = now;
 
-      // Extract tap coordinates from MapLibre / @rnmapbox event formats
+      // Robust coordinate extraction: only extract valid numeric primitives
       let lng: number | undefined;
       let lat: number | undefined;
 
-      const raw = event?.nativeEvent ?? event;
-
-      if (raw?.geometry?.coordinates && Array.isArray(raw.geometry.coordinates)) {
-        [lng, lat] = raw.geometry.coordinates;
-      } else if (raw?.coordinates && Array.isArray(raw.coordinates)) {
-        [lng, lat] = raw.coordinates;
-      } else if (raw?.coordinate && Array.isArray(raw.coordinate)) {
-        [lng, lat] = raw.coordinate;
-      } else if (raw?.lngLat && Array.isArray(raw.lngLat) && raw.lngLat.length >= 2) {
-        [lng, lat] = raw.lngLat;
-      } else if (raw?.lngLat && typeof raw.lngLat === 'object') {
-        lng = raw.lngLat.lng ?? raw.lngLat.longitude;
-        lat = raw.lngLat.lat ?? raw.lngLat.latitude;
-      } else if (raw?.coordinate && typeof raw.coordinate === 'object') {
-        lng = raw.coordinate.longitude ?? raw.coordinate.lng;
-        lat = raw.coordinate.latitude ?? raw.coordinate.lat;
-      } else if (raw?.coordinates && typeof raw.coordinates === 'object') {
-        lng = raw.coordinates.longitude ?? raw.coordinates.lng;
-        lat = raw.coordinates.latitude ?? raw.coordinates.lat;
+      const coords = extractLngLat(event);
+      if (coords) {
+        [lng, lat] = coords;
+      } else {
+        const raw = event?.nativeEvent ?? event;
+        const fallbackCoords = extractLngLat(raw);
+        if (fallbackCoords) {
+          [lng, lat] = fallbackCoords;
+        }
       }
 
       // Helper function to process direct selection properties
@@ -804,23 +795,42 @@ function FullMapScreen() {
         }
       }
 
-      // ── PRIORITY 2: If tap fell on a border sliver, pick candidate closest to tap coordinate ──
+      // ── PRIORITY 2: Boundary check against MapLibre's returned features ──
+      // If point-in-polygon on the full activeGeoJSON didn't hit (e.g. slight border tap),
+      // evaluate candidate features returned by the map rendering engine.
       if (!hitFeature && event?.features?.length) {
         if (lng != null && lat != null) {
-          let bestDist = Infinity;
-          let bestFeature = event.features[0];
+          // Check point-in-polygon on each candidate feature
           for (const f of event.features) {
-            const centroid = getConstituencyCentroid(Number(f.properties?.AC_NO)) ??
-              (f.geometry ? getFeatureCentroid(f) : null);
-            if (centroid) {
-              const d = Math.hypot(centroid[0] - lng, centroid[1] - lat);
-              if (d < bestDist) {
-                bestDist = d;
-                bestFeature = f;
-              }
+            if (f.geometry?.type === 'Polygon' && pointInPolygon([lng, lat], f.geometry.coordinates)) {
+              hitFeature = f;
+              break;
+            } else if (f.geometry?.type === 'MultiPolygon' && pointInMultiPolygon([lng, lat], f.geometry.coordinates)) {
+              hitFeature = f;
+              break;
             }
           }
-          hitFeature = bestFeature;
+
+          // If still not inside any candidate (e.g. slight border click), pick closest candidate by true centroid
+          if (!hitFeature) {
+            let bestDist = Infinity;
+            let bestFeature = event.features[0];
+            for (const f of event.features) {
+              const stateCodeCand = f.properties?.STATE_CODE ?? (f.properties?.ST_NM ? getStateCodeFromName(f.properties.ST_NM) : null);
+              const stateInfo = stateCodeCand ? STATES[stateCodeCand] : null;
+              const centroid = (stateInfo?.centroid ? [stateInfo.centroid.longitude, stateInfo.centroid.latitude] : null) ??
+                getConstituencyCentroid(Number(f.properties?.AC_NO)) ??
+                (f.geometry ? getFeatureCentroid(f) : null);
+              if (centroid) {
+                const d = Math.hypot(centroid[0] - lng, centroid[1] - lat);
+                if (d < bestDist) {
+                  bestDist = d;
+                  bestFeature = f;
+                }
+              }
+            }
+            hitFeature = bestFeature;
+          }
         } else {
           hitFeature = event.features[0];
         }
@@ -830,7 +840,7 @@ function FullMapScreen() {
 
       // National View: navigate to the selected state
       if (stateCode === 'IN') {
-        const code = hitFeature.properties?.STATE_CODE;
+        const code = hitFeature.properties?.STATE_CODE ?? (hitFeature.properties?.ST_NM ? getStateCodeFromName(hitFeature.properties.ST_NM) : null);
         if (code) {
           tapLight();
           setStateCode(code);
@@ -1156,6 +1166,7 @@ function FullMapScreen() {
             <MapboxGL.ShapeSource
               id={`constituencies-${stateCode}`}
               shape={activeGeoJSON}
+              hitbox={{ top: 2, bottom: 2, left: 2, right: 2 }}
               onPress={handleMapPress}
             >
               {is3DMode ? (

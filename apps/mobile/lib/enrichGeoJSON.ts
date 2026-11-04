@@ -273,42 +273,54 @@ export function enrichGeoJSONForState(
  * Enrich the national India states GeoJSON.
  * Maps state name (ST_NM) to its StateInfo registry and colors by ruling party.
  */
+// ── Master name-to-code mapping for Indian states & UTs ──
+const STATE_NAME_TO_CODE: Record<string, string> = {
+  jammukashmir: 'JK',
+  jammuandkashmir: 'JK',
+  puducherry: 'PY',
+  delhi: 'DL',
+  nctofdelhi: 'DL',
+  odisha: 'OD',
+  orissa: 'OD',
+  uttaranchal: 'UK',
+  uttarakhand: 'UK',
+  andamannicobar: 'AN',
+  andamanandnicobar: 'AN',
+  andamanandnicobarislands: 'AN',
+  dadraandnagarhavelianddamananddiu: 'DN',
+  dadraandnagarhavelianddamanddiu: 'DN',
+  dadranagarhaveli: 'DN',
+  damandiu: 'DN',
+  lakshadweep: 'LD',
+  ladakh: 'LA',
+  chandigarh: 'CH',
+};
+
+for (const [code, info] of Object.entries(STATES)) {
+  const key = info.name.toLowerCase().replace(/[^a-z]/g, '');
+  STATE_NAME_TO_CODE[key] = code;
+}
+
+/** Resolves any state/UT name variant to its canonical 2-letter state code */
+export function getStateCodeFromName(name: string): string | null {
+  if (!name) return null;
+  const normName = name.toLowerCase().replace(/[^a-z]/g, '');
+  return STATE_NAME_TO_CODE[normName] ?? null;
+}
+
+/**
+ * Enriches the national India overview GeoJSON with state metadata.
+ * Adds STATE_CODE, STATE_NAME, WINNER_PARTY (ruling party), and SEATS
+ * so that state-level choropleth rendering works uniformly.
+ */
 export function enrichIndiaGeoJSON(
   geojson: GeoJSON.FeatureCollection,
 ): GeoJSON.FeatureCollection {
-  // Normalize and map state names to state codes
-  const nameToCode: Record<string, string> = {};
-  for (const [code, info] of Object.entries(STATES)) {
-    const key = info.name.toLowerCase().replace(/[^a-z]/g, '');
-    nameToCode[key] = code;
-  }
-  // Custom manual mappings for variant spellings
-  nameToCode['jammukashmir'] = 'JK';
-  nameToCode['jammuandkashmir'] = 'JK';
-  nameToCode['puducherry'] = 'PY';
-  nameToCode['delhi'] = 'DL';
-  nameToCode['nctofdelhi'] = 'DL';
-  nameToCode['odisha'] = 'OD';
-  nameToCode['orissa'] = 'OD';
-  nameToCode['uttaranchal'] = 'UK';
-  nameToCode['uttarakhand'] = 'UK';
-  nameToCode['andamannicobar'] = 'AN';
-  nameToCode['andamanandnicobar'] = 'AN';
-  nameToCode['andamanandnicobarislands'] = 'AN';
-  nameToCode['dadraandnagarhavelianddamananddiu'] = 'DN';
-  nameToCode['dadraandnagarhavelianddamanddiu'] = 'DN';
-  nameToCode['dadranagarhaveli'] = 'DN';
-  nameToCode['damandiu'] = 'DN';
-  nameToCode['lakshadweep'] = 'LD';
-  nameToCode['ladakh'] = 'LA';
-  nameToCode['chandigarh'] = 'CH';
-
   return {
     ...geojson,
     features: geojson.features.map((feature) => {
       const name = feature.properties?.ST_NM ?? '';
-      const normName = name.toLowerCase().replace(/[^a-z]/g, '');
-      const code = nameToCode[normName] ?? '';
+      const code = getStateCodeFromName(name) ?? '';
       const stateInfo = STATES[code];
 
       return {
