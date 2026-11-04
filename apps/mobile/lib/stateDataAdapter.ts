@@ -129,11 +129,12 @@ function genericAdapter(
 
   // For Assam, actual 2021 election returns were mistakenly keyed as 2026 in seed
   const isAssam2021Fallback = stateCode === 'AS' && year === 2021;
-  const rawWinner = c[winnerKey] ?? (isAssam2021Fallback ? c.winner2026 : (c.winner ?? ''));
-  const rawWinnerName = c[winnerNameKey] ?? (isAssam2021Fallback ? c.winnerName2026 : (c.winnerName ?? ''));
-  const rawWinnerVotes = c[winnerVotesKey] ?? (isAssam2021Fallback ? c.winnerVotes2026 : 0);
-  const rawRunnerUp = c[runnerUpKey] ?? (isAssam2021Fallback ? c.runnerUp2026 : '');
-  const rawMargin = c[marginKey] ?? (isAssam2021Fallback ? c.margin2026 : 0);
+  const isBihar2025Fallback = stateCode === 'BR' && year === 2025;
+  const rawWinner = c[winnerKey] ?? (isBihar2025Fallback ? (c.winner2025 ?? c.winner2020 ?? c.currentParty) : isAssam2021Fallback ? c.winner2026 : (c.winner ?? ''));
+  const rawWinnerName = c[winnerNameKey] ?? (isBihar2025Fallback ? (c.winnerName2025 ?? c.winnerName2020) : isAssam2021Fallback ? c.winnerName2026 : (c.winnerName ?? ''));
+  const rawWinnerVotes = c[winnerVotesKey] ?? (isBihar2025Fallback ? (c.winnerVotes2025 ?? c.winnerVotes2020) : isAssam2021Fallback ? c.winnerVotes2026 : 0);
+  const rawRunnerUp = c[runnerUpKey] ?? (isBihar2025Fallback ? (c.runnerUp2025 ?? c.runnerUp2020) : isAssam2021Fallback ? c.runnerUp2026 : '');
+  const rawMargin = c[marginKey] ?? (isBihar2025Fallback ? (c.margin2025 ?? c.margin2020) : isAssam2021Fallback ? c.margin2026 : 0);
 
   // If a future simulation field exists, preserve it in projection metadata only
   const hasFutureSimulation = c.winner2026 && year < 2026 && stateCode !== 'AS';
@@ -432,7 +433,7 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
     case 'HR': return HR_CONSTITUENCIES.map((c) => genericAdapter(c, 'HR', 2024));
     case 'CG': return CG_CONSTITUENCIES.map((c) => genericAdapter(c, 'CG', 2023));
     case 'MP': return MP_CONSTITUENCIES.map((c) => genericAdapter(c, 'MP', 2023));
-    case 'BR': return BR_CONSTITUENCIES.map((c) => genericAdapter(c, 'BR', 2020));
+    case 'BR': return BR_CONSTITUENCIES.map((c) => genericAdapter(c, 'BR', 2025));
     case 'AS': return AS_CONSTITUENCIES.map((c) => genericAdapter(c, 'AS', 2026));
     case 'GA': return GA_CONSTITUENCIES.map((c) => genericAdapter(c, 'GA', 2022));
     case 'HP': return HP_CONSTITUENCIES.map((c) => genericAdapter(c, 'HP', 2022));
@@ -608,7 +609,7 @@ export function getConstituenciesForState(stateCode: string): ConstituencyBrief[
     case 'HR': return HR_CONSTITUENCIES.map((c) => genericBriefAdapter(c, 'HR', 2024));
     case 'CG': return CG_CONSTITUENCIES.map((c) => genericBriefAdapter(c, 'CG', 2023));
     case 'MP': return MP_CONSTITUENCIES.map((c) => genericBriefAdapter(c, 'MP', 2023));
-    case 'BR': return BR_CONSTITUENCIES.map((c) => genericBriefAdapter(c, 'BR', 2020));
+    case 'BR': return BR_CONSTITUENCIES.map((c) => genericBriefAdapter(c, 'BR', 2025));
     case 'AS': return AS_CONSTITUENCIES.map((c) => genericBriefAdapter(c, 'AS', 2026));
     case 'GA': return GA_CONSTITUENCIES.map((c) => genericBriefAdapter(c, 'GA', 2022));
     case 'HP': return HP_CONSTITUENCIES.map((c) => genericBriefAdapter(c, 'HP', 2022));

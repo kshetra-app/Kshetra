@@ -89,6 +89,7 @@ import { getBRMLAProfile } from '../../../data/seed/bihar-mla-profiles';
 import { getBRConstituencyDemographics } from '../../../data/seed/bihar-demographics';
 import { BR_ELECTION_HISTORY } from '../../../data/seed/bihar-election-history';
 import { getBRConstituencyTimeline } from '../../../data/seed/bihar-political-timeline';
+import { BR_CONSTITUENCIES } from '../../../data/seed/bihar-constituencies';
 import { getASMLAProfile } from '../../../data/seed/assam-mla-profiles';
 import { getGAMLAProfile } from '../../../data/seed/goa-mla-profiles';
 import { getHPMLAProfile } from '../../../data/seed/himachal-pradesh-mla-profiles';
@@ -515,6 +516,29 @@ export function getHistoryForState(
       if (c && c.winnerName2026) results.push({ year: 2026, winner: c.winnerName2026, party: c.winner2026 });
       if (c && c.winnerName2021) results.push({ year: 2021, winner: c.winnerName2021, party: c.winner2021 });
       if (r2016) results.push({ year: 2016, winner: r2016.winner, party: r2016.party });
+      return results;
+    }
+    case 'BR': {
+      const c = BR_CONSTITUENCIES.find(x => x.acNo === acNo);
+      const results: ConstituencyHistoryEntry[] = [];
+      if (c) {
+        results.push({
+          year: 2025,
+          winner: (c as any).winnerName2025 || c.winnerName2020 || '',
+          party: (c as any).winner2025 || c.currentParty || c.winner2020 || 'BJP',
+          winner_votes: (c as any).winnerVotes2025 || c.winnerVotes2020,
+          margin_winner_to_runner_up_1: (c as any).margin2025 || c.margin2020,
+        });
+        if (c.winner2020) {
+          results.push({
+            year: 2020,
+            winner: c.winnerName2020,
+            party: c.winner2020,
+            winner_votes: c.winnerVotes2020,
+            margin_winner_to_runner_up_1: c.margin2020,
+          });
+        }
+      }
       return results;
     }
     case 'DL': {

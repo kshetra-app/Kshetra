@@ -40,6 +40,14 @@ export const STATIC_LEADER_PHOTOS: Record<string, string> = {
   'D. K. Shivakumar': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/D._K._Shivakumar.jpg/330px-D._K._Shivakumar.jpg',
   'D.K. Shivakumar': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/D._K._Shivakumar.jpg/330px-D._K._Shivakumar.jpg',
 
+  'C. Joseph Vijay': 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Vijay_at_the_Nadigar_Sangam_Protest.jpg/330px-Vijay_at_the_Nadigar_Sangam_Protest.jpg',
+  'Joseph Vijay': 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Vijay_at_the_Nadigar_Sangam_Protest.jpg/330px-Vijay_at_the_Nadigar_Sangam_Protest.jpg',
+
+  'V. D. Satheesan': 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/V_D_Satheesan.jpg/330px-V_D_Satheesan.jpg',
+  'V.D. Satheesan': 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/V_D_Satheesan.jpg/330px-V_D_Satheesan.jpg',
+
+  'Suvendu Adhikari': 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Suvendu_Adhikari_at_a_rally_in_Nandigram_04_%28cropped%29.jpg/330px-Suvendu_Adhikari_at_a_rally_in_Nandigram_04_%28cropped%29.jpg',
+
   'Devendra Fadnavis': 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/be/Shri_Devendra_Gangadharrao_Fadnavis.jpg/330px-Shri_Devendra_Gangadharrao_Fadnavis.jpg',
   'Eknath Shinde': 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Eknath_Shinde_2022.jpg/330px-Eknath_Shinde_2022.jpg',
 
@@ -208,6 +216,8 @@ export const WIKIPEDIA_ARTICLES: Record<string, string> = {
   'Supriya Sule': 'Supriya_Sule',
 
   // ── Tamil Nadu ──
+  'C. Joseph Vijay': 'Vijay_(actor)',
+  'Joseph Vijay': 'Vijay_(actor)',
   'M.K. Stalin': 'M._K._Stalin',
   'Edappadi K. Palaniswami': 'Edappadi_K._Palaniswami',
   'K. Annamalai': 'K._Annamalai',
