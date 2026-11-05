@@ -35,6 +35,15 @@ function getInitials(name: string): string {
     .toUpperCase();
 }
 
+function sanitizePhotoUrl(url?: string | null): string | null {
+  if (!url || typeof url !== 'string') return null;
+  const trimmed = url.trim();
+  if (!trimmed.startsWith('http')) return null;
+  if (trimmed.includes('.svg') || trimmed.includes('LokSabha2024/photos/')) return null;
+  // Upgrade http:// to https://
+  return trimmed.replace(/^http:\/\//i, 'https://');
+}
+
 export default memo(function CandidateAvatar({
   name,
   party,
@@ -43,9 +52,10 @@ export default memo(function CandidateAvatar({
   borderWidth = 2,
   onPress,
 }: CandidateAvatarProps) {
-  // 1. Instant static resolution (e.g. Chief Ministers, PM, seed photos, MMKV cache)
+  // 1. Instant static resolution (e.g. Chief Ministers, PM, seed photos, MMKV cache, static map)
   const staticPhoto = useMemo(() => {
-    return photoUrl || getStaticPhoto(name) || getCachedPhoto(name) || null;
+    const raw = photoUrl || getStaticPhoto(name) || getCachedPhoto(name) || null;
+    return sanitizePhotoUrl(raw);
   }, [name, photoUrl]);
 
   const [remoteUrl, setRemoteUrl] = useState<string | null>(null);

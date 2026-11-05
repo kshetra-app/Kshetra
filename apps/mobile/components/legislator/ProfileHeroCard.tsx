@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getPartyColor } from '../../lib/constants';
@@ -71,9 +71,14 @@ export default function ProfileHeroCard({
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const partyColor = getPartyColor(party);
+  const [imgError, setImgError] = useState(false);
 
   const effectivePhoto = useMemo(() => {
-    return photoUrl || getStaticPhoto(fullName) || getStaticPhoto(displayName) || getCachedPhoto(fullName) || getCachedPhoto(displayName) || null;
+    const raw = photoUrl || getStaticPhoto(fullName) || getStaticPhoto(displayName) || getCachedPhoto(fullName) || getCachedPhoto(displayName) || null;
+    if (!raw || typeof raw !== 'string') return null;
+    const trimmed = raw.trim();
+    if (!trimmed.startsWith('http') || trimmed.includes('.svg') || trimmed.includes('LokSabha2024/photos/')) return null;
+    return trimmed.replace(/^http:\/\//i, 'https://');
   }, [photoUrl, fullName, displayName]);
 
   const LEGISLATOR_HOUSE_LABELS: Record<string, string> = {
@@ -121,8 +126,19 @@ export default function ProfileHeroCard({
       <View style={styles.content}>
         {/* Photo with verified badge */}
         <Pressable style={styles.photoContainer} onPress={() => onPhotoPress?.(effectivePhoto)}>
-          {effectivePhoto ? (
-            <Image key={effectivePhoto} source={{ uri: effectivePhoto }} style={styles.photo} resizeMode="cover" />
+          {!imgError && effectivePhoto ? (
+            <Image
+              key={effectivePhoto}
+              source={{
+                uri: effectivePhoto,
+                headers: {
+                  'User-Agent': 'PoligramApp/1.0 (https://kshetra.app; contact@kshetra.app)',
+                },
+              }}
+              style={styles.photo}
+              resizeMode="cover"
+              onError={() => setImgError(true)}
+            />
           ) : (
             <View style={[styles.photoPlaceholder, { backgroundColor: partyColor + '30', borderColor: partyColor }]}>
               <Text style={[styles.initials, { color: '#FFFFFF' }]}>

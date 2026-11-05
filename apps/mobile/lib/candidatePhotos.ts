@@ -14,9 +14,36 @@
 
 import { mmkv, isMMKVAvailable } from './storage';
 
-// ── Dynamic photo map (decoupled from client bundle, cached in MMKV) ────
+/**
+ * Normalise a candidate name for lookup: lowercase, collapse whitespace,
+ * strip dots/commas, trim.
+ */
+function normaliseName(name: string): string {
+  if (!name) return '';
+  return name.toLowerCase().replace(/[.,]/g, '').replace(/\s+/g, ' ').trim();
+}
+
+// ── Dynamic photo map (pre-indexed with 4,600+ verified politician photos, cached in MMKV) ────
 const PHOTO_CACHE_PREFIX = 'cand_photo:';
 const STATIC_PHOTO_MAP: Record<string, string> = {};
+
+try {
+  // Use require to avoid huge TS compiler AST overhead on large static JSON
+  const candidatePhotoMap: Record<string, string> = require('../data/candidate-photo-map.json');
+  if (candidatePhotoMap && typeof candidatePhotoMap === 'object') {
+    for (const [rawName, rawUrl] of Object.entries(candidatePhotoMap)) {
+      if (typeof rawUrl === 'string' && rawUrl.startsWith('http')) {
+        STATIC_PHOTO_MAP[rawName] = rawUrl;
+        const norm = normaliseName(rawName);
+        if (norm) {
+          STATIC_PHOTO_MAP[norm] = rawUrl;
+        }
+      }
+    }
+  }
+} catch {
+  // Fallback to empty map if file is not found
+}
 
 /**
  * Curated high-resolution static portraits for the Prime Minister,
@@ -144,14 +171,6 @@ export function setCachedCandidatePhoto(name: string, url: string): void {
   if (isMMKVAvailable && mmkv) {
     mmkv.set(PHOTO_CACHE_PREFIX + norm, url);
   }
-}
-
-/**
- * Normalise a candidate name for lookup: lowercase, collapse whitespace,
- * strip dots/commas, trim.
- */
-function normaliseName(name: string): string {
-  return name.toLowerCase().replace(/[.,]/g, '').replace(/\s+/g, ' ').trim();
 }
 
 /**

@@ -188,6 +188,7 @@ export default function ConstituencyDetailScreen() {
 
   const effectiveRunnerUpName = latestPodium?.firstRunnerUp?.name || constituency?.runnerUpName || '';
   const demo = useMemo(() => getDemographicsForState(stateCode, acNo), [stateCode, acNo]);
+  const mlaProfile = useMemo(() => getMLAProfileForState(stateCode, acNo), [stateCode, acNo]);
 
   // Canonical authoritative latest podium contest
   const canonicalPodium = useMemo(() => {
@@ -695,6 +696,7 @@ export default function ConstituencyDetailScreen() {
                     name={effectiveWinnerName}
                     party={effectiveWinnerParty}
                     size={52}
+                    photoUrl={mlaProfile?.photoUrl || undefined}
                     onPress={(uri) => setPhotoViewer({ uri, name: effectiveWinnerName, party: effectiveWinnerParty })}
                   />
                   <View>
