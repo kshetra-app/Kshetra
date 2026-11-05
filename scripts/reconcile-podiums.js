@@ -47,8 +47,7 @@ const specs = [
 ];
 
 const podiumDirs = [
-  path.resolve('data/historical/podiums'),
-  path.resolve('apps/mobile/data/historical')
+  path.resolve('data/historical/podiums')
 ];
 
 let totalInjected = 0;
