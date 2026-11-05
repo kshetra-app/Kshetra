@@ -82,9 +82,9 @@ describe('Map Touch Precision & State Hit Testing', () => {
         const found = findConstituencyAtPoint(lng, lat, activeGeoJSON);
         expect(found).not.toBeNull();
         const feature = activeGeoJSON.features[found!.index];
-        expect(feature.properties.STATE_CODE).toBe('TS');
-        expect(feature.properties.ST_NM).toBe('Telangana');
-        expect(feature.properties.STATE_CODE).not.toBe('MH');
+        expect(feature.properties?.STATE_CODE).toBe('TS');
+        expect(feature.properties?.ST_NM).toBe('Telangana');
+        expect(feature.properties?.STATE_CODE).not.toBe('MH');
       });
     });
 
@@ -102,8 +102,8 @@ describe('Map Touch Precision & State Hit Testing', () => {
         const found = findConstituencyAtPoint(lng, lat, activeGeoJSON);
         expect(found).not.toBeNull();
         const feature = activeGeoJSON.features[found!.index];
-        expect(feature.properties.STATE_CODE).toBe('MH');
-        expect(feature.properties.ST_NM).toBe('Maharashtra');
+        expect(feature.properties?.STATE_CODE).toBe('MH');
+        expect(feature.properties?.ST_NM).toBe('Maharashtra');
       });
     });
   });
@@ -122,10 +122,11 @@ describe('Map Touch Precision & State Hit Testing', () => {
 
       let selectedFeature: any = null;
       for (const f of eventFeatures) {
-        if (f.geometry?.type === 'Polygon' && pointInPolygon([tapLng, tapLat], f.geometry.coordinates)) {
+        if (!f) continue;
+        if (f.geometry?.type === 'Polygon' && pointInPolygon([tapLng, tapLat], f.geometry.coordinates as any)) {
           selectedFeature = f;
           break;
-        } else if (f.geometry?.type === 'MultiPolygon' && pointInMultiPolygon([tapLng, tapLat], f.geometry.coordinates)) {
+        } else if (f.geometry?.type === 'MultiPolygon' && pointInMultiPolygon([tapLng, tapLat], f.geometry.coordinates as any)) {
           selectedFeature = f;
           break;
         }

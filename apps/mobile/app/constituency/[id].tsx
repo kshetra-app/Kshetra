@@ -1,9 +1,12 @@
 import PodiumHistoryCard from '../../components/PodiumHistoryCard';
 import {
   getLatestPodiumForConstituency,
+  getHistoricalPodiumForConstituency,
   fetchHistoricalPodiumForConstituency,
   getLocalizedCandidateName,
+  type HistoricalPodiumContest,
 } from '../../lib/historicalPodiumStore';
+import { loadHistoricalResultsForState, getHistoricalResults } from '../../lib/seedDataLoader';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Platform, Pressable, Share, Image } from 'react-native';
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
@@ -178,14 +181,19 @@ export default function ConstituencyDetailScreen() {
   const [latestPodium, setLatestPodium] = useState(() => {
     return getLatestPodiumForConstituency(stateCode, acNo);
   });
+  const [historicalContests, setHistoricalContests] = useState<HistoricalPodiumContest[]>(() => {
+    return getHistoricalPodiumForConstituency(stateCode, acNo);
+  });
+  const [loadingHistory, setLoadingHistory] = useState(false);
+
   const effectiveRunnerUpName = latestPodium?.firstRunnerUp?.name || constituency?.runnerUpName || '';
   const demo = useMemo(() => getDemographicsForState(stateCode, acNo), [stateCode, acNo]);
 
   // Canonical authoritative latest podium contest
   const canonicalPodium = useMemo(() => {
-    const rawPodium = latestPodium;
-    if (!effectiveElectionYear) return rawPodium;
-    if (rawPodium && rawPodium.year >= effectiveElectionYear) {
+    const rawPodium = latestPodium || (historicalContests.length > 0 ? historicalContests[0] : null);
+    const effectiveYear = effectiveElectionYear || rawPodium?.year || 2024;
+    if (rawPodium && effectiveElectionYear && rawPodium.year >= effectiveElectionYear) {
       return rawPodium;
     }
     // If rawPodium is outdated compared to the authoritative electionYear, synthesize latest
@@ -197,31 +205,42 @@ export default function ConstituencyDetailScreen() {
       const winnerShare = totalValid > 0 ? parseFloat(((winnerVotes / totalValid) * 100).toFixed(2)) : 0;
       const ruShare = totalValid > 0 ? parseFloat(((runnerUpVotes / totalValid) * 100).toFixed(2)) : 0;
 
+      const rawRu2 = rawPodium?.secondRunnerUp || historicalContests[0]?.secondRunnerUp;
+
       return {
         year: effectiveElectionYear,
         delimitationId: rawPodium?.delimitationId || '4',
         totalValidVotes: totalValid,
         constituencyName: effectiveConstituencyName,
         marginWinnerToRunnerUp1: margin,
+        marginWinnerToRunnerUp2: rawRu2?.marginToWinner ?? rawPodium?.marginWinnerToRunnerUp2 ?? null,
+        marginRunnerUp1ToRunnerUp2: rawRu2?.marginToFirstRunnerUp ?? rawPodium?.marginRunnerUp1ToRunnerUp2 ?? null,
         winner: {
           name: effectiveWinnerName,
           party: effectiveWinnerParty,
           votes: winnerVotes,
           voteShare: winnerShare,
+          photoUrl: rawPodium?.winner?.photoUrl,
+          localizedNames: rawPodium?.winner?.localizedNames,
+          localizedParties: rawPodium?.winner?.localizedParties,
         },
         firstRunnerUp: {
-          name: effectiveRunnerUpName || constituency?.runnerUpName || '',
-          party: effectiveRunnerUp || constituency?.runnerUp || '',
+          name: effectiveRunnerUpName || constituency?.runnerUpName || rawPodium?.firstRunnerUp?.name || '',
+          party: effectiveRunnerUp || constituency?.runnerUp || rawPodium?.firstRunnerUp?.party || '',
           votes: runnerUpVotes,
           voteShare: ruShare,
           marginToWinner: margin,
+          photoUrl: rawPodium?.firstRunnerUp?.photoUrl,
+          localizedNames: rawPodium?.firstRunnerUp?.localizedNames,
+          localizedParties: rawPodium?.firstRunnerUp?.localizedParties,
         },
-        secondRunnerUp: null,
+        secondRunnerUp: rawRu2 || null,
       };
     }
     return rawPodium;
   }, [
     latestPodium,
+    historicalContests,
     effectiveElectionYear,
     effectiveWinnerParty,
     effectiveWinnerName,
@@ -233,16 +252,110 @@ export default function ConstituencyDetailScreen() {
     constituency,
   ]);
 
+  const contestToItem = useCallback((contest: HistoricalPodiumContest, sCode: string, acNum: number) => {
+    return {
+      id: `${sCode}-AC-${acNum}-${contest.year}`,
+      state_code: sCode,
+      ac_no: acNum,
+      year: contest.year,
+      delimitation_id: contest.delimitationId,
+      total_valid_votes: contest.totalValidVotes,
+      winner: contest.winner?.name,
+      party: contest.winner?.party,
+      winner_name: contest.winner?.name,
+      winner_party: contest.winner?.party,
+      winner_votes: contest.winner?.votes || 0,
+      winner_vote_share: contest.winner?.voteShare || 0,
+      winner_education: contest.winner?.education,
+      first_runner_up_name: contest.firstRunnerUp?.name,
+      first_runner_up_party: contest.firstRunnerUp?.party,
+      first_runner_up_votes: contest.firstRunnerUp?.votes || 0,
+      first_runner_up_vote_share: contest.firstRunnerUp?.voteShare || 0,
+      margin_winner_to_runner_up_1: contest.marginWinnerToRunnerUp1 ?? contest.firstRunnerUp?.marginToWinner,
+      second_runner_up_name: contest.secondRunnerUp?.name,
+      second_runner_up_party: contest.secondRunnerUp?.party,
+      second_runner_up_votes: contest.secondRunnerUp?.votes || 0,
+      second_runner_up_vote_share: contest.secondRunnerUp?.voteShare || 0,
+      margin_winner_to_runner_up_2: contest.marginWinnerToRunnerUp2 ?? contest.secondRunnerUp?.marginToWinner,
+      margin_runner_up_1_to_runner_up_2: contest.marginRunnerUp1ToRunnerUp2 ?? contest.secondRunnerUp?.marginToFirstRunnerUp,
+      winner_photo_url: contest.winner?.photoUrl,
+      first_runner_up_photo_url: contest.firstRunnerUp?.photoUrl,
+      second_runner_up_photo_url: contest.secondRunnerUp?.photoUrl,
+      localized_names_json: JSON.stringify({
+        winner: contest.winner?.localizedNames,
+        ru1: contest.firstRunnerUp?.localizedNames,
+        ru2: contest.secondRunnerUp?.localizedNames,
+      }),
+      localized_parties_json: JSON.stringify({
+        winner: contest.winner?.localizedParties,
+        ru1: contest.firstRunnerUp?.localizedParties,
+        ru2: contest.secondRunnerUp?.localizedParties,
+      }),
+    } as any;
+  }, []);
+
   useEffect(() => {
     let isMounted = true;
     const initial = getLatestPodiumForConstituency(stateCode, acNo);
     if (initial) {
       setLatestPodium(initial);
     }
-    fetchHistoricalPodiumForConstituency(stateCode, acNo).then((contests) => {
-      if (isMounted && contests && contests.length > 0) {
+    const cachedAll = getHistoricalPodiumForConstituency(stateCode, acNo);
+    if (cachedAll && cachedAll.length > 0) {
+      setHistoricalContests(cachedAll);
+    }
+
+    setLoadingHistory(true);
+    Promise.all([
+      loadHistoricalResultsForState(stateCode).catch(() => {}),
+      fetchHistoricalPodiumForConstituency(stateCode, acNo).catch(() => []),
+    ]).then(([_, apiContests]) => {
+      if (!isMounted) return;
+      let contests = (apiContests && apiContests.length > 0)
+        ? apiContests
+        : getHistoricalPodiumForConstituency(stateCode, acNo);
+
+      if (!contests || contests.length === 0) {
+        const sqliteRows = getHistoricalResults(stateCode, acNo);
+        if (sqliteRows && sqliteRows.length > 0) {
+          contests = sqliteRows.map((r: any) => ({
+            year: r.year,
+            delimitationId: String(r.delimitation_id || '4'),
+            totalValidVotes: r.total_valid_votes || 0,
+            constituencyName: r.constituency_name,
+            marginWinnerToRunnerUp1: r.margin_winner_to_runner_up_1,
+            marginWinnerToRunnerUp2: r.margin_winner_to_runner_up_2,
+            marginRunnerUp1ToRunnerUp2: r.margin_runner_up_1_to_runner_up_2,
+            winner: {
+              name: r.winner_name || r.winner,
+              party: r.winner_party || r.party,
+              votes: r.winner_votes,
+              voteShare: r.winner_vote_share,
+            },
+            firstRunnerUp: r.first_runner_up_name ? {
+              name: r.first_runner_up_name,
+              party: r.first_runner_up_party,
+              votes: r.first_runner_up_votes,
+              voteShare: r.first_runner_up_vote_share,
+              marginToWinner: r.margin_winner_to_runner_up_1,
+            } : null,
+            secondRunnerUp: r.second_runner_up_name ? {
+              name: r.second_runner_up_name,
+              party: r.second_runner_up_party,
+              votes: r.second_runner_up_votes,
+              voteShare: r.second_runner_up_vote_share,
+              marginToWinner: r.margin_winner_to_runner_up_2,
+              marginToFirstRunnerUp: r.margin_runner_up_1_to_runner_up_2,
+            } : null,
+          }));
+        }
+      }
+
+      if (contests && contests.length > 0) {
+        setHistoricalContests(contests);
         setLatestPodium(contests[0]);
       }
+      setLoadingHistory(false);
     });
     return () => { isMounted = false; };
   }, [stateCode, acNo]);
@@ -547,7 +660,7 @@ export default function ConstituencyDetailScreen() {
                 winner_party: canonicalPodium.winner?.party || effectiveWinnerParty,
                 winner_votes: canonicalPodium.winner?.votes || effectiveWinnerVotes || 0,
                 winner_vote_share: canonicalPodium.winner?.voteShare || 0,
-                winner_education: canonicalPodium.winner?.education || undefined,
+                winner_education: (canonicalPodium.winner as any)?.education || undefined,
                 first_runner_up_name: canonicalPodium.firstRunnerUp?.name || effectiveRunnerUpName || undefined,
                 first_runner_up_party: canonicalPodium.firstRunnerUp?.party || effectiveRunnerUp || undefined,
                 first_runner_up_votes: canonicalPodium.firstRunnerUp?.votes || 0,
@@ -630,34 +743,102 @@ export default function ConstituencyDetailScreen() {
         </View>
 
         {/* MLA Profile */}
-        {hasFull && (() => {
+        {(() => {
           const mla = getMLAProfileForState(stateCode, acNo);
-          return mla ? (
+          const winnerName = canonicalPodium?.winner?.name || effectiveWinnerName || mla?.name;
+          const winnerParty = canonicalPodium?.winner?.party || effectiveWinnerParty || mla?.party;
+          if (!winnerName && !mla) return null;
+
+          const effectiveMla = {
+            ...(mla || {}),
+            acNo,
+            name: winnerName || 'Current MLA',
+            party: winnerParty || 'IND',
+            photoUrl: canonicalPodium?.winner?.photoUrl || mla?.photoUrl,
+            education: (canonicalPodium?.winner as any)?.education || mla?.education,
+            profession: (canonicalPodium?.winner as any)?.profession || mla?.profession,
+            criminalCases: (canonicalPodium?.winner as any)?.criminalCases ?? mla?.criminalCases ?? 0,
+            totalAssets: (canonicalPodium?.winner as any)?.totalAssets ?? mla?.totalAssets,
+            totalLiabilities: (canonicalPodium?.winner as any)?.totalLiabilities ?? mla?.totalLiabilities,
+            constituencyName: effectiveConstituencyName,
+            district: effectiveDistrict,
+          };
+
+          const electionYr = canonicalPodium?.year || effectiveElectionYear || 2024;
+
+          return (
             <View style={styles.section}>
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                 <Text style={styles.sectionTitle}>{t('constituency.currentMlaSection')}</Text>
                 <View style={[styles.provenancePill, { backgroundColor: '#3B82F615', borderColor: '#3B82F640', paddingVertical: 2, paddingHorizontal: 6 }]}>
                   <View style={[styles.provenanceDot, { backgroundColor: '#3B82F6', width: 5, height: 5 }]} />
                   <Text style={[styles.provenanceText, { color: '#3B82F6', fontSize: 10 }]}>
-                    Offline Profile Seed
+                    Official Representative
                   </Text>
                 </View>
               </View>
               <MLACard
-                profile={mla}
-                onAvatarPress={(uri) => setPhotoViewer({ uri, name: mla.name, party: mla.party })}
+                profile={effectiveMla as any}
+                onAvatarPress={(uri) => setPhotoViewer({ uri, name: effectiveMla.name, party: effectiveMla.party })}
               />
               <Pressable
                 style={styles.fullProfileBtn}
-                onPress={() => router.push(effectiveElectionYear ? `/legislator/MLA_${stateCode}_${effectiveElectionYear}_${effectiveConstituencyName}_${acNo}` as any : `/legislator/MLA_${stateCode}_${effectiveConstituencyName}_${acNo}` as any)}
+                onPress={() => router.push(`/legislator/MLA_${stateCode}_${electionYr}_${acNo}_W` as any)}
               >
                 <Ionicons name="person-circle" size={16} color="#4F8EF7" />
                 <Text style={styles.fullProfileBtnText}>{t('constituencyExtended.viewCompleteProfile')}</Text>
                 <Ionicons name="chevron-forward" size={14} color="#4F8EF7" />
               </Pressable>
             </View>
-          ) : null;
+          );
         })()}
+
+        {/* Historical Political Data from 1999 to 2026 (Podium Format) */}
+        {historicalContests.length > 0 && (
+          <View style={styles.section}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Ionicons name="time" size={18} color="#002B7F" />
+                <Text style={styles.sectionTitle}>
+                  Historical Political Data (1999–2026)
+                </Text>
+              </View>
+              <Pressable
+                onPress={() => setActiveTab('history')}
+                style={[styles.provenancePill, { backgroundColor: '#002B7F15', borderColor: '#002B7F40', paddingVertical: 2, paddingHorizontal: 8 }]}
+              >
+                <Text style={[styles.provenanceText, { color: '#002B7F', fontSize: 11, fontWeight: '700' }]}>
+                  View All ({historicalContests.length})
+                </Text>
+                <Ionicons name="chevron-forward" size={12} color="#002B7F" />
+              </Pressable>
+            </View>
+
+            <Text style={{ fontSize: 12, color: colors.textMuted, marginBottom: 12 }}>
+              Assembly election podium results with 1st, 2nd, and 3rd place candidates, margins, and vote shares:
+            </Text>
+
+            {historicalContests.slice(0, 3).map((contest, idx) => (
+              <PodiumHistoryCard
+                key={contest.year}
+                item={contestToItem(contest, stateCode, acNo)}
+                isLatest={idx === 0}
+              />
+            ))}
+
+            {historicalContests.length > 3 && (
+              <Pressable
+                style={[styles.expandHistoryBtn, { borderColor: colors.border }]}
+                onPress={() => setActiveTab('history')}
+              >
+                <Text style={[styles.expandHistoryBtnText, { color: colors.primary }]}>
+                  Show All {historicalContests.length} Past Elections (1999–{historicalContests[historicalContests.length - 1]?.year || '1999'})
+                </Text>
+                <Ionicons name="arrow-forward-circle" size={16} color={colors.primary} />
+              </Pressable>
+            )}
+          </View>
+        )}
 
         {/* Administrative Hierarchy drill-down (Booth → Panchayat → Mandal) */}
         {hasHierarchyData(stateCode, acNo) && (
@@ -1050,22 +1231,33 @@ export default function ConstituencyDetailScreen() {
         {/* ═══════════════════════════════════════════════════════════════ */}
         {activeTab === 'history' && (<>
 
-        {/* Per-Constituency Election History (1999–2024 with Winner & Runner-up Podiums) */}
+        {/* Per-Constituency Election History (1999–2026 with Winner, 1st & 2nd Runner-up Podiums) */}
         {(() => {
-          const rawHistory = getHistoryForState(stateCode, acNo);
+          const rawContests = historicalContests.length > 0
+            ? historicalContests.map((c) => contestToItem(c, stateCode, acNo))
+            : getHistoryForState(stateCode, acNo).map((e) => ({
+                ...e,
+                state_code: stateCode,
+                ac_no: acNo,
+              } as any));
+
           // Sort descending: newest first down to 1999
-          const elections = [...rawHistory].sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
+          const elections = [...rawContests].sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
           const currentParty = constituency?.currentParty ?? effectiveWinnerParty;
           const stronghold = isStrongholdForState(stateCode, acNo, currentParty);
           const normalize = (p: string) => (p === 'TRS' ? 'BRS' : p);
 
-          const partyChanged = elections.length >= 2 &&
-            normalize(elections[0].party) !== normalize(elections[1].party);
+          const party1 = normalize(elections[0]?.winner_party || elections[0]?.party || '');
+          const party2 = normalize(elections[1]?.winner_party || elections[1]?.party || '');
+          const partyChanged = elections.length >= 2 && party1 && party2 && party1 !== party2;
 
           return (
             <View style={styles.section}>
               <View style={styles.histSectionHeader}>
-                <Text style={styles.sectionTitle}>{t('constituency.constituencyHistory')}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <Ionicons name="time" size={18} color="#002B7F" />
+                  <Text style={styles.sectionTitle}>{t('constituency.constituencyHistory')} (1999–2026)</Text>
+                </View>
                 {stronghold && (
                   <View style={styles.strongholdBadge}>
                     <Ionicons name="shield-checkmark" size={12} color="#10B981" />
@@ -1083,11 +1275,7 @@ export default function ConstituencyDetailScreen() {
               {elections.map((e, idx) => (
                 <PodiumHistoryCard
                   key={e.year}
-                  item={{
-                    ...e,
-                    state_code: stateCode,
-                    ac_no: acNo,
-                  } as any}
+                  item={e}
                   isLatest={idx === 0}
                 />
               ))}
@@ -2197,5 +2385,21 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800',
     color: '#047857',
+  },
+  expandHistoryBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    borderWidth: 1,
+    marginTop: 8,
+    backgroundColor: '#FFFFFF',
+  },
+  expandHistoryBtnText: {
+    fontSize: 13,
+    fontWeight: '700',
   },
 });

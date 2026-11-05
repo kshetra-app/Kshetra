@@ -60,7 +60,7 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
 
   const rawRu2 = item.second_runner_up_name;
   const cleanRu2 = !isGenericCandidate(rawRu2) ? rawRu2 : null;
-  const ru2Name = localizedNames?.ru2?.[currentLang] || (cleanRu2 ? getLocalizedCandidateName(cleanRu2, currentLang) : null) || cleanRu2;
+  const ru2Name = localizedNames?.ru2?.[currentLang] || (cleanRu2 ? getLocalizedCandidateName(cleanRu2, currentLang) : null) || cleanRu2 || (item.second_runner_up_party ? `${item.second_runner_up_party} Candidate` : null);
 
   // Parties
   const winnerParty = localizedParties?.winner?.[currentLang] || getLocalizedPartyName(item.winner_party || item.party, currentLang) || 'IND';
@@ -88,7 +88,7 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
     : (ru1Votes > 0 && ru2Votes > 0 ? ru1Votes - ru2Votes : null);
 
   const hasPodium = Boolean(cleanRu1 || (item.first_runner_up_votes && item.first_runner_up_votes > 0));
-  const hasThirdPlace = Boolean(cleanRu2);
+  const hasThirdPlace = Boolean(cleanRu2 || item.second_runner_up_party || (item.second_runner_up_votes && item.second_runner_up_votes > 0));
   const handlePressCandidate = (rank: 'W' | 'RU1' | 'RU2') => {
     if (item.ac_no) {
       const stateCode = item.state_code || 'TS';

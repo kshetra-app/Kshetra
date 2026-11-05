@@ -108,6 +108,62 @@ export async function fetchHistoricalPodiumForConstituency(
   } catch (err) {
     console.warn(`[historicalPodiumStore] Failed to fetch AC podium for ${code} ${acNoOrName}:`, err);
   }
+
+  // Offline / fallback from SQLite prebuilt database
+  try {
+    const { loadHistoricalResultsForState, getHistoricalResults } = require('./seedDataLoader');
+    await loadHistoricalResultsForState(code);
+    const acNum = typeof acNoOrName === 'number' ? acNoOrName : parseInt(String(acNoOrName), 10);
+    if (!isNaN(acNum)) {
+      const rows = getHistoricalResults(code, acNum);
+      if (rows && rows.length > 0) {
+        const converted: HistoricalPodiumContest[] = rows.map((r: any) => ({
+          year: r.year,
+          delimitationId: String(r.delimitation_id || '4'),
+          totalValidVotes: r.total_valid_votes || 0,
+          constituencyName: r.constituency_name,
+          marginWinnerToRunnerUp1: r.margin_winner_to_runner_up_1,
+          marginWinnerToRunnerUp2: r.margin_winner_to_runner_up_2,
+          marginRunnerUp1ToRunnerUp2: r.margin_runner_up_1_to_runner_up_2,
+          winner: {
+            name: r.winner_name || r.winner,
+            party: r.winner_party || r.party,
+            votes: r.winner_votes,
+            voteShare: r.winner_vote_share,
+            education: r.winner_education,
+            profession: r.winner_profession,
+            criminalCases: r.winner_criminal_cases,
+            totalAssets: r.winner_total_assets,
+            totalLiabilities: r.winner_total_liabilities,
+          },
+          firstRunnerUp: r.first_runner_up_name ? {
+            name: r.first_runner_up_name,
+            party: r.first_runner_up_party,
+            votes: r.first_runner_up_votes,
+            voteShare: r.first_runner_up_vote_share,
+            marginToWinner: r.margin_winner_to_runner_up_1,
+          } : null,
+          secondRunnerUp: r.second_runner_up_name ? {
+            name: r.second_runner_up_name,
+            party: r.second_runner_up_party,
+            votes: r.second_runner_up_votes,
+            voteShare: r.second_runner_up_vote_share,
+            marginToWinner: r.margin_winner_to_runner_up_2,
+            marginToFirstRunnerUp: r.margin_runner_up_1_to_runner_up_2,
+          } : null,
+        })).sort((a: any, b: any) => (b.year ?? 0) - (a.year ?? 0));
+
+        let stateMap = stateCache.get(code);
+        if (!stateMap) {
+          stateMap = {};
+          stateCache.set(code, stateMap);
+        }
+        stateMap[String(acNoOrName)] = converted;
+        return converted;
+      }
+    }
+  } catch {}
+
   return cached || [];
 }
 
@@ -184,7 +240,56 @@ export function getHistoricalPodiumForConstituency(
 
   const data = getStateData(code);
   const contests = data[String(acNoOrName)] || data[Number(acNoOrName) as any] || [];
-  return Array.isArray(contests) ? [...contests].sort((a, b) => (b.year ?? 0) - (a.year ?? 0)) : [];
+  if (Array.isArray(contests) && contests.length > 0) {
+    return [...contests].sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
+  }
+
+  try {
+    const { getHistoricalResults } = require('./seedDataLoader');
+    const acNum = typeof acNoOrName === 'number' ? acNoOrName : parseInt(String(acNoOrName), 10);
+    if (!isNaN(acNum)) {
+      const rows = getHistoricalResults(code, acNum);
+      if (rows && rows.length > 0) {
+        return rows.map((r: any) => ({
+          year: r.year,
+          delimitationId: String(r.delimitation_id || '4'),
+          totalValidVotes: r.total_valid_votes || 0,
+          constituencyName: r.constituency_name,
+          marginWinnerToRunnerUp1: r.margin_winner_to_runner_up_1,
+          marginWinnerToRunnerUp2: r.margin_winner_to_runner_up_2,
+          marginRunnerUp1ToRunnerUp2: r.margin_runner_up_1_to_runner_up_2,
+          winner: {
+            name: r.winner_name || r.winner,
+            party: r.winner_party || r.party,
+            votes: r.winner_votes,
+            voteShare: r.winner_vote_share,
+            education: r.winner_education,
+            profession: r.winner_profession,
+            criminalCases: r.winner_criminal_cases,
+            totalAssets: r.winner_total_assets,
+            totalLiabilities: r.winner_total_liabilities,
+          },
+          firstRunnerUp: r.first_runner_up_name ? {
+            name: r.first_runner_up_name,
+            party: r.first_runner_up_party,
+            votes: r.first_runner_up_votes,
+            voteShare: r.first_runner_up_vote_share,
+            marginToWinner: r.margin_winner_to_runner_up_1,
+          } : null,
+          secondRunnerUp: r.second_runner_up_name ? {
+            name: r.second_runner_up_name,
+            party: r.second_runner_up_party,
+            votes: r.second_runner_up_votes,
+            voteShare: r.second_runner_up_vote_share,
+            marginToWinner: r.margin_winner_to_runner_up_2,
+            marginToFirstRunnerUp: r.margin_runner_up_1_to_runner_up_2,
+          } : null,
+        })).sort((a: any, b: any) => (b.year ?? 0) - (a.year ?? 0));
+      }
+    }
+  } catch {}
+
+  return [];
 }
 
 /**

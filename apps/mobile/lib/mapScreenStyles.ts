@@ -441,6 +441,11 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E2E8F0',
   },
+  s1ThirdPlaceBox: {
+    backgroundColor: '#FFF7ED',
+    borderWidth: 1,
+    borderColor: '#FED7AA',
+  },
   s1CandidateLeft: {
     flexDirection: 'row',
     alignItems: 'center',

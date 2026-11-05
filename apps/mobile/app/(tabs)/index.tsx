@@ -83,7 +83,12 @@ import {
   getLocalizedReservation,
   getLocalizedConstituencyName,
 } from '../../lib/stateTranslations';
-import { getLocalizedCandidateName, getLatestPodiumForConstituency } from '../../lib/historicalPodiumStore';
+import {
+  getLocalizedCandidateName,
+  getLatestPodiumForConstituency,
+  fetchHistoricalPodiumForConstituency,
+  type HistoricalPodiumContest,
+} from '../../lib/historicalPodiumStore';
 import { useAffidavitStore } from '../../stores/affidavits';
 import { getBoothsForConstituency, hasHierarchyData, hasBoothData } from '../../lib/hierarchyData';
 import { useHasRepresentativeData } from '../../lib/representativesData';
@@ -192,14 +197,32 @@ function FullMapScreen() {
   const { t, i18n } = useTranslation();
   const cameraRef = useRef<any>(null);
   const bottomSheetRef = useRef<BottomSheet>(null);
+  const stateCode = useActiveStateStore((s) => s.stateCode);
   const [selected, setSelected] = useState<SelectedConstituency | null>(null);
+  const [selectedPodium, setSelectedPodium] = useState<HistoricalPodiumContest | null>(null);
   const selectedRef = useRef<SelectedConstituency | null>(null);
+
+  useEffect(() => {
+    if (!selected) {
+      setSelectedPodium(null);
+      return;
+    }
+    const sync = getLatestPodiumForConstituency(stateCode, selected.acNo);
+    if (sync) setSelectedPodium(sync);
+
+    let active = true;
+    fetchHistoricalPodiumForConstituency(stateCode, selected.acNo).then((contests) => {
+      if (active && contests && contests.length > 0) {
+        setSelectedPodium(contests[0]);
+      }
+    });
+    return () => { active = false; };
+  }, [selected?.acNo, stateCode]);
   const [spatialProvenance, setSpatialProvenance] = useState<SpatialProvenance>('NONE');
   const [userMarker, setUserMarker] = useState<[number, number] | null>(null);
   const [colorMode, setColorMode] = useState<MapColorMode>('party');
   const { loading: locating, requestLocation } = useUserLocation();
   const favoriteIds = useFavoritesStore((s) => s.favoriteIds);
-  const stateCode = useActiveStateStore((s) => s.stateCode);
   const setStateCode = useActiveStateStore((s) => s.setStateCode);
   const mapOnlyMode = useActiveStateStore((s) => s.mapOnlyMode);
   const broadcastMode = usePreferencesStore((s) => s.broadcastMode);
@@ -2131,7 +2154,7 @@ function FullMapScreen() {
         }}
       >
         {selected && (() => {
-          const podium = getLatestPodiumForConstituency(stateCode, selected.acNo);
+          const podium = selectedPodium || getLatestPodiumForConstituency(stateCode, selected.acNo);
           const winnerName = podium?.winner?.name || selected.winnerName;
           const winnerParty = podium?.winner?.party || selected.winner;
           const winnerVotes = podium?.winner?.votes || selected.votes;
@@ -2142,21 +2165,30 @@ function FullMapScreen() {
           const runnerUpVotes = podium?.firstRunnerUp?.votes || (selected.votes > selected.margin ? selected.votes - selected.margin : 0);
           const runnerUpColor = getPartyColor(runnerUpParty);
 
+          const ru2Name = podium?.secondRunnerUp?.name;
+          const ru2Party = podium?.secondRunnerUp?.party;
+          const ru2Votes = podium?.secondRunnerUp?.votes || 0;
+          const ru2Color = ru2Party ? getPartyColor(ru2Party) : '#B45309';
+
           const margin = podium?.marginWinnerToRunnerUp1 ?? selected.margin;
-          const totalValidVotes = podium?.totalValidVotes || (winnerVotes + runnerUpVotes);
+          const totalValidVotes = podium?.totalValidVotes || (winnerVotes + runnerUpVotes + ru2Votes);
           const winnerShare = podium?.winner?.voteShare ?? (totalValidVotes > 0 ? (winnerVotes / totalValidVotes) * 100 : 0);
           const runnerUpShare = podium?.firstRunnerUp?.voteShare ?? (totalValidVotes > 0 ? (runnerUpVotes / totalValidVotes) * 100 : 0);
-          const othersShare = Math.max(0, 100 - winnerShare - runnerUpShare);
+          const ru2Share = podium?.secondRunnerUp?.voteShare ?? (totalValidVotes > 0 && ru2Votes > 0 ? (ru2Votes / totalValidVotes) * 100 : 0);
+          const othersShare = Math.max(0, 100 - winnerShare - runnerUpShare - ru2Share);
+          const margin2 = podium?.marginWinnerToRunnerUp2 != null
+            ? podium.marginWinnerToRunnerUp2
+            : (winnerVotes > 0 && ru2Votes > 0 ? winnerVotes - ru2Votes : null);
 
           const mla = getMLAProfileForState(stateCode, selected.acNo);
           const affidavit = useAffidavitStore.getState().getWinnerAffidavit(stateCode, selected.acNo, selected.electionYear);
-          const totalAssets = affidavit?.totalAssets || mla?.totalAssets;
-          const totalLiabilities = affidavit?.totalLiabilities || mla?.totalLiabilities;
+          const totalAssets = affidavit?.totalAssets || mla?.totalAssets || podium?.winner?.totalAssets;
+          const totalLiabilities = affidavit?.totalLiabilities || mla?.totalLiabilities || podium?.winner?.totalLiabilities;
           const netWorth = (totalAssets != null && totalLiabilities != null) ? totalAssets - totalLiabilities : totalAssets;
-          const age = affidavit?.age || mla?.age;
-          const criminalCases = affidavit?.criminalCases ?? mla?.criminalCases ?? 0;
-          const education = affidavit?.education || mla?.education || 'Graduate';
-          const profession = affidavit?.profession || mla?.profession || 'Public Service';
+          const age = affidavit?.age || mla?.age || podium?.winner?.age;
+          const criminalCases = affidavit?.criminalCases ?? mla?.criminalCases ?? podium?.winner?.criminalCases ?? 0;
+          const education = affidavit?.education || mla?.education || podium?.winner?.education || 'Graduate';
+          const profession = affidavit?.profession || mla?.profession || podium?.winner?.profession || 'Public Service';
 
           return (
             <BottomSheetView style={styles.sheetContent}>
@@ -2240,8 +2272,14 @@ function FullMapScreen() {
                       </Text>
                     </View>
 
-                    {/* Winner Row */}
-                    <View style={[styles.s1CandidateBox, styles.s1WinnerBox]}>
+                    {/* Winner Row (Rank 1) */}
+                    <Pressable
+                      style={({ pressed }) => [styles.s1CandidateBox, styles.s1WinnerBox, { opacity: pressed ? 0.85 : 1 }]}
+                      onPress={() => {
+                        bottomSheetRef.current?.close();
+                        router.push(`/legislator/MLA_${stateCode}_${selected.electionYear}_${selected.acNo}_W` as any);
+                      }}
+                    >
                       <View style={styles.s1CandidateLeft}>
                         <View style={{ position: 'relative' }}>
                           <CandidateAvatar
@@ -2272,15 +2310,21 @@ function FullMapScreen() {
                         </View>
                       </View>
                       <View style={styles.s1CandidateVotesCol}>
-                        <Text style={styles.s1CandidateVotes}>{winnerVotes.toLocaleString()}</Text>
+                        <Text style={styles.s1CandidateVotes}>{winnerVotes > 0 ? winnerVotes.toLocaleString() : '—'}</Text>
                         <Text style={[styles.s1CandidateShare, { color: '#B45309' }]}>
                           {winnerShare.toFixed(1)}%
                         </Text>
                       </View>
-                    </View>
+                    </Pressable>
 
-                    {/* Runner-up Row */}
-                    <View style={[styles.s1CandidateBox, styles.s1RunnerUpBox]}>
+                    {/* Runner-up Row (Rank 2) */}
+                    <Pressable
+                      style={({ pressed }) => [styles.s1CandidateBox, styles.s1RunnerUpBox, { opacity: pressed ? 0.85 : 1 }]}
+                      onPress={() => {
+                        bottomSheetRef.current?.close();
+                        router.push(`/legislator/MLA_${stateCode}_${selected.electionYear}_${selected.acNo}_RU1` as any);
+                      }}
+                    >
                       <View style={styles.s1CandidateLeft}>
                         <View style={{ position: 'relative' }}>
                           <CandidateAvatar
@@ -2311,12 +2355,59 @@ function FullMapScreen() {
                         </View>
                       </View>
                       <View style={styles.s1CandidateVotesCol}>
-                        <Text style={styles.s1CandidateVotes}>{runnerUpVotes.toLocaleString()}</Text>
+                        <Text style={styles.s1CandidateVotes}>{runnerUpVotes > 0 ? runnerUpVotes.toLocaleString() : '—'}</Text>
                         <Text style={[styles.s1CandidateShare, { color: '#64748B' }]}>
                           -{margin.toLocaleString()} ({runnerUpShare.toFixed(1)}%)
                         </Text>
                       </View>
-                    </View>
+                    </Pressable>
+
+                    {/* 2nd Runner-up Row (Rank 3) */}
+                    {Boolean(ru2Name || (ru2Votes > 0 && ru2Party)) && (
+                      <Pressable
+                        style={({ pressed }) => [styles.s1CandidateBox, styles.s1ThirdPlaceBox, { opacity: pressed ? 0.85 : 1 }]}
+                        onPress={() => {
+                          bottomSheetRef.current?.close();
+                          router.push(`/legislator/MLA_${stateCode}_${selected.electionYear}_${selected.acNo}_RU2` as any);
+                        }}
+                      >
+                        <View style={styles.s1CandidateLeft}>
+                          <View style={{ position: 'relative' }}>
+                            <CandidateAvatar
+                              key={ru2Name || 'ru2'}
+                              name={ru2Name || `${ru2Party} Candidate`}
+                              party={ru2Party || 'IND'}
+                              size={34}
+                              onPress={(uri) => setPhotoViewer({ uri, name: ru2Name || `${ru2Party} Candidate`, party: ru2Party || '' })}
+                            />
+                            <View style={[styles.s1RankBadge, { backgroundColor: '#B45309' }]}>
+                              <Text style={styles.s1RankBadgeText}>3rd</Text>
+                            </View>
+                          </View>
+                          <View style={{ flex: 1, minWidth: 0 }}>
+                            <Text style={styles.s1CandidateName} numberOfLines={1}>
+                              {getLocalizedCandidateName(ru2Name || `${ru2Party} Candidate`, i18n.language) || ru2Name || `${ru2Party} Candidate`}
+                            </Text>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 }}>
+                              <View style={[styles.s1CandidatePartyPill, { backgroundColor: ru2Color }]}>
+                                <Text style={[styles.s1CandidatePartyPillText, { color: '#FFFFFF' }]}>
+                                  {ru2Party || 'IND'}
+                                </Text>
+                              </View>
+                              <Text style={styles.s1CandidatePartyFullName} numberOfLines={1}>
+                                {getLocalizedPartyName(ru2Party || 'IND', i18n.language) || ru2Party || 'IND'}
+                              </Text>
+                            </View>
+                          </View>
+                        </View>
+                        <View style={styles.s1CandidateVotesCol}>
+                          <Text style={styles.s1CandidateVotes}>{ru2Votes > 0 ? ru2Votes.toLocaleString() : '—'}</Text>
+                          <Text style={[styles.s1CandidateShare, { color: '#B45309' }]}>
+                            {margin2 != null && margin2 > 0 ? `-${margin2.toLocaleString()} ` : ''}({ru2Share.toFixed(1)}%)
+                          </Text>
+                        </View>
+                      </Pressable>
+                    )}
 
                     {/* Vote Share Tug-of-War Bar */}
                     <View style={{ marginTop: 6 }}>
@@ -2324,17 +2415,25 @@ function FullMapScreen() {
                         <Text style={{ fontSize: 10, fontWeight: '800', color: '#0F172A' }}>
                           {winnerParty}: {winnerShare.toFixed(1)}%
                         </Text>
+                        <Text style={{ fontSize: 10, fontWeight: '800', color: '#475569' }}>
+                          {runnerUpParty}: {runnerUpShare.toFixed(1)}%
+                        </Text>
+                        {ru2Share > 0 && (
+                          <Text style={{ fontSize: 10, fontWeight: '800', color: '#9A3412' }}>
+                            {ru2Party}: {ru2Share.toFixed(1)}%
+                          </Text>
+                        )}
                         <Text style={{ fontSize: 10, fontWeight: '700', color: '#64748B' }}>
                           Others: {othersShare.toFixed(1)}%
-                        </Text>
-                        <Text style={{ fontSize: 10, fontWeight: '800', color: '#0F172A' }}>
-                          {runnerUpParty}: {runnerUpShare.toFixed(1)}%
                         </Text>
                       </View>
                       <View style={styles.s1TugBarTrack}>
                         <View style={{ width: `${Math.min(100, Math.max(1, winnerShare))}%`, backgroundColor: winnerColor }} />
-                        <View style={{ width: `${Math.min(100, Math.max(0, othersShare))}%`, backgroundColor: '#CBD5E1' }} />
                         <View style={{ width: `${Math.min(100, Math.max(1, runnerUpShare))}%`, backgroundColor: runnerUpColor }} />
+                        {ru2Share > 0 && (
+                          <View style={{ width: `${Math.min(100, Math.max(1, ru2Share))}%`, backgroundColor: ru2Color }} />
+                        )}
+                        <View style={{ width: `${Math.min(100, Math.max(0, othersShare))}%`, backgroundColor: '#CBD5E1' }} />
                       </View>
                     </View>
 
@@ -2383,10 +2482,10 @@ function FullMapScreen() {
                           {t('legislator.assets', { defaultValue: 'Declared Assets' })}
                         </Text>
                         <Text style={styles.s1AffidavitValue}>
-                          {totalAssets != null ? `₹${(totalAssets / 10000000).toFixed(2)} Cr` : '₹3.27 Cr'}
+                          {totalAssets != null ? `₹${(totalAssets / 10000000).toFixed(2)} Cr` : 'Not Declared'}
                         </Text>
                         <Text style={styles.s1AffidavitSub}>
-                          {netWorth != null ? `Net: ₹${(netWorth / 10000000).toFixed(2)} Cr` : 'Verified'}
+                          {netWorth != null ? `Net: ₹${(netWorth / 10000000).toFixed(2)} Cr` : (totalAssets != null ? 'Declared' : 'Unfiled')}
                         </Text>
                       </View>
                       <View style={styles.s1AffidavitBox}>
@@ -2394,10 +2493,10 @@ function FullMapScreen() {
                           {t('legislator.age', { defaultValue: 'Age' })}
                         </Text>
                         <Text style={styles.s1AffidavitValue}>
-                          {age ? `${age} Yrs` : '62 Years'}
+                          {age ? `${age} Yrs` : '—'}
                         </Text>
                         <Text style={[styles.s1AffidavitSub, { color: '#64748B' }]}>
-                          {(affidavit as any)?.dob ? `DOB: ${(affidavit as any).dob}` : 'Gazette Verified'}
+                          {(affidavit as any)?.dob ? `DOB: ${(affidavit as any).dob}` : 'ECI Form 26'}
                         </Text>
                       </View>
                       <View style={styles.s1AffidavitBox}>
@@ -2451,7 +2550,7 @@ function FullMapScreen() {
                       onPress={() => {
                         tapLight();
                         bottomSheetRef.current?.close();
-                        router.push(`/legislator/${selected.acNo}` as any);
+                        router.push(`/legislator/MLA_${stateCode}_${selected.electionYear}_${selected.acNo}_W` as any);
                       }}
                     >
                       <Ionicons name="person" size={14} color="#002B7F" />

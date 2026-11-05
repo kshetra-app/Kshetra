@@ -37,6 +37,7 @@ interface Props {
   margin?: number | null;
   voteShare?: number | null;
   dob?: string | null;
+  rank?: "winner" | "ru1" | "ru2";
   onPhotoPress?: (uri: string | null) => void;
   onSharePress?: () => void;
 }
@@ -63,6 +64,7 @@ export default function ProfileHeroCard({
   margin,
   voteShare,
   dob,
+  rank = "winner",
   onPhotoPress,
   onSharePress,
 }: Props) {
@@ -88,7 +90,7 @@ export default function ProfileHeroCard({
 
   // Format Net Worth & Margin for Computed Metrics Pills
   const netWorthStr = useMemo(() => {
-    if (netWorth == null) return '₹2.98 Cr';
+    if (netWorth == null) return 'Not Declared';
     const abs = Math.abs(netWorth);
     if (abs >= 10000000) return `₹${(netWorth / 10000000).toFixed(2)} Cr`;
     if (abs >= 100000) return `₹${(netWorth / 100000).toFixed(1)} L`;
@@ -96,7 +98,7 @@ export default function ProfileHeroCard({
   }, [netWorth]);
 
   const marginStr = useMemo(() => {
-    if (margin == null) return '+31,245';
+    if (margin == null) return '—';
     return margin > 0 ? `+${margin.toLocaleString()}` : margin.toLocaleString();
   }, [margin]);
 
@@ -128,11 +130,9 @@ export default function ProfileHeroCard({
               </Text>
             </View>
           )}
-          {isCurrentMember && (
-            <View style={styles.activeCheckBadge}>
-              <Ionicons name="checkmark" size={11} color="#FFFFFF" />
-            </View>
-          )}
+          <View style={[styles.activeCheckBadge, { backgroundColor: rank === 'winner' ? '#10B981' : (rank === 'ru1' ? '#64748B' : '#B45309') }]}>
+            <Ionicons name={rank === 'winner' ? "checkmark" : (rank === 'ru1' ? "medal" : "ribbon")} size={10} color="#FFFFFF" />
+          </View>
         </Pressable>
 
         {/* Name & Identity */}
@@ -149,7 +149,7 @@ export default function ProfileHeroCard({
             <Text style={styles.aliasNameNavy} numberOfLines={1}>{fullName}</Text>
           )}
           <Text style={styles.officeSubtitle}>
-            {houseLabel} · {constituency} ({localizedDistrict})
+            {rank === 'winner' || isCurrentMember ? houseLabel : (rank === 'ru1' ? '1st Runner-up' : '2nd Runner-up')} · {constituency} ({localizedDistrict})
           </Text>
         </View>
 
@@ -158,7 +158,7 @@ export default function ProfileHeroCard({
           <View style={styles.computedMetricPill}>
             <Text style={styles.computedMetricLabel}>{t('legislator.age', { defaultValue: 'Age' })}</Text>
             <Text style={styles.computedMetricValue}>
-              {age ?? '62'} <Text style={styles.computedMetricUnit}>Yrs</Text>
+              {age != null ? age : '—'} <Text style={styles.computedMetricUnit}>{age != null ? 'Yrs' : ''}</Text>
             </Text>
           </View>
           <View style={styles.computedMetricPill}>
@@ -168,7 +168,7 @@ export default function ProfileHeroCard({
             </Text>
           </View>
           <View style={styles.computedMetricPill}>
-            <Text style={styles.computedMetricLabel}>{t('constituency.margin', { defaultValue: 'Margin' })}</Text>
+            <Text style={styles.computedMetricLabel}>{margin != null && margin < 0 ? t('constituency.deficit', { defaultValue: 'Deficit' }) : t('constituency.margin', { defaultValue: 'Margin' })}</Text>
             <Text style={[styles.computedMetricValue, { color: '#6EE7B7' }]}>
               {marginStr}
             </Text>
