@@ -34,6 +34,7 @@ interface Props {
   reservationType?: string;
   netWorth?: number | null;
   liabilities?: number | null;
+  votes?: number | null;
   margin?: number | null;
   voteShare?: number | null;
   dob?: string | null;
@@ -61,6 +62,7 @@ export default function ProfileHeroCard({
   reservationType,
   netWorth,
   liabilities,
+  votes,
   margin,
   voteShare,
   dob,
@@ -184,9 +186,17 @@ export default function ProfileHeroCard({
             </Text>
           </View>
           <View style={styles.computedMetricPill}>
-            <Text style={styles.computedMetricLabel}>{margin != null && margin < 0 ? t('constituency.deficit', { defaultValue: 'Deficit' }) : t('constituency.margin', { defaultValue: 'Margin' })}</Text>
+            <Text style={styles.computedMetricLabel}>
+              {rank === 'winner'
+                ? t('constituency.margin', { defaultValue: 'Margin' })
+                : t('constituency.votesPolled', { defaultValue: 'Votes Polled' })}
+            </Text>
             <Text style={[styles.computedMetricValue, { color: '#6EE7B7' }]}>
-              {marginStr}
+              {rank === 'winner'
+                ? marginStr
+                : (votes != null && votes > 0
+                    ? votes.toLocaleString()
+                    : (voteShare != null ? `${voteShare.toFixed(1)}%` : '—'))}
             </Text>
           </View>
         </View>

@@ -186,7 +186,10 @@ export default function ConstituencyDetailScreen() {
   });
   const [loadingHistory, setLoadingHistory] = useState(false);
 
-  const effectiveRunnerUpName = latestPodium?.firstRunnerUp?.name || constituency?.runnerUpName || '';
+  let effectiveRunnerUpName = latestPodium?.firstRunnerUp?.name || constituency?.runnerUpName || '';
+  if (/candidate/i.test(effectiveRunnerUpName) && constituency?.runnerUpName && !/candidate/i.test(constituency.runnerUpName)) {
+    effectiveRunnerUpName = constituency.runnerUpName;
+  }
   const demo = useMemo(() => getDemographicsForState(stateCode, acNo), [stateCode, acNo]);
   const mlaProfile = useMemo(() => getMLAProfileForState(stateCode, acNo), [stateCode, acNo]);
 

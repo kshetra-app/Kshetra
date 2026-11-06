@@ -80178,21 +80178,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Koneru Konappa",
-      "localizedNames": {
-        "en": "Koneru Konappa",
-        "te": "కోనేరు కోనప్ప",
-        "hi": "koneru konappa",
-        "kn": "koneru konappa",
-        "ta": "koneru konappa",
-        "mr": "koneru konappa",
-        "bn": "koneru konappa",
-        "gu": "koneru konappa",
-        "ml": "koneru konappa",
-        "pa": "koneru konappa",
-        "or": "koneru konappa",
-        "as": "koneru konappa",
-        "ne": "koneru konappa"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -80215,7 +80200,14 @@
       "voteShare": 32.43,
       "marginToWinner": 3088
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "R. S. Praveen Kumar",
+      "party": "BSP",
+      "votes": 44646,
+      "voteShare": 23.89,
+      "marginToWinner": 19056,
+      "marginToFirstRunnerUp": 15968
+    }
   },
   {
     "id": "TS-AC-2-2023",
@@ -80231,7 +80223,7 @@
     "marginRunnerUp1ToRunnerUp2": 66889,
     "winner": {
       "rank": 1,
-      "name": "Gaddam Vivekanand",
+      "name": "G. Vivekanand",
       "localizedNames": {
         "en": "Gaddam Vivekanand",
         "hi": "गडदम विवेकंअणड",
@@ -80281,21 +80273,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Balka Suman",
-      "localizedNames": {
-        "en": "Balka Suman",
-        "te": "బాల్క సుమన్",
-        "hi": "balka सुमन",
-        "kn": "balka सुमन",
-        "ta": "balka सुमन",
-        "mr": "balka सुमन",
-        "bn": "balka सुमन",
-        "gu": "balka सुमन",
-        "ml": "balka सुमन",
-        "pa": "balka सुमन",
-        "or": "balka सुमन",
-        "as": "balka सुमन",
-        "ne": "balka सुमन"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -80318,7 +80295,14 @@
       "voteShare": 32.86,
       "marginToWinner": 37515
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Durgam Ashok",
+      "party": "BJP",
+      "votes": 3375,
+      "voteShare": 2.22,
+      "marginToWinner": 84166,
+      "marginToFirstRunnerUp": 46651
+    }
   },
   {
     "id": "TS-AC-3-2023",
@@ -80334,7 +80318,7 @@
     "marginRunnerUp1ToRunnerUp2": 64386,
     "winner": {
       "rank": 1,
-      "name": "Gaddam Vinod",
+      "name": "Gaddam Vinod Kumar",
       "localizedNames": {
         "en": "Gaddam Vinod",
         "hi": "गडदम विणोड",
@@ -80384,21 +80368,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Durgam Chinnaiah",
-      "localizedNames": {
-        "en": "Durgam Chinnaiah",
-        "te": "దుర్గం చిన్నయ్య",
-        "hi": "durgam chinnaiah",
-        "kn": "durgam chinnaiah",
-        "ta": "durgam chinnaiah",
-        "mr": "durgam chinnaiah",
-        "bn": "durgam chinnaiah",
-        "gu": "durgam chinnaiah",
-        "ml": "durgam chinnaiah",
-        "pa": "durgam chinnaiah",
-        "or": "durgam chinnaiah",
-        "as": "durgam chinnaiah",
-        "ne": "durgam chinnaiah"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -80421,7 +80390,14 @@
       "voteShare": 31.96,
       "marginToWinner": 36878
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Amurajula Sridevi",
+      "party": "BJP",
+      "votes": 3812,
+      "voteShare": 2.69,
+      "marginToWinner": 78405,
+      "marginToFirstRunnerUp": 41527
+    }
   },
   {
     "id": "TS-AC-4-2023",
@@ -80486,22 +80462,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Verabelli Raghunath",
-      "localizedNames": {
-        "en": "Verabelli Raghunath",
-        "te": "verabelli raghunath",
-        "hi": "verabelli raghunath",
-        "kn": "verabelli raghunath",
-        "ta": "verabelli raghunath",
-        "mr": "verabelli raghunath",
-        "bn": "verabelli raghunath",
-        "gu": "verabelli raghunath",
-        "ml": "verabelli raghunath",
-        "pa": "verabelli raghunath",
-        "or": "verabelli raghunath",
-        "as": "verabelli raghunath",
-        "ne": "verabelli raghunath"
-      },
+      "name": "Raghunath Verabelli",
       "party": "BJP",
       "localizedParties": {
         "en": "Bharatiya Janata Party",
@@ -80524,7 +80485,14 @@
       "voteShare": 20.69,
       "marginToWinner": 66116
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Diwakar Rao Nadipelli",
+      "party": "BRS",
+      "votes": 37989,
+      "voteShare": 19.73,
+      "marginToWinner": 67956,
+      "marginToFirstRunnerUp": 1840
+    }
   },
   {
     "id": "TS-AC-5-2023",
@@ -80574,7 +80542,7 @@
       },
       "sex": "O",
       "age": 53,
-      "votes": 83036,
+      "votes": 83052,
       "voteShare": 44.97,
       "education": "Literate",
       "profession": "Zila Parishad Chairperson-Kumram Bheem Asifabad",
@@ -80590,21 +80558,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Ajmera Shyam",
-      "localizedNames": {
-        "en": "Ajmera Shyam",
-        "te": "ajmera shyam",
-        "hi": "ajmera shyam",
-        "kn": "ajmera shyam",
-        "ta": "ajmera shyam",
-        "mr": "ajmera shyam",
-        "bn": "ajmera shyam",
-        "gu": "ajmera shyam",
-        "ml": "ajmera shyam",
-        "pa": "ajmera shyam",
-        "or": "ajmera shyam",
-        "as": "ajmera shyam",
-        "ne": "ajmera shyam"
-      },
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -80623,11 +80576,18 @@
       },
       "sex": "O",
       "age": null,
-      "votes": 60238,
+      "votes": 60242,
       "voteShare": 32.62,
-      "marginToWinner": 22798
+      "marginToWinner": 22810
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Kotnaka Vijay Kumar",
+      "party": "INDEPENDENT POLITICIAN",
+      "votes": 16469,
+      "voteShare": 8.92,
+      "marginToWinner": 66583,
+      "marginToFirstRunnerUp": 43773
+    }
   },
   {
     "id": "TS-AC-6-2023",
@@ -80677,8 +80637,8 @@
       },
       "sex": "O",
       "age": 37,
-      "votes": 58870,
-      "voteShare": 33.79,
+      "votes": 72185,
+      "voteShare": 53.3,
       "education": "Post Graduate",
       "profession": "Agriculture",
       "totalAssets": 2430000,
@@ -80693,21 +80653,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Johnson Naik Bhukya",
-      "localizedNames": {
-        "en": "Johnson Naik Bhukya",
-        "te": "johnson naik bhukya",
-        "hi": "johnson naik bhukya",
-        "kn": "johnson naik bhukya",
-        "ta": "johnson naik bhukya",
-        "mr": "johnson naik bhukya",
-        "bn": "johnson naik bhukya",
-        "gu": "johnson naik bhukya",
-        "ml": "johnson naik bhukya",
-        "pa": "johnson naik bhukya",
-        "or": "johnson naik bhukya",
-        "as": "johnson naik bhukya",
-        "ne": "johnson naik bhukya"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -80726,9 +80671,9 @@
       },
       "sex": "O",
       "age": null,
-      "votes": 54168,
-      "voteShare": 31.09,
-      "marginToWinner": 4702
+      "votes": 63239,
+      "voteShare": 46.7,
+      "marginToWinner": 8946
     },
     "secondRunnerUp": null
   },
@@ -80746,7 +80691,7 @@
     "marginRunnerUp1ToRunnerUp2": 66287,
     "winner": {
       "rank": 1,
-      "name": "Payal Shanker",
+      "name": "Payal Shankar",
       "localizedNames": {
         "en": "Payal Shanker",
         "hi": "पयल शंकेर",
@@ -80796,21 +80741,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Jogu Ramanna",
-      "localizedNames": {
-        "en": "Jogu Ramanna",
-        "te": "jogu ramanna",
-        "hi": "jogu ramanna",
-        "kn": "jogu ramanna",
-        "ta": "jogu ramanna",
-        "mr": "jogu ramanna",
-        "bn": "jogu ramanna",
-        "gu": "jogu ramanna",
-        "ml": "jogu ramanna",
-        "pa": "jogu ramanna",
-        "or": "jogu ramanna",
-        "as": "jogu ramanna",
-        "ne": "jogu ramanna"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -80833,7 +80763,14 @@
       "voteShare": 32.29,
       "marginToWinner": 6692
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Kandi Srinivasa Reddy",
+      "party": "INC",
+      "votes": 47724,
+      "voteShare": 25.3,
+      "marginToWinner": 19884,
+      "marginToFirstRunnerUp": 13192
+    }
   },
   {
     "id": "TS-AC-8-2023",
@@ -80899,21 +80836,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Soyam Bapu Rao",
-      "localizedNames": {
-        "en": "Soyam Bapu Rao",
-        "te": "soyam bapu రావు",
-        "hi": "soyam bapu राव",
-        "kn": "soyam bapu राव",
-        "ta": "soyam bapu राव",
-        "mr": "soyam bapu राव",
-        "bn": "soyam bapu राव",
-        "gu": "soyam bapu राव",
-        "ml": "soyam bapu राव",
-        "pa": "soyam bapu राव",
-        "or": "soyam bapu राव",
-        "as": "soyam bapu राव",
-        "ne": "soyam bapu राव"
-      },
       "party": "BJP",
       "localizedParties": {
         "en": "Bharatiya Janata Party",
@@ -80936,7 +80858,14 @@
       "voteShare": 31.03,
       "marginToWinner": 22800
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Aade Gajender",
+      "party": "INC",
+      "votes": 32797,
+      "voteShare": 18.85,
+      "marginToWinner": 43995,
+      "marginToFirstRunnerUp": 21195
+    }
   },
   {
     "id": "TS-AC-9-2023",
@@ -81002,21 +80931,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Allola Indrakaran Reddy",
-      "localizedNames": {
-        "en": "Allola Indrakaran Reddy",
-        "te": "allola indrakaran రెడ్డి",
-        "hi": "allola indrakaran रेड्डी",
-        "kn": "allola indrakaran रेड्डी",
-        "ta": "allola indrakaran रेड्डी",
-        "mr": "allola indrakaran रेड्डी",
-        "bn": "allola indrakaran रेड्डी",
-        "gu": "allola indrakaran रेड्डी",
-        "ml": "allola indrakaran रेड्डी",
-        "pa": "allola indrakaran रेड्डी",
-        "or": "allola indrakaran रेड्डी",
-        "as": "allola indrakaran रेड्डी",
-        "ne": "allola indrakaran रेड्डी"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -81039,7 +80953,14 @@
       "voteShare": 28.28,
       "marginToWinner": 50703
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "K. Srihari Rao",
+      "party": "INC",
+      "votes": 28642,
+      "voteShare": 14.54,
+      "marginToWinner": 77758,
+      "marginToFirstRunnerUp": 27055
+    }
   },
   {
     "id": "TS-AC-10-2023",
@@ -81104,21 +81025,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Gaddigari Vittal Reddy",
-      "localizedNames": {
-        "en": "Gaddigari Vittal Reddy",
-        "te": "gaddigari విట్టల్ రెడ్డి",
-        "hi": "gaddigari vittal रेड्डी",
-        "kn": "gaddigari vittal रेड्डी",
-        "ta": "gaddigari vittal रेड्डी",
-        "mr": "gaddigari vittal रेड्डी",
-        "bn": "gaddigari vittal रेड्डी",
-        "gu": "gaddigari vittal रेड्डी",
-        "ml": "gaddigari vittal रेड्डी",
-        "pa": "gaddigari vittal रेड्डी",
-        "or": "gaddigari vittal रेड्डी",
-        "as": "gaddigari vittal रेड्डी",
-        "ne": "gaddigari vittal रेड्डी"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -81137,11 +81043,18 @@
       },
       "sex": "O",
       "age": null,
-      "votes": 74254,
+      "votes": 74253,
       "voteShare": 36.72,
       "marginToWinner": 23999
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Bhosle Narayan Rao Patil",
+      "party": "INC",
+      "votes": 15588,
+      "voteShare": 7.71,
+      "marginToWinner": 82664,
+      "marginToFirstRunnerUp": 58665
+    }
   },
   {
     "id": "TS-AC-11-2023",
@@ -81207,21 +81120,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Prodduturi Vinay Kumar Reddy",
-      "localizedNames": {
-        "en": "Prodduturi Vinay Kumar Reddy",
-        "te": "prodduturi vinay కుమార్ రెడ్డి",
-        "hi": "prodduturi vinay कुमार रेड्डी",
-        "kn": "prodduturi vinay कुमार रेड्डी",
-        "ta": "prodduturi vinay कुमार रेड्डी",
-        "mr": "prodduturi vinay कुमार रेड्डी",
-        "bn": "prodduturi vinay कुमार रेड्डी",
-        "gu": "prodduturi vinay कुमार रेड्डी",
-        "ml": "prodduturi vinay कुमार रेड्डी",
-        "pa": "prodduturi vinay कुमार रेड्डी",
-        "or": "prodduturi vinay कुमार रेड्डी",
-        "as": "prodduturi vinay कुमार रेड्डी",
-        "ne": "prodduturi vinay कुमार रेड्डी"
-      },
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -81244,7 +81142,14 @@
       "voteShare": 26.56,
       "marginToWinner": 29669
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Asannagari Jeevan Reddy",
+      "party": "BRS",
+      "votes": 39395,
+      "voteShare": 24.34,
+      "marginToWinner": 33263,
+      "marginToFirstRunnerUp": 3594
+    }
   },
   {
     "id": "TS-AC-12-2023",
@@ -81299,22 +81204,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Mohammed Shakil Aamir",
-      "localizedNames": {
-        "en": "Mohammed Shakil Aamir",
-        "te": "mohammed షకీల్ ఆమిర్",
-        "hi": "mohammed shakil aamir",
-        "kn": "mohammed shakil aamir",
-        "ta": "mohammed shakil aamir",
-        "mr": "mohammed shakil aamir",
-        "bn": "mohammed shakil aamir",
-        "gu": "mohammed shakil aamir",
-        "ml": "mohammed shakil aamir",
-        "pa": "mohammed shakil aamir",
-        "or": "mohammed shakil aamir",
-        "as": "mohammed shakil aamir",
-        "ne": "mohammed shakil aamir"
-      },
+      "name": "Mohammed Shakil Amir",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -81337,7 +81227,14 @@
       "voteShare": 37.17,
       "marginToWinner": 3062
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Vaddi Mohan Reddy",
+      "party": "BJP",
+      "votes": 33555,
+      "voteShare": 19.52,
+      "marginToWinner": 33408,
+      "marginToFirstRunnerUp": 30346
+    }
   },
   {
     "id": "TS-AC-13-2023",
@@ -81402,22 +81299,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Hanmant Shinde",
-      "localizedNames": {
-        "en": "Hanmant Shinde",
-        "te": "hanmant షిండే",
-        "hi": "hanmant shinde",
-        "kn": "hanmant shinde",
-        "ta": "hanmant shinde",
-        "mr": "hanmant shinde",
-        "bn": "hanmant shinde",
-        "gu": "hanmant shinde",
-        "ml": "hanmant shinde",
-        "pa": "hanmant shinde",
-        "or": "hanmant shinde",
-        "as": "hanmant shinde",
-        "ne": "hanmant shinde"
-      },
+      "name": "Hanmanth Shinde",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -81440,7 +81322,14 @@
       "voteShare": 38.49,
       "marginToWinner": 1152
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "T. Aruna Thara",
+      "party": "BJP",
+      "votes": 28437,
+      "voteShare": 17.28,
+      "marginToWinner": 36052,
+      "marginToFirstRunnerUp": 34900
+    }
   },
   {
     "id": "TS-AC-14-2023",
@@ -81505,21 +81394,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Eanugu Ravinder Reddy",
-      "localizedNames": {
-        "en": "Eanugu Ravinder Reddy",
-        "te": "eanugu ravinder రెడ్డి",
-        "hi": "eanugu ravinder रेड्डी",
-        "kn": "eanugu ravinder रेड्डी",
-        "ta": "eanugu ravinder रेड्डी",
-        "mr": "eanugu ravinder रेड्डी",
-        "bn": "eanugu ravinder रेड्डी",
-        "gu": "eanugu ravinder रेड्डी",
-        "ml": "eanugu ravinder रेड्डी",
-        "pa": "eanugu ravinder रेड्डी",
-        "or": "eanugu ravinder रेड्डी",
-        "as": "eanugu ravinder रेड्डी",
-        "ne": "eanugu ravinder रेड्डी"
-      },
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -81542,7 +81416,14 @@
       "voteShare": 32.99,
       "marginToWinner": 23464
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Laxmi Narayana Yendala",
+      "party": "BJP",
+      "votes": 23685,
+      "voteShare": 14.8,
+      "marginToWinner": 52593,
+      "marginToFirstRunnerUp": 29129
+    }
   },
   {
     "id": "TS-AC-15-2023",
@@ -81607,22 +81488,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Jajala Surendar",
-      "localizedNames": {
-        "en": "Jajala Surendar",
-        "te": "jajala surendar",
-        "hi": "jajala surendar",
-        "kn": "jajala surendar",
-        "ta": "jajala surendar",
-        "mr": "jajala surendar",
-        "bn": "jajala surendar",
-        "gu": "jajala surendar",
-        "ml": "jajala surendar",
-        "pa": "jajala surendar",
-        "or": "jajala surendar",
-        "as": "jajala surendar",
-        "ne": "jajala surendar"
-      },
+      "name": "Jajala Surender",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -81645,7 +81511,14 @@
       "voteShare": 34.08,
       "marginToWinner": 24001
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Vadepally Subhash Reddy",
+      "party": "BJP",
+      "votes": 27000,
+      "voteShare": 14.61,
+      "marginToWinner": 59989,
+      "marginToFirstRunnerUp": 35988
+    }
   },
   {
     "id": "TS-AC-16-2023",
@@ -81661,7 +81534,7 @@
     "marginRunnerUp1ToRunnerUp2": 74351,
     "winner": {
       "rank": 1,
-      "name": "K. V. Ramana Reddy",
+      "name": "Katipally Venkata Ramana Reddy",
       "localizedNames": {
         "en": "K. V. Ramana Reddy",
         "hi": "क. व. रमंअ रेडडय",
@@ -81710,22 +81583,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "K. Chandrashekar Rao",
-      "localizedNames": {
-        "en": "K. Chandrashekar Rao",
-        "te": "k. చంద్రశేఖర్ రావు",
-        "hi": "k. चंद्रशेखर राव",
-        "kn": "k. चंद्रशेखर राव",
-        "ta": "k. चंद्रशेखर राव",
-        "mr": "k. चंद्रशेखर राव",
-        "bn": "k. चंद्रशेखर राव",
-        "gu": "k. चंद्रशेखर राव",
-        "ml": "k. चंद्रशेखर राव",
-        "pa": "k. चंद्रशेखर राव",
-        "or": "k. चंद्रशेखर राव",
-        "as": "k. चंद्रशेखर राव",
-        "ne": "k. चंद्रशेखर राव"
-      },
+      "name": "Kalvakuntla Chandrashekar Rao",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -81748,7 +81606,14 @@
       "voteShare": 31.06,
       "marginToWinner": 6741
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Anumula Revanth Reddy",
+      "party": "INC",
+      "votes": 54916,
+      "voteShare": 28.47,
+      "marginToWinner": 11736,
+      "marginToFirstRunnerUp": 4995
+    }
   },
   {
     "id": "TS-AC-17-2023",
@@ -81764,7 +81629,7 @@
     "marginRunnerUp1ToRunnerUp2": 73513,
     "winner": {
       "rank": 1,
-      "name": "Dhanpal Suryanarayana Gupta",
+      "name": "Dhanpal Suryanarayana",
       "localizedNames": {
         "en": "Dhanpal Suryanarayana Gupta",
         "hi": "धणपल सुरयंअरयंअ गुपत",
@@ -81814,21 +81679,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Mohammed Ali Shabbir",
-      "localizedNames": {
-        "en": "Mohammed Ali Shabbir",
-        "te": "mohammed ali shabbir",
-        "hi": "mohammed ali shabbir",
-        "kn": "mohammed ali shabbir",
-        "ta": "mohammed ali shabbir",
-        "mr": "mohammed ali shabbir",
-        "bn": "mohammed ali shabbir",
-        "gu": "mohammed ali shabbir",
-        "ml": "mohammed ali shabbir",
-        "pa": "mohammed ali shabbir",
-        "or": "mohammed ali shabbir",
-        "as": "mohammed ali shabbir",
-        "ne": "mohammed ali shabbir"
-      },
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -81851,7 +81701,14 @@
       "voteShare": 32.47,
       "marginToWinner": 15387
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Bigala Ganesh",
+      "party": "BRS",
+      "votes": 44829,
+      "voteShare": 24.32,
+      "marginToWinner": 30411,
+      "marginToFirstRunnerUp": 15024
+    }
   },
   {
     "id": "TS-AC-18-2023",
@@ -81917,21 +81774,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Bajireddy Goverdhan",
-      "localizedNames": {
-        "en": "Bajireddy Goverdhan",
-        "te": "bajireddy goverdhan",
-        "hi": "bajireddy goverdhan",
-        "kn": "bajireddy goverdhan",
-        "ta": "bajireddy goverdhan",
-        "mr": "bajireddy goverdhan",
-        "bn": "bajireddy goverdhan",
-        "gu": "bajireddy goverdhan",
-        "ml": "bajireddy goverdhan",
-        "pa": "bajireddy goverdhan",
-        "or": "bajireddy goverdhan",
-        "as": "bajireddy goverdhan",
-        "ne": "bajireddy goverdhan"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -81954,7 +81796,14 @@
       "voteShare": 28.93,
       "marginToWinner": 21963
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Dinesh Kumar Kulachari",
+      "party": "BJP",
+      "votes": 49723,
+      "voteShare": 25.5,
+      "marginToWinner": 28655,
+      "marginToFirstRunnerUp": 6692
+    }
   },
   {
     "id": "TS-AC-19-2023",
@@ -82019,22 +81868,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Muthyala Sunil Kumar",
-      "localizedNames": {
-        "en": "Muthyala Sunil Kumar",
-        "te": "muthyala sunil కుమార్",
-        "hi": "muthyala sunil कुमार",
-        "kn": "muthyala sunil कुमार",
-        "ta": "muthyala sunil कुमार",
-        "mr": "muthyala sunil कुमार",
-        "bn": "muthyala sunil कुमार",
-        "gu": "muthyala sunil कुमार",
-        "ml": "muthyala sunil कुमार",
-        "pa": "muthyala sunil कुमार",
-        "or": "muthyala sunil कुमार",
-        "as": "muthyala sunil कुमार",
-        "ne": "muthyala sunil कुमार"
-      },
+      "name": "Sunil Kumar Muthyala",
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -82057,7 +81891,14 @@
       "voteShare": 37.68,
       "marginToWinner": 4533
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Annapurna Devi Aleti",
+      "party": "BJP",
+      "votes": 30250,
+      "voteShare": 17.3,
+      "marginToWinner": 40167,
+      "marginToFirstRunnerUp": 35634
+    }
   },
   {
     "id": "TS-AC-20-2023",
@@ -82123,21 +81964,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Dharmapuri Arvind",
-      "localizedNames": {
-        "en": "Dharmapuri Arvind",
-        "te": "dharmapuri arvind",
-        "hi": "dharmapuri arvind",
-        "kn": "dharmapuri arvind",
-        "ta": "dharmapuri arvind",
-        "mr": "dharmapuri arvind",
-        "bn": "dharmapuri arvind",
-        "gu": "dharmapuri arvind",
-        "ml": "dharmapuri arvind",
-        "pa": "dharmapuri arvind",
-        "or": "dharmapuri arvind",
-        "as": "dharmapuri arvind",
-        "ne": "dharmapuri arvind"
-      },
       "party": "BJP",
       "localizedParties": {
         "en": "Bharatiya Janata Party",
@@ -82160,7 +81986,14 @@
       "voteShare": 33.67,
       "marginToWinner": 10305
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Juvvadi Narsinga Rao",
+      "party": "INC",
+      "votes": 39647,
+      "voteShare": 21.6,
+      "marginToWinner": 32468,
+      "marginToFirstRunnerUp": 22163
+    }
   },
   {
     "id": "TS-AC-21-2023",
@@ -82226,21 +82059,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "T. Jeevan Reddy",
-      "localizedNames": {
-        "en": "T. Jeevan Reddy",
-        "te": "t. జీవన్ రెడ్డి",
-        "hi": "t. jeevan रेड्डी",
-        "kn": "t. jeevan रेड्डी",
-        "ta": "t. jeevan रेड्डी",
-        "mr": "t. jeevan रेड्डी",
-        "bn": "t. jeevan रेड्डी",
-        "gu": "t. jeevan रेड्डी",
-        "ml": "t. jeevan रेड्डी",
-        "pa": "t. jeevan रेड्डी",
-        "or": "t. jeevan रेड्डी",
-        "as": "t. jeevan रेड्डी",
-        "ne": "t. jeevan रेड्डी"
-      },
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -82263,7 +82081,14 @@
       "voteShare": 30.86,
       "marginToWinner": 15822
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Boga Shravani",
+      "party": "BJP",
+      "votes": 42138,
+      "voteShare": 23.89,
+      "marginToWinner": 28105,
+      "marginToFirstRunnerUp": 12283
+    }
   },
   {
     "id": "TS-AC-22-2023",
@@ -82313,8 +82138,8 @@
       },
       "sex": "O",
       "age": 57,
-      "votes": 91393,
-      "voteShare": 50.3,
+      "votes": 81723,
+      "voteShare": 56.77,
       "education": "Others",
       "profession": "Self Employed",
       "totalAssets": 11871800,
@@ -82328,21 +82153,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Koppula Eshwar",
-      "localizedNames": {
-        "en": "Koppula Eshwar",
-        "te": "koppula eshwar",
-        "hi": "koppula eshwar",
-        "kn": "koppula eshwar",
-        "ta": "koppula eshwar",
-        "mr": "koppula eshwar",
-        "bn": "koppula eshwar",
-        "gu": "koppula eshwar",
-        "ml": "koppula eshwar",
-        "pa": "koppula eshwar",
-        "or": "koppula eshwar",
-        "as": "koppula eshwar",
-        "ne": "koppula eshwar"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -82361,9 +82171,9 @@
       },
       "sex": "O",
       "age": null,
-      "votes": 69354,
-      "voteShare": 38.17,
-      "marginToWinner": 22039
+      "votes": 62241,
+      "voteShare": 43.23,
+      "marginToWinner": 19482
     },
     "secondRunnerUp": null
   },
@@ -82430,22 +82240,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Korukanti Chandar Patel",
-      "localizedNames": {
-        "en": "Korukanti Chandar Patel",
-        "te": "korukanti chandar patel",
-        "hi": "korukanti chandar patel",
-        "kn": "korukanti chandar patel",
-        "ta": "korukanti chandar patel",
-        "mr": "korukanti chandar patel",
-        "bn": "korukanti chandar patel",
-        "gu": "korukanti chandar patel",
-        "ml": "korukanti chandar patel",
-        "pa": "korukanti chandar patel",
-        "or": "korukanti chandar patel",
-        "as": "korukanti chandar patel",
-        "ne": "korukanti chandar patel"
-      },
+      "name": "Korukanti Chandar",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -82468,7 +82263,14 @@
       "voteShare": 23.16,
       "marginToWinner": 56794
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Kandula Sandhyarani",
+      "party": "BJP",
+      "votes": 12966,
+      "voteShare": 8.48,
+      "marginToWinner": 79261,
+      "marginToFirstRunnerUp": 22467
+    }
   },
   {
     "id": "TS-AC-24-2023",
@@ -82484,7 +82286,7 @@
     "marginRunnerUp1ToRunnerUp2": 58226,
     "winner": {
       "rank": 1,
-      "name": "Duddilla Sridhar Babu",
+      "name": "Sridhar Babu",
       "localizedNames": {
         "en": "Duddilla Sridhar Babu",
         "hi": "डुडडिलल सरिधर बबु",
@@ -82533,22 +82335,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Putta Madhukar",
-      "localizedNames": {
-        "en": "Putta Madhukar",
-        "te": "putta madhukar",
-        "hi": "putta madhukar",
-        "kn": "putta madhukar",
-        "ta": "putta madhukar",
-        "mr": "putta madhukar",
-        "bn": "putta madhukar",
-        "gu": "putta madhukar",
-        "ml": "putta madhukar",
-        "pa": "putta madhukar",
-        "or": "putta madhukar",
-        "as": "putta madhukar",
-        "ne": "putta madhukar"
-      },
+      "name": "Putta Madhu",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -82571,7 +82358,14 @@
       "voteShare": 36.86,
       "marginToWinner": 31380
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Chandrupatla Sunil Reddy",
+      "party": "BJP",
+      "votes": 5779,
+      "voteShare": 2.94,
+      "marginToWinner": 98043,
+      "marginToFirstRunnerUp": 66663
+    }
   },
   {
     "id": "TS-AC-25-2023",
@@ -82622,26 +82416,11 @@
       "sex": "O",
       "age": null,
       "votes": 118888,
-      "voteShare": 57.17
+      "voteShare": 57.41
     },
     "firstRunnerUp": {
       "rank": 2,
       "name": "Dasari Manohar Reddy",
-      "localizedNames": {
-        "en": "Dasari Manohar Reddy",
-        "te": "dasari manohar రెడ్డి",
-        "hi": "dasari manohar रेड्डी",
-        "kn": "dasari manohar रेड्डी",
-        "ta": "dasari manohar रेड्डी",
-        "mr": "dasari manohar रेड्डी",
-        "bn": "dasari manohar रेड्डी",
-        "gu": "dasari manohar रेड्डी",
-        "ml": "dasari manohar रेड्डी",
-        "pa": "dasari manohar रेड्डी",
-        "or": "dasari manohar रेड्डी",
-        "as": "dasari manohar रेड्डी",
-        "ne": "dasari manohar रेड्डी"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -82661,10 +82440,17 @@
       "sex": "O",
       "age": null,
       "votes": 63780,
-      "voteShare": 30.67,
+      "voteShare": 30.8,
       "marginToWinner": 55108
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Dasari Usha",
+      "party": "BSP",
+      "votes": 10315,
+      "voteShare": 4.98,
+      "marginToWinner": 108573,
+      "marginToFirstRunnerUp": 53465
+    }
   },
   {
     "id": "TS-AC-26-2023",
@@ -82730,21 +82516,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Bandi Sanjay Kumar",
-      "localizedNames": {
-        "en": "Bandi Sanjay Kumar",
-        "te": "bandi సంజయ్ కుమార్",
-        "hi": "bandi sanjay कुमार",
-        "kn": "bandi sanjay कुमार",
-        "ta": "bandi sanjay कुमार",
-        "mr": "bandi sanjay कुमार",
-        "bn": "bandi sanjay कुमार",
-        "gu": "bandi sanjay कुमार",
-        "ml": "bandi sanjay कुमार",
-        "pa": "bandi sanjay कुमार",
-        "or": "bandi sanjay कुमार",
-        "as": "bandi sanjay कुमार",
-        "ne": "bandi sanjay कुमार"
-      },
       "party": "BJP",
       "localizedParties": {
         "en": "Bharatiya Janata Party",
@@ -82767,7 +82538,14 @@
       "voteShare": 38.74,
       "marginToWinner": 3163
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Purumalla Srinivas",
+      "party": "INC",
+      "votes": 40057,
+      "voteShare": 17.43,
+      "marginToWinner": 52122,
+      "marginToFirstRunnerUp": 48959
+    }
   },
   {
     "id": "TS-AC-27-2023",
@@ -82783,7 +82561,7 @@
     "marginRunnerUp1ToRunnerUp2": 63586,
     "winner": {
       "rank": 1,
-      "name": "Medipally Satyam",
+      "name": "Medipally Sathyam",
       "localizedNames": {
         "en": "Medipally Satyam",
         "hi": "मेडिपललय सटयम",
@@ -82823,21 +82601,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Sunke Ravi Shankar",
-      "localizedNames": {
-        "en": "Sunke Ravi Shankar",
-        "te": "sunke ravi శంకర్",
-        "hi": "sunke ravi शंकर",
-        "kn": "sunke ravi शंकर",
-        "ta": "sunke ravi शंकर",
-        "mr": "sunke ravi शंकर",
-        "bn": "sunke ravi शंकर",
-        "gu": "sunke ravi शंकर",
-        "ml": "sunke ravi शंकर",
-        "pa": "sunke ravi शंकर",
-        "or": "sunke ravi शंकर",
-        "as": "sunke ravi शंकर",
-        "ne": "sunke ravi शंकर"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -82860,7 +82623,14 @@
       "voteShare": 29.07,
       "marginToWinner": 37439
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Bodiga Shobha",
+      "party": "BJP",
+      "votes": 26669,
+      "voteShare": 14.64,
+      "marginToWinner": 63726,
+      "marginToFirstRunnerUp": 26287
+    }
   },
   {
     "id": "TS-AC-28-2023",
@@ -82925,22 +82695,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Chalimeda Lakshmi Narasimha Rao",
-      "localizedNames": {
-        "en": "Chalimeda Lakshmi Narasimha Rao",
-        "te": "chalimeda లక్ష్మి narasimha రావు",
-        "hi": "chalimeda लक्ष्मी narasimha राव",
-        "kn": "chalimeda लक्ष्मी narasimha राव",
-        "ta": "chalimeda लक्ष्मी narasimha राव",
-        "mr": "chalimeda लक्ष्मी narasimha राव",
-        "bn": "chalimeda लक्ष्मी narasimha राव",
-        "gu": "chalimeda लक्ष्मी narasimha राव",
-        "ml": "chalimeda लक्ष्मी narasimha राव",
-        "pa": "chalimeda लक्ष्मी narasimha राव",
-        "or": "chalimeda लक्ष्मी narasimha राव",
-        "as": "chalimeda लक्ष्मी narasimha राव",
-        "ne": "chalimeda लक्ष्मी narasimha राव"
-      },
+      "name": "Chalmeda Lakshmi Narasimha Rao",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -82963,7 +82718,14 @@
       "voteShare": 32.66,
       "marginToWinner": 14581
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Chennamaneni Vikas",
+      "party": "BJP",
+      "votes": 29710,
+      "voteShare": 17.06,
+      "marginToWinner": 41741,
+      "marginToFirstRunnerUp": 27160
+    }
   },
   {
     "id": "TS-AC-29-2023",
@@ -83029,21 +82791,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "K. K. Mahender Reddy",
-      "localizedNames": {
-        "en": "K. K. Mahender Reddy",
-        "te": "k. k. mahender రెడ్డి",
-        "hi": "k. k. mahender रेड्डी",
-        "kn": "k. k. mahender रेड्डी",
-        "ta": "k. k. mahender रेड्डी",
-        "mr": "k. k. mahender रेड्डी",
-        "bn": "k. k. mahender रेड्डी",
-        "gu": "k. k. mahender रेड्डी",
-        "ml": "k. k. mahender रेड्डी",
-        "pa": "k. k. mahender रेड्डी",
-        "or": "k. k. mahender रेड्डी",
-        "as": "k. k. mahender रेड्डी",
-        "ne": "k. k. mahender रेड्डी"
-      },
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -83066,7 +82813,14 @@
       "voteShare": 31.56,
       "marginToWinner": 29687
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Rani Rudrama Reddy",
+      "party": "BJP",
+      "votes": 18328,
+      "voteShare": 9.71,
+      "marginToWinner": 70916,
+      "marginToFirstRunnerUp": 41229
+    }
   },
   {
     "id": "TS-AC-30-2023",
@@ -83082,7 +82836,7 @@
     "marginRunnerUp1ToRunnerUp2": 63329,
     "winner": {
       "rank": 1,
-      "name": "Kavvampally Satyanarayana",
+      "name": "Dr. Kavvampally Satyanarayana",
       "localizedNames": {
         "en": "Kavvampally Satyanarayana",
         "hi": "कववमपललय सटयंअरयंअ",
@@ -83117,26 +82871,11 @@
       "sex": "O",
       "age": null,
       "votes": 96773,
-      "voteShare": 52.08
+      "voteShare": 52.64
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Erupula Balakishan",
-      "localizedNames": {
-        "en": "Erupula Balakishan",
-        "te": "erupula balakishan",
-        "hi": "erupula balakishan",
-        "kn": "erupula balakishan",
-        "ta": "erupula balakishan",
-        "mr": "erupula balakishan",
-        "bn": "erupula balakishan",
-        "gu": "erupula balakishan",
-        "ml": "erupula balakishan",
-        "pa": "erupula balakishan",
-        "or": "erupula balakishan",
-        "as": "erupula balakishan",
-        "ne": "erupula balakishan"
-      },
+      "name": "Erupula Balakishan Rasamayi",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -83156,10 +82895,17 @@
       "sex": "O",
       "age": null,
       "votes": 64408,
-      "voteShare": 34.66,
+      "voteShare": 35.04,
       "marginToWinner": 32365
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Arepally Mohan",
+      "party": "BJP",
+      "votes": 14879,
+      "voteShare": 8.09,
+      "marginToWinner": 81894,
+      "marginToFirstRunnerUp": 49529
+    }
   },
   {
     "id": "TS-AC-31-2023",
@@ -83175,7 +82921,7 @@
     "marginRunnerUp1ToRunnerUp2": 77331,
     "winner": {
       "rank": 1,
-      "name": "Padi Kaushik Reddy",
+      "name": "Kaushik Reddy",
       "localizedNames": {
         "en": "Padi Kaushik Reddy",
         "hi": "पडि कौशिक रेडडय",
@@ -83224,22 +82970,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Etela Rajender",
-      "localizedNames": {
-        "en": "Etela Rajender",
-        "te": "etela rajender",
-        "hi": "etela rajender",
-        "kn": "etela rajender",
-        "ta": "etela rajender",
-        "mr": "etela rajender",
-        "bn": "etela rajender",
-        "gu": "etela rajender",
-        "ml": "etela rajender",
-        "pa": "etela rajender",
-        "or": "etela rajender",
-        "as": "etela rajender",
-        "ne": "etela rajender"
-      },
+      "name": "Etela Rajendar",
       "party": "BJP",
       "localizedParties": {
         "en": "Bharatiya Janata Party",
@@ -83262,7 +82993,14 @@
       "voteShare": 30.32,
       "marginToWinner": 16873
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Vodithala Pranav",
+      "party": "INC",
+      "votes": 53164,
+      "voteShare": 25.4,
+      "marginToWinner": 27169,
+      "marginToFirstRunnerUp": 10296
+    }
   },
   {
     "id": "TS-AC-32-2023",
@@ -83327,22 +83065,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Voditela Satish Kumar",
-      "localizedNames": {
-        "en": "Voditela Satish Kumar",
-        "te": "voditela satish కుమార్",
-        "hi": "voditela satish कुमार",
-        "kn": "voditela satish कुमार",
-        "ta": "voditela satish कुमार",
-        "mr": "voditela satish कुमार",
-        "bn": "voditela satish कुमार",
-        "gu": "voditela satish कुमार",
-        "ml": "voditela satish कुमार",
-        "pa": "voditela satish कुमार",
-        "or": "voditela satish कुमार",
-        "as": "voditela satish कुमार",
-        "ne": "voditela satish कुमार"
-      },
+      "name": "Vodithela Sathish Kumar",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -83365,7 +83088,14 @@
       "voteShare": 39.48,
       "marginToWinner": 19344
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Bomma Sriram Chakravarthy",
+      "party": "BJP",
+      "votes": 8338,
+      "voteShare": 4.03,
+      "marginToWinner": 92617,
+      "marginToFirstRunnerUp": 73273
+    }
   },
   {
     "id": "TS-AC-33-2023",
@@ -83381,7 +83111,7 @@
     "marginRunnerUp1ToRunnerUp2": 69998,
     "winner": {
       "rank": 1,
-      "name": "Thanneeru Harish Rao",
+      "name": "T. Harish Rao",
       "localizedNames": {
         "en": "Thanneeru Harish Rao",
         "hi": "थणणीरु हरिश रओ",
@@ -83430,22 +83160,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Pujala Hari Krishna",
-      "localizedNames": {
-        "en": "Pujala Hari Krishna",
-        "te": "pujala hari కృష్ణ",
-        "hi": "pujala hari कृष्ण",
-        "kn": "pujala hari कृष्ण",
-        "ta": "pujala hari कृष्ण",
-        "mr": "pujala hari कृष्ण",
-        "bn": "pujala hari कृष्ण",
-        "gu": "pujala hari कृष्ण",
-        "ml": "pujala hari कृष्ण",
-        "pa": "pujala hari कृष्ण",
-        "or": "pujala hari कृष्ण",
-        "as": "pujala hari कृष्ण",
-        "ne": "pujala hari कृष्ण"
-      },
+      "name": "Pujala Harikrishna",
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -83468,7 +83183,14 @@
       "voteShare": 12.79,
       "marginToWinner": 82308
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Dudi Srikanth Reddy",
+      "party": "BJP",
+      "votes": 23201,
+      "voteShare": 12.79,
+      "marginToWinner": 82313,
+      "marginToFirstRunnerUp": 5
+    }
   },
   {
     "id": "TS-AC-34-2023",
@@ -83484,7 +83206,7 @@
     "marginRunnerUp1ToRunnerUp2": 66622,
     "winner": {
       "rank": 1,
-      "name": "Mynampally Rohith",
+      "name": "Mynampally Rohit",
       "localizedNames": {
         "en": "Mynampally Rohith",
         "hi": "मयनमपललय रोहिठ",
@@ -83533,21 +83255,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Padma Devender Reddy",
-      "localizedNames": {
-        "en": "Padma Devender Reddy",
-        "te": "padma devender రెడ్డి",
-        "hi": "padma devender रेड्डी",
-        "kn": "padma devender रेड्डी",
-        "ta": "padma devender रेड्डी",
-        "mr": "padma devender रेड्डी",
-        "bn": "padma devender रेड्डी",
-        "gu": "padma devender रेड्डी",
-        "ml": "padma devender रेड्डी",
-        "pa": "padma devender रेड्डी",
-        "or": "padma devender रेड्डी",
-        "as": "padma devender रेड्डी",
-        "ne": "padma devender रेड्डी"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -83570,7 +83277,14 @@
       "voteShare": 41.19,
       "marginToWinner": 10157
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Panja Vijay Kumar",
+      "party": "BJP",
+      "votes": 13657,
+      "voteShare": 7.31,
+      "marginToWinner": 73469,
+      "marginToFirstRunnerUp": 63312
+    }
   },
   {
     "id": "TS-AC-35-2023",
@@ -83636,21 +83350,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Mahareddy Bhupal Reddy",
-      "localizedNames": {
-        "en": "Mahareddy Bhupal Reddy",
-        "te": "mahareddy bhupal రెడ్డి",
-        "hi": "mahareddy bhupal रेड्डी",
-        "kn": "mahareddy bhupal रेड्डी",
-        "ta": "mahareddy bhupal रेड्डी",
-        "mr": "mahareddy bhupal रेड्डी",
-        "bn": "mahareddy bhupal रेड्डी",
-        "gu": "mahareddy bhupal रेड्डी",
-        "ml": "mahareddy bhupal रेड्डी",
-        "pa": "mahareddy bhupal रेड्डी",
-        "or": "mahareddy bhupal रेड्डी",
-        "as": "mahareddy bhupal रेड्डी",
-        "ne": "mahareddy bhupal रेड्डी"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -83673,7 +83372,14 @@
       "voteShare": 43.72,
       "marginToWinner": 6547
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Jenawade Sangappa",
+      "party": "BJP",
+      "votes": 7823,
+      "voteShare": 4.03,
+      "marginToWinner": 83550,
+      "marginToFirstRunnerUp": 77003
+    }
   },
   {
     "id": "TS-AC-36-2023",
@@ -83689,7 +83395,7 @@
     "marginRunnerUp1ToRunnerUp2": 65282,
     "winner": {
       "rank": 1,
-      "name": "C. Damodar Raja Narasimha",
+      "name": "Damodar Raja Narasimha",
       "localizedNames": {
         "en": "C. Damodar Raja Narasimha",
         "hi": "c. दमोदर रज नरसिमह",
@@ -83728,22 +83434,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Chanti Karanthi Kiran",
-      "localizedNames": {
-        "en": "Chanti Karanthi Kiran",
-        "te": "chanti karanthi kiran",
-        "hi": "chanti karanthi kiran",
-        "kn": "chanti karanthi kiran",
-        "ta": "chanti karanthi kiran",
-        "mr": "chanti karanthi kiran",
-        "bn": "chanti karanthi kiran",
-        "gu": "chanti karanthi kiran",
-        "ml": "chanti karanthi kiran",
-        "pa": "chanti karanthi kiran",
-        "or": "chanti karanthi kiran",
-        "as": "chanti karanthi kiran",
-        "ne": "chanti karanthi kiran"
-      },
+      "name": "Chanti Kranthi Kiran",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -83766,7 +83457,14 @@
       "voteShare": 40.4,
       "marginToWinner": 28193
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Babu Mohan Palli",
+      "party": "BJP",
+      "votes": 5524,
+      "voteShare": 2.6,
+      "marginToWinner": 108623,
+      "marginToFirstRunnerUp": 80430
+    }
   },
   {
     "id": "TS-AC-37-2023",
@@ -83782,7 +83480,7 @@
     "marginRunnerUp1ToRunnerUp2": 76507,
     "winner": {
       "rank": 1,
-      "name": "Vakiti Sunitha Laxma Reddy",
+      "name": "Sunitha Laxma Reddy V",
       "localizedNames": {
         "en": "Vakiti Sunitha Laxma Reddy",
         "hi": "वकिटि सुणिथ लxम रेडडय",
@@ -83822,21 +83520,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Aavula Raji Reddy",
-      "localizedNames": {
-        "en": "Aavula Raji Reddy",
-        "te": "aavula raji రెడ్డి",
-        "hi": "aavula raji रेड्डी",
-        "kn": "aavula raji रेड्डी",
-        "ta": "aavula raji रेड्डी",
-        "mr": "aavula raji रेड्डी",
-        "bn": "aavula raji रेड्डी",
-        "gu": "aavula raji रेड्डी",
-        "ml": "aavula raji रेड्डी",
-        "pa": "aavula raji रेड्डी",
-        "or": "aavula raji रेड्डी",
-        "as": "aavula raji रेड्डी",
-        "ne": "aavula raji रेड्डी"
-      },
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -83859,7 +83542,14 @@
       "voteShare": 40.17,
       "marginToWinner": 8855
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Arragolla Muralidhar Yadav",
+      "party": "BJP",
+      "votes": 22865,
+      "voteShare": 11.54,
+      "marginToWinner": 65545,
+      "marginToFirstRunnerUp": 56690
+    }
   },
   {
     "id": "TS-AC-38-2023",
@@ -83924,22 +83614,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "A. Chandrasekhar Rao",
-      "localizedNames": {
-        "en": "A. Chandrasekhar Rao",
-        "te": "a. chandrasekhar రావు",
-        "hi": "a. chandrasekhar राव",
-        "kn": "a. chandrasekhar राव",
-        "ta": "a. chandrasekhar राव",
-        "mr": "a. chandrasekhar राव",
-        "bn": "a. chandrasekhar राव",
-        "gu": "a. chandrasekhar राव",
-        "ml": "a. chandrasekhar राव",
-        "pa": "a. chandrasekhar राव",
-        "or": "a. chandrasekhar राव",
-        "as": "a. chandrasekhar राव",
-        "ne": "a. chandrasekhar राव"
-      },
+      "name": "Agam Chandra Sekhar",
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -83962,7 +83637,14 @@
       "voteShare": 40.37,
       "marginToWinner": 12790
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Ramchandra Raja Narasimha",
+      "party": "BJP",
+      "votes": 13645,
+      "voteShare": 6.53,
+      "marginToWinner": 83560,
+      "marginToFirstRunnerUp": 70770
+    }
   },
   {
     "id": "TS-AC-39-2023",
@@ -84028,21 +83710,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Jagga Reddy",
-      "localizedNames": {
-        "en": "Jagga Reddy",
-        "te": "jagga రెడ్డి",
-        "hi": "jagga रेड्डी",
-        "kn": "jagga रेड्डी",
-        "ta": "jagga रेड्डी",
-        "mr": "jagga रेड्डी",
-        "bn": "jagga रेड्डी",
-        "gu": "jagga रेड्डी",
-        "ml": "jagga रेड्डी",
-        "pa": "jagga रेड्डी",
-        "or": "jagga रेड्डी",
-        "as": "jagga रेड्डी",
-        "ne": "jagga रेड्डी"
-      },
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -84065,7 +83732,14 @@
       "voteShare": 39.94,
       "marginToWinner": 8217
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Pulimamidi Raju",
+      "party": "BJP",
+      "votes": 20921,
+      "voteShare": 11.15,
+      "marginToWinner": 62191,
+      "marginToFirstRunnerUp": 53974
+    }
   },
   {
     "id": "TS-AC-40-2023",
@@ -84081,7 +83755,7 @@
     "marginRunnerUp1ToRunnerUp2": 81629,
     "winner": {
       "rank": 1,
-      "name": "Gudem Mahipal Reddy",
+      "name": "G. Mahipal Reddy",
       "localizedNames": {
         "en": "Gudem Mahipal Reddy",
         "hi": "गुडेम मःइपल रेडडय",
@@ -84131,21 +83805,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Kata Srinivas Goud",
-      "localizedNames": {
-        "en": "Kata Srinivas Goud",
-        "te": "kata శ్రీనివాస్ గౌడ్",
-        "hi": "kata श्रीनिवास गौड़",
-        "kn": "kata श्रीनिवास गौड़",
-        "ta": "kata श्रीनिवास गौड़",
-        "mr": "kata श्रीनिवास गौड़",
-        "bn": "kata श्रीनिवास गौड़",
-        "gu": "kata श्रीनिवास गौड़",
-        "ml": "kata श्रीनिवास गौड़",
-        "pa": "kata श्रीनिवास गौड़",
-        "or": "kata श्रीनिवास गौड़",
-        "as": "kata श्रीनिवास गौड़",
-        "ne": "kata श्रीनिवास गौड़"
-      },
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -84168,7 +83827,14 @@
       "voteShare": 35.5,
       "marginToWinner": 7091
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Neelam Madhu Mudhiraj",
+      "party": "BSP",
+      "votes": 46162,
+      "voteShare": 16.67,
+      "marginToWinner": 59225,
+      "marginToFirstRunnerUp": 52134
+    }
   },
   {
     "id": "TS-AC-41-2023",
@@ -84224,21 +83890,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Raghunandan Rao",
-      "localizedNames": {
-        "en": "Raghunandan Rao",
-        "te": "raghunandan రావు",
-        "hi": "raghunandan राव",
-        "kn": "raghunandan राव",
-        "ta": "raghunandan राव",
-        "mr": "raghunandan राव",
-        "bn": "raghunandan राव",
-        "gu": "raghunandan राव",
-        "ml": "raghunandan राव",
-        "pa": "raghunandan राव",
-        "or": "raghunandan राव",
-        "as": "raghunandan राव",
-        "ne": "raghunandan राव"
-      },
       "party": "BJP",
       "localizedParties": {
         "en": "Bharatiya Janata Party",
@@ -84261,7 +83912,14 @@
       "voteShare": 25.39,
       "marginToWinner": 53513
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Cheruku Srinivas Reddy",
+      "party": "INC",
+      "votes": 25235,
+      "voteShare": 14.44,
+      "marginToWinner": 72644,
+      "marginToFirstRunnerUp": 19131
+    }
   },
   {
     "id": "TS-AC-42-2023",
@@ -84277,7 +83935,7 @@
     "marginRunnerUp1ToRunnerUp2": 72128,
     "winner": {
       "rank": 1,
-      "name": "K. Chandrashekar Rao",
+      "name": "Kalvakuntla Chandrashekhar Rao",
       "localizedNames": {
         "en": "K. Chandrashekar Rao",
         "hi": "क. चंडरशेकर रओ",
@@ -84327,21 +83985,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Etela Rajender",
-      "localizedNames": {
-        "en": "Etela Rajender",
-        "te": "etela rajender",
-        "hi": "etela rajender",
-        "kn": "etela rajender",
-        "ta": "etela rajender",
-        "mr": "etela rajender",
-        "bn": "etela rajender",
-        "gu": "etela rajender",
-        "ml": "etela rajender",
-        "pa": "etela rajender",
-        "or": "etela rajender",
-        "as": "etela rajender",
-        "ne": "etela rajender"
-      },
       "party": "BJP",
       "localizedParties": {
         "en": "Bharatiya Janata Party",
@@ -84364,7 +84007,14 @@
       "voteShare": 28.68,
       "marginToWinner": 45031
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Thoomkunta Narsa Reddy",
+      "party": "INC",
+      "votes": 32568,
+      "voteShare": 14.01,
+      "marginToWinner": 79116,
+      "marginToFirstRunnerUp": 34085
+    }
   },
   {
     "id": "TS-AC-43-2023",
@@ -84380,7 +84030,7 @@
     "marginRunnerUp1ToRunnerUp2": 81237,
     "winner": {
       "rank": 1,
-      "name": "Chamakura Malla Reddy",
+      "name": "Malla Reddy",
       "localizedNames": {
         "en": "Chamakura Malla Reddy",
         "hi": "चमकुर मलल रेडडय",
@@ -84430,21 +84080,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Thotakura Vajresh Yadav",
-      "localizedNames": {
-        "en": "Thotakura Vajresh Yadav",
-        "te": "thotakura vajresh yadav",
-        "hi": "thotakura vajresh yadav",
-        "kn": "thotakura vajresh yadav",
-        "ta": "thotakura vajresh yadav",
-        "mr": "thotakura vajresh yadav",
-        "bn": "thotakura vajresh yadav",
-        "gu": "thotakura vajresh yadav",
-        "ml": "thotakura vajresh yadav",
-        "pa": "thotakura vajresh yadav",
-        "or": "thotakura vajresh yadav",
-        "as": "thotakura vajresh yadav",
-        "ne": "thotakura vajresh yadav"
-      },
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -84467,7 +84102,14 @@
       "voteShare": 38.1,
       "marginToWinner": 33419
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Yenugu Sudharshan Reddy",
+      "party": "BJP",
+      "votes": 50535,
+      "voteShare": 12.62,
+      "marginToWinner": 135482,
+      "marginToFirstRunnerUp": 102063
+    }
   },
   {
     "id": "TS-AC-44-2023",
@@ -84532,31 +84174,37 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Mynampally Hanumanth Rao",
-      "localizedNames": {
-        "en": "Mynampally Hanumanth Rao",
-        "te": "mynampally hanumanth రావు",
-        "hi": "mynampally hanumanth राव",
-        "kn": "mynampally hanumanth राव",
-        "ta": "mynampally hanumanth राव",
-        "mr": "mynampally hanumanth राव",
-        "bn": "mynampally hanumanth राव",
-        "gu": "mynampally hanumanth राव",
-        "ml": "mynampally hanumanth राव",
-        "pa": "mynampally hanumanth राव",
-        "or": "mynampally hanumanth राव",
-        "as": "mynampally hanumanth राव",
-        "ne": "mynampally hanumanth राव"
+      "name": "Mynampally Hanmanth Rao",
+      "party": "INC",
+      "localizedParties": {
+        "en": "Indian National Congress",
+        "te": "భారత జాతీయ కాంగ్రెస్",
+        "hi": "भारतीय राष्ट्रीय कांग्रेस",
+        "kn": "ಭಾರತೀಯ ರಾಷ್ಟ್ರೀಯ ಕಾಂಗ್ರೆಸ್",
+        "mr": "भारतीय राष्ट्रीय काँग्रेस",
+        "ta": "இந்திய தேசிய காங்கிரஸ்",
+        "ml": "ഇന്ത്യൻ നാഷണൽ കോൺഗ്രസ്",
+        "bn": "ভারতীয় জাতীয় কংগ্রেস",
+        "gu": "ભારતીય રાષ્ટ્રીય કોંગ્રેસ",
+        "pa": "ਭਾਰਤੀ ਰਾਸ਼ਟਰੀ ਕਾਂਗਰਸ",
+        "or": "ଭାରତୀୟ ଜାତୀୟ କଂଗ୍ରେସ",
+        "as": "ভাৰতীয় জাতীয় কংগ্ৰেছ",
+        "ne": "भारतीय राष्ट्रिय काङ्ग्रेस"
       },
-      "party": "IND",
-      "localizedParties": {},
       "sex": "O",
       "age": null,
       "votes": 75519,
       "voteShare": 28.45,
       "marginToWinner": 49530
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Naraparaju Ramchander Rao",
+      "party": "BJP",
+      "votes": 55427,
+      "voteShare": 20.88,
+      "marginToWinner": 69622,
+      "marginToFirstRunnerUp": 20092
+    }
   },
   {
     "id": "TS-AC-45-2023",
@@ -84572,7 +84220,7 @@
     "marginRunnerUp1ToRunnerUp2": 76693,
     "winner": {
       "rank": 1,
-      "name": "K. P. Vivekanand",
+      "name": "K. P. Vivekanand Goud",
       "localizedNames": {
         "en": "K. P. Vivekanand",
         "hi": "क. प. विवेकंअणड",
@@ -84622,21 +84270,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Kuna Srisailam Goud",
-      "localizedNames": {
-        "en": "Kuna Srisailam Goud",
-        "te": "kuna srisailam గౌడ్",
-        "hi": "kuna srisailam गौड़",
-        "kn": "kuna srisailam गौड़",
-        "ta": "kuna srisailam गौड़",
-        "mr": "kuna srisailam गौड़",
-        "bn": "kuna srisailam गौड़",
-        "gu": "kuna srisailam गौड़",
-        "ml": "kuna srisailam गौड़",
-        "pa": "kuna srisailam गौड़",
-        "or": "kuna srisailam गौड़",
-        "as": "kuna srisailam गौड़",
-        "ne": "kuna srisailam गौड़"
-      },
       "party": "BJP",
       "localizedParties": {
         "en": "Bharatiya Janata Party",
@@ -84659,7 +84292,14 @@
       "voteShare": 25.5,
       "marginToWinner": 85576
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Kolan Hanmanth Reddy",
+      "party": "INC",
+      "votes": 101554,
+      "voteShare": 25.28,
+      "marginToWinner": 86445,
+      "marginToFirstRunnerUp": 869
+    }
   },
   {
     "id": "TS-AC-46-2023",
@@ -84709,36 +84349,42 @@
       },
       "sex": "O",
       "age": null,
-      "votes": 135636,
+      "votes": 135635,
       "voteShare": 54.08
     },
     "firstRunnerUp": {
       "rank": 2,
       "name": "Bandi Ramesh",
-      "localizedNames": {
-        "en": "Bandi Ramesh",
-        "te": "bandi రమేష్",
-        "hi": "bandi रमेश",
-        "kn": "bandi रमेश",
-        "ta": "bandi रमेश",
-        "mr": "bandi रमेश",
-        "bn": "bandi रमेश",
-        "gu": "bandi रमेश",
-        "ml": "bandi रमेश",
-        "pa": "bandi रमेश",
-        "or": "bandi रमेश",
-        "as": "bandi रमेश",
-        "ne": "bandi रमेश"
+      "party": "INC",
+      "localizedParties": {
+        "en": "Indian National Congress",
+        "te": "భారత జాతీయ కాంగ్రెస్",
+        "hi": "भारतीय राष्ट्रीय कांग्रेस",
+        "kn": "ಭಾರತೀಯ ರಾಷ್ಟ್ರೀಯ ಕಾಂಗ್ರೆಸ್",
+        "mr": "भारतीय राष्ट्रीय काँग्रेस",
+        "ta": "இந்திய தேசிய காங்கிரஸ்",
+        "ml": "ഇന്ത്യൻ നാഷണൽ കോൺഗ്രസ്",
+        "bn": "ভারতীয় জাতীয় কংগ্রেস",
+        "gu": "ભારતીય રાષ્ટ્રીય કોંગ્રેસ",
+        "pa": "ਭਾਰਤੀ ਰਾਸ਼ਟਰੀ ਕਾਂਗਰਸ",
+        "or": "ଭାରତୀୟ ଜାତୀୟ କଂଗ୍ରେସ",
+        "as": "ভাৰতীয় জাতীয় কংগ্ৰেছ",
+        "ne": "भारतीय राष्ट्रिय काङ्ग्रेस"
       },
-      "party": "IND",
-      "localizedParties": {},
       "sex": "O",
       "age": null,
       "votes": 65248,
       "voteShare": 26.02,
       "marginToWinner": 70387
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Mummareddy Prem Kumar",
+      "party": "JSP",
+      "votes": 39830,
+      "voteShare": 15.88,
+      "marginToWinner": 95805,
+      "marginToFirstRunnerUp": 25418
+    }
   },
   {
     "id": "TS-AC-47-2023",
@@ -84793,31 +84439,37 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Mandumula Parameshwar Reddy",
-      "localizedNames": {
-        "en": "Mandumula Parameshwar Reddy",
-        "te": "mandumula parameshwar రెడ్డి",
-        "hi": "mandumula parameshwar रेड्डी",
-        "kn": "mandumula parameshwar रेड्डी",
-        "ta": "mandumula parameshwar रेड्डी",
-        "mr": "mandumula parameshwar रेड्डी",
-        "bn": "mandumula parameshwar रेड्डी",
-        "gu": "mandumula parameshwar रेड्डी",
-        "ml": "mandumula parameshwar रेड्डी",
-        "pa": "mandumula parameshwar रेड्डी",
-        "or": "mandumula parameshwar रेड्डी",
-        "as": "mandumula parameshwar रेड्डी",
-        "ne": "mandumula parameshwar रेड्डी"
+      "name": "M. Parmeshwar Reddy",
+      "party": "INC",
+      "localizedParties": {
+        "en": "Indian National Congress",
+        "te": "భారత జాతీయ కాంగ్రెస్",
+        "hi": "भारतीय राष्ट्रीय कांग्रेस",
+        "kn": "ಭಾರತೀಯ ರಾಷ್ಟ್ರೀಯ ಕಾಂಗ್ರೆಸ್",
+        "mr": "भारतीय राष्ट्रीय काँग्रेस",
+        "ta": "இந்திய தேசிய காங்கிரஸ்",
+        "ml": "ഇന്ത്യൻ നാഷണൽ കോൺഗ്രസ്",
+        "bn": "ভারতীয় জাতীয় কংগ্রেস",
+        "gu": "ભારતીય રાષ્ટ્રીય કોંગ્રેસ",
+        "pa": "ਭਾਰਤੀ ਰਾਸ਼ਟਰੀ ਕਾਂਗਰਸ",
+        "or": "ଭାରତୀୟ ଜାତୀୟ କଂଗ୍ରେସ",
+        "as": "ভাৰতীয় জাতীয় কংগ্ৰেছ",
+        "ne": "भारतीय राष्ट्रिय काङ्ग्रेस"
       },
-      "party": "IND",
-      "localizedParties": {},
       "sex": "O",
       "age": null,
       "votes": 83897,
       "voteShare": 30.51,
       "marginToWinner": 49030
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "N. V. S. S. Prabhakar",
+      "party": "BJP",
+      "votes": 47332,
+      "voteShare": 17.21,
+      "marginToWinner": 85595,
+      "marginToFirstRunnerUp": 36565
+    }
   },
   {
     "id": "TS-AC-48-2023",
@@ -84873,21 +84525,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Manchireddy Kishan Reddy",
-      "localizedNames": {
-        "en": "Manchireddy Kishan Reddy",
-        "te": "manchireddy kishan రెడ్డి",
-        "hi": "manchireddy kishan रेड्डी",
-        "kn": "manchireddy kishan रेड्डी",
-        "ta": "manchireddy kishan रेड्डी",
-        "mr": "manchireddy kishan रेड्डी",
-        "bn": "manchireddy kishan रेड्डी",
-        "gu": "manchireddy kishan रेड्डी",
-        "ml": "manchireddy kishan रेड्डी",
-        "pa": "manchireddy kishan रेड्डी",
-        "or": "manchireddy kishan रेड्डी",
-        "as": "manchireddy kishan रेड्डी",
-        "ne": "manchireddy kishan रेड्डी"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -84910,7 +84547,14 @@
       "voteShare": 36.14,
       "marginToWinner": 36700
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Nomula Dayanand",
+      "party": "BJP",
+      "votes": 15790,
+      "voteShare": 6.36,
+      "marginToWinner": 110716,
+      "marginToFirstRunnerUp": 74016
+    }
   },
   {
     "id": "TS-AC-49-2023",
@@ -84960,8 +84604,8 @@
       },
       "sex": "O",
       "age": 61,
-      "votes": 111380,
-      "voteShare": 37.74,
+      "votes": 82347,
+      "voteShare": 51.77,
       "education": "Graduate",
       "profession": "Agriculture and Business",
       "totalAssets": 215835581,
@@ -84976,21 +84620,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Sama Ranga Reddy",
-      "localizedNames": {
-        "en": "Sama Ranga Reddy",
-        "te": "sama ranga రెడ్డి",
-        "hi": "sama ranga रेड्डी",
-        "kn": "sama ranga रेड्डी",
-        "ta": "sama ranga रेड्डी",
-        "mr": "sama ranga रेड्डी",
-        "bn": "sama ranga रेड्डी",
-        "gu": "sama ranga रेड्डी",
-        "ml": "sama ranga रेड्डी",
-        "pa": "sama ranga रेड्डी",
-        "or": "sama ranga रेड्डी",
-        "as": "sama ranga रेड्डी",
-        "ne": "sama ranga रेड्डी"
-      },
       "party": "BJP",
       "localizedParties": {
         "en": "Bharatiya Janata Party",
@@ -85009,9 +84638,9 @@
       },
       "sex": "O",
       "age": null,
-      "votes": 89075,
-      "voteShare": 30.18,
-      "marginToWinner": 22305
+      "votes": 76713,
+      "voteShare": 48.23,
+      "marginToWinner": 5634
     },
     "secondRunnerUp": null
   },
@@ -85078,21 +84707,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Andela Sriramulu Yadav",
-      "localizedNames": {
-        "en": "Andela Sriramulu Yadav",
-        "te": "andela sriramulu yadav",
-        "hi": "andela sriramulu yadav",
-        "kn": "andela sriramulu yadav",
-        "ta": "andela sriramulu yadav",
-        "mr": "andela sriramulu yadav",
-        "bn": "andela sriramulu yadav",
-        "gu": "andela sriramulu yadav",
-        "ml": "andela sriramulu yadav",
-        "pa": "andela sriramulu yadav",
-        "or": "andela sriramulu yadav",
-        "as": "andela sriramulu yadav",
-        "ne": "andela sriramulu yadav"
-      },
       "party": "BJP",
       "localizedParties": {
         "en": "Bharatiya Janata Party",
@@ -85115,7 +84729,14 @@
       "voteShare": 32.45,
       "marginToWinner": 26187
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Kichannagiri Laxma Reddy",
+      "party": "INC",
+      "votes": 70657,
+      "voteShare": 23.07,
+      "marginToWinner": 54921,
+      "marginToFirstRunnerUp": 28734
+    }
   },
   {
     "id": "TS-AC-51-2023",
@@ -85131,7 +84752,7 @@
     "marginRunnerUp1ToRunnerUp2": 79308,
     "winner": {
       "rank": 1,
-      "name": "T. Prakash Goud",
+      "name": "T. Prakash Goud{{efn",
       "localizedNames": {
         "en": "T. Prakash Goud",
         "hi": "ट. परकश गोउड",
@@ -85165,8 +84786,8 @@
       },
       "sex": "O",
       "age": 64,
-      "votes": 121734,
-      "voteShare": 37.09,
+      "votes": 87654,
+      "voteShare": 52.5,
       "education": "5th Pass",
       "profession": "Politician & Agriculture",
       "totalAssets": 181507981,
@@ -85181,21 +84802,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Thokala Srinivas Reddy",
-      "localizedNames": {
-        "en": "Thokala Srinivas Reddy",
-        "te": "thokala శ్రీనివాస్ రెడ్డి",
-        "hi": "thokala श्रीनिवास रेड्डी",
-        "kn": "thokala श्रीनिवास रेड्डी",
-        "ta": "thokala श्रीनिवास रेड्डी",
-        "mr": "thokala श्रीनिवास रेड्डी",
-        "bn": "thokala श्रीनिवास रेड्डी",
-        "gu": "thokala श्रीनिवास रेड्डी",
-        "ml": "thokala श्रीनिवास रेड्डी",
-        "pa": "thokala श्रीनिवास रेड्डी",
-        "or": "thokala श्रीनिवास रेड्डी",
-        "as": "thokala श्रीनिवास रेड्डी",
-        "ne": "thokala श्रीनिवास रेड्डी"
-      },
       "party": "BJP",
       "localizedParties": {
         "en": "Bharatiya Janata Party",
@@ -85216,9 +84822,16 @@
       "age": null,
       "votes": 89638,
       "voteShare": 27.31,
-      "marginToWinner": 32096
+      "marginToWinner": -1984
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Kasturi Narendar",
+      "party": "INC",
+      "votes": 82057,
+      "voteShare": 25,
+      "marginToWinner": 5597,
+      "marginToFirstRunnerUp": 7581
+    }
   },
   {
     "id": "TS-AC-52-2023",
@@ -85284,21 +84897,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Jagadeeswar Goud",
-      "localizedNames": {
-        "en": "Jagadeeswar Goud",
-        "te": "jagadeeswar గౌడ్",
-        "hi": "jagadeeswar गौड़",
-        "kn": "jagadeeswar गौड़",
-        "ta": "jagadeeswar गौड़",
-        "mr": "jagadeeswar गौड़",
-        "bn": "jagadeeswar गौड़",
-        "gu": "jagadeeswar गौड़",
-        "ml": "jagadeeswar गौड़",
-        "pa": "jagadeeswar गौड़",
-        "or": "jagadeeswar गौड़",
-        "as": "jagadeeswar गौड़",
-        "ne": "jagadeeswar गौड़"
-      },
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -85321,7 +84919,14 @@
       "voteShare": 30.96,
       "marginToWinner": 46552
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "M. Ravi Kumar Yadav",
+      "party": "BJP",
+      "votes": 80148,
+      "voteShare": 22.4,
+      "marginToWinner": 77184,
+      "marginToFirstRunnerUp": 30632
+    }
   },
   {
     "id": "TS-AC-53-2023",
@@ -85386,22 +84991,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Beem Bharath Pamena",
-      "localizedNames": {
-        "en": "Beem Bharath Pamena",
-        "te": "beem bharath pamena",
-        "hi": "beem bharath pamena",
-        "kn": "beem bharath pamena",
-        "ta": "beem bharath pamena",
-        "mr": "beem bharath pamena",
-        "bn": "beem bharath pamena",
-        "gu": "beem bharath pamena",
-        "ml": "beem bharath pamena",
-        "pa": "beem bharath pamena",
-        "or": "beem bharath pamena",
-        "as": "beem bharath pamena",
-        "ne": "beem bharath pamena"
-      },
+      "name": "Pamena Beem Bharat",
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -85424,7 +85014,14 @@
       "voteShare": 38.59,
       "marginToWinner": 268
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Korani Sayanna Ratnam",
+      "party": "BJP",
+      "votes": 38455,
+      "voteShare": 19.54,
+      "marginToWinner": 37763,
+      "marginToFirstRunnerUp": 37495
+    }
   },
   {
     "id": "TS-AC-54-2023",
@@ -85440,7 +85037,7 @@
     "marginRunnerUp1ToRunnerUp2": 66728,
     "winner": {
       "rank": 1,
-      "name": "Tammannagari Ram Mohan Reddy",
+      "name": "T. Ram Mohan Reddy",
       "localizedNames": {
         "en": "Tammannagari Ram Mohan Reddy",
         "hi": "तममंनगरि रम मोहं रेडडय",
@@ -85489,22 +85086,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "K. Mahesh Reddy",
-      "localizedNames": {
-        "en": "K. Mahesh Reddy",
-        "te": "k. mahesh రెడ్డి",
-        "hi": "k. mahesh रेड्डी",
-        "kn": "k. mahesh रेड्डी",
-        "ta": "k. mahesh रेड्डी",
-        "mr": "k. mahesh रेड्डी",
-        "bn": "k. mahesh रेड्डी",
-        "gu": "k. mahesh रेड्डी",
-        "ml": "k. mahesh रेड्डी",
-        "pa": "k. mahesh रेड्डी",
-        "or": "k. mahesh रेड्डी",
-        "as": "k. mahesh रेड्डी",
-        "ne": "k. mahesh रेड्डी"
-      },
+      "name": "Koppula Mahesh Reddy",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -85527,7 +85109,14 @@
       "voteShare": 37.01,
       "marginToWinner": 24013
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Booneti Maruthi Kiran",
+      "party": "BJP",
+      "votes": 16653,
+      "voteShare": 8.27,
+      "marginToWinner": 81883,
+      "marginToFirstRunnerUp": 57870
+    }
   },
   {
     "id": "TS-AC-55-2023",
@@ -85577,8 +85166,8 @@
       },
       "sex": "O",
       "age": 59,
-      "votes": 86885,
-      "voteShare": 49.85,
+      "votes": 78943,
+      "voteShare": 55.07,
       "education": "12th Pass",
       "profession": "Farmer",
       "totalAssets": 31136497,
@@ -85593,21 +85182,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Methuku Anand",
-      "localizedNames": {
-        "en": "Methuku Anand",
-        "te": "methuku anand",
-        "hi": "methuku anand",
-        "kn": "methuku anand",
-        "ta": "methuku anand",
-        "mr": "methuku anand",
-        "bn": "methuku anand",
-        "gu": "methuku anand",
-        "ml": "methuku anand",
-        "pa": "methuku anand",
-        "or": "methuku anand",
-        "as": "methuku anand",
-        "ne": "methuku anand"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -85626,9 +85200,9 @@
       },
       "sex": "O",
       "age": null,
-      "votes": 73992,
-      "voteShare": 42.46,
-      "marginToWinner": 12893
+      "votes": 64416,
+      "voteShare": 44.93,
+      "marginToWinner": 14527
     },
     "secondRunnerUp": null
   },
@@ -85646,7 +85220,7 @@
     "marginRunnerUp1ToRunnerUp2": 62831,
     "winner": {
       "rank": 1,
-      "name": "B. Manohar Reddy",
+      "name": "B.Manohar Reddy",
       "localizedNames": {
         "en": "B. Manohar Reddy",
         "hi": "ब. मंओहर रेडडय",
@@ -85695,21 +85269,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Pilot Rohith Reddy",
-      "localizedNames": {
-        "en": "Pilot Rohith Reddy",
-        "te": "పైలట్ rohith రెడ్డి",
-        "hi": "pilot rohith रेड्डी",
-        "kn": "pilot rohith रेड्डी",
-        "ta": "pilot rohith रेड्डी",
-        "mr": "pilot rohith रेड्डी",
-        "bn": "pilot rohith रेड्डी",
-        "gu": "pilot rohith रेड्डी",
-        "ml": "pilot rohith रेड्डी",
-        "pa": "pilot rohith रेड्डी",
-        "or": "pilot rohith रेड्डी",
-        "as": "pilot rohith रेड्डी",
-        "ne": "pilot rohith रेड्डी"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -85732,7 +85291,14 @@
       "voteShare": 44.56,
       "marginToWinner": 6583
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "N. Shankar Goud",
+      "party": "JSP",
+      "votes": 2087,
+      "voteShare": 1.93,
+      "marginToWinner": 82575,
+      "marginToFirstRunnerUp": 75992
+    }
   },
   {
     "id": "TS-AC-57-2023",
@@ -85783,26 +85349,11 @@
       "sex": "O",
       "age": null,
       "votes": 75207,
-      "voteShare": 49.07
+      "voteShare": 51.49
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Anjan Kumar Yadav",
-      "localizedNames": {
-        "en": "Anjan Kumar Yadav",
-        "te": "anjan కుమార్ yadav",
-        "hi": "anjan कुमार yadav",
-        "kn": "anjan कुमार yadav",
-        "ta": "anjan कुमार yadav",
-        "mr": "anjan कुमार yadav",
-        "bn": "anjan कुमार yadav",
-        "gu": "anjan कुमार yadav",
-        "ml": "anjan कुमार yadav",
-        "pa": "anjan कुमार yadav",
-        "or": "anjan कुमार yadav",
-        "as": "anjan कुमार yadav",
-        "ne": "anjan कुमार yadav"
-      },
+      "name": "M. Anjan Kumar Yadav",
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -85822,10 +85373,17 @@
       "sex": "O",
       "age": null,
       "votes": 37410,
-      "voteShare": 24.41,
+      "voteShare": 48.51,
       "marginToWinner": 37797
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Poosa Raju",
+      "party": "BJP",
+      "votes": 35423,
+      "voteShare": 0,
+      "marginToWinner": 39784,
+      "marginToFirstRunnerUp": 1987
+    }
   },
   {
     "id": "TS-AC-58-2023",
@@ -85891,21 +85449,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Shaik Akbar",
-      "localizedNames": {
-        "en": "Shaik Akbar",
-        "te": "shaik akbar",
-        "hi": "shaik akbar",
-        "kn": "shaik akbar",
-        "ta": "shaik akbar",
-        "mr": "shaik akbar",
-        "bn": "shaik akbar",
-        "gu": "shaik akbar",
-        "ml": "shaik akbar",
-        "pa": "shaik akbar",
-        "or": "shaik akbar",
-        "as": "shaik akbar",
-        "ne": "shaik akbar"
-      },
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -85928,7 +85471,14 @@
       "voteShare": 22.5,
       "marginToWinner": 26106
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Samreddy Surender Reddy",
+      "party": "BJP",
+      "votes": 23731,
+      "voteShare": 17.97,
+      "marginToWinner": 32074,
+      "marginToFirstRunnerUp": 5968
+    }
   },
   {
     "id": "TS-AC-59-2023",
@@ -85994,21 +85544,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Chenaboyanna Krishna Yadav",
-      "localizedNames": {
-        "en": "Chenaboyanna Krishna Yadav",
-        "te": "chenaboyanna కృష్ణ yadav",
-        "hi": "chenaboyanna कृष्ण yadav",
-        "kn": "chenaboyanna कृष्ण yadav",
-        "ta": "chenaboyanna कृष्ण yadav",
-        "mr": "chenaboyanna कृष्ण yadav",
-        "bn": "chenaboyanna कृष्ण yadav",
-        "gu": "chenaboyanna कृष्ण yadav",
-        "ml": "chenaboyanna कृष्ण yadav",
-        "pa": "chenaboyanna कृष्ण yadav",
-        "or": "chenaboyanna कृष्ण yadav",
-        "as": "chenaboyanna कृष्ण yadav",
-        "ne": "chenaboyanna कृष्ण yadav"
-      },
       "party": "BJP",
       "localizedParties": {
         "en": "Bharatiya Janata Party",
@@ -86031,7 +85566,14 @@
       "voteShare": 34.05,
       "marginToWinner": 24537
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Dr. Rohin Kumar Reddy. C",
+      "party": "INC",
+      "votes": 18004,
+      "voteShare": 12.29,
+      "marginToWinner": 56412,
+      "marginToFirstRunnerUp": 31875
+    }
   },
   {
     "id": "TS-AC-60-2023",
@@ -86097,21 +85639,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "P. Vijaya Reddy",
-      "localizedNames": {
-        "en": "P. Vijaya Reddy",
-        "te": "p. విజయ రెడ్డి",
-        "hi": "p. vijaya रेड्डी",
-        "kn": "p. vijaya रेड्डी",
-        "ta": "p. vijaya रेड्डी",
-        "mr": "p. vijaya रेड्डी",
-        "bn": "p. vijaya रेड्डी",
-        "gu": "p. vijaya रेड्डी",
-        "ml": "p. vijaya रेड्डी",
-        "pa": "p. vijaya रेड्डी",
-        "or": "p. vijaya रेड्डी",
-        "as": "p. vijaya रेड्डी",
-        "ne": "p. vijaya रेड्डी"
-      },
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -86134,7 +85661,14 @@
       "voteShare": 29.28,
       "marginToWinner": 22010
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Chintala Ramachandra Reddy",
+      "party": "BJP",
+      "votes": 38094,
+      "voteShare": 24.59,
+      "marginToWinner": 29274,
+      "marginToFirstRunnerUp": 7264
+    }
   },
   {
     "id": "TS-AC-61-2023",
@@ -86200,21 +85734,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Mohammed Azharuddin",
-      "localizedNames": {
-        "en": "Mohammed Azharuddin",
-        "te": "mohammed azharuddin",
-        "hi": "mohammed azharuddin",
-        "kn": "mohammed azharuddin",
-        "ta": "mohammed azharuddin",
-        "mr": "mohammed azharuddin",
-        "bn": "mohammed azharuddin",
-        "gu": "mohammed azharuddin",
-        "ml": "mohammed azharuddin",
-        "pa": "mohammed azharuddin",
-        "or": "mohammed azharuddin",
-        "as": "mohammed azharuddin",
-        "ne": "mohammed azharuddin"
-      },
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -86237,7 +85756,14 @@
       "voteShare": 35.03,
       "marginToWinner": 16337
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Lankala Deepak Reddy",
+      "party": "BJP",
+      "votes": 25866,
+      "voteShare": 14.11,
+      "marginToWinner": 54683,
+      "marginToFirstRunnerUp": 38346
+    }
   },
   {
     "id": "TS-AC-62-2023",
@@ -86302,21 +85828,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Marri Shashidhar Reddy",
-      "localizedNames": {
-        "en": "Marri Shashidhar Reddy",
-        "te": "marri shashidhar రెడ్డి",
-        "hi": "marri shashidhar रेड्डी",
-        "kn": "marri shashidhar रेड्डी",
-        "ta": "marri shashidhar रेड्डी",
-        "mr": "marri shashidhar रेड्डी",
-        "bn": "marri shashidhar रेड्डी",
-        "gu": "marri shashidhar रेड्डी",
-        "ml": "marri shashidhar रेड्डी",
-        "pa": "marri shashidhar रेड्डी",
-        "or": "marri shashidhar रेड्डी",
-        "as": "marri shashidhar रेड्डी",
-        "ne": "marri shashidhar रेड्डी"
-      },
       "party": "BJP",
       "localizedParties": {
         "en": "Bharatiya Janata Party",
@@ -86339,7 +85850,14 @@
       "voteShare": 23.96,
       "marginToWinner": 41827
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Kota Neelima",
+      "party": "INC",
+      "votes": 22492,
+      "voteShare": 17.54,
+      "marginToWinner": 50065,
+      "marginToFirstRunnerUp": 8238
+    }
   },
   {
     "id": "TS-AC-63-2023",
@@ -86390,7 +85908,7 @@
       "sex": "O",
       "age": 43,
       "votes": 62185,
-      "voteShare": 40.83,
+      "voteShare": 40.96,
       "education": "Graduate Professional",
       "profession": "Corporator (Mehdipatnam)",
       "totalAssets": 25170108,
@@ -86404,22 +85922,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Mohammed Feroz Khan",
-      "localizedNames": {
-        "en": "Mohammed Feroz Khan",
-        "te": "mohammed feroz khan",
-        "hi": "mohammed feroz khan",
-        "kn": "mohammed feroz khan",
-        "ta": "mohammed feroz khan",
-        "mr": "mohammed feroz khan",
-        "bn": "mohammed feroz khan",
-        "gu": "mohammed feroz khan",
-        "ml": "mohammed feroz khan",
-        "pa": "mohammed feroz khan",
-        "or": "mohammed feroz khan",
-        "as": "mohammed feroz khan",
-        "ne": "mohammed feroz khan"
-      },
+      "name": "Mohammad Feroz Khan",
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -86439,10 +85942,17 @@
       "sex": "O",
       "age": null,
       "votes": 60148,
-      "voteShare": 39.49,
+      "voteShare": 39.61,
       "marginToWinner": 2037
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Anand Kumar Goud",
+      "party": "BRS",
+      "votes": 15420,
+      "voteShare": 10.15,
+      "marginToWinner": 46765,
+      "marginToFirstRunnerUp": 44728
+    }
   },
   {
     "id": "TS-AC-64-2023",
@@ -86498,21 +86008,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Amar Singh",
-      "localizedNames": {
-        "en": "Amar Singh",
-        "te": "amar సింగ్",
-        "hi": "amar singh",
-        "kn": "amar singh",
-        "ta": "amar singh",
-        "mr": "amar singh",
-        "bn": "amar singh",
-        "gu": "amar singh",
-        "ml": "amar singh",
-        "pa": "amar singh",
-        "or": "amar singh",
-        "as": "amar singh",
-        "ne": "amar singh"
-      },
       "party": "BJP",
       "localizedParties": {
         "en": "Bharatiya Janata Party",
@@ -86535,7 +86030,14 @@
       "voteShare": 23.55,
       "marginToWinner": 41986
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Aindala Krishnaiah",
+      "party": "BRS",
+      "votes": 29194,
+      "voteShare": 16.6,
+      "marginToWinner": 54194,
+      "marginToFirstRunnerUp": 12208
+    }
   },
   {
     "id": "TS-AC-65-2023",
@@ -86601,28 +86103,27 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Nand Kishore Vyas",
-      "localizedNames": {
-        "en": "Nand Kishore Vyas",
-        "te": "nand kishore vyas",
-        "hi": "nand kishore vyas",
-        "kn": "nand kishore vyas",
-        "ta": "nand kishore vyas",
-        "mr": "nand kishore vyas",
-        "bn": "nand kishore vyas",
-        "gu": "nand kishore vyas",
-        "ml": "nand kishore vyas",
-        "pa": "nand kishore vyas",
-        "or": "nand kishore vyas",
-        "as": "nand kishore vyas",
-        "ne": "nand kishore vyas"
+      "party": "BRS",
+      "localizedParties": {
+        "en": "Bharat Rashtra Samithi",
+        "te": "భారత్ రాష్ట్ర సమితి",
+        "hi": "भारत राष्ट्र समिति",
+        "kn": "ಭಾರತ್ ರಾಷ್ಟ್ರ ಸಮಿತಿ",
+        "mr": "भारत राष्ट्र समिती",
+        "ta": "பாரத் ராஷ்டிர சமிதி",
+        "ml": "ഭാരത് രാഷ്ട്ര സമിതി",
+        "bn": "ভারত রাষ্ট্র সমিতি",
+        "gu": "ભારત રાષ્ટ્ર સમિતિ",
+        "pa": "ਭਾਰਤ ਰਾਸ਼ਟਰ ਸਮਿਤੀ",
+        "or": "ଭାରତ ରାଷ୍ଟ୍ର ସମିତି",
+        "as": "ভাৰত ৰাষ্ট্ৰ সমিতি",
+        "ne": "भारत राष्ट्र समिति"
       },
-      "party": "IND",
-      "localizedParties": {},
       "sex": "O",
       "age": null,
-      "votes": 58725,
-      "voteShare": 39.61,
-      "marginToWinner": 21457
+      "votes": 64418,
+      "voteShare": 41.92,
+      "marginToWinner": 15764
     },
     "secondRunnerUp": null
   },
@@ -86690,21 +86191,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Megha Rani Agarwal",
-      "localizedNames": {
-        "en": "Megha Rani Agarwal",
-        "te": "megha రాణి agarwal",
-        "hi": "megha रानी agarwal",
-        "kn": "megha रानी agarwal",
-        "ta": "megha रानी agarwal",
-        "mr": "megha रानी agarwal",
-        "bn": "megha रानी agarwal",
-        "gu": "megha रानी agarwal",
-        "ml": "megha रानी agarwal",
-        "pa": "megha रानी agarwal",
-        "or": "megha रानी agarwal",
-        "as": "megha रानी agarwal",
-        "ne": "megha रानी agarwal"
-      },
       "party": "BJP",
       "localizedParties": {
         "en": "Bharatiya Janata Party",
@@ -86727,7 +86213,14 @@
       "voteShare": 26.76,
       "marginToWinner": 22853
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Mohammed Mujeebullah Shareef",
+      "party": "INC",
+      "votes": 10899,
+      "voteShare": 11.11,
+      "marginToWinner": 38204,
+      "marginToFirstRunnerUp": 15351
+    }
   },
   {
     "id": "TS-AC-67-2023",
@@ -86792,22 +86285,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Muppi Seetharam Reddy",
-      "localizedNames": {
-        "en": "Muppi Seetharam Reddy",
-        "te": "muppi seetharam రెడ్డి",
-        "hi": "muppi seetharam रेड्डी",
-        "kn": "muppi seetharam रेड्डी",
-        "ta": "muppi seetharam रेड्डी",
-        "mr": "muppi seetharam रेड्डी",
-        "bn": "muppi seetharam रेड्डी",
-        "gu": "muppi seetharam रेड्डी",
-        "ml": "muppi seetharam रेड्डी",
-        "pa": "muppi seetharam रेड्डी",
-        "or": "muppi seetharam रेड्डी",
-        "as": "muppi seetharam रेड्डी",
-        "ne": "muppi seetharam रेड्डी"
-      },
+      "name": "Sitharam Reddy Muppi",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -86830,7 +86308,14 @@
       "voteShare": 11.78,
       "marginToWinner": 81660
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Kowdi Mahender",
+      "party": "BJP",
+      "votes": 16414,
+      "voteShare": 10.67,
+      "marginToWinner": 83362,
+      "marginToFirstRunnerUp": 1702
+    }
   },
   {
     "id": "TS-AC-68-2023",
@@ -86886,30 +86371,36 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Amjed Ullah Khan",
-      "localizedNames": {
-        "en": "Amjed Ullah Khan",
-        "te": "amjed ullah khan",
-        "hi": "amjed ullah khan",
-        "kn": "amjed ullah khan",
-        "ta": "amjed ullah khan",
-        "mr": "amjed ullah khan",
-        "bn": "amjed ullah khan",
-        "gu": "amjed ullah khan",
-        "ml": "amjed ullah khan",
-        "pa": "amjed ullah khan",
-        "or": "amjed ullah khan",
-        "as": "amjed ullah khan",
-        "ne": "amjed ullah khan"
+      "party": "MAJLIS BACHAO TEHREEK",
+      "localizedParties": {
+        "en": "Bharat Rashtra Samithi",
+        "te": "భారత్ రాష్ట్ర సమితి",
+        "hi": "भारत राष्ट्र समिति",
+        "kn": "ಭಾರತ್ ರಾಷ್ಟ್ರ ಸಮಿತಿ",
+        "mr": "भारत राष्ट्र समिती",
+        "ta": "பாரத் ராஷ்டிர சமிதி",
+        "ml": "ഭാരത് രാഷ്ട്ര സമിതി",
+        "bn": "ভারত রাষ্ট্র সমিতি",
+        "gu": "ભારત રાષ્ટ્ર સમિતિ",
+        "pa": "ਭਾਰਤ ਰਾਸ਼ਟਰ ਸਮਿਤੀ",
+        "or": "ଭାରତ ରାଷ୍ଟ୍ର ସମିତି",
+        "as": "ভাৰত ৰাষ্ট্ৰ সমিতি",
+        "ne": "भारत राष्ट्र समिति"
       },
-      "party": "Majlis Bachao Tehreek",
-      "localizedParties": {},
       "sex": "O",
       "age": null,
       "votes": 45275,
       "voteShare": 32.24,
       "marginToWinner": 878
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "N. Veerender Babu Yadav",
+      "party": "BJP",
+      "votes": 22354,
+      "voteShare": 15.92,
+      "marginToWinner": 23799,
+      "marginToFirstRunnerUp": 22921
+    }
   },
   {
     "id": "TS-AC-69-2023",
@@ -86974,21 +86465,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Mir Inayath Ali Baqri",
-      "localizedNames": {
-        "en": "Mir Inayath Ali Baqri",
-        "te": "mir inayath ali baqri",
-        "hi": "mir inayath ali baqri",
-        "kn": "mir inayath ali baqri",
-        "ta": "mir inayath ali baqri",
-        "mr": "mir inayath ali baqri",
-        "bn": "mir inayath ali baqri",
-        "gu": "mir inayath ali baqri",
-        "ml": "mir inayath ali baqri",
-        "pa": "mir inayath ali baqri",
-        "or": "mir inayath ali baqri",
-        "as": "mir inayath ali baqri",
-        "ne": "mir inayath ali baqri"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -87011,7 +86487,14 @@
       "voteShare": 15.6,
       "marginToWinner": 67025
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Pulipati Rajesh Kumar",
+      "party": "INC",
+      "votes": 14448,
+      "voteShare": 10.05,
+      "marginToWinner": 75003,
+      "marginToFirstRunnerUp": 7978
+    }
   },
   {
     "id": "TS-AC-70-2023",
@@ -87076,22 +86559,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Adam Santosh Kumar",
-      "localizedNames": {
-        "en": "Adam Santosh Kumar",
-        "te": "adam santosh కుమార్",
-        "hi": "adam santosh कुमार",
-        "kn": "adam santosh कुमार",
-        "ta": "adam santosh कुमार",
-        "mr": "adam santosh कुमार",
-        "bn": "adam santosh कुमार",
-        "gu": "adam santosh कुमार",
-        "ml": "adam santosh कुमार",
-        "pa": "adam santosh कुमार",
-        "or": "adam santosh कुमार",
-        "as": "adam santosh कुमार",
-        "ne": "adam santosh कुमार"
-      },
+      "name": "Santhosh Kumar",
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -87114,7 +86582,14 @@
       "voteShare": 23.37,
       "marginToWinner": 45240
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Mekala Sarangapani",
+      "party": "BJP",
+      "votes": 25202,
+      "voteShare": 17.86,
+      "marginToWinner": 53021,
+      "marginToFirstRunnerUp": 7781
+    }
   },
   {
     "id": "TS-AC-71-2023",
@@ -87165,26 +86640,11 @@
       "sex": "O",
       "age": null,
       "votes": 59057,
-      "voteShare": 47.43
+      "voteShare": 47.52
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Sri Ganesh Narayan",
-      "localizedNames": {
-        "en": "Sri Ganesh Narayan",
-        "te": "sri ganesh narayan",
-        "hi": "sri ganesh narayan",
-        "kn": "sri ganesh narayan",
-        "ta": "sri ganesh narayan",
-        "mr": "sri ganesh narayan",
-        "bn": "sri ganesh narayan",
-        "gu": "sri ganesh narayan",
-        "ml": "sri ganesh narayan",
-        "pa": "sri ganesh narayan",
-        "or": "sri ganesh narayan",
-        "as": "sri ganesh narayan",
-        "ne": "sri ganesh narayan"
-      },
+      "name": "Sri Ganesh",
       "party": "BJP",
       "localizedParties": {
         "en": "Bharatiya Janata Party",
@@ -87207,7 +86667,14 @@
       "voteShare": 33.64,
       "marginToWinner": 17169
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "G. V. Venella",
+      "party": "INC",
+      "votes": 20825,
+      "voteShare": 16.72,
+      "marginToWinner": 38232,
+      "marginToFirstRunnerUp": 21063
+    }
   },
   {
     "id": "TS-AC-72-2023",
@@ -87273,21 +86740,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Patnam Narender Reddy",
-      "localizedNames": {
-        "en": "Patnam Narender Reddy",
-        "te": "పట్నం నరేందర్ రెడ్డి",
-        "hi": "patnam narender रेड्डी",
-        "kn": "patnam narender रेड्डी",
-        "ta": "patnam narender रेड्डी",
-        "mr": "patnam narender रेड्डी",
-        "bn": "patnam narender रेड्डी",
-        "gu": "patnam narender रेड्डी",
-        "ml": "patnam narender रेड्डी",
-        "pa": "patnam narender रेड्डी",
-        "or": "patnam narender रेड्डी",
-        "as": "patnam narender रेड्डी",
-        "ne": "patnam narender रेड्डी"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -87310,7 +86762,14 @@
       "voteShare": 38.38,
       "marginToWinner": 32532
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Bantu Ramesh",
+      "party": "BJP",
+      "votes": 3988,
+      "voteShare": 2.04,
+      "marginToWinner": 103441,
+      "marginToFirstRunnerUp": 70909
+    }
   },
   {
     "id": "TS-AC-73-2023",
@@ -87326,7 +86785,7 @@
     "marginRunnerUp1ToRunnerUp2": 64692,
     "winner": {
       "rank": 1,
-      "name": "Chittem Parnika Reddy",
+      "name": "Gaddam Prasad Kumar",
       "localizedNames": {
         "en": "Chittem Parnika Reddy",
         "hi": "चिटटेम परणिक रेडडय",
@@ -87360,8 +86819,8 @@
       },
       "sex": "O",
       "age": 30,
-      "votes": 84708,
-      "voteShare": 46.31,
+      "votes": 86885,
+      "voteShare": 49.85,
       "education": "Graduate Professional",
       "profession": "Student Post Graduation",
       "totalAssets": 33420393,
@@ -87375,22 +86834,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "S. Rajender Reddy",
-      "localizedNames": {
-        "en": "S. Rajender Reddy",
-        "te": "s. rajender రెడ్డి",
-        "hi": "s. rajender रेड्डी",
-        "kn": "s. rajender रेड्डी",
-        "ta": "s. rajender रेड्डी",
-        "mr": "s. rajender रेड्डी",
-        "bn": "s. rajender रेड्डी",
-        "gu": "s. rajender रेड्डी",
-        "ml": "s. rajender रेड्डी",
-        "pa": "s. rajender रेड्डी",
-        "or": "s. rajender रेड्डी",
-        "as": "s. rajender रेड्डी",
-        "ne": "s. rajender रेड्डी"
-      },
+      "name": "Methuku Anand",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -87409,11 +86853,18 @@
       },
       "sex": "O",
       "age": null,
-      "votes": 76757,
-      "voteShare": 41.97,
-      "marginToWinner": 7951
+      "votes": 73992,
+      "voteShare": 42.46,
+      "marginToWinner": 12893
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Peddinti Naveen Kumar",
+      "party": "BJP",
+      "votes": 7132,
+      "voteShare": 4.09,
+      "marginToWinner": 79753,
+      "marginToFirstRunnerUp": 66860
+    }
   },
   {
     "id": "TS-AC-74-2023",
@@ -87479,21 +86930,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "V. Srinivas Goud",
-      "localizedNames": {
-        "en": "V. Srinivas Goud",
-        "te": "v. శ్రీనివాస్ గౌడ్",
-        "hi": "v. श्रीनिवास गौड़",
-        "kn": "v. श्रीनिवास गौड़",
-        "ta": "v. श्रीनिवास गौड़",
-        "mr": "v. श्रीनिवास गौड़",
-        "bn": "v. श्रीनिवास गौड़",
-        "gu": "v. श्रीनिवास गौड़",
-        "ml": "v. श्रीनिवास गौड़",
-        "pa": "v. श्रीनिवास गौड़",
-        "or": "v. श्रीनिवास गौड़",
-        "as": "v. श्रीनिवास गौड़",
-        "ne": "v. श्रीनिवास गौड़"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -87512,11 +86948,18 @@
       },
       "sex": "O",
       "age": null,
-      "votes": 64,
+      "votes": 68489,
       "voteShare": 37.72,
       "marginToWinner": 18738
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "A. P. Mithun Kumar Reddy",
+      "party": "BJP",
+      "votes": 20919,
+      "voteShare": 10.97,
+      "marginToWinner": 66308,
+      "marginToFirstRunnerUp": 47570
+    }
   },
   {
     "id": "TS-AC-75-2023",
@@ -87581,22 +87024,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Charlakola Laxma Rreddy",
-      "localizedNames": {
-        "en": "Charlakola Laxma Rreddy",
-        "te": "charlakola laxma rreddy",
-        "hi": "charlakola laxma rreddy",
-        "kn": "charlakola laxma rreddy",
-        "ta": "charlakola laxma rreddy",
-        "mr": "charlakola laxma rreddy",
-        "bn": "charlakola laxma rreddy",
-        "gu": "charlakola laxma rreddy",
-        "ml": "charlakola laxma rreddy",
-        "pa": "charlakola laxma rreddy",
-        "or": "charlakola laxma rreddy",
-        "as": "charlakola laxma rreddy",
-        "ne": "charlakola laxma rreddy"
-      },
+      "name": "C. Laxma Reddy",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -87619,7 +87047,14 @@
       "voteShare": 41.9,
       "marginToWinner": 15171
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Chittaranjan Das. J",
+      "party": "BJP",
+      "votes": 7312,
+      "voteShare": 4.05,
+      "marginToWinner": 83553,
+      "marginToFirstRunnerUp": 68382
+    }
   },
   {
     "id": "TS-AC-76-2023",
@@ -87684,22 +87119,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Alla Venkateswar Reddy",
-      "localizedNames": {
-        "en": "Alla Venkateswar Reddy",
-        "te": "alla venkateswar రెడ్డి",
-        "hi": "alla venkateswar रेड्डी",
-        "kn": "alla venkateswar रेड्डी",
-        "ta": "alla venkateswar रेड्डी",
-        "mr": "alla venkateswar रेड्डी",
-        "bn": "alla venkateswar रेड्डी",
-        "gu": "alla venkateswar रेड्डी",
-        "ml": "alla venkateswar रेड्डी",
-        "pa": "alla venkateswar रेड्डी",
-        "or": "alla venkateswar रेड्डी",
-        "as": "alla venkateswar रेड्डी",
-        "ne": "alla venkateswar रेड्डी"
-      },
+      "name": "Alla Venkateshwar Reddy",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -87722,7 +87142,14 @@
       "voteShare": 44.6,
       "marginToWinner": 1392
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Konda Prashanth Reddy",
+      "party": "BJP",
+      "votes": 13164,
+      "voteShare": 6.74,
+      "marginToWinner": 75387,
+      "marginToFirstRunnerUp": 73995
+    }
   },
   {
     "id": "TS-AC-77-2023",
@@ -87788,21 +87215,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Chittem Ram Mohan Reddy",
-      "localizedNames": {
-        "en": "Chittem Ram Mohan Reddy",
-        "te": "chittem ram మోహన్ రెడ్డి",
-        "hi": "chittem ram मोहन रेड्डी",
-        "kn": "chittem ram मोहन रेड्डी",
-        "ta": "chittem ram मोहन रेड्डी",
-        "mr": "chittem ram मोहन रेड्डी",
-        "bn": "chittem ram मोहन रेड्डी",
-        "gu": "chittem ram मोहन रेड्डी",
-        "ml": "chittem ram मोहन रेड्डी",
-        "pa": "chittem ram मोहन रेड्डी",
-        "or": "chittem ram मोहन रेड्डी",
-        "as": "chittem ram मोहन रेड्डी",
-        "ne": "chittem ram मोहन रेड्डी"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -87825,7 +87237,14 @@
       "voteShare": 30.55,
       "marginToWinner": 17525
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Jalandhar Reddy Madi Reddy",
+      "party": "BJP",
+      "votes": 45455,
+      "voteShare": 24.2,
+      "marginToWinner": 29462,
+      "marginToFirstRunnerUp": 11937
+    }
   },
   {
     "id": "TS-AC-78-2023",
@@ -87891,21 +87310,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Singireddy Niranjan Reddy",
-      "localizedNames": {
-        "en": "Singireddy Niranjan Reddy",
-        "te": "singireddy niranjan రెడ్డి",
-        "hi": "singireddy niranjan रेड्डी",
-        "kn": "singireddy niranjan रेड्डी",
-        "ta": "singireddy niranjan रेड्डी",
-        "mr": "singireddy niranjan रेड्डी",
-        "bn": "singireddy niranjan रेड्डी",
-        "gu": "singireddy niranjan रेड्डी",
-        "ml": "singireddy niranjan रेड्डी",
-        "pa": "singireddy niranjan रेड्डी",
-        "or": "singireddy niranjan रेड्डी",
-        "as": "singireddy niranjan रेड्डी",
-        "ne": "singireddy niranjan रेड्डी"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -87928,7 +87332,14 @@
       "voteShare": 38.37,
       "marginToWinner": 25320
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Anugna Reddy Bujala",
+      "party": "BJP",
+      "votes": 9185,
+      "voteShare": 4.31,
+      "marginToWinner": 97930,
+      "marginToFirstRunnerUp": 72610
+    }
   },
   {
     "id": "TS-AC-79-2023",
@@ -87994,21 +87405,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Saritha Thirupathaiah",
-      "localizedNames": {
-        "en": "Saritha Thirupathaiah",
-        "te": "saritha thirupathaiah",
-        "hi": "saritha thirupathaiah",
-        "kn": "saritha thirupathaiah",
-        "ta": "saritha thirupathaiah",
-        "mr": "saritha thirupathaiah",
-        "bn": "saritha thirupathaiah",
-        "gu": "saritha thirupathaiah",
-        "ml": "saritha thirupathaiah",
-        "pa": "saritha thirupathaiah",
-        "or": "saritha thirupathaiah",
-        "as": "saritha thirupathaiah",
-        "ne": "saritha thirupathaiah"
-      },
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -88031,7 +87427,14 @@
       "voteShare": 40.52,
       "marginToWinner": 7036
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Gongalla Ranjith Kumar",
+      "party": "AIFB",
+      "votes": 13454,
+      "voteShare": 6.26,
+      "marginToWinner": 80643,
+      "marginToFirstRunnerUp": 73607
+    }
   },
   {
     "id": "TS-AC-80-2023",
@@ -88097,21 +87500,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "S. A. Sampath Kumar",
-      "localizedNames": {
-        "en": "S. A. Sampath Kumar",
-        "te": "s. a. sampath కుమార్",
-        "hi": "s. a. sampath कुमार",
-        "kn": "s. a. sampath कुमार",
-        "ta": "s. a. sampath कुमार",
-        "mr": "s. a. sampath कुमार",
-        "bn": "s. a. sampath कुमार",
-        "gu": "s. a. sampath कुमार",
-        "ml": "s. a. sampath कुमार",
-        "pa": "s. a. sampath कुमार",
-        "or": "s. a. sampath कुमार",
-        "as": "s. a. sampath कुमार",
-        "ne": "s. a. sampath कुमार"
-      },
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -88134,7 +87522,14 @@
       "voteShare": 37.34,
       "marginToWinner": 30573
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Dr. R. Prasanna Kumar",
+      "party": "BSP",
+      "votes": 6082,
+      "voteShare": 3.09,
+      "marginToWinner": 97978,
+      "marginToFirstRunnerUp": 67405
+    }
   },
   {
     "id": "TS-AC-81-2023",
@@ -88150,7 +87545,7 @@
     "marginRunnerUp1ToRunnerUp2": 67589,
     "winner": {
       "rank": 1,
-      "name": "Kuchkulla Rajesh Reddy",
+      "name": "Dr. Kuchkulla Rajesh Reddy",
       "localizedNames": {
         "en": "Kuchkulla Rajesh Reddy",
         "hi": "कुचकुलल रजेश रेडडय",
@@ -88200,21 +87595,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Marri Janardhan Reddy",
-      "localizedNames": {
-        "en": "Marri Janardhan Reddy",
-        "te": "marri janardhan రెడ్డి",
-        "hi": "marri janardhan रेड्डी",
-        "kn": "marri janardhan रेड्डी",
-        "ta": "marri janardhan रेड्डी",
-        "mr": "marri janardhan रेड्डी",
-        "bn": "marri janardhan रेड्डी",
-        "gu": "marri janardhan रेड्डी",
-        "ml": "marri janardhan रेड्डी",
-        "pa": "marri janardhan रेड्डी",
-        "or": "marri janardhan रेड्डी",
-        "as": "marri janardhan रेड्डी",
-        "ne": "marri janardhan रेड्डी"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -88237,7 +87617,14 @@
       "voteShare": 44.37,
       "marginToWinner": 5248
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Vanga Lakshman Goud",
+      "party": "JSP",
+      "votes": 1955,
+      "voteShare": 1.06,
+      "marginToWinner": 85206,
+      "marginToFirstRunnerUp": 79958
+    }
   },
   {
     "id": "TS-AC-82-2023",
@@ -88303,21 +87690,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Guvvala Balaraju",
-      "localizedNames": {
-        "en": "Guvvala Balaraju",
-        "te": "guvvala balaraju",
-        "hi": "guvvala balaraju",
-        "kn": "guvvala balaraju",
-        "ta": "guvvala balaraju",
-        "mr": "guvvala balaraju",
-        "bn": "guvvala balaraju",
-        "gu": "guvvala balaraju",
-        "ml": "guvvala balaraju",
-        "pa": "guvvala balaraju",
-        "or": "guvvala balaraju",
-        "as": "guvvala balaraju",
-        "ne": "guvvala balaraju"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -88340,7 +87712,14 @@
       "voteShare": 33.74,
       "marginToWinner": 49326
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Devani Satish Madiga",
+      "party": "BJP",
+      "votes": 4267,
+      "voteShare": 2.18,
+      "marginToWinner": 111070,
+      "marginToFirstRunnerUp": 61744
+    }
   },
   {
     "id": "TS-AC-83-2023",
@@ -88405,22 +87784,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Talloju Achary",
-      "localizedNames": {
-        "en": "Talloju Achary",
-        "te": "talloju achary",
-        "hi": "talloju achary",
-        "kn": "talloju achary",
-        "ta": "talloju achary",
-        "mr": "talloju achary",
-        "bn": "talloju achary",
-        "gu": "talloju achary",
-        "ml": "talloju achary",
-        "pa": "talloju achary",
-        "or": "talloju achary",
-        "as": "talloju achary",
-        "ne": "talloju achary"
-      },
+      "name": "Thalloju Achari",
       "party": "BJP",
       "localizedParties": {
         "en": "Bharatiya Janata Party",
@@ -88443,7 +87807,14 @@
       "voteShare": 34.75,
       "marginToWinner": 5410
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Gurka Jaipal Yadav",
+      "party": "BRS",
+      "votes": 42847,
+      "voteShare": 21.13,
+      "marginToWinner": 33011,
+      "marginToFirstRunnerUp": 27601
+    }
   },
   {
     "id": "TS-AC-84-2023",
@@ -88508,22 +87879,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Yelganamoni Anjaiah",
-      "localizedNames": {
-        "en": "Yelganamoni Anjaiah",
-        "te": "yelganamoni anjaiah",
-        "hi": "yelganamoni anjaiah",
-        "kn": "yelganamoni anjaiah",
-        "ta": "yelganamoni anjaiah",
-        "mr": "yelganamoni anjaiah",
-        "bn": "yelganamoni anjaiah",
-        "gu": "yelganamoni anjaiah",
-        "ml": "yelganamoni anjaiah",
-        "pa": "yelganamoni anjaiah",
-        "or": "yelganamoni anjaiah",
-        "as": "yelganamoni anjaiah",
-        "ne": "yelganamoni anjaiah"
-      },
+      "name": "Anjaiah Yelganamoni",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -88546,7 +87902,14 @@
       "voteShare": 36.15,
       "marginToWinner": 7128
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Palamur Vishnuvardhan Reddy",
+      "party": "AIFB",
+      "votes": 31651,
+      "voteShare": 16.19,
+      "marginToWinner": 46166,
+      "marginToFirstRunnerUp": 39038
+    }
   },
   {
     "id": "TS-AC-85-2023",
@@ -88612,21 +87975,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Beeram Harshavardhan Reddy",
-      "localizedNames": {
-        "en": "Beeram Harshavardhan Reddy",
-        "te": "beeram harshavardhan రెడ్డి",
-        "hi": "beeram harshavardhan रेड्डी",
-        "kn": "beeram harshavardhan रेड्डी",
-        "ta": "beeram harshavardhan रेड्डी",
-        "mr": "beeram harshavardhan रेड्डी",
-        "bn": "beeram harshavardhan रेड्डी",
-        "gu": "beeram harshavardhan रेड्डी",
-        "ml": "beeram harshavardhan रेड्डी",
-        "pa": "beeram harshavardhan रेड्डी",
-        "or": "beeram harshavardhan रेड्डी",
-        "as": "beeram harshavardhan रेड्डी",
-        "ne": "beeram harshavardhan रेड्डी"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -88649,7 +87997,14 @@
       "voteShare": 33.13,
       "marginToWinner": 29931
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Aelleni Sudhakar Rao",
+      "party": "BJP",
+      "votes": 20389,
+      "voteShare": 10.61,
+      "marginToWinner": 73220,
+      "marginToFirstRunnerUp": 43289
+    }
   },
   {
     "id": "TS-AC-86-2023",
@@ -88714,21 +88069,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Ravindra Kumar Ramavath",
-      "localizedNames": {
-        "en": "Ravindra Kumar Ramavath",
-        "te": "ravindra కుమార్ ramavath",
-        "hi": "ravindra कुमार ramavath",
-        "kn": "ravindra कुमार ramavath",
-        "ta": "ravindra कुमार ramavath",
-        "mr": "ravindra कुमार ramavath",
-        "bn": "ravindra कुमार ramavath",
-        "gu": "ravindra कुमार ramavath",
-        "ml": "ravindra कुमार ramavath",
-        "pa": "ravindra कुमार ramavath",
-        "or": "ravindra कुमार ramavath",
-        "as": "ravindra कुमार ramavath",
-        "ne": "ravindra कुमार ramavath"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -88747,11 +88087,18 @@
       },
       "sex": "O",
       "age": null,
-      "votes": 81323,
+      "votes": 81232,
       "voteShare": 38.02,
-      "marginToWinner": 30021
+      "marginToWinner": 30112
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Kethavath Lalu Naik",
+      "party": "BJP",
+      "votes": 9815,
+      "voteShare": 4.59,
+      "marginToWinner": 101529,
+      "marginToFirstRunnerUp": 71417
+    }
   },
   {
     "id": "TS-AC-87-2023",
@@ -88816,22 +88163,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Nomula Bhagath Kumar",
-      "localizedNames": {
-        "en": "Nomula Bhagath Kumar",
-        "te": "nomula bhagath కుమార్",
-        "hi": "nomula bhagath कुमार",
-        "kn": "nomula bhagath कुमार",
-        "ta": "nomula bhagath कुमार",
-        "mr": "nomula bhagath कुमार",
-        "bn": "nomula bhagath कुमार",
-        "gu": "nomula bhagath कुमार",
-        "ml": "nomula bhagath कुमार",
-        "pa": "nomula bhagath कुमार",
-        "or": "nomula bhagath कुमार",
-        "as": "nomula bhagath कुमार",
-        "ne": "nomula bhagath कुमार"
-      },
+      "name": "Nomula Bhagath",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -88854,7 +88186,14 @@
       "voteShare": 31.66,
       "marginToWinner": 55849
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Kankanala Niveditha Reddy",
+      "party": "BJP",
+      "votes": 6491,
+      "voteShare": 3.21,
+      "marginToWinner": 113340,
+      "marginToFirstRunnerUp": 57491
+    }
   },
   {
     "id": "TS-AC-88-2023",
@@ -88904,8 +88243,8 @@
       },
       "sex": "O",
       "age": 54,
-      "votes": 114462,
-      "voteShare": 59.08,
+      "votes": 89234,
+      "voteShare": 57.2,
       "education": "Others",
       "profession": "BUSINESS",
       "totalAssets": 490939725,
@@ -88920,21 +88259,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Nallamothu Bhaskar Rao",
-      "localizedNames": {
-        "en": "Nallamothu Bhaskar Rao",
-        "te": "nallamothu bhaskar రావు",
-        "hi": "nallamothu bhaskar राव",
-        "kn": "nallamothu bhaskar राव",
-        "ta": "nallamothu bhaskar राव",
-        "mr": "nallamothu bhaskar राव",
-        "bn": "nallamothu bhaskar राव",
-        "gu": "nallamothu bhaskar राव",
-        "ml": "nallamothu bhaskar राव",
-        "pa": "nallamothu bhaskar राव",
-        "or": "nallamothu bhaskar राव",
-        "as": "nallamothu bhaskar राव",
-        "ne": "nallamothu bhaskar राव"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -88953,9 +88277,9 @@
       },
       "sex": "O",
       "age": null,
-      "votes": 65680,
-      "voteShare": 33.9,
-      "marginToWinner": 48782
+      "votes": 66773,
+      "voteShare": 42.8,
+      "marginToWinner": 22461
     },
     "secondRunnerUp": null
   },
@@ -89022,22 +88346,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Shanampudi Saidi Reddy",
-      "localizedNames": {
-        "en": "Shanampudi Saidi Reddy",
-        "te": "shanampudi saidi రెడ్డి",
-        "hi": "shanampudi saidi रेड्डी",
-        "kn": "shanampudi saidi रेड्डी",
-        "ta": "shanampudi saidi रेड्डी",
-        "mr": "shanampudi saidi रेड्डी",
-        "bn": "shanampudi saidi रेड्डी",
-        "gu": "shanampudi saidi रेड्डी",
-        "ml": "shanampudi saidi रेड्डी",
-        "pa": "shanampudi saidi रेड्डी",
-        "or": "shanampudi saidi रेड्डी",
-        "as": "shanampudi saidi रेड्डी",
-        "ne": "shanampudi saidi रेड्डी"
-      },
+      "name": "Shanampudi Saidireddy",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -89060,7 +88369,14 @@
       "voteShare": 33.36,
       "marginToWinner": 44888
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Pillutla Raghu",
+      "party": "AIFB",
+      "votes": 8280,
+      "voteShare": 3.85,
+      "marginToWinner": 108427,
+      "marginToFirstRunnerUp": 63539
+    }
   },
   {
     "id": "TS-AC-90-2023",
@@ -89126,21 +88442,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Bollam Mallaiah Yadav",
-      "localizedNames": {
-        "en": "Bollam Mallaiah Yadav",
-        "te": "bollam mallaiah yadav",
-        "hi": "bollam mallaiah yadav",
-        "kn": "bollam mallaiah yadav",
-        "ta": "bollam mallaiah yadav",
-        "mr": "bollam mallaiah yadav",
-        "bn": "bollam mallaiah yadav",
-        "gu": "bollam mallaiah yadav",
-        "ml": "bollam mallaiah yadav",
-        "pa": "bollam mallaiah yadav",
-        "or": "bollam mallaiah yadav",
-        "as": "bollam mallaiah yadav",
-        "ne": "bollam mallaiah yadav"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -89163,7 +88464,14 @@
       "voteShare": 32.35,
       "marginToWinner": 58172
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Pillutla Srinivas",
+      "party": "BSP",
+      "votes": 3369,
+      "voteShare": 1.61,
+      "marginToWinner": 122414,
+      "marginToFirstRunnerUp": 64242
+    }
   },
   {
     "id": "TS-AC-91-2023",
@@ -89227,22 +88535,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Damodar Reddy Ramreddy",
-      "localizedNames": {
-        "en": "Damodar Reddy Ramreddy",
-        "te": "damodar రెడ్డి ramreddy",
-        "hi": "damodar रेड्डी ramreddy",
-        "kn": "damodar रेड्डी ramreddy",
-        "ta": "damodar रेड्डी ramreddy",
-        "mr": "damodar रेड्डी ramreddy",
-        "bn": "damodar रेड्डी ramreddy",
-        "gu": "damodar रेड्डी ramreddy",
-        "ml": "damodar रेड्डी ramreddy",
-        "pa": "damodar रेड्डी ramreddy",
-        "or": "damodar रेड्डी ramreddy",
-        "as": "damodar रेड्डी ramreddy",
-        "ne": "damodar रेड्डी ramreddy"
-      },
+      "name": "Ramreddy Damodar Reddy",
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -89265,7 +88558,14 @@
       "voteShare": 34.13,
       "marginToWinner": 4606
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Sankineni Venkateswar Rao",
+      "party": "BJP",
+      "votes": 40407,
+      "voteShare": 19.55,
+      "marginToWinner": 34736,
+      "marginToFirstRunnerUp": 30130
+    }
   },
   {
     "id": "TS-AC-92-2023",
@@ -89330,22 +88630,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Kancharla. Bhupal Reddy",
-      "localizedNames": {
-        "en": "Kancharla. Bhupal Reddy",
-        "te": "kancharla. bhupal రెడ్డి",
-        "hi": "kancharla. bhupal रेड्डी",
-        "kn": "kancharla. bhupal रेड्डी",
-        "ta": "kancharla. bhupal रेड्डी",
-        "mr": "kancharla. bhupal रेड्डी",
-        "bn": "kancharla. bhupal रेड्डी",
-        "gu": "kancharla. bhupal रेड्डी",
-        "ml": "kancharla. bhupal रेड्डी",
-        "pa": "kancharla. bhupal रेड्डी",
-        "or": "kancharla. bhupal रेड्डी",
-        "as": "kancharla. bhupal रेड्डी",
-        "ne": "kancharla. bhupal रेड्डी"
-      },
+      "name": "Kancharla Bhupal Reddy",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -89368,7 +88653,14 @@
       "voteShare": 26.01,
       "marginToWinner": 54332
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Pilli Rama Raju Yadav",
+      "party": "AIFB",
+      "votes": 27096,
+      "voteShare": 13.28,
+      "marginToWinner": 80309,
+      "marginToFirstRunnerUp": 25977
+    }
   },
   {
     "id": "TS-AC-93-2023",
@@ -89384,7 +88676,7 @@
     "marginRunnerUp1ToRunnerUp2": 68691,
     "winner": {
       "rank": 1,
-      "name": "Komatireddy Raj Gopal Reddy",
+      "name": "Komatireddy Rajagopal Reddy",
       "localizedNames": {
         "en": "Komatireddy Raj Gopal Reddy",
         "hi": "कोमटिरेडडय रज गोपल रेडडय",
@@ -89434,21 +88726,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Kusukuntla Prabhakar Reddy",
-      "localizedNames": {
-        "en": "Kusukuntla Prabhakar Reddy",
-        "te": "kusukuntla prabhakar రెడ్డి",
-        "hi": "kusukuntla prabhakar रेड्डी",
-        "kn": "kusukuntla prabhakar रेड्डी",
-        "ta": "kusukuntla prabhakar रेड्डी",
-        "mr": "kusukuntla prabhakar रेड्डी",
-        "bn": "kusukuntla prabhakar रेड्डी",
-        "gu": "kusukuntla prabhakar रेड्डी",
-        "ml": "kusukuntla prabhakar रेड्डी",
-        "pa": "kusukuntla prabhakar रेड्डी",
-        "or": "kusukuntla prabhakar रेड्डी",
-        "as": "kusukuntla prabhakar रेड्डी",
-        "ne": "kusukuntla prabhakar रेड्डी"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -89471,7 +88748,14 @@
       "voteShare": 33.83,
       "marginToWinner": 40590
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Chelamalla Krishna Reddy",
+      "party": "BJP",
+      "votes": 22319,
+      "voteShare": 9.55,
+      "marginToWinner": 97305,
+      "marginToFirstRunnerUp": 56715
+    }
   },
   {
     "id": "TS-AC-94-2023",
@@ -89537,21 +88821,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Pailla Shekar Reddy",
-      "localizedNames": {
-        "en": "Pailla Shekar Reddy",
-        "te": "pailla శేఖర్ రెడ్డి",
-        "hi": "pailla शेखर रेड्डी",
-        "kn": "pailla शेखर रेड्डी",
-        "ta": "pailla शेखर रेड्डी",
-        "mr": "pailla शेखर रेड्डी",
-        "bn": "pailla शेखर रेड्डी",
-        "gu": "pailla शेखर रेड्डी",
-        "ml": "pailla शेखर रेड्डी",
-        "pa": "pailla शेखर रेड्डी",
-        "or": "pailla शेखर रेड्डी",
-        "as": "pailla शेखर रेड्डी",
-        "ne": "pailla शेखर रेड्डी"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -89574,7 +88843,14 @@
       "voteShare": 39.04,
       "marginToWinner": 26201
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Gudur Narayana Reddy",
+      "party": "BJP",
+      "votes": 9200,
+      "voteShare": 4.69,
+      "marginToWinner": 93542,
+      "marginToFirstRunnerUp": 67341
+    }
   },
   {
     "id": "TS-AC-95-2023",
@@ -89639,22 +88915,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Chirumarthy Lingaiah",
-      "localizedNames": {
-        "en": "Chirumarthy Lingaiah",
-        "te": "chirumarthy lingaiah",
-        "hi": "chirumarthy lingaiah",
-        "kn": "chirumarthy lingaiah",
-        "ta": "chirumarthy lingaiah",
-        "mr": "chirumarthy lingaiah",
-        "bn": "chirumarthy lingaiah",
-        "gu": "chirumarthy lingaiah",
-        "ml": "chirumarthy lingaiah",
-        "pa": "chirumarthy lingaiah",
-        "or": "chirumarthy lingaiah",
-        "as": "chirumarthy lingaiah",
-        "ne": "chirumarthy lingaiah"
-      },
+      "name": "Chirumarthi Lingaiah",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -89677,7 +88938,14 @@
       "voteShare": 29.54,
       "marginToWinner": 68839
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Nakirekanti Mogulaiah",
+      "party": "BJP",
+      "votes": 5668,
+      "voteShare": 2.59,
+      "marginToWinner": 127872,
+      "marginToFirstRunnerUp": 59033
+    }
   },
   {
     "id": "TS-AC-96-2023",
@@ -89728,26 +88996,11 @@
       "sex": "O",
       "age": null,
       "votes": 129535,
-      "voteShare": 57.53
+      "voteShare": 54.19
     },
     "firstRunnerUp": {
       "rank": 2,
       "name": "Gadari Kishore",
-      "localizedNames": {
-        "en": "Gadari Kishore",
-        "te": "gadari kishore",
-        "hi": "gadari kishore",
-        "kn": "gadari kishore",
-        "ta": "gadari kishore",
-        "mr": "gadari kishore",
-        "bn": "gadari kishore",
-        "gu": "gadari kishore",
-        "ml": "gadari kishore",
-        "pa": "gadari kishore",
-        "or": "gadari kishore",
-        "as": "gadari kishore",
-        "ne": "gadari kishore"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -89767,10 +89020,17 @@
       "sex": "O",
       "age": null,
       "votes": 78441,
-      "voteShare": 34.84,
+      "voteShare": 45.81,
       "marginToWinner": 51094
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Kadiyam Ramachandraiah",
+      "party": "BJP",
+      "votes": 4412,
+      "voteShare": 0,
+      "marginToWinner": 125123,
+      "marginToFirstRunnerUp": 74029
+    }
   },
   {
     "id": "TS-AC-97-2023",
@@ -89835,22 +89095,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Gongidi Sunitha",
-      "localizedNames": {
-        "en": "Gongidi Sunitha",
-        "te": "gongidi సునీత",
-        "hi": "gongidi sunitha",
-        "kn": "gongidi sunitha",
-        "ta": "gongidi sunitha",
-        "mr": "gongidi sunitha",
-        "bn": "gongidi sunitha",
-        "gu": "gongidi sunitha",
-        "ml": "gongidi sunitha",
-        "pa": "gongidi sunitha",
-        "or": "gongidi sunitha",
-        "as": "gongidi sunitha",
-        "ne": "gongidi sunitha"
-      },
+      "name": "Gongidi Suntiha",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -89873,7 +89118,14 @@
       "voteShare": 34.08,
       "marginToWinner": 49636
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Padala Srinivas",
+      "party": "BJP",
+      "votes": 9659,
+      "voteShare": 4.54,
+      "marginToWinner": 112481,
+      "marginToFirstRunnerUp": 62845
+    }
   },
   {
     "id": "TS-AC-98-2023",
@@ -89939,21 +89191,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Kommuri Pratap Reddy",
-      "localizedNames": {
-        "en": "Kommuri Pratap Reddy",
-        "te": "kommuri pratap రెడ్డి",
-        "hi": "kommuri pratap रेड्डी",
-        "kn": "kommuri pratap रेड्डी",
-        "ta": "kommuri pratap रेड्डी",
-        "mr": "kommuri pratap रेड्डी",
-        "bn": "kommuri pratap रेड्डी",
-        "gu": "kommuri pratap रेड्डी",
-        "ml": "kommuri pratap रेड्डी",
-        "pa": "kommuri pratap रेड्डी",
-        "or": "kommuri pratap रेड्डी",
-        "as": "kommuri pratap रेड्डी",
-        "ne": "kommuri pratap रेड्डी"
-      },
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -89976,7 +89213,14 @@
       "voteShare": 40.86,
       "marginToWinner": 15783
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Arutla Deshmantha Reddy",
+      "party": "BJP",
+      "votes": 7734,
+      "voteShare": 3.8,
+      "marginToWinner": 91241,
+      "marginToFirstRunnerUp": 75458
+    }
   },
   {
     "id": "TS-AC-99-2023",
@@ -90041,22 +89285,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Singhapuram Indira",
-      "localizedNames": {
-        "en": "Singhapuram Indira",
-        "te": "singhapuram indira",
-        "hi": "singhapuram indira",
-        "kn": "singhapuram indira",
-        "ta": "singhapuram indira",
-        "mr": "singhapuram indira",
-        "bn": "singhapuram indira",
-        "gu": "singhapuram indira",
-        "ml": "singhapuram indira",
-        "pa": "singhapuram indira",
-        "or": "singhapuram indira",
-        "as": "singhapuram indira",
-        "ne": "singhapuram indira"
-      },
+      "name": "Indira Singapuram",
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -90079,7 +89308,14 @@
       "voteShare": 43.53,
       "marginToWinner": 7779
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Gunde Vijaya Rama Rao",
+      "party": "BJP",
+      "votes": 4984,
+      "voteShare": 2.31,
+      "marginToWinner": 96712,
+      "marginToFirstRunnerUp": 88933
+    }
   },
   {
     "id": "TS-AC-100-2023",
@@ -90145,21 +89381,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Errabelli Dayakar Rao",
-      "localizedNames": {
-        "en": "Errabelli Dayakar Rao",
-        "te": "errabelli dayakar రావు",
-        "hi": "errabelli dayakar राव",
-        "kn": "errabelli dayakar राव",
-        "ta": "errabelli dayakar राव",
-        "mr": "errabelli dayakar राव",
-        "bn": "errabelli dayakar राव",
-        "gu": "errabelli dayakar राव",
-        "ml": "errabelli dayakar राव",
-        "pa": "errabelli dayakar राव",
-        "or": "errabelli dayakar राव",
-        "as": "errabelli dayakar राव",
-        "ne": "errabelli dayakar राव"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -90182,7 +89403,14 @@
       "voteShare": 35.98,
       "marginToWinner": 47634
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Madavapeddi Venkat Reddy",
+      "party": "INDEPENDENT",
+      "votes": 4146,
+      "voteShare": 1.88,
+      "marginToWinner": 122702,
+      "marginToFirstRunnerUp": 75068
+    }
   },
   {
     "id": "TS-AC-101-2023",
@@ -90198,7 +89426,7 @@
     "marginRunnerUp1ToRunnerUp2": 65309,
     "winner": {
       "rank": 1,
-      "name": "Jatoth Ram Chander Naik",
+      "name": "Jatoth Ramachandru Naik",
       "localizedNames": {
         "en": "Jatoth Ram Chander Naik",
         "hi": "जटोठ रम चंडेर निक",
@@ -90238,21 +89466,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Dharamsoth Redya Naik",
-      "localizedNames": {
-        "en": "Dharamsoth Redya Naik",
-        "te": "dharamsoth redya naik",
-        "hi": "dharamsoth redya naik",
-        "kn": "dharamsoth redya naik",
-        "ta": "dharamsoth redya naik",
-        "mr": "dharamsoth redya naik",
-        "bn": "dharamsoth redya naik",
-        "gu": "dharamsoth redya naik",
-        "ml": "dharamsoth redya naik",
-        "pa": "dharamsoth redya naik",
-        "or": "dharamsoth redya naik",
-        "as": "dharamsoth redya naik",
-        "ne": "dharamsoth redya naik"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -90275,7 +89488,14 @@
       "voteShare": 32.42,
       "marginToWinner": 53131
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Ratna Azmeera",
+      "party": "INDEPENDENT",
+      "votes": 2773,
+      "voteShare": 1.44,
+      "marginToWinner": 112814,
+      "marginToFirstRunnerUp": 59683
+    }
   },
   {
     "id": "TS-AC-102-2023",
@@ -90291,7 +89511,7 @@
     "marginRunnerUp1ToRunnerUp2": 64974,
     "winner": {
       "rank": 1,
-      "name": "Murali Naik Bhukya",
+      "name": "K. R. Nagaraj",
       "localizedNames": {
         "en": "Murali Naik Bhukya",
         "hi": "मुरलि निक भुकय",
@@ -90325,8 +89545,8 @@
       },
       "sex": "O",
       "age": 57,
-      "votes": 116644,
-      "voteShare": 55.46,
+      "votes": 106696,
+      "voteShare": 48.77,
       "education": "Post Graduate",
       "profession": "Medical Practitioner",
       "totalAssets": 62194707,
@@ -90340,22 +89560,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Banoth Shankar Naik",
-      "localizedNames": {
-        "en": "Banoth Shankar Naik",
-        "te": "banoth శంకర్ naik",
-        "hi": "banoth शंकर naik",
-        "kn": "banoth शंकर naik",
-        "ta": "banoth शंकर naik",
-        "mr": "banoth शंकर naik",
-        "bn": "banoth शंकर naik",
-        "gu": "banoth शंकर naik",
-        "ml": "banoth शंकर naik",
-        "pa": "banoth शंकर naik",
-        "or": "banoth शंकर naik",
-        "as": "banoth शंकर naik",
-        "ne": "banoth शंकर naik"
-      },
+      "name": "Aroori Ramesh",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -90374,11 +89579,18 @@
       },
       "sex": "O",
       "age": null,
-      "votes": 66473,
-      "voteShare": 31.6,
-      "marginToWinner": 50171
+      "votes": 87238,
+      "voteShare": 39.88,
+      "marginToWinner": 19458
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Kondeti Shridhar",
+      "party": "BJP",
+      "votes": 12275,
+      "voteShare": 5.61,
+      "marginToWinner": 94421,
+      "marginToFirstRunnerUp": 74963
+    }
   },
   {
     "id": "TS-AC-103-2023",
@@ -90444,21 +89656,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Peddi Sudarshan Reddy",
-      "localizedNames": {
-        "en": "Peddi Sudarshan Reddy",
-        "te": "peddi sudarshan రెడ్డి",
-        "hi": "peddi sudarshan रेड्डी",
-        "kn": "peddi sudarshan रेड्डी",
-        "ta": "peddi sudarshan रेड्डी",
-        "mr": "peddi sudarshan रेड्डी",
-        "bn": "peddi sudarshan रेड्डी",
-        "gu": "peddi sudarshan रेड्डी",
-        "ml": "peddi sudarshan रेड्डी",
-        "pa": "peddi sudarshan रेड्डी",
-        "or": "peddi sudarshan रेड्डी",
-        "as": "peddi sudarshan रेड्डी",
-        "ne": "peddi sudarshan रेड्डी"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -90481,7 +89678,14 @@
       "voteShare": 41.53,
       "marginToWinner": 18889
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Kambhampati Prathap",
+      "party": "BJP",
+      "votes": 3062,
+      "voteShare": 1.49,
+      "marginToWinner": 101123,
+      "marginToFirstRunnerUp": 82234
+    }
   },
   {
     "id": "TS-AC-104-2023",
@@ -90546,22 +89750,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Challa. Dharma Reddy.",
-      "localizedNames": {
-        "en": "Challa. Dharma Reddy.",
-        "te": "challa. dharma reddy.",
-        "hi": "challa. dharma reddy.",
-        "kn": "challa. dharma reddy.",
-        "ta": "challa. dharma reddy.",
-        "mr": "challa. dharma reddy.",
-        "bn": "challa. dharma reddy.",
-        "gu": "challa. dharma reddy.",
-        "ml": "challa. dharma reddy.",
-        "pa": "challa. dharma reddy.",
-        "or": "challa. dharma reddy.",
-        "as": "challa. dharma reddy.",
-        "ne": "challa. dharma reddy."
-      },
+      "name": "Challa Dharma Reddy",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -90584,7 +89773,14 @@
       "voteShare": 34.25,
       "marginToWinner": 7941
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Kali Prasad Rao Pagadala",
+      "party": "BJP",
+      "votes": 38735,
+      "voteShare": 20.53,
+      "marginToWinner": 33838,
+      "marginToFirstRunnerUp": 25897
+    }
   },
   {
     "id": "TS-AC-105-2023",
@@ -90649,22 +89845,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Dasyam Vinay Bhasker",
-      "localizedNames": {
-        "en": "Dasyam Vinay Bhasker",
-        "te": "dasyam vinay bhasker",
-        "hi": "dasyam vinay bhasker",
-        "kn": "dasyam vinay bhasker",
-        "ta": "dasyam vinay bhasker",
-        "mr": "dasyam vinay bhasker",
-        "bn": "dasyam vinay bhasker",
-        "gu": "dasyam vinay bhasker",
-        "ml": "dasyam vinay bhasker",
-        "pa": "dasyam vinay bhasker",
-        "or": "dasyam vinay bhasker",
-        "as": "dasyam vinay bhasker",
-        "ne": "dasyam vinay bhasker"
-      },
+      "name": "Dasyam Vinay Bhaskar",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -90687,7 +89868,14 @@
       "voteShare": 34.32,
       "marginToWinner": 15331
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Rao Padma",
+      "party": "BJP",
+      "votes": 30826,
+      "voteShare": 18.46,
+      "marginToWinner": 41823,
+      "marginToFirstRunnerUp": 26492
+    }
   },
   {
     "id": "TS-AC-106-2023",
@@ -90752,21 +89940,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Errabelli Pradeep Kumar Rao",
-      "localizedNames": {
-        "en": "Errabelli Pradeep Kumar Rao",
-        "te": "errabelli pradeep కుమార్ రావు",
-        "hi": "errabelli pradeep कुमार राव",
-        "kn": "errabelli pradeep कुमार राव",
-        "ta": "errabelli pradeep कुमार राव",
-        "mr": "errabelli pradeep कुमार राव",
-        "bn": "errabelli pradeep कुमार राव",
-        "gu": "errabelli pradeep कुमार राव",
-        "ml": "errabelli pradeep कुमार राव",
-        "pa": "errabelli pradeep कुमार राव",
-        "or": "errabelli pradeep कुमार राव",
-        "as": "errabelli pradeep कुमार राव",
-        "ne": "errabelli pradeep कुमार राव"
-      },
       "party": "BJP",
       "localizedParties": {
         "en": "Bharatiya Janata Party",
@@ -90789,7 +89962,14 @@
       "voteShare": 30.35,
       "marginToWinner": 15652
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Nannapuneni Narender",
+      "party": "BRS",
+      "votes": 42783,
+      "voteShare": 24.92,
+      "marginToWinner": 24974,
+      "marginToFirstRunnerUp": 9322
+    }
   },
   {
     "id": "TS-AC-107-2023",
@@ -90839,27 +90019,12 @@
       },
       "sex": "O",
       "age": null,
-      "votes": 106696,
-      "voteShare": 48.77
+      "votes": 79234,
+      "voteShare": 54.64
     },
     "firstRunnerUp": {
       "rank": 2,
       "name": "Aroori Ramesh",
-      "localizedNames": {
-        "en": "Aroori Ramesh",
-        "te": "aroori రమేష్",
-        "hi": "aroori रमेश",
-        "kn": "aroori रमेश",
-        "ta": "aroori रमेश",
-        "mr": "aroori रमेश",
-        "bn": "aroori रमेश",
-        "gu": "aroori रमेश",
-        "ml": "aroori रमेश",
-        "pa": "aroori रमेश",
-        "or": "aroori रमेश",
-        "as": "aroori रमेश",
-        "ne": "aroori रमेश"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -90878,9 +90043,9 @@
       },
       "sex": "O",
       "age": null,
-      "votes": 87238,
-      "voteShare": 39.88,
-      "marginToWinner": 19458
+      "votes": 65778,
+      "voteShare": 45.36,
+      "marginToWinner": 13456
     },
     "secondRunnerUp": null
   },
@@ -90948,21 +90113,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Gandra Venkata Ramana Reddy",
-      "localizedNames": {
-        "en": "Gandra Venkata Ramana Reddy",
-        "te": "gandra venkata రమణ రెడ్డి",
-        "hi": "gandra venkata ramana रेड्डी",
-        "kn": "gandra venkata ramana रेड्डी",
-        "ta": "gandra venkata ramana रेड्डी",
-        "mr": "gandra venkata ramana रेड्डी",
-        "bn": "gandra venkata ramana रेड्डी",
-        "gu": "gandra venkata ramana रेड्डी",
-        "ml": "gandra venkata ramana रेड्डी",
-        "pa": "gandra venkata ramana रेड्डी",
-        "or": "gandra venkata ramana रेड्डी",
-        "as": "gandra venkata ramana रेड्डी",
-        "ne": "gandra venkata ramana रेड्डी"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -90985,7 +90135,14 @@
       "voteShare": 31.2,
       "marginToWinner": 52699
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Chandupatla Keerthi Reddy",
+      "party": "BJP",
+      "votes": 14731,
+      "voteShare": 6.53,
+      "marginToWinner": 108385,
+      "marginToFirstRunnerUp": 55686
+    }
   },
   {
     "id": "TS-AC-109-2023",
@@ -91041,21 +90198,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Bade Nagajyothi",
-      "localizedNames": {
-        "en": "Bade Nagajyothi",
-        "te": "bade nagajyothi",
-        "hi": "bade nagajyothi",
-        "kn": "bade nagajyothi",
-        "ta": "bade nagajyothi",
-        "mr": "bade nagajyothi",
-        "bn": "bade nagajyothi",
-        "gu": "bade nagajyothi",
-        "ml": "bade nagajyothi",
-        "pa": "bade nagajyothi",
-        "or": "bade nagajyothi",
-        "as": "bade nagajyothi",
-        "ne": "bade nagajyothi"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -91078,7 +90220,14 @@
       "voteShare": 36.55,
       "marginToWinner": 33700
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Azmeera Prahlad Naik",
+      "party": "BJP",
+      "votes": 5388,
+      "voteShare": 2.87,
+      "marginToWinner": 96879,
+      "marginToFirstRunnerUp": 63179
+    }
   },
   {
     "id": "TS-AC-110-2023",
@@ -91144,21 +90293,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Rega Kantha Rao",
-      "localizedNames": {
-        "en": "Rega Kantha Rao",
-        "te": "rega kantha రావు",
-        "hi": "rega kantha राव",
-        "kn": "rega kantha राव",
-        "ta": "rega kantha राव",
-        "mr": "rega kantha राव",
-        "bn": "rega kantha राव",
-        "gu": "rega kantha राव",
-        "ml": "rega kantha राव",
-        "pa": "rega kantha राव",
-        "or": "rega kantha राव",
-        "as": "rega kantha राव",
-        "ne": "rega kantha राव"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -91181,7 +90315,14 @@
       "voteShare": 35.03,
       "marginToWinner": 34506
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Balaraju Podium",
+      "party": "BJP",
+      "votes": 2627,
+      "voteShare": 1.64,
+      "marginToWinner": 87883,
+      "marginToFirstRunnerUp": 53377
+    }
   },
   {
     "id": "TS-AC-111-2023",
@@ -91236,22 +90377,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Banoth Hari Priya",
-      "localizedNames": {
-        "en": "Banoth Hari Priya",
-        "te": "banoth hari priya",
-        "hi": "banoth hari priya",
-        "kn": "banoth hari priya",
-        "ta": "banoth hari priya",
-        "mr": "banoth hari priya",
-        "bn": "banoth hari priya",
-        "gu": "banoth hari priya",
-        "ml": "banoth hari priya",
-        "pa": "banoth hari priya",
-        "or": "banoth hari priya",
-        "as": "banoth hari priya",
-        "ne": "banoth hari priya"
-      },
+      "name": "Haripriya Banoth",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -91274,7 +90400,14 @@
       "voteShare": 29.08,
       "marginToWinner": 57309
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Dharavath Ravinder Naik",
+      "party": "BJP",
+      "votes": 2568,
+      "voteShare": 1.44,
+      "marginToWinner": 106603,
+      "marginToFirstRunnerUp": 49294
+    }
   },
   {
     "id": "TS-AC-112-2023",
@@ -91290,7 +90423,7 @@
     "marginRunnerUp1ToRunnerUp2": 66111,
     "winner": {
       "rank": 1,
-      "name": "Tummala Nageswara Rao",
+      "name": "Thummala Nageswara Rao",
       "localizedNames": {
         "en": "Tummala Nageswara Rao",
         "hi": "टुममल नगेसवर रओ",
@@ -91340,21 +90473,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Puvvada Ajay Kumar",
-      "localizedNames": {
-        "en": "Puvvada Ajay Kumar",
-        "te": "puvvada ajay కుమార్",
-        "hi": "puvvada ajay कुमार",
-        "kn": "puvvada ajay कुमार",
-        "ta": "puvvada ajay कुमार",
-        "mr": "puvvada ajay कुमार",
-        "bn": "puvvada ajay कुमार",
-        "gu": "puvvada ajay कुमार",
-        "ml": "puvvada ajay कुमार",
-        "pa": "puvvada ajay कुमार",
-        "or": "puvvada ajay कुमार",
-        "as": "puvvada ajay कुमार",
-        "ne": "puvvada ajay कुमार"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -91377,7 +90495,14 @@
       "voteShare": 36.67,
       "marginToWinner": 49381
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Miriyala Ramakrishna",
+      "party": "JSP",
+      "votes": 4040,
+      "voteShare": 1.71,
+      "marginToWinner": 131976,
+      "marginToFirstRunnerUp": 82595
+    }
   },
   {
     "id": "TS-AC-113-2023",
@@ -91393,7 +90518,7 @@
     "marginRunnerUp1ToRunnerUp2": 58387,
     "winner": {
       "rank": 1,
-      "name": "Ponguleti Srinivasa Reddy",
+      "name": "Ponguleti Srinivas Reddy",
       "localizedNames": {
         "en": "Ponguleti Srinivasa Reddy",
         "hi": "पोङुलेटि सरिणिवस रेडडय",
@@ -91443,21 +90568,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Kandala Upender Reddy",
-      "localizedNames": {
-        "en": "Kandala Upender Reddy",
-        "te": "kandala upender రెడ్డి",
-        "hi": "kandala upender रेड्डी",
-        "kn": "kandala upender रेड्डी",
-        "ta": "kandala upender रेड्डी",
-        "mr": "kandala upender रेड्डी",
-        "bn": "kandala upender रेड्डी",
-        "gu": "kandala upender रेड्डी",
-        "ml": "kandala upender रेड्डी",
-        "pa": "kandala upender रेड्डी",
-        "or": "kandala upender रेड्डी",
-        "as": "kandala upender रेड्डी",
-        "ne": "kandala upender रेड्डी"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -91480,7 +90590,14 @@
       "voteShare": 32.82,
       "marginToWinner": 56650
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Allika Venkateswar Rao",
+      "party": "BSP",
+      "votes": 2095,
+      "voteShare": 0.97,
+      "marginToWinner": 125725,
+      "marginToFirstRunnerUp": 69075
+    }
   },
   {
     "id": "TS-AC-114-2023",
@@ -91544,22 +90661,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Lingala Kamal Raju",
-      "localizedNames": {
-        "en": "Lingala Kamal Raju",
-        "te": "lingala kamal raju",
-        "hi": "lingala kamal raju",
-        "kn": "lingala kamal raju",
-        "ta": "lingala kamal raju",
-        "mr": "lingala kamal raju",
-        "bn": "lingala kamal raju",
-        "gu": "lingala kamal raju",
-        "ml": "lingala kamal raju",
-        "pa": "lingala kamal raju",
-        "or": "lingala kamal raju",
-        "as": "lingala kamal raju",
-        "ne": "lingala kamal raju"
-      },
+      "name": "Kamal Raju Lingala",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -91582,7 +90684,14 @@
       "voteShare": 37.44,
       "marginToWinner": 35452
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Paladugu Bhaskar",
+      "party": "CPI(M)",
+      "votes": 6575,
+      "voteShare": 3.35,
+      "marginToWinner": 102395,
+      "marginToFirstRunnerUp": 66943
+    }
   },
   {
     "id": "TS-AC-115-2023",
@@ -91647,22 +90756,7 @@
     },
     "firstRunnerUp": {
       "rank": 2,
-      "name": "Banoth Madanlal",
-      "localizedNames": {
-        "en": "Banoth Madanlal",
-        "te": "banoth madanlal",
-        "hi": "banoth madanlal",
-        "kn": "banoth madanlal",
-        "ta": "banoth madanlal",
-        "mr": "banoth madanlal",
-        "bn": "banoth madanlal",
-        "gu": "banoth madanlal",
-        "ml": "banoth madanlal",
-        "pa": "banoth madanlal",
-        "or": "banoth madanlal",
-        "as": "banoth madanlal",
-        "ne": "banoth madanlal"
-      },
+      "name": "Madanlal Banoth",
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -91685,7 +90779,14 @@
       "voteShare": 35.93,
       "marginToWinner": 33045
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Bhukya Veerabhadram",
+      "party": "CPI(M)",
+      "votes": 4439,
+      "voteShare": 2.62,
+      "marginToWinner": 89474,
+      "marginToFirstRunnerUp": 56429
+    }
   },
   {
     "id": "TS-AC-116-2023",
@@ -91750,21 +90851,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Sandra Venkata Veeraiah",
-      "localizedNames": {
-        "en": "Sandra Venkata Veeraiah",
-        "te": "sandra venkata veeraiah",
-        "hi": "sandra venkata veeraiah",
-        "kn": "sandra venkata veeraiah",
-        "ta": "sandra venkata veeraiah",
-        "mr": "sandra venkata veeraiah",
-        "bn": "sandra venkata veeraiah",
-        "gu": "sandra venkata veeraiah",
-        "ml": "sandra venkata veeraiah",
-        "pa": "sandra venkata veeraiah",
-        "or": "sandra venkata veeraiah",
-        "as": "sandra venkata veeraiah",
-        "ne": "sandra venkata veeraiah"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -91787,7 +90873,14 @@
       "voteShare": 42.63,
       "marginToWinner": 19440
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Namburi Ramalingeswara Rao",
+      "party": "BJP",
+      "votes": 1882,
+      "voteShare": 0.87,
+      "marginToWinner": 109363,
+      "marginToFirstRunnerUp": 89923
+    }
   },
   {
     "id": "TS-AC-117-2023",
@@ -91803,7 +90896,7 @@
     "marginRunnerUp1ToRunnerUp2": 68309,
     "winner": {
       "rank": 1,
-      "name": "Kunamneni Sambasiva Rao",
+      "name": "Kunamneni Sambasiva Rao{{efn",
       "localizedNames": {
         "en": "Kunamneni Sambasiva Rao",
         "hi": "कुनमणेणि समबसिव रओ",
@@ -91837,8 +90930,8 @@
       },
       "sex": "O",
       "age": 67,
-      "votes": 80336,
-      "voteShare": 42.75,
+      "votes": 76543,
+      "voteShare": 52.84,
       "education": "Graduate",
       "profession": "Social Service",
       "totalAssets": 23339376,
@@ -91853,30 +90946,36 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Jalagam Venkat Rao",
-      "localizedNames": {
-        "en": "Jalagam Venkat Rao",
-        "te": "jalagam వెంకట్ రావు",
-        "hi": "jalagam वेंकट राव",
-        "kn": "jalagam वेंकट राव",
-        "ta": "jalagam वेंकट राव",
-        "mr": "jalagam वेंकट राव",
-        "bn": "jalagam वेंकट राव",
-        "gu": "jalagam वेंकट राव",
-        "ml": "jalagam वेंकट राव",
-        "pa": "jalagam वेंकट राव",
-        "or": "jalagam वेंकट राव",
-        "as": "jalagam वेंकट राव",
-        "ne": "jalagam वेंकट राव"
+      "party": "AIFB",
+      "localizedParties": {
+        "en": "Indian National Congress",
+        "te": "భారత జాతీయ కాంగ్రెస్",
+        "hi": "भारतीय राष्ट्रीय कांग्रेस",
+        "kn": "ಭಾರತೀಯ ರಾಷ್ಟ್ರೀಯ ಕಾಂಗ್ರೆಸ್",
+        "mr": "भारतीय राष्ट्रीय काँग्रेस",
+        "ta": "இந்திய தேசிய காங்கிரஸ்",
+        "ml": "ഇന്ത്യൻ നാഷണൽ കോൺഗ്രസ്",
+        "bn": "ভারতীয় জাতীয় কংগ্রেস",
+        "gu": "ભારતીય રાષ્ટ્રીય કોંગ્રેસ",
+        "pa": "ਭਾਰਤੀ ਰਾਸ਼ਟਰੀ ਕਾਂਗਰਸ",
+        "or": "ଭାରତୀୟ ଜାତୀୟ କଂଗ୍ରେସ",
+        "as": "ভাৰতীয় জাতীয় কংগ্ৰেছ",
+        "ne": "भारतीय राष्ट्रिय काङ्ग्रेस"
       },
-      "party": "IND",
-      "localizedParties": {},
       "sex": "O",
       "age": null,
       "votes": 53789,
       "voteShare": 28.62,
-      "marginToWinner": 26547
+      "marginToWinner": 22754
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Vanama Venkateswara Rao",
+      "party": "BRS",
+      "votes": 37555,
+      "voteShare": 19.98,
+      "marginToWinner": 38988,
+      "marginToFirstRunnerUp": 16234
+    }
   },
   {
     "id": "TS-AC-118-2023",
@@ -91932,21 +91031,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Mecha Nageswara Rao",
-      "localizedNames": {
-        "en": "Mecha Nageswara Rao",
-        "te": "mecha nageswara రావు",
-        "hi": "mecha nageswara राव",
-        "kn": "mecha nageswara राव",
-        "ta": "mecha nageswara राव",
-        "mr": "mecha nageswara राव",
-        "bn": "mecha nageswara राव",
-        "gu": "mecha nageswara राव",
-        "ml": "mecha nageswara राव",
-        "pa": "mecha nageswara राव",
-        "or": "mecha nageswara राव",
-        "as": "mecha nageswara राव",
-        "ne": "mecha nageswara राव"
-      },
       "party": "BRS",
       "localizedParties": {
         "en": "Bharat Rashtra Samithi",
@@ -91969,7 +91053,14 @@
       "voteShare": 33.83,
       "marginToWinner": 28905
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Arjunarao Pittala",
+      "party": "CPI(M)",
+      "votes": 2488,
+      "voteShare": 1.83,
+      "marginToWinner": 72505,
+      "marginToFirstRunnerUp": 43600
+    }
   },
   {
     "id": "TS-AC-119-2023",
@@ -91985,7 +91076,7 @@
     "marginRunnerUp1ToRunnerUp2": 67389,
     "winner": {
       "rank": 1,
-      "name": "Tellam Venkata Rao",
+      "name": "Dr. Tellam Venkata Rao",
       "localizedNames": {
         "en": "Tellam Venkata Rao",
         "hi": "टेललम वेणकत रओ",
@@ -92035,21 +91126,6 @@
     "firstRunnerUp": {
       "rank": 2,
       "name": "Podem Veeraiah",
-      "localizedNames": {
-        "en": "Podem Veeraiah",
-        "te": "podem veeraiah",
-        "hi": "podem veeraiah",
-        "kn": "podem veeraiah",
-        "ta": "podem veeraiah",
-        "mr": "podem veeraiah",
-        "bn": "podem veeraiah",
-        "gu": "podem veeraiah",
-        "ml": "podem veeraiah",
-        "pa": "podem veeraiah",
-        "or": "podem veeraiah",
-        "as": "podem veeraiah",
-        "ne": "podem veeraiah"
-      },
       "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
@@ -92072,6 +91148,13 @@
       "voteShare": 40.24,
       "marginToWinner": 5719
     },
-    "secondRunnerUp": null
+    "secondRunnerUp": {
+      "name": "Karam Pullaiah",
+      "party": "CPI(M)",
+      "votes": 5860,
+      "voteShare": 4.96,
+      "marginToWinner": 47392,
+      "marginToFirstRunnerUp": 41673
+    }
   }
 ]

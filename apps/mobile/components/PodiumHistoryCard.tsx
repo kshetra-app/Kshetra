@@ -199,9 +199,9 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
             <Text style={[styles.voteCountSecondary, { color: colors.textSecondary }]}>
               {ru1Votes > 0 ? ru1Votes.toLocaleString() : '-'}
             </Text>
-            {margin1 != null && margin1 > 0 && (
+            {ru1VoteShare > 0 && (
               <View style={styles.marginBadge}>
-                <Text style={styles.marginBadgeText}>-{margin1.toLocaleString()}</Text>
+                <Text style={styles.marginBadgeText}>{ru1VoteShare.toFixed(1)}%</Text>
               </View>
             )}
           </View>
@@ -239,9 +239,9 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
             <Text style={[styles.voteCountSecondary, { color: colors.textSecondary }]}>
               {ru2Votes > 0 ? ru2Votes.toLocaleString() : '-'}
             </Text>
-            {margin2 != null && margin2 > 0 && (
+            {ru2VoteShare > 0 && (
               <View style={[styles.marginBadge, { backgroundColor: '#F3F4F6' }]}>
-                <Text style={[styles.marginBadgeText, { color: '#6B7280' }]}>-{margin2.toLocaleString()}</Text>
+                <Text style={[styles.marginBadgeText, { color: '#6B7280' }]}>{ru2VoteShare.toFixed(1)}%</Text>
               </View>
             )}
           </View>

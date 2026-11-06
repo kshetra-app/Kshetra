@@ -2160,7 +2160,11 @@ function FullMapScreen() {
           const winnerVotes = podium?.winner?.votes || selected.votes;
           const winnerColor = getPartyColor(winnerParty);
 
-          const runnerUpName = podium?.firstRunnerUp?.name || selected.runnerUpName || selected.runnerUp;
+          let rawRuName = podium?.firstRunnerUp?.name || selected.runnerUpName || selected.runnerUp;
+          if (/candidate/i.test(rawRuName) && selected.runnerUpName && !/candidate/i.test(selected.runnerUpName)) {
+            rawRuName = selected.runnerUpName;
+          }
+          const runnerUpName = rawRuName;
           const runnerUpParty = podium?.firstRunnerUp?.party || selected.runnerUp;
           const runnerUpVotes = podium?.firstRunnerUp?.votes || (selected.votes > selected.margin ? selected.votes - selected.margin : 0);
           const runnerUpColor = getPartyColor(runnerUpParty);
@@ -2359,7 +2363,7 @@ function FullMapScreen() {
                       <View style={styles.s1CandidateVotesCol}>
                         <Text style={styles.s1CandidateVotes}>{runnerUpVotes > 0 ? runnerUpVotes.toLocaleString() : '—'}</Text>
                         <Text style={[styles.s1CandidateShare, { color: '#64748B' }]}>
-                          -{margin.toLocaleString()} ({runnerUpShare.toFixed(1)}%)
+                          {runnerUpShare > 0 ? `${runnerUpShare.toFixed(1)}%` : ''}
                         </Text>
                       </View>
                     </Pressable>
@@ -2406,7 +2410,7 @@ function FullMapScreen() {
                         <View style={styles.s1CandidateVotesCol}>
                           <Text style={styles.s1CandidateVotes}>{ru2Votes > 0 ? ru2Votes.toLocaleString() : '—'}</Text>
                           <Text style={[styles.s1CandidateShare, { color: '#B45309' }]}>
-                            {margin2 != null && margin2 > 0 ? `-${margin2.toLocaleString()} ` : ''}({ru2Share.toFixed(1)}%)
+                            {ru2Share > 0 ? `${ru2Share.toFixed(1)}%` : ''}
                           </Text>
                         </View>
                       </Pressable>
