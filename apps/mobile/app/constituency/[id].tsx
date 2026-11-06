@@ -3,6 +3,7 @@ import {
   getLatestPodiumForConstituency,
   getHistoricalPodiumForConstituency,
   fetchHistoricalPodiumForConstituency,
+  sanitizeContestWithSeed,
   getLocalizedCandidateName,
   type HistoricalPodiumContest,
 } from '../../lib/historicalPodiumStore';
@@ -157,19 +158,21 @@ export default function ConstituencyDetailScreen() {
   const effectiveConstituencyName = apiDetail?.name || constituency?.name || '';
   const effectiveDistrict = apiDetail?.district || constituency?.district || '';
   const effectiveReservation = apiDetail?.reservationStatus || constituency?.type || 'GEN';
-  const effectiveWinnerParty = apiDetail?.recentElection?.winner || apiDetail?.currentParty || constituency?.winnerParty || '';
-  const effectiveWinnerName = apiDetail?.recentElection?.winnerName || apiDetail?.currentMLA || constituency?.winnerName || '';
-  const effectiveWinnerVotes = apiDetail?.recentElection?.winnerVotes !== undefined ? apiDetail.recentElection.winnerVotes : (constituency?.winnerVotes ?? null);
-  const effectiveMargin = apiDetail?.recentElection?.margin !== undefined ? apiDetail.recentElection.margin : (constituency?.margin ?? null);
-  const effectiveRunnerUp = apiDetail?.recentElection?.runnerUp || constituency?.runnerUp || '';
+  const effectiveWinnerParty = (constituency?.winnerParty && constituency.winnerParty.trim()) || apiDetail?.recentElection?.winner || apiDetail?.currentParty || '';
+  const effectiveWinnerName = (constituency?.winnerName && constituency.winnerName.trim()) || apiDetail?.recentElection?.winnerName || apiDetail?.currentMLA || '';
+  const effectiveWinnerVotes = (constituency?.winnerVotes && constituency.winnerVotes > 0)
+    ? constituency.winnerVotes
+    : (apiDetail?.recentElection?.winnerVotes !== undefined ? apiDetail.recentElection.winnerVotes : (constituency?.winnerVotes ?? null));
+  const effectiveMargin = (constituency?.margin && constituency.margin > 0)
+    ? constituency.margin
+    : (apiDetail?.recentElection?.margin !== undefined ? apiDetail.recentElection.margin : (constituency?.margin ?? null));
+  const effectiveRunnerUp = (constituency?.runnerUp && constituency.runnerUp.trim()) || apiDetail?.recentElection?.runnerUp || '';
   const effectiveElectionYear = apiDetail?.recentElection?.electionYear !== undefined
     ? apiDetail.recentElection.electionYear
     : (constituency?.electionYear ?? null);
-  const effectiveMarginPercent = apiDetail?.recentElection?.marginPercent !== undefined
-    ? apiDetail.recentElection.marginPercent
-    : (effectiveMargin != null && effectiveWinnerVotes != null && effectiveWinnerVotes > 0
-        ? parseFloat(((effectiveMargin / effectiveWinnerVotes) * 100).toFixed(1))
-        : null);
+  const effectiveMarginPercent = (effectiveMargin != null && effectiveWinnerVotes != null && effectiveWinnerVotes > 0)
+    ? parseFloat(((effectiveMargin / effectiveWinnerVotes) * 100).toFixed(1))
+    : (apiDetail?.recentElection?.marginPercent !== undefined ? apiDetail.recentElection.marginPercent : null);
 
   const localizedConstName = constituency
     ? getLocalizedConstituencyName(acNo, stateCode, effectiveConstituencyName, i18n.language, constituency.localName)
@@ -284,6 +287,29 @@ export default function ConstituencyDetailScreen() {
           photoUrl: ru2Photo,
           localizedNames: cleanRu2Loc,
         };
+      }
+
+      if (effectiveWinnerVotes && effectiveWinnerVotes > 0) {
+        if (sanitized.winner) {
+          sanitized.winner.votes = effectiveWinnerVotes;
+        }
+        if (effectiveMargin != null) {
+          sanitized.marginWinnerToRunnerUp1 = effectiveMargin;
+        }
+        const ruVotes = (constituency as any)?.runnerUpVotes || (effectiveMargin != null && effectiveWinnerVotes > effectiveMargin ? effectiveWinnerVotes - effectiveMargin : sanitized.firstRunnerUp?.votes || 0);
+        if (sanitized.firstRunnerUp) {
+          sanitized.firstRunnerUp.votes = ruVotes;
+          sanitized.firstRunnerUp.marginToWinner = effectiveMargin || 0;
+        }
+        const ru2Votes = sanitized.secondRunnerUp?.votes || 0;
+        const total = effectiveWinnerVotes + (sanitized.firstRunnerUp?.votes || 0) + ru2Votes;
+        sanitized.totalValidVotes = total;
+        if (sanitized.winner) {
+          sanitized.winner.voteShare = Math.round((effectiveWinnerVotes / total) * 10000) / 100;
+        }
+        if (sanitized.firstRunnerUp && sanitized.firstRunnerUp.votes) {
+          sanitized.firstRunnerUp.voteShare = Math.round((sanitized.firstRunnerUp.votes / total) * 10000) / 100;
+        }
       }
 
       return sanitized;
@@ -450,8 +476,9 @@ export default function ConstituencyDetailScreen() {
       }
 
       if (contests && contests.length > 0) {
-        setHistoricalContests(contests);
-        setLatestPodium(contests[0]);
+        const sanitizedList = contests.map((c: any) => sanitizeContestWithSeed(stateCode, acNo, c));
+        setHistoricalContests(sanitizedList);
+        setLatestPodium(sanitizedList[0]);
       }
       setLoadingHistory(false);
     });

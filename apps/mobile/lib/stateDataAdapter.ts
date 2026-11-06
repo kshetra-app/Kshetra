@@ -88,6 +88,7 @@ export interface UnifiedConstituency {
   winnerVotes: number;
   runnerUp: string;
   runnerUpName?: string;
+  runnerUpVotes?: number;
   margin: number;
   /** Current verified party of sitting representative */
   currentParty: string;
@@ -239,6 +240,7 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
         winnerVotes: c.winnerVotes2023,
         runnerUp: c.runnerUp2023,
         runnerUpName: (c as any).runnerUpName2023 || '',
+        runnerUpVotes: (c as any).runnerUpVotes2023 || (c.winnerVotes2023 && c.margin2023 ? c.winnerVotes2023 - c.margin2023 : 0),
         margin: c.margin2023,
         currentParty: c.currentParty ?? c.winner2023,
         electionYear: 2023,
@@ -259,6 +261,7 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
         winnerVotes: c.winnerVotes2024,
         runnerUp: c.runnerUp2024,
         runnerUpName: (c as any).runnerUpName2024 || '',
+        runnerUpVotes: (c as any).runnerUpVotes2024 || (c.winnerVotes2024 && c.margin2024 ? c.winnerVotes2024 - c.margin2024 : 0),
         margin: c.margin2024,
         currentParty: c.currentParty ?? c.winner2024,
         electionYear: 2024,
@@ -279,6 +282,7 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
         winnerVotes: c.winnerVotes2023,
         runnerUp: c.runnerUp2023,
         runnerUpName: (c as any).runnerUpName2023 || '',
+        runnerUpVotes: (c as any).runnerUpVotes2023 || (c.winnerVotes2023 && c.margin2023 ? c.winnerVotes2023 - c.margin2023 : 0),
         margin: c.margin2023,
         currentParty: c.currentParty ?? c.winner2023,
         electionYear: 2023,
@@ -299,6 +303,7 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
         winnerVotes: c.winnerVotes2024,
         runnerUp: c.runnerUp2024,
         runnerUpName: (c as any).runnerUpName2024 || '',
+        runnerUpVotes: (c as any).runnerUpVotes2024 || (c.winnerVotes2024 && c.margin2024 ? c.winnerVotes2024 - c.margin2024 : 0),
         margin: c.margin2024,
         currentParty: c.currentParty ?? c.winner2024,
         electionYear: 2024,

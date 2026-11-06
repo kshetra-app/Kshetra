@@ -58,6 +58,61 @@ export function setCachedStatePodium(stateCode: string, data: Record<string, His
 }
 
 /**
+ * Reconciles and sanitizes an election contest against authoritative local seed data.
+ * Protects against stale remote API responses, old GeoJSON fallbacks, or outdated CDN caches.
+ */
+export function sanitizeContestWithSeed(
+  stateCode: string,
+  acNoOrName: number | string,
+  contest: HistoricalPodiumContest,
+): HistoricalPodiumContest {
+  if (!contest) return contest;
+  try {
+    const { getUnifiedConstituenciesForState } = require('./stateDataAdapter');
+    const consts = getUnifiedConstituenciesForState(stateCode);
+    const acNum = typeof acNoOrName === 'number' ? acNoOrName : parseInt(String(acNoOrName), 10);
+    const seed = consts?.find((c: any) => c.acNo === acNum);
+    if (seed && contest.year === (seed.electionYear || 2023)) {
+      const authenticWinnerVotes = seed.winnerVotes || seed.votes;
+      const authenticMargin = seed.margin;
+      const authenticRuVotes = seed.runnerUpVotes || (authenticWinnerVotes && authenticMargin ? authenticWinnerVotes - authenticMargin : 0);
+      const isGenericCand = (n?: string | null) => !n || /candidate|runner\s*up|winner|ind|nota/i.test(n.trim());
+      const authenticRuName = (!isGenericCand(seed.runnerUpName) ? seed.runnerUpName : null) ||
+                              (!isGenericCand(contest.firstRunnerUp?.name) ? contest.firstRunnerUp?.name : null) ||
+                              seed.runnerUpName || contest.firstRunnerUp?.name || seed.runnerUp || '';
+      const authenticWinnerName = seed.winnerName || contest.winner?.name || seed.winner || '';
+
+      if (authenticWinnerVotes && authenticWinnerVotes > 0) {
+        if (contest.winner) {
+          contest.winner.votes = authenticWinnerVotes;
+          if (authenticWinnerName) contest.winner.name = authenticWinnerName;
+          if (seed.winnerParty) contest.winner.party = seed.winnerParty;
+        }
+        if (authenticMargin != null) {
+          contest.marginWinnerToRunnerUp1 = authenticMargin;
+        }
+        if (contest.firstRunnerUp) {
+          if (authenticRuVotes > 0) contest.firstRunnerUp.votes = authenticRuVotes;
+          if (authenticRuName) contest.firstRunnerUp.name = authenticRuName;
+          if (seed.runnerUp || (seed as any).runnerUpParty) contest.firstRunnerUp.party = seed.runnerUp || (seed as any).runnerUpParty;
+          contest.firstRunnerUp.marginToWinner = authenticMargin;
+        }
+        const ru2Votes = contest.secondRunnerUp?.votes || 0;
+        const total = authenticWinnerVotes + (contest.firstRunnerUp?.votes || 0) + ru2Votes;
+        contest.totalValidVotes = total;
+        if (contest.winner) {
+          contest.winner.voteShare = Math.round((authenticWinnerVotes / total) * 10000) / 100;
+        }
+        if (contest.firstRunnerUp && contest.firstRunnerUp.votes) {
+          contest.firstRunnerUp.voteShare = Math.round((contest.firstRunnerUp.votes / total) * 10000) / 100;
+        }
+      }
+    }
+  } catch {}
+  return contest;
+}
+
+/**
  * On-demand asynchronous fetch for an entire state's historical podium data.
  */
 export async function fetchStatePodium(stateCode: string): Promise<Record<string, HistoricalPodiumContest[]>> {
@@ -70,6 +125,11 @@ export async function fetchStatePodium(stateCode: string): Promise<Record<string
     const res = await fetch(`${API_BASE_URL}/api/v1/states/${code}/podium`);
     if (res.ok) {
       const data = await res.json();
+      for (const acKey of Object.keys(data)) {
+        if (Array.isArray(data[acKey])) {
+          data[acKey] = data[acKey].map((c: HistoricalPodiumContest) => sanitizeContestWithSeed(code, acKey, c));
+        }
+      }
       stateCache.set(code, data);
       return data;
     }
@@ -95,8 +155,9 @@ export async function fetchHistoricalPodiumForConstituency(
   try {
     const res = await fetch(`${API_BASE_URL}/api/v1/states/${code}/constituencies/${acNoOrName}/podium`);
     if (res.ok) {
-      const contests = await res.json();
+      let contests = await res.json();
       if (Array.isArray(contests) && contests.length > 0) {
+        contests = contests.map((c: HistoricalPodiumContest) => sanitizeContestWithSeed(code, acNoOrName, c));
         let stateMap = stateCache.get(code);
         if (!stateMap) {
           stateMap = {};
@@ -118,7 +179,7 @@ export async function fetchHistoricalPodiumForConstituency(
     if (!isNaN(acNum)) {
       const rows = getHistoricalResults(code, acNum);
       if (rows && rows.length > 0) {
-        const converted: HistoricalPodiumContest[] = rows.map((r: any) => ({
+        const converted: HistoricalPodiumContest[] = rows.map((r: any) => sanitizeContestWithSeed(code, acNum, {
           year: r.year,
           delimitationId: String(r.delimitation_id || '4'),
           totalValidVotes: r.total_valid_votes || 0,
@@ -165,7 +226,8 @@ export async function fetchHistoricalPodiumForConstituency(
     }
   } catch {}
 
-  return cached || [];
+  const fallback = getLatestPodiumForConstituency(code, acNoOrName);
+  return fallback ? [fallback] : (cached || []);
 }
 
 // Ultra-thin online architecture: Full historical multi-election datasets (~118 MB)
@@ -242,7 +304,9 @@ export function getHistoricalPodiumForConstituency(
   const data = getStateData(code);
   const contests = data[String(acNoOrName)] || data[Number(acNoOrName) as any] || [];
   if (Array.isArray(contests) && contests.length > 0) {
-    return [...contests].sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
+    return [...contests]
+      .sort((a, b) => (b.year ?? 0) - (a.year ?? 0))
+      .map((c) => sanitizeContestWithSeed(code, acNoOrName, c));
   }
 
   try {
@@ -251,7 +315,7 @@ export function getHistoricalPodiumForConstituency(
     if (!isNaN(acNum)) {
       const rows = getHistoricalResults(code, acNum);
       if (rows && rows.length > 0) {
-        return rows.map((r: any) => ({
+        return rows.map((r: any) => sanitizeContestWithSeed(code, acNum, {
           year: r.year,
           delimitationId: String(r.delimitation_id || '4'),
           totalValidVotes: r.total_valid_votes || 0,
@@ -302,7 +366,7 @@ export function getLatestPodiumForConstituency(
 ): HistoricalPodiumContest | null {
   const list = getHistoricalPodiumForConstituency(stateCode, acNoOrName);
   if (list && list.length > 0) {
-    const contest = { ...list[0] };
+    const contest = sanitizeContestWithSeed(stateCode, acNoOrName, { ...list[0] });
     if (contest.firstRunnerUp && (!contest.firstRunnerUp.name || /candidate|runner\s*up/i.test(contest.firstRunnerUp.name))) {
       try {
         const { getUnifiedConstituenciesForState } = require('./stateDataAdapter');

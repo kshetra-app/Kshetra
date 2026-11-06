@@ -88,6 +88,7 @@ import {
   getLocalizedCandidateName,
   getLatestPodiumForConstituency,
   fetchHistoricalPodiumForConstituency,
+  sanitizeContestWithSeed,
   type HistoricalPodiumContest,
 } from '../../lib/historicalPodiumStore';
 import { useAffidavitStore } from '../../stores/affidavits';
@@ -214,12 +215,12 @@ function FullMapScreen() {
       return;
     }
     const sync = getLatestPodiumForConstituency(stateCode, selected.acNo);
-    if (sync) setSelectedPodium(sync);
+    if (sync) setSelectedPodium(sanitizeContestWithSeed(stateCode, selected.acNo, sync));
 
     let active = true;
     fetchHistoricalPodiumForConstituency(stateCode, selected.acNo).then((contests) => {
       if (active && contests && contests.length > 0) {
-        setSelectedPodium(contests[0]);
+        setSelectedPodium(sanitizeContestWithSeed(stateCode, selected.acNo, contests[0]));
       }
     });
     return () => { active = false; };
@@ -2160,10 +2161,15 @@ function FullMapScreen() {
         }}
       >
         {selected && (() => {
-          const podium = selectedPodium || getLatestPodiumForConstituency(stateCode, selected.acNo);
-          const winnerName = podium?.winner?.name || selected.winnerName;
-          const winnerParty = podium?.winner?.party || selected.winner;
-          const winnerVotes = podium?.winner?.votes || selected.votes;
+          const rawPodium = selectedPodium || getLatestPodiumForConstituency(stateCode, selected.acNo);
+          const podium = rawPodium ? sanitizeContestWithSeed(stateCode, selected.acNo, rawPodium) : null;
+          const seed = seedMap.get(selected.acNo);
+
+          const winnerName = (seed?.winnerName && seed.winnerName.trim()) || podium?.winner?.name || selected.winnerName;
+          const winnerParty = seed?.winnerParty || podium?.winner?.party || selected.winner;
+          const winnerVotes = (seed?.winnerVotes && seed.winnerVotes > 0)
+            ? seed.winnerVotes
+            : (podium?.winner?.votes || selected.votes);
           const winnerColor = getPartyColor(winnerParty);
 
           const isGenericCand = (n?: string | null) => {
@@ -2171,15 +2177,18 @@ function FullMapScreen() {
             const l = n.trim().toLowerCase();
             return l.includes('candidate') || l.includes('runner up') || l === 'winner' || l === 'ind' || l === 'nota' || l === 'none of the above';
           };
-          let rawRuName = (!isGenericCand(podium?.firstRunnerUp?.name) ? podium?.firstRunnerUp?.name : null) ||
+          let rawRuName = (seed?.runnerUpName && !isGenericCand(seed.runnerUpName) ? seed.runnerUpName : null) ||
+                          (!isGenericCand(podium?.firstRunnerUp?.name) ? podium?.firstRunnerUp?.name : null) ||
                           (!isGenericCand(selected.runnerUpName) ? selected.runnerUpName : null) ||
-                          podium?.firstRunnerUp?.name || selected.runnerUpName || selected.runnerUp;
+                          seed?.runnerUpName || podium?.firstRunnerUp?.name || selected.runnerUpName || selected.runnerUp;
           if (isGenericCand(rawRuName) && selected.runnerUpName && !isGenericCand(selected.runnerUpName)) {
             rawRuName = selected.runnerUpName;
           }
           const runnerUpName = rawRuName;
-          const runnerUpParty = podium?.firstRunnerUp?.party || selected.runnerUp;
-          const runnerUpVotes = podium?.firstRunnerUp?.votes || (selected.votes > selected.margin ? selected.votes - selected.margin : 0);
+          const runnerUpParty = seed?.runnerUp || podium?.firstRunnerUp?.party || selected.runnerUp;
+          const runnerUpVotes = (seed?.runnerUpVotes && seed.runnerUpVotes > 0)
+            ? seed.runnerUpVotes
+            : (podium?.firstRunnerUp?.votes || (winnerVotes > selected.margin ? winnerVotes - selected.margin : 0));
           const runnerUpColor = getPartyColor(runnerUpParty);
 
           const ru2Name = podium?.secondRunnerUp?.name;
@@ -2187,11 +2196,17 @@ function FullMapScreen() {
           const ru2Votes = podium?.secondRunnerUp?.votes || 0;
           const ru2Color = ru2Party ? getPartyColor(ru2Party) : '#B45309';
 
-          const margin = podium?.marginWinnerToRunnerUp1 ?? selected.margin;
-          const totalValidVotes = podium?.totalValidVotes || (winnerVotes + runnerUpVotes + ru2Votes);
-          const winnerShare = podium?.winner?.voteShare ?? (totalValidVotes > 0 ? (winnerVotes / totalValidVotes) * 100 : 0);
-          const runnerUpShare = podium?.firstRunnerUp?.voteShare ?? (totalValidVotes > 0 ? (runnerUpVotes / totalValidVotes) * 100 : 0);
-          const ru2Share = podium?.secondRunnerUp?.voteShare ?? (totalValidVotes > 0 && ru2Votes > 0 ? (ru2Votes / totalValidVotes) * 100 : 0);
+          const margin = (seed?.margin && seed.margin > 0) ? seed.margin : (podium?.marginWinnerToRunnerUp1 ?? selected.margin);
+          const totalValidVotes = (seed?.winnerVotes && runnerUpVotes > 0)
+            ? (seed.winnerVotes + runnerUpVotes + ru2Votes)
+            : (podium?.totalValidVotes || (winnerVotes + runnerUpVotes + ru2Votes));
+          const winnerShare = (totalValidVotes > 0 && winnerVotes > 0)
+            ? (winnerVotes / totalValidVotes) * 100
+            : (podium?.winner?.voteShare ?? 0);
+          const runnerUpShare = (totalValidVotes > 0 && runnerUpVotes > 0)
+            ? (runnerUpVotes / totalValidVotes) * 100
+            : (podium?.firstRunnerUp?.voteShare ?? 0);
+          const ru2Share = totalValidVotes > 0 && ru2Votes > 0 ? (ru2Votes / totalValidVotes) * 100 : 0;
           const othersShare = Math.max(0, 100 - winnerShare - runnerUpShare - ru2Share);
           const margin2 = podium?.marginWinnerToRunnerUp2 != null
             ? podium.marginWinnerToRunnerUp2
