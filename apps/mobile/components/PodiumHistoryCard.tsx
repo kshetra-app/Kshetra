@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { getPartyColor } from '../lib/constants';
 import CandidateAvatar from './CandidateAvatar';
+import { getStaticPhoto } from '../lib/candidatePhotos';
 import { useTheme } from '../lib/theme';
 import type { HistoricalResultRow } from '../lib/seedDataLoader';
 
@@ -52,15 +53,21 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
 
   // Candidate Names
   const cleanWinner = !isGenericCandidate(item.winner_name || item.winner) ? (item.winner_name || item.winner) : 'Winner';
-  const winnerName = localizedNames?.winner?.[currentLang] || getLocalizedCandidateName(cleanWinner, currentLang) || cleanWinner;
+  const locWinner = localizedNames?.winner?.[currentLang];
+  const validLocWinner = locWinner && !isGenericCandidate(locWinner) ? locWinner : null;
+  const winnerName = validLocWinner || getLocalizedCandidateName(cleanWinner, currentLang) || cleanWinner;
 
   const rawRu1 = item.first_runner_up_name;
   const cleanRu1 = !isGenericCandidate(rawRu1) ? rawRu1 : null;
-  const ru1Name = localizedNames?.ru1?.[currentLang] || (cleanRu1 ? getLocalizedCandidateName(cleanRu1, currentLang) : null) || cleanRu1 || (item.first_runner_up_party ? `${item.first_runner_up_party}` : 'Runner Up');
+  const locRu1 = localizedNames?.ru1?.[currentLang];
+  const validLocRu1 = locRu1 && !isGenericCandidate(locRu1) ? locRu1 : null;
+  const ru1Name = validLocRu1 || (cleanRu1 ? getLocalizedCandidateName(cleanRu1, currentLang) : null) || cleanRu1 || 'Runner Up';
 
   const rawRu2 = item.second_runner_up_name;
   const cleanRu2 = !isGenericCandidate(rawRu2) ? rawRu2 : null;
-  const ru2Name = localizedNames?.ru2?.[currentLang] || (cleanRu2 ? getLocalizedCandidateName(cleanRu2, currentLang) : null) || cleanRu2 || (item.second_runner_up_party ? `${item.second_runner_up_party} Candidate` : null);
+  const locRu2 = localizedNames?.ru2?.[currentLang];
+  const validLocRu2 = locRu2 && !isGenericCandidate(locRu2) ? locRu2 : null;
+  const ru2Name = validLocRu2 || (cleanRu2 ? getLocalizedCandidateName(cleanRu2, currentLang) : null) || cleanRu2 || null;
 
   // Parties
   const winnerParty = localizedParties?.winner?.[currentLang] || getLocalizedPartyName(item.winner_party || item.party, currentLang) || 'IND';
@@ -135,7 +142,7 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
           name={winnerName}
           party={item.winner_party || item.party}
           size={36}
-          photoUrl={item.winner_photo_url}
+          photoUrl={item.winner_photo_url || getStaticPhoto(winnerName) || getStaticPhoto(cleanWinner) || undefined}
         />
 
         <View style={styles.candInfo}>
@@ -180,7 +187,7 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
             name={ru1Name}
             party={item.first_runner_up_party || 'IND'}
             size={32}
-            photoUrl={item.first_runner_up_photo_url}
+            photoUrl={item.first_runner_up_photo_url || (cleanRu1 ? getStaticPhoto(cleanRu1) : undefined) || getStaticPhoto(ru1Name) || undefined}
           />
 
           <View style={styles.candInfo}>
@@ -220,7 +227,7 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
             name={ru2Name}
             party={item.second_runner_up_party || 'IND'}
             size={32}
-            photoUrl={item.second_runner_up_photo_url}
+            photoUrl={item.second_runner_up_photo_url || (cleanRu2 ? getStaticPhoto(cleanRu2) : undefined) || getStaticPhoto(ru2Name) || undefined}
           />
 
           <View style={styles.candInfo}>

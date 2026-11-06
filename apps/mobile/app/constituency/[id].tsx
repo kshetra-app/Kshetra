@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { getPartyColor } from '../../lib/constants';
 import CandidateAvatar from '../../components/CandidateAvatar';
+import { getStaticPhoto } from '../../lib/candidatePhotos';
 import {
   getMLAProfileForState,
   getDemographicsForState,
@@ -186,10 +187,26 @@ export default function ConstituencyDetailScreen() {
   });
   const [loadingHistory, setLoadingHistory] = useState(false);
 
-  let effectiveRunnerUpName = latestPodium?.firstRunnerUp?.name || constituency?.runnerUpName || '';
-  if (/candidate/i.test(effectiveRunnerUpName) && constituency?.runnerUpName && !/candidate/i.test(constituency.runnerUpName)) {
-    effectiveRunnerUpName = constituency.runnerUpName;
+  const isGenericCandidate = (name?: string | null) => {
+    if (!name) return true;
+    const lower = name.trim().toLowerCase();
+    return (
+      lower.includes('candidate') ||
+      lower.includes('runner up') ||
+      lower === 'winner' ||
+      lower === 'ind' ||
+      lower === 'nota' ||
+      lower === 'none of the above'
+    );
+  };
+
+  const seedRuName = constituency?.runnerUpName || (constituency as any)?.runnerUpName2023 || (constituency as any)?.runnerUpName2024 || '';
+  let effectiveRunnerUpName = latestPodium?.firstRunnerUp?.name || seedRuName || '';
+  if (isGenericCandidate(effectiveRunnerUpName) && !isGenericCandidate(seedRuName)) {
+    effectiveRunnerUpName = seedRuName;
   }
+  const authoritativeRuName = (!isGenericCandidate(effectiveRunnerUpName) ? effectiveRunnerUpName : null) || (!isGenericCandidate(seedRuName) ? seedRuName : '') || '';
+
   const demo = useMemo(() => getDemographicsForState(stateCode, acNo), [stateCode, acNo]);
   const mlaProfile = useMemo(() => getMLAProfileForState(stateCode, acNo), [stateCode, acNo]);
 
@@ -197,8 +214,83 @@ export default function ConstituencyDetailScreen() {
   const canonicalPodium = useMemo(() => {
     const rawPodium = latestPodium || (historicalContests.length > 0 ? historicalContests[0] : null);
     const effectiveYear = effectiveElectionYear || rawPodium?.year || 2024;
+
+    const sanitizeContest = (contest: HistoricalPodiumContest): HistoricalPodiumContest => {
+      const sanitized = { ...contest };
+      const wName = (!isGenericCandidate(sanitized.winner?.name) ? sanitized.winner?.name : null) || effectiveWinnerName;
+      const wParty = sanitized.winner?.party || effectiveWinnerParty || 'IND';
+      const wPhoto = sanitized.winner?.photoUrl || (wName ? getStaticPhoto(wName) : undefined);
+
+      sanitized.winner = {
+        ...(sanitized.winner || {}),
+        name: wName,
+        party: wParty,
+        photoUrl: wPhoto,
+      };
+
+      if (sanitized.firstRunnerUp) {
+        const ruName = (!isGenericCandidate(sanitized.firstRunnerUp.name) ? sanitized.firstRunnerUp.name : null) || authoritativeRuName || '';
+        const ruParty = sanitized.firstRunnerUp.party || effectiveRunnerUp || constituency?.runnerUp || 'IND';
+        const ruPhoto = sanitized.firstRunnerUp.photoUrl || (ruName ? getStaticPhoto(ruName) : undefined);
+
+        let cleanRu1Loc = sanitized.firstRunnerUp.localizedNames ? { ...sanitized.firstRunnerUp.localizedNames } : undefined;
+        if (cleanRu1Loc) {
+          for (const [k, v] of Object.entries(cleanRu1Loc)) {
+            if (isGenericCandidate(v)) delete cleanRu1Loc[k];
+          }
+          if (Object.keys(cleanRu1Loc).length === 0) cleanRu1Loc = undefined;
+        }
+
+        sanitized.firstRunnerUp = {
+          ...sanitized.firstRunnerUp,
+          name: ruName,
+          party: ruParty,
+          photoUrl: ruPhoto,
+          localizedNames: cleanRu1Loc,
+        };
+      } else if (authoritativeRuName) {
+        const winnerVotes = effectiveWinnerVotes || 0;
+        const margin = effectiveMargin || 0;
+        const runnerUpVotes = winnerVotes > margin ? winnerVotes - margin : Math.round(winnerVotes * 0.85);
+        const totalValid = sanitized.totalValidVotes || (winnerVotes + runnerUpVotes);
+        const ruShare = totalValid > 0 ? parseFloat(((runnerUpVotes / totalValid) * 100).toFixed(2)) : 0;
+        sanitized.firstRunnerUp = {
+          name: authoritativeRuName,
+          party: effectiveRunnerUp || constituency?.runnerUp || 'IND',
+          votes: runnerUpVotes,
+          voteShare: ruShare,
+          marginToWinner: margin,
+          photoUrl: getStaticPhoto(authoritativeRuName) || undefined,
+        };
+      }
+
+      if (sanitized.secondRunnerUp) {
+        const ru2Name = (!isGenericCandidate(sanitized.secondRunnerUp.name) ? sanitized.secondRunnerUp.name : null) || '';
+        const ru2Party = sanitized.secondRunnerUp.party || 'IND';
+        const ru2Photo = sanitized.secondRunnerUp.photoUrl || (ru2Name ? getStaticPhoto(ru2Name) : undefined);
+
+        let cleanRu2Loc = sanitized.secondRunnerUp.localizedNames ? { ...sanitized.secondRunnerUp.localizedNames } : undefined;
+        if (cleanRu2Loc) {
+          for (const [k, v] of Object.entries(cleanRu2Loc)) {
+            if (isGenericCandidate(v)) delete cleanRu2Loc[k];
+          }
+          if (Object.keys(cleanRu2Loc).length === 0) cleanRu2Loc = undefined;
+        }
+
+        sanitized.secondRunnerUp = {
+          ...sanitized.secondRunnerUp,
+          name: ru2Name,
+          party: ru2Party,
+          photoUrl: ru2Photo,
+          localizedNames: cleanRu2Loc,
+        };
+      }
+
+      return sanitized;
+    };
+
     if (rawPodium && effectiveElectionYear && rawPodium.year >= effectiveElectionYear) {
-      return rawPodium;
+      return sanitizeContest(rawPodium);
     }
     // If rawPodium is outdated compared to the authoritative electionYear, synthesize latest
     if (effectiveWinnerParty || effectiveWinnerName) {
@@ -211,37 +303,38 @@ export default function ConstituencyDetailScreen() {
 
       const rawRu2 = rawPodium?.secondRunnerUp || historicalContests[0]?.secondRunnerUp;
 
-      return {
-        year: effectiveElectionYear,
+      const synthesized: HistoricalPodiumContest = {
+        year: effectiveElectionYear || 2023,
         delimitationId: rawPodium?.delimitationId || '4',
         totalValidVotes: totalValid,
         constituencyName: effectiveConstituencyName,
         marginWinnerToRunnerUp1: margin,
-        marginWinnerToRunnerUp2: rawRu2?.marginToWinner ?? rawPodium?.marginWinnerToRunnerUp2 ?? null,
-        marginRunnerUp1ToRunnerUp2: rawRu2?.marginToFirstRunnerUp ?? rawPodium?.marginRunnerUp1ToRunnerUp2 ?? null,
+        marginWinnerToRunnerUp2: rawRu2?.marginToWinner ?? rawPodium?.marginWinnerToRunnerUp2 ?? undefined,
+        marginRunnerUp1ToRunnerUp2: rawRu2?.marginToFirstRunnerUp ?? rawPodium?.marginRunnerUp1ToRunnerUp2 ?? undefined,
         winner: {
           name: effectiveWinnerName,
           party: effectiveWinnerParty,
           votes: winnerVotes,
           voteShare: winnerShare,
-          photoUrl: rawPodium?.winner?.photoUrl,
+          photoUrl: rawPodium?.winner?.photoUrl || (effectiveWinnerName ? getStaticPhoto(effectiveWinnerName) : undefined),
           localizedNames: rawPodium?.winner?.localizedNames,
           localizedParties: rawPodium?.winner?.localizedParties,
         },
         firstRunnerUp: {
-          name: effectiveRunnerUpName || constituency?.runnerUpName || rawPodium?.firstRunnerUp?.name || '',
+          name: authoritativeRuName || effectiveRunnerUpName || constituency?.runnerUpName || rawPodium?.firstRunnerUp?.name || '',
           party: effectiveRunnerUp || constituency?.runnerUp || rawPodium?.firstRunnerUp?.party || '',
           votes: runnerUpVotes,
           voteShare: ruShare,
           marginToWinner: margin,
-          photoUrl: rawPodium?.firstRunnerUp?.photoUrl,
+          photoUrl: rawPodium?.firstRunnerUp?.photoUrl || getStaticPhoto(authoritativeRuName || effectiveRunnerUpName) || undefined,
           localizedNames: rawPodium?.firstRunnerUp?.localizedNames,
           localizedParties: rawPodium?.firstRunnerUp?.localizedParties,
         },
         secondRunnerUp: rawRu2 || null,
       };
+      return sanitizeContest(synthesized);
     }
-    return rawPodium;
+    return rawPodium ? sanitizeContest(rawPodium) : null;
   }, [
     latestPodium,
     historicalContests,
@@ -252,6 +345,7 @@ export default function ConstituencyDetailScreen() {
     effectiveMargin,
     effectiveRunnerUp,
     effectiveRunnerUpName,
+    authoritativeRuName,
     effectiveConstituencyName,
     constituency,
   ]);
@@ -266,12 +360,12 @@ export default function ConstituencyDetailScreen() {
       total_valid_votes: contest.totalValidVotes,
       winner: contest.winner?.name,
       party: contest.winner?.party,
-      winner_name: contest.winner?.name,
+      winner_name: (!isGenericCandidate(contest.winner?.name) ? contest.winner?.name : null) || contest.winner?.name || undefined,
       winner_party: contest.winner?.party,
       winner_votes: contest.winner?.votes || 0,
       winner_vote_share: contest.winner?.voteShare || 0,
       winner_education: contest.winner?.education,
-      first_runner_up_name: contest.firstRunnerUp?.name,
+      first_runner_up_name: (!isGenericCandidate(contest.firstRunnerUp?.name) ? contest.firstRunnerUp?.name : null) || (contest.year === (effectiveElectionYear || 2024) ? authoritativeRuName : undefined) || contest.firstRunnerUp?.name || undefined,
       first_runner_up_party: contest.firstRunnerUp?.party,
       first_runner_up_votes: contest.firstRunnerUp?.votes || 0,
       first_runner_up_vote_share: contest.firstRunnerUp?.voteShare || 0,
@@ -282,9 +376,9 @@ export default function ConstituencyDetailScreen() {
       second_runner_up_vote_share: contest.secondRunnerUp?.voteShare || 0,
       margin_winner_to_runner_up_2: contest.marginWinnerToRunnerUp2 ?? contest.secondRunnerUp?.marginToWinner,
       margin_runner_up_1_to_runner_up_2: contest.marginRunnerUp1ToRunnerUp2 ?? contest.secondRunnerUp?.marginToFirstRunnerUp,
-      winner_photo_url: contest.winner?.photoUrl,
-      first_runner_up_photo_url: contest.firstRunnerUp?.photoUrl,
-      second_runner_up_photo_url: contest.secondRunnerUp?.photoUrl,
+      winner_photo_url: contest.winner?.photoUrl || (contest.winner?.name ? getStaticPhoto(contest.winner.name) : undefined) || undefined,
+      first_runner_up_photo_url: contest.firstRunnerUp?.photoUrl || (contest.firstRunnerUp?.name ? getStaticPhoto(contest.firstRunnerUp.name) : undefined) || undefined,
+      second_runner_up_photo_url: contest.secondRunnerUp?.photoUrl || (contest.secondRunnerUp?.name ? getStaticPhoto(contest.secondRunnerUp.name) : undefined) || undefined,
       localized_names_json: JSON.stringify({
         winner: contest.winner?.localizedNames,
         ru1: contest.firstRunnerUp?.localizedNames,
@@ -675,9 +769,9 @@ export default function ConstituencyDetailScreen() {
                 second_runner_up_votes: canonicalPodium.secondRunnerUp?.votes || 0,
                 second_runner_up_vote_share: canonicalPodium.secondRunnerUp?.voteShare || 0,
                 margin_winner_to_runner_up_2: canonicalPodium.marginWinnerToRunnerUp2 || 0,
-                winner_photo_url: canonicalPodium.winner?.photoUrl || undefined,
-                first_runner_up_photo_url: canonicalPodium.firstRunnerUp?.photoUrl || undefined,
-                second_runner_up_photo_url: canonicalPodium.secondRunnerUp?.photoUrl || undefined,
+                winner_photo_url: canonicalPodium.winner?.photoUrl || (canonicalPodium.winner?.name ? getStaticPhoto(canonicalPodium.winner.name) : undefined) || undefined,
+                first_runner_up_photo_url: canonicalPodium.firstRunnerUp?.photoUrl || (canonicalPodium.firstRunnerUp?.name ? getStaticPhoto(canonicalPodium.firstRunnerUp.name) : undefined) || undefined,
+                second_runner_up_photo_url: canonicalPodium.secondRunnerUp?.photoUrl || (canonicalPodium.secondRunnerUp?.name ? getStaticPhoto(canonicalPodium.secondRunnerUp.name) : undefined) || undefined,
                 localized_names_json: JSON.stringify({
                   winner: canonicalPodium.winner?.localizedNames,
                   ru1: canonicalPodium.firstRunnerUp?.localizedNames,

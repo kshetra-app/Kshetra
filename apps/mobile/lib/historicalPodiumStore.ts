@@ -301,7 +301,23 @@ export function getLatestPodiumForConstituency(
 ): HistoricalPodiumContest | null {
   const list = getHistoricalPodiumForConstituency(stateCode, acNoOrName);
   if (list && list.length > 0) {
-    return list[0];
+    const contest = { ...list[0] };
+    if (contest.firstRunnerUp && (!contest.firstRunnerUp.name || /candidate|runner\s*up/i.test(contest.firstRunnerUp.name))) {
+      try {
+        const { getUnifiedConstituenciesForState } = require('./stateDataAdapter');
+        const consts = getUnifiedConstituenciesForState(stateCode);
+        const acNo = typeof acNoOrName === 'number' ? acNoOrName : parseInt(String(acNoOrName), 10);
+        const match = consts?.find((c: any) => c.acNo === acNo);
+        if (match?.runnerUpName && !/candidate/i.test(match.runnerUpName)) {
+          contest.firstRunnerUp = {
+            ...contest.firstRunnerUp,
+            name: match.runnerUpName,
+            photoUrl: contest.firstRunnerUp.photoUrl || (match.runnerUpName ? require('./candidatePhotos').getStaticPhoto(match.runnerUpName) : undefined),
+          };
+        }
+      } catch {}
+    }
+    return contest;
   }
   // Online-first fallback: synthesize authoritative latest contest from seed stateDataAdapter
   try {
@@ -316,6 +332,7 @@ export function getLatestPodiumForConstituency(
       const totalValid = winnerVotes + runnerUpVotes;
       const winnerShare = totalValid > 0 ? (winnerVotes / totalValid) * 100 : 0;
       const runnerUpShare = totalValid > 0 ? (runnerUpVotes / totalValid) * 100 : 0;
+      const ruName = (!match.runnerUpName || /candidate/i.test(match.runnerUpName)) ? (match.runnerUpName || match.runnerUp || '') : match.runnerUpName;
 
       return {
         year: match.electionYear || 2023,
@@ -327,12 +344,14 @@ export function getLatestPodiumForConstituency(
           party: match.winnerParty || match.winner || '',
           votes: winnerVotes,
           voteShare: Math.round(winnerShare * 10) / 10,
+          photoUrl: require('./candidatePhotos').getStaticPhoto(match.winnerName || match.winner) || undefined,
         },
         firstRunnerUp: {
-          name: match.runnerUpName || match.runnerUp || '',
+          name: ruName,
           party: match.runnerUpParty || match.runnerUp || '',
           votes: runnerUpVotes,
           voteShare: Math.round(runnerUpShare * 10) / 10,
+          photoUrl: ruName ? require('./candidatePhotos').getStaticPhoto(ruName) : undefined,
         },
         secondRunnerUp: null,
       };
@@ -358,6 +377,23 @@ export function getCandidatePodiumDetail(
   if (rank === 'winner') candidate = match.winner;
   else if (rank === 'ru1') candidate = match.firstRunnerUp;
   else if (rank === 'ru2') candidate = match.secondRunnerUp;
+
+  // Sanitize candidate name if generic
+  if (candidate && (!candidate.name || /candidate|runner\s*up/i.test(candidate.name))) {
+    try {
+      const { getUnifiedConstituenciesForState } = require('./stateDataAdapter');
+      const consts = getUnifiedConstituenciesForState(stateCode);
+      const acNo = typeof acNoOrName === 'number' ? acNoOrName : parseInt(String(acNoOrName), 10);
+      const m = consts?.find((c: any) => c.acNo === acNo);
+      if (rank === 'ru1' && m?.runnerUpName && !/candidate/i.test(m.runnerUpName)) {
+        candidate = {
+          ...candidate,
+          name: m.runnerUpName,
+          photoUrl: candidate.photoUrl || require('./candidatePhotos').getStaticPhoto(m.runnerUpName) || undefined,
+        };
+      }
+    } catch {}
+  }
 
   return { candidate, contest: match };
 }

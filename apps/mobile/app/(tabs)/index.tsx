@@ -23,6 +23,7 @@ import {
   getStateZoom,
 } from '../../lib/constants';
 import CandidateAvatar from '../../components/CandidateAvatar';
+import { getStaticPhoto } from '../../lib/candidatePhotos';
 import { useUserLocation } from '../../lib/useUserLocation';
 import { findConstituencyAtPoint, pointInPolygon, pointInMultiPolygon, STATES } from '@kshetra/shared';
 import { useActiveStateStore } from '../../stores/activeState';
@@ -2291,7 +2292,7 @@ function FullMapScreen() {
                             name={winnerName}
                             party={winnerParty}
                             size={40}
-                            photoUrl={podium?.winner?.photoUrl || mla?.photoUrl || undefined}
+                            photoUrl={podium?.winner?.photoUrl || (winnerName ? getStaticPhoto(winnerName) : undefined) || mla?.photoUrl || undefined}
                             onPress={(uri) => setPhotoViewer({ uri, name: winnerName, party: winnerParty })}
                           />
                           <View style={[styles.s1RankBadge, { backgroundColor: '#F59E0B' }]}>
@@ -2337,7 +2338,7 @@ function FullMapScreen() {
                             name={runnerUpName}
                             party={runnerUpParty}
                             size={36}
-                            photoUrl={podium?.firstRunnerUp?.photoUrl || undefined}
+                            photoUrl={podium?.firstRunnerUp?.photoUrl || (runnerUpName ? getStaticPhoto(runnerUpName) : undefined) || undefined}
                             onPress={(uri) => setPhotoViewer({ uri, name: runnerUpName, party: runnerUpParty })}
                           />
                           <View style={[styles.s1RankBadge, { backgroundColor: '#64748B' }]}>
@@ -2384,7 +2385,7 @@ function FullMapScreen() {
                               name={ru2Name || `${ru2Party} Candidate`}
                               party={ru2Party || 'IND'}
                               size={34}
-                              photoUrl={podium?.secondRunnerUp?.photoUrl || undefined}
+                              photoUrl={podium?.secondRunnerUp?.photoUrl || (ru2Name ? getStaticPhoto(ru2Name) : undefined) || undefined}
                               onPress={(uri) => setPhotoViewer({ uri, name: ru2Name || `${ru2Party} Candidate`, party: ru2Party || '' })}
                             />
                             <View style={[styles.s1RankBadge, { backgroundColor: '#B45309' }]}>

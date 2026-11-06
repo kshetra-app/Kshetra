@@ -31,6 +31,7 @@ import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import PhotoViewerModal from '../../components/PhotoViewerModal';
 import ShareableCardModal from '../../components/ShareableCardModal';
 import { useTheme } from '../../lib/theme';
+import { getStaticPhoto } from '../../lib/candidatePhotos';
 import i18n from '../../i18n';
 
 
@@ -268,17 +269,24 @@ export default function LegislatorProfileScreen() {
   }
 
   const isWinner = parsedRank === 'winner';
-  const fallbackRuName = (constituency as any)?.runnerUpName || (constituency as any)?.runnerUpName2024 || (constituency as any)?.runnerUpName2023 || constituency?.runnerUp;
-  let rawName = isWinner ? (mla?.name || constituency?.winnerName || 'Unknown') : (podiumDetail?.name || mla?.name || fallbackRuName || 'Candidate');
-  if (!isWinner && /candidate/i.test(rawName) && fallbackRuName && !/candidate/i.test(fallbackRuName)) {
-    rawName = fallbackRuName;
-  }
+  const isGeneric = (str?: string | null) => {
+    if (!str) return true;
+    const l = str.trim().toLowerCase();
+    return l.includes('candidate') || l.includes('runner up') || l === 'winner' || l === 'ind' || l === 'nota' || l === 'none of the above';
+  };
+  const seedRuName = (constituency as any)?.runnerUpName || (constituency as any)?.runnerUpName2024 || (constituency as any)?.runnerUpName2023 || '';
+  const cleanSeedRuName = !isGeneric(seedRuName) ? seedRuName : null;
+
+  let rawName = isWinner
+    ? (mla?.name || constituency?.winnerName || 'Unknown')
+    : ((!isGeneric(podiumDetail?.name) ? podiumDetail?.name : null) || cleanSeedRuName || 'Runner Up');
+
   const rawParty = podiumDetail?.party || mla?.party || (isWinner ? constituency?.winnerParty : (constituency?.runnerUp || 'IND')) || '—';
-  let name = podiumDetail
+  let name = podiumDetail && !isGeneric(podiumDetail.name)
     ? (getLocalizedCandidateName(podiumDetail, i18n.language) || rawName)
     : (getLocalizedCandidateName(rawName, i18n.language) || rawName);
-  if (!isWinner && /candidate/i.test(name) && fallbackRuName && !/candidate/i.test(fallbackRuName)) {
-    name = fallbackRuName;
+  if (!isWinner && isGeneric(name) && cleanSeedRuName) {
+    name = cleanSeedRuName;
   }
   const party = podiumDetail
     ? (getLocalizedPartyName(podiumDetail, i18n.language) || rawParty)
@@ -288,7 +296,7 @@ export default function LegislatorProfileScreen() {
   const gender = (podiumDetail as any)?.sex === 'F' ? 'female' : (mla?.gender === 'F' ? 'female' : 'male');
   const age = podiumDetail?.age || (isWinner ? (winnerAffidavit?.age || mla?.age) : null) || null;
   const terms = isWinner ? (mla?.terms || 1) : 0;
-  const photoUrl = podiumDetail?.photoUrl || (isWinner ? mla?.photoUrl : null);
+  const photoUrl = podiumDetail?.photoUrl || (!isWinner ? (cleanSeedRuName ? getStaticPhoto(cleanSeedRuName) : (getStaticPhoto(rawName) || getStaticPhoto(name))) : mla?.photoUrl);
   const constType = constituency?.type || 'GEN';
 
   const defectionEvent = useMemo(() => {
