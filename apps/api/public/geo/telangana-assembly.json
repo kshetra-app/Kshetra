@@ -4396,11 +4396,14 @@
         "dtname11": "Adilabad",
         "WINNER_PARTY": "BJP",
         "WINNER_NAME": "Palvai Harish Babu",
-        "WINNER_VOTES": 71482,
+        "WINNER_VOTES": 63702,
         "RUNNER_UP": "BRS",
-        "MARGIN": 6213,
+        "MARGIN": 3088,
         "RESERVATION": "ST",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Koneru Konappa",
+        "RUNNER_UP_VOTES": 60614,
+        "TOTAL_VOTES": 136751
       }
     },
     {
@@ -9107,12 +9110,15 @@
         "dtcode11": "532",
         "dtname11": "Adilabad",
         "WINNER_PARTY": "INC",
-        "WINNER_NAME": "Gaddam Vivekanand",
-        "WINNER_VOTES": 85634,
+        "WINNER_NAME": "G. Vivekanand",
+        "WINNER_VOTES": 87541,
         "RUNNER_UP": "BRS",
-        "MARGIN": 18745,
+        "MARGIN": 37515,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Balka Suman",
+        "RUNNER_UP_VOTES": 50026,
+        "TOTAL_VOTES": 152523
       }
     },
     {
@@ -11515,12 +11521,15 @@
         "dtcode11": "532",
         "dtname11": "Adilabad",
         "WINNER_PARTY": "INC",
-        "WINNER_NAME": "Gaddam Vinod",
-        "WINNER_VOTES": 79218,
+        "WINNER_NAME": "Gaddam Vinod Kumar",
+        "WINNER_VOTES": 82217,
         "RUNNER_UP": "BRS",
-        "MARGIN": 14832,
+        "MARGIN": 36878,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Durgam Chinnaiah",
+        "RUNNER_UP_VOTES": 45339,
+        "TOTAL_VOTES": 143604
       }
     },
     {
@@ -13400,11 +13409,14 @@
         "dtname11": "Adilabad",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Kokkirala Premsagar Rao",
-        "WINNER_VOTES": 82456,
+        "WINNER_VOTES": 105945,
         "RUNNER_UP": "BJP",
-        "MARGIN": 11294,
+        "MARGIN": 66116,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Raghunath Verabelli",
+        "RUNNER_UP_VOTES": 39829,
+        "TOTAL_VOTES": 153618
       }
     },
     {
@@ -17932,11 +17944,14 @@
         "dtname11": "Adilabad",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Kova Laxmi",
-        "WINNER_VOTES": 68341,
+        "WINNER_VOTES": 83052,
         "RUNNER_UP": "INC",
-        "MARGIN": 4527,
+        "MARGIN": 22810,
         "RESERVATION": "ST",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "Ajmera Shyam",
+        "RUNNER_UP_VOTES": 60242,
+        "TOTAL_VOTES": 132155
       }
     },
     {
@@ -21620,7 +21635,10 @@
         "RUNNER_UP": "BRS",
         "MARGIN": 8946,
         "RESERVATION": "ST",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Johnson Naik Bhukya",
+        "RUNNER_UP_VOTES": 63239,
+        "TOTAL_VOTES": 135424
       }
     },
     {
@@ -24323,12 +24341,15 @@
         "dtcode11": "532",
         "dtname11": "Adilabad",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Payal Shanker",
-        "WINNER_VOTES": 78924,
+        "WINNER_NAME": "Payal Shankar",
+        "WINNER_VOTES": 67608,
         "RUNNER_UP": "BRS",
-        "MARGIN": 12637,
+        "MARGIN": 6692,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Jogu Ramanna",
+        "RUNNER_UP_VOTES": 60916,
+        "TOTAL_VOTES": 145211
       }
     },
     {
@@ -27992,11 +28013,14 @@
         "dtname11": "Adilabad",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Anil Jadhav",
-        "WINNER_VOTES": 65728,
+        "WINNER_VOTES": 76792,
         "RUNNER_UP": "BJP",
-        "MARGIN": 3841,
+        "MARGIN": 22800,
         "RESERVATION": "ST",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "Soyam Bapu Rao",
+        "RUNNER_UP_VOTES": 53992,
+        "TOTAL_VOTES": 127615
       }
     },
     {
@@ -31428,11 +31452,14 @@
         "dtname11": "Adilabad",
         "WINNER_PARTY": "BJP",
         "WINNER_NAME": "Alleti Maheshwar Reddy",
-        "WINNER_VOTES": 84367,
+        "WINNER_VOTES": 106400,
         "RUNNER_UP": "BRS",
-        "MARGIN": 15482,
+        "MARGIN": 50703,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Allola Indrakaran Reddy",
+        "RUNNER_UP_VOTES": 55697,
+        "TOTAL_VOTES": 153252
       }
     },
     {
@@ -38100,11 +38127,14 @@
         "dtname11": "Adilabad",
         "WINNER_PARTY": "BJP",
         "WINNER_NAME": "Rama Rao Pawar",
-        "WINNER_VOTES": 76543,
+        "WINNER_VOTES": 98252,
         "RUNNER_UP": "BRS",
-        "MARGIN": 9218,
+        "MARGIN": 23999,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Gaddigari Vittal Reddy",
+        "RUNNER_UP_VOTES": 74253,
+        "TOTAL_VOTES": 143868
       }
     },
     {
@@ -40148,11 +40178,14 @@
         "dtname11": "Nizamabad",
         "WINNER_PARTY": "BJP",
         "WINNER_NAME": "Paidi Rakesh Reddy",
-        "WINNER_VOTES": 89231,
+        "WINNER_VOTES": 72658,
         "RUNNER_UP": "INC",
-        "MARGIN": 21547,
+        "MARGIN": 29669,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Prodduturi Vinay Kumar Reddy",
+        "RUNNER_UP_VOTES": 42989,
+        "TOTAL_VOTES": 156915
       }
     },
     {
@@ -43620,11 +43653,14 @@
         "dtname11": "Nizamabad",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "P. Sudarshan Reddy",
-        "WINNER_VOTES": 87645,
+        "WINNER_VOTES": 66963,
         "RUNNER_UP": "BRS",
-        "MARGIN": 16823,
+        "MARGIN": 3062,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Mohammed Shakil Amir",
+        "RUNNER_UP_VOTES": 63901,
+        "TOTAL_VOTES": 158467
       }
     },
     {
@@ -48168,11 +48204,14 @@
         "dtname11": "Nizamabad",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Thota Laxmi Kantha Rao",
-        "WINNER_VOTES": 78432,
+        "WINNER_VOTES": 64489,
         "RUNNER_UP": "BRS",
-        "MARGIN": 12156,
+        "MARGIN": 1152,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Hanmanth Shinde",
+        "RUNNER_UP_VOTES": 63337,
+        "TOTAL_VOTES": 144708
       }
     },
     {
@@ -49388,11 +49427,14 @@
         "dtname11": "Nizamabad",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Pocharam Srinivas Reddy",
-        "WINNER_VOTES": 91872,
+        "WINNER_VOTES": 76278,
         "RUNNER_UP": "INC",
-        "MARGIN": 8534,
+        "MARGIN": 23464,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Eanugu Ravinder Reddy",
+        "RUNNER_UP_VOTES": 52814,
+        "TOTAL_VOTES": 175210
       }
     },
     {
@@ -55576,11 +55618,14 @@
         "dtname11": "Nizamabad",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "K. Madan Mohan Rao",
-        "WINNER_VOTES": 82174,
+        "WINNER_VOTES": 86989,
         "RUNNER_UP": "BRS",
-        "MARGIN": 14287,
+        "MARGIN": 24001,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Jajala Surender",
+        "RUNNER_UP_VOTES": 62988,
+        "TOTAL_VOTES": 150061
       }
     },
     {
@@ -59307,12 +59352,15 @@
         "dtcode11": "533",
         "dtname11": "Nizamabad",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "K. V. Ramana Reddy",
-        "WINNER_VOTES": 85693,
+        "WINNER_NAME": "Katipally Venkata Ramana Reddy",
+        "WINNER_VOTES": 66652,
         "RUNNER_UP": "BRS",
-        "MARGIN": 11342,
+        "MARGIN": 6741,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Kalvakuntla Chandrashekar Rao",
+        "RUNNER_UP_VOTES": 59911,
+        "TOTAL_VOTES": 160044
       }
     },
     {
@@ -59499,12 +59547,15 @@
         "dtcode11": "533",
         "dtname11": "Nizamabad",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Dhanpal Suryanarayana Gupta",
-        "WINNER_VOTES": 92478,
+        "WINNER_NAME": "Dhanpal Suryanarayana",
+        "WINNER_VOTES": 75240,
         "RUNNER_UP": "INC",
-        "MARGIN": 18965,
+        "MARGIN": 15387,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Mohammed Ali Shabbir",
+        "RUNNER_UP_VOTES": 59853,
+        "TOTAL_VOTES": 165991
       }
     },
     {
@@ -62416,11 +62467,14 @@
         "dtname11": "Nizamabad",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Rekulapally Bhoopathi Reddy",
-        "WINNER_VOTES": 79836,
+        "WINNER_VOTES": 78378,
         "RUNNER_UP": "BRS",
-        "MARGIN": 10473,
+        "MARGIN": 21963,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Bajireddy Goverdhan",
+        "RUNNER_UP_VOTES": 56415,
+        "TOTAL_VOTES": 149199
       }
     },
     {
@@ -66684,11 +66738,14 @@
         "dtname11": "Nizamabad",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Vemula Prashanth Reddy",
-        "WINNER_VOTES": 86521,
+        "WINNER_VOTES": 70417,
         "RUNNER_UP": "INC",
-        "MARGIN": 5218,
+        "MARGIN": 4533,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "Sunil Kumar Muthyala",
+        "RUNNER_UP_VOTES": 65884,
+        "TOTAL_VOTES": 167824
       }
     },
     {
@@ -70200,11 +70257,14 @@
         "dtname11": "Karimnagar",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Kalvakuntla Sanjay",
-        "WINNER_VOTES": 87342,
+        "WINNER_VOTES": 72115,
         "RUNNER_UP": "BJP",
-        "MARGIN": 7845,
+        "MARGIN": 10305,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "Dharmapuri Arvind",
+        "RUNNER_UP_VOTES": 61810,
+        "TOTAL_VOTES": 166839
       }
     },
     {
@@ -72344,11 +72404,14 @@
         "dtname11": "Karimnagar",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "M. Sanjay Kumar",
-        "WINNER_VOTES": 83465,
+        "WINNER_VOTES": 70243,
         "RUNNER_UP": "INC",
-        "MARGIN": 6132,
+        "MARGIN": 15822,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "T. Jeevan Reddy",
+        "RUNNER_UP_VOTES": 54421,
+        "TOTAL_VOTES": 160798
       }
     },
     {
@@ -74036,7 +74099,10 @@
         "RUNNER_UP": "BRS",
         "MARGIN": 19482,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Koppula Eshwar",
+        "RUNNER_UP_VOTES": 62241,
+        "TOTAL_VOTES": 143964
       }
     },
     {
@@ -74964,11 +75030,14 @@
         "dtname11": "Karimnagar",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Makkan Singh Raj Thakur",
-        "WINNER_VOTES": 86214,
+        "WINNER_VOTES": 92227,
         "RUNNER_UP": "BRS",
-        "MARGIN": 22715,
+        "MARGIN": 56794,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Korukanti Chandar",
+        "RUNNER_UP_VOTES": 35433,
+        "TOTAL_VOTES": 149713
       }
     },
     {
@@ -84575,12 +84644,15 @@
         "dtcode11": "534",
         "dtname11": "Karimnagar",
         "WINNER_PARTY": "INC",
-        "WINNER_NAME": "Duddilla Sridhar Babu",
-        "WINNER_VOTES": 93847,
+        "WINNER_NAME": "Sridhar Babu",
+        "WINNER_VOTES": 103822,
         "RUNNER_UP": "BRS",
-        "MARGIN": 35621,
+        "MARGIN": 31380,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Putta Madhu",
+        "RUNNER_UP_VOTES": 72442,
+        "TOTAL_VOTES": 152073
       }
     },
     {
@@ -85604,11 +85676,14 @@
         "dtname11": "Karimnagar",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Chinthakunta Vijaya Ramana Rao",
-        "WINNER_VOTES": 84536,
+        "WINNER_VOTES": 118888,
         "RUNNER_UP": "BRS",
-        "MARGIN": 17843,
+        "MARGIN": 55108,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Dasari Manohar Reddy",
+        "RUNNER_UP_VOTES": 63780,
+        "TOTAL_VOTES": 151229
       }
     },
     {
@@ -86020,11 +86095,14 @@
         "dtname11": "Karimnagar",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Gangula Kamalakar",
-        "WINNER_VOTES": 88912,
+        "WINNER_VOTES": 92179,
         "RUNNER_UP": "BJP",
-        "MARGIN": 3427,
+        "MARGIN": 3163,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "Bandi Sanjay Kumar",
+        "RUNNER_UP_VOTES": 89016,
+        "TOTAL_VOTES": 174397
       }
     },
     {
@@ -87067,12 +87145,15 @@
         "dtcode11": "534",
         "dtname11": "Karimnagar",
         "WINNER_PARTY": "INC",
-        "WINNER_NAME": "Medipally Satyam",
-        "WINNER_VOTES": 76842,
+        "WINNER_NAME": "Medipally Sathyam",
+        "WINNER_VOTES": 90395,
         "RUNNER_UP": "BRS",
-        "MARGIN": 13256,
+        "MARGIN": 37439,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Sunke Ravi Shankar",
+        "RUNNER_UP_VOTES": 52956,
+        "TOTAL_VOTES": 140428
       }
     },
     {
@@ -89032,11 +89113,14 @@
         "dtname11": "Karimnagar",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Aadi Srinivas",
-        "WINNER_VOTES": 81345,
+        "WINNER_VOTES": 71451,
         "RUNNER_UP": "BRS",
-        "MARGIN": 11728,
+        "MARGIN": 14581,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Chalmeda Lakshmi Narasimha Rao",
+        "RUNNER_UP_VOTES": 56870,
+        "TOTAL_VOTES": 150962
       }
     },
     {
@@ -93040,11 +93124,14 @@
         "dtname11": "Karimnagar",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "K. T. Rama Rao",
-        "WINNER_VOTES": 103256,
+        "WINNER_VOTES": 89244,
         "RUNNER_UP": "INC",
-        "MARGIN": 51489,
+        "MARGIN": 29687,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "K. K. Mahender Reddy",
+        "RUNNER_UP_VOTES": 59557,
+        "TOTAL_VOTES": 155023
       }
     },
     {
@@ -95095,12 +95182,15 @@
         "dtcode11": "534",
         "dtname11": "Karimnagar",
         "WINNER_PARTY": "INC",
-        "WINNER_NAME": "Kavvampally Satyanarayana",
-        "WINNER_VOTES": 78963,
+        "WINNER_NAME": "Dr. Kavvampally Satyanarayana",
+        "WINNER_VOTES": 96773,
         "RUNNER_UP": "BRS",
-        "MARGIN": 15634,
+        "MARGIN": 32365,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Erupula Balakishan Rasamayi",
+        "RUNNER_UP_VOTES": 64408,
+        "TOTAL_VOTES": 142292
       }
     },
     {
@@ -97143,12 +97233,15 @@
         "dtcode11": "534",
         "dtname11": "Karimnagar",
         "WINNER_PARTY": "BRS",
-        "WINNER_NAME": "Padi Kaushik Reddy",
-        "WINNER_VOTES": 82147,
+        "WINNER_NAME": "Kaushik Reddy",
+        "WINNER_VOTES": 80333,
         "RUNNER_UP": "BJP",
-        "MARGIN": 4816,
+        "MARGIN": 16873,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "Etela Rajendar",
+        "RUNNER_UP_VOTES": 63460,
+        "TOTAL_VOTES": 159478
       }
     },
     {
@@ -101312,11 +101405,14 @@
         "dtname11": "Karimnagar",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Ponnam Prabhakar",
-        "WINNER_VOTES": 84632,
+        "WINNER_VOTES": 100955,
         "RUNNER_UP": "BRS",
-        "MARGIN": 16247,
+        "MARGIN": 19344,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Vodithela Sathish Kumar",
+        "RUNNER_UP_VOTES": 81611,
+        "TOTAL_VOTES": 153017
       }
     },
     {
@@ -105711,12 +105807,15 @@
         "dtcode11": "535",
         "dtname11": "Medak",
         "WINNER_PARTY": "BRS",
-        "WINNER_NAME": "Thanneeru Harish Rao",
-        "WINNER_VOTES": 112845,
+        "WINNER_NAME": "T. Harish Rao",
+        "WINNER_VOTES": 105514,
         "RUNNER_UP": "INC",
-        "MARGIN": 42847,
+        "MARGIN": 82308,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "Pujala Harikrishna",
+        "RUNNER_UP_VOTES": 23206,
+        "TOTAL_VOTES": 182843
       }
     },
     {
@@ -110763,12 +110862,15 @@
         "dtcode11": "535",
         "dtname11": "Medak",
         "WINNER_PARTY": "INC",
-        "WINNER_NAME": "Mynampally Rohith",
-        "WINNER_VOTES": 79456,
+        "WINNER_NAME": "Mynampally Rohit",
+        "WINNER_VOTES": 87126,
         "RUNNER_UP": "BRS",
-        "MARGIN": 12834,
+        "MARGIN": 10157,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Padma Devender Reddy",
+        "RUNNER_UP_VOTES": 76969,
+        "TOTAL_VOTES": 146078
       }
     },
     {
@@ -117200,11 +117302,14 @@
         "dtname11": "Medak",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Patlolla Sanjeeva Reddy",
-        "WINNER_VOTES": 82173,
+        "WINNER_VOTES": 91373,
         "RUNNER_UP": "BRS",
-        "MARGIN": 15427,
+        "MARGIN": 6547,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Mahareddy Bhupal Reddy",
+        "RUNNER_UP_VOTES": 84826,
+        "TOTAL_VOTES": 148919
       }
     },
     {
@@ -119391,12 +119496,15 @@
         "dtcode11": "535",
         "dtname11": "Medak",
         "WINNER_PARTY": "INC",
-        "WINNER_NAME": "C. Damodar Raja Narasimha",
-        "WINNER_VOTES": 76845,
+        "WINNER_NAME": "Damodar Raja Narasimha",
+        "WINNER_VOTES": 114147,
         "RUNNER_UP": "BRS",
-        "MARGIN": 11563,
+        "MARGIN": 28193,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Chanti Kranthi Kiran",
+        "RUNNER_UP_VOTES": 85954,
+        "TOTAL_VOTES": 142127
       }
     },
     {
@@ -120779,12 +120887,15 @@
         "dtcode11": "535",
         "dtname11": "Medak",
         "WINNER_PARTY": "BRS",
-        "WINNER_NAME": "Vakiti Sunitha Laxma Reddy",
-        "WINNER_VOTES": 81236,
+        "WINNER_NAME": "Sunitha Laxma Reddy V",
+        "WINNER_VOTES": 88410,
         "RUNNER_UP": "INC",
-        "MARGIN": 4729,
+        "MARGIN": 8855,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "Aavula Raji Reddy",
+        "RUNNER_UP_VOTES": 79555,
+        "TOTAL_VOTES": 157743
       }
     },
     {
@@ -126768,11 +126879,14 @@
         "dtname11": "Medak",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Koninty Manik Rao",
-        "WINNER_VOTES": 78462,
+        "WINNER_VOTES": 97205,
         "RUNNER_UP": "INC",
-        "MARGIN": 3184,
+        "MARGIN": 12790,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "Agam Chandra Sekhar",
+        "RUNNER_UP_VOTES": 84415,
+        "TOTAL_VOTES": 153740
       }
     },
     {
@@ -130700,11 +130814,14 @@
         "dtname11": "Medak",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Chinta Prabhakar",
-        "WINNER_VOTES": 84127,
+        "WINNER_VOTES": 83112,
         "RUNNER_UP": "INC",
-        "MARGIN": 5621,
+        "MARGIN": 8217,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "Jagga Reddy",
+        "RUNNER_UP_VOTES": 74895,
+        "TOTAL_VOTES": 162633
       }
     },
     {
@@ -133931,12 +134048,15 @@
         "dtcode11": "535",
         "dtname11": "Medak",
         "WINNER_PARTY": "BRS",
-        "WINNER_NAME": "Gudem Mahipal Reddy",
-        "WINNER_VOTES": 89463,
+        "WINNER_NAME": "G. Mahipal Reddy",
+        "WINNER_VOTES": 105387,
         "RUNNER_UP": "INC",
-        "MARGIN": 7834,
+        "MARGIN": 7091,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Kata Srinivas Goud",
+        "RUNNER_UP_VOTES": 98296,
+        "TOTAL_VOTES": 171092
       }
     },
     {
@@ -136520,11 +136640,14 @@
         "dtname11": "Medak",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Kotha Prabhakar Reddy",
-        "WINNER_VOTES": 82715,
+        "WINNER_VOTES": 97879,
         "RUNNER_UP": "BJP",
-        "MARGIN": 6423,
+        "MARGIN": 53513,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "Raghunandan Rao",
+        "RUNNER_UP_VOTES": 44366,
+        "TOTAL_VOTES": 159007
       }
     },
     {
@@ -142223,12 +142346,15 @@
         "dtcode11": "535",
         "dtname11": "Medak",
         "WINNER_PARTY": "BRS",
-        "WINNER_NAME": "K. Chandrashekar Rao",
-        "WINNER_VOTES": 118962,
+        "WINNER_NAME": "Kalvakuntla Chandrashekhar Rao",
+        "WINNER_VOTES": 111684,
         "RUNNER_UP": "BJP",
-        "MARGIN": 46834,
+        "MARGIN": 45031,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "Etela Rajender",
+        "RUNNER_UP_VOTES": 66653,
+        "TOTAL_VOTES": 191090
       }
     },
     {
@@ -146991,12 +147117,15 @@
         "dtcode11": "537",
         "dtname11": "Rangareddy",
         "WINNER_PARTY": "BRS",
-        "WINNER_NAME": "Chamakura Malla Reddy",
-        "WINNER_VOTES": 86453,
+        "WINNER_NAME": "Malla Reddy",
+        "WINNER_VOTES": 186017,
         "RUNNER_UP": "INC",
-        "MARGIN": 5216,
+        "MARGIN": 33419,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "Thotakura Vajresh Yadav",
+        "RUNNER_UP_VOTES": 152598,
+        "TOTAL_VOTES": 167690
       }
     },
     {
@@ -148300,11 +148429,14 @@
         "dtname11": "Rangareddy",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Marri Rajasekhar Reddy",
-        "WINNER_VOTES": 79834,
+        "WINNER_VOTES": 125049,
         "RUNNER_UP": "INC",
-        "MARGIN": 3847,
+        "MARGIN": 49530,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "Mynampally Hanmanth Rao",
+        "RUNNER_UP_VOTES": 75519,
+        "TOTAL_VOTES": 155821
       }
     },
     {
@@ -149123,12 +149255,15 @@
         "dtcode11": "537",
         "dtname11": "Rangareddy",
         "WINNER_PARTY": "BRS",
-        "WINNER_NAME": "K. P. Vivekanand",
-        "WINNER_VOTES": 84216,
+        "WINNER_NAME": "K. P. Vivekanand Goud",
+        "WINNER_VOTES": 187999,
         "RUNNER_UP": "BJP",
-        "MARGIN": 7523,
+        "MARGIN": 85576,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "Kuna Srisailam Goud",
+        "RUNNER_UP_VOTES": 102423,
+        "TOTAL_VOTES": 160909
       }
     },
     {
@@ -149392,11 +149527,14 @@
         "dtname11": "Rangareddy",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Madhavaram Krishna Rao",
-        "WINNER_VOTES": 91327,
+        "WINNER_VOTES": 135635,
         "RUNNER_UP": "INC",
-        "MARGIN": 8941,
+        "MARGIN": 70387,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "Bandi Ramesh",
+        "RUNNER_UP_VOTES": 65248,
+        "TOTAL_VOTES": 173713
       }
     },
     {
@@ -150312,11 +150450,14 @@
         "dtname11": "Rangareddy",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Bandari Lakshma Reddy",
-        "WINNER_VOTES": 78543,
+        "WINNER_VOTES": 132927,
         "RUNNER_UP": "INC",
-        "MARGIN": 4128,
+        "MARGIN": 49030,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "M. Parmeshwar Reddy",
+        "RUNNER_UP_VOTES": 83897,
+        "TOTAL_VOTES": 152958
       }
     },
     {
@@ -154808,11 +154949,14 @@
         "dtname11": "Rangareddy",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Malreddy Ranga Reddy",
-        "WINNER_VOTES": 87621,
+        "WINNER_VOTES": 126506,
         "RUNNER_UP": "BRS",
-        "MARGIN": 22456,
+        "MARGIN": 36700,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Manchireddy Kishan Reddy",
+        "RUNNER_UP_VOTES": 89806,
+        "TOTAL_VOTES": 152786
       }
     },
     {
@@ -155396,7 +155540,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 5634,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "Sama Ranga Reddy",
+        "RUNNER_UP_VOTES": 76713,
+        "TOTAL_VOTES": 159060
       }
     },
     {
@@ -157512,11 +157659,14 @@
         "dtname11": "Rangareddy",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Sabitha Indra Reddy",
-        "WINNER_VOTES": 95241,
+        "WINNER_VOTES": 125578,
         "RUNNER_UP": "BJP",
-        "MARGIN": 14827,
+        "MARGIN": 26187,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "Andela Sriramulu Yadav",
+        "RUNNER_UP_VOTES": 99391,
+        "TOTAL_VOTES": 175655
       }
     },
     {
@@ -159259,12 +159409,15 @@
         "dtcode11": "537",
         "dtname11": "Rangareddy",
         "WINNER_PARTY": "BRS",
-        "WINNER_NAME": "T. Prakash Goud",
+        "WINNER_NAME": "T. Prakash Goud{{efn",
         "WINNER_VOTES": 87654,
         "RUNNER_UP": "BJP",
-        "MARGIN": 8346,
+        "MARGIN": -1984,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Thokala Srinivas Reddy",
+        "RUNNER_UP_VOTES": 89638,
+        "TOTAL_VOTES": 166962
       }
     },
     {
@@ -160576,11 +160729,14 @@
         "dtname11": "Rangareddy",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Arekapudi Gandhi",
-        "WINNER_VOTES": 93128,
+        "WINNER_VOTES": 157332,
         "RUNNER_UP": "INC",
-        "MARGIN": 11425,
+        "MARGIN": 46552,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Jagadeeswar Goud",
+        "RUNNER_UP_VOTES": 110780,
+        "TOTAL_VOTES": 174831
       }
     },
     {
@@ -163684,11 +163840,14 @@
         "dtname11": "Rangareddy",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Kale Yadaiah",
-        "WINNER_VOTES": 81347,
+        "WINNER_VOTES": 76218,
         "RUNNER_UP": "INC",
-        "MARGIN": 6218,
+        "MARGIN": 268,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Pamena Beem Bharat",
+        "RUNNER_UP_VOTES": 75950,
+        "TOTAL_VOTES": 156476
       }
     },
     {
@@ -171975,12 +172134,15 @@
         "dtcode11": "537",
         "dtname11": "Rangareddy",
         "WINNER_PARTY": "INC",
-        "WINNER_NAME": "Tammannagari Ram Mohan Reddy",
-        "WINNER_VOTES": 84562,
+        "WINNER_NAME": "T. Ram Mohan Reddy",
+        "WINNER_VOTES": 98536,
         "RUNNER_UP": "BRS",
-        "MARGIN": 17834,
+        "MARGIN": 24013,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Koppula Mahesh Reddy",
+        "RUNNER_UP_VOTES": 74523,
+        "TOTAL_VOTES": 151290
       }
     },
     {
@@ -176568,7 +176730,10 @@
         "RUNNER_UP": "BRS",
         "MARGIN": 14527,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Methuku Anand",
+        "RUNNER_UP_VOTES": 64416,
+        "TOTAL_VOTES": 143359
       }
     },
     {
@@ -182647,12 +182812,15 @@
         "dtcode11": "537",
         "dtname11": "Rangareddy",
         "WINNER_PARTY": "INC",
-        "WINNER_NAME": "B. Manohar Reddy",
-        "WINNER_VOTES": 82176,
+        "WINNER_NAME": "B.Manohar Reddy",
+        "WINNER_VOTES": 84662,
         "RUNNER_UP": "BRS",
-        "MARGIN": 19345,
+        "MARGIN": 6583,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Pilot Rohith Reddy",
+        "RUNNER_UP_VOTES": 78079,
+        "TOTAL_VOTES": 145007
       }
     },
     {
@@ -182940,11 +183108,14 @@
         "dtname11": "Hyderabad",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Muta Gopal",
-        "WINNER_VOTES": 72834,
+        "WINNER_VOTES": 75207,
         "RUNNER_UP": "INC",
-        "MARGIN": 4217,
+        "MARGIN": 37797,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "M. Anjan Kumar Yadav",
+        "RUNNER_UP_VOTES": 37410,
+        "TOTAL_VOTES": 141451
       }
     },
     {
@@ -183216,11 +183387,14 @@
         "dtname11": "Hyderabad",
         "WINNER_PARTY": "AIMIM",
         "WINNER_NAME": "Ahmed Bin Abdullah Balala",
-        "WINNER_VOTES": 81456,
+        "WINNER_VOTES": 55805,
         "RUNNER_UP": "INC",
-        "MARGIN": 28634,
+        "MARGIN": 26106,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "AIMIM"
+        "CURRENT_PARTY": "AIMIM",
+        "RUNNER_UP_NAME": "Shaik Akbar",
+        "RUNNER_UP_VOTES": 29699,
+        "TOTAL_VOTES": 134278
       }
     },
     {
@@ -183816,11 +183990,14 @@
         "dtname11": "Hyderabad",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Kaleru Venkatesh",
-        "WINNER_VOTES": 68742,
+        "WINNER_VOTES": 74416,
         "RUNNER_UP": "BJP",
-        "MARGIN": 3528,
+        "MARGIN": 24537,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "Chenaboyanna Krishna Yadav",
+        "RUNNER_UP_VOTES": 49879,
+        "TOTAL_VOTES": 133956
       }
     },
     {
@@ -184080,11 +184257,14 @@
         "dtname11": "Hyderabad",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Danam Nagender",
-        "WINNER_VOTES": 76321,
+        "WINNER_VOTES": 67368,
         "RUNNER_UP": "INC",
-        "MARGIN": 5843,
+        "MARGIN": 22010,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "P. Vijaya Reddy",
+        "RUNNER_UP_VOTES": 45358,
+        "TOTAL_VOTES": 146799
       }
     },
     {
@@ -184364,11 +184544,14 @@
         "dtname11": "Hyderabad",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Maganti Gopinath",
-        "WINNER_VOTES": 72456,
+        "WINNER_VOTES": 80549,
         "RUNNER_UP": "INC",
-        "MARGIN": 4127,
+        "MARGIN": 16337,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "Mohammed Azharuddin",
+        "RUNNER_UP_VOTES": 64212,
+        "TOTAL_VOTES": 140785
       }
     },
     {
@@ -184520,11 +184703,14 @@
         "dtname11": "Hyderabad",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Talasani Srinivas Yadav",
-        "WINNER_VOTES": 74823,
+        "WINNER_VOTES": 72557,
         "RUNNER_UP": "BJP",
-        "MARGIN": 6534,
+        "MARGIN": 41827,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "Marri Shashidhar Reddy",
+        "RUNNER_UP_VOTES": 30730,
+        "TOTAL_VOTES": 143112
       }
     },
     {
@@ -184772,11 +184958,14 @@
         "dtname11": "Hyderabad",
         "WINNER_PARTY": "AIMIM",
         "WINNER_NAME": "Mohammad Majid Hussain",
-        "WINNER_VOTES": 78912,
+        "WINNER_VOTES": 62185,
         "RUNNER_UP": "INC",
-        "MARGIN": 32415,
+        "MARGIN": 2037,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "AIMIM"
+        "CURRENT_PARTY": "AIMIM",
+        "RUNNER_UP_NAME": "Mohammad Feroz Khan",
+        "RUNNER_UP_VOTES": 60148,
+        "TOTAL_VOTES": 125409
       }
     },
     {
@@ -185460,11 +185649,14 @@
         "dtname11": "Hyderabad",
         "WINNER_PARTY": "AIMIM",
         "WINNER_NAME": "Kausar Mohiuddin",
-        "WINNER_VOTES": 84567,
+        "WINNER_VOTES": 83388,
         "RUNNER_UP": "BJP",
-        "MARGIN": 36218,
+        "MARGIN": 41986,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "AIMIM"
+        "CURRENT_PARTY": "AIMIM",
+        "RUNNER_UP_NAME": "Amar Singh",
+        "RUNNER_UP_VOTES": 41402,
+        "TOTAL_VOTES": 132916
       }
     },
     {
@@ -185664,11 +185856,14 @@
         "dtname11": "Hyderabad",
         "WINNER_PARTY": "BJP",
         "WINNER_NAME": "T. Raja Singh",
-        "WINNER_VOTES": 89234,
+        "WINNER_VOTES": 80182,
         "RUNNER_UP": "BRS",
-        "MARGIN": 24816,
+        "MARGIN": 15764,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Nand Kishore Vyas",
+        "RUNNER_UP_VOTES": 64418,
+        "TOTAL_VOTES": 153652
       }
     },
     {
@@ -186072,11 +186267,14 @@
         "dtname11": "Hyderabad",
         "WINNER_PARTY": "AIMIM",
         "WINNER_NAME": "Mir Zulfeqar Ali",
-        "WINNER_VOTES": 76543,
+        "WINNER_VOTES": 49103,
         "RUNNER_UP": "BJP",
-        "MARGIN": 29847,
+        "MARGIN": 22853,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "AIMIM"
+        "CURRENT_PARTY": "AIMIM",
+        "RUNNER_UP_NAME": "Megha Rani Agarwal",
+        "RUNNER_UP_VOTES": 26250,
+        "TOTAL_VOTES": 123239
       }
     },
     {
@@ -186640,11 +186838,14 @@
         "dtname11": "Hyderabad",
         "WINNER_PARTY": "AIMIM",
         "WINNER_NAME": "Akbaruddin Owaisi",
-        "WINNER_VOTES": 95678,
+        "WINNER_VOTES": 99776,
         "RUNNER_UP": "BRS",
-        "MARGIN": 62341,
+        "MARGIN": 81660,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "AIMIM"
+        "CURRENT_PARTY": "AIMIM",
+        "RUNNER_UP_NAME": "Sitharam Reddy Muppi",
+        "RUNNER_UP_VOTES": 18116,
+        "TOTAL_VOTES": 129015
       }
     },
     {
@@ -186800,11 +187001,14 @@
         "dtname11": "Hyderabad",
         "WINNER_PARTY": "AIMIM",
         "WINNER_NAME": "Jaffer Hussain",
-        "WINNER_VOTES": 72345,
-        "RUNNER_UP": "BRS",
-        "MARGIN": 34216,
+        "WINNER_VOTES": 46153,
+        "RUNNER_UP": "MAJLIS BACHAO TEHREEK",
+        "MARGIN": 878,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "AIMIM"
+        "CURRENT_PARTY": "AIMIM",
+        "RUNNER_UP_NAME": "Amjed Ullah Khan",
+        "RUNNER_UP_VOTES": 45275,
+        "TOTAL_VOTES": 110474
       }
     },
     {
@@ -187368,11 +187572,14 @@
         "dtname11": "Hyderabad",
         "WINNER_PARTY": "AIMIM",
         "WINNER_NAME": "Mohammed Mubeen",
-        "WINNER_VOTES": 74812,
+        "WINNER_VOTES": 89451,
         "RUNNER_UP": "BRS",
-        "MARGIN": 31524,
+        "MARGIN": 67025,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "AIMIM"
+        "CURRENT_PARTY": "AIMIM",
+        "RUNNER_UP_NAME": "Mir Inayath Ali Baqri",
+        "RUNNER_UP_VOTES": 22426,
+        "TOTAL_VOTES": 118100
       }
     },
     {
@@ -187540,11 +187747,14 @@
         "dtname11": "Hyderabad",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "T. Padma Rao Goud",
-        "WINNER_VOTES": 71234,
+        "WINNER_VOTES": 78223,
         "RUNNER_UP": "INC",
-        "MARGIN": 3842,
+        "MARGIN": 45240,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "Santhosh Kumar",
+        "RUNNER_UP_VOTES": 32983,
+        "TOTAL_VOTES": 138626
       }
     },
     {
@@ -188710,13 +188920,16 @@
         "Shape_Area": 0.00152711600476,
         "dtcode11": "536",
         "dtname11": "Hyderabad",
-        "WINNER_PARTY": "INC",
-        "WINNER_NAME": "Sri Ganesh Narayanan",
-        "WINNER_VOTES": 53651,
+        "WINNER_PARTY": "BRS",
+        "WINNER_NAME": "G. Lasya Nanditha",
+        "WINNER_VOTES": 59057,
         "RUNNER_UP": "BJP",
-        "MARGIN": 13256,
+        "MARGIN": 17169,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Sri Ganesh",
+        "RUNNER_UP_VOTES": 41888,
+        "TOTAL_VOTES": 132276
       }
     },
     {
@@ -194620,11 +194833,14 @@
         "dtname11": "Mahbubnagar",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Anumula Revanth Reddy",
-        "WINNER_VOTES": 108547,
+        "WINNER_VOTES": 107429,
         "RUNNER_UP": "BRS",
-        "MARGIN": 57814,
+        "MARGIN": 32532,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Patnam Narender Reddy",
+        "RUNNER_UP_VOTES": 74897,
+        "TOTAL_VOTES": 159280
       }
     },
     {
@@ -197431,12 +197647,15 @@
         "dtcode11": "538",
         "dtname11": "Mahbubnagar",
         "WINNER_PARTY": "INC",
-        "WINNER_NAME": "Chittem Parnika Reddy",
-        "WINNER_VOTES": 81234,
+        "WINNER_NAME": "Gaddam Prasad Kumar",
+        "WINNER_VOTES": 86885,
         "RUNNER_UP": "BRS",
-        "MARGIN": 16542,
+        "MARGIN": 12893,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Methuku Anand",
+        "RUNNER_UP_VOTES": 73992,
+        "TOTAL_VOTES": 145926
       }
     },
     {
@@ -200116,11 +200335,14 @@
         "dtname11": "Mahbubnagar",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Yennam Srinivas Reddy",
-        "WINNER_VOTES": 87456,
+        "WINNER_VOTES": 87227,
         "RUNNER_UP": "BRS",
-        "MARGIN": 21834,
+        "MARGIN": 18738,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "V. Srinivas Goud",
+        "RUNNER_UP_VOTES": 68489,
+        "TOTAL_VOTES": 153078
       }
     },
     {
@@ -203116,11 +203338,14 @@
         "dtname11": "Mahbubnagar",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Janampalli Anirudh Reddy",
-        "WINNER_VOTES": 85623,
+        "WINNER_VOTES": 90865,
         "RUNNER_UP": "BRS",
-        "MARGIN": 19246,
+        "MARGIN": 15171,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "C. Laxma Reddy",
+        "RUNNER_UP_VOTES": 75694,
+        "TOTAL_VOTES": 152000
       }
     },
     {
@@ -204680,11 +204905,14 @@
         "dtname11": "Mahbubnagar",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Gavinolla Madhusudan Reddy",
-        "WINNER_VOTES": 82347,
+        "WINNER_VOTES": 88551,
         "RUNNER_UP": "BRS",
-        "MARGIN": 14825,
+        "MARGIN": 1392,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Alla Venkateshwar Reddy",
+        "RUNNER_UP_VOTES": 87159,
+        "TOTAL_VOTES": 149869
       }
     },
     {
@@ -211508,11 +211736,14 @@
         "dtname11": "Mahbubnagar",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Vakiti Srihari",
-        "WINNER_VOTES": 79821,
+        "WINNER_VOTES": 74917,
         "RUNNER_UP": "BRS",
-        "MARGIN": 11634,
+        "MARGIN": 17525,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Chittem Ram Mohan Reddy",
+        "RUNNER_UP_VOTES": 57392,
+        "TOTAL_VOTES": 148008
       }
     },
     {
@@ -213132,11 +213363,14 @@
         "dtname11": "Mahbubnagar",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Tudi Megha Reddy",
-        "WINNER_VOTES": 83456,
+        "WINNER_VOTES": 107115,
         "RUNNER_UP": "BRS",
-        "MARGIN": 18247,
+        "MARGIN": 25320,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Singireddy Niranjan Reddy",
+        "RUNNER_UP_VOTES": 81795,
+        "TOTAL_VOTES": 148665
       }
     },
     {
@@ -216408,11 +216642,14 @@
         "dtname11": "Mahbubnagar",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Bandla Krishna Mohan Reddy",
-        "WINNER_VOTES": 78934,
+        "WINNER_VOTES": 94097,
         "RUNNER_UP": "INC",
-        "MARGIN": 4216,
+        "MARGIN": 7036,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Saritha Thirupathaiah",
+        "RUNNER_UP_VOTES": 87061,
+        "TOTAL_VOTES": 153652
       }
     },
     {
@@ -220364,11 +220601,14 @@
         "dtname11": "Mahbubnagar",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Vijayudu",
-        "WINNER_VOTES": 74562,
+        "WINNER_VOTES": 104060,
         "RUNNER_UP": "INC",
-        "MARGIN": 3847,
+        "MARGIN": 30573,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "S. A. Sampath Kumar",
+        "RUNNER_UP_VOTES": 73487,
+        "TOTAL_VOTES": 145277
       }
     },
     {
@@ -221567,12 +221807,15 @@
         "dtcode11": "538",
         "dtname11": "Mahbubnagar",
         "WINNER_PARTY": "INC",
-        "WINNER_NAME": "Kuchkulla Rajesh Reddy",
-        "WINNER_VOTES": 86234,
+        "WINNER_NAME": "Dr. Kuchkulla Rajesh Reddy",
+        "WINNER_VOTES": 87161,
         "RUNNER_UP": "BRS",
-        "MARGIN": 18645,
+        "MARGIN": 5248,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Marri Janardhan Reddy",
+        "RUNNER_UP_VOTES": 81913,
+        "TOTAL_VOTES": 153823
       }
     },
     {
@@ -229292,11 +229535,14 @@
         "dtname11": "Mahbubnagar",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Chikkudu Vamshi Krishna",
-        "WINNER_VOTES": 78943,
+        "WINNER_VOTES": 115337,
         "RUNNER_UP": "BRS",
-        "MARGIN": 14236,
+        "MARGIN": 49326,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Guvvala Balaraju",
+        "RUNNER_UP_VOTES": 66011,
+        "TOTAL_VOTES": 143650
       }
     },
     {
@@ -233796,11 +234042,14 @@
         "dtname11": "Mahbubnagar",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Kasireddy Narayan Reddy",
-        "WINNER_VOTES": 84567,
+        "WINNER_VOTES": 75858,
         "RUNNER_UP": "BJP",
-        "MARGIN": 16847,
+        "MARGIN": 5410,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Thalloju Achari",
+        "RUNNER_UP_VOTES": 70448,
+        "TOTAL_VOTES": 152287
       }
     },
     {
@@ -238452,11 +238701,14 @@
         "dtname11": "Mahbubnagar",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "K. Shankaraiah",
-        "WINNER_VOTES": 91234,
+        "WINNER_VOTES": 77817,
         "RUNNER_UP": "BRS",
-        "MARGIN": 24518,
+        "MARGIN": 7128,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Anjaiah Yelganamoni",
+        "RUNNER_UP_VOTES": 70689,
+        "TOTAL_VOTES": 157950
       }
     },
     {
@@ -240668,11 +240920,14 @@
         "dtname11": "Mahbubnagar",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Jupally Krishna Rao",
-        "WINNER_VOTES": 87621,
+        "WINNER_VOTES": 93609,
         "RUNNER_UP": "BRS",
-        "MARGIN": 21345,
+        "MARGIN": 29931,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Beeram Harshavardhan Reddy",
+        "RUNNER_UP_VOTES": 63678,
+        "TOTAL_VOTES": 153897
       }
     },
     {
@@ -248832,11 +249087,14 @@
         "dtname11": "Nalgonda",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Nenavath Balu Naik",
-        "WINNER_VOTES": 82345,
+        "WINNER_VOTES": 111344,
         "RUNNER_UP": "BRS",
-        "MARGIN": 15234,
+        "MARGIN": 30112,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Ravindra Kumar Ramavath",
+        "RUNNER_UP_VOTES": 81232,
+        "TOTAL_VOTES": 149456
       }
     },
     {
@@ -251224,11 +251482,14 @@
         "dtname11": "Nalgonda",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Kunduru Jayaveer Reddy",
-        "WINNER_VOTES": 85432,
+        "WINNER_VOTES": 119831,
         "RUNNER_UP": "BRS",
-        "MARGIN": 18743,
+        "MARGIN": 55849,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Nomula Bhagath",
+        "RUNNER_UP_VOTES": 63982,
+        "TOTAL_VOTES": 152121
       }
     },
     {
@@ -252908,7 +253169,10 @@
         "RUNNER_UP": "BRS",
         "MARGIN": 22461,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Nallamothu Bhaskar Rao",
+        "RUNNER_UP_VOTES": 66773,
+        "TOTAL_VOTES": 156007
       }
     },
     {
@@ -256124,11 +256388,14 @@
         "dtname11": "Nalgonda",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Nalamada Uttam Kumar Reddy",
-        "WINNER_VOTES": 94827,
+        "WINNER_VOTES": 116707,
         "RUNNER_UP": "BRS",
-        "MARGIN": 31245,
+        "MARGIN": 44888,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Shanampudi Saidireddy",
+        "RUNNER_UP_VOTES": 71819,
+        "TOTAL_VOTES": 215287
       }
     },
     {
@@ -261844,11 +262111,14 @@
         "dtname11": "Nalgonda",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Nalamada Padmavathi Reddy",
-        "WINNER_VOTES": 83456,
+        "WINNER_VOTES": 125783,
         "RUNNER_UP": "BRS",
-        "MARGIN": 16823,
+        "MARGIN": 58172,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Bollam Mallaiah Yadav",
+        "RUNNER_UP_VOTES": 67611,
+        "TOTAL_VOTES": 150089
       }
     },
     {
@@ -263060,11 +263330,14 @@
         "dtname11": "Nalgonda",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Guntakandla Jagadish Reddy",
-        "WINNER_VOTES": 91234,
+        "WINNER_VOTES": 75143,
         "RUNNER_UP": "INC",
-        "MARGIN": 8427,
+        "MARGIN": 4606,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "Ramreddy Damodar Reddy",
+        "RUNNER_UP_VOTES": 70537,
+        "TOTAL_VOTES": 174041
       }
     },
     {
@@ -264064,11 +264337,14 @@
         "dtname11": "Nalgonda",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Komatireddy Venkat Reddy",
-        "WINNER_VOTES": 96843,
+        "WINNER_VOTES": 107405,
         "RUNNER_UP": "BRS",
-        "MARGIN": 38412,
+        "MARGIN": 54332,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Kancharla Bhupal Reddy",
+        "RUNNER_UP_VOTES": 53073,
+        "TOTAL_VOTES": 155274
       }
     },
     {
@@ -267591,12 +267867,15 @@
         "dtcode11": "539",
         "dtname11": "Nalgonda",
         "WINNER_PARTY": "INC",
-        "WINNER_NAME": "Komatireddy Raj Gopal Reddy",
-        "WINNER_VOTES": 87234,
+        "WINNER_NAME": "Komatireddy Rajagopal Reddy",
+        "WINNER_VOTES": 119624,
         "RUNNER_UP": "BRS",
-        "MARGIN": 18543,
+        "MARGIN": 40590,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Kusukuntla Prabhakar Reddy",
+        "RUNNER_UP_VOTES": 79034,
+        "TOTAL_VOTES": 155925
       }
     },
     {
@@ -269800,11 +270079,14 @@
         "dtname11": "Nalgonda",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Kumbam Anil Kumar Reddy",
-        "WINNER_VOTES": 88456,
+        "WINNER_VOTES": 102742,
         "RUNNER_UP": "BRS",
-        "MARGIN": 21634,
+        "MARGIN": 26201,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Pailla Shekar Reddy",
+        "RUNNER_UP_VOTES": 76541,
+        "TOTAL_VOTES": 155278
       }
     },
     {
@@ -271252,11 +271534,14 @@
         "dtname11": "Nalgonda",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Vemula Veeresham",
-        "WINNER_VOTES": 81234,
+        "WINNER_VOTES": 133540,
         "RUNNER_UP": "BRS",
-        "MARGIN": 14827,
+        "MARGIN": 68839,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Chirumarthi Lingaiah",
+        "RUNNER_UP_VOTES": 64701,
+        "TOTAL_VOTES": 147641
       }
     },
     {
@@ -275792,11 +276077,14 @@
         "dtname11": "Nalgonda",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Mandula Samuel",
-        "WINNER_VOTES": 79845,
+        "WINNER_VOTES": 129535,
         "RUNNER_UP": "BRS",
-        "MARGIN": 12345,
+        "MARGIN": 51094,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Gadari Kishore",
+        "RUNNER_UP_VOTES": 78441,
+        "TOTAL_VOTES": 147345
       }
     },
     {
@@ -282040,11 +282328,14 @@
         "dtname11": "Nalgonda",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Beerla Ilaiah",
-        "WINNER_VOTES": 83456,
+        "WINNER_VOTES": 122140,
         "RUNNER_UP": "BRS",
-        "MARGIN": 15234,
+        "MARGIN": 49636,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Gongidi Suntiha",
+        "RUNNER_UP_VOTES": 72504,
+        "TOTAL_VOTES": 151678
       }
     },
     {
@@ -287396,11 +287687,14 @@
         "dtname11": "Warangal",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Palla Rajeshwar Reddy",
-        "WINNER_VOTES": 84321,
+        "WINNER_VOTES": 98975,
         "RUNNER_UP": "INC",
-        "MARGIN": 5412,
+        "MARGIN": 15783,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BRS"
+        "CURRENT_PARTY": "BRS",
+        "RUNNER_UP_NAME": "Kommuri Pratap Reddy",
+        "RUNNER_UP_VOTES": 83192,
+        "TOTAL_VOTES": 163230
       }
     },
     {
@@ -289912,11 +290206,14 @@
         "dtname11": "Warangal",
         "WINNER_PARTY": "BRS",
         "WINNER_NAME": "Kadiyam Srihari",
-        "WINNER_VOTES": 79456,
+        "WINNER_VOTES": 101696,
         "RUNNER_UP": "INC",
-        "MARGIN": 4823,
+        "MARGIN": 7779,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Indira Singapuram",
+        "RUNNER_UP_VOTES": 93917,
+        "TOTAL_VOTES": 154089
       }
     },
     {
@@ -293856,11 +294153,14 @@
         "dtname11": "Warangal",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Mamidala Yashaswini Reddy",
-        "WINNER_VOTES": 81234,
+        "WINNER_VOTES": 126848,
         "RUNNER_UP": "BRS",
-        "MARGIN": 13456,
+        "MARGIN": 47634,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Errabelli Dayakar Rao",
+        "RUNNER_UP_VOTES": 79214,
+        "TOTAL_VOTES": 149012
       }
     },
     {
@@ -299775,12 +300075,15 @@
         "dtcode11": "540",
         "dtname11": "Warangal",
         "WINNER_PARTY": "INC",
-        "WINNER_NAME": "Jatoth Ram Chander Naik",
-        "WINNER_VOTES": 76543,
+        "WINNER_NAME": "Jatoth Ramachandru Naik",
+        "WINNER_VOTES": 115587,
         "RUNNER_UP": "BRS",
-        "MARGIN": 11234,
+        "MARGIN": 53131,
         "RESERVATION": "ST",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Dharamsoth Redya Naik",
+        "RUNNER_UP_VOTES": 62456,
+        "TOTAL_VOTES": 141852
       }
     },
     {
@@ -301727,12 +302030,15 @@
         "dtcode11": "540",
         "dtname11": "Warangal",
         "WINNER_PARTY": "INC",
-        "WINNER_NAME": "Murali Naik Bhukya",
-        "WINNER_VOTES": 74821,
+        "WINNER_NAME": "K. R. Nagaraj",
+        "WINNER_VOTES": 106696,
         "RUNNER_UP": "BRS",
-        "MARGIN": 9847,
+        "MARGIN": 19458,
         "RESERVATION": "ST",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Aroori Ramesh",
+        "RUNNER_UP_VOTES": 87238,
+        "TOTAL_VOTES": 139795
       }
     },
     {
@@ -302736,11 +303042,14 @@
         "dtname11": "Warangal",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Donthi Madhava Reddy",
-        "WINNER_VOTES": 85432,
+        "WINNER_VOTES": 104185,
         "RUNNER_UP": "BRS",
-        "MARGIN": 17234,
+        "MARGIN": 18889,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Peddi Sudarshan Reddy",
+        "RUNNER_UP_VOTES": 85296,
+        "TOTAL_VOTES": 153630
       }
     },
     {
@@ -304308,11 +304617,14 @@
         "dtname11": "Warangal",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Revuri Prakash Reddy",
-        "WINNER_VOTES": 82345,
+        "WINNER_VOTES": 72573,
         "RUNNER_UP": "BRS",
-        "MARGIN": 14821,
+        "MARGIN": 7941,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Challa Dharma Reddy",
+        "RUNNER_UP_VOTES": 64632,
+        "TOTAL_VOTES": 149869
       }
     },
     {
@@ -304420,11 +304732,14 @@
         "dtname11": "Warangal",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Naini Rajender Reddy",
-        "WINNER_VOTES": 87654,
+        "WINNER_VOTES": 72649,
         "RUNNER_UP": "BRS",
-        "MARGIN": 21345,
+        "MARGIN": 15331,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Dasyam Vinay Bhaskar",
+        "RUNNER_UP_VOTES": 57318,
+        "TOTAL_VOTES": 153963
       }
     },
     {
@@ -304576,11 +304891,14 @@
         "dtname11": "Warangal",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Konda Surekha",
-        "WINNER_VOTES": 92345,
+        "WINNER_VOTES": 67757,
         "RUNNER_UP": "BJP",
-        "MARGIN": 28456,
+        "MARGIN": 15652,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Errabelli Pradeep Kumar Rao",
+        "RUNNER_UP_VOTES": 52105,
+        "TOTAL_VOTES": 156234
       }
     },
     {
@@ -307296,7 +307614,10 @@
         "RUNNER_UP": "BRS",
         "MARGIN": 13456,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Aroori Ramesh",
+        "RUNNER_UP_VOTES": 65778,
+        "TOTAL_VOTES": 145012
       }
     },
     {
@@ -313404,11 +313725,14 @@
         "dtname11": "Warangal",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Gandra Satyanarayana Rao",
-        "WINNER_VOTES": 83456,
+        "WINNER_VOTES": 123116,
         "RUNNER_UP": "BRS",
-        "MARGIN": 15234,
+        "MARGIN": 52699,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Gandra Venkata Ramana Reddy",
+        "RUNNER_UP_VOTES": 70417,
+        "TOTAL_VOTES": 151678
       }
     },
     {
@@ -321520,11 +321844,14 @@
         "dtname11": "Warangal",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Seethakka",
-        "WINNER_VOTES": 89234,
+        "WINNER_VOTES": 102267,
         "RUNNER_UP": "BRS",
-        "MARGIN": 32456,
+        "MARGIN": 33700,
         "RESERVATION": "ST",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Bade Nagajyothi",
+        "RUNNER_UP_VOTES": 68567,
+        "TOTAL_VOTES": 146012
       }
     },
     {
@@ -326960,11 +327287,14 @@
         "dtname11": "Khammam",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Payam Venkateswarlu",
-        "WINNER_VOTES": 78456,
+        "WINNER_VOTES": 90510,
         "RUNNER_UP": "BRS",
-        "MARGIN": 14523,
+        "MARGIN": 34506,
         "RESERVATION": "ST",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Rega Kantha Rao",
+        "RUNNER_UP_VOTES": 56004,
+        "TOTAL_VOTES": 142389
       }
     },
     {
@@ -330928,11 +331258,14 @@
         "dtname11": "Khammam",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Koram Kanakaiah",
-        "WINNER_VOTES": 72345,
+        "WINNER_VOTES": 109171,
         "RUNNER_UP": "BRS",
-        "MARGIN": 11234,
+        "MARGIN": 57309,
         "RESERVATION": "ST",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Haripriya Banoth",
+        "RUNNER_UP_VOTES": 51862,
+        "TOTAL_VOTES": 133456
       }
     },
     {
@@ -331491,12 +331824,15 @@
         "dtcode11": "541",
         "dtname11": "Khammam",
         "WINNER_PARTY": "INC",
-        "WINNER_NAME": "Tummala Nageswara Rao",
-        "WINNER_VOTES": 94567,
+        "WINNER_NAME": "Thummala Nageswara Rao",
+        "WINNER_VOTES": 136016,
         "RUNNER_UP": "BRS",
-        "MARGIN": 28456,
+        "MARGIN": 49381,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Puvvada Ajay Kumar",
+        "RUNNER_UP_VOTES": 86635,
+        "TOTAL_VOTES": 160678
       }
     },
     {
@@ -339479,12 +339815,15 @@
         "dtcode11": "541",
         "dtname11": "Khammam",
         "WINNER_PARTY": "INC",
-        "WINNER_NAME": "Ponguleti Srinivasa Reddy",
-        "WINNER_VOTES": 91234,
+        "WINNER_NAME": "Ponguleti Srinivas Reddy",
+        "WINNER_VOTES": 127820,
         "RUNNER_UP": "BRS",
-        "MARGIN": 32847,
+        "MARGIN": 56650,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Kandala Upender Reddy",
+        "RUNNER_UP_VOTES": 71170,
+        "TOTAL_VOTES": 149621
       }
     },
     {
@@ -347276,11 +347615,14 @@
         "dtname11": "Khammam",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Mallu Bhatti Vikramarka",
-        "WINNER_VOTES": 98456,
+        "WINNER_VOTES": 108970,
         "RUNNER_UP": "BRS",
-        "MARGIN": 42345,
+        "MARGIN": 35452,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Kamal Raju Lingala",
+        "RUNNER_UP_VOTES": 73518,
+        "TOTAL_VOTES": 154567
       }
     },
     {
@@ -348884,11 +349226,14 @@
         "dtname11": "Khammam",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Ramdas Maloth",
-        "WINNER_VOTES": 82345,
+        "WINNER_VOTES": 93913,
         "RUNNER_UP": "BRS",
-        "MARGIN": 18456,
+        "MARGIN": 33045,
         "RESERVATION": "ST",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Madanlal Banoth",
+        "RUNNER_UP_VOTES": 60868,
+        "TOTAL_VOTES": 146234
       }
     },
     {
@@ -353384,11 +353729,14 @@
         "dtname11": "Khammam",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Matta Ragamayee",
-        "WINNER_VOTES": 79234,
+        "WINNER_VOTES": 111245,
         "RUNNER_UP": "BRS",
-        "MARGIN": 15234,
+        "MARGIN": 19440,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Sandra Venkata Veeraiah",
+        "RUNNER_UP_VOTES": 91805,
+        "TOTAL_VOTES": 143234
       }
     },
     {
@@ -354535,12 +354883,15 @@
         "dtcode11": "541",
         "dtname11": "Khammam",
         "WINNER_PARTY": "CPI",
-        "WINNER_NAME": "Kunamneni Sambasiva Rao",
+        "WINNER_NAME": "Kunamneni Sambasiva Rao{{efn",
         "WINNER_VOTES": 76543,
-        "RUNNER_UP": "INC",
-        "MARGIN": 8234,
+        "RUNNER_UP": "AIFB",
+        "MARGIN": 22754,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "CPI"
+        "CURRENT_PARTY": "CPI",
+        "RUNNER_UP_NAME": "Jalagam Venkat Rao",
+        "RUNNER_UP_VOTES": 53789,
+        "TOTAL_VOTES": 144852
       }
     },
     {
@@ -358600,11 +358951,14 @@
         "dtname11": "Khammam",
         "WINNER_PARTY": "INC",
         "WINNER_NAME": "Jare Adinarayana",
-        "WINNER_VOTES": 74821,
+        "WINNER_VOTES": 74993,
         "RUNNER_UP": "BRS",
-        "MARGIN": 12456,
+        "MARGIN": 28905,
         "RESERVATION": "ST",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Mecha Nageswara Rao",
+        "RUNNER_UP_VOTES": 46088,
+        "TOTAL_VOTES": 137186
       }
     },
     {
@@ -367805,12 +368159,15 @@
         "dtcode11": "723",
         "dtname11": "Sukma",
         "WINNER_PARTY": "BRS",
-        "WINNER_NAME": "Tellam Venkata Rao",
-        "WINNER_VOTES": 71234,
+        "WINNER_NAME": "Dr. Tellam Venkata Rao",
+        "WINNER_VOTES": 53252,
         "RUNNER_UP": "INC",
-        "MARGIN": 3845,
+        "MARGIN": 5719,
         "RESERVATION": "ST",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Podem Veeraiah",
+        "RUNNER_UP_VOTES": 47533,
+        "TOTAL_VOTES": 138623
       }
     }
   ]

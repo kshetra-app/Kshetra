@@ -93,6 +93,7 @@ import {
 import { useAffidavitStore } from '../../stores/affidavits';
 import { getBoothsForConstituency, hasHierarchyData, hasBoothData } from '../../lib/hierarchyData';
 import { useHasRepresentativeData } from '../../lib/representativesData';
+import { loadHistoricalResultsForState } from '../../lib/seedDataLoader';
 
 interface SelectedConstituency {
   acNo: number;
@@ -202,6 +203,10 @@ function FullMapScreen() {
   const [selected, setSelected] = useState<SelectedConstituency | null>(null);
   const [selectedPodium, setSelectedPodium] = useState<HistoricalPodiumContest | null>(null);
   const selectedRef = useRef<SelectedConstituency | null>(null);
+
+  useEffect(() => {
+    loadHistoricalResultsForState(stateCode).catch(() => {});
+  }, [stateCode]);
 
   useEffect(() => {
     if (!selected) {
