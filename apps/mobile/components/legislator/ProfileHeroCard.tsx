@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { getPartyColor } from '../../lib/constants';
 import { moderateScale as ms } from '../../lib/responsive';
 import { useTheme } from '../../lib/theme';
-import { getStaticPhoto, getCachedPhoto } from '../../lib/candidatePhotos';
+import { getStaticPhoto, getCachedPhoto, getSmartInitials } from '../../lib/candidatePhotos';
 
 import { useTranslation } from 'react-i18next';
 import {
@@ -95,6 +95,17 @@ export default function ProfileHeroCard({
   const localizedDistrict = getLocalizedDistrictName(district, i18n.language) || district;
   const localizedState = getLocalizedStateName(stateCode, i18n.language) || stateCode;
 
+  // Clean redundant party labels like "TDP TDP" or "INC INC (Congress)"
+  const cleanPartyFull = useMemo(() => {
+    const raw = (partyFull || localizedParty || '').trim();
+    if (!raw) return '';
+    if (raw.toUpperCase() === party.toUpperCase()) return '';
+    if (raw.toUpperCase().startsWith(party.toUpperCase() + ' ')) {
+      return raw.slice(party.length).trim();
+    }
+    return raw;
+  }, [party, partyFull, localizedParty]);
+
   // Format Net Worth & Margin for Computed Metrics Pills
   const netWorthStr = useMemo(() => {
     if (netWorth == null) return 'Not Declared';
@@ -144,7 +155,7 @@ export default function ProfileHeroCard({
           ) : (
             <View style={[styles.photoPlaceholder, { backgroundColor: partyColor + '30', borderColor: partyColor }]}>
               <Text style={[styles.initials, { color: '#FFFFFF' }]}>
-                {fullName.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase()}
+                {getSmartInitials(displayName || fullName)}
               </Text>
             </View>
           )}
@@ -159,7 +170,9 @@ export default function ProfileHeroCard({
             <View style={[styles.partyPillBadge, { backgroundColor: partyColor }]}>
               <Text style={styles.partyPillText}>{party}</Text>
             </View>
-            <Text style={styles.partyFullText} numberOfLines={1}>{partyFull || localizedParty}</Text>
+            {Boolean(cleanPartyFull) && (
+              <Text style={styles.partyFullText} numberOfLines={1}>{cleanPartyFull}</Text>
+            )}
           </View>
 
           <Text style={styles.fullNameNavy} numberOfLines={2}>{displayName}</Text>

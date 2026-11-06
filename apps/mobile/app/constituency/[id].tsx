@@ -759,7 +759,7 @@ export default function ConstituencyDetailScreen() {
                 winner_votes: canonicalPodium.winner?.votes || effectiveWinnerVotes || 0,
                 winner_vote_share: canonicalPodium.winner?.voteShare || 0,
                 winner_education: (canonicalPodium.winner as any)?.education || undefined,
-                first_runner_up_name: canonicalPodium.firstRunnerUp?.name || effectiveRunnerUpName || undefined,
+                first_runner_up_name: (!isGenericCandidate(canonicalPodium.firstRunnerUp?.name) ? canonicalPodium.firstRunnerUp?.name : null) || (!isGenericCandidate(effectiveRunnerUpName) ? effectiveRunnerUpName : null) || canonicalPodium.firstRunnerUp?.name || effectiveRunnerUpName || undefined,
                 first_runner_up_party: canonicalPodium.firstRunnerUp?.party || effectiveRunnerUp || undefined,
                 first_runner_up_votes: canonicalPodium.firstRunnerUp?.votes || 0,
                 first_runner_up_vote_share: canonicalPodium.firstRunnerUp?.voteShare || 0,

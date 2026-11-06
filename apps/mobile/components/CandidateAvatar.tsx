@@ -11,7 +11,7 @@
 import React, { useState, useEffect, memo, useMemo } from 'react';
 import { View, Image, Text, Pressable, StyleSheet } from 'react-native';
 import { getPartyColor } from '../lib/constants';
-import { fetchWikipediaPhoto, getCachedPhoto, getStaticPhoto, hasKnownPhoto } from '../lib/candidatePhotos';
+import { fetchWikipediaPhoto, getCachedPhoto, getStaticPhoto, hasKnownPhoto, getSmartInitials } from '../lib/candidatePhotos';
 
 interface CandidateAvatarProps {
   name: string;
@@ -26,13 +26,7 @@ interface CandidateAvatarProps {
 }
 
 function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .filter(Boolean)
-    .map((w) => w[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
+  return getSmartInitials(name);
 }
 
 function sanitizePhotoUrl(url?: string | null): string | null {

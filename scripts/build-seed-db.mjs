@@ -562,7 +562,7 @@ function importHistoricalPodiumResults(db, manifest) {
   `);
 
   let totalContests = 0;
-  const insertMany = db.transaction((contests) => {
+  const insertMany = db.transaction((contests, fallbackState) => {
     for (const c of contests) {
       const w = c.winner || {};
       const ru1 = c.firstRunnerUp || {};
@@ -580,14 +580,20 @@ function importHistoricalPodiumResults(db, manifest) {
         ru2: ru2.localizedParties || null,
       });
 
+      const stCode = c.stateCode || fallbackState || (c.id?.startsWith('IN-') ? 'IN' : (c.id ? c.id.split('-')[0] : 'IN'));
+      const yr = c.electionYear ?? c.year ?? 2023;
+      const acNum = c.acNo ?? c.pcNo ?? 0;
+      const cId = c.id || `${stCode}-AC-${acNum}-${yr}`;
+      const vVotes = c.validVotes ?? c.totalValidVotes ?? 0;
+
       insertStmt.run(
-        c.id,
-        (c.stateCode || (c.id?.startsWith('IN-') ? 'IN' : 'IN')),
-        (c.acNo ?? c.pcNo ?? 0),
+        cId,
+        stCode,
+        acNum,
         c.constituencyName || '',
-        c.electionYear,
-        c.delimitationId || (c.electionYear >= 2008 ? '4' : '3'),
-        c.validVotes || 0,
+        yr,
+        c.delimitationId || (yr >= 2008 ? '4' : '3'),
+        vVotes,
         w.name || '',
         w.party || '',
         w.name || '',
@@ -631,8 +637,9 @@ function importHistoricalPodiumResults(db, manifest) {
     try {
       const contests = JSON.parse(fs.readFileSync(path.join(historicalDir, file), 'utf8'));
       if (Array.isArray(contests) && contests.length > 0) {
-        insertMany(contests);
-        const state = contests[0].stateCode;
+        const fileState = file.replace('-podium-results.json', '').toUpperCase();
+        const state = contests[0].stateCode || (fileState === 'LOK_SABHA' ? 'IN' : fileState);
+        insertMany(contests, state);
         if (manifest && manifest[state]) {
           manifest[state].has_historical_results = 1;
         }

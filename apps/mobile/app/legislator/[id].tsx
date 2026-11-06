@@ -17,6 +17,7 @@ import {
   fetchHistoricalPodiumForConstituency,
   getLocalizedCandidateName,
   getLocalizedPartyName,
+  calculateTermsServed,
 } from '../../lib/historicalPodiumStore';
 import PodiumHistoryCard from '../../components/PodiumHistoryCard';
 import { useActiveStateStore } from '../../stores/activeState';
@@ -31,7 +32,7 @@ import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import PhotoViewerModal from '../../components/PhotoViewerModal';
 import ShareableCardModal from '../../components/ShareableCardModal';
 import { useTheme } from '../../lib/theme';
-import { getStaticPhoto } from '../../lib/candidatePhotos';
+import { getStaticPhoto, getCanonicalCandidateName } from '../../lib/candidatePhotos';
 import i18n from '../../i18n';
 
 
@@ -124,7 +125,7 @@ export default function LegislatorProfileScreen() {
   }, [stateCode, acNo]);
 
   // All data access is wrapped in try-catch useMemo to prevent crashes
-  const { mla, constituency, winnerAffidavit, financialRecords, redFlags, dataCompleteness, electionYear, podiumDetail } = useMemo(() => {
+  const { mla, constituency, winnerAffidavit, financialRecords, redFlags, dataCompleteness, electionYear, podiumDetail, podiumContest, isSamePersonAsSittingMLA } = useMemo(() => {
     try {
       const _allConst = getUnifiedConstituenciesForState(stateCode) || [];
       const _constituency = _allConst.find(c => c.acNo === acNo) ?? null;
@@ -134,11 +135,21 @@ export default function LegislatorProfileScreen() {
       const { candidate: _podiumCand, contest: _podiumContest } = getCandidatePodiumDetail(stateCode, acNo, effectiveYear, parsedRank);
 
       const isWinnerRank = parsedRank === 'winner';
-      let _mla = isWinnerRank ? (getMLAProfileForState(stateCode, acNo) ?? null) : null;
+      let rawMla = isWinnerRank ? (getMLAProfileForState(stateCode, acNo) ?? null) : null;
+      const sittingWinnerName = _constituency?.winnerName || rawMla?.name || '';
+      const candPodiumName = _podiumCand?.name || '';
+      const isCurrentSittingElection = effectiveYear >= (_constituency?.electionYear || 2023);
+      const isSamePerson = isWinnerRank && (
+        isCurrentSittingElection ||
+        (Boolean(candPodiumName && sittingWinnerName) && (
+          candPodiumName.toLowerCase() === sittingWinnerName.toLowerCase() ||
+          getCanonicalCandidateName(candPodiumName).toLowerCase() === getCanonicalCandidateName(sittingWinnerName).toLowerCase()
+        ))
+      );
 
-      // Synchronize candidate profile with authoritative candidate podium record
+      let _mla = rawMla;
       if (_podiumCand) {
-        if (isWinnerRank) {
+        if (isWinnerRank && isSamePerson) {
           _mla = {
             ...(_mla || {}),
             acNo,
@@ -158,15 +169,15 @@ export default function LegislatorProfileScreen() {
             sourceUrl: _podiumCand.affidavitUrl || _mla?.sourceUrl || undefined,
           } as any;
         } else {
-          // Non-winner candidate (Runner-up 1 or 2) — NEVER inherit incumbent MLA's photo, affidavits or flags
+          // Historical Winner (different person than sitting MLA) or Non-winner candidate — NEVER inherit incumbent MLA's photo, affidavits or flags
           const candGender = (_podiumCand as any).sex === 'F' ? 'F' : ((_podiumCand as any).sex === 'M' ? 'M' : undefined);
           _mla = {
             acNo,
-            name: _podiumCand.name || (_constituency as any)?.runnerUpName || 'Candidate',
-            party: _podiumCand.party || (_constituency as any)?.runnerUp || 'IND',
+            name: _podiumCand.name || (isWinnerRank ? 'Winner' : ((_constituency as any)?.runnerUpName || 'Candidate')),
+            party: _podiumCand.party || (isWinnerRank ? 'IND' : ((_constituency as any)?.runnerUp || 'IND')),
             gender: candGender || 'M',
-            terms: 0,
-            photoUrl: _podiumCand.photoUrl || undefined,
+            terms: isWinnerRank ? 1 : 0,
+            photoUrl: _podiumCand.photoUrl || getStaticPhoto(_podiumCand.name) || undefined,
             age: _podiumCand.age || undefined,
             education: _podiumCand.education || undefined,
             profession: _podiumCand.profession || undefined,
@@ -181,7 +192,7 @@ export default function LegislatorProfileScreen() {
       }
 
       const _store = useAffidavitStore.getState();
-      const _winnerAffidavit = isWinnerRank ? _store.getWinnerAffidavit(stateCode, acNo, effectiveYear) : null;
+      const _winnerAffidavit = (isWinnerRank && isSamePerson) ? _store.getWinnerAffidavit(stateCode, acNo, effectiveYear) : null;
 
       // Financial records matching FinancialRecord interface in FinancialBreakdownCard
       let _financialRecords: any[] = [];
@@ -217,7 +228,7 @@ export default function LegislatorProfileScreen() {
 
       // Red flags calculation — strictly candidate-specific
       const _redFlags: { type: string; severity: string; description: string; value?: string }[] = [];
-      const targetCriminalCases = isWinnerRank
+      const targetCriminalCases = isWinnerRank && isSamePerson
         ? (_winnerAffidavit?.criminalCases ?? _podiumCand?.criminalCases ?? _mla?.criminalCases ?? 0)
         : (_podiumCand?.criminalCases ?? 0);
       if (targetCriminalCases > 0) {
@@ -243,10 +254,12 @@ export default function LegislatorProfileScreen() {
         dataCompleteness: score,
         electionYear: effectiveYear,
         podiumDetail: _podiumCand,
+        podiumContest: _podiumContest,
+        isSamePersonAsSittingMLA: Boolean(isSamePerson),
       };
     } catch (e) {
       console.error('[LegislatorProfile] Data load error:', e);
-      return { mla: null, constituency: null, winnerAffidavit: null, financialRecords: [], redFlags: [], dataCompleteness: 0, electionYear: parsedElectionYear ?? 2023, podiumDetail: null };
+      return { mla: null, constituency: null, winnerAffidavit: null, financialRecords: [], redFlags: [], dataCompleteness: 0, electionYear: parsedElectionYear ?? 2023, podiumDetail: null, podiumContest: null, isSamePersonAsSittingMLA: false };
     }
   }, [stateCode, acNo, parsedElectionYear, parsedRank]);
 
@@ -293,10 +306,10 @@ export default function LegislatorProfileScreen() {
     : (getLocalizedPartyName(rawParty, i18n.language) || rawParty);
   const constName = mla?.constituencyName || constituency?.name || '';
   const district = constituency?.district || '';
-  const gender = (podiumDetail as any)?.sex === 'F' ? 'female' : (mla?.gender === 'F' ? 'female' : 'male');
-  const age = podiumDetail?.age || (isWinner ? (winnerAffidavit?.age || mla?.age) : null) || null;
-  const terms = isWinner ? (mla?.terms || 1) : 0;
-  const photoUrl = podiumDetail?.photoUrl || (!isWinner ? (cleanSeedRuName ? getStaticPhoto(cleanSeedRuName) : (getStaticPhoto(rawName) || getStaticPhoto(name))) : mla?.photoUrl);
+  const gender = (podiumDetail as any)?.sex === 'F' ? 'female' : ((podiumDetail as any)?.sex === 'M' ? 'male' : (isSamePersonAsSittingMLA ? (mla?.gender === 'F' ? 'female' : 'male') : 'male'));
+  const age = podiumDetail?.age || (isSamePersonAsSittingMLA ? (winnerAffidavit?.age || mla?.age) : null) || null;
+  const terms = calculateTermsServed(rawName, stateCode, acNo, electionYear) || (isWinner ? 1 : 0);
+  const photoUrl = podiumDetail?.photoUrl || getStaticPhoto(rawName) || getStaticPhoto(name) || (cleanSeedRuName ? getStaticPhoto(cleanSeedRuName) : null) || (isSamePersonAsSittingMLA ? mla?.photoUrl : null);
   const constType = constituency?.type || 'GEN';
 
   const defectionEvent = useMemo(() => {
@@ -361,28 +374,28 @@ export default function LegislatorProfileScreen() {
           rank={parsedRank}
           reservationType={constType.toLowerCase()}
           netWorth={
-            isWinner
+            isSamePersonAsSittingMLA
               ? (financialRecords[0]?.netWorth ?? (mla?.totalAssets != null && mla?.totalLiabilities != null ? mla.totalAssets - mla.totalLiabilities : (mla?.totalAssets ?? null)))
               : (financialRecords[0]?.netWorth ?? null)
           }
           liabilities={
-            isWinner
+            isSamePersonAsSittingMLA
               ? (financialRecords[0]?.totalLiabilities ?? mla?.totalLiabilities ?? null)
               : (financialRecords[0]?.totalLiabilities ?? null)
           }
           votes={
             podiumDetail?.votes ??
-            (isWinner
+            (isSamePersonAsSittingMLA
               ? (constituency?.winnerVotes || (constituency as any)?.votes || null)
-              : ((constituency as any)?.runnerUpVotes || null))
+              : null)
           }
           margin={
             parsedRank === 'winner'
-              ? (podiumDetail?.marginToWinner != null ? podiumDetail.marginToWinner : (constituency?.margin ?? null))
+              ? (podiumContest?.marginWinnerToRunnerUp1 ?? (isSamePersonAsSittingMLA ? (constituency?.margin ?? null) : null))
               : null
           }
           voteShare={podiumDetail?.voteShare ?? null}
-          dob={isWinner ? (winnerAffidavit as any)?.dob : null}
+          dob={isSamePersonAsSittingMLA ? (winnerAffidavit as any)?.dob : null}
           onPhotoPress={(uri) => {
             setPhotoViewerUri(uri);
             setPhotoViewerVisible(true);
@@ -489,19 +502,19 @@ export default function LegislatorProfileScreen() {
             )}
 
             {/* Education & Profession */}
-            {((isWinner && (winnerAffidavit || mla?.education)) || (!isWinner && (podiumDetail?.education || podiumDetail?.profession))) && (
+            {((isSamePersonAsSittingMLA && (winnerAffidavit || mla?.education)) || (podiumDetail?.education || podiumDetail?.profession)) && (
               <View style={styles.sectionCard}>
                 <View style={styles.sectionHeader}>
                   <Ionicons name="school" size={18} color="#002B7F" />
                   <Text style={styles.sectionTitle}>{i18n.t('legislator.educationProfession')}</Text>
                 </View>
                 <View style={styles.infoGrid}>
-                  <InfoRow label="Education" value={formatEducation((isWinner ? (winnerAffidavit?.education || mla?.education) : podiumDetail?.education) || undefined)} />
-                  <InfoRow label="Profession" value={isWinner ? (winnerAffidavit?.profession || mla?.profession || '—') : (podiumDetail?.profession || '—')} />
-                  {isWinner && mla?.gender && <InfoRow label="Gender" value={mla.gender === 'F' ? 'Female' : 'Male'} />}
-                  {isWinner && mla?.maritalStatus && <InfoRow label="Marital Status" value={mla.maritalStatus} />}
-                  {isWinner && mla?.dob && <InfoRow label="Date of Birth" value={mla.dob} />}
-                  {isWinner && mla?.phone && <InfoRow label="Contact" value={mla.phone} />}
+                  <InfoRow label="Education" value={formatEducation((isSamePersonAsSittingMLA ? (winnerAffidavit?.education || mla?.education) : podiumDetail?.education) || undefined)} />
+                  <InfoRow label="Profession" value={isSamePersonAsSittingMLA ? (winnerAffidavit?.profession || mla?.profession || '—') : (podiumDetail?.profession || '—')} />
+                  {isSamePersonAsSittingMLA && mla?.gender && <InfoRow label="Gender" value={mla.gender === 'F' ? 'Female' : 'Male'} />}
+                  {isSamePersonAsSittingMLA && mla?.maritalStatus && <InfoRow label="Marital Status" value={mla.maritalStatus} />}
+                  {isSamePersonAsSittingMLA && mla?.dob && <InfoRow label="Date of Birth" value={mla.dob} />}
+                  {isSamePersonAsSittingMLA && mla?.phone && <InfoRow label="Contact" value={mla.phone} />}
                 </View>
               </View>
             )}
@@ -515,10 +528,34 @@ export default function LegislatorProfileScreen() {
               <View style={styles.infoGrid}>
                 <InfoRow label="Constituency" value={`#${acNo} ${constName}`} />
                 <InfoRow label="State" value={stateCode} />
-                <InfoRow label="Term" value={isWinner ? 'Current Incumbent' : 'Contesting Candidate'} />
+                <InfoRow
+                  label="Term"
+                  value={
+                    isWinner
+                      ? (isSamePersonAsSittingMLA
+                          ? (terms > 1 ? `${terms} Terms Incumbent (${terms}nd Term)` : '1st Term Incumbent')
+                          : (terms > 1 ? `${terms} Terms Elected (${electionYear} Winner)` : `${electionYear} Elected Winner`))
+                      : (parsedRank === 'ru1' ? '1st Runner-up Candidate' : '2nd Runner-up Candidate')
+                  }
+                />
                 <InfoRow label="Category" value={constType} />
               </View>
             </View>
+
+            {/* Statutory Form 26 Affidavit Disclaimer for Pre-2004 or Unverified Elections */}
+            {electionYear < 2004 ? (
+              <View style={[styles.sectionCard, { backgroundColor: '#F8FAFC', borderColor: colors.border }]}>
+                <Text style={{ fontSize: 12, color: colors.textMuted, lineHeight: 18 }}>
+                  Statutory Form 26 sworn affidavits were instituted by the Election Commission of India starting with the 2004 elections. Sworn asset and criminal disclosures were not legally mandated for the {electionYear} election term.
+                </Text>
+              </View>
+            ) : (!winnerAffidavit && !podiumDetail?.totalAssets && (
+              <View style={[styles.sectionCard, { backgroundColor: '#F8FAFC', borderColor: colors.border }]}>
+                <Text style={{ fontSize: 12, color: colors.textMuted, lineHeight: 18 }}>
+                  Affidavit and asset disclosures for this representative have not yet been ingested or verified for the {electionYear} term. Unverified or missing disclosures are not coerced to zero.
+                </Text>
+              </View>
+            ))}
           </>
         )}
 

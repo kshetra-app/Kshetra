@@ -27,6 +27,118 @@ function normaliseName(name: string): string {
 const PHOTO_CACHE_PREFIX = 'cand_photo:';
 const STATIC_PHOTO_MAP: Record<string, string> = {};
 
+const HONORIFIC_PREFIXES = [
+  /^(?:dr|smt|shri|sri|prof|adv|col|capt|maj|er|ch|chaudhary|doctor|shrimati|advocate|professor|swami|pandit|yogi|sardar)\b[\s.]*/i,
+  /^[A-Za-z]\.\s*(?:dr|smt|shri|sri|prof|adv)\b[\s.]*/i,
+];
+
+/**
+ * Strips honorary titles and academic/military prefixes from candidate names.
+ * e.g., "Dr.C.Vamshi Krishna" -> "C.Vamshi Krishna", "Smt. Sonia Gandhi" -> "Sonia Gandhi"
+ */
+export function stripHonorifics(name: string): string {
+  if (!name) return '';
+  let cleaned = name.trim();
+  let prev = '';
+  while (cleaned !== prev) {
+    prev = cleaned;
+    for (const pat of HONORIFIC_PREFIXES) {
+      cleaned = cleaned.replace(pat, '').trim();
+    }
+  }
+  return cleaned;
+}
+
+/**
+ * Extracts polished, human-accurate initials for Indian politicians.
+ * Strips honorifics so "Dr.C.Vamshi Krishna" yields "CV", not "DK".
+ */
+export function getSmartInitials(name: string): string {
+  if (!name) return '??';
+  const stripped = stripHonorifics(name);
+  const tokens = stripped
+    .replace(/[()[\]{}]/g, ' ')
+    .split(/[\s.]+/)
+    .map((t) => t.trim())
+    .filter((t) => Boolean(t) && !/^(and|the|of|for|ind|nota)$/i.test(t));
+
+  if (tokens.length === 0) return '??';
+  if (tokens.length === 1) return tokens[0].slice(0, 2).toUpperCase();
+
+  if (tokens.length === 2) {
+    return (tokens[0][0] + tokens[1][0]).toUpperCase();
+  }
+
+  // If first token is 1 letter initial (e.g. "C." in "C. Vamshi Krishna"),
+  // use tokens[0][0] + tokens[1][0] -> "CV"
+  if (tokens[0].length === 1) {
+    return (tokens[0][0] + tokens[1][0]).toUpperCase();
+  }
+
+  return (tokens[0][0] + tokens[tokens.length - 1][0]).toUpperCase();
+}
+
+/**
+ * Known candidate alias groups across Indian elections.
+ * Links variations like "Dr.C.Vamshi Krishna", "Chikkudu Vamshi Krishna", "C. Vamshi Krishna"
+ */
+export const CANDIDATE_ALIASES: Record<string, string> = {
+  // Telangana
+  'chikkudu vamshi krishna': 'Chikkudu Vamshi Krishna',
+  'dr.c.vamshi krishna': 'Chikkudu Vamshi Krishna',
+  'dr. c. vamshi krishna': 'Chikkudu Vamshi Krishna',
+  'dr c vamshi krishna': 'Chikkudu Vamshi Krishna',
+  'c. vamshi krishna': 'Chikkudu Vamshi Krishna',
+  'c vamshi krishna': 'Chikkudu Vamshi Krishna',
+  'r vamshi krishna': 'Chikkudu Vamshi Krishna',
+  'chikkudu vamshikrishna': 'Chikkudu Vamshi Krishna',
+  'palvai harish babu': 'Palvai Harish Babu',
+  'dr. palvai harish babu': 'Palvai Harish Babu',
+  'koneru konappa': 'Koneru Konappa',
+  'onappa': 'Koneru Konappa',
+  'k. konappa': 'Koneru Konappa',
+  'konappa koneru': 'Koneru Konappa',
+  'nalamada uttam kumar reddy': 'Nalamada Uttam Kumar Reddy',
+  'n. uttam kumar reddy': 'Nalamada Uttam Kumar Reddy',
+  'uttam kumar reddy': 'Nalamada Uttam Kumar Reddy',
+  'uttam kumar reddy nalamada': 'Nalamada Uttam Kumar Reddy',
+  'shanampudi saidi reddy': 'Shanampudi Saidi Reddy',
+  'shanampudi saidireddy': 'Shanampudi Saidi Reddy',
+  'saidi reddy shanampudi': 'Shanampudi Saidi Reddy',
+  'sanampudi saidireddy': 'Shanampudi Saidi Reddy',
+  'p.ramulu': 'P. Ramulu',
+  'p. ramulu': 'P. Ramulu',
+  'ramulu': 'P. Ramulu',
+  'pothuganti ramulu': 'P. Ramulu',
+  'guvvala balaraju': 'Guvvala Balaraju',
+  'balaraju guvvala': 'Guvvala Balaraju',
+
+  // Andhra Pradesh
+  'hanumantha rao kotagiri': 'Hanumantha Rao Kotagiri',
+  'kotagiri hanumantha rao': 'Hanumantha Rao Kotagiri',
+  'k. hanumantha rao': 'Hanumantha Rao Kotagiri',
+  'otagiri hanumantha rao': 'Hanumantha Rao Kotagiri',
+  'meka venkata pratap appa rao': 'Meka Venkata Pratap Appa Rao',
+  'meka venkata pratap apparao': 'Meka Venkata Pratap Appa Rao',
+  'enkata pratap apparao meka': 'Meka Venkata Pratap Appa Rao',
+  'venkata pratap appa rao meka': 'Meka Venkata Pratap Appa Rao',
+  'ashok bendalam': 'Ashok Bendalam',
+  'bendalam ashok': 'Ashok Bendalam',
+  'piriya sairaj': 'Piriya Sairaj',
+  'krishna rao m.v.': 'Krishna Rao M.V.',
+};
+
+export function getCanonicalCandidateName(name: string): string {
+  if (!name) return '';
+  const lower = name.trim().toLowerCase();
+  if (CANDIDATE_ALIASES[lower]) return CANDIDATE_ALIASES[lower];
+  const stripped = stripHonorifics(name).toLowerCase();
+  if (CANDIDATE_ALIASES[stripped]) return CANDIDATE_ALIASES[stripped];
+  const noDots = stripped.replace(/[.,]/g, '').replace(/\s+/g, ' ').trim();
+  if (CANDIDATE_ALIASES[noDots]) return CANDIDATE_ALIASES[noDots];
+  return name.trim();
+}
+
 try {
   // Use require to avoid huge TS compiler AST overhead on large static JSON
   const candidatePhotoMap: Record<string, string> = require('../data/candidate-photo-map.json');
@@ -152,6 +264,11 @@ export const STATIC_LEADER_PHOTOS: Record<string, string> = {
   'Nalamada Uttam Kumar Reddy': 'https://www.myneta.info/images_candidate/Telangana2023/8affd3c15179952f38acf9cdbfa961c0e361b957.jpg',
   'Shanampudi Saidi Reddy': 'https://www.myneta.info/images_candidate/Telangana2023/8d862a898684c1048c70c32201a2ee29c9898621.jpg',
   'Shanampudi Saidireddy': 'https://www.myneta.info/images_candidate/Telangana2023/8d862a898684c1048c70c32201a2ee29c9898621.jpg',
+  'Chikkudu Vamshi Krishna': 'https://www.myneta.info/images_candidate/Telangana2023/ce781f883abd181bce8747272ec7b32be65fd8ae.jpg',
+  'Dr. C. Vamshi Krishna': 'https://www.myneta.info/images_candidate/Telangana2023/ce781f883abd181bce8747272ec7b32be65fd8ae.jpg',
+  'Dr.C.Vamshi Krishna': 'https://www.myneta.info/images_candidate/Telangana2023/ce781f883abd181bce8747272ec7b32be65fd8ae.jpg',
+  'Dr C Vamshi Krishna': 'https://www.myneta.info/images_candidate/Telangana2023/ce781f883abd181bce8747272ec7b32be65fd8ae.jpg',
+  'C. Vamshi Krishna': 'https://www.myneta.info/images_candidate/Telangana2023/ce781f883abd181bce8747272ec7b32be65fd8ae.jpg',
   'Sharad Pawar': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Sharad_Pawar_in_2023.jpg/330px-Sharad_Pawar_in_2023.jpg',
   'Uddhav Thackeray': 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Uddhav_Thackeray_in_2023.jpg/330px-Uddhav_Thackeray_in_2023.jpg',
   'Akhilesh Yadav': 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Akhilesh_Yadav_in_2024.jpg/330px-Akhilesh_Yadav_in_2024.jpg',
@@ -307,7 +424,21 @@ export function getStaticPhoto(name: string): string | undefined {
     if (normaliseName(key) === norm) return url;
   }
 
-  // 3. Try dynamic cache first, then exact or normalised key in static photo map
+  // 3. Check alias or honorific-stripped canonical name
+  const canonical = getCanonicalCandidateName(name);
+  if (canonical && canonical !== name) {
+    if (STATIC_LEADER_PHOTOS[canonical]) return STATIC_LEADER_PHOTOS[canonical];
+    const canonicalNorm = normaliseName(canonical);
+    if (STATIC_PHOTO_MAP[canonicalNorm]) return STATIC_PHOTO_MAP[canonicalNorm];
+  }
+  const stripped = stripHonorifics(name);
+  if (stripped && stripped !== name) {
+    if (STATIC_LEADER_PHOTOS[stripped]) return STATIC_LEADER_PHOTOS[stripped];
+    const strippedNorm = normaliseName(stripped);
+    if (STATIC_PHOTO_MAP[strippedNorm]) return STATIC_PHOTO_MAP[strippedNorm];
+  }
+
+  // 4. Try dynamic cache first, then exact or normalised key in static photo map
   const url = getCachedCandidatePhoto(name) ?? STATIC_PHOTO_MAP[name] ?? STATIC_PHOTO_MAP[norm];
   if (!url) return undefined;
   // Skip SVG URLs — React Native Image cannot render SVG

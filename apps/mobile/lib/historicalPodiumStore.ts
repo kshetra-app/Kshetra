@@ -38,6 +38,7 @@ export interface HistoricalPodiumContest {
 }
 
 import { API_BASE_URL } from './constants';
+import { stripHonorifics, getCanonicalCandidateName } from './candidatePhotos';
 
 // In-memory cache for parsed state podium files (hydrated on demand from API or local cache)
 const stateCache = new Map<string, Record<string, HistoricalPodiumContest[]>>();
@@ -713,4 +714,57 @@ export function getLocalizedPartyName(
   };
 
   return PARTY_NAMES[partyCode]?.[lang] || partyCode;
+}
+
+/**
+ * Calculates true historical terms served by a candidate across election years.
+ * Dynamically counts every recorded election where the candidate emerged as winner.
+ */
+export function calculateTermsServed(
+  candidateName: string,
+  stateCode: string,
+  acNo?: number,
+  asOfYear?: number,
+): number {
+  if (!candidateName) return 1;
+  const canonicalTarget = getCanonicalCandidateName(candidateName);
+  const targetNorm = stripHonorifics(canonicalTarget).toLowerCase().replace(/[.,]/g, '').replace(/\s+/g, ' ').trim();
+  if (!targetNorm) return 1;
+
+  const code = (stateCode || 'TS').toUpperCase();
+  const wonYears = new Set<number>();
+
+  // 1. If acNo is provided, query full historical contests for the constituency
+  if (acNo != null) {
+    const constContests = getHistoricalPodiumForConstituency(code, acNo);
+    for (const c of constContests) {
+      if (asOfYear != null && c.year > asOfYear) continue;
+      if (c.winner && c.winner.name) {
+        const wCanonical = getCanonicalCandidateName(c.winner.name);
+        const wNorm = stripHonorifics(wCanonical).toLowerCase().replace(/[.,]/g, '').replace(/\s+/g, ' ').trim();
+        if (wNorm === targetNorm || (targetNorm.length > 5 && wNorm.includes(targetNorm)) || (wNorm.length > 5 && targetNorm.includes(wNorm))) {
+          wonYears.add(c.year);
+        }
+      }
+    }
+  }
+
+  // 2. Query stateCache if loaded
+  const podiumData = stateCache.get(code);
+  if (podiumData) {
+    for (const [_, contests] of Object.entries(podiumData)) {
+      for (const c of contests) {
+        if (asOfYear != null && c.year > asOfYear) continue;
+        if (c.winner && c.winner.name) {
+          const wCanonical = getCanonicalCandidateName(c.winner.name);
+          const wNorm = stripHonorifics(wCanonical).toLowerCase().replace(/[.,]/g, '').replace(/\s+/g, ' ').trim();
+          if (wNorm === targetNorm || (targetNorm.length > 5 && wNorm.includes(targetNorm)) || (wNorm.length > 5 && targetNorm.includes(wNorm))) {
+            wonYears.add(c.year);
+          }
+        }
+      }
+    }
+  }
+
+  return Math.max(wonYears.size, 1);
 }

@@ -2161,8 +2161,15 @@ function FullMapScreen() {
           const winnerVotes = podium?.winner?.votes || selected.votes;
           const winnerColor = getPartyColor(winnerParty);
 
-          let rawRuName = podium?.firstRunnerUp?.name || selected.runnerUpName || selected.runnerUp;
-          if (/candidate/i.test(rawRuName) && selected.runnerUpName && !/candidate/i.test(selected.runnerUpName)) {
+          const isGenericCand = (n?: string | null) => {
+            if (!n) return true;
+            const l = n.trim().toLowerCase();
+            return l.includes('candidate') || l.includes('runner up') || l === 'winner' || l === 'ind' || l === 'nota' || l === 'none of the above';
+          };
+          let rawRuName = (!isGenericCand(podium?.firstRunnerUp?.name) ? podium?.firstRunnerUp?.name : null) ||
+                          (!isGenericCand(selected.runnerUpName) ? selected.runnerUpName : null) ||
+                          podium?.firstRunnerUp?.name || selected.runnerUpName || selected.runnerUp;
+          if (isGenericCand(rawRuName) && selected.runnerUpName && !isGenericCand(selected.runnerUpName)) {
             rawRuName = selected.runnerUpName;
           }
           const runnerUpName = rawRuName;

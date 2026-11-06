@@ -23,7 +23,7 @@ import {
   getLocalizedConstituencyName,
   getLocalizedDetail,
 } from '../lib/stateTranslations';
-import { getLocalizedCandidateName } from '../lib/historicalPodiumStore';
+import { getLocalizedCandidateName, calculateTermsServed } from '../lib/historicalPodiumStore';
 
 interface MLACardProps {
   profile: MLAProfile;
@@ -34,14 +34,17 @@ export default function MLACard({ profile, onAvatarPress }: MLACardProps) {
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const partyColor = getPartyColor(profile.party);
+  const stateCode = (profile as any).stateCode || (profile as any).state_code || 'TS';
 
-  const termLabel = profile.terms === 1 ? t('mla.term_1')
-    : profile.terms === 2 ? t('mla.term_2')
-    : profile.terms === 3 ? t('mla.term_3')
-    : t('mla.term_n', { n: profile.terms });
+  const calculatedTerms = calculateTermsServed(profile.name, stateCode, profile.acNo);
+  const effectiveTerms = Math.max(calculatedTerms, profile.terms || 1);
+
+  const termLabel = effectiveTerms === 1 ? t('mla.term_1')
+    : effectiveTerms === 2 ? t('mla.term_2')
+    : effectiveTerms === 3 ? t('mla.term_3')
+    : t('mla.term_n', { n: effectiveTerms });
 
   const localizedParty = getLocalizedPartyName(profile.party, i18n.language) || profile.party;
-  const stateCode = (profile as any).stateCode || (profile as any).state_code || 'TS';
   const localizedConstName = profile.constituencyName
     ? getLocalizedConstituencyName(profile.acNo, stateCode, profile.constituencyName, i18n.language)
     : '';
