@@ -4169,7 +4169,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 37880,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Naresh Saini",
+        "RUNNER_UP_VOTES": 96633,
+        "TOTAL_VOTES": 281373
       }
     },
     {
@@ -7896,7 +7899,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 315,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Dr. Dharam Singh Saini",
+        "RUNNER_UP_VOTES": 103799,
+        "TOTAL_VOTES": 270652
       }
     },
     {
@@ -12335,7 +12341,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 30745,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Jagpal Singh",
+        "RUNNER_UP_VOTES": 76262,
+        "TOTAL_VOTES": 259855
       }
     },
     {
@@ -13601,12 +13610,15 @@
         "DIST_NAME": "Saharanpur",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Rajiv Gumber",
+        "WINNER_NAME": "Rajeev Gumber",
         "WINNER_VOTES": 143195,
         "RUNNER_UP": "SP",
         "MARGIN": 7434,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Sanjay Garg",
+        "RUNNER_UP_VOTES": 135761,
+        "TOTAL_VOTES": 293112
       }
     },
     {
@@ -17724,12 +17736,15 @@
         "DIST_NAME": "Saharanpur",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Devendra Kumar Nim",
+        "WINNER_NAME": "Devender Kumar Nim",
         "WINNER_VOTES": 89109,
         "RUNNER_UP": "BSP",
         "MARGIN": 20593,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ravindra Kumar",
+        "RUNNER_UP_VOTES": 68516,
+        "TOTAL_VOTES": 232233
       }
     },
     {
@@ -22147,12 +22162,15 @@
         "DIST_NAME": "Saharanpur",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Th. Brijesh Singh",
+        "WINNER_NAME": "Brijesh",
         "WINNER_VOTES": 93890,
         "RUNNER_UP": "SP",
         "MARGIN": 7104,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Kartikey Rana",
+        "RUNNER_UP_VOTES": 86786,
+        "TOTAL_VOTES": 242193
       }
     },
     {
@@ -27235,7 +27253,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 23449,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Inder Sain",
+        "RUNNER_UP_VOTES": 93133,
+        "TOTAL_VOTES": 270590
       }
     },
     {
@@ -29842,7 +29863,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 23770,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Raja Bharatendra Singh",
+        "RUNNER_UP_VOTES": 78905,
+        "TOTAL_VOTES": 232615
       }
     },
     {
@@ -37661,7 +37685,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 14345,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Kapil Kumar",
+        "RUNNER_UP_VOTES": 85755,
+        "TOTAL_VOTES": 240760
       }
     },
     {
@@ -42044,7 +42071,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 6532,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "RLD"
+        "CURRENT_PARTY": "RLD",
+        "RUNNER_UP_NAME": "Pramod Utwal",
+        "RUNNER_UP_VOTES": 86140,
+        "TOTAL_VOTES": 215085
       }
     },
     {
@@ -47123,7 +47153,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 25887,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Mriganka Singh",
+        "RUNNER_UP_VOTES": 105148,
+        "TOTAL_VOTES": 241947
       }
     },
     {
@@ -50670,7 +50703,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 10806,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "RLD"
+        "CURRENT_PARTY": "RLD",
+        "RUNNER_UP_NAME": "Suresh Kumar",
+        "RUNNER_UP_VOTES": 92945,
+        "TOTAL_VOTES": 218541
       }
     },
     {
@@ -56293,7 +56329,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 5334,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Sapna Kashyap",
+        "RUNNER_UP_VOTES": 92029,
+        "TOTAL_VOTES": 222190
       }
     },
     {
@@ -59991,12 +60030,15 @@
         "DIST_NAME": "Bijnor",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Suchi Chaudhary",
+        "WINNER_NAME": "Suchi",
         "WINNER_VOTES": 97165,
         "RUNNER_UP": "RLD",
         "MARGIN": 1445,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Neeraj Chaudhary",
+        "RUNNER_UP_VOTES": 95720,
+        "TOTAL_VOTES": 252142
       }
     },
     {
@@ -63803,7 +63845,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 26451,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Dr Yashwant Singh",
+        "RUNNER_UP_VOTES": 70704,
+        "TOTAL_VOTES": 223282
       }
     },
     {
@@ -68146,7 +68191,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 27380,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "RLD"
+        "CURRENT_PARTY": "RLD",
+        "RUNNER_UP_NAME": "Prashant Chaudhary",
+        "RUNNER_UP_VOTES": 80041,
+        "TOTAL_VOTES": 216692
       }
     },
     {
@@ -71488,12 +71536,15 @@
         "DIST_NAME": "Shamli",
         "STATE": "UP",
         "WINNER_PARTY": "RLD",
-        "WINNER_NAME": "Persann Kumar Chaudhary",
+        "WINNER_NAME": "Persann Kumar",
         "WINNER_VOTES": 103070,
         "RUNNER_UP": "BJP",
         "MARGIN": 7107,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "RLD"
+        "CURRENT_PARTY": "RLD",
+        "RUNNER_UP_NAME": "Tejendra Singh",
+        "RUNNER_UP_VOTES": 95963,
+        "TOTAL_VOTES": 210952
       }
     },
     {
@@ -73303,12 +73354,15 @@
         "DIST_NAME": "Muzaffarnagar",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Kapil Dev Aggarwal",
+        "WINNER_NAME": "Kapil Dev Agarwal",
         "WINNER_VOTES": 111794,
         "RUNNER_UP": "RLD",
         "MARGIN": 18694,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Saurabh",
+        "RUNNER_UP_VOTES": 93100,
+        "TOTAL_VOTES": 225543
       }
     },
     {
@@ -76755,7 +76809,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 28310,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "RLD"
+        "CURRENT_PARTY": "RLD",
+        "RUNNER_UP_NAME": "Umesh Malik",
+        "RUNNER_UP_VOTES": 102783,
+        "TOTAL_VOTES": 255624
       }
     },
     {
@@ -81416,13 +81473,16 @@
         "AC_NAME": "Khatauli",
         "DIST_NAME": "Muzaffarnagar",
         "STATE": "UP",
-        "WINNER_PARTY": "RLD",
-        "WINNER_NAME": "Madan Bhaiya",
+        "WINNER_PARTY": "BJP",
+        "WINNER_NAME": "Vikram Singh",
         "WINNER_VOTES": 100651,
         "RUNNER_UP": "RLD",
         "MARGIN": 16345,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "RLD"
+        "CURRENT_PARTY": "RLD",
+        "RUNNER_UP_NAME": "Rajpal Singh Saini",
+        "RUNNER_UP_VOTES": 84306,
+        "TOTAL_VOTES": 221969
       }
     },
     {
@@ -83685,7 +83745,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 203,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Naim Ul Hasan",
+        "RUNNER_UP_VOTES": 81588,
+        "TOTAL_VOTES": 205067
       }
     },
     {
@@ -86387,12 +86450,15 @@
         "DIST_NAME": "Bijnor",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Om Kumar",
+        "WINNER_NAME": "Omkumar",
         "WINNER_VOTES": 77935,
         "RUNNER_UP": "RLD",
         "MARGIN": 258,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Munshiram",
+        "RUNNER_UP_VOTES": 77677,
+        "TOTAL_VOTES": 199914
       }
     },
     {
@@ -89883,7 +89949,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 29508,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "RLD"
+        "CURRENT_PARTY": "RLD",
+        "RUNNER_UP_NAME": "Sahender Singh Ramala",
+        "RUNNER_UP_VOTES": 82372,
+        "TOTAL_VOTES": 209904
       }
     },
     {
@@ -94698,7 +94767,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 18200,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Sangeet Singh Som",
+        "RUNNER_UP_VOTES": 100373,
+        "TOTAL_VOTES": 243206
       }
     },
     {
@@ -98329,7 +98401,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 234,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Kamlesh Saini",
+        "RUNNER_UP_VOTES": 90288,
+        "TOTAL_VOTES": 224374
       }
     },
     {
@@ -103379,12 +103454,15 @@
         "DIST_NAME": "Meerut",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Dinesh Khatik",
+        "WINNER_NAME": "Dinesh",
         "WINNER_VOTES": 107587,
         "RUNNER_UP": "SP",
         "MARGIN": 7312,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Yogesh Verma",
+        "RUNNER_UP_VOTES": 100275,
+        "TOTAL_VOTES": 230276
       }
     },
     {
@@ -108726,12 +108804,15 @@
         "DIST_NAME": "Moradabad",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Nawab Jan",
+        "WINNER_NAME": "Navab Jan",
         "WINNER_VOTES": 134391,
         "RUNNER_UP": "BJP",
         "MARGIN": 19684,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Ajay Pratap Singh",
+        "RUNNER_UP_VOTES": 114707,
+        "TOTAL_VOTES": 275608
       }
     },
     {
@@ -112445,12 +112526,15 @@
         "DIST_NAME": "Meerut",
         "STATE": "UP",
         "WINNER_PARTY": "RLD",
-        "WINNER_NAME": "Ghulam Mohammed",
+        "WINNER_NAME": "Ghulam Mohammad",
         "WINNER_VOTES": 101749,
         "RUNNER_UP": "BJP",
         "MARGIN": 9182,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "RLD"
+        "CURRENT_PARTY": "RLD",
+        "RUNNER_UP_NAME": "Maninder Pal",
+        "RUNNER_UP_VOTES": 92567,
+        "TOTAL_VOTES": 233667
       }
     },
     {
@@ -115501,7 +115585,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 6065,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Chandraprakash Singh",
+        "RUNNER_UP_VOTES": 86509,
+        "TOTAL_VOTES": 213969
       }
     },
     {
@@ -118383,12 +118470,15 @@
         "DIST_NAME": "Baghpat",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Krishnapal Malik",
+        "WINNER_NAME": "Krishan Pal Malik",
         "WINNER_VOTES": 90931,
         "RUNNER_UP": "RLD",
         "MARGIN": 315,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Jaiveer",
+        "RUNNER_UP_VOTES": 90616,
+        "TOTAL_VOTES": 196226
       }
     },
     {
@@ -122803,7 +122893,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 43178,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Rajesh Kumar Singh",
+        "RUNNER_UP_VOTES": 91514,
+        "TOTAL_VOTES": 273839
       }
     },
     {
@@ -127476,13 +127569,16 @@
         "AC_NAME": "Suar",
         "DIST_NAME": "Rampur",
         "STATE": "UP",
-        "WINNER_PARTY": "ADAL",
-        "WINNER_NAME": "Shafeek Ahmed Ansari",
+        "WINNER_PARTY": "SP",
+        "WINNER_NAME": "Mohammad Abdullah Azam Khan",
         "WINNER_VOTES": 126162,
-        "RUNNER_UP": "ADSL",
+        "RUNNER_UP": "ADS",
         "MARGIN": 61103,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "ADAL"
+        "CURRENT_PARTY": "ADAL",
+        "RUNNER_UP_NAME": "Haidar Ali Khan Alias Hamza Mian",
+        "RUNNER_UP_VOTES": 65059,
+        "TOTAL_VOTES": 213160
       }
     },
     {
@@ -132677,7 +132773,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 2180,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Satyavir Tyagi",
+        "RUNNER_UP_VOTES": 104924,
+        "TOTAL_VOTES": 253869
       }
     },
     {
@@ -137475,12 +137574,15 @@
         "DIST_NAME": "Amroha",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Rajeev Tarara",
+        "WINNER_NAME": "Rajeev Kumar",
         "WINNER_VOTES": 103054,
         "RUNNER_UP": "SP",
         "MARGIN": 11425,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Vivek Singh",
+        "RUNNER_UP_VOTES": 91629,
+        "TOTAL_VOTES": 243697
       }
     },
     {
@@ -138646,12 +138748,15 @@
         "DIST_NAME": "Meerut",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Amit Agrawal",
+        "WINNER_NAME": "Amit Agarwal",
         "WINNER_VOTES": 162032,
         "RUNNER_UP": "RLD",
         "MARGIN": 118072,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Manisha Ahlawat",
+        "RUNNER_UP_VOTES": 43960,
+        "TOTAL_VOTES": 244493
       }
     },
     {
@@ -143194,7 +143299,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 6540,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Devender Nagpal",
+        "RUNNER_UP_VOTES": 101957,
+        "TOTAL_VOTES": 244837
       }
     },
     {
@@ -147276,12 +147384,15 @@
         "DIST_NAME": "Baghpat",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Chaudhary Yogesh Dhama",
+        "WINNER_NAME": "Yogesh Dhama",
         "WINNER_VOTES": 101420,
         "RUNNER_UP": "RLD",
         "MARGIN": 6733,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Mohd Ahmed Hameed",
+        "RUNNER_UP_VOTES": 94687,
+        "TOTAL_VOTES": 214112
       }
     },
     {
@@ -151059,12 +151170,15 @@
         "DIST_NAME": "Moradabad",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Mohd Nasir Qureshi",
-        "WINNER_VOTES": 114337,
+        "WINNER_NAME": "Mohd Nasir",
+        "WINNER_VOTES": 143337,
         "RUNNER_UP": "BJP",
-        "MARGIN": 27820,
+        "MARGIN": 56820,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "K K Misra",
+        "RUNNER_UP_VOTES": 86517,
+        "TOTAL_VOTES": 251978
       }
     },
     {
@@ -155595,7 +155709,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 34290,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Mohan Kumar Lodhi",
+        "RUNNER_UP_VOTES": 66686,
+        "TOTAL_VOTES": 200601
       }
     },
     {
@@ -155874,7 +155991,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 26065,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Kamal Dutt Sharma",
+        "RUNNER_UP_VOTES": 80330,
+        "TOTAL_VOTES": 201638
       }
     },
     {
@@ -162513,7 +162633,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 307,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Amarjeet Singh",
+        "RUNNER_UP_VOTES": 101691,
+        "TOTAL_VOTES": 236259
       }
     },
     {
@@ -163891,12 +164014,15 @@
         "DIST_NAME": "Meerut",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Somendra Tomar",
+        "WINNER_NAME": "Dr. Somendra Singh Tomar",
         "WINNER_VOTES": 129667,
         "RUNNER_UP": "SP",
         "MARGIN": 7942,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Mohd Adil",
+        "RUNNER_UP_VOTES": 121725,
+        "TOTAL_VOTES": 298393
       }
     },
     {
@@ -169698,12 +169824,15 @@
         "DIST_NAME": "Moradabad",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Zia ur Rahman Barq",
+        "WINNER_NAME": "Zia Ur Rehman",
         "WINNER_VOTES": 125792,
         "RUNNER_UP": "BJP",
         "MARGIN": 43162,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Kamal Kumar",
+        "RUNNER_UP_VOTES": 82630,
+        "TOTAL_VOTES": 271785
       }
     },
     {
@@ -173253,12 +173382,15 @@
         "DIST_NAME": "Ghaziabad",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Manju Shiwach",
+        "WINNER_NAME": "Dr. Manju Shiwach",
         "WINNER_VOTES": 113349,
         "RUNNER_UP": "RLD",
         "MARGIN": 34619,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Sudesh Sharma",
+        "RUNNER_UP_VOTES": 78730,
+        "TOTAL_VOTES": 223867
       }
     },
     {
@@ -175877,7 +176009,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 71036,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Ram Singh",
+        "RUNNER_UP_VOTES": 57699,
+        "TOTAL_VOTES": 224150
       }
     },
     {
@@ -178544,7 +178679,10 @@
         "RUNNER_UP": "RLD",
         "MARGIN": 97095,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Surendra Kumar Munni",
+        "RUNNER_UP_VOTES": 72195,
+        "TOTAL_VOTES": 274689
       }
     },
     {
@@ -183326,12 +183464,15 @@
         "DIST_NAME": "Hapur",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Harendra Singh Tewatia",
+        "WINNER_NAME": "Harendra Singh",
         "WINNER_VOTES": 104113,
         "RUNNER_UP": "SP",
         "MARGIN": 26306,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ravinder Chaudhary",
+        "RUNNER_UP_VOTES": 77807,
+        "TOTAL_VOTES": 236220
       }
     },
     {
@@ -189690,7 +189831,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 3355,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Chhatra Pal Singh",
+        "RUNNER_UP_VOTES": 120790,
+        "TOTAL_VOTES": 266003
       }
     },
     {
@@ -190485,7 +190629,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 782,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Mohd Yusuf Ansari",
+        "RUNNER_UP_VOTES": 147602,
+        "TOTAL_VOTES": 321704
       }
     },
     {
@@ -193211,12 +193358,15 @@
         "DIST_NAME": "Ghaziabad",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Nand Kishor Gurjar",
+        "WINNER_NAME": "Nandkishor",
         "WINNER_VOTES": 127410,
         "RUNNER_UP": "RLD",
         "MARGIN": 8676,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Madan Bhaiya",
+        "RUNNER_UP_VOTES": 118734,
+        "TOTAL_VOTES": 315095
       }
     },
     {
@@ -198595,7 +198745,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 6970,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Shailendra Singh Gangwar",
+        "RUNNER_UP_VOTES": 118536,
+        "TOTAL_VOTES": 261009
       }
     },
     {
@@ -203273,12 +203426,15 @@
         "DIST_NAME": "Sambhal",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Pinki Singh Yadav",
+        "WINNER_NAME": "Pinki Singh",
         "WINNER_VOTES": 111652,
         "RUNNER_UP": "BJP",
         "MARGIN": 25206,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Harendra Kumar",
+        "RUNNER_UP_VOTES": 86446,
+        "TOTAL_VOTES": 260152
       }
     },
     {
@@ -205811,13 +205967,16 @@
         "AC_NAME": "Rampur",
         "DIST_NAME": "Rampur",
         "STATE": "UP",
-        "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Akash Saxena (Honey)",
+        "WINNER_PARTY": "SP",
+        "WINNER_NAME": "Mohammad Azam Khan",
         "WINNER_VOTES": 131225,
         "RUNNER_UP": "BJP",
         "MARGIN": 55141,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Akash Saxena (Honey)",
+        "RUNNER_UP_VOTES": 76084,
+        "TOTAL_VOTES": 219757
       }
     },
     {
@@ -209547,12 +209706,15 @@
         "DIST_NAME": "Amroha",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Mahender Singh Khadakvanshi",
+        "WINNER_NAME": "Mahendra",
         "WINNER_VOTES": 120135,
         "RUNNER_UP": "SP",
         "MARGIN": 22382,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Mukhya Gurjar",
+        "RUNNER_UP_VOTES": 97753,
+        "TOTAL_VOTES": 268924
       }
     },
     {
@@ -212187,7 +212349,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 41697,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Rajesh Singhal",
+        "RUNNER_UP_VOTES": 65376,
+        "TOTAL_VOTES": 244853
       }
     },
     {
@@ -215573,12 +215738,15 @@
         "DIST_NAME": "Hapur",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Vijay Pal Aadthi",
+        "WINNER_NAME": "Vijaypal (Aadhti)",
         "WINNER_VOTES": 97862,
         "RUNNER_UP": "RLD",
         "MARGIN": 7034,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Gajraj Singh",
+        "RUNNER_UP_VOTES": 90828,
+        "TOTAL_VOTES": 246567
       }
     },
     {
@@ -222152,12 +222320,15 @@
         "DIST_NAME": "Pilibhit",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Swami Pravaktanand",
+        "WINNER_NAME": "Jaydrath Urf Pravaktanand",
         "WINNER_VOTES": 151771,
         "RUNNER_UP": "SP",
         "MARGIN": 81472,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Hemraj Verma",
+        "RUNNER_UP_VOTES": 70299,
+        "TOTAL_VOTES": 237878
       }
     },
     {
@@ -225363,12 +225534,15 @@
         "DIST_NAME": "Pilibhit",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Babu Ram Paswan",
+        "WINNER_NAME": "Baburam",
         "WINNER_VOTES": 134404,
         "RUNNER_UP": "SP",
         "MARGIN": 26576,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Arti",
+        "RUNNER_UP_VOTES": 107828,
+        "TOTAL_VOTES": 268177
       }
     },
     {
@@ -230095,7 +230269,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 12628,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Aslam Ali",
+        "RUNNER_UP_VOTES": 112400,
+        "TOTAL_VOTES": 280013
       }
     },
     {
@@ -235093,12 +235270,15 @@
         "DIST_NAME": "Bareilly",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "DC Verma",
+        "WINNER_NAME": "Dr. D. C. Verma",
         "WINNER_VOTES": 116435,
         "RUNNER_UP": "SP",
-        "MARGIN": 32840,
+        "MARGIN": 32480,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Sultan Beg",
+        "RUNNER_UP_VOTES": 83955,
+        "TOTAL_VOTES": 228387
       }
     },
     {
@@ -241333,7 +241513,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 9409,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Bahoran Lal Maurya",
+        "RUNNER_UP_VOTES": 109993,
+        "TOTAL_VOTES": 260250
       }
     },
     {
@@ -241956,7 +242139,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 105537,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Vishal Verma",
+        "RUNNER_UP_VOTES": 44668,
+        "TOTAL_VOTES": 244766
       }
     },
     {
@@ -247163,7 +247349,10 @@
         "RUNNER_UP": "RLD",
         "MARGIN": 89657,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Dilnawaz Khan",
+        "RUNNER_UP_VOTES": 59468,
+        "TOTAL_VOTES": 253197
       }
     },
     {
@@ -247726,7 +247915,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 214835,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Amarpal Sharma",
+        "RUNNER_UP_VOTES": 108047,
+        "TOTAL_VOTES": 481686
       }
     },
     {
@@ -252144,12 +252336,15 @@
         "DIST_NAME": "Rampur",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Rajbala",
+        "WINNER_NAME": "Rajbala Singh",
         "WINNER_VOTES": 97948,
         "RUNNER_UP": "SP",
         "MARGIN": 5912,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Vijay Singh",
+        "RUNNER_UP_VOTES": 92036,
+        "TOTAL_VOTES": 227230
       }
     },
     {
@@ -254472,7 +254667,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 181513,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Sunil Choudhary",
+        "RUNNER_UP_VOTES": 62806,
+        "TOTAL_VOTES": 348228
       }
     },
     {
@@ -257878,12 +258076,15 @@
         "DIST_NAME": "Moradabad",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Mohammed Faeem",
+        "WINNER_NAME": "Mohammad Faheem Irfan",
         "WINNER_VOTES": 95338,
         "RUNNER_UP": "BJP",
         "MARGIN": 7610,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Parmeshwar Lal",
+        "RUNNER_UP_VOTES": 87728,
+        "TOTAL_VOTES": 238844
       }
     },
     {
@@ -262905,12 +263106,15 @@
         "DIST_NAME": "Lakhimpur Kheri",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Harvindar Kumar Sahani",
+        "WINNER_NAME": "Harvinder Kumar Sahni Alias Romi Sahni",
         "WINNER_VOTES": 118864,
         "RUNNER_UP": "SP",
         "MARGIN": 38129,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Pritinder Singh Kakku",
+        "RUNNER_UP_VOTES": 80735,
+        "TOTAL_VOTES": 236794
       }
     },
     {
@@ -266193,7 +266397,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 138218,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Rajkumar Bhati",
+        "RUNNER_UP_VOTES": 79850,
+        "TOTAL_VOTES": 353777
       }
     },
     {
@@ -270244,11 +270451,14 @@
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
         "WINNER_NAME": "Pradeep Kumar Chaudhary",
-        "WINNER_VOTES": 127026,
+        "WINNER_VOTES": 127076,
         "RUNNER_UP": "RLD",
-        "MARGIN": 25600,
+        "MARGIN": 25830,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Mohammad Yunus",
+        "RUNNER_UP_VOTES": 101246,
+        "TOTAL_VOTES": 259670
       }
     },
     {
@@ -273210,12 +273420,15 @@
         "DIST_NAME": "Bulandshahr",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Lakshmi Raj Singh",
+        "WINNER_NAME": "Lakshmi Raj",
         "WINNER_VOTES": 125644,
         "RUNNER_UP": "SP",
         "MARGIN": 29343,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Rahul Yadav",
+        "RUNNER_UP_VOTES": 96301,
+        "TOTAL_VOTES": 273133
       }
     },
     {
@@ -278253,12 +278466,15 @@
         "DIST_NAME": "Bareilly",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Dr. M. P. Arya Gangwar",
+        "WINNER_NAME": "Dr. M. P. Arya",
         "WINNER_VOTES": 111113,
         "RUNNER_UP": "SP",
         "MARGIN": 9237,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Bhagwat Saran Gangwar",
+        "RUNNER_UP_VOTES": 101876,
+        "TOTAL_VOTES": 230503
       }
     },
     {
@@ -283905,7 +284121,10 @@
         "RUNNER_UP": "BSP",
         "MARGIN": 77623,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Rameshvar",
+        "RUNNER_UP_VOTES": 47979,
+        "TOTAL_VOTES": 238600
       }
     },
     {
@@ -287247,12 +287466,15 @@
         "DIST_NAME": "Sambhal",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Gulabo Devi",
+        "WINNER_NAME": "Gulab Debi",
         "WINNER_VOTES": 112890,
         "RUNNER_UP": "SP",
         "MARGIN": 35367,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Km Vimlesh Kumari",
+        "RUNNER_UP_VOTES": 77523,
+        "TOTAL_VOTES": 227934
       }
     },
     {
@@ -292994,12 +293216,15 @@
         "DIST_NAME": "Bareilly",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Dharampal Singh",
+        "WINNER_NAME": "Dharmpal Singh",
         "WINNER_VOTES": 88956,
         "RUNNER_UP": "SP",
         "MARGIN": 18424,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Pt. Radha Krishan Sharma",
+        "RUNNER_UP_VOTES": 70532,
+        "TOTAL_VOTES": 191509
       }
     },
     {
@@ -299450,7 +299675,10 @@
         "RUNNER_UP": "RLD",
         "MARGIN": 56315,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Avtar Singh Bhadana",
+        "RUNNER_UP_VOTES": 60890,
+        "TOTAL_VOTES": 231959
       }
     },
     {
@@ -305052,12 +305280,15 @@
         "DIST_NAME": "Sambhal",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Ramkhiladi Singh Yadav",
+        "WINNER_NAME": "Ramkhiladi Singh",
         "WINNER_VOTES": 123969,
         "RUNNER_UP": "BJP",
         "MARGIN": 29529,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Ajeet Kumar Urf Raju Yadav",
+        "RUNNER_UP_VOTES": 94440,
+        "TOTAL_VOTES": 241292
       }
     },
     {
@@ -307844,7 +308075,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 41009,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "R S Kushwaha",
+        "RUNNER_UP_VOTES": 85479,
+        "TOTAL_VOTES": 236815
       }
     },
     {
@@ -313626,12 +313860,15 @@
         "DIST_NAME": "Budaun",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Ashutosh Maurya",
+        "WINNER_NAME": "Ashutosh Maurya Urf Raju",
         "WINNER_VOTES": 110569,
         "RUNNER_UP": "BJP",
         "MARGIN": 1834,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Kushagra Sagar",
+        "RUNNER_UP_VOTES": 108735,
+        "TOTAL_VOTES": 249964
       }
     },
     {
@@ -320437,12 +320674,15 @@
         "DIST_NAME": "Shahjahanpur",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Chetram Pasi",
+        "WINNER_NAME": "Chetram",
         "WINNER_VOTES": 129785,
         "RUNNER_UP": "SP",
         "MARGIN": 51578,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Upendra Pal Singh",
+        "RUNNER_UP_VOTES": 78207,
+        "TOTAL_VOTES": 233325
       }
     },
     {
@@ -321836,12 +322076,15 @@
         "DIST_NAME": "Bareilly",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Dr. Arun Kumar Saxena",
+        "WINNER_NAME": "Dr Arun Kumar",
         "WINNER_VOTES": 129014,
         "RUNNER_UP": "SP",
         "MARGIN": 32320,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Rajesh Kumar Agarwal",
+        "RUNNER_UP_VOTES": 96694,
+        "TOTAL_VOTES": 239946
       }
     },
     {
@@ -329351,12 +329594,15 @@
         "DIST_NAME": "Bareilly",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Raghavendra Sharma",
+        "WINNER_NAME": "Dr. Raghavendra Sharma",
         "WINNER_VOTES": 115417,
         "RUNNER_UP": "SP",
         "MARGIN": 15841,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Agam Kumar Maurya",
+        "RUNNER_UP_VOTES": 99576,
+        "TOTAL_VOTES": 248030
       }
     },
     {
@@ -333834,12 +334080,15 @@
         "DIST_NAME": "Bulandshahr",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Anil Sharma",
+        "WINNER_NAME": "Anil Kumar",
         "WINNER_VOTES": 113855,
         "RUNNER_UP": "RLD",
         "MARGIN": 55683,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Kiranpal Singh",
+        "RUNNER_UP_VOTES": 58172,
+        "TOTAL_VOTES": 214653
       }
     },
     {
@@ -341802,7 +342051,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 50409,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Divya Gangwar",
+        "RUNNER_UP_VOTES": 70733,
+        "TOTAL_VOTES": 239625
       }
     },
     {
@@ -346117,7 +346369,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 68025,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Harish Kumar",
+        "RUNNER_UP_VOTES": 60615,
+        "TOTAL_VOTES": 219519
       }
     },
     {
@@ -348920,7 +349175,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 16573,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Akshaybar Nath Kanaujiya",
+        "RUNNER_UP_VOTES": 83910,
+        "TOTAL_VOTES": 214812
       }
     },
     {
@@ -353730,12 +353988,15 @@
         "DIST_NAME": "Bareilly",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Shyam Bihari Lal",
+        "WINNER_NAME": "Prof. Shyam Bihari Lal",
         "WINNER_VOTES": 92070,
         "RUNNER_UP": "SP",
         "MARGIN": 2921,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Vijay Pal Singh",
+        "RUNNER_UP_VOTES": 89149,
+        "TOTAL_VOTES": 203607
       }
     },
     {
@@ -357401,12 +357662,15 @@
         "DIST_NAME": "Bulandshahr",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Meenakshi Singh",
+        "WINNER_NAME": "Minakshi Singh",
         "WINNER_VOTES": 137461,
         "RUNNER_UP": "SP",
         "MARGIN": 67084,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Banshi Singh",
+        "RUNNER_UP_VOTES": 70377,
+        "TOTAL_VOTES": 259387
       }
     },
     {
@@ -358137,7 +358401,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 10768,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Supriya Aron",
+        "RUNNER_UP_VOTES": 88163,
+        "TOTAL_VOTES": 196168
       }
     },
     {
@@ -363508,7 +363775,10 @@
         "RUNNER_UP": "BSP",
         "MARGIN": 13945,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Musarrat Ali",
+        "RUNNER_UP_VOTES": 69728,
+        "TOTAL_VOTES": 250872
       }
     },
     {
@@ -368467,7 +368737,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 29294,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Vinay Tiwari",
+        "RUNNER_UP_VOTES": 97240,
+        "TOTAL_VOTES": 259993
       }
     },
     {
@@ -372770,7 +373043,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 11179,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Rais Ahmad",
+        "RUNNER_UP_VOTES": 89917,
+        "TOTAL_VOTES": 219183
       }
     },
     {
@@ -381169,7 +381445,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 357,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Rajesh Yadav",
+        "RUNNER_UP_VOTES": 77443,
+        "TOTAL_VOTES": 194967
       }
     },
     {
@@ -388388,7 +388667,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 13277,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Roshan Lal Verma",
+        "RUNNER_UP_VOTES": 89030,
+        "TOTAL_VOTES": 213455
       }
     },
     {
@@ -392330,12 +392612,15 @@
         "DIST_NAME": "Budaun",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Harish Chandra Shakya",
+        "WINNER_NAME": "Harish Chandra",
         "WINNER_VOTES": 93500,
         "RUNNER_UP": "SP",
         "MARGIN": 25115,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Chandra Prakash Maurya",
+        "RUNNER_UP_VOTES": 68385,
+        "TOTAL_VOTES": 205319
       }
     },
     {
@@ -399205,12 +399490,15 @@
         "DIST_NAME": "Aligarh",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Anoop Pradhan",
+        "WINNER_NAME": "Anoop Singh Urf Anoop Pradhan Valmeeki",
         "WINNER_VOTES": 139643,
         "RUNNER_UP": "BSP",
         "MARGIN": 74341,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Charu Kain Kain",
+        "RUNNER_UP_VOTES": 65302,
+        "TOTAL_VOTES": 251380
       }
     },
     {
@@ -405280,12 +405568,15 @@
         "DIST_NAME": "Budaun",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Rajeev Kumar Singh",
+        "WINNER_NAME": "Rajeev Singh Urf Babbu Bhaiya",
         "WINNER_VOTES": 107591,
         "RUNNER_UP": "SP",
         "MARGIN": 9476,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Arjun Singh",
+        "RUNNER_UP_VOTES": 98115,
+        "TOTAL_VOTES": 237304
       }
     },
     {
@@ -410052,7 +410343,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 39324,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Viresh Yadav",
+        "RUNNER_UP_VOTES": 86367,
+        "TOTAL_VOTES": 241581
       }
     },
     {
@@ -415970,12 +416264,15 @@
         "DIST_NAME": "Aligarh",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Thakur Jaivir Singh",
+        "WINNER_NAME": "Thakur Jaiveer Singh",
         "WINNER_VOTES": 147984,
         "RUNNER_UP": "BSP",
         "MARGIN": 90645,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Narendra Kumar Sharma",
+        "RUNNER_UP_VOTES": 57339,
+        "TOTAL_VOTES": 244299
       }
     },
     {
@@ -421562,7 +421859,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 4871,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Daud Ahmad",
+        "RUNNER_UP_VOTES": 94506,
+        "TOTAL_VOTES": 232436
       }
     },
     {
@@ -427189,7 +427489,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 17608,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ram Sharan",
+        "RUNNER_UP_VOTES": 90641,
+        "TOTAL_VOTES": 229293
       }
     },
     {
@@ -430947,12 +431250,15 @@
         "DIST_NAME": "Lakhimpur Kheri",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Vinod Shankar Awasthi",
+        "WINNER_NAME": "Vinod Shankar",
         "WINNER_VOTES": 113498,
         "RUNNER_UP": "SP",
         "MARGIN": 24610,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Varun Singh",
+        "RUNNER_UP_VOTES": 88888,
+        "TOTAL_VOTES": 229315
       }
     },
     {
@@ -436063,7 +436369,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 6100,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Dharmendra Kumar Singh Shakya",
+        "RUNNER_UP_VOTES": 99431,
+        "TOTAL_VOTES": 246366
       }
     },
     {
@@ -439994,7 +440303,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 46265,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Man Pal Singh",
+        "RUNNER_UP_VOTES": 77145,
+        "TOTAL_VOTES": 234326
       }
     },
     {
@@ -444719,13 +445031,16 @@
         "AC_NAME": "Nanpara",
         "DIST_NAME": "Bahraich",
         "STATE": "UP",
-        "WINNER_PARTY": "ADSL",
-        "WINNER_NAME": "AD(S)",
+        "WINNER_PARTY": "ADS",
+        "WINNER_NAME": "Ram Niwas Verma",
         "WINNER_VOTES": 87689,
         "RUNNER_UP": "SP",
         "MARGIN": 12184,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "ADSL"
+        "CURRENT_PARTY": "ADSL",
+        "RUNNER_UP_NAME": "Madhuri Verma",
+        "RUNNER_UP_VOTES": 75505,
+        "TOTAL_VOTES": 199694
       }
     },
     {
@@ -446556,7 +446871,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 9313,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Tanveer Khan",
+        "RUNNER_UP_VOTES": 100629,
+        "TOTAL_VOTES": 224447
       }
     },
     {
@@ -451095,7 +451413,10 @@
         "RUNNER_UP": "RLD",
         "MARGIN": 59163,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Birpal Singh",
+        "RUNNER_UP_VOTES": 68046,
+        "TOTAL_VOTES": 243015
       }
     },
     {
@@ -456990,7 +457311,10 @@
         "RUNNER_UP": "BSP",
         "MARGIN": 9580,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Shyam Sundar Sharma",
+        "RUNNER_UP_VOTES": 74378,
+        "TOTAL_VOTES": 224786
       }
     },
     {
@@ -460829,11 +461153,14 @@
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
         "WINNER_NAME": "Ravendra Pal Singh",
-        "WINNER_VOTES": 110928,
+        "WINNER_VOTES": 111293,
         "RUNNER_UP": "SP",
         "MARGIN": 24327,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Laxmi Dhangar",
+        "RUNNER_UP_VOTES": 86966,
+        "TOTAL_VOTES": 243058
       }
     },
     {
@@ -465348,7 +465675,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 9701,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Rajesh Kumar Verma",
+        "RUNNER_UP_VOTES": 91256,
+        "TOTAL_VOTES": 224055
       }
     },
     {
@@ -469711,7 +470041,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 20578,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Utkarsh Verma Madhur",
+        "RUNNER_UP_VOTES": 107085,
+        "TOTAL_VOTES": 269472
       }
     },
     {
@@ -475433,12 +475766,15 @@
         "DIST_NAME": "Mathura",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Chaudhary Laxmi Narayan Singh",
+        "WINNER_NAME": "Laxmi Narayan",
         "WINNER_VOTES": 124414,
         "RUNNER_UP": "RLD",
         "MARGIN": 48948,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Tejpal Singh",
+        "RUNNER_UP_VOTES": 75466,
+        "TOTAL_VOTES": 238419
       }
     },
     {
@@ -476421,7 +476757,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 12786,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Zafar Alam",
+        "RUNNER_UP_VOTES": 107603,
+        "TOTAL_VOTES": 252587
       }
     },
     {
@@ -482244,7 +482583,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 13817,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Suneel Kumar Lala",
+        "RUNNER_UP_VOTES": 89498,
+        "TOTAL_VOTES": 215550
       }
     },
     {
@@ -485074,12 +485416,15 @@
         "DIST_NAME": "Kasganj",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Hariom Verma",
+        "WINNER_NAME": "Hariom",
         "WINNER_VOTES": 96377,
         "RUNNER_UP": "SP",
         "MARGIN": 43329,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Satyabhan",
+        "RUNNER_UP_VOTES": 53048,
+        "TOTAL_VOTES": 191228
       }
     },
     {
@@ -488878,7 +489223,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 13574,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Padam Sen Chaudhary",
+        "RUNNER_UP_VOTES": 90087,
+        "TOTAL_VOTES": 231104
       }
     },
     {
@@ -492588,12 +492936,15 @@
         "DIST_NAME": "Bahraich",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Mariya Shah",
+        "WINNER_NAME": "Mariya",
         "WINNER_VOTES": 102255,
         "RUNNER_UP": "BJP",
         "MARGIN": 10428,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Arun Veer Singh",
+        "RUNNER_UP_VOTES": 91827,
+        "TOTAL_VOTES": 212372
       }
     },
     {
@@ -494196,7 +494547,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 5028,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Shaz Ishaq",
+        "RUNNER_UP_VOTES": 103039,
+        "TOTAL_VOTES": 252406
       }
     },
     {
@@ -497859,11 +498213,14 @@
         "STATE": "UP",
         "WINNER_PARTY": "SP",
         "WINNER_NAME": "Nadira Sultan",
-        "WINNER_VOTES": 91545,
+        "WINNER_VOTES": 91958,
         "RUNNER_UP": "BJP",
         "MARGIN": 4001,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Mamtesh Shakya",
+        "RUNNER_UP_VOTES": 87957,
+        "TOTAL_VOTES": 219549
       }
     },
     {
@@ -502826,7 +503183,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 38160,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ramhet Bharti",
+        "RUNNER_UP_VOTES": 78531,
+        "TOTAL_VOTES": 222425
       }
     },
     {
@@ -507852,12 +508212,15 @@
         "DIST_NAME": "Shrawasti",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Ram Feran Pandey",
+        "WINNER_NAME": "Ram Feran",
         "WINNER_VOTES": 98640,
         "RUNNER_UP": "SP",
         "MARGIN": 1457,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Mohhamad Aslam Rainee",
+        "RUNNER_UP_VOTES": 97183,
+        "TOTAL_VOTES": 253077
       }
     },
     {
@@ -512688,7 +513051,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 8104,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Dr. Lalit Pratap Baghel",
+        "RUNNER_UP_VOTES": 89990,
+        "TOTAL_VOTES": 235619
       }
     },
     {
@@ -518387,7 +518753,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 12172,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Anoop Kumar Gupta",
+        "RUNNER_UP_VOTES": 99868,
+        "TOTAL_VOTES": 250504
       }
     },
     {
@@ -522813,12 +523182,15 @@
         "DIST_NAME": "Balrampur",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Kailash Nath Shukla",
-        "WINNER_VOTES": 87092,
+        "WINNER_NAME": "Kailash Nath",
+        "WINNER_VOTES": 87032,
         "RUNNER_UP": "IND",
-        "MARGIN": 35841,
+        "MARGIN": 35781,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Zeba Rizwan",
+        "RUNNER_UP_VOTES": 51251,
+        "TOTAL_VOTES": 202787
       }
     },
     {
@@ -525805,7 +526177,10 @@
         "RUNNER_UP": "BSP",
         "MARGIN": 100856,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Sanjeev Kumar",
+        "RUNNER_UP_VOTES": 53799,
+        "TOTAL_VOTES": 263054
       }
     },
     {
@@ -532012,7 +532387,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 4572,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Neeraj Nalinish",
+        "RUNNER_UP_VOTES": 95037,
+        "TOTAL_VOTES": 216688
       }
     },
     {
@@ -534867,7 +535245,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 17609,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Amit Gaurav",
+        "RUNNER_UP_VOTES": 83778,
+        "TOTAL_VOTES": 206870
       }
     },
     {
@@ -539162,7 +539543,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 13155,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Suneel Verma",
+        "RUNNER_UP_VOTES": 99832,
+        "TOTAL_VOTES": 240151
       }
     },
     {
@@ -543356,12 +543740,15 @@
         "DIST_NAME": "Hardoi",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Rajani Tiwari",
+        "WINNER_NAME": "Rajni Tiwari",
         "WINNER_VOTES": 94561,
         "RUNNER_UP": "SP",
         "MARGIN": 6479,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Mohd Asif Khan",
+        "RUNNER_UP_VOTES": 88082,
+        "TOTAL_VOTES": 233517
       }
     },
     {
@@ -550112,7 +550499,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 7998,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Rajeshwari",
+        "RUNNER_UP_VOTES": 83764,
+        "TOTAL_VOTES": 213048
       }
     },
     {
@@ -554783,7 +555173,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 42684,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Krishna Kumar Ojha",
+        "RUNNER_UP_VOTES": 75199,
+        "TOTAL_VOTES": 215978
       }
     },
     {
@@ -559392,13 +559785,16 @@
         "AC_NAME": "Kaimganj",
         "DIST_NAME": "Farrukhabad",
         "STATE": "UP",
-        "WINNER_PARTY": "ADSL",
-        "WINNER_NAME": "AD(S)",
+        "WINNER_PARTY": "ADS",
+        "WINNER_NAME": "Dr. Surabhi",
         "WINNER_VOTES": 114952,
         "RUNNER_UP": "SP",
         "MARGIN": 18543,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "ADSL"
+        "CURRENT_PARTY": "ADSL",
+        "RUNNER_UP_NAME": "Sarvesh Ambedkar",
+        "RUNNER_UP_VOTES": 96409,
+        "TOTAL_VOTES": 241231
       }
     },
     {
@@ -564628,12 +565024,15 @@
         "DIST_NAME": "Hardoi",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Madhavendra Pratap",
-        "WINNER_VOTES": 114623,
+        "WINNER_NAME": "Madhavendra Pratap Singh",
+        "WINNER_VOTES": 114263,
         "RUNNER_UP": "SP",
-        "MARGIN": 26047,
+        "MARGIN": 25687,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Padamrag Singh Yadav",
+        "RUNNER_UP_VOTES": 88576,
+        "TOTAL_VOTES": 248222
       }
     },
     {
@@ -568442,9 +568841,12 @@
         "WINNER_NAME": "Gyan Tiwari",
         "WINNER_VOTES": 108057,
         "RUNNER_UP": "SP",
-        "MARGIN": 20438,
+        "MARGIN": 20281,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Mahendra Kumar Singh",
+        "RUNNER_UP_VOTES": 87776,
+        "TOTAL_VOTES": 223131
       }
     },
     {
@@ -574290,12 +574692,15 @@
         "DIST_NAME": "Balrampur",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Shiv Pratap Yadav",
+        "WINNER_NAME": "Dr. Shiv Pratap Yadav",
         "WINNER_VOTES": 75345,
         "RUNNER_UP": "BJP",
         "MARGIN": 5837,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Shailesh Kumar Singh Shailu",
+        "RUNNER_UP_VOTES": 69508,
+        "TOTAL_VOTES": 189885
       }
     },
     {
@@ -578697,12 +579102,15 @@
         "DIST_NAME": "Mathura",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Karinda Singh",
+        "WINNER_NAME": "Meghshyam",
         "WINNER_VOTES": 100199,
         "RUNNER_UP": "BSP",
         "MARGIN": 42507,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Rajkumar Rawat",
+        "RUNNER_UP_VOTES": 57692,
+        "TOTAL_VOTES": 221637
       }
     },
     {
@@ -581929,7 +582337,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 10478,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Afzaal Kausar",
+        "RUNNER_UP_VOTES": 95536,
+        "TOTAL_VOTES": 236786
       }
     },
     {
@@ -586688,7 +587099,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 3810,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Rameshwar Singh Yadav",
+        "RUNNER_UP_VOTES": 99063,
+        "TOTAL_VOTES": 226375
       }
     },
     {
@@ -591231,7 +591645,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 6437,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "RLD"
+        "CURRENT_PARTY": "RLD",
+        "RUNNER_UP_NAME": "Ramveer Upadhyay",
+        "RUNNER_UP_VOTES": 98437,
+        "TOTAL_VOTES": 242482
       }
     },
     {
@@ -599214,7 +599631,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 44686,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Dr. Jitendra Singh Yadav",
+        "RUNNER_UP_VOTES": 54162,
+        "TOTAL_VOTES": 186149
       }
     },
     {
@@ -602417,7 +602837,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 17247,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Jugendra Singh Yadav",
+        "RUNNER_UP_VOTES": 80292,
+        "TOTAL_VOTES": 210489
       }
     },
     {
@@ -606983,12 +607406,15 @@
         "DIST_NAME": "Etah",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Sanjeev Kumar Diwakar",
+        "WINNER_NAME": "Sanjeev Kumar",
         "WINNER_VOTES": 91339,
         "RUNNER_UP": "SP",
         "MARGIN": 4441,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ranjeet Suman",
+        "RUNNER_UP_VOTES": 86898,
+        "TOTAL_VOTES": 202531
       }
     },
     {
@@ -610975,7 +611401,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 4078,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Yasar Shah",
+        "RUNNER_UP_VOTES": 103550,
+        "TOTAL_VOTES": 231708
       }
     },
     {
@@ -614110,7 +614539,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 1253,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Radhey Shyam Jaiswal",
+        "RUNNER_UP_VOTES": 98096,
+        "TOTAL_VOTES": 232552
       }
     },
     {
@@ -618296,12 +618728,15 @@
         "DIST_NAME": "Mathura",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Pooran Prakash",
+        "WINNER_NAME": "Puran Prakash",
         "WINNER_VOTES": 108414,
         "RUNNER_UP": "RLD",
         "MARGIN": 25255,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Babita Devi",
+        "RUNNER_UP_VOTES": 83159,
+        "TOTAL_VOTES": 245601
       }
     },
     {
@@ -619316,7 +619751,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 109803,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Pradeep Mathur",
+        "RUNNER_UP_VOTES": 49056,
+        "TOTAL_VOTES": 263621
       }
     },
     {
@@ -622699,7 +623137,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 42411,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Anil Verma",
+        "RUNNER_UP_VOTES": 84339,
+        "TOTAL_VOTES": 238295
       }
     },
     {
@@ -627625,12 +628066,15 @@
         "DIST_NAME": "Balrampur",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Paltu Ram",
+        "WINNER_NAME": "Paltoo Ram",
         "WINNER_VOTES": 101146,
         "RUNNER_UP": "SP",
         "MARGIN": 10971,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Jagram Paswan",
+        "RUNNER_UP_VOTES": 90175,
+        "TOTAL_VOTES": 206720
       }
     },
     {
@@ -632053,7 +632497,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 836,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Manvendra Pratap Singh",
+        "RUNNER_UP_VOTES": 107453,
+        "TOTAL_VOTES": 247762
       }
     },
     {
@@ -639060,7 +639507,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 12056,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Mukesh Srivastava",
+        "RUNNER_UP_VOTES": 98106,
+        "TOTAL_VOTES": 230613
       }
     },
     {
@@ -644027,7 +644477,10 @@
         "RUNNER_UP": "SBSP",
         "MARGIN": 11465,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Manoj Kumar Rajvanshi",
+        "RUNNER_UP_VOTES": 79627,
+        "TOTAL_VOTES": 221341
       }
     },
     {
@@ -648242,7 +648695,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 5222,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Narendra Singh Verma",
+        "RUNNER_UP_VOTES": 86869,
+        "TOTAL_VOTES": 219853
       }
     },
     {
@@ -652231,13 +652687,16 @@
         "AC_NAME": "Shohratgarh",
         "DIST_NAME": "Siddharthnagar",
         "STATE": "UP",
-        "WINNER_PARTY": "ADSL",
-        "WINNER_NAME": "AD(S)",
+        "WINNER_PARTY": "ADS",
+        "WINNER_NAME": "Vinay Verma",
         "WINNER_VOTES": 71062,
         "RUNNER_UP": "SBSP",
         "MARGIN": 24463,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "ADSL"
+        "CURRENT_PARTY": "ADSL",
+        "RUNNER_UP_NAME": "Prem Chandra",
+        "RUNNER_UP_VOTES": 46599,
+        "TOTAL_VOTES": 189713
       }
     },
     {
@@ -657219,12 +657678,15 @@
         "DIST_NAME": "Mainpuri",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Jaiveer Singh",
+        "WINNER_NAME": "Jayveer Singh",
         "WINNER_VOTES": 99814,
         "RUNNER_UP": "SP",
         "MARGIN": 6766,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Rajkumar Urf Raju Yadav",
+        "RUNNER_UP_VOTES": 93048,
+        "TOTAL_VOTES": 213589
       }
     },
     {
@@ -663323,11 +663785,14 @@
         "STATE": "UP",
         "WINNER_PARTY": "SP",
         "WINNER_NAME": "Anand Kumar",
-        "WINNER_VOTES": 103195,
+        "WINNER_VOTES": 103135,
         "RUNNER_UP": "BJP",
-        "MARGIN": 7771,
+        "MARGIN": 7711,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Gaurav Verma",
+        "RUNNER_UP_VOTES": 95424,
+        "TOTAL_VOTES": 226617
       }
     },
     {
@@ -666348,13 +666813,16 @@
         "AC_NAME": "Nautanwa",
         "DIST_NAME": "Maharajganj",
         "STATE": "UP",
-        "WINNER_PARTY": "NISHAD",
-        "WINNER_NAME": "Rishi Tripathi",
+        "WINNER_PARTY": "NINSHAD",
+        "WINNER_NAME": "Rishi",
         "WINNER_VOTES": 90263,
         "RUNNER_UP": "SP",
-        "MARGIN": 15691,
+        "MARGIN": 15331,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "NISHAD"
+        "CURRENT_PARTY": "NISHAD",
+        "RUNNER_UP_NAME": "Kunwar Kaushal Singh",
+        "RUNNER_UP_VOTES": 74932,
+        "TOTAL_VOTES": 225463
       }
     },
     {
@@ -668940,12 +669408,15 @@
         "DIST_NAME": "Farrukhabad",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Sunil Dutt Dwivedi",
+        "WINNER_NAME": "Major Sunil Dutt Dwivedi",
         "WINNER_VOTES": 112314,
         "RUNNER_UP": "SP",
-        "MARGIN": 39326,
+        "MARGIN": 39316,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Suman Shakya",
+        "RUNNER_UP_VOTES": 72998,
+        "TOTAL_VOTES": 208634
       }
     },
     {
@@ -673331,12 +673802,15 @@
         "DIST_NAME": "Siddharthnagar",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Shyam Dhani",
+        "WINNER_NAME": "Shyamdhani Rahi",
         "WINNER_VOTES": 122940,
         "RUNNER_UP": "SP",
         "MARGIN": 30939,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Vijay Kumar",
+        "RUNNER_UP_VOTES": 92001,
+        "TOTAL_VOTES": 252356
       }
     },
     {
@@ -679475,7 +679949,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 4767,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Alok Kumar Shakya",
+        "RUNNER_UP_VOTES": 92441,
+        "TOTAL_VOTES": 215153
       }
     },
     {
@@ -683105,12 +683582,15 @@
         "DIST_NAME": "Agra",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Dharampal Singh",
+        "WINNER_NAME": "Dr. Dharmpal Singh",
         "WINNER_VOTES": 146603,
         "RUNNER_UP": "BSP",
         "MARGIN": 47924,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Praval Pratap Singh",
+        "RUNNER_UP_VOTES": 98679,
+        "TOTAL_VOTES": 300588
       }
     },
     {
@@ -688580,12 +689060,15 @@
         "DIST_NAME": "Gonda",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Vinay Kumar Dwivedi",
-        "WINNER_VOTES": 107237,
+        "WINNER_NAME": "Vinay Kumar",
+        "WINNER_VOTES": 107327,
         "RUNNER_UP": "SP",
-        "MARGIN": 23128,
+        "MARGIN": 23218,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Nandita Shukla",
+        "RUNNER_UP_VOTES": 84109,
+        "TOTAL_VOTES": 214439
       }
     },
     {
@@ -693256,7 +693739,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 9716,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Dr. Hargovind Bhargava",
+        "RUNNER_UP_VOTES": 96506,
+        "TOTAL_VOTES": 243719
       }
     },
     {
@@ -698459,7 +698945,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 1662,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Satish Chandra",
+        "RUNNER_UP_VOTES": 62591,
+        "TOTAL_VOTES": 166700
       }
     },
     {
@@ -701973,12 +702462,15 @@
         "DIST_NAME": "Maharajganj",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Prem Sagar Patel",
+        "WINNER_NAME": "Premsagar Patel",
         "WINNER_VOTES": 127673,
         "RUNNER_UP": "SP",
         "MARGIN": 62731,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Sushil Kumar Tibrewal",
+        "RUNNER_UP_VOTES": 64942,
+        "TOTAL_VOTES": 255079
       }
     },
     {
@@ -706037,7 +706529,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 9233,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Usha Verma",
+        "RUNNER_UP_VOTES": 72286,
+        "TOTAL_VOTES": 195511
       }
     },
     {
@@ -710415,12 +710910,15 @@
         "DIST_NAME": "Firozabad",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Prempal Singh Dhangar",
+        "WINNER_NAME": "Prem Pal Singh Dhangar",
         "WINNER_VOTES": 122881,
         "RUNNER_UP": "SP",
         "MARGIN": 47691,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Rakesh Babu",
+        "RUNNER_UP_VOTES": 75190,
+        "TOTAL_VOTES": 248451
       }
     },
     {
@@ -715954,12 +716452,15 @@
         "DIST_NAME": "Farrukhabad",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Nagendra Singh Rathore",
+        "WINNER_NAME": "Nagendra Singh Rathour",
         "WINNER_VOTES": 99979,
         "RUNNER_UP": "SP",
-        "MARGIN": 27468,
+        "MARGIN": 27458,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Arshad Jamal Siddiqui",
+        "RUNNER_UP_VOTES": 72521,
+        "TOTAL_VOTES": 197269
       }
     },
     {
@@ -719617,12 +720118,15 @@
         "DIST_NAME": "Balrampur",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Ram Pratap Verma",
+        "WINNER_NAME": "Rampratap Verma Urf Shashikant Verma",
         "WINNER_VOTES": 87162,
         "RUNNER_UP": "SP",
         "MARGIN": 21769,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Hasib Khan",
+        "RUNNER_UP_VOTES": 65393,
+        "TOTAL_VOTES": 196180
       }
     },
     {
@@ -725049,7 +725553,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 67504,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Prof. S.P. Singh Baghel",
+        "RUNNER_UP_VOTES": 80692,
+        "TOTAL_VOTES": 246498
       }
     },
     {
@@ -729608,7 +730115,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 18457,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Baijnath",
+        "RUNNER_UP_VOTES": 93834,
+        "TOTAL_VOTES": 234642
       }
     },
     {
@@ -735674,12 +736184,15 @@
         "DIST_NAME": "Hardoi",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Ram Pal Verma",
+        "WINNER_NAME": "Rampal Verma",
         "WINNER_VOTES": 81994,
         "RUNNER_UP": "SP",
-        "MARGIN": 26424,
+        "MARGIN": 26244,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Rambali Verma",
+        "RUNNER_UP_VOTES": 55750,
+        "TOTAL_VOTES": 191387
       }
     },
     {
@@ -739085,12 +739598,15 @@
         "DIST_NAME": "Maharajganj",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Jai Mangal Kanojiya",
+        "WINNER_NAME": "Jay Mangal",
         "WINNER_VOTES": 136071,
         "RUNNER_UP": "IND",
         "MARGIN": 76903,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Nirmesh Mangal",
+        "RUNNER_UP_VOTES": 59168,
+        "TOTAL_VOTES": 262672
       }
     },
     {
@@ -745364,12 +745880,15 @@
         "DIST_NAME": "Barabanki",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Sakendra Pratap Verma",
+        "WINNER_NAME": "Sakendra Pratap",
         "WINNER_VOTES": 118720,
         "RUNNER_UP": "SP",
         "MARGIN": 217,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Rakesh Kumar Verma",
+        "RUNNER_UP_VOTES": 118503,
+        "TOTAL_VOTES": 288519
       }
     },
     {
@@ -750419,12 +750938,15 @@
         "DIST_NAME": "Agra",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Babulal Chaudhary",
+        "WINNER_NAME": "Babulal",
         "WINNER_VOTES": 112095,
         "RUNNER_UP": "RLD",
         "MARGIN": 47269,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Brijesh Kumar",
+        "RUNNER_UP_VOTES": 64826,
+        "TOTAL_VOTES": 242922
       }
     },
     {
@@ -754795,7 +755317,10 @@
         "RUNNER_UP": "BSP",
         "MARGIN": 76608,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Kiran Prabha Keshari",
+        "RUNNER_UP_VOTES": 60702,
+        "TOTAL_VOTES": 260921
       }
     },
     {
@@ -758550,7 +759075,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 1246,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Bajrang Bahadur Singh",
+        "RUNNER_UP_VOTES": 83935,
+        "TOTAL_VOTES": 211490
       }
     },
     {
@@ -762609,7 +763137,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 261,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Sharad Kumar Awasthi",
+        "RUNNER_UP_VOTES": 98538,
+        "TOTAL_VOTES": 235461
       }
     },
     {
@@ -767998,13 +768529,16 @@
         "AC_NAME": "Khadda",
         "DIST_NAME": "Kushinagar",
         "STATE": "UP",
-        "WINNER_PARTY": "NISHAD",
-        "WINNER_NAME": "Vivekanand Pandey",
+        "WINNER_PARTY": "NINSHAD",
+        "WINNER_NAME": "Viveka Nand Pandey",
         "WINNER_VOTES": 88291,
         "RUNNER_UP": "IND",
         "MARGIN": 41451,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "NISHAD"
+        "CURRENT_PARTY": "NISHAD",
+        "RUNNER_UP_NAME": "Vijay Pratap Kushwaha",
+        "RUNNER_UP_VOTES": 46840,
+        "TOTAL_VOTES": 204959
       }
     },
     {
@@ -773365,7 +773899,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 771,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Raghvendra Pratap Singh",
+        "RUNNER_UP_VOTES": 84327,
+        "TOTAL_VOTES": 206586
       }
     },
     {
@@ -777408,7 +777945,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 20340,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Naveen",
+        "RUNNER_UP_VOTES": 64256,
+        "TOTAL_VOTES": 188754
       }
     },
     {
@@ -778207,7 +778747,10 @@
         "RUNNER_UP": "BSP",
         "MARGIN": 112370,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Shabbir Abbas",
+        "RUNNER_UP_VOTES": 41447,
+        "TOTAL_VOTES": 240752
       }
     },
     {
@@ -782170,7 +782713,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 9328,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Om Prakash Verma",
+        "RUNNER_UP_VOTES": 96951,
+        "TOTAL_VOTES": 235438
       }
     },
     {
@@ -785480,12 +786026,15 @@
         "DIST_NAME": "Firozabad",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Sarvesh Singh Yadav",
+        "WINNER_NAME": "Sarvesh Singh",
         "WINNER_VOTES": 96224,
         "RUNNER_UP": "BJP",
         "MARGIN": 8805,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Hariom Yadav",
+        "RUNNER_UP_VOTES": 87419,
+        "TOTAL_VOTES": 208192
       }
     },
     {
@@ -792003,12 +792552,15 @@
         "DIST_NAME": "Mainpuri",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Brajesh Katheriya",
+        "WINNER_NAME": "Eng. Brajesh Katheriya",
         "WINNER_VOTES": 97070,
         "RUNNER_UP": "BJP",
         "MARGIN": 19151,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Dr. Priya Ranjan Ashu Diwakar",
+        "RUNNER_UP_VOTES": 77919,
+        "TOTAL_VOTES": 195795
       }
     },
     {
@@ -794529,9 +795081,12 @@
         "WINNER_NAME": "Prateek Bhushan Singh",
         "WINNER_VOTES": 96528,
         "RUNNER_UP": "SP",
-        "MARGIN": 6700,
+        "MARGIN": 6699,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Suraj Singh",
+        "RUNNER_UP_VOTES": 89829,
+        "TOTAL_VOTES": 200215
       }
     },
     {
@@ -798501,12 +799056,15 @@
         "DIST_NAME": "Hardoi",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Ashish Kumar Singh",
+        "WINNER_NAME": "Ashish Kumar Singh 'Ashu'",
         "WINNER_VOTES": 82075,
         "RUNNER_UP": "SP",
         "MARGIN": 24890,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Brijesh Kumar Verma",
+        "RUNNER_UP_VOTES": 57185,
+        "TOTAL_VOTES": 234764
       }
     },
     {
@@ -799057,7 +799615,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 56640,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Vinay Agarwal",
+        "RUNNER_UP_VOTES": 52622,
+        "TOTAL_VOTES": 208569
       }
     },
     {
@@ -804192,7 +804753,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 1111,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Arvind Singh Yadav",
+        "RUNNER_UP_VOTES": 123662,
+        "TOTAL_VOTES": 281597
       }
     },
     {
@@ -808202,12 +808766,15 @@
         "DIST_NAME": "Hardoi",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Alka Singh Arkvanshi",
+        "WINNER_NAME": "Alka Singh",
         "WINNER_VOTES": 101730,
         "RUNNER_UP": "BSP",
         "MARGIN": 37103,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Abdul Mannan",
+        "RUNNER_UP_VOTES": 64627,
+        "TOTAL_VOTES": 204445
       }
     },
     {
@@ -809341,12 +809908,15 @@
         "DIST_NAME": "Agra",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "G S Dharmesh",
+        "WINNER_NAME": "Dr. G S Dharmesh",
         "WINNER_VOTES": 117796,
         "RUNNER_UP": "SP",
         "MARGIN": 48697,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Kunwar Chand",
+        "RUNNER_UP_VOTES": 69099,
+        "TOTAL_VOTES": 251816
       }
     },
     {
@@ -809820,12 +810390,15 @@
         "DIST_NAME": "Firozabad",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Manish Asiza",
+        "WINNER_NAME": "Manish Asija",
         "WINNER_VOTES": 112509,
         "RUNNER_UP": "SP",
         "MARGIN": 32955,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Saifurrahaman Urf Chhuttan Bhai",
+        "RUNNER_UP_VOTES": 79554,
+        "TOTAL_VOTES": 259033
       }
     },
     {
@@ -814140,7 +814713,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 6090,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Anil Kumar Doharey",
+        "RUNNER_UP_VOTES": 114786,
+        "TOTAL_VOTES": 271435
       }
     },
     {
@@ -818118,12 +818694,15 @@
         "DIST_NAME": "Agra",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Chotelal Verma",
+        "WINNER_NAME": "Chhotey Lal Verma",
         "WINNER_VOTES": 108811,
         "RUNNER_UP": "SP",
         "MARGIN": 53235,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Roopali Dixit",
+        "RUNNER_UP_VOTES": 55576,
+        "TOTAL_VOTES": 215626
       }
     },
     {
@@ -821890,7 +822469,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 42349,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ramesh Chandra",
+        "RUNNER_UP_VOTES": 63328,
+        "TOTAL_VOTES": 183192
       }
     },
     {
@@ -825369,7 +825951,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 35472,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Yogesh Pratap Singh Urf Yogesh Bhaiya",
+        "RUNNER_UP_VOTES": 72637,
+        "TOTAL_VOTES": 193761
       }
     },
     {
@@ -829384,7 +829969,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 22974,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Sanjay Kumar",
+        "RUNNER_UP_VOTES": 50571,
+        "TOTAL_VOTES": 172557
       }
     },
     {
@@ -834467,7 +835055,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 27788,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Gomti Yadav",
+        "RUNNER_UP_VOTES": 120134,
+        "TOTAL_VOTES": 319052
       }
     },
     {
@@ -838793,12 +839384,15 @@
         "DIST_NAME": "Gorakhpur",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Fateh Bahadur Singh",
+        "WINNER_NAME": "Fateh Bahadur",
         "WINNER_VOTES": 122032,
         "RUNNER_UP": "SP",
         "MARGIN": 42656,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Kajal Nishad",
+        "RUNNER_UP_VOTES": 79376,
+        "TOTAL_VOTES": 224393
       }
     },
     {
@@ -841749,7 +842343,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 15226,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Sangeeta Devi Urf Sangeeta Pratap Jaiswal",
+        "RUNNER_UP_VOTES": 71134,
+        "TOTAL_VOTES": 234531
       }
     },
     {
@@ -845340,7 +845937,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 35050,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Dr. Ramkumari Maurya",
+        "RUNNER_UP_VOTES": 90450,
+        "TOTAL_VOTES": 266396
       }
     },
     {
@@ -847926,12 +848526,15 @@
         "DIST_NAME": "Gonda",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Prem Narayan Pandey",
+        "WINNER_NAME": "Prem Nrayan Pandey",
         "WINNER_VOTES": 125325,
         "RUNNER_UP": "SP",
         "MARGIN": 53690,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ram Bhajan Chaubey",
+        "RUNNER_UP_VOTES": 71635,
+        "TOTAL_VOTES": 211012
       }
     },
     {
@@ -854566,7 +855169,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 36497,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ramnath Singh Sikarwar",
+        "RUNNER_UP_VOTES": 60077,
+        "TOTAL_VOTES": 205257
       }
     },
     {
@@ -859705,7 +860311,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 7745,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Surendra Kumar",
+        "RUNNER_UP_VOTES": 98627,
+        "TOTAL_VOTES": 240941
       }
     },
     {
@@ -864210,13 +864819,16 @@
         "AC_NAME": "Menhdawal",
         "DIST_NAME": "Sant Kabir Nagar",
         "STATE": "UP",
-        "WINNER_PARTY": "NISHAD",
+        "WINNER_PARTY": "NINSHAD",
         "WINNER_NAME": "Anil Kumar Tripathi",
         "WINNER_VOTES": 90193,
         "RUNNER_UP": "SP",
         "MARGIN": 5223,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "NISHAD"
+        "CURRENT_PARTY": "NISHAD",
+        "RUNNER_UP_NAME": "Jay Chand",
+        "RUNNER_UP_VOTES": 84970,
+        "TOTAL_VOTES": 242230
       }
     },
     {
@@ -866943,7 +867555,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 61428,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Krishnabhan",
+        "RUNNER_UP_VOTES": 74035,
+        "TOTAL_VOTES": 259931
       }
     },
     {
@@ -872545,12 +873160,15 @@
         "DIST_NAME": "Kannauj",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Kailash Singh Rajput",
+        "WINNER_NAME": "Kailash Rajput",
         "WINNER_VOTES": 106089,
         "RUNNER_UP": "SP",
         "MARGIN": 4608,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Anil Kumar Pal",
+        "RUNNER_UP_VOTES": 101481,
+        "TOTAL_VOTES": 238364
       }
     },
     {
@@ -875884,12 +876502,15 @@
         "DIST_NAME": "Kushinagar",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Manish Jaiswal",
+        "WINNER_NAME": "Manish Kumar Urf Mantu",
         "WINNER_VOTES": 114496,
         "RUNNER_UP": "SP",
         "MARGIN": 42008,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Vikrama Yadav",
+        "RUNNER_UP_VOTES": 72488,
+        "TOTAL_VOTES": 229907
       }
     },
     {
@@ -880524,7 +881145,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 2982,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Ambrish Rawat",
+        "RUNNER_UP_VOTES": 110576,
+        "TOTAL_VOTES": 277908
       }
     },
     {
@@ -885983,7 +886607,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 15793,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Dr. Munna",
+        "RUNNER_UP_VOTES": 75187,
+        "TOTAL_VOTES": 203527
       }
     },
     {
@@ -892166,7 +892793,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 90979,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Vivek Shakya",
+        "RUNNER_UP_VOTES": 68739,
+        "TOTAL_VOTES": 253630
       }
     },
     {
@@ -897105,7 +897735,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 24235,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Madhusudan Sharma",
+        "RUNNER_UP_VOTES": 54125,
+        "TOTAL_VOTES": 190382
       }
     },
     {
@@ -901059,12 +901692,15 @@
         "DIST_NAME": "Barabanki",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Satish Sharma",
-        "WINNER_VOTES": 127983,
+        "WINNER_NAME": "Satish Chandra Sharma",
+        "WINNER_VOTES": 128219,
         "RUNNER_UP": "SP",
-        "MARGIN": 32617,
+        "MARGIN": 32402,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Arvind Kumar Singh Gope",
+        "RUNNER_UP_VOTES": 95817,
+        "TOTAL_VOTES": 273557
       }
     },
     {
@@ -907814,12 +908450,15 @@
         "DIST_NAME": "Unnao",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Brijesh Kumar Rawat",
+        "WINNER_NAME": "Brajesh Kumar",
         "WINNER_VOTES": 113291,
         "RUNNER_UP": "SP",
         "MARGIN": 43179,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Dr. Anchal",
+        "RUNNER_UP_VOTES": 70112,
+        "TOTAL_VOTES": 211963
       }
     },
     {
@@ -911658,7 +912297,10 @@
         "RUNNER_UP": "SBSP",
         "MARGIN": 72543,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Purnmasi Dehati",
+        "RUNNER_UP_VOTES": 52249,
+        "TOTAL_VOTES": 214152
       }
     },
     {
@@ -916661,7 +917303,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 24179,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Chandra Prakash Shukla",
+        "RUNNER_UP_VOTES": 70094,
+        "TOTAL_VOTES": 215925
       }
     },
     {
@@ -921059,12 +921704,15 @@
         "DIST_NAME": "Unnao",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Bamba Lal Diwakar",
+        "WINNER_NAME": "Bamba Lal",
         "WINNER_VOTES": 102968,
         "RUNNER_UP": "SP",
         "MARGIN": 34132,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Sudhir Kumar",
+        "RUNNER_UP_VOTES": 68836,
+        "TOTAL_VOTES": 197535
       }
     },
     {
@@ -925782,12 +926430,15 @@
         "DIST_NAME": "Basti",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Ajay Kumar Singh",
+        "WINNER_NAME": "Ajay Singh",
         "WINNER_VOTES": 88200,
         "RUNNER_UP": "SP",
         "MARGIN": 18329,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Tarayambak Nath",
+        "RUNNER_UP_VOTES": 69871,
+        "TOTAL_VOTES": 221334
       }
     },
     {
@@ -930249,12 +930900,15 @@
         "DIST_NAME": "Kanpur Nagar",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Rahul Bachha Sonkar",
+        "WINNER_NAME": "Mohit Sonkar",
         "WINNER_VOTES": 123094,
         "RUNNER_UP": "SP",
         "MARGIN": 42351,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Rachna Singh",
+        "RUNNER_UP_VOTES": 80743,
+        "TOTAL_VOTES": 244540
       }
     },
     {
@@ -935213,11 +935867,14 @@
         "STATE": "UP",
         "WINNER_PARTY": "SP",
         "WINNER_NAME": "Rekha Verma",
-        "WINNER_VOTES": 92757,
+        "WINNER_VOTES": 97257,
         "RUNNER_UP": "BJP",
-        "MARGIN": 3265,
+        "MARGIN": 7765,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Riya Shakya",
+        "RUNNER_UP_VOTES": 89492,
+        "TOTAL_VOTES": 228340
       }
     },
     {
@@ -937956,7 +938613,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 65357,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Amrendra Nishad",
+        "RUNNER_UP_VOTES": 76423,
+        "TOTAL_VOTES": 258442
       }
     },
     {
@@ -938694,12 +939354,15 @@
         "DIST_NAME": "Lucknow",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Neeraj Bora",
+        "WINNER_NAME": "Dr. Neeraj Bora",
         "WINNER_VOTES": 139159,
         "RUNNER_UP": "SP",
         "MARGIN": 33953,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Pooja Shukla",
+        "RUNNER_UP_VOTES": 105206,
+        "TOTAL_VOTES": 261099
       }
     },
     {
@@ -942629,12 +943292,15 @@
         "DIST_NAME": "Sant Kabir Nagar",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Ankur Raj Tiwari",
+        "WINNER_NAME": "Ankur Tiwari",
         "WINNER_VOTES": 76086,
         "RUNNER_UP": "SP",
-        "MARGIN": 12262,
+        "MARGIN": 12622,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Digvijay Narayan",
+        "RUNNER_UP_VOTES": 63464,
+        "TOTAL_VOTES": 250627
       }
     },
     {
@@ -946592,12 +947258,15 @@
         "DIST_NAME": "Etawah",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Sarita Bhadauria",
+        "WINNER_NAME": "Sarita",
         "WINNER_VOTES": 98150,
         "RUNNER_UP": "SP",
         "MARGIN": 3984,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Sarvesh Kumar Shakya",
+        "RUNNER_UP_VOTES": 94166,
+        "TOTAL_VOTES": 245542
       }
     },
     {
@@ -946879,12 +947548,15 @@
         "DIST_NAME": "Lucknow",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Ashutosh Tandon",
+        "WINNER_NAME": "Ashutosh Tandon 'Gopal Ji '",
         "WINNER_VOTES": 152928,
         "RUNNER_UP": "SP",
         "MARGIN": 68731,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Anurag Singh Bhadouriya",
+        "RUNNER_UP_VOTES": 84197,
+        "TOTAL_VOTES": 257468
       }
     },
     {
@@ -947859,7 +948531,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 8184,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Anjani Kumar Srivastava",
+        "RUNNER_UP_VOTES": 116313,
+        "TOTAL_VOTES": 258320
       }
     },
     {
@@ -951174,7 +951849,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 45014,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Swami Prasad Maurya",
+        "RUNNER_UP_VOTES": 71015,
+        "TOTAL_VOTES": 224836
       }
     },
     {
@@ -956481,7 +957159,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 43406,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Yashpal Singh Rawat",
+        "RUNNER_UP_VOTES": 62575,
+        "TOTAL_VOTES": 224489
       }
     },
     {
@@ -959303,12 +959984,15 @@
         "DIST_NAME": "Kushinagar",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Mohan Verma",
+        "WINNER_NAME": "Mohan",
         "WINNER_VOTES": 120666,
         "RUNNER_UP": "SP",
         "MARGIN": 59365,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ranvijay Singh",
+        "RUNNER_UP_VOTES": 61301,
+        "TOTAL_VOTES": 216619
       }
     },
     {
@@ -962082,12 +962766,15 @@
         "DIST_NAME": "Kushinagar",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Panchanand Pathak",
+        "WINNER_NAME": "Panchanand Pathak (P.N. Pathak)",
         "WINNER_VOTES": 115268,
         "RUNNER_UP": "SP",
         "MARGIN": 34790,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Rajesh Pratap Rao Urf Banti Bhaiya",
+        "RUNNER_UP_VOTES": 80478,
+        "TOTAL_VOTES": 221074
       }
     },
     {
@@ -965686,7 +966373,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 66472,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Uday Narayan",
+        "RUNNER_UP_VOTES": 48651,
+        "TOTAL_VOTES": 226581
       }
     },
     {
@@ -968221,7 +968911,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 1779,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Dayaram Chaudhary",
+        "RUNNER_UP_VOTES": 84250,
+        "TOTAL_VOTES": 216093
       }
     },
     {
@@ -971348,7 +972041,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 7559,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Siddharth Shanker",
+        "RUNNER_UP_VOTES": 96117,
+        "TOTAL_VOTES": 246734
       }
     },
     {
@@ -971634,12 +972330,15 @@
         "DIST_NAME": "Lucknow",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Ravidas Mehotra",
+        "WINNER_NAME": "Ravidas Mehrotra",
         "WINNER_VOTES": 104488,
         "RUNNER_UP": "BJP",
         "MARGIN": 10935,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Rajnish Kumar Gupta",
+        "RUNNER_UP_VOTES": 93553,
+        "TOTAL_VOTES": 210567
       }
     },
     {
@@ -976042,7 +976741,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 40616,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Anand Sen",
+        "RUNNER_UP_VOTES": 53415,
+        "TOTAL_VOTES": 218920
       }
     },
     {
@@ -981365,7 +982067,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 56186,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Abhishek Mishra",
+        "RUNNER_UP_VOTES": 104440,
+        "TOTAL_VOTES": 327373
       }
     },
     {
@@ -982775,12 +983480,15 @@
         "DIST_NAME": "Gorakhpur",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Yogi Adityanath",
+        "WINNER_NAME": "Adityanath",
         "WINNER_VOTES": 165499,
         "RUNNER_UP": "SP",
         "MARGIN": 103390,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Subhawati Upendra Dutt Shukla",
+        "RUNNER_UP_VOTES": 62109,
+        "TOTAL_VOTES": 250067
       }
     },
     {
@@ -983375,7 +984083,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 39512,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Surendra Singh Gandhi 'Raju Gandhi'",
+        "RUNNER_UP_VOTES": 68635,
+        "TOTAL_VOTES": 197716
       }
     },
     {
@@ -988054,7 +988765,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 16548,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Sushila Saroj",
+        "RUNNER_UP_VOTES": 90541,
+        "TOTAL_VOTES": 245742
       }
     },
     {
@@ -992053,7 +992767,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 21512,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Kamlesh Chandra Diwakar",
+        "RUNNER_UP_VOTES": 70271,
+        "TOTAL_VOTES": 196261
       }
     },
     {
@@ -996808,7 +997525,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 5560,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Firoz Khan",
+        "RUNNER_UP_VOTES": 101708,
+        "TOTAL_VOTES": 241937
       }
     },
     {
@@ -999286,12 +1000006,15 @@
         "DIST_NAME": "Ayodhya",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Ved Prakash Gupta",
+        "WINNER_NAME": "Ved Prakash",
         "WINNER_VOTES": 113414,
         "RUNNER_UP": "SP",
         "MARGIN": 19990,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Tej Narayan",
+        "RUNNER_UP_VOTES": 93424,
+        "TOTAL_VOTES": 231258
       }
     },
     {
@@ -1004698,7 +1005421,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 473,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Lakhan Singh Rajput",
+        "RUNNER_UP_VOTES": 80392,
+        "TOTAL_VOTES": 200455
       }
     },
     {
@@ -1006917,7 +1007643,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 24070,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Vijay Bahadur Yadav",
+        "RUNNER_UP_VOTES": 102306,
+        "TOTAL_VOTES": 254865
       }
     },
     {
@@ -1011252,7 +1011981,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 25691,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ram Magan",
+        "RUNNER_UP_VOTES": 91422,
+        "TOTAL_VOTES": 230094
       }
     },
     {
@@ -1014031,7 +1014763,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 28681,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Brahmashankar Tripathi",
+        "RUNNER_UP_VOTES": 65177,
+        "TOTAL_VOTES": 201183
       }
     },
     {
@@ -1018170,7 +1018905,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 41127,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Brijesh Chandra Lal",
+        "RUNNER_UP_VOTES": 50831,
+        "TOTAL_VOTES": 205952
       }
     },
     {
@@ -1022973,7 +1023711,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 5495,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "SBSP"
+        "CURRENT_PARTY": "SBSP",
+        "RUNNER_UP_NAME": "Ravi",
+        "RUNNER_UP_VOTES": 77855,
+        "TOTAL_VOTES": 211187
       }
     },
     {
@@ -1028000,7 +1028741,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 13338,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Baba Gorakhnath",
+        "RUNNER_UP_VOTES": 90567,
+        "TOTAL_VOTES": 216515
       }
     },
     {
@@ -1034771,7 +1035515,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 13079,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Arti Tiwari",
+        "RUNNER_UP_VOTES": 92784,
+        "TOTAL_VOTES": 241298
       }
     },
     {
@@ -1038114,7 +1038861,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 40655,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ajay Pratap Singh Alias Pintu",
+        "RUNNER_UP_VOTES": 66046,
+        "TOTAL_VOTES": 199352
       }
     },
     {
@@ -1041129,7 +1041879,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 31128,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Abhinav Kumar",
+        "RUNNER_UP_VOTES": 95542,
+        "TOTAL_VOTES": 245372
       }
     },
     {
@@ -1046207,12 +1046960,15 @@
         "DIST_NAME": "Sant Kabir Nagar",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Ganesh Chandra Chauhan",
+        "WINNER_NAME": "Ganesh Chandra",
         "WINNER_VOTES": 83241,
         "RUNNER_UP": "SBSP",
         "MARGIN": 10553,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Alagu Prasad",
+        "RUNNER_UP_VOTES": 72688,
+        "TOTAL_VOTES": 216222
       }
     },
     {
@@ -1050950,12 +1051706,15 @@
         "DIST_NAME": "Gorakhpur",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Sriram Chauhan",
+        "WINNER_NAME": "Shriram Chauhan",
         "WINNER_VOTES": 90210,
         "RUNNER_UP": "SP",
         "MARGIN": 37101,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Rupawati Beldar",
+        "RUNNER_UP_VOTES": 53109,
+        "TOTAL_VOTES": 198827
       }
     },
     {
@@ -1056747,10 +1057506,13 @@
         "WINNER_PARTY": "SP",
         "WINNER_NAME": "Lalji Verma",
         "WINNER_VOTES": 93524,
-        "RUNNER_UP": "NISHAD",
+        "RUNNER_UP": "NINSHAD",
         "MARGIN": 7696,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Avadhesh Kumar",
+        "RUNNER_UP_VOTES": 85828,
+        "TOTAL_VOTES": 247560
       }
     },
     {
@@ -1064613,7 +1065375,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 31061,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Uday Raj",
+        "RUNNER_UP_VOTES": 102766,
+        "TOTAL_VOTES": 256018
       }
     },
     {
@@ -1070196,7 +1070961,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 22824,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Vijay Kumar",
+        "RUNNER_UP_VOTES": 66491,
+        "TOTAL_VOTES": 203268
       }
     },
     {
@@ -1077010,12 +1077778,15 @@
         "DIST_NAME": "Kanpur Nagar",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Abhijeet Singh Sanga",
+        "WINNER_NAME": "Abhijeet Singh",
         "WINNER_VOTES": 107330,
         "RUNNER_UP": "SP",
         "MARGIN": 21073,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Munindra Shukla",
+        "RUNNER_UP_VOTES": 86257,
+        "TOTAL_VOTES": 241399
       }
     },
     {
@@ -1080445,12 +1081216,15 @@
         "DIST_NAME": "Gorakhpur",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Vimlesh Paswan",
+        "WINNER_NAME": "Dr. Vimlesh Paswan",
         "WINNER_VOTES": 87224,
         "RUNNER_UP": "SP",
-        "MARGIN": 32209,
+        "MARGIN": 32309,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Dr. Sanjay Kumar",
+        "RUNNER_UP_VOTES": 54915,
+        "TOTAL_VOTES": 188542
       }
     },
     {
@@ -1084973,7 +1085747,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 14670,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Fasiha Manzar Ghazala Lari",
+        "RUNNER_UP_VOTES": 76072,
+        "TOTAL_VOTES": 206915
       }
     },
     {
@@ -1088756,7 +1089533,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 22447,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Jitendra Kumar Dohare",
+        "RUNNER_UP_VOTES": 66184,
+        "TOTAL_VOTES": 195746
       }
     },
     {
@@ -1091607,7 +1092387,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 13417,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Dr. Ram Prakash Kushwaha",
+        "RUNNER_UP_VOTES": 79410,
+        "TOTAL_VOTES": 211830
       }
     },
     {
@@ -1097165,12 +1097948,15 @@
         "DIST_NAME": "Raebareli",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Shyam Sunder Bharti",
+        "WINNER_NAME": "Shyam Sunder",
         "WINNER_VOTES": 65747,
-        "RUNNER_UP": "ADSL",
+        "RUNNER_UP": "ADS",
         "MARGIN": 2812,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Laxmikant",
+        "RUNNER_UP_VOTES": 62935,
+        "TOTAL_VOTES": 209512
       }
     },
     {
@@ -1101061,7 +1101847,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 32097,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Kapil Deo",
+        "RUNNER_UP_VOTES": 63166,
+        "TOTAL_VOTES": 219050
       }
     },
     {
@@ -1107184,7 +1107973,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 27829,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Mohd Naim",
+        "RUNNER_UP_VOTES": 71643,
+        "TOTAL_VOTES": 204940
       }
     },
     {
@@ -1112023,7 +1112815,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 41936,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Rambhual Nishad",
+        "RUNNER_UP_VOTES": 36251,
+        "TOTAL_VOTES": 181863
       }
     },
     {
@@ -1115482,7 +1116277,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 31567,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Prabhakar Pandey",
+        "RUNNER_UP_VOTES": 57894,
+        "TOTAL_VOTES": 199307
       }
     },
     {
@@ -1116741,7 +1117539,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 21535,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Satish Kumar Nigam",
+        "RUNNER_UP_VOTES": 77462,
+        "TOTAL_VOTES": 187814
       }
     },
     {
@@ -1120052,11 +1120853,14 @@
         "STATE": "UP",
         "WINNER_PARTY": "SP",
         "WINNER_NAME": "Ram Achal Rajbhar",
-        "WINNER_VOTES": 81391,
+        "WINNER_VOTES": 81931,
         "RUNNER_UP": "BJP",
         "MARGIN": 12336,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Dharmraj Nishad",
+        "RUNNER_UP_VOTES": 69595,
+        "TOTAL_VOTES": 214843
       }
     },
     {
@@ -1125691,7 +1126495,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 9383,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Triveniram",
+        "RUNNER_UP_VOTES": 64782,
+        "TOTAL_VOTES": 208647
       }
     },
     {
@@ -1130081,12 +1130888,15 @@
         "DIST_NAME": "Sultanpur",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Mohammad Tahir Khan",
+        "WINNER_NAME": "Mohd Tahir Khan",
         "WINNER_VOTES": 69629,
         "RUNNER_UP": "BJP",
         "MARGIN": 269,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Om Prakash Pandey",
+        "RUNNER_UP_VOTES": 69360,
+        "TOTAL_VOTES": 202743
       }
     },
     {
@@ -1135881,7 +1136691,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 21645,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Vinay Shankar",
+        "RUNNER_UP_VOTES": 75132,
+        "TOTAL_VOTES": 227784
       }
     },
     {
@@ -1136272,7 +1137085,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 7924,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Suresh Awasthi",
+        "RUNNER_UP_VOTES": 68973,
+        "TOTAL_VOTES": 152099
       }
     },
     {
@@ -1136539,7 +1137355,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 12266,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Salil Vishnoi",
+        "RUNNER_UP_VOTES": 66897,
+        "TOTAL_VOTES": 156209
       }
     },
     {
@@ -1137502,7 +1138321,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 80896,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Vikas Yadav",
+        "RUNNER_UP_VOTES": 36605,
+        "TOTAL_VOTES": 192202
       }
     },
     {
@@ -1143661,7 +1144483,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 43010,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ankit Parihar",
+        "RUNNER_UP_VOTES": 84108,
+        "TOTAL_VOTES": 247886
       }
     },
     {
@@ -1147612,7 +1148437,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 6963,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Chandra Prakash Mishra Matiyari",
+        "RUNNER_UP_VOTES": 72077,
+        "TOTAL_VOTES": 202856
       }
     },
     {
@@ -1148450,12 +1149278,15 @@
         "DIST_NAME": "Kanpur Nagar",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Mohammed Hasan",
+        "WINNER_NAME": "Mohammad Hasan",
         "WINNER_VOTES": 94729,
         "RUNNER_UP": "BJP",
         "MARGIN": 19987,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Raghunandan Singh Bhadauriya",
+        "RUNNER_UP_VOTES": 74742,
+        "TOTAL_VOTES": 189492
       }
     },
     {
@@ -1152778,7 +1153609,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 1009,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Anoop Sanda",
+        "RUNNER_UP_VOTES": 91706,
+        "TOTAL_VOTES": 219508
       }
     },
     {
@@ -1160744,12 +1161578,15 @@
         "DIST_NAME": "Jalaun",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Moolchandra Singh",
+        "WINNER_NAME": "Mool Chandra Singh",
         "WINNER_VOTES": 105231,
         "RUNNER_UP": "BSP",
         "MARGIN": 34974,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Sheetal Kushwaha",
+        "RUNNER_UP_VOTES": 70257,
+        "TOTAL_VOTES": 254828
       }
     },
     {
@@ -1166123,12 +1166960,15 @@
         "DIST_NAME": "Deoria",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Deepak Kumar Mishra",
+        "WINNER_NAME": "Deepak Kumar Mishr",
         "WINNER_VOTES": 85758,
         "RUNNER_UP": "SP",
         "MARGIN": 16861,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Murli Manohar Jaiswal",
+        "RUNNER_UP_VOTES": 68897,
+        "TOTAL_VOTES": 185108
       }
     },
     {
@@ -1166694,12 +1167534,15 @@
         "DIST_NAME": "Kanpur Nagar",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Mahesh Trivedi",
+        "WINNER_NAME": "Mahesh Kumar Trivedi",
         "WINNER_VOTES": 114111,
         "RUNNER_UP": "INC",
         "MARGIN": 37760,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ajay Kapoor",
+        "RUNNER_UP_VOTES": 76351,
+        "TOTAL_VOTES": 206018
       }
     },
     {
@@ -1169453,12 +1170296,15 @@
         "DIST_NAME": "Deoria",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Sabhakunwar Kushawaha",
+        "WINNER_NAME": "Sabhakunwar",
         "WINNER_VOTES": 91282,
         "RUNNER_UP": "SP",
         "MARGIN": 18082,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ashutosh Upadhyay",
+        "RUNNER_UP_VOTES": 73200,
+        "TOTAL_VOTES": 194282
       }
     },
     {
@@ -1175089,7 +1175935,10 @@
         "RUNNER_UP": "BSP",
         "MARGIN": 13630,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Dr. Rajesh Singh",
+        "RUNNER_UP_VOTES": 80038,
+        "TOTAL_VOTES": 258897
       }
     },
     {
@@ -1182369,10 +1183218,13 @@
         "WINNER_PARTY": "SP",
         "WINNER_NAME": "Vinod Chaturvedi",
         "WINNER_VOTES": 69782,
-        "RUNNER_UP": "NISHAD",
+        "RUNNER_UP": "NINSHAD",
         "MARGIN": 2816,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Chhote Singh",
+        "RUNNER_UP_VOTES": 66966,
+        "TOTAL_VOTES": 236741
       }
     },
     {
@@ -1187482,12 +1188334,15 @@
         "DIST_NAME": "Azamgarh",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Sangram Yadav",
+        "WINNER_NAME": "Dr. Sangram",
         "WINNER_VOTES": 91502,
-        "RUNNER_UP": "NISHAD",
+        "RUNNER_UP": "NINSHAD",
         "MARGIN": 17247,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Prashant Singh",
+        "RUNNER_UP_VOTES": 74255,
+        "TOTAL_VOTES": 231341
       }
     },
     {
@@ -1191262,7 +1192117,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 82261,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Fateh Bahadur Singh Gill",
+        "RUNNER_UP_VOTES": 70622,
+        "TOTAL_VOTES": 252262
       }
     },
     {
@@ -1198105,7 +1198963,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 14489,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Rakesh Singh",
+        "RUNNER_UP_VOTES": 78009,
+        "TOTAL_VOTES": 201651
       }
     },
     {
@@ -1203536,7 +1204397,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 15754,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Arun Verma",
+        "RUNNER_UP_VOTES": 69495,
+        "TOTAL_VOTES": 203496
       }
     },
     {
@@ -1206319,7 +1207183,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 24307,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Satyendra Rai",
+        "RUNNER_UP_VOTES": 60094,
+        "TOTAL_VOTES": 206518
       }
     },
     {
@@ -1210161,12 +1211028,15 @@
         "DIST_NAME": "Deoria",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Vijay Laxmi Gautam",
+        "WINNER_NAME": "Bijaylaxmi Gautam",
         "WINNER_VOTES": 82047,
         "RUNNER_UP": "SBSP",
         "MARGIN": 16608,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Manbodh Prasad",
+        "RUNNER_UP_VOTES": 65439,
+        "TOTAL_VOTES": 177800
       }
     },
     {
@@ -1213385,7 +1214255,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 11893,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Narendra Pal Singh",
+        "RUNNER_UP_VOTES": 75916,
+        "TOTAL_VOTES": 218144
       }
     },
     {
@@ -1218280,7 +1219153,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 7175,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ram Pratap Yadav",
+        "RUNNER_UP_VOTES": 95254,
+        "TOTAL_VOTES": 230100
       }
     },
     {
@@ -1220659,7 +1221535,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 22515,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Bandana Singh",
+        "RUNNER_UP_VOTES": 60578,
+        "TOTAL_VOTES": 194340
       }
     },
     {
@@ -1225356,13 +1226235,16 @@
         "AC_NAME": "Ghatampur",
         "DIST_NAME": "Kanpur Nagar",
         "STATE": "UP",
-        "WINNER_PARTY": "ADSL",
-        "WINNER_NAME": "AD(S)",
+        "WINNER_PARTY": "ADS",
+        "WINNER_NAME": "Saroj",
         "WINNER_VOTES": 81727,
         "RUNNER_UP": "SP",
         "MARGIN": 14474,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "ADSL"
+        "CURRENT_PARTY": "ADSL",
+        "RUNNER_UP_NAME": "Bhagwati Prasad",
+        "RUNNER_UP_VOTES": 67253,
+        "TOTAL_VOTES": 196466
       }
     },
     {
@@ -1232376,12 +1233258,15 @@
         "DIST_NAME": "Sultanpur",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Rajesh Gautam",
+        "WINNER_NAME": "Rajesh Kumar Gautam",
         "WINNER_VOTES": 96405,
         "RUNNER_UP": "SP",
         "MARGIN": 25723,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Bhagelu Ram",
+        "RUNNER_UP_VOTES": 70682,
+        "TOTAL_VOTES": 221945
       }
     },
     {
@@ -1236620,7 +1237505,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 18096,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Dr.Sanjay Sinh",
+        "RUNNER_UP_VOTES": 70121,
+        "TOTAL_VOTES": 189864
       }
     },
     {
@@ -1240939,7 +1241827,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 4448,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Umesh Pandey",
+        "RUNNER_UP_VOTES": 74584,
+        "TOTAL_VOTES": 224258
       }
     },
     {
@@ -1245073,12 +1245964,15 @@
         "DIST_NAME": "Azamgarh",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Ramakant Yadav",
+        "WINNER_NAME": "Ramakant",
         "WINNER_VOTES": 81164,
         "RUNNER_UP": "BJP",
         "MARGIN": 25306,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Ram Surat",
+        "RUNNER_UP_VOTES": 55858,
+        "TOTAL_VOTES": 193244
       }
     },
     {
@@ -1249737,7 +1250631,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 9533,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Santosh Pandey",
+        "RUNNER_UP_VOTES": 73466,
+        "TOTAL_VOTES": 210835
       }
     },
     {
@@ -1255904,7 +1256801,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 3807,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Dhirendra Bahadur Singh",
+        "RUNNER_UP_VOTES": 62359,
+        "TOTAL_VOTES": 216700
       }
     },
     {
@@ -1261222,12 +1262122,15 @@
         "DIST_NAME": "Raebareli",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Ashok Kori",
+        "WINNER_NAME": "Ashok Kumar",
         "WINNER_VOTES": 87715,
         "RUNNER_UP": "SP",
-        "MARGIN": 1511,
+        "MARGIN": 2111,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Jagdish Prasad",
+        "RUNNER_UP_VOTES": 85604,
+        "TOTAL_VOTES": 200323
       }
     },
     {
@@ -1266750,7 +1267653,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 18192,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Madan Gopal",
+        "RUNNER_UP_VOTES": 60311,
+        "TOTAL_VOTES": 190500
       }
     },
     {
@@ -1270056,12 +1270962,15 @@
         "DIST_NAME": "Mau",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Sudhakar Singh",
+        "WINNER_NAME": "Dara Singh Chauhan",
         "WINNER_VOTES": 108430,
         "RUNNER_UP": "BJP",
         "MARGIN": 22216,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Vijay Kumar Rajbhar",
+        "RUNNER_UP_VOTES": 86214,
+        "TOTAL_VOTES": 256855
       }
     },
     {
@@ -1277856,7 +1278765,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 37648,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Dayashankar Verma",
+        "RUNNER_UP_VOTES": 90996,
+        "TOTAL_VOTES": 271107
       }
     },
     {
@@ -1283997,13 +1284909,16 @@
         "AC_NAME": "Shahganj",
         "DIST_NAME": "Jaunpur",
         "STATE": "UP",
-        "WINNER_PARTY": "NISHAD",
-        "WINNER_NAME": "Ramesh Singh",
+        "WINNER_PARTY": "NINSHAD",
+        "WINNER_NAME": "Ramesh",
         "WINNER_VOTES": 87233,
         "RUNNER_UP": "SP",
         "MARGIN": 719,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "NISHAD"
+        "CURRENT_PARTY": "NISHAD",
+        "RUNNER_UP_NAME": "Shailendra Yadav Lalai",
+        "RUNNER_UP_VOTES": 86514,
+        "TOTAL_VOTES": 240920
       }
     },
     {
@@ -1287566,7 +1288481,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 5514,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "SBSP"
+        "CURRENT_PARTY": "SBSP",
+        "RUNNER_UP_NAME": "Chhathu Ram",
+        "RUNNER_UP_VOTES": 73481,
+        "TOTAL_VOTES": 199617
       }
     },
     {
@@ -1290100,12 +1291018,15 @@
         "DIST_NAME": "Azamgarh",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Alambadi",
+        "WINNER_NAME": "Alam Badi",
         "WINNER_VOTES": 79835,
         "RUNNER_UP": "BJP",
         "MARGIN": 34187,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Manoj",
+        "RUNNER_UP_VOTES": 45648,
+        "TOTAL_VOTES": 184712
       }
     },
     {
@@ -1295467,12 +1296388,15 @@
         "DIST_NAME": "Pratapgarh",
         "STATE": "UP",
         "WINNER_PARTY": "INC",
-        "WINNER_NAME": "Aradhana Misra Mona",
+        "WINNER_NAME": "Aradhana Mishra, Mona",
         "WINNER_VOTES": 84334,
         "RUNNER_UP": "BJP",
         "MARGIN": 14741,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Nagesh Pratap Singh Urf Chhote Sarkar",
+        "RUNNER_UP_VOTES": 69593,
+        "TOTAL_VOTES": 167754
       }
     },
     {
@@ -1304334,12 +1305258,15 @@
         "DIST_NAME": "Hamirpur",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Manoj Kumar Prajapati",
+        "WINNER_NAME": "Dr. Manoj Kumar",
         "WINNER_VOTES": 105432,
         "RUNNER_UP": "SP",
         "MARGIN": 25485,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ram Prakash",
+        "RUNNER_UP_VOTES": 79947,
+        "TOTAL_VOTES": 262674
       }
     },
     {
@@ -1306837,12 +1307764,15 @@
         "DIST_NAME": "Ballia",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Mohammed Ziauddin Rizvi",
+        "WINNER_NAME": "Ziyauddin Rizvi",
         "WINNER_VOTES": 75446,
         "RUNNER_UP": "BJP",
         "MARGIN": 11855,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Sanjay Yadav",
+        "RUNNER_UP_VOTES": 63591,
+        "TOTAL_VOTES": 176471
       }
     },
     {
@@ -1310511,13 +1311441,16 @@
         "AC_NAME": "Bindki",
         "DIST_NAME": "Fatehpur",
         "STATE": "UP",
-        "WINNER_PARTY": "ADSL",
-        "WINNER_NAME": "AD(S)",
+        "WINNER_PARTY": "ADS",
+        "WINNER_NAME": "Jay Kumar Singh Jaiki",
         "WINNER_VOTES": 78165,
         "RUNNER_UP": "SP",
         "MARGIN": 3797,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "ADSL"
+        "CURRENT_PARTY": "ADSL",
+        "RUNNER_UP_NAME": "Rameshwar Dayal",
+        "RUNNER_UP_VOTES": 74368,
+        "TOTAL_VOTES": 190821
       }
     },
     {
@@ -1314331,12 +1315264,15 @@
         "DIST_NAME": "Azamgarh",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Akhilesh Yadav",
+        "WINNER_NAME": "Akhilesh",
         "WINNER_VOTES": 80726,
         "RUNNER_UP": "BJP",
         "MARGIN": 29103,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Arvind Jaiswal",
+        "RUNNER_UP_VOTES": 51623,
+        "TOTAL_VOTES": 224138
       }
     },
     {
@@ -1317395,7 +1318331,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 16036,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Akhilesh Kumar Mishra",
+        "RUNNER_UP_VOTES": 84777,
+        "TOTAL_VOTES": 236330
       }
     },
     {
@@ -1321050,7 +1321989,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 26649,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Poonam Saroj",
+        "RUNNER_UP_VOTES": 68039,
+        "TOTAL_VOTES": 228291
       }
     },
     {
@@ -1326101,7 +1327043,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 6621,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Amarpal Maurya",
+        "RUNNER_UP_VOTES": 75893,
+        "TOTAL_VOTES": 212030
       }
     },
     {
@@ -1331048,7 +1331993,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 25181,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Ranvendra Pratap Singh",
+        "RUNNER_UP_VOTES": 66703,
+        "TOTAL_VOTES": 188359
       }
     },
     {
@@ -1335486,12 +1336434,15 @@
         "DIST_NAME": "Pratapgarh",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Rajendra Maurya",
+        "WINNER_NAME": "Rajendra Kumar",
         "WINNER_VOTES": 89762,
-        "RUNNER_UP": "IND",
+        "RUNNER_UP": "APNA DAL (KAMERAWADI)",
         "MARGIN": 25063,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Krishna Patel",
+        "RUNNER_UP_VOTES": 64699,
+        "TOTAL_VOTES": 195981
       }
     },
     {
@@ -1340573,12 +1341524,15 @@
         "DIST_NAME": "Pratapgarh",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Ram Singh Patel",
+        "WINNER_NAME": "Ram Singh",
         "WINNER_VOTES": 108070,
         "RUNNER_UP": "BJP",
         "MARGIN": 22051,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Rajendra Pratap Singh Urf Moti",
+        "RUNNER_UP_VOTES": 86019,
+        "TOTAL_VOTES": 221762
       }
     },
     {
@@ -1344404,12 +1345358,15 @@
         "DIST_NAME": "Azamgarh",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Kamlakant Rajbhar",
+        "WINNER_NAME": "Kamalkant",
         "WINNER_VOTES": 74342,
         "RUNNER_UP": "BJP",
         "MARGIN": 13561,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Krishnamurari",
+        "RUNNER_UP_VOTES": 60781,
+        "TOTAL_VOTES": 200957
       }
     },
     {
@@ -1347923,12 +1348880,15 @@
         "DIST_NAME": "Fatehpur",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Chandra Prakash Lodhi",
+        "WINNER_NAME": "Chandra Prakash",
         "WINNER_VOTES": 96839,
         "RUNNER_UP": "BJP",
         "MARGIN": 8601,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Vikram Singh",
+        "RUNNER_UP_VOTES": 88238,
+        "TOTAL_VOTES": 214050
       }
     },
     {
@@ -1351825,13 +1352785,16 @@
         "AC_NAME": "Vishwanathganj",
         "DIST_NAME": "Pratapgarh",
         "STATE": "UP",
-        "WINNER_PARTY": "ADSL",
-        "WINNER_NAME": "AD(S)",
+        "WINNER_PARTY": "ADS",
+        "WINNER_NAME": "Jeet Lal",
         "WINNER_VOTES": 86829,
         "RUNNER_UP": "SP",
         "MARGIN": 48052,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "ADSL"
+        "CURRENT_PARTY": "ADSL",
+        "RUNNER_UP_NAME": "Saurabh Singh",
+        "RUNNER_UP_VOTES": 38777,
+        "TOTAL_VOTES": 200930
       }
     },
     {
@@ -1355442,7 +1356405,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 8052,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Mohd. Arshad Khan",
+        "RUNNER_UP_VOTES": 89708,
+        "TOTAL_VOTES": 248447
       }
     },
     {
@@ -1359301,7 +1360267,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 38116,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SBSP"
+        "CURRENT_PARTY": "SBSP",
+        "RUNNER_UP_NAME": "Ashok Kumar Singh",
+        "RUNNER_UP_VOTES": 86575,
+        "TOTAL_VOTES": 278996
       }
     },
     {
@@ -1361940,7 +1362909,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 21352,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ram Govind",
+        "RUNNER_UP_VOTES": 81953,
+        "TOTAL_VOTES": 216698
       }
     },
     {
@@ -1366071,7 +1367043,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 1326,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Omprakash Baba Dubey",
+        "RUNNER_UP_VOTES": 81065,
+        "TOTAL_VOTES": 207419
       }
     },
     {
@@ -1369282,7 +1370257,10 @@
         "RUNNER_UP": "SBSP",
         "MARGIN": 6583,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BSP"
+        "CURRENT_PARTY": "BSP",
+        "RUNNER_UP_NAME": "Mahendra",
+        "RUNNER_UP_VOTES": 81304,
+        "TOTAL_VOTES": 200572
       }
     },
     {
@@ -1378813,7 +1379791,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 33662,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Deep Narayan Singh (Deepak Yadav)",
+        "RUNNER_UP_VOTES": 80397,
+        "TOTAL_VOTES": 235972
       }
     },
     {
@@ -1384593,12 +1385574,15 @@
         "DIST_NAME": "Azamgarh",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Puja Saroj",
+        "WINNER_NAME": "Puja",
         "WINNER_VOTES": 86960,
         "RUNNER_UP": "BJP",
         "MARGIN": 14149,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Manjoo Saroj",
+        "RUNNER_UP_VOTES": 72811,
+        "TOTAL_VOTES": 221016
       }
     },
     {
@@ -1387281,7 +1388265,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 12951,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Anand Swarup Shukla",
+        "RUNNER_UP_VOTES": 58290,
+        "TOTAL_VOTES": 176654
       }
     },
     {
@@ -1391303,12 +1392290,15 @@
         "DIST_NAME": "Azamgarh",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Bechai Saroj",
+        "WINNER_NAME": "Bechai",
         "WINNER_VOTES": 83767,
         "RUNNER_UP": "BJP",
         "MARGIN": 14733,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Neelam",
+        "RUNNER_UP_VOTES": 69034,
+        "TOTAL_VOTES": 218657
       }
     },
     {
@@ -1396286,12 +1397276,15 @@
         "DIST_NAME": "Pratapgarh",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Rakesh Kumar Verma",
+        "WINNER_NAME": "Rakesh Kumar Verma Alias Dr. R. K. Verma",
         "WINNER_VOTES": 75583,
         "RUNNER_UP": "BJP",
         "MARGIN": 2649,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Abhay Kumar Alias Dhiraj Ojha",
+        "RUNNER_UP_VOTES": 72934,
+        "TOTAL_VOTES": 188715
       }
     },
     {
@@ -1403253,12 +1404246,15 @@
         "DIST_NAME": "Hamirpur",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Manisha Anuragi",
+        "WINNER_NAME": "Manisha",
         "WINNER_VOTES": 139373,
         "RUNNER_UP": "SP",
         "MARGIN": 61979,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Chandrawati Verma",
+        "RUNNER_UP_VOTES": 77394,
+        "TOTAL_VOTES": 259108
       }
     },
     {
@@ -1408571,13 +1409567,16 @@
         "AC_NAME": "Babaganj (SC)",
         "DIST_NAME": "PRATAPGARH",
         "STATE": "UP",
-        "WINNER_PARTY": "IND",
-        "WINNER_NAME": "",
-        "WINNER_VOTES": 0,
-        "RUNNER_UP": "",
-        "MARGIN": 0,
+        "WINNER_PARTY": "JDL",
+        "WINNER_NAME": "Vinod Kumar",
+        "WINNER_VOTES": 67282,
+        "RUNNER_UP": "SP",
+        "MARGIN": 15767,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "IND"
+        "CURRENT_PARTY": "IND",
+        "RUNNER_UP_NAME": "Girish Chandra",
+        "RUNNER_UP_VOTES": 51515,
+        "TOTAL_VOTES": 166804
       }
     },
     {
@@ -1413076,7 +1414075,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 13006,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Vishambhar Prasad Nishad",
+        "RUNNER_UP_VOTES": 58225,
+        "TOTAL_VOTES": 160419
       }
     },
     {
@@ -1416971,7 +1417973,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 19354,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Upendra Tiwari",
+        "RUNNER_UP_VOTES": 73162,
+        "TOTAL_VOTES": 189662
       }
     },
     {
@@ -1425673,12 +1426678,15 @@
         "DIST_NAME": "Banda",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Ramakesh Nishad",
+        "WINNER_NAME": "Ramkesh Nishad",
         "WINNER_VOTES": 86812,
         "RUNNER_UP": "SP",
         "MARGIN": 28425,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Brajesh Kumar Prajapati",
+        "RUNNER_UP_VOTES": 58387,
+        "TOTAL_VOTES": 196221
       }
     },
     {
@@ -1430777,7 +1431785,10 @@
         "RUNNER_UP": "JD(U)",
         "MARGIN": 17527,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Dhananjay Singh",
+        "RUNNER_UP_VOTES": 79830,
+        "TOTAL_VOTES": 228695
       }
     },
     {
@@ -1436996,7 +1438007,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 45632,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SBSP"
+        "CURRENT_PARTY": "SBSP",
+        "RUNNER_UP_NAME": "Kalicharan",
+        "RUNNER_UP_VOTES": 69228,
+        "TOTAL_VOTES": 247266
       }
     },
     {
@@ -1440983,7 +1441997,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 35063,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Ram Naresh Kushwaha",
+        "RUNNER_UP_VOTES": 68062,
+        "TOTAL_VOTES": 230465
       }
     },
     {
@@ -1444198,7 +1445215,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 26239,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Narad Rai",
+        "RUNNER_UP_VOTES": 77634,
+        "TOTAL_VOTES": 202812
       }
     },
     {
@@ -1448954,12 +1449974,15 @@
         "DIST_NAME": "Ghazipur",
         "STATE": "UP",
         "WINNER_PARTY": "SBSP",
-        "WINNER_NAME": "Triveni Ram",
+        "WINNER_NAME": "Bedi",
         "WINNER_VOTES": 113378,
         "RUNNER_UP": "BJP",
         "MARGIN": 36865,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "SBSP"
+        "CURRENT_PARTY": "SBSP",
+        "RUNNER_UP_NAME": "Ramraj",
+        "RUNNER_UP_VOTES": 76513,
+        "TOTAL_VOTES": 254608
       }
     },
     {
@@ -1453466,7 +1454489,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 6292,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SBSP"
+        "CURRENT_PARTY": "SBSP",
+        "RUNNER_UP_NAME": "Dr. Harendra Prasad Singh",
+        "RUNNER_UP_VOTES": 84328,
+        "TOTAL_VOTES": 223351
       }
     },
     {
@@ -1459356,12 +1460382,15 @@
         "DIST_NAME": "Jaunpur",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Pankaj Patel",
+        "WINNER_NAME": "Pankaj",
         "WINNER_VOTES": 92048,
         "RUNNER_UP": "BJP",
         "MARGIN": 5230,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Ajay Shankar Dubey",
+        "RUNNER_UP_VOTES": 86818,
+        "TOTAL_VOTES": 219700
       }
     },
     {
@@ -1464360,7 +1465389,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 5509,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ramthirth Paramhans",
+        "RUNNER_UP_VOTES": 78226,
+        "TOTAL_VOTES": 199986
       }
     },
     {
@@ -1468238,12 +1469270,15 @@
         "DIST_NAME": "Kaushambi",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Pallavi Patel",
+        "WINNER_NAME": "Dr. Pallavi Patel",
         "WINNER_VOTES": 106278,
         "RUNNER_UP": "BJP",
         "MARGIN": 7337,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Keshav Prasad Maurya",
+        "RUNNER_UP_VOTES": 98941,
+        "TOTAL_VOTES": 228626
       }
     },
     {
@@ -1473232,13 +1474267,16 @@
         "AC_NAME": "Kunda",
         "DIST_NAME": "PRATAPGARH",
         "STATE": "UP",
-        "WINNER_PARTY": "IND",
-        "WINNER_NAME": "",
-        "WINNER_VOTES": 0,
-        "RUNNER_UP": "",
-        "MARGIN": 0,
+        "WINNER_PARTY": "JDL",
+        "WINNER_NAME": "Raghuraj Pratap Singh",
+        "WINNER_VOTES": 99612,
+        "RUNNER_UP": "SP",
+        "MARGIN": 30315,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "IND"
+        "CURRENT_PARTY": "IND",
+        "RUNNER_UP_NAME": "Gulshan Yadav",
+        "RUNNER_UP_VOTES": 69297,
+        "TOTAL_VOTES": 196940
       }
     },
     {
@@ -1477653,7 +1478691,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 9844,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Dinesh Chaudhary",
+        "RUNNER_UP_VOTES": 84178,
+        "TOTAL_VOTES": 240258
       }
     },
     {
@@ -1481015,12 +1482056,15 @@
         "DIST_NAME": "Prayagraj",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Geeta Shastri",
+        "WINNER_NAME": "Geeta Shastri (Pasi)",
         "WINNER_VOTES": 91474,
-        "RUNNER_UP": "ADSL",
+        "RUNNER_UP": "ADS",
         "MARGIN": 5590,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Dr. Jamuna Prasad Saroj",
+        "RUNNER_UP_VOTES": 85884,
+        "TOTAL_VOTES": 223169
       }
     },
     {
@@ -1485203,7 +1486247,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 14324,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ansar Ahmad",
+        "RUNNER_UP_VOTES": 76862,
+        "TOTAL_VOTES": 210773
       }
     },
     {
@@ -1490789,12 +1491836,15 @@
         "DIST_NAME": "Jaunpur",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Ragini Sonkar",
+        "WINNER_NAME": "Dr. Ragini",
         "WINNER_VOTES": 91659,
         "RUNNER_UP": "BJP",
         "MARGIN": 8484,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Mehi Lal",
+        "RUNNER_UP_VOTES": 83175,
+        "TOTAL_VOTES": 218312
       }
     },
     {
@@ -1495841,7 +1496891,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 7393,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Ajay Kumar",
+        "RUNNER_UP_VOTES": 72221,
+        "TOTAL_VOTES": 205453
       }
     },
     {
@@ -1508546,13 +1509599,16 @@
         "AC_NAME": "Mauranipur",
         "DIST_NAME": "Jhansi",
         "STATE": "UP",
-        "WINNER_PARTY": "ADSL",
-        "WINNER_NAME": "AD(S)",
+        "WINNER_PARTY": "ADS",
+        "WINNER_NAME": "Rashmi Arya",
         "WINNER_VOTES": 143577,
         "RUNNER_UP": "SP",
         "MARGIN": 58595,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "ADSL"
+        "CURRENT_PARTY": "ADSL",
+        "RUNNER_UP_NAME": "Tilak Chandra Ahirwar",
+        "RUNNER_UP_VOTES": 84982,
+        "TOTAL_VOTES": 276999
       }
     },
     {
@@ -1512874,12 +1513930,15 @@
         "DIST_NAME": "Ghazipur",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Suhaib Ansari",
+        "WINNER_NAME": "Suhaib Alias Mannu Ansari",
         "WINNER_VOTES": 111443,
         "RUNNER_UP": "BJP",
         "MARGIN": 18759,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Alka Rai",
+        "RUNNER_UP_VOTES": 92684,
+        "TOTAL_VOTES": 246214
       }
     },
     {
@@ -1515830,7 +1516889,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 36635,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Subhash Passi",
+        "RUNNER_UP_VOTES": 73076,
+        "TOTAL_VOTES": 236636
       }
     },
     {
@@ -1521427,13 +1522489,16 @@
         "AC_NAME": "Mariyahu",
         "DIST_NAME": "Jaunpur",
         "STATE": "UP",
-        "WINNER_PARTY": "ADSL",
-        "WINNER_NAME": "AD(S)",
+        "WINNER_PARTY": "ADS",
+        "WINNER_NAME": "Dr R.K. Patel",
         "WINNER_VOTES": 76007,
         "RUNNER_UP": "SP",
         "MARGIN": 1206,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "ADSL"
+        "CURRENT_PARTY": "ADSL",
+        "RUNNER_UP_NAME": "Sushma Patel",
+        "RUNNER_UP_VOTES": 74801,
+        "TOTAL_VOTES": 193664
       }
     },
     {
@@ -1528009,10 +1529074,13 @@
         "WINNER_PARTY": "SP",
         "WINNER_NAME": "Vijama Yadav",
         "WINNER_VOTES": 91142,
-        "RUNNER_UP": "ADSL",
+        "RUNNER_UP": "ADS",
         "MARGIN": 10956,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Rakesh Dhar Tripathi",
+        "RUNNER_UP_VOTES": 80186,
+        "TOTAL_VOTES": 227363
       }
     },
     {
@@ -1540214,12 +1541282,15 @@
         "DIST_NAME": "Jhansi",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Rajeev Singh Parichha",
+        "WINNER_NAME": "Rajeev Singh ''Parichha''",
         "WINNER_VOTES": 118343,
         "RUNNER_UP": "SP",
         "MARGIN": 44529,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Yashpal Singh Yadav",
+        "RUNNER_UP_VOTES": 73814,
+        "TOTAL_VOTES": 234631
       }
     },
     {
@@ -1543125,12 +1544196,15 @@
         "DIST_NAME": "Ghazipur",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Jai Kishan Sahu",
+        "WINNER_NAME": "Jaikishan",
         "WINNER_VOTES": 92472,
         "RUNNER_UP": "BJP",
         "MARGIN": 1692,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Dr. Sangeeta Balwant",
+        "RUNNER_UP_VOTES": 90780,
+        "TOTAL_VOTES": 226595
       }
     },
     {
@@ -1548633,7 +1549707,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 43447,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Manoj Tiwari",
+        "RUNNER_UP_VOTES": 51043,
+        "TOTAL_VOTES": 207179
       }
     },
     {
@@ -1552228,7 +1553305,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 2732,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Mohd.Mujataba Siddiqui",
+        "RUNNER_UP_VOTES": 100825,
+        "TOTAL_VOTES": 246588
       }
     },
     {
@@ -1554652,10 +1555732,13 @@
         "WINNER_PARTY": "SP",
         "WINNER_NAME": "Pooja Pal",
         "WINNER_VOTES": 88818,
-        "RUNNER_UP": "ADSL",
+        "RUNNER_UP": "ADS",
         "MARGIN": 13209,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Nagendra Pratap Singh Patel",
+        "RUNNER_UP_VOTES": 75609,
+        "TOTAL_VOTES": 223984
       }
     },
     {
@@ -1562635,12 +1563718,15 @@
         "DIST_NAME": "Mahoba",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Brijbhushan Rajpoot",
+        "WINNER_NAME": "Brijbhushan Rajput",
         "WINNER_VOTES": 102051,
         "RUNNER_UP": "SP",
         "MARGIN": 41881,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ramjeevan",
+        "RUNNER_UP_VOTES": 60170,
+        "TOTAL_VOTES": 223078
       }
     },
     {
@@ -1566451,7 +1567537,10 @@
         "RUNNER_UP": "BSP",
         "MARGIN": 35559,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Babulal",
+        "RUNNER_UP_VOTES": 48766,
+        "TOTAL_VOTES": 220547
       }
     },
     {
@@ -1570798,7 +1571887,10 @@
         "RUNNER_UP": "SBSP",
         "MARGIN": 9160,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Sunil Sonkar",
+        "RUNNER_UP_VOTES": 91928,
+        "TOTAL_VOTES": 245074
       }
     },
     {
@@ -1572293,7 +1573385,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 76353,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Sita Ram Kushwaha",
+        "RUNNER_UP_VOTES": 71909,
+        "TOTAL_VOTES": 252793
       }
     },
     {
@@ -1575895,12 +1576990,15 @@
         "DIST_NAME": "Ghazipur",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Omprakash Singh",
+        "WINNER_NAME": "Om Prakash",
         "WINNER_VOTES": 94695,
         "RUNNER_UP": "BJP",
         "MARGIN": 22456,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Sunita Singh",
+        "RUNNER_UP_VOTES": 72239,
+        "TOTAL_VOTES": 233390
       }
     },
     {
@@ -1581622,12 +1582720,15 @@
         "DIST_NAME": "Chitrakoot",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Anil Pradhan",
+        "WINNER_NAME": "Anil Kumar Anil Pradhan",
         "WINNER_VOTES": 104771,
         "RUNNER_UP": "BJP",
         "MARGIN": 20876,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Chandrika Prasad Upadhyay",
+        "RUNNER_UP_VOTES": 83895,
+        "TOTAL_VOTES": 242357
       }
     },
     {
@@ -1584561,12 +1585662,15 @@
         "DIST_NAME": "Chandauli",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Prabhunarayan Yadav",
+        "WINNER_NAME": "Prabhu Narayan Yadav",
         "WINNER_VOTES": 86328,
         "RUNNER_UP": "BJP",
         "MARGIN": 16661,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Suryamuni Tiwari",
+        "RUNNER_UP_VOTES": 69667,
+        "TOTAL_VOTES": 212118
       }
     },
     {
@@ -1587272,12 +1588376,15 @@
         "DIST_NAME": "Kaushambi",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Indrajit Saroj",
+        "WINNER_NAME": "Indrajeet Saroj",
         "WINNER_VOTES": 121506,
         "RUNNER_UP": "BJP",
         "MARGIN": 23878,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Lal Bahadur",
+        "RUNNER_UP_VOTES": 97628,
+        "TOTAL_VOTES": 257411
       }
     },
     {
@@ -1595179,12 +1596286,15 @@
         "DIST_NAME": "Bhadohi",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Zahid Beg",
+        "WINNER_NAME": "Zahid",
         "WINNER_VOTES": 100738,
         "RUNNER_UP": "BJP",
         "MARGIN": 4885,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Ravindra Nath Tripathi",
+        "RUNNER_UP_VOTES": 95853,
+        "TOTAL_VOTES": 250365
       }
     },
     {
@@ -1595599,7 +1596709,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 54883,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Sandeep Yadav",
+        "RUNNER_UP_VOTES": 42007,
+        "TOTAL_VOTES": 175941
       }
     },
     {
@@ -1599326,7 +1600439,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 10917,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Manoj Kumar",
+        "RUNNER_UP_VOTES": 76974,
+        "TOTAL_VOTES": 210031
       }
     },
     {
@@ -1599617,7 +1600733,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 29933,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Richa Singh",
+        "RUNNER_UP_VOTES": 88826,
+        "TOTAL_VOTES": 222861
       }
     },
     {
@@ -1603736,7 +1604855,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 15214,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Manjula Singh",
+        "RUNNER_UP_VOTES": 66343,
+        "TOTAL_VOTES": 197300
       }
     },
     {
@@ -1607468,10 +1608590,13 @@
         "WINNER_PARTY": "SP",
         "WINNER_NAME": "Hakim Lal Bind",
         "WINNER_VOTES": 84417,
-        "RUNNER_UP": "NISHAD",
+        "RUNNER_UP": "NINSHAD",
         "MARGIN": 3543,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Prashant Kumar Singh Rahul",
+        "RUNNER_UP_VOTES": 80874,
+        "TOTAL_VOTES": 214451
       }
     },
     {
@@ -1608145,12 +1609270,15 @@
         "DIST_NAME": "Prayagraj",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Nand Gopal Gupta",
+        "WINNER_NAME": "Nand Gopal Gupta Nandi",
         "WINNER_VOTES": 97864,
         "RUNNER_UP": "SP",
         "MARGIN": 26182,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Raish Chandra Shukla",
+        "RUNNER_UP_VOTES": 71682,
+        "TOTAL_VOTES": 180745
       }
     },
     {
@@ -1611373,7 +1612501,10 @@
         "RUNNER_UP": "SBSP",
         "MARGIN": 27687,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Arvind Rajbhar",
+        "RUNNER_UP_VOTES": 87544,
+        "TOTAL_VOTES": 251791
       }
     },
     {
@@ -1616134,13 +1617265,16 @@
         "AC_NAME": "Gyanpur",
         "DIST_NAME": "Bhadohi",
         "STATE": "UP",
-        "WINNER_PARTY": "NISHAD",
+        "WINNER_PARTY": "NINSHAD",
         "WINNER_NAME": "Vipul Dubey",
         "WINNER_VOTES": 73446,
         "RUNNER_UP": "SP",
         "MARGIN": 6231,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "NISHAD"
+        "CURRENT_PARTY": "NISHAD",
+        "RUNNER_UP_NAME": "Ram Kishore Bind",
+        "RUNNER_UP_VOTES": 67215,
+        "TOTAL_VOTES": 215254
       }
     },
     {
@@ -1618891,7 +1620025,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 9328,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ujjwal Raman Singh",
+        "RUNNER_UP_VOTES": 80199,
+        "TOTAL_VOTES": 203189
       }
     },
     {
@@ -1630149,12 +1631286,15 @@
         "DIST_NAME": "Banda",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Ommani Verma",
+        "WINNER_NAME": "Ommani Varma",
         "WINNER_VOTES": 83263,
         "RUNNER_UP": "SP",
         "MARGIN": 6719,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Kiran Verma",
+        "RUNNER_UP_VOTES": 76544,
+        "TOTAL_VOTES": 213967
       }
     },
     {
@@ -1633688,12 +1634828,15 @@
         "DIST_NAME": "Varanasi",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Neel Ratan Singh Patel",
+        "WINNER_NAME": "Neel Ratan Singh",
         "WINNER_VOTES": 105163,
         "RUNNER_UP": "SP",
         "MARGIN": 22531,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Surendra Singh Patel",
+        "RUNNER_UP_VOTES": 82632,
+        "TOTAL_VOTES": 220910
       }
     },
     {
@@ -1644046,13 +1645189,16 @@
         "AC_NAME": "Manikpur",
         "DIST_NAME": "Chitrakoot",
         "STATE": "UP",
-        "WINNER_PARTY": "ADSL",
-        "WINNER_NAME": "AD(S)",
+        "WINNER_PARTY": "ADS",
+        "WINNER_NAME": "Avinash Chandra Dwivedi",
         "WINNER_VOTES": 73132,
         "RUNNER_UP": "SP",
         "MARGIN": 1048,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "ADSL"
+        "CURRENT_PARTY": "ADSL",
+        "RUNNER_UP_NAME": "Veer Singh Patel",
+        "RUNNER_UP_VOTES": 72084,
+        "TOTAL_VOTES": 207930
       }
     },
     {
@@ -1647005,13 +1648151,16 @@
         "AC_NAME": "Rohaniya",
         "DIST_NAME": "Varanasi",
         "STATE": "UP",
-        "WINNER_PARTY": "ADSL",
-        "WINNER_NAME": "AD(S)",
+        "WINNER_PARTY": "ADS",
+        "WINNER_NAME": "Dr. Sunil Patel",
         "WINNER_VOTES": 118663,
-        "RUNNER_UP": "IND",
+        "RUNNER_UP": "APNA DAL (KAMERAWADI)",
         "MARGIN": 46472,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "ADSL"
+        "CURRENT_PARTY": "ADSL",
+        "RUNNER_UP_NAME": "Abhay Patel",
+        "RUNNER_UP_VOTES": 72191,
+        "TOTAL_VOTES": 246793
       }
     },
     {
@@ -1647982,7 +1649131,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 40776,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ashfaque",
+        "RUNNER_UP_VOTES": 93695,
+        "TOTAL_VOTES": 246225
       }
     },
     {
@@ -1651757,7 +1652909,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 1647,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Anjani",
+        "RUNNER_UP_VOTES": 92044,
+        "TOTAL_VOTES": 224745
       }
     },
     {
@@ -1656150,13 +1657305,16 @@
         "AC_NAME": "Bara",
         "DIST_NAME": "Prayagraj",
         "STATE": "UP",
-        "WINNER_PARTY": "ADSL",
-        "WINNER_NAME": "AD(S)",
+        "WINNER_PARTY": "ADS",
+        "WINNER_NAME": "Vachaspati",
         "WINNER_VOTES": 89203,
         "RUNNER_UP": "SP",
-        "MARGIN": 12464,
+        "MARGIN": 12524,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "ADSL"
+        "CURRENT_PARTY": "ADSL",
+        "RUNNER_UP_NAME": "Ajay",
+        "RUNNER_UP_VOTES": 76679,
+        "TOTAL_VOTES": 205129
       }
     },
     {
@@ -1656510,12 +1657668,15 @@
         "DIST_NAME": "Varanasi",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Neelkanth Tiwari",
+        "WINNER_NAME": "Dr. Neelkanth Tiwari",
         "WINNER_VOTES": 99622,
         "RUNNER_UP": "SP",
         "MARGIN": 10722,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Kameshwar Alias Kishan Dixit",
+        "RUNNER_UP_VOTES": 88900,
+        "TOTAL_VOTES": 195782
       }
     },
     {
@@ -1659158,7 +1660319,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 14921,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Chandra Shekhar Yadav",
+        "RUNNER_UP_VOTES": 87295,
+        "TOTAL_VOTES": 241076
       }
     },
     {
@@ -1661752,12 +1662916,15 @@
         "DIST_NAME": "Prayagraj",
         "STATE": "UP",
         "WINNER_PARTY": "SP",
-        "WINNER_NAME": "Sandeep Singh Patel",
+        "WINNER_NAME": "Sandeep Singh",
         "WINNER_VOTES": 78555,
         "RUNNER_UP": "BJP",
         "MARGIN": 3439,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "SP"
+        "CURRENT_PARTY": "SP",
+        "RUNNER_UP_NAME": "Neelam Karvariya",
+        "RUNNER_UP_VOTES": 75116,
+        "TOTAL_VOTES": 186497
       }
     },
     {
@@ -1662524,7 +1663691,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 86844,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Pooja Yadav",
+        "RUNNER_UP_VOTES": 60989,
+        "TOTAL_VOTES": 243821
       }
     },
     {
@@ -1667857,13 +1669027,16 @@
         "AC_NAME": "Majhawan",
         "DIST_NAME": "Mirzapur",
         "STATE": "UP",
-        "WINNER_PARTY": "NISHAD",
+        "WINNER_PARTY": "NINSHAD",
         "WINNER_NAME": "Dr. Vinod Kumar Bind",
         "WINNER_VOTES": 103235,
         "RUNNER_UP": "SP",
         "MARGIN": 33587,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "NISHAD"
+        "CURRENT_PARTY": "NISHAD",
+        "RUNNER_UP_NAME": "Rohit Shukla",
+        "RUNNER_UP_VOTES": 69648,
+        "TOTAL_VOTES": 245391
       }
     },
     {
@@ -1678896,13 +1680069,16 @@
         "AC_NAME": "Chhanbey",
         "DIST_NAME": "Mirzapur",
         "STATE": "UP",
-        "WINNER_PARTY": "ADSL",
-        "WINNER_NAME": "AD(S)",
+        "WINNER_PARTY": "ADS",
+        "WINNER_NAME": "Rahul Prakash Kol",
         "WINNER_VOTES": 102502,
         "RUNNER_UP": "SP",
         "MARGIN": 38113,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "ADSL"
+        "CURRENT_PARTY": "ADSL",
+        "RUNNER_UP_NAME": "Kirti",
+        "RUNNER_UP_VOTES": 64389,
+        "TOTAL_VOTES": 216739
       }
     },
     {
@@ -1686525,7 +1687701,10 @@
         "RUNNER_UP": "BSP",
         "MARGIN": 107215,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Chandra Bhusan Singh Bundela (Guddu Raja)",
+        "RUNNER_UP_VOTES": 69335,
+        "TOTAL_VOTES": 333155
       }
     },
     {
@@ -1692531,12 +1693710,15 @@
         "DIST_NAME": "Chandauli",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Kailash Kharwar",
+        "WINNER_NAME": "Kailash",
         "WINNER_VOTES": 97812,
         "RUNNER_UP": "SP",
         "MARGIN": 9251,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Jitendra Kumar",
+        "RUNNER_UP_VOTES": 88561,
+        "TOTAL_VOTES": 246794
       }
     },
     {
@@ -1695519,7 +1696701,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 39876,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Kailash Chaursia",
+        "RUNNER_UP_VOTES": 78766,
+        "TOTAL_VOTES": 227751
       }
     },
     {
@@ -1699211,10 +1700396,13 @@
         "WINNER_PARTY": "BJP",
         "WINNER_NAME": "Anurag Singh",
         "WINNER_VOTES": 110980,
-        "RUNNER_UP": "IND",
+        "RUNNER_UP": "APNA DAL (KAMERAWADI)",
         "MARGIN": 47614,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ramashankar Prasad Singh",
+        "RUNNER_UP_VOTES": 63366,
+        "TOTAL_VOTES": 220823
       }
     },
     {
@@ -1704364,12 +1705552,15 @@
         "DIST_NAME": "Prayagraj",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Rajmani Kol",
+        "WINNER_NAME": "Raj Mani",
         "WINNER_VOTES": 84587,
         "RUNNER_UP": "SP",
         "MARGIN": 24487,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ram Deo",
+        "RUNNER_UP_VOTES": 60100,
+        "TOTAL_VOTES": 207611
       }
     },
     {
@@ -1711496,7 +1712687,10 @@
         "RUNNER_UP": "BSP",
         "MARGIN": 62911,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Narendra Singh Kusawaha",
+        "RUNNER_UP_VOTES": 42466,
+        "TOTAL_VOTES": 236733
       }
     },
     {
@@ -1724154,12 +1725348,15 @@
         "DIST_NAME": "Lalitpur",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Manohar Lal Panth",
+        "WINNER_NAME": "Manohar Lal",
         "WINNER_VOTES": 184778,
         "RUNNER_UP": "BSP",
         "MARGIN": 110451,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Kiran Ramesh Khatik",
+        "RUNNER_UP_VOTES": 74327,
+        "TOTAL_VOTES": 336798
       }
     },
     {
@@ -1729425,12 +1730622,15 @@
         "DIST_NAME": "Sonbhadra",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Anil Kumar Maurya",
+        "WINNER_NAME": "Dr. Anil Kumar Maurya",
         "WINNER_VOTES": 101277,
         "RUNNER_UP": "SP",
         "MARGIN": 23922,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ramesh Chandra Dubey",
+        "RUNNER_UP_VOTES": 77355,
+        "TOTAL_VOTES": 250342
       }
     },
     {
@@ -1735233,7 +1736433,10 @@
         "RUNNER_UP": "SP",
         "MARGIN": 5621,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Avinash Kushwaha",
+        "RUNNER_UP_VOTES": 78875,
+        "TOTAL_VOTES": 209724
       }
     },
     {
@@ -1740887,12 +1742090,15 @@
         "DIST_NAME": "Sonbhadra",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Sanjeev Kumar Gond",
+        "WINNER_NAME": "Sanjeev Kumar",
         "WINNER_VOTES": 78364,
         "RUNNER_UP": "SP",
         "MARGIN": 26442,
         "RESERVATION": "ST",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Arvind Kumar",
+        "RUNNER_UP_VOTES": 51922,
+        "TOTAL_VOTES": 163139
       }
     },
     {
@@ -1748094,12 +1749300,15 @@
         "DIST_NAME": "Sonbhadra",
         "STATE": "UP",
         "WINNER_PARTY": "BJP",
-        "WINNER_NAME": "Ramdular Gaur",
+        "WINNER_NAME": "Ramdular",
         "WINNER_VOTES": 84407,
         "RUNNER_UP": "SP",
         "MARGIN": 6297,
         "RESERVATION": "ST",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Vijay Singh",
+        "RUNNER_UP_VOTES": 78110,
+        "TOTAL_VOTES": 204469
       }
     }
   ]

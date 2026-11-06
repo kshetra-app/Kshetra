@@ -4969,7 +4969,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 4231,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Dr. Ravi B. Patil",
+        "RUNNER_UP_VOTES": 64953,
+        "TOTAL_VOTES": 149478
       }
     },
     {
@@ -9272,7 +9275,10 @@
         "RUNNER_UP": "IND",
         "MARGIN": 12308,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Ramakant Konduskar",
+        "RUNNER_UP_VOTES": 64786,
+        "TOTAL_VOTES": 159111
       }
     },
     {
@@ -12127,7 +12133,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 56016,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Nagesh Annappa Manolkar",
+        "RUNNER_UP_VOTES": 51603,
+        "TOTAL_VOTES": 204562
       }
     },
     {
@@ -16246,7 +16255,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 54629,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Dr. Anjali Hemant Nimbalkar",
+        "RUNNER_UP_VOTES": 37205,
+        "TOTAL_VOTES": 161013
       }
     },
     {
@@ -19029,7 +19041,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 2993,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Doddagoudar Mahantesh Basavantaray",
+        "RUNNER_UP_VOTES": 74543,
+        "TOTAL_VOTES": 156660
       }
     },
     {
@@ -23880,7 +23895,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 2778,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Jagdish Channappa Metgud",
+        "RUNNER_UP_VOTES": 55630,
+        "TOTAL_VOTES": 152596
       }
     },
     {
@@ -28715,7 +28733,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 11730,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Chikkarevanna",
+        "RUNNER_UP_VOTES": 68564,
+        "TOTAL_VOTES": 154029
       }
     },
     {
@@ -31938,7 +31959,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 14695,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Mamani Ratna Anand @ Vishwanath",
+        "RUNNER_UP_VOTES": 56529,
+        "TOTAL_VOTES": 163317
       }
     },
     {
@@ -35137,7 +35161,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 76122,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Mahesh. Irangouda. Kumathalli.",
+        "RUNNER_UP_VOTES": 55282,
+        "TOTAL_VOTES": 192279
       }
     },
     {
@@ -40732,7 +40759,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 8827,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Shrimant Balasaheb Patil",
+        "RUNNER_UP_VOTES": 74560,
+        "TOTAL_VOTES": 162078
       }
     },
     {
@@ -41779,7 +41809,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 25412,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Kadadi Mahantesh Kallappa",
+        "RUNNER_UP_VOTES": 79901,
+        "TOTAL_VOTES": 190390
       }
     },
     {
@@ -43566,7 +43599,10 @@
         "RUNNER_UP": "IND",
         "MARGIN": 71540,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Bhimappa Gundappa Gadad",
+        "RUNNER_UP_VOTES": 43862,
+        "TOTAL_VOTES": 190105
       }
     },
     {
@@ -51343,7 +51379,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 78509,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Katti Ramesh Vishwanath",
+        "RUNNER_UP_VOTES": 49840,
+        "TOTAL_VOTES": 183835
       }
     },
     {
@@ -58342,7 +58381,10 @@
         "RUNNER_UP": "NCP",
         "MARGIN": 7292,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Uttam Raosaheb Patil",
+        "RUNNER_UP_VOTES": 66056,
+        "TOTAL_VOTES": 187412
       }
     },
     {
@@ -63593,7 +63635,10 @@
         "RUNNER_UP": "IND",
         "MARGIN": 71540,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Bhimappa Gundappa Gadad",
+        "RUNNER_UP_VOTES": 43862,
+        "TOTAL_VOTES": 190105
       }
     },
     {
@@ -67256,7 +67301,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 14695,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Mamani Ratna Anand @ Vishwanath",
+        "RUNNER_UP_VOTES": 56529,
+        "TOTAL_VOTES": 163317
       }
     },
     {
@@ -72987,7 +73035,10 @@
         "RUNNER_UP": "IND",
         "MARGIN": 2570,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Shambhu Kallolikar",
+        "RUNNER_UP_VOTES": 54930,
+        "TOTAL_VOTES": 165288
       }
     },
     {
@@ -76938,7 +76989,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 42551,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "A.B.Patil",
+        "RUNNER_UP_VOTES": 61023,
+        "TOTAL_VOTES": 167903
       }
     },
     {
@@ -80261,7 +80315,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 18037,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Amrut Ayyappa Desai",
+        "RUNNER_UP_VOTES": 71296,
+        "TOTAL_VOTES": 165663
       }
     },
     {
@@ -82408,7 +82465,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 34289,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Jagadish Shettar",
+        "RUNNER_UP_VOTES": 60775,
+        "TOTAL_VOTES": 160401
       }
     },
     {
@@ -85051,7 +85111,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 32370,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Dr. Kranthi Kiran",
+        "RUNNER_UP_VOTES": 53056,
+        "TOTAL_VOTES": 148640
       }
     },
     {
@@ -90234,7 +90297,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 38693,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Deepak Chinchore",
+        "RUNNER_UP_VOTES": 62717,
+        "TOTAL_VOTES": 170567
       }
     },
     {
@@ -95449,7 +95515,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 14357,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Chabbi Nagaraj",
+        "RUNNER_UP_VOTES": 71404,
+        "TOTAL_VOTES": 162253
       }
     },
     {
@@ -99360,7 +99429,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 35341,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Kusumavathi Channabasappa Shivalli",
+        "RUNNER_UP_VOTES": 40764,
+        "TOTAL_VOTES": 155086
       }
     },
     {
@@ -105031,7 +105103,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 22199,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Shankar Basanagouda Patil Munenakoppa",
+        "RUNNER_UP_VOTES": 63882,
+        "TOTAL_VOTES": 161914
       }
     },
     {
@@ -110170,7 +110245,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 11915,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Gavisiddappa Dyamannavar",
+        "RUNNER_UP_VOTES": 81912,
+        "TOTAL_VOTES": 181383
       }
     },
     {
@@ -117329,7 +117407,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 23841,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Ballari Virupakshappa Rudrappa",
+        "RUNNER_UP_VOTES": 73899,
+        "TOTAL_VOTES": 175863
       }
     },
     {
@@ -121876,7 +121957,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 15020,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Basavanagouda Patil",
+        "RUNNER_UP_VOTES": 70358,
+        "TOTAL_VOTES": 159497
       }
     },
     {
@@ -127239,7 +127323,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 9800,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Arunkumar Guttur",
+        "RUNNER_UP_VOTES": 62030,
+        "TOTAL_VOTES": 193020
       }
     },
     {
@@ -128030,7 +128117,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 21945,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Shivaraj Sajjanar",
+        "RUNNER_UP_VOTES": 72645,
+        "TOTAL_VOTES": 179272
       }
     },
     {
@@ -134885,7 +134975,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 35978,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Pathan Yasirahmedkhan",
+        "RUNNER_UP_VOTES": 64038,
+        "TOTAL_VOTES": 182027
       }
     },
     {
@@ -139168,7 +139261,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 35978,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Pathan Yasirahmedkhan",
+        "RUNNER_UP_VOTES": 64038,
+        "TOTAL_VOTES": 182027
       }
     },
     {
@@ -144723,7 +144819,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 15130,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Anil. P. Menasinakai",
+        "RUNNER_UP_VOTES": 74828,
+        "TOTAL_VOTES": 170232
       }
     },
     {
@@ -151174,7 +151273,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 24688,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Kalakappa Gurushantappa Bandi",
+        "RUNNER_UP_VOTES": 70177,
+        "TOTAL_VOTES": 178196
       }
     },
     {
@@ -156373,7 +156475,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 1791,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "B. R. Yavagal",
+        "RUNNER_UP_VOTES": 71044,
+        "TOTAL_VOTES": 150236
       }
     },
     {
@@ -161332,7 +161437,10 @@
         "RUNNER_UP": "IND",
         "MARGIN": 28520,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Ramakrishna. Shidlingappa. Doddamani",
+        "RUNNER_UP_VOTES": 45969,
+        "TOTAL_VOTES": 163974
       }
     },
     {
@@ -165147,7 +165255,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 15130,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Anil. P. Menasinakai",
+        "RUNNER_UP_VOTES": 74828,
+        "TOTAL_VOTES": 170232
       }
     },
     {
@@ -170286,7 +170397,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 9725,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Shanthagouda Thirthgouda Patil.",
+        "RUNNER_UP_VOTES": 56120,
+        "TOTAL_VOTES": 169038
       }
     },
     {
@@ -178381,7 +178495,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 5878,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Veerabhadrayya (Veeranna) Charantimath",
+        "RUNNER_UP_VOTES": 73458,
+        "TOTAL_VOTES": 170370
       }
     },
     {
@@ -186464,7 +186581,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 11129,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Nirani Muragesh Rudrappa",
+        "RUNNER_UP_VOTES": 84523,
+        "TOTAL_VOTES": 184837
       }
     },
     {
@@ -192819,7 +192939,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 4716,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Anand Siddu Nyamagouda",
+        "RUNNER_UP_VOTES": 77221,
+        "TOTAL_VOTES": 167688
       }
     },
     {
@@ -200542,7 +200665,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 17335,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Govind Makthappa Karjol",
+        "RUNNER_UP_VOTES": 59963,
+        "TOTAL_VOTES": 158767
       }
     },
     {
@@ -207545,7 +207671,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 30007,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Doddanagouda G Patil",
+        "RUNNER_UP_VOTES": 48427,
+        "TOTAL_VOTES": 165361
       }
     },
     {
@@ -209472,7 +209601,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 10745,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Siddu.Ramappa.Konnur.",
+        "RUNNER_UP_VOTES": 66520,
+        "TOTAL_VOTES": 179661
       }
     },
     {
@@ -210347,7 +210479,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 9725,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Shanthagouda Thirthgouda Patil.",
+        "RUNNER_UP_VOTES": 56120,
+        "TOTAL_VOTES": 169038
       }
     },
     {
@@ -214634,7 +214769,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 8233,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Abdul Hameed Khajasab Musharif",
+        "RUNNER_UP_VOTES": 85978,
+        "TOTAL_VOTES": 183057
       }
     },
     {
@@ -220073,7 +220211,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 15216,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Vijayakumar (Vijayagouda) Patil",
+        "RUNNER_UP_VOTES": 78707,
+        "TOTAL_VOTES": 179186
       }
     },
     {
@@ -224588,7 +224729,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 10329,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "B. D. Patil (Hanjagi)",
+        "RUNNER_UP_VOTES": 61456,
+        "TOTAL_VOTES": 180859
       }
     },
     {
@@ -230427,7 +230571,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 7808,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Bhusanur Ramesh Balappa",
+        "RUNNER_UP_VOTES": 79813,
+        "TOTAL_VOTES": 173399
       }
     },
     {
@@ -233818,7 +233965,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 7637,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "A. S. Patil (Nadahalli)",
+        "RUNNER_UP_VOTES": 71846,
+        "TOTAL_VOTES": 155021
       }
     },
     {
@@ -240537,7 +240687,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 20175,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "JD(S)"
+        "CURRENT_PARTY": "JD(S)",
+        "RUNNER_UP_NAME": "Somanagouda B. Patil (Sasanur)",
+        "RUNNER_UP_VOTES": 45777,
+        "TOTAL_VOTES": 151983
       }
     },
     {
@@ -247126,7 +247279,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 24863,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Bellubbi Sangappa Kallappa",
+        "RUNNER_UP_VOTES": 43263,
+        "TOTAL_VOTES": 158446
       }
     },
     {
@@ -255665,7 +255821,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 15216,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Vijayakumar (Vijayagouda) Patil",
+        "RUNNER_UP_VOTES": 78707,
+        "TOTAL_VOTES": 179186
       }
     },
     {
@@ -257360,7 +257519,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 3732,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Mohammed Shalam",
+        "RUNNER_UP_VOTES": 65923,
+        "TOTAL_VOTES": 145243
       }
     },
     {
@@ -262491,7 +262653,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 13857,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Tipparaju Hawaldar",
+        "RUNNER_UP_VOTES": 75283,
+        "TOTAL_VOTES": 173361
       }
     },
     {
@@ -268110,7 +268275,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 7719,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "A Bhagavantaray",
+        "RUNNER_UP_VOTES": 59203,
+        "TOTAL_VOTES": 157730
       }
     },
     {
@@ -274241,7 +274409,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 34256,
         "RESERVATION": "ST",
-        "CURRENT_PARTY": "JD(S)"
+        "CURRENT_PARTY": "JD(S)",
+        "RUNNER_UP_NAME": "Shivanagouda",
+        "RUNNER_UP_VOTES": 65288,
+        "TOTAL_VOTES": 175406
       }
     },
     {
@@ -279360,7 +279531,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 2809,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "D.S.Hulageri",
+        "RUNNER_UP_VOTES": 55960,
+        "TOTAL_VOTES": 174238
       }
     },
     {
@@ -283855,7 +284029,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 21942,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "K. Kariyappa",
+        "RUNNER_UP_VOTES": 51703,
+        "TOTAL_VOTES": 175431
       }
     },
     {
@@ -292714,7 +292891,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 36260,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Karadi Manjula",
+        "RUNNER_UP_VOTES": 54170,
+        "TOTAL_VOTES": 194749
       }
     },
     {
@@ -297285,7 +297465,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 8266,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Iqbal Ansari",
+        "RUNNER_UP_VOTES": 57947,
+        "TOTAL_VOTES": 159859
       }
     },
     {
@@ -301048,7 +301231,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 17181,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Achar Halappa Basappa",
+        "RUNNER_UP_VOTES": 77149,
+        "TOTAL_VOTES": 176998
       }
     },
     {
@@ -309559,7 +309745,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 9646,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Amaregouda Linganagouda Patil Bayyapur",
+        "RUNNER_UP_VOTES": 83269,
+        "TOTAL_VOTES": 183082
       }
     },
     {
@@ -314794,7 +314983,10 @@
         "RUNNER_UP": "KALYANA RAJYA PRAGATHI PAKSHA",
         "MARGIN": 37863,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Gali Lakshmi Aruna",
+        "RUNNER_UP_VOTES": 48577,
+        "TOTAL_VOTES": 178350
       }
     },
     {
@@ -322265,7 +322457,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 29300,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "B Sreeramulu",
+        "RUNNER_UP_VOTES": 74536,
+        "TOTAL_VOTES": 182692
       }
     },
     {
@@ -324956,7 +325151,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 35522,
         "RESERVATION": "ST",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Shilpa Raghavendra",
+        "RUNNER_UP_VOTES": 49701,
+        "TOTAL_VOTES": 172833
       }
     },
     {
@@ -334359,7 +334557,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 37032,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "M. S. Somalingappa",
+        "RUNNER_UP_VOTES": 53830,
+        "TOTAL_VOTES": 168106
       }
     },
     {
@@ -340402,7 +340603,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 33723,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Siddharth Singh A Thakur",
+        "RUNNER_UP_VOTES": 71140,
+        "TOTAL_VOTES": 180837
       }
     },
     {
@@ -346317,7 +346521,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 11344,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "JD(S)"
+        "CURRENT_PARTY": "JD(S)",
+        "RUNNER_UP_NAME": "L B P Bheema Naik",
+        "RUNNER_UP_VOTES": 72679,
+        "TOTAL_VOTES": 189065
       }
     },
     {
@@ -351636,7 +351843,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 54350,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Lokesh. V. Nayaka",
+        "RUNNER_UP_VOTES": 50403,
+        "TOTAL_VOTES": 163810
       }
     },
     {
@@ -355103,7 +355313,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 24091,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "T H Suresh Babu",
+        "RUNNER_UP_VOTES": 76333,
+        "TOTAL_VOTES": 181884
       }
     },
     {
@@ -355506,7 +355719,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 2712,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Chandrakant B. Patil (Chandu Patil)",
+        "RUNNER_UP_VOTES": 78261,
+        "TOTAL_VOTES": 178845
       }
     },
     {
@@ -356133,7 +356349,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 21048,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Dattatreya.C. Patil Revoor Appugouda",
+        "RUNNER_UP_VOTES": 66297,
+        "TOTAL_VOTES": 159567
       }
     },
     {
@@ -357150,7 +357369,10 @@
         "RUNNER_UP": "IND",
         "MARGIN": 4594,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Nitin Venkayya Guttedar",
+        "RUNNER_UP_VOTES": 51719,
+        "TOTAL_VOTES": 160322
       }
     },
     {
@@ -363693,7 +363915,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 10278,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Doddappagouda",
+        "RUNNER_UP_VOTES": 60532,
+        "TOTAL_VOTES": 167404
       }
     },
     {
@@ -372148,7 +372373,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 25223,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Narasimhanayak (Rajugouda)",
+        "RUNNER_UP_VOTES": 88336,
+        "TOTAL_VOTES": 207530
       }
     },
     {
@@ -381511,7 +381739,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 26027,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Ameenraddi Yalagi",
+        "RUNNER_UP_VOTES": 52326,
+        "TOTAL_VOTES": 166714
       }
     },
     {
@@ -385536,7 +385767,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 3673,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Venkatreddy Mudnal",
+        "RUNNER_UP_VOTES": 50129,
+        "TOTAL_VOTES": 155002
       }
     },
     {
@@ -389327,7 +389561,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 2579,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Baburao Chinchansoor",
+        "RUNNER_UP_VOTES": 69718,
+        "TOTAL_VOTES": 162330
       }
     },
     {
@@ -396714,7 +396951,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 858,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Subhash V Rathod",
+        "RUNNER_UP_VOTES": 69105,
+        "TOTAL_VOTES": 149940
       }
     },
     {
@@ -407961,7 +408201,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 43561,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Rajkumar Patil Telkur",
+        "RUNNER_UP_VOTES": 49816,
+        "TOTAL_VOTES": 175997
       }
     },
     {
@@ -413496,7 +413739,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 10780,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Suryakanth Nagamarpalli",
+        "RUNNER_UP_VOTES": 58385,
+        "TOTAL_VOTES": 150277
       }
     },
     {
@@ -418755,7 +419001,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 1263,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Ashok Kheny",
+        "RUNNER_UP_VOTES": 48609,
+        "TOTAL_VOTES": 153384
       }
     },
     {
@@ -422694,7 +422943,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 9569,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Bhimsain Rao Shinde",
+        "RUNNER_UP_VOTES": 71813,
+        "TOTAL_VOTES": 158603
       }
     },
     {
@@ -427701,7 +427953,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 1594,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Rajashekhar Basavaraj Patil",
+        "RUNNER_UP_VOTES": 73921,
+        "TOTAL_VOTES": 178807
       }
     },
     {
@@ -433540,7 +433795,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 14415,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Vijay Singh",
+        "RUNNER_UP_VOTES": 78505,
+        "TOTAL_VOTES": 175991
       }
     },
     {
@@ -438139,7 +438397,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 2138,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Roopali Santosh Naik",
+        "RUNNER_UP_VOTES": 75307,
+        "TOTAL_VOTES": 164267
       }
     },
     {
@@ -445494,7 +445755,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 676,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Suraj Naik Soni",
+        "RUNNER_UP_VOTES": 59289,
+        "TOTAL_VOTES": 148530
       }
     },
     {
@@ -450181,7 +450445,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 8712,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Kageri Vishweshwar Hegde",
+        "RUNNER_UP_VOTES": 68175,
+        "TOTAL_VOTES": 160538
       }
     },
     {
@@ -451644,7 +451911,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 4004,
         "RESERVATION": "ST",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Andalagi Veerabhadragouda Shivanagoud Patil",
+        "RUNNER_UP_VOTES": 70695,
+        "TOTAL_VOTES": 150338
       }
     },
     {
@@ -455079,7 +455349,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 3623,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Sunil Hegade",
+        "RUNNER_UP_VOTES": 53617,
+        "TOTAL_VOTES": 142827
       }
     },
     {
@@ -460366,7 +460639,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 27674,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "JD(S)"
+        "CURRENT_PARTY": "JD(S)",
+        "RUNNER_UP_NAME": "H C Yogesh",
+        "RUNNER_UP_VOTES": 68816,
+        "TOTAL_VOTES": 179829
       }
     },
     {
@@ -465305,7 +465581,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 2705,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Sharada Appaji",
+        "RUNNER_UP_VOTES": 63503,
+        "TOTAL_VOTES": 155311
       }
     },
     {
@@ -466516,7 +466795,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 15142,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "JD(S)"
+        "CURRENT_PARTY": "JD(S)",
+        "RUNNER_UP_NAME": "K.B.Ashok Naik",
+        "RUNNER_UP_VOTES": 71198,
+        "TOTAL_VOTES": 180848
       }
     },
     {
@@ -472239,7 +472521,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 12241,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Kimmane Ratnakar",
+        "RUNNER_UP_VOTES": 72322,
+        "TOTAL_VOTES": 161756
       }
     },
     {
@@ -478690,7 +478975,10 @@
         "RUNNER_UP": "IND",
         "MARGIN": 11008,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "S. P. Nagarajagowda",
+        "RUNNER_UP_VOTES": 70802,
+        "TOTAL_VOTES": 166729
       }
     },
     {
@@ -486361,7 +486649,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 44262,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "S. Kumara Bangarappa",
+        "RUNNER_UP_VOTES": 54650,
+        "TOTAL_VOTES": 164036
       }
     },
     {
@@ -492296,7 +492587,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 16022,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "H.Halappa Harathalu",
+        "RUNNER_UP_VOTES": 72966,
+        "TOTAL_VOTES": 166465
       }
     },
     {
@@ -495471,7 +495765,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 24472,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Lokikere Nagaraj",
+        "RUNNER_UP_VOTES": 69547,
+        "TOTAL_VOTES": 167891
       }
     },
     {
@@ -503018,7 +503315,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 27888,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Ajay Kumar. B.G",
+        "RUNNER_UP_VOTES": 56410,
+        "TOTAL_VOTES": 146382
       }
     },
     {
@@ -509493,7 +509793,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 4304,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Srinivasa N H (Nandigavi)",
+        "RUNNER_UP_VOTES": 59620,
+        "TOTAL_VOTES": 168473
       }
     },
     {
@@ -518032,7 +518335,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 874,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "S.V.Ramachandra",
+        "RUNNER_UP_VOTES": 49891,
+        "TOTAL_VOTES": 156483
       }
     },
     {
@@ -524159,7 +524465,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 13845,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "IND"
+        "CURRENT_PARTY": "IND",
+        "RUNNER_UP_NAME": "G Karunakara Reddy",
+        "RUNNER_UP_VOTES": 56349,
+        "TOTAL_VOTES": 177425
       }
     },
     {
@@ -531886,7 +532195,10 @@
         "RUNNER_UP": "IND",
         "MARGIN": 16435,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Madal Mallikarjuna",
+        "RUNNER_UP_VOTES": 61828,
+        "TOTAL_VOTES": 166402
       }
     },
     {
@@ -537957,7 +538269,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 53300,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "G.H.Thippa Reddy",
+        "RUNNER_UP_VOTES": 68721,
+        "TOTAL_VOTES": 203906
       }
     },
     {
@@ -539936,7 +540251,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 30322,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "K.Poornima",
+        "RUNNER_UP_VOTES": 61728,
+        "TOTAL_VOTES": 200016
       }
     },
     {
@@ -541863,7 +542181,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 32816,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "S. Lingamurthy",
+        "RUNNER_UP_VOTES": 48234,
+        "TOTAL_VOTES": 167580
       }
     },
     {
@@ -547222,7 +547543,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 5682,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "H.Anjaneya",
+        "RUNNER_UP_VOTES": 83050,
+        "TOTAL_VOTES": 197079
       }
     },
     {
@@ -552025,7 +552349,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 22149,
         "RESERVATION": "ST",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "S.Thippeswamy",
+        "RUNNER_UP_VOTES": 87310,
+        "TOTAL_VOTES": 203405
       }
     },
     {
@@ -558252,7 +558579,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 3198,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "N Govindaraju",
+        "RUNNER_UP_VOTES": 55967,
+        "TOTAL_VOTES": 175085
       }
     },
     {
@@ -563667,7 +563997,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 4594,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "D.C.Gowrishankar Swamy",
+        "RUNNER_UP_VOTES": 84597,
+        "TOTAL_VOTES": 182389
       }
     },
     {
@@ -566382,7 +566715,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 26573,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "D Krishnakumar",
+        "RUNNER_UP_VOTES": 48151,
+        "TOTAL_VOTES": 174277
       }
     },
     {
@@ -567249,7 +567585,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 17652,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "B.C. Nagesh",
+        "RUNNER_UP_VOTES": 54347,
+        "TOTAL_VOTES": 156069
       }
     },
     {
@@ -576096,7 +576435,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 9923,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "JD(S)"
+        "CURRENT_PARTY": "JD(S)",
+        "RUNNER_UP_NAME": "Masala Jayaram",
+        "RUNNER_UP_VOTES": 58240,
+        "TOTAL_VOTES": 160338
       }
     },
     {
@@ -580899,7 +581241,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 8541,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "S D Dilipkumar",
+        "RUNNER_UP_VOTES": 51979,
+        "TOTAL_VOTES": 160136
       }
     },
     {
@@ -590518,7 +590863,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 10042,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "J C Madhu Swamy",
+        "RUNNER_UP_VOTES": 60994,
+        "TOTAL_VOTES": 188657
       }
     },
     {
@@ -597693,7 +598041,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 35523,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "M.V.Veerabhadraiah",
+        "RUNNER_UP_VOTES": 55643,
+        "TOTAL_VOTES": 166615
       }
     },
     {
@@ -602880,7 +603231,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 10881,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "K.M.Thimmarayappa",
+        "RUNNER_UP_VOTES": 72181,
+        "TOTAL_VOTES": 167390
       }
     },
     {
@@ -606839,7 +607193,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 29250,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "R Ugresh",
+        "RUNNER_UP_VOTES": 56834,
+        "TOTAL_VOTES": 190706
       }
     },
     {
@@ -609810,7 +610167,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 14347,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "P. R. Sudhakar Lal",
+        "RUNNER_UP_VOTES": 64752,
+        "TOTAL_VOTES": 174578
       }
     },
     {
@@ -614501,7 +614861,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 30761,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "C.M.R. Srinath",
+        "RUNNER_UP_VOTES": 53229,
+        "TOTAL_VOTES": 192818
       }
     },
     {
@@ -621916,7 +622279,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 50467,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Ashwini Sampangi",
+        "RUNNER_UP_VOTES": 31102,
+        "TOTAL_VOTES": 148051
       }
     },
     {
@@ -630979,7 +631345,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 4711,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "M. Mallesh Babu",
+        "RUNNER_UP_VOTES": 72581,
+        "TOTAL_VOTES": 164294
       }
     },
     {
@@ -641054,7 +641423,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 26268,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "JD(S)"
+        "CURRENT_PARTY": "JD(S)",
+        "RUNNER_UP_NAME": "V.Adinarayana",
+        "RUNNER_UP_VOTES": 67986,
+        "TOTAL_VOTES": 176501
       }
     },
     {
@@ -647405,7 +647777,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 10443,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "JD(S)"
+        "CURRENT_PARTY": "JD(S)",
+        "RUNNER_UP_NAME": "K.R. Ramesh Kumar",
+        "RUNNER_UP_VOTES": 85020,
+        "TOTAL_VOTES": 190972
       }
     },
     {
@@ -653818,7 +654193,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 10642,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Dr. K. Sudhakar",
+        "RUNNER_UP_VOTES": 75582,
+        "TOTAL_VOTES": 184817
       }
     },
     {
@@ -660455,7 +660833,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 29052,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "J.K. Krishna Reddy",
+        "RUNNER_UP_VOTES": 68272,
+        "TOTAL_VOTES": 190632
       }
     },
     {
@@ -668458,7 +668839,10 @@
         "RUNNER_UP": "IND",
         "MARGIN": 16772,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "JD(S)"
+        "CURRENT_PARTY": "JD(S)",
+        "RUNNER_UP_NAME": "Puttu Anjinappa",
+        "RUNNER_UP_VOTES": 52160,
+        "TOTAL_VOTES": 177260
       }
     },
     {
@@ -674197,7 +674581,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 37286,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "IND"
+        "CURRENT_PARTY": "IND",
+        "RUNNER_UP_NAME": "N.H.Shivashankara Reddy",
+        "RUNNER_UP_VOTES": 46551,
+        "TOTAL_VOTES": 180815
       }
     },
     {
@@ -679132,7 +679519,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 19179,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "C. Muniraju",
+        "RUNNER_UP_VOTES": 62949,
+        "TOTAL_VOTES": 173372
       }
     },
     {
@@ -685963,7 +686353,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 49699,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "R K Ramesh",
+        "RUNNER_UP_VOTES": 146521,
+        "TOTAL_VOTES": 382112
       }
     },
     {
@@ -686318,7 +686711,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 31325,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Srinivas. C. Hullahalli",
+        "RUNNER_UP_VOTES": 103472,
+        "TOTAL_VOTES": 251702
       }
     },
     {
@@ -692963,7 +693359,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 24215,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "JD(S)"
+        "CURRENT_PARTY": "JD(S)",
+        "RUNNER_UP_NAME": "Umapathy Srinivasa Gowda",
+        "RUNNER_UP_VOTES": 89359,
+        "TOTAL_VOTES": 215037
       }
     },
     {
@@ -698234,7 +698633,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 16,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Sowmya Reddy",
+        "RUNNER_UP_VOTES": 57781,
+        "TOTAL_VOTES": 120743
       }
     },
     {
@@ -703409,7 +703811,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 54978,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "U.B.Venkatesh",
+        "RUNNER_UP_VOTES": 23876,
+        "TOTAL_VOTES": 128286
       }
     },
     {
@@ -709660,7 +710065,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 55175,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "V. Raghunatha Naidu",
+        "RUNNER_UP_VOTES": 43575,
+        "TOTAL_VOTES": 159991
       }
     },
     {
@@ -716707,7 +717115,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 9222,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "K.R.Sridhara",
+        "RUNNER_UP_VOTES": 59335,
+        "TOTAL_VOTES": 135231
       }
     },
     {
@@ -722842,7 +723253,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 12113,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "R. V. Devraj",
+        "RUNNER_UP_VOTES": 45186,
+        "TOTAL_VOTES": 128828
       }
     },
     {
@@ -728337,7 +728751,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 23194,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Chandra.N.",
+        "RUNNER_UP_VOTES": 41719,
+        "TOTAL_VOTES": 110447
       }
     },
     {
@@ -735588,7 +736005,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 105,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Sapthagiri Gowda A R",
+        "RUNNER_UP_VOTES": 54013,
+        "TOTAL_VOTES": 132609
       }
     },
     {
@@ -739711,7 +740131,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 8060,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Puttanna",
+        "RUNNER_UP_VOTES": 50564,
+        "TOTAL_VOTES": 118187
       }
     },
     {
@@ -744678,7 +745101,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 53953,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Bhaskar Rao",
+        "RUNNER_UP_VOTES": 23678,
+        "TOTAL_VOTES": 124767
       }
     },
     {
@@ -749865,7 +750291,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 12516,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "K. Umesh Shetty",
+        "RUNNER_UP_VOTES": 69618,
+        "TOTAL_VOTES": 161453
       }
     },
     {
@@ -755904,7 +756333,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 7324,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "H Ravindra",
+        "RUNNER_UP_VOTES": 72833,
+        "TOTAL_VOTES": 158713
       }
     },
     {
@@ -760835,7 +761267,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 51165,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Keshavamurthy S",
+        "RUNNER_UP_VOTES": 45259,
+        "TOTAL_VOTES": 159103
       }
     },
     {
@@ -763238,7 +763673,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 41302,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Anoop Iyengar",
+        "RUNNER_UP_VOTES": 39304,
+        "TOTAL_VOTES": 126493
       }
     },
     {
@@ -767349,7 +767787,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 30754,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Jagdeesha Katta K S",
+        "RUNNER_UP_VOTES": 61084,
+        "TOTAL_VOTES": 159132
       }
     },
     {
@@ -771128,7 +771569,10 @@
         "RUNNER_UP": "BSP",
         "MARGIN": 62210,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Akanda Srinivasa Murthy R",
+        "RUNNER_UP_VOTES": 25106,
+        "TOTAL_VOTES": 130869
       }
     },
     {
@@ -776447,7 +776891,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 55768,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Padmanabha Reddy",
+        "RUNNER_UP_VOTES": 63015,
+        "TOTAL_VOTES": 194604
       }
     },
     {
@@ -779898,7 +780345,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 16395,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Anand Kumar. S",
+        "RUNNER_UP_VOTES": 52833,
+        "TOTAL_VOTES": 129325
       }
     },
     {
@@ -781293,7 +781743,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 44501,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "H Nagesh",
+        "RUNNER_UP_VOTES": 137230,
+        "TOTAL_VOTES": 334616
       }
     },
     {
@@ -783692,7 +784145,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 64110,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Keshava Rajanna B",
+        "RUNNER_UP_VOTES": 77428,
+        "TOTAL_VOTES": 274807
       }
     },
     {
@@ -788159,7 +788615,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 24301,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "D K Mohan",
+        "RUNNER_UP_VOTES": 115624,
+        "TOTAL_VOTES": 269462
       }
     },
     {
@@ -789666,7 +790125,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 38204,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Thammesh Gowda H C",
+        "RUNNER_UP_VOTES": 121978,
+        "TOTAL_VOTES": 294274
       }
     },
     {
@@ -790833,7 +791295,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 15118,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "T.N.Javarayi Gowda",
+        "RUNNER_UP_VOTES": 154031,
+        "TOTAL_VOTES": 357911
       }
     },
     {
@@ -790976,7 +791441,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 9194,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "R. Manjunatha",
+        "RUNNER_UP_VOTES": 82095,
+        "TOTAL_VOTES": 229641
       }
     },
     {
@@ -791203,7 +791671,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 11842,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Kusuma .H",
+        "RUNNER_UP_VOTES": 116138,
+        "TOTAL_VOTES": 262701
       }
     },
     {
@@ -791346,7 +791817,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 31978,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Dr. K.Srinivasamurthy",
+        "RUNNER_UP_VOTES": 52251,
+        "TOTAL_VOTES": 172882
       }
     },
     {
@@ -791529,7 +792003,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 10715,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Nikhil Kumaraswamy",
+        "RUNNER_UP_VOTES": 76975,
+        "TOTAL_VOTES": 182750
       }
     },
     {
@@ -791924,7 +792401,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 15915,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "C.P. Yogeshwara",
+        "RUNNER_UP_VOTES": 80677,
+        "TOTAL_VOTES": 197796
       }
     },
     {
@@ -792227,7 +792707,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 11839,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "A. Manjunath.",
+        "RUNNER_UP_VOTES": 82811,
+        "TOTAL_VOTES": 202508
       }
     },
     {
@@ -792474,7 +792957,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 122392,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "B Nagaraju",
+        "RUNNER_UP_VOTES": 20631,
+        "TOTAL_VOTES": 190623
       }
     },
     {
@@ -792681,7 +793167,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 2019,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "B.R. Ramachandra",
+        "RUNNER_UP_VOTES": 59392,
+        "TOTAL_VOTES": 174546
       }
     },
     {
@@ -792868,7 +793357,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 24113,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "D.C.Thammanna",
+        "RUNNER_UP_VOTES": 62906,
+        "TOTAL_VOTES": 183390
       }
     },
     {
@@ -793031,7 +793523,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 46846,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Dr|| K. Annadani",
+        "RUNNER_UP_VOTES": 59652,
+        "TOTAL_VOTES": 197983
       }
     },
     {
@@ -793218,7 +793713,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 11137,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Ravindra Srikantaiah",
+        "RUNNER_UP_VOTES": 61680,
+        "TOTAL_VOTES": 185194
       }
     },
     {
@@ -793381,7 +793879,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 4414,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Sureshgowdaa",
+        "RUNNER_UP_VOTES": 86220,
+        "TOTAL_VOTES": 192146
       }
     },
     {
@@ -793488,7 +793989,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 22344,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "B.L.Devaraja",
+        "RUNNER_UP_VOTES": 58302,
+        "TOTAL_VOTES": 189545
       }
     },
     {
@@ -793667,7 +794171,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 10862,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "C. S. Puttaraju",
+        "RUNNER_UP_VOTES": 80289,
+        "TOTAL_VOTES": 183883
       }
     },
     {
@@ -793838,7 +794345,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 7213,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "M.K. Somashekar",
+        "RUNNER_UP_VOTES": 66457,
+        "TOTAL_VOTES": 150322
       }
     },
     {
@@ -794045,7 +794555,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 4094,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "L. Nagendra.",
+        "RUNNER_UP_VOTES": 68837,
+        "TOTAL_VOTES": 150615
       }
     },
     {
@@ -794240,7 +794753,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 31120,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "S. Satheesh Sandesh Swamy",
+        "RUNNER_UP_VOTES": 52360,
+        "TOTAL_VOTES": 184941
       }
     },
     {
@@ -794391,7 +794907,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 46163,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "V. Somanna",
+        "RUNNER_UP_VOTES": 73653,
+        "TOTAL_VOTES": 199379
       }
     },
     {
@@ -797190,7 +797709,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 18619,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Ashvin Kumar M",
+        "RUNNER_UP_VOTES": 59265,
+        "TOTAL_VOTES": 162256
       }
     },
     {
@@ -798219,7 +798741,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 47607,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "B. Harshavardhan",
+        "RUNNER_UP_VOTES": 61518,
+        "TOTAL_VOTES": 175864
       }
     },
     {
@@ -801714,7 +802239,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 2412,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "JD(S)"
+        "CURRENT_PARTY": "JD(S)",
+        "RUNNER_UP_NAME": "H.P.Manjunath",
+        "RUNNER_UP_VOTES": 92254,
+        "TOTAL_VOTES": 200946
       }
     },
     {
@@ -805865,7 +806393,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 34939,
         "RESERVATION": "ST",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "K.M. Krishnanayaka",
+        "RUNNER_UP_VOTES": 49420,
+        "TOTAL_VOTES": 182371
       }
     },
     {
@@ -809488,7 +810019,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 19675,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "K. Mahadeva",
+        "RUNNER_UP_VOTES": 66269,
+        "TOTAL_VOTES": 165205
       }
     },
     {
@@ -814699,7 +815233,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 19675,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "K. Mahadeva",
+        "RUNNER_UP_VOTES": 66269,
+        "TOTAL_VOTES": 165205
       }
     },
     {
@@ -820122,7 +820659,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 25500,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "S. Siddegowda",
+        "RUNNER_UP_VOTES": 79373,
+        "TOTAL_VOTES": 247118
       }
     },
     {
@@ -824333,7 +824873,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 7533,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "V.Somanna",
+        "RUNNER_UP_VOTES": 76325,
+        "TOTAL_VOTES": 173057
       }
     },
     {
@@ -833392,7 +833935,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 36675,
         "RESERVATION": "ST",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "C.S. Niranjan Kumar",
+        "RUNNER_UP_VOTES": 71119,
+        "TOTAL_VOTES": 187995
       }
     },
     {
@@ -840543,7 +841089,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 59519,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "N.Mahesh",
+        "RUNNER_UP_VOTES": 48844,
+        "TOTAL_VOTES": 167779
       }
     },
     {
@@ -847282,7 +847831,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 17654,
         "RESERVATION": "ST",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "R. Narendra",
+        "RUNNER_UP_VOTES": 57978,
+        "TOTAL_VOTES": 180366
       }
     },
     {
@@ -852633,7 +853185,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 7854,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "JD(S)"
+        "CURRENT_PARTY": "JD(S)",
+        "RUNNER_UP_NAME": "Preetham J. Gowda",
+        "RUNNER_UP_VOTES": 77322,
+        "TOTAL_VOTES": 171038
       }
     },
     {
@@ -858952,7 +859507,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 3152,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "JD(S)"
+        "CURRENT_PARTY": "JD(S)",
+        "RUNNER_UP_NAME": "Shreyas M Patel",
+        "RUNNER_UP_VOTES": 84951,
+        "TOTAL_VOTES": 185444
       }
     },
     {
@@ -863403,7 +863961,10 @@
         "RUNNER_UP": "IND",
         "MARGIN": 19605,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "M.T. Krishnegowda",
+        "RUNNER_UP_VOTES": 55038,
+        "TOTAL_VOTES": 193941
       }
     },
     {
@@ -867050,7 +867611,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 2056,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Kumaraswamy H.K",
+        "RUNNER_UP_VOTES": 56548,
+        "TOTAL_VOTES": 164898
       }
     },
     {
@@ -869717,7 +870281,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 7736,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "B. Shivaramu",
+        "RUNNER_UP_VOTES": 55835,
+        "TOTAL_VOTES": 164021
       }
     },
     {
@@ -874848,7 +875415,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 7736,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "B. Shivaramu",
+        "RUNNER_UP_VOTES": 55835,
+        "TOTAL_VOTES": 164021
       }
     },
     {
@@ -881507,7 +882077,10 @@
         "RUNNER_UP": "IND",
         "MARGIN": 19605,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "M.T. Krishnegowda",
+        "RUNNER_UP_VOTES": 55038,
+        "TOTAL_VOTES": 193941
       }
     },
     {
@@ -887702,7 +888275,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 6645,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "M.A. Gopalaswamy",
+        "RUNNER_UP_VOTES": 79023,
+        "TOTAL_VOTES": 175067
       }
     },
     {
@@ -893613,7 +894189,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 5926,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "C. T. Ravi",
+        "RUNNER_UP_VOTES": 79128,
+        "TOTAL_VOTES": 170072
       }
     },
     {
@@ -900760,7 +901339,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 12007,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Belli Prakash",
+        "RUNNER_UP_VOTES": 63469,
+        "TOTAL_VOTES": 169229
       }
     },
     {
@@ -908543,7 +909125,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 722,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Deepak Doddaiah",
+        "RUNNER_UP_VOTES": 50121,
+        "TOTAL_VOTES": 133811
       }
     },
     {
@@ -913450,7 +914035,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 12131,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "D.S. Suresh",
+        "RUNNER_UP_VOTES": 50955,
+        "TOTAL_VOTES": 154149
       }
     },
     {
@@ -919387,7 +919975,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 201,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "D.N.Jeevaraja.",
+        "RUNNER_UP_VOTES": 58970,
+        "TOTAL_VOTES": 141580
       }
     },
     {
@@ -926470,7 +927061,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 32776,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Prasadraj Kanchan",
+        "RUNNER_UP_VOTES": 64303,
+        "TOTAL_VOTES": 166060
       }
     },
     {
@@ -935301,7 +935895,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 13004,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Vinay Kumar Sorake",
+        "RUNNER_UP_VOTES": 67555,
+        "TOTAL_VOTES": 151355
       }
     },
     {
@@ -942772,7 +943369,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 41556,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Dinesh Hegde Molahalli",
+        "RUNNER_UP_VOTES": 60868,
+        "TOTAL_VOTES": 167471
       }
     },
     {
@@ -947863,7 +948463,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 16153,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "K. Gopal Poojary",
+        "RUNNER_UP_VOTES": 82475,
+        "TOTAL_VOTES": 185683
       }
     },
     {
@@ -950622,7 +951225,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 32922,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Inayath Ali",
+        "RUNNER_UP_VOTES": 70609,
+        "TOTAL_VOTES": 182363
       }
     },
     {
@@ -953345,7 +953951,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 23962,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "J.R.Lobo",
+        "RUNNER_UP_VOTES": 67475,
+        "TOTAL_VOTES": 161943
       }
     },
     {
@@ -955456,7 +956065,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 8282,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "B. Ramanath Rai",
+        "RUNNER_UP_VOTES": 85042,
+        "TOTAL_VOTES": 185572
       }
     },
     {
@@ -959267,7 +959879,10 @@
         "RUNNER_UP": "IND",
         "MARGIN": 4149,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Arun Kumar Puthila",
+        "RUNNER_UP_VOTES": 62458,
+        "TOTAL_VOTES": 172762
       }
     },
     {
@@ -963882,7 +964497,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 4402,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Appachu Ranjan M. P",
+        "RUNNER_UP_VOTES": 80477,
+        "TOTAL_VOTES": 177416
       }
     },
     {
@@ -971709,7 +972327,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 4291,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "K.G.Bopaiah",
+        "RUNNER_UP_VOTES": 79500,
+        "TOTAL_VOTES": 167778
       }
     },
     {
@@ -979908,7 +980529,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 30874,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "G. Krishnappa Ramakunja.",
+        "RUNNER_UP_VOTES": 63037,
+        "TOTAL_VOTES": 164732
       }
     },
     {
@@ -990771,7 +991395,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 22468,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Mithun M Rai",
+        "RUNNER_UP_VOTES": 64457,
+        "TOTAL_VOTES": 158721
       }
     },
     {
@@ -996886,7 +997513,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 18216,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Rakshith Shivaram",
+        "RUNNER_UP_VOTES": 82788,
+        "TOTAL_VOTES": 189007
       }
     },
     {
@@ -1002513,7 +1003143,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 25500,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "S. Siddegowda",
+        "RUNNER_UP_VOTES": 79373,
+        "TOTAL_VOTES": 247118
       }
     },
     {
@@ -1007824,7 +1008457,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 34256,
         "RESERVATION": "ST",
-        "CURRENT_PARTY": "JD(S)"
+        "CURRENT_PARTY": "JD(S)",
+        "RUNNER_UP_NAME": "Shivanagouda",
+        "RUNNER_UP_VOTES": 65288,
+        "TOTAL_VOTES": 175406
       }
     },
     {
@@ -1015859,7 +1016495,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 10348,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Subhash Guttedar",
+        "RUNNER_UP_VOTES": 79160,
+        "TOTAL_VOTES": 174588
       }
     },
     {
@@ -1020790,7 +1021429,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 13640,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Manikanta Rathod",
+        "RUNNER_UP_VOTES": 67683,
+        "TOTAL_VOTES": 153195
       }
     },
     {
@@ -1027461,7 +1028103,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 24301,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "D K Mohan",
+        "RUNNER_UP_VOTES": 115624,
+        "TOTAL_VOTES": 269462
       }
     },
     {
@@ -1028212,7 +1028857,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 25639,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "Sa.Ra. Mahesh.",
+        "RUNNER_UP_VOTES": 78863,
+        "TOTAL_VOTES": 188841
       }
     },
     {
@@ -1028971,7 +1029619,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 2056,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Kumaraswamy H.K",
+        "RUNNER_UP_VOTES": 56548,
+        "TOTAL_VOTES": 164898
       }
     },
     {
@@ -1029506,7 +1030157,10 @@
         "RUNNER_UP": "IND",
         "MARGIN": 4594,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Nitin Venkayya Guttedar",
+        "RUNNER_UP_VOTES": 51719,
+        "TOTAL_VOTES": 160322
       }
     },
     {
@@ -1036397,7 +1037051,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 5075,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "N Nagaraju",
+        "RUNNER_UP_VOTES": 102145,
+        "TOTAL_VOTES": 213896
       }
     },
     {
@@ -1042392,7 +1043049,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 4631,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Nisarga Narayanaswamy L.N",
+        "RUNNER_UP_VOTES": 68427,
+        "TOTAL_VOTES": 180569
       }
     },
     {
@@ -1049839,7 +1050499,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 31753,
         "RESERVATION": "SC",
-        "CURRENT_PARTY": "BJP"
+        "CURRENT_PARTY": "BJP",
+        "RUNNER_UP_NAME": "T.Venkataramanaiah (Appakaranahalli T.Venkatesh)",
+        "RUNNER_UP_VOTES": 53391,
+        "TOTAL_VOTES": 182365
       }
     },
     {
@@ -1055286,7 +1055949,10 @@
         "RUNNER_UP": "JD(S)",
         "MARGIN": 31978,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Dr. K.Srinivasamurthy",
+        "RUNNER_UP_VOTES": 52251,
+        "TOTAL_VOTES": 172882
       }
     },
     {
@@ -1060733,7 +1061399,10 @@
         "RUNNER_UP": "BJP",
         "MARGIN": 10642,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "INC"
+        "CURRENT_PARTY": "INC",
+        "RUNNER_UP_NAME": "Dr. K. Sudhakar",
+        "RUNNER_UP_VOTES": 75582,
+        "TOTAL_VOTES": 184817
       }
     },
     {
@@ -1068112,7 +1068781,10 @@
         "RUNNER_UP": "INC",
         "MARGIN": 37286,
         "RESERVATION": "GEN",
-        "CURRENT_PARTY": "IND"
+        "CURRENT_PARTY": "IND",
+        "RUNNER_UP_NAME": "N.H.Shivashankara Reddy",
+        "RUNNER_UP_VOTES": 46551,
+        "TOTAL_VOTES": 180815
       }
     }
   ]
