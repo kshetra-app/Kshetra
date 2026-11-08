@@ -15,6 +15,7 @@
  * election schedule model.
  */
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import type {
   ConstituencyBrief,
   ReservationStatus,
@@ -838,8 +839,14 @@ export class CanonicalGeographyService {
       }
     }
 
-    // Default canonical hierarchy pilot for known assembly constituencies when DB is offline or empty
-    if (ulbs.length === 0 && gps.length === 0 && booths.length === 0) {
+    // Keep the hand-authored hierarchy available only for local/demo use. Never
+    // report sample wards, booths, or voter counts as live campaign geography.
+    if (
+      !isProductionLikeRuntime() &&
+      ulbs.length === 0 &&
+      gps.length === 0 &&
+      booths.length === 0
+    ) {
       if (acNo === 4) { // Mancherial
         ulbs = [
           {

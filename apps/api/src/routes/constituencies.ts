@@ -26,19 +26,27 @@ import {
 import { sendApiError } from '../lib/replyHelper';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
-/** Map ConstituencyBrief to generic ConstituencyRecord for analytics */
-function constituencyToRecord(c: ConstituencyBrief): ConstituencyRecord {
+/** Convert only explicit election winner records; reject current-seat fallbacks. */
+function constituencyToRecord(c: ConstituencyBrief): ConstituencyRecord | null {
   const elec = getConstituencyElectionData(c.stateCode, c.acNo);
   const rec = elec?.recentElection;
+  if (!rec?.winner || !rec.electionYear) return null;
+
+  const winnerVotes =
+    rec.winnerVotes != null && Number.isFinite(rec.winnerVotes) && rec.winnerVotes > 0
+      ? rec.winnerVotes
+      : null;
+  const margin = rec.margin != null && Number.isFinite(rec.margin) && rec.margin > 0 ? rec.margin : null;
+
   return {
     acNo: c.acNo,
     name: c.name,
     district: c.district,
     type: (c.reservationStatus as 'GEN' | 'SC' | 'ST') || 'GEN',
-    winner: rec?.winner || c.currentParty || 'UNKNOWN',
-    winnerVotes: rec?.winnerVotes ?? 100000,
-    runnerUp: rec?.runnerUp || '',
-    margin: rec?.margin ?? 10000,
+    winner: rec.winner,
+    winnerVotes,
+    runnerUp: rec.runnerUp,
+    margin,
   };
 }
 
@@ -222,6 +230,26 @@ const analyticsSchema = {
       properties: {
         state: { type: 'string' },
         totalConstituencies: { type: 'number' },
+        geographicalConstituencies: { type: 'number' },
+        electionResultsCoverage: {
+          type: 'object',
+          properties: {
+            constituenciesWithElectionWinners: { type: 'number' },
+            constituenciesWithoutElectionWinners: { type: 'number' },
+            winnerCoveragePercentage: { type: 'number' },
+            constituenciesWithUsableMargins: { type: 'number' },
+            constituenciesWithoutUsableMargins: { type: 'number' },
+            marginCoveragePercentage: { type: 'number' },
+          },
+          required: [
+            'constituenciesWithElectionWinners',
+            'constituenciesWithoutElectionWinners',
+            'winnerCoveragePercentage',
+            'constituenciesWithUsableMargins',
+            'constituenciesWithoutUsableMargins',
+            'marginCoveragePercentage',
+          ],
+        },
         totalDistricts: { type: 'number' },
         partySummary: {
           type: 'array',
@@ -263,16 +291,16 @@ const analyticsSchema = {
             closest: {
               type: 'object',
               properties: {
-                constituency: { type: 'string' },
-                margin: { type: 'number' },
+                constituency: { type: ['string', 'null'] },
+                margin: { type: ['number', 'null'] },
               },
               required: ['constituency', 'margin'],
             },
             biggest: {
               type: 'object',
               properties: {
-                constituency: { type: 'string' },
-                margin: { type: 'number' },
+                constituency: { type: ['string', 'null'] },
+                margin: { type: ['number', 'null'] },
               },
               required: ['constituency', 'margin'],
             },
@@ -283,6 +311,8 @@ const analyticsSchema = {
       required: [
         'state',
         'totalConstituencies',
+        'geographicalConstituencies',
+        'electionResultsCoverage',
         'totalDistricts',
         'partySummary',
         'districts',
@@ -739,11 +769,39 @@ export async function constituencyRoutes(app: FastifyInstance) {
       }
 
       const constituencies = getConstituencies('TS');
-      const records = constituencies.map(constituencyToRecord);
+      const records = constituencies
+        .map(constituencyToRecord)
+        .filter((record): record is ConstituencyRecord => record !== null);
+      if (records.length === 0) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Election analytics are unavailable because no election winner records are available.',
+          { code: 'ELECTION_RESULTS_UNAVAILABLE' },
+        );
+      }
       const analytics = computeElectionAnalytics(records);
+      const marginsWithUsableValues = records.filter((record) => record.margin != null).length;
 
       return {
         state: 'TS',
+        geographicalConstituencies: constituencies.length,
+        electionResultsCoverage: {
+          constituenciesWithElectionWinners: records.length,
+          constituenciesWithoutElectionWinners: constituencies.length - records.length,
+          winnerCoveragePercentage:
+            constituencies.length > 0
+              ? parseFloat(((records.length / constituencies.length) * 100).toFixed(1))
+              : 0,
+          constituenciesWithUsableMargins: marginsWithUsableValues,
+          constituenciesWithoutUsableMargins: constituencies.length - marginsWithUsableValues,
+          marginCoveragePercentage:
+            constituencies.length > 0
+              ? parseFloat(((marginsWithUsableValues / constituencies.length) * 100).toFixed(1))
+              : 0,
+        },
         ...analytics,
       };
     },

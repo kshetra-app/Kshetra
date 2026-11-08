@@ -10,9 +10,9 @@ export interface ConstituencyRecord {
   district: string;
   type: 'GEN' | 'SC' | 'ST';
   winner: string;
-  winnerVotes: number;
+  winnerVotes: number | null;
   runnerUp: string;
-  margin: number;
+  margin: number | null;
 }
 
 export interface PartySummary {
@@ -29,8 +29,8 @@ export interface DistrictSummary {
 }
 
 export interface MarginExtremes {
-  closest: { constituency: string; margin: number };
-  biggest: { constituency: string; margin: number };
+  closest: { constituency: string | null; margin: number | null };
+  biggest: { constituency: string | null; margin: number | null };
 }
 
 export interface ElectionAnalytics {
@@ -64,13 +64,15 @@ export function computeElectionAnalytics(records: ConstituencyRecord[]): Electio
 
     reservationCounts[c.type]++;
 
-    if (c.margin < closestMargin) {
-      closestMargin = c.margin;
-      closestAC = c.name;
-    }
-    if (c.margin > biggestMargin) {
-      biggestMargin = c.margin;
-      biggestAC = c.name;
+    if (c.margin != null && Number.isFinite(c.margin) && c.margin > 0) {
+      if (c.margin < closestMargin) {
+        closestMargin = c.margin;
+        closestAC = c.name;
+      }
+      if (c.margin > biggestMargin) {
+        biggestMargin = c.margin;
+        biggestAC = c.name;
+      }
     }
   }
 
@@ -102,8 +104,12 @@ export function computeElectionAnalytics(records: ConstituencyRecord[]): Electio
     districts,
     reservationCounts,
     margins: {
-      closest: { constituency: closestAC, margin: closestMargin },
-      biggest: { constituency: biggestAC, margin: biggestMargin },
+      closest: Number.isFinite(closestMargin)
+        ? { constituency: closestAC, margin: closestMargin }
+        : { constituency: null, margin: null },
+      biggest: biggestAC
+        ? { constituency: biggestAC, margin: biggestMargin }
+        : { constituency: null, margin: null },
     },
   };
 }
