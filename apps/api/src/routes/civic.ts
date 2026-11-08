@@ -1,3 +1,4 @@
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import type { FastifyInstance } from 'fastify';
 import { sendApiError } from '../lib/replyHelper';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
@@ -10,6 +11,8 @@ import {
 } from '../services/civicService';
 import { canonicalGeographyService } from '../services/canonicalGeographyService';
 import { checkContentModeration } from '../services/contentModeration';
+
+const isProductionRuntime = isProductionLikeRuntime();
 
 // Schema definitions for civic endpoints
 const budgetSchema = {
@@ -863,19 +866,50 @@ export async function civicRoutes(app: FastifyInstance) {
     {
       schema: schemesSchema,
     },
-    async (request) => {
+    async (request, reply) => {
       const { state, category, level } = request.query;
       let schemesList: any[] = [];
+      if (!isSupabaseConfigured && isProductionRuntime) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Government scheme records are unavailable from the authoritative database.',
+          { code: 'CIVIC_SCHEMES_UNAVAILABLE' },
+        );
+      }
       if (isSupabaseConfigured) {
         try {
           let q = supabase.from('government_schemes').select('*');
           if (state) q = q.or(`state_code.eq.${state},state_code.is.null`);
           if (category) q = q.eq('category', category);
           const { data, error } = await q;
-          if (!error && data && data.length > 0) schemesList = data;
-        } catch {}
+          if (error && isProductionRuntime) {
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Government scheme records could not be loaded from the authoritative database.',
+              { code: 'CIVIC_SCHEMES_UNAVAILABLE' },
+            );
+          }
+          if (!error) schemesList = data || [];
+        } catch {
+          if (isProductionRuntime) {
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Government scheme records could not be loaded from the authoritative database.',
+              { code: 'CIVIC_SCHEMES_UNAVAILABLE' },
+            );
+          }
+        }
       }
-      if (schemesList.length === 0) {
+      if (!isProductionRuntime && schemesList.length === 0) {
         schemesList = await civicService.getSchemes({ stateCode: state, category });
       }
       return {
@@ -901,9 +935,19 @@ export async function civicRoutes(app: FastifyInstance) {
     {
       schema: projectsSchema,
     },
-    async (request) => {
+    async (request, reply) => {
       const { state, phase, category, constituency } = request.query;
       let projectsList: any[] = [];
+      if (!isSupabaseConfigured && isProductionRuntime) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Development project records are unavailable from the authoritative database.',
+          { code: 'CIVIC_PROJECTS_UNAVAILABLE' },
+        );
+      }
       if (isSupabaseConfigured) {
         try {
           let q = supabase.from('development_projects').select('*');
@@ -911,10 +955,31 @@ export async function civicRoutes(app: FastifyInstance) {
           if (constituency) q = q.eq('constituency_id', constituency);
           if (category) q = q.eq('category', category);
           const { data, error } = await q;
-          if (!error && data && data.length > 0) projectsList = data;
-        } catch {}
+          if (error && isProductionRuntime) {
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Development project records could not be loaded from the authoritative database.',
+              { code: 'CIVIC_PROJECTS_UNAVAILABLE' },
+            );
+          }
+          if (!error) projectsList = data || [];
+        } catch {
+          if (isProductionRuntime) {
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Development project records could not be loaded from the authoritative database.',
+              { code: 'CIVIC_PROJECTS_UNAVAILABLE' },
+            );
+          }
+        }
       }
-      if (projectsList.length === 0) {
+      if (!isProductionRuntime && projectsList.length === 0) {
         projectsList = await civicService.getProjects({ constituencyId: constituency, stateCode: state });
       }
       return {
