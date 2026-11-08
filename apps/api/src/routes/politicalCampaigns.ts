@@ -5,6 +5,7 @@
  */
 
 import type { FastifyPluginAsync } from 'fastify';
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import { campaignService } from '../services/campaignService';
 import { sendApiError } from '../lib/replyHelper';
 import type {
@@ -14,6 +15,22 @@ import type {
 } from '@kshetra/shared';
 
 export const politicalCampaignRoutes: FastifyPluginAsync = async (app) => {
+  // This legacy service still keeps team/content workflows in process memory,
+  // accepts caller-supplied identities, and includes unsourced intelligence fields.
+  // Preserve its development demo, but never expose it as a live production API.
+  if (isProductionLikeRuntime()) {
+    app.addHook('preHandler', async (request, reply) =>
+      sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Political campaign authentication, durable team/content storage, and sourced intelligence are not connected for production.',
+        { code: 'POLITICAL_CAMPAIGN_SERVICE_UNAVAILABLE' },
+      ),
+    );
+  }
+
   // Create Political Campaign Workspace (JOB 054)
   app.post<{ Body: CreatePoliticalCampaignInput }>(
     '/',
