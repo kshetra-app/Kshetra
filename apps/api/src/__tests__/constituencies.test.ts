@@ -171,6 +171,15 @@ describe('Constituency Routes', () => {
 
     expect(body.state).toBe('TS');
     expect(body.totalConstituencies).toBe(119);
+    expect(body.geographicalConstituencies).toBe(119);
+    expect(body.electionResultsCoverage).toEqual({
+      constituenciesWithElectionWinners: 119,
+      constituenciesWithoutElectionWinners: 0,
+      winnerCoveragePercentage: 100,
+      constituenciesWithUsableMargins: 118,
+      constituenciesWithoutUsableMargins: 1,
+      marginCoveragePercentage: 99.2,
+    });
     expect(body.totalDistricts).toBeGreaterThan(0);
 
     expect(body.partySummary).toBeInstanceOf(Array);
