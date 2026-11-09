@@ -16,9 +16,9 @@ interface CaseDetail {
 }
 
 interface Props {
-  totalCases: number;
-  seriousCases: number;
-  convictions: number;
+  totalCases: number | null;
+  seriousCases: number | null;
+  convictions: number | null;
   caseDetails: CaseDetail[];
   compact?: boolean;
 }
@@ -26,6 +26,18 @@ interface Props {
 export default function CriminalRecordCard({ totalCases, seriousCases, convictions, caseDetails, compact }: Props) {
   const { colors } = useTheme();
   const [expanded, setExpanded] = useState(false);
+
+  if (totalCases == null) {
+    if (compact) return null;
+    return (
+      <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1 }]}>
+        <View style={styles.cleanRow}>
+          <Ionicons name="help-circle-outline" size={20} color={colors.textMuted} />
+          <Text style={[styles.cleanText, { color: colors.textMuted }]}>Criminal case disclosure unavailable</Text>
+        </View>
+      </View>
+    );
+  }
 
   if (totalCases === 0) {
     if (compact) return null;
@@ -39,7 +51,7 @@ export default function CriminalRecordCard({ totalCases, seriousCases, convictio
     );
   }
 
-  const severity = convictions > 0 ? 'critical' : seriousCases > 0 ? 'serious' : 'minor';
+  const severity = (convictions ?? 0) > 0 ? 'critical' : (seriousCases ?? 0) > 0 ? 'serious' : 'minor';
   const severityColor = severity === 'critical' ? colors.danger : severity === 'serious' ? colors.warning : colors.textMuted;
 
   if (compact) {
@@ -47,7 +59,7 @@ export default function CriminalRecordCard({ totalCases, seriousCases, convictio
       <View style={[styles.compactContainer, { backgroundColor: colors.surface, borderLeftColor: severityColor, borderColor: colors.border, borderWidth: 1 }]}>
         <Ionicons name="warning" size={14} color={severityColor} />
         <Text style={[styles.compactText, { color: severityColor }]}>
-          {totalCases} case{totalCases > 1 ? 's' : ''}{seriousCases > 0 ? ` (${seriousCases} serious)` : ''}
+          {totalCases} case{totalCases > 1 ? 's' : ''}{(seriousCases ?? 0) > 0 ? ` (${seriousCases} serious)` : ''}
         </Text>
       </View>
     );
@@ -74,12 +86,12 @@ export default function CriminalRecordCard({ totalCases, seriousCases, convictio
         </View>
         <View style={[styles.summaryDivider, { backgroundColor: colors.border }]} />
         <View style={styles.summaryItem}>
-          <Text style={[styles.summaryValue, { color: seriousCases > 0 ? colors.danger : colors.textMuted }]}>{seriousCases}</Text>
+          <Text style={[styles.summaryValue, { color: (seriousCases ?? 0) > 0 ? colors.danger : colors.textMuted }]}>{seriousCases ?? '—'}</Text>
           <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>Serious</Text>
         </View>
         <View style={[styles.summaryDivider, { backgroundColor: colors.border }]} />
         <View style={styles.summaryItem}>
-          <Text style={[styles.summaryValue, { color: convictions > 0 ? colors.danger : colors.textMuted }]}>{convictions}</Text>
+          <Text style={[styles.summaryValue, { color: (convictions ?? 0) > 0 ? colors.danger : colors.textMuted }]}>{convictions ?? '—'}</Text>
           <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>Convictions</Text>
         </View>
       </View>

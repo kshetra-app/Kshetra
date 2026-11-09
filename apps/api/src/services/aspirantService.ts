@@ -1,10 +1,11 @@
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 /**
  * Aspirant, Community Pages & Leadership Academy Service
  * Master Product Blueprint — Domain 4 (JOB 046 - JOB 050)
  * Ratified under DEC-176 and DEC-177
  */
 
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, isUsingServiceRole } from '../lib/supabase';
 import type {
   AspirantRegistrationRequest,
   AspirantKYCSubmissionRequest,
@@ -28,6 +29,24 @@ export interface AcademyModuleData extends LeadershipModuleDTO {
   sections?: Array<{ heading: string; body: string }>;
   keyTakeaways?: string[];
   quiz?: QuizQuestionDTO[];
+}
+
+type PublicAcademyModuleData = Omit<AcademyModuleData, 'quiz'> & {
+  quiz?: Array<Pick<QuizQuestionDTO, 'id' | 'question' | 'options'>>;
+};
+
+function publicAcademyModule(module: AcademyModuleData): PublicAcademyModuleData {
+  const { quiz, ...metadata } = module;
+  return {
+    ...metadata,
+    quiz: quiz?.map(({ id, question, options }) => ({ id, question, options })),
+  };
+}
+
+function isProductionRuntime(): boolean { return isProductionLikeRuntime(); }
+
+function academyError(message: string, code: string, statusCode = 503): Error & { code: string; statusCode: number } {
+  return Object.assign(new Error(message), { code, statusCode });
 }
 
 export const ACADEMY_CURRICULUM: Record<string, AcademyModuleData> = {
@@ -185,7 +204,7 @@ export class AspirantService {
       targetConstituencyAcNo: row.target_constituency_ac_no ?? row.targetConstituencyAcNo ?? undefined,
       targetConstituencyName: row.target_constituency_name ?? row.targetConstituencyName ?? undefined,
       targetElectionYear: row.target_election_year ?? row.targetElectionYear ?? undefined,
-      partyAffiliation: row.party_affiliation ?? row.partyAffiliation ?? 'Independent',
+      partyAffiliation: row.party_affiliation ?? row.partyAffiliation ?? undefined,
       isIndependent: row.is_independent ?? row.isIndependent ?? true,
       manifestoUrl: row.manifesto_url ?? row.manifestoUrl ?? undefined,
       visionSummary: row.vision_summary ?? row.visionSummary ?? undefined,
@@ -197,8 +216,13 @@ export class AspirantService {
       civicScore: row.civic_score ?? row.civicScore ?? 0,
       issuesReported: row.issues_reported ?? row.issuesReported ?? 0,
       issuesResolved: row.issues_resolved ?? row.issuesResolved ?? 0,
+      commentsCount: row.comments_count ?? row.commentsCount ?? 0,
+      evidenceSubmitted: row.evidence_submitted ?? row.evidenceSubmitted ?? 0,
+      promisesTracked: row.promises_tracked ?? row.promisesTracked ?? 0,
       communityEndorsements: row.community_endorsements ?? row.communityEndorsements ?? 0,
       modulesCompleted: row.modules_completed ?? row.modulesCompleted ?? 0,
+      challengesCompleted: row.challenges_completed ?? row.challengesCompleted ?? 0,
+      isPublic: row.is_public ?? row.isPublic ?? true,
       badges: row.badges ?? [],
       upcomingEvents: row.upcomingEvents ?? [],
       createdAt: row.created_at ?? row.createdAt ?? new Date().toISOString(),
@@ -215,7 +239,7 @@ export class AspirantService {
     if (!req.displayName || req.displayName.trim().length < 2) {
       throw new Error('DISPLAY_NAME_REQUIRED');
     }
-    if (!req.stateCode) {
+    if (!req.stateCode || !req.stateCode.trim()) {
       throw new Error('STATE_CODE_REQUIRED');
     }
 
@@ -247,11 +271,11 @@ export class AspirantService {
       user_id: userId,
       display_name: req.displayName.trim(),
       bio: req.bio?.trim() || null,
-      state_code: req.stateCode,
+      state_code: req.stateCode.trim().toUpperCase(),
       target_constituency_ac_no: req.targetConstituencyAcNo || null,
       target_constituency_name: req.targetConstituencyName || null,
-      target_election_year: req.targetElectionYear || 2029,
-      party_affiliation: req.partyAffiliation || 'Independent',
+      target_election_year: req.targetElectionYear ?? null,
+      party_affiliation: req.partyAffiliation?.trim() || null,
       is_independent: req.isIndependent ?? true,
       manifesto_url: req.manifestoUrl || null,
       vision_summary: req.visionSummary || null,
@@ -283,11 +307,11 @@ export class AspirantService {
       userId,
       ...record,
       displayName: req.displayName.trim(),
-      stateCode: req.stateCode,
+      stateCode: req.stateCode.trim().toUpperCase(),
       targetConstituencyAcNo: req.targetConstituencyAcNo || null,
       targetConstituencyName: req.targetConstituencyName || null,
-      targetElectionYear: req.targetElectionYear || 2029,
-      partyAffiliation: req.partyAffiliation || 'Independent',
+      targetElectionYear: req.targetElectionYear ?? null,
+      partyAffiliation: req.partyAffiliation?.trim() || null,
       isIndependent: req.isIndependent ?? true,
       manifestoUrl: req.manifestoUrl || null,
       visionSummary: req.visionSummary || null,
@@ -306,6 +330,20 @@ export class AspirantService {
     };
     this.mockProfiles.set(userId, saved);
     return this.mapProfileRow(saved);
+  }
+
+  static async getMyProfile(userId: string): Promise<any | null> {
+    if (!this.shouldUseDatabaseAcademy()) {
+      return this.mapProfileRow(this.mockProfiles.get(userId) ?? null);
+    }
+
+    const { data, error } = await supabase
+      .from('aspirant_profiles')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+    if (error) throw academyError(error.message, 'DATABASE_ERROR');
+    return this.mapProfileRow(data);
   }
 
   // ─── 2. ASPIRANT KYC VERIFICATION (JOB 046 - DEC-177 Decision 1) ───
@@ -447,10 +485,11 @@ export class AspirantService {
       profile = data;
 
       // Fetch badges
-      const { data: badgesData } = await supabase
+      const { data: badgesData, error: badgesError } = await supabase
         .from('civic_badges')
         .select('badge_type, earned_at')
         .eq('user_id', profile.user_id);
+      if (badgesError) throw academyError(badgesError.message, 'DATABASE_ERROR');
 
       const badges = (badgesData || []).map(b => ({
         badgeType: b.badge_type,
@@ -478,8 +517,8 @@ export class AspirantService {
         stateCode: profile.state_code,
         targetConstituencyAcNo: profile.target_constituency_ac_no || undefined,
         targetConstituencyName: profile.target_constituency_name || undefined,
-        targetElectionYear: profile.target_election_year || 2029,
-        partyAffiliation: profile.party_affiliation || 'Independent',
+        targetElectionYear: profile.target_election_year ?? undefined,
+        partyAffiliation: profile.party_affiliation ?? undefined,
         isIndependent: profile.is_independent,
         verificationTier: profile.verification_tier || 'tier1',
         verificationStatus: profile.verification_status || 'unverified',
@@ -526,8 +565,8 @@ export class AspirantService {
       stateCode: profile.state_code || profile.stateCode,
       targetConstituencyAcNo: profile.target_constituency_ac_no || profile.targetConstituencyAcNo,
       targetConstituencyName: profile.target_constituency_name || profile.targetConstituencyName,
-      targetElectionYear: profile.target_election_year || profile.targetElectionYear || 2029,
-      partyAffiliation: profile.party_affiliation || profile.partyAffiliation || 'Independent',
+      targetElectionYear: profile.target_election_year ?? profile.targetElectionYear ?? undefined,
+      partyAffiliation: profile.party_affiliation ?? profile.partyAffiliation ?? undefined,
       isIndependent: profile.is_independent ?? profile.isIndependent ?? true,
       verificationTier: profile.verification_tier || 'tier1',
       verificationStatus: profile.verification_status || 'unverified',
@@ -867,36 +906,166 @@ export class AspirantService {
 
   // ─── 5. LEADERSHIP ACADEMY & QUIZ VALIDATION (JOB 050 - DEC-177 Decision 3) ───
 
-  static listAcademyModules(userId?: string): LeadershipModuleDTO[] {
-    return Object.values(ACADEMY_CURRICULUM).map(mod => {
-      let completed = false;
-      let quizScore: number | undefined = undefined;
-      if (userId) {
-        const prog = this.mockModuleProgress.get(`${userId}:${mod.id}`);
-        if (prog) {
-          completed = prog.completed;
-          quizScore = prog.quizScore;
-        }
+  private static shouldUseDatabaseAcademy(): boolean {
+    if (!isSupabaseConfigured || (isProductionRuntime() && !isUsingServiceRole)) {
+      if (isProductionRuntime()) {
+        throw academyError('Durable Leadership Academy storage is unavailable', 'DATABASE_UNAVAILABLE');
       }
-      return {
-        id: mod.id,
-        title: mod.title,
-        description: mod.description,
-        category: mod.category,
-        contentType: mod.contentType,
-        durationMinutes: mod.durationMinutes,
-        difficulty: mod.difficulty,
-        isPremium: mod.isPremium,
-        sortOrder: mod.sortOrder,
-        completed,
-        quizScore,
-      };
-    });
+      return false;
+    }
+    return true;
   }
 
-  static getAcademyModule(moduleId: string, userId?: string): AcademyModuleData | null {
+  private static async getDatabaseModule(moduleId: string): Promise<{ id: string; title: string } | null> {
+    const definition = ACADEMY_CURRICULUM[moduleId];
+    if (!definition) return null;
+    const { data, error } = await supabase
+      .from('leadership_modules')
+      .select('id,title')
+      .eq('title', definition.title)
+      .maybeSingle();
+    if (error) throw academyError(error.message, 'DATABASE_ERROR');
+    return data;
+  }
+
+  static async listAcademyBadges(userId: string): Promise<Array<{ badgeType: string; earnedAt: string }>> {
+    if (!this.shouldUseDatabaseAcademy()) {
+      return this.mockBadges.get(userId) ?? [];
+    }
+
+    const { data, error } = await supabase
+      .from('civic_badges')
+      .select('badge_type,earned_at')
+      .eq('user_id', userId)
+      .order('earned_at', { ascending: true });
+    if (error) throw academyError(error.message, 'DATABASE_ERROR');
+    return (data ?? []).map((row: any) => ({ badgeType: row.badge_type, earnedAt: row.earned_at }));
+  }
+
+  static async listAcademyChallenges(userId?: string, requestedStateCode?: string): Promise<{
+    challenges: Array<Record<string, unknown>>;
+    participation: Array<Record<string, unknown>>;
+  }> {
+    if (!this.shouldUseDatabaseAcademy()) return { challenges: [], participation: [] };
+
+    let stateCode: string | undefined;
+    if (userId) {
+      const { data: profile, error: profileError } = await supabase
+        .from('aspirant_profiles')
+        .select('state_code')
+        .eq('user_id', userId)
+        .maybeSingle();
+      if (profileError) throw academyError(profileError.message, 'DATABASE_ERROR');
+      stateCode = profile?.state_code ?? undefined;
+    }
+    stateCode = requestedStateCode?.trim().toUpperCase() || stateCode;
+
+    const now = new Date().toISOString();
+    const { data: rows, error } = await supabase
+      .from('community_challenges')
+      .select('id,title,description,category,points,target_count,state_code,is_active,starts_at,ends_at')
+      .eq('is_active', true)
+      .lte('starts_at', now)
+      .order('starts_at', { ascending: false });
+    if (error) throw academyError(error.message, 'DATABASE_ERROR');
+
+    const activeRows = (rows ?? []).filter((row: any) =>
+      (!row.ends_at || new Date(row.ends_at).getTime() >= Date.now())
+      && (!row.state_code || row.state_code === stateCode),
+    );
+    const challenges = activeRows.map((row: any) => ({
+      id: row.id,
+      title: row.title,
+      description: row.description,
+      category: row.category,
+      points: row.points,
+      targetCount: row.target_count,
+      stateCode: row.state_code ?? undefined,
+      isActive: row.is_active,
+      startsAt: row.starts_at,
+      endsAt: row.ends_at ?? undefined,
+    }));
+
+    if (!userId || challenges.length === 0) return { challenges, participation: [] };
+    const challengeIds = challenges.map((challenge: any) => challenge.id as string);
+    const { data: participationRows, error: participationError } = await supabase
+      .from('challenge_participation')
+      .select('challenge_id,progress,completed,completed_at,evidence_url')
+      .eq('user_id', userId)
+      .in('challenge_id', challengeIds);
+    if (participationError) throw academyError(participationError.message, 'DATABASE_ERROR');
+
+    const participation = (participationRows ?? []).map((row: any) => ({
+      challengeId: row.challenge_id,
+      progress: row.progress,
+      completed: row.completed,
+      completedAt: row.completed_at ?? undefined,
+      evidenceUrl: row.evidence_url ?? undefined,
+    }));
+    return { challenges, participation };
+  }
+
+  static async listAcademyModules(userId?: string): Promise<PublicAcademyModuleData[]> {
+    if (!this.shouldUseDatabaseAcademy()) {
+      return Object.values(ACADEMY_CURRICULUM).map((module) => {
+        const progress = userId ? this.mockModuleProgress.get(`${userId}:${module.id}`) : undefined;
+        return publicAcademyModule({ ...module, completed: progress?.completed ?? false, quizScore: progress?.quizScore });
+      });
+    }
+
+    const titles = Object.values(ACADEMY_CURRICULUM).map((module) => module.title);
+    const { data: rows, error } = await supabase
+      .from('leadership_modules')
+      .select('id,title')
+      .in('title', titles);
+    if (error) throw academyError(error.message, 'DATABASE_ERROR');
+
+    const matchingRows = (rows ?? []).filter((row: any) => titles.includes(row.title));
+    const matchingTitles = matchingRows.map((row: any) => row.title);
+    if (new Set(matchingTitles).size !== matchingTitles.length) {
+      throw academyError('Leadership module titles are ambiguous in the database', 'DATABASE_ERROR');
+    }
+    const modulesByTitle = new Map((rows ?? []).map((row: any) => [row.title, row]));
+    const databaseIds = Array.from(modulesByTitle.values()).map((row: any) => row.id);
+    let progressById = new Map<string, any>();
+    if (userId && databaseIds.length > 0) {
+      const { data: progress, error: progressError } = await supabase
+        .from('module_progress')
+        .select('module_id,completed,quiz_score')
+        .eq('user_id', userId)
+        .in('module_id', databaseIds);
+      if (progressError) throw academyError(progressError.message, 'DATABASE_ERROR');
+      progressById = new Map((progress ?? []).map((item: any) => [item.module_id, item]));
+    }
+
+    return Object.values(ACADEMY_CURRICULUM)
+      .filter((module) => modulesByTitle.has(module.title))
+      .map((module) => {
+        const row = modulesByTitle.get(module.title) as any;
+        const progress = progressById.get(row.id);
+        return publicAcademyModule({ ...module, completed: progress?.completed ?? false, quizScore: progress?.quiz_score ?? undefined });
+      });
+  }
+
+  static async getAcademyModule(moduleId: string, userId?: string): Promise<PublicAcademyModuleData | null> {
     const mod = ACADEMY_CURRICULUM[moduleId];
     if (!mod) return null;
+
+    if (this.shouldUseDatabaseAcademy()) {
+      const row = await this.getDatabaseModule(moduleId);
+      if (!row) return null;
+      if (userId) {
+        const { data: progress, error } = await supabase
+          .from('module_progress')
+          .select('completed,quiz_score')
+          .eq('user_id', userId)
+          .eq('module_id', row.id)
+          .maybeSingle();
+        if (error) throw academyError(error.message, 'DATABASE_ERROR');
+        return publicAcademyModule({ ...mod, completed: progress?.completed ?? false, quizScore: progress?.quiz_score ?? undefined });
+      }
+      return publicAcademyModule({ ...mod, completed: false, quizScore: undefined });
+    }
 
     let completed = false;
     let quizScore: number | undefined = undefined;
@@ -908,11 +1077,89 @@ export class AspirantService {
       }
     }
 
-    return {
+    return publicAcademyModule({
       ...mod,
       completed,
       quizScore,
-    };
+    });
+  }
+
+  static async startModule(userId: string, moduleId: string): Promise<{ moduleId: string; started: true }> {
+    if (!this.shouldUseDatabaseAcademy()) {
+      if (!ACADEMY_CURRICULUM[moduleId]) throw academyError('Module not found', 'MODULE_NOT_FOUND', 404);
+      const startedAt = new Date().toISOString();
+      const previous = this.mockModuleProgress.get(`${userId}:${moduleId}`);
+      this.mockModuleProgress.set(`${userId}:${moduleId}`, {
+        completed: previous?.completed ?? false,
+        quizScore: previous?.quizScore,
+        startedAt: previous?.startedAt ?? startedAt,
+      });
+      return { moduleId, started: true };
+    }
+
+    const module = await this.getDatabaseModule(moduleId);
+    if (!module) throw academyError('Module not found', 'MODULE_NOT_FOUND', 404);
+    const { error } = await supabase.from('module_progress').upsert({
+      user_id: userId,
+      module_id: module.id,
+      started_at: new Date().toISOString(),
+    }, { onConflict: 'user_id,module_id' });
+    if (error) throw academyError(error.message, 'DATABASE_ERROR');
+    return { moduleId, started: true };
+  }
+
+  static async completeModule(
+    userId: string,
+    moduleId: string,
+    suppliedQuizScore?: number,
+  ): Promise<{ moduleId: string; completedAt: string; quizScore?: number }> {
+    const definition = ACADEMY_CURRICULUM[moduleId];
+    if (!definition) throw academyError('Module not found', 'MODULE_NOT_FOUND', 404);
+
+    if (!this.shouldUseDatabaseAcademy()) {
+      const prior = this.mockModuleProgress.get(`${userId}:${moduleId}`);
+      if (definition.quiz?.length && prior?.quizScore === undefined) {
+        throw academyError('Submit the quiz before completing this module', 'QUIZ_REQUIRED', 409);
+      }
+      const completedAt = new Date().toISOString();
+      this.mockModuleProgress.set(`${userId}:${moduleId}`, {
+        completed: true,
+        startedAt: prior?.startedAt ?? completedAt,
+        quizScore: prior?.quizScore,
+      });
+      return { moduleId, completedAt, quizScore: prior?.quizScore };
+    }
+
+    const module = await this.getDatabaseModule(moduleId);
+    if (!module) throw academyError('Module not found', 'MODULE_NOT_FOUND', 404);
+    let quizScore: number | undefined;
+    if (definition.quiz?.length) {
+      const { data: attempt, error: attemptError } = await supabase
+        .from('module_quiz_attempts')
+        .select('score_percentage')
+        .eq('user_id', userId)
+        .eq('module_id', module.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (attemptError) throw academyError(attemptError.message, 'DATABASE_ERROR');
+      if (!attempt) throw academyError('Submit the quiz before completing this module', 'QUIZ_REQUIRED', 409);
+      quizScore = Number(attempt.score_percentage);
+      if (suppliedQuizScore !== undefined && suppliedQuizScore !== quizScore) {
+        throw academyError('Quiz score must match the latest server-graded attempt', 'QUIZ_SCORE_MISMATCH', 409);
+      }
+    }
+
+    const completedAt = new Date().toISOString();
+    const { error } = await supabase.from('module_progress').upsert({
+      user_id: userId,
+      module_id: module.id,
+      completed: true,
+      quiz_score: quizScore ?? null,
+      completed_at: completedAt,
+    }, { onConflict: 'user_id,module_id' });
+    if (error) throw academyError(error.message, 'DATABASE_ERROR');
+    return { moduleId, completedAt, quizScore };
   }
 
   static async submitQuiz(
@@ -959,50 +1206,32 @@ export class AspirantService {
 
     const now = new Date().toISOString();
 
-    if (isSupabaseConfigured) {
-      // Record quiz attempt
-      await supabase.from('module_quiz_attempts').insert({
-        user_id: userId,
-        module_id: moduleId,
-        score_percentage: scorePercentage,
-        passed,
-        answers_summary: explanations,
+    const persistentDatabase = this.shouldUseDatabaseAcademy();
+    const databaseModule = persistentDatabase ? await this.getDatabaseModule(moduleId) : null;
+    if (persistentDatabase && !databaseModule) throw academyError('Module not found', 'MODULE_NOT_FOUND', 404);
+
+    if (persistentDatabase) {
+      const { error } = await supabase.rpc('record_academy_quiz_result', {
+        p_user_id: userId,
+        p_module_id: databaseModule!.id,
+        p_score_percentage: scorePercentage,
+        p_passed: passed,
+        p_answers_summary: explanations,
+        p_award_badge: Boolean(badgeAwarded),
       });
-
-      // Update module progress
-      await supabase.from('module_progress').upsert({
-        user_id: userId,
-        module_id: moduleId,
-        completed: true,
-        quiz_score: scorePercentage,
-        completed_at: now,
-      }, { onConflict: 'user_id,module_id' });
-
-      // Award badge if passed
-      if (badgeAwarded) {
-        await supabase.from('civic_badges').upsert({
-          user_id: userId,
-          badge_type: badgeAwarded,
-          earned_at: now,
-        }, { onConflict: 'user_id,badge_type' });
-      }
-
-      // Increment points on profile
-      try {
-        await supabase.rpc('increment_aspirant_modules', { p_user_id: userId });
-      } catch {
-        // best effort
-      }
+      if (error) throw academyError(error.message, 'DATABASE_ERROR');
     }
 
-    // In-memory update
-    this.mockModuleProgress.set(`${userId}:${moduleId}`, {
-      completed: true,
-      quizScore: scorePercentage,
-      startedAt: now,
-    });
+    // Isolated development fallback only; production reads the persisted rows above.
+    if (!persistentDatabase) {
+      this.mockModuleProgress.set(`${userId}:${moduleId}`, {
+        completed: false,
+        quizScore: scorePercentage,
+        startedAt: now,
+      });
+    }
 
-    if (badgeAwarded) {
+    if (badgeAwarded && !persistentDatabase) {
       const userBadges = this.mockBadges.get(userId) || [];
       if (!userBadges.some(b => b.badgeType === badgeAwarded)) {
         userBadges.push({ badgeType: badgeAwarded, earnedAt: now });
@@ -1011,7 +1240,7 @@ export class AspirantService {
     }
 
     const profile = this.mockProfiles.get(userId);
-    if (profile) {
+    if (profile && !persistentDatabase) {
       profile.modulesCompleted = (profile.modulesCompleted || 0) + 1;
       profile.civicScore = (profile.civicScore || 0) + pointsEarned;
     }

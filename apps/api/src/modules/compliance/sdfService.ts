@@ -1,18 +1,26 @@
+import { isProductionLikeRuntime } from '../../lib/runtimeEnvironment';
 /**
  * apps/api/src/modules/compliance/sdfService.ts
  *
- * Milestone W051.5 — Compliance, DPDP & Data Governance Readiness
- * Significant Data Fiduciary (SDF) Statutory Assessment Engine.
- * Evaluates application metrics against Section 10 statutory criteria.
+ * Development preview of a Significant Data Fiduciary (SDF) assessment.
+ * The values below are illustrative and are never served in production.
  */
 
 import type { SignificantDataFiduciaryAssessment } from '@kshetra/shared';
 
+function isProductionRuntime(): boolean { return isProductionLikeRuntime(); }
+
 export class SdfService {
   /**
-   * Generates authoritative Significant Data Fiduciary (SDF) statutory assessment.
+   * Returns the local development assessment preview.
    */
   getAssessment(): SignificantDataFiduciaryAssessment {
+    if (isProductionRuntime()) {
+      throw new Error(
+        'SDF_ASSESSMENT_UNAVAILABLE: No measured, reviewed, and persisted production assessment is configured.',
+      );
+    }
+
     return {
       assessmentDate: '2026-10-29T12:00:00.000Z',
       assessmentFramework: 'DPDP_Act_2023_Section_10',
@@ -39,7 +47,7 @@ export class SdfService {
           status: 'LOW',
           score: 25,
           rationale:
-            'Zero anonymous mass-messaging. All broadcast communications comply with TRAI OBD regulations (09:00 - 21:00 window, DND registry enforcement). Emergency moderation kill-switch established.',
+            'Production voice dispatch is disabled until consent, DND/opt-out enforcement, provider controls, and current jurisdiction-specific calling requirements are verified. The application has a configured 09:00–20:00 IST product window; this does not certify legal compliance.',
         },
       },
       overallClassification: 'DATA_FIDUCIARY',

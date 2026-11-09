@@ -73,15 +73,38 @@ describe('Telangana Constituencies Seed Data', () => {
     });
   });
 
-  it('should track 10 BRS→INC post-election defections', () => {
+  it('should track ten reported BRS→INC affiliations separately from by-elections', () => {
     const defections = TELANGANA_CONSTITUENCIES.filter(
-      (c) => c.currentParty && c.currentParty !== c.winner2023,
+      (c) => c.currentParty && c.currentParty !== c.winner2023 && !c.byElection,
     );
     expect(defections.length).toBe(10);
     defections.forEach((c) => {
       expect(c.winner2023).toBe('BRS');
       expect(c.currentParty).toBe('INC');
     });
+  });
+
+  it('should distinguish by-election winners and the Khairatabad vacancy from 2023 results', () => {
+    const khairatabad = TELANGANA_CONSTITUENCIES.find((c) => c.acNo === 60)!;
+    const jubileeHills = TELANGANA_CONSTITUENCIES.find((c) => c.acNo === 61)!;
+    const secunderabadCantt = TELANGANA_CONSTITUENCIES.find((c) => c.acNo === 71)!;
+
+    expect(khairatabad.winnerName2023).toBe('Danam Nagender');
+    expect(khairatabad.officeholderStatus).toBe('VACANT');
+    expect(jubileeHills.winnerName2023).toBe('Maganti Gopinath');
+    expect(jubileeHills.currentMemberName).toBe('Naveen Yadav V');
+    expect(jubileeHills.byElection?.year).toBe(2025);
+    expect(secunderabadCantt.winnerName2023).toBe('G. Lasya Nanditha');
+    expect(secunderabadCantt.currentMemberName).toBe('Sri Ganesh Narayanan');
+    expect(secunderabadCantt.byElection?.year).toBe(2024);
+  });
+
+  it('should match ECI-verified Narayanpet winner and runner-up results', () => {
+    const narayanpet = TELANGANA_CONSTITUENCIES.find((c) => c.acNo === 73)!;
+    expect(narayanpet.winnerName2023).toBe('Chittem Parnika Reddy');
+    expect(narayanpet.winnerVotes2023).toBe(84708);
+    expect(narayanpet.runnerUpName2023).toBe('S. Rajender Reddy');
+    expect(narayanpet.margin2023).toBe(7951);
   });
 
   it('should have a valid localName in Telugu script for all constituencies', () => {

@@ -176,10 +176,10 @@ export default function ExploreScreen() {
           sorted.sort((a, b) => a.name.localeCompare(b.name));
           break;
         case 'margin_asc':
-          sorted.sort((a, b) => a.margin - b.margin);
+          sorted.sort((a, b) => (a.margin ?? Number.POSITIVE_INFINITY) - (b.margin ?? Number.POSITIVE_INFINITY));
           break;
         case 'margin_desc':
-          sorted.sort((a, b) => b.margin - a.margin);
+          sorted.sort((a, b) => (b.margin ?? Number.NEGATIVE_INFINITY) - (a.margin ?? Number.NEGATIVE_INFINITY));
           break;
         default: // acNo
           sorted.sort((a, b) => a.acNo - b.acNo);
@@ -745,12 +745,14 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
     item.localName,
   );
   const localizedDistrict = getLocalizedDistrictName(item.district, i18n.language) || item.district;
-  const localizedType = getLocalizedReservation(item.type, i18n.language) || item.type;
+  const localizedType = getLocalizedReservation(item.type || '', i18n.language) || item.type;
   const localizedWinnerParty = getLocalizedPartyName(item.winnerParty, i18n.language) || item.winnerParty;
   const localizedWinnerName = getLocalizedCandidateName(item.winnerName, i18n.language) || item.winnerName;
 
   // Rich data badges from affidavit store
-  const winnerAffidavit = useAffidavitStore.getState().getWinnerAffidavit(item.stateCode || 'TS', item.acNo, item.electionYear || 2023);
+  const winnerAffidavit = item.stateCode && item.electionYear != null
+    ? useAffidavitStore.getState().getWinnerAffidavit(item.stateCode, item.acNo, item.electionYear)
+    : null;
   const totalAssets = winnerAffidavit?.totalAssets;
   const criminalCases = winnerAffidavit?.criminalCases;
   const isCrorepati = totalAssets != null && totalAssets >= 1_00_00_000;
@@ -776,7 +778,7 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
             <Text style={styles.partyBadgeText}>{localizedWinnerParty}</Text>
           </View>
           <Text style={[styles.cardWinner, { color: colors.textSecondary }]} numberOfLines={1}>
-            {localizedWinnerName} · {item.margin.toLocaleString()}
+            {localizedWinnerName} · {item.margin != null ? item.margin.toLocaleString() : '—'}
           </Text>
         </View>
         {/* Transparency badges row */}

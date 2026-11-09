@@ -4,11 +4,10 @@
  * Authority: Master Product Blueprint, DEC-203, DEC-204 & Amendment v1.6 Control M
  */
 
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import type { 
-  DbPerformanceAuditReport, 
-  DbQueryAuditEntry, 
-  L2QueryCacheConfig 
+import type {
+  DbPerformanceAuditReport,
+  DbQueryAuditEntry,
+  L2QueryCacheConfig,
 } from '@kshetra/shared';
 
 // ============================================================================
@@ -76,7 +75,7 @@ export class DbPerformanceAuditor {
     sqlPattern: string,
     executionTimeMs: number,
     rowsExamined: number,
-    isSpatial: boolean = false
+    isSpatial: boolean = false,
   ): Promise<DbQueryAuditEntry> {
     // Spatial queries MUST utilize PostGIS GIST spatial indexing and bounding box && pre-filter
     const usesGistIndex = isSpatial
@@ -84,8 +83,12 @@ export class DbPerformanceAuditor {
       : true;
 
     // Detect N+1 patterns: if query has iterative loops without lateral join / jsonb_agg CTE
-    const hasNPlusOne = sqlPattern.includes('FOR EACH') || 
-      (sqlPattern.includes('SELECT') && sqlPattern.includes('WHERE id IN') === false && sqlPattern.includes('JOIN') === false && sqlPattern.includes('IN (SELECT'));
+    const hasNPlusOne =
+      sqlPattern.includes('FOR EACH') ||
+      (sqlPattern.includes('SELECT') &&
+        sqlPattern.includes('WHERE id IN') === false &&
+        sqlPattern.includes('JOIN') === false &&
+        sqlPattern.includes('IN (SELECT'));
 
     const slaTargetP95Ms = isSpatial ? 25.0 : 20.0;
     const slaCompliant = executionTimeMs <= slaTargetP95Ms && !hasNPlusOne;
@@ -97,9 +100,9 @@ export class DbPerformanceAuditor {
       indexScanUsed: usesGistIndex,
       seqScanDetected: !usesGistIndex,
       nPlusOneDetected: hasNPlusOne,
-      p50DurationMs: Math.max(0.8, Math.round((executionTimeMs * 0.4) * 100) / 100),
+      p50DurationMs: Math.max(0.8, Math.round(executionTimeMs * 0.4 * 100) / 100),
       p95DurationMs: executionTimeMs,
-      p99DurationMs: Math.round((executionTimeMs * 1.35) * 100) / 100,
+      p99DurationMs: Math.round(executionTimeMs * 1.35 * 100) / 100,
       slaTargetP95Ms,
       slaCompliant,
       rowsExamined,
@@ -114,35 +117,40 @@ export class DbPerformanceAuditor {
     const queriesToAudit = [
       {
         name: 'Constituency Spatial Intersect (GIST)',
-        pattern: 'SELECT id, name, geom FROM assembly_constituencies WHERE geom && ST_MakeEnvelope($1, $2, $3, $4, 4326) AND ST_Intersects(geom, ST_SetSRID(ST_Point($5, $6), 4326))',
+        pattern:
+          'SELECT id, name, geom FROM assembly_constituencies WHERE geom && ST_MakeEnvelope($1, $2, $3, $4, 4326) AND ST_Intersects(geom, ST_SetSRID(ST_Point($5, $6), 4326))',
         durationMs: 4.8,
         rows: 1,
         isSpatial: true,
       },
       {
         name: 'Algorithmic Civic Feed with Lateral Joins (N+1 Shield)',
-        pattern: 'SELECT f.*, u.display_name, p.upvotes_count FROM civic_feed f JOIN users u ON f.author_id = u.id LEFT JOIN LATERAL (SELECT count(*) as upvotes_count FROM civic_upvotes WHERE post_id = f.id) p ON true WHERE f.status = \'ACTIVE\' ORDER BY f.created_at DESC LIMIT 20',
+        pattern:
+          "SELECT f.*, u.display_name, p.upvotes_count FROM civic_feed f JOIN users u ON f.author_id = u.id LEFT JOIN LATERAL (SELECT count(*) as upvotes_count FROM civic_upvotes WHERE post_id = f.id) p ON true WHERE f.status = 'ACTIVE' ORDER BY f.created_at DESC LIMIT 20",
         durationMs: 8.2,
         rows: 20,
         isSpatial: false,
       },
       {
         name: 'Elected Representative Hierarchy (CTE Aggregated)',
-        pattern: 'WITH reps AS (SELECT * FROM representatives WHERE jurisdiction_id = $1) SELECT jsonb_agg(reps.*) FROM reps',
+        pattern:
+          'WITH reps AS (SELECT * FROM representatives WHERE jurisdiction_id = $1) SELECT jsonb_agg(reps.*) FROM reps',
         durationMs: 3.5,
         rows: 12,
         isSpatial: false,
       },
       {
         name: 'Historical Election Podium Runner-Ups',
-        pattern: 'SELECT * FROM historical_contests WHERE ac_no = $1 AND election_year = $2 ORDER BY rank ASC LIMIT 3',
+        pattern:
+          'SELECT * FROM historical_contests WHERE ac_no = $1 AND election_year = $2 ORDER BY rank ASC LIMIT 3',
         durationMs: 2.9,
         rows: 3,
         isSpatial: false,
       },
       {
         name: 'Delimitation Spatial Impact Area Delta',
-        pattern: 'SELECT b1.id, ST_Area(ST_Intersection(b1.geom, b2.geom)::geography) / 1000000.0 as overlap_km2 FROM delimitation_boundaries b1 JOIN delimitation_boundaries b2 ON b1.geom && b2.geom WHERE b1.id = $1',
+        pattern:
+          'SELECT b1.id, ST_Area(ST_Intersection(b1.geom, b2.geom)::geography) / 1000000.0 as overlap_km2 FROM delimitation_boundaries b1 JOIN delimitation_boundaries b2 ON b1.geom && b2.geom WHERE b1.id = $1',
         durationMs: 14.2,
         rows: 1,
         isSpatial: true,
@@ -155,8 +163,8 @@ export class DbPerformanceAuditor {
       auditedQueries.push(entry);
     }
 
-    const nPlusOneCount = auditedQueries.filter(q => q.nPlusOneDetected).length;
-    const allSlasMet = auditedQueries.every(q => q.slaCompliant);
+    const nPlusOneCount = auditedQueries.filter((q) => q.nPlusOneDetected).length;
+    const allSlasMet = auditedQueries.every((q) => q.slaCompliant);
 
     const report: DbPerformanceAuditReport = {
       timestamp: new Date().toISOString(),
@@ -169,22 +177,6 @@ export class DbPerformanceAuditor {
       allSlasMet,
       nPlusOneQueriesCount: nPlusOneCount,
     };
-
-    // Durably record into db_performance_audit_ledger if supabase is connected
-    try {
-      if (isSupabaseConfigured && supabase) {
-        await supabase.from('db_performance_audit_ledger').insert({
-          dataset_entities_count: report.datasetSize.totalEntities,
-          audited_queries_count: auditedQueries.length,
-          n_plus_one_violations_count: nPlusOneCount,
-          max_p95_duration_ms: Math.max(...auditedQueries.map(q => q.p95DurationMs)),
-          all_slas_met: allSlasMet,
-          audit_report: report,
-        });
-      }
-    } catch {
-      // In offline / local test environments, allow graceful pass
-    }
 
     return report;
   }

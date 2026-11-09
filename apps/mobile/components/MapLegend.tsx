@@ -60,7 +60,7 @@ export function buildPartyLegend(stateCode: string): { party: string; label: str
 
   const counts = new Map<string, number>();
   for (const c of constituencies) {
-    const p = c.currentParty || c.winnerParty;
+    const p = c.officeholderStatus === 'VACANT' ? 'VACANT' : c.currentParty || c.winnerParty;
     if (p) {
       counts.set(p, (counts.get(p) ?? 0) + 1);
     }
@@ -71,7 +71,7 @@ export function buildPartyLegend(stateCode: string): { party: string; label: str
     .sort((a, b) => b[1] - a[1])
     .map(([party, seats]) => ({
       party,
-      label: (PARTY_CONFIG as Record<string, { name: string }>)[party]?.name ?? party,
+      label: party === 'VACANT' ? 'Vacant seat' : (PARTY_CONFIG as Record<string, { name: string }>)[party]?.name ?? party,
       seats,
     }));
 }

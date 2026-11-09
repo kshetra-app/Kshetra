@@ -78,26 +78,33 @@ describe('CTO Directive 119: Fixture Credentials & Fail-Closed Behavior', () => 
 
   describe('Part 2: Database Probing Fail-Closed Invariants', () => {
     it('isLocalDatabaseAvailable returns false when no local container is listening on probed port', () => {
-      // Connect to an unallocated high port
-      const available = isLocalDatabaseAvailable('127.0.0.1', 59998);
-      // In CI without INTEGRATION_TESTS_ENABLED, or locally when nothing is listening on 59998,
-      // it must return false (fail closed)
-      if (process.env.INTEGRATION_TESTS_ENABLED === 'true') {
-        expect(available).toBe(true); // explicit override mode
-      } else {
-        expect(available).toBe(false);
+      const savedUrl = process.env.SUPABASE_URL;
+      process.env.SUPABASE_URL = 'http://127.0.0.1:54321';
+      try {
+        // Connect to an unallocated high port.
+        const available = isLocalDatabaseAvailable('127.0.0.1', 59998);
+        // The explicit override is allowed only after a local Supabase URL is selected.
+        if (process.env.INTEGRATION_TESTS_ENABLED === 'true') {
+          expect(available).toBe(true);
+        } else {
+          expect(available).toBe(false);
+        }
+        expect(isLocalDatabaseAvailable('remote.example.com', 54321)).toBe(false);
+      } finally {
+        if (savedUrl !== undefined) process.env.SUPABASE_URL = savedUrl;
+        else delete process.env.SUPABASE_URL;
       }
     });
 
-    it('proves fixture credentials do NOT cause isLocalDatabaseAvailable to report true', () => {
-      // Even with SUPABASE_URL and SUPABASE_ANON_KEY populated, isLocalDatabaseAvailable
-      // inspects the actual TCP socket or CI environment, not environment strings
+    it('refuses database probes when the configured Supabase host is not local', () => {
       const savedCI = process.env.CI;
       const savedIntegration = process.env.INTEGRATION_TESTS_ENABLED;
+      const savedUrl = process.env.SUPABASE_URL;
 
       try {
         process.env.CI = 'true';
-        delete process.env.INTEGRATION_TESTS_ENABLED;
+        process.env.INTEGRATION_TESTS_ENABLED = 'true';
+        process.env.SUPABASE_URL = 'https://test-fixture.supabase.co';
 
         const probeResult = isLocalDatabaseAvailable('127.0.0.1', 54321);
         expect(probeResult).toBe(false);
@@ -107,6 +114,8 @@ describe('CTO Directive 119: Fixture Credentials & Fail-Closed Behavior', () => 
         if (savedIntegration !== undefined)
           process.env.INTEGRATION_TESTS_ENABLED = savedIntegration;
         else delete process.env.INTEGRATION_TESTS_ENABLED;
+        if (savedUrl !== undefined) process.env.SUPABASE_URL = savedUrl;
+        else delete process.env.SUPABASE_URL;
       }
     });
   });

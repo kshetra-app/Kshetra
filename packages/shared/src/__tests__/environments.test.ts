@@ -1,5 +1,6 @@
 import {
   resolveEnvironment,
+  isProductionLikeEnvironment,
   getEnvironmentConfig,
   ENVIRONMENT_CONFIGS,
 } from '../config/environments';
@@ -26,6 +27,14 @@ describe('Environment Configuration & Resolution', () => {
     expect(resolveEnvironment('test')).toBe('test');
     expect(resolveEnvironment('development')).toBe('development');
     expect(resolveEnvironment('unknown_env')).toBe('development');
+  });
+
+  it('treats staging and production as deployed environments, while preserving development and test modes', () => {
+    expect(isProductionLikeEnvironment('staging')).toBe(true);
+    expect(isProductionLikeEnvironment('preview')).toBe(true);
+    expect(isProductionLikeEnvironment('production')).toBe(true);
+    expect(isProductionLikeEnvironment('development')).toBe(false);
+    expect(isProductionLikeEnvironment('test')).toBe(false);
   });
 
   it('resolves environment from process.env when argument is undefined', () => {

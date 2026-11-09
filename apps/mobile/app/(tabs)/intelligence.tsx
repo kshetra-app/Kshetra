@@ -27,8 +27,6 @@ function useElectionAnalytics(stateCode: string) {
     const constituencies = getUnifiedConstituenciesForState(stateCode);
     const totalConstituencies = constituencies.length;
     const partySeats: Record<string, number> = {};
-    const partyVotes: Record<string, number> = {};
-    let totalVotes = 0;
     let closestMargin = Infinity;
     let closestAC = '';
     let biggestMargin = 0;
@@ -36,17 +34,15 @@ function useElectionAnalytics(stateCode: string) {
     const reservationCounts: Record<'GEN' | 'SC' | 'ST', number> = { GEN: 0, SC: 0, ST: 0 };
 
     for (const c of constituencies) {
-      partySeats[c.winnerParty] = (partySeats[c.winnerParty] || 0) + 1;
-      partyVotes[c.winnerParty] =
-        (partyVotes[c.winnerParty] || 0) + c.winnerVotes;
-      totalVotes += c.winnerVotes;
+      const winnerParty = c.winnerParty || 'Unknown';
+      partySeats[winnerParty] = (partySeats[winnerParty] || 0) + 1;
       if (c.type in reservationCounts) reservationCounts[c.type as 'GEN' | 'SC' | 'ST']++;
 
-      if (c.margin < closestMargin) {
+      if (c.margin != null && c.margin < closestMargin) {
         closestMargin = c.margin;
         closestAC = c.name;
       }
-      if (c.margin > biggestMargin) {
+      if (c.margin != null && c.margin > biggestMargin) {
         biggestMargin = c.margin;
         biggestAC = c.name;
       }
@@ -61,6 +57,7 @@ function useElectionAnalytics(stateCode: string) {
       }));
 
     const districts = new Set(constituencies.map((c) => c.district));
+    const electionYears = [...new Set(constituencies.map((c) => c.electionYear))].sort((a, b) => a - b);
 
     // District-wise: count seats per party per district, find dominant party
     const districtPartyMap: Record<string, Record<string, number>> = {};
@@ -82,11 +79,11 @@ function useElectionAnalytics(stateCode: string) {
 
     return {
       totalConstituencies,
+      electionYears,
       partyBreakdown: sorted,
-      totalVotes,
-      closestMargin,
+      closestMargin: Number.isFinite(closestMargin) ? closestMargin : null,
       closestAC,
-      biggestMargin,
+      biggestMargin: biggestAC ? biggestMargin : null,
       biggestAC,
       reservationCounts,
       districtCount: districts.size,
@@ -107,9 +104,9 @@ export default function IntelligenceScreen() {
   const analytics = useElectionAnalytics(stateCode);
 
   // Determine election year for the active state
-  const electionYear = analytics.partyBreakdown.length > 0
-    ? (stateCode === 'AP' || stateCode === 'MH' ? 2024 : 2023)
-    : '';
+  const electionYear = analytics.electionYears.length === 1
+    ? analytics.electionYears[0]
+    : analytics.electionYears.length > 1 ? 'Mixed election years' : '';
 
   const { insets } = useResponsive();
 
@@ -126,7 +123,9 @@ export default function IntelligenceScreen() {
     const seats: Record<string, number> = {};
     const constituencies = getUnifiedConstituenciesForState(stateCode);
     for (const c of constituencies) {
-      const party = c.currentParty || c.winnerParty;
+      const party = c.officeholderStatus === 'VACANT'
+        ? 'VACANT'
+        : c.currentParty || c.winnerParty;
       seats[party] = (seats[party] || 0) + 1;
     }
     return seats;
@@ -336,8 +335,9 @@ export default function IntelligenceScreen() {
           <View style={styles.insightText}>
             <Text style={styles.insightTitle}>{t('intelligence.biggestVictory', { defaultValue: 'Biggest Victory' })}</Text>
             <Text style={styles.insightValue}>
-              {analytics.biggestAC} — margin of{' '}
-              {analytics.biggestMargin.toLocaleString()} votes
+              {analytics.biggestAC && analytics.biggestMargin != null
+                ? `${analytics.biggestAC} — margin of ${analytics.biggestMargin.toLocaleString()} votes`
+                : 'Margin data unavailable'}
             </Text>
           </View>
         </View>
@@ -347,8 +347,9 @@ export default function IntelligenceScreen() {
           <View style={styles.insightText}>
             <Text style={styles.insightTitle}>{t('intelligence.closestContest', { defaultValue: 'Closest Contest' })}</Text>
             <Text style={styles.insightValue}>
-              {analytics.closestAC} — margin of{' '}
-              {analytics.closestMargin.toLocaleString()} votes
+              {analytics.closestAC && analytics.closestMargin != null
+                ? `${analytics.closestAC} — margin of ${analytics.closestMargin.toLocaleString()} votes`
+                : 'Margin data unavailable'}
             </Text>
           </View>
         </View>
@@ -358,9 +359,9 @@ export default function IntelligenceScreen() {
           <View style={styles.insightText}>
             <Text style={styles.insightTitle}>{t('intelligence.majorityParty', { defaultValue: 'Majority Party' })}</Text>
             <Text style={styles.insightValue}>
-              {analytics.partyBreakdown[0].party} with{' '}
-              {analytics.partyBreakdown[0].seats} seats (
-              {analytics.partyBreakdown[0].pct}%)
+              {analytics.partyBreakdown[0]
+                ? `${analytics.partyBreakdown[0].party} with ${analytics.partyBreakdown[0].seats} seats (${analytics.partyBreakdown[0].pct}%)`
+                : 'Party data unavailable'}
             </Text>
           </View>
         </View>

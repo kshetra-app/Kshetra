@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { useMyConstituencyStore } from '../../stores/myConstituency';
 import { useActiveStateStore } from '../../stores/activeState';
 import { useDelimitationStore } from '../../stores/delimitation';
+import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
 import { computeStateSeatAllocation } from '../../lib/delimitation/seatCalculator';
 import {
   DELIMITATION_STATUS_CONFIG,
@@ -307,8 +308,8 @@ export default function MyImpactScreen() {
           </View>
         )}
 
-        {/* Sample PIN codes for quick demonstration */}
-        <View style={[styles.sampleCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        {/* Development-only sample PINs for trying the simulation */}
+        {!IS_LIVE_ENVIRONMENT && <View style={[styles.sampleCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Text style={[styles.sampleTitle, { color: colors.text }]}>{t('delimitation.quickTestPin', { defaultValue: 'Quick Test PIN Codes' })}</Text>
           <Text style={[styles.sampleSub, { color: colors.textSecondary }]}>{t('delimitation.quickTestPinDesc', { defaultValue: 'Tap any PIN code to immediately calculate personal delimitation impact:' })}</Text>
           <View style={styles.sampleChipsRow}>
@@ -343,7 +344,7 @@ export default function MyImpactScreen() {
               </Pressable>
             ))}
           </View>
-        </View>
+        </View>}
 
         {/* {t('delimitation.constitutionalFramework', { defaultValue: 'Constitutional Framework & Citizen Rights' })} */}
         <View style={[styles.comingSoonCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>

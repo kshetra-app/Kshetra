@@ -58,6 +58,7 @@ export default function PostDetailModal({
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const [commentText, setCommentText] = useState('');
+  const [isSendingComment, setIsSendingComment] = useState(false);
   const [reportVisible, setReportVisible] = useState(false);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const inputRef = useRef<TextInput>(null);
@@ -80,6 +81,7 @@ export default function PostDetailModal({
   const rawComments = useFeedStore((s) => (post ? s.comments[post.id] ?? [] : []));
   const addComment = useFeedStore((s) => s.addComment);
   const deleteComment = useFeedStore((s) => s.deleteComment);
+  const retryComment = useFeedStore((s) => s.retryComment);
   const toggleCommentReaction = useFeedStore((s) => s.toggleCommentReaction);
   const toggleReaction = useFeedStore((s) => s.toggleReaction);
   const votePoll = useFeedStore((s) => s.votePoll);
@@ -100,9 +102,11 @@ export default function PostDetailModal({
     }
   }, [visible, autoFocusReply]);
 
-  const handleSendComment = useCallback(() => {
-    if (!post || !commentText.trim()) return;
+  const handleSendComment = useCallback(async () => {
+    if (!post || !commentText.trim() || isSendingComment) return;
+    if (!gateContentAction('create_comment')) return;
     tapLight();
+    setIsSendingComment(true);
 
     const authorName = user?.email?.split('@')[0] ?? 'Citizen';
     const clientToken = `client_cmt_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -122,15 +126,26 @@ export default function PostDetailModal({
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    addComment(post.id, newComment);
-    logContentAction('create_comment', {
-      type: 'comment',
-      id: newComment.id,
-      body: newComment.content,
-      screenName: 'post_detail',
-    });
-    setCommentText('');
-  }, [post, commentText, user, userId, i18n.language, addComment]);
+    try {
+      const outcome = await addComment(post.id, newComment);
+      if (outcome === 'failed') {
+        Alert.alert(
+          t('postDetail.commentFailed', { defaultValue: 'Comment not sent' }),
+          useFeedStore.getState().lastError || t('postDetail.commentRetry', { defaultValue: 'Please check your connection and try again.' }),
+        );
+        return;
+      }
+      setCommentText('');
+      if (outcome === 'queued') {
+        Alert.alert(
+          t('postDetail.commentQueued', { defaultValue: 'Comment queued' }),
+          t('postDetail.commentQueuedBody', { defaultValue: 'It will be sent when your connection returns.' }),
+        );
+      }
+    } finally {
+      setIsSendingComment(false);
+    }
+  }, [post, commentText, user, userId, i18n.language, isSendingComment, addComment, t]);
 
   const handleShare = useCallback(async () => {
     if (!post) return;
@@ -152,8 +167,12 @@ export default function PostDetailModal({
         {
           text: t('postCard.delete'),
           style: 'destructive',
-          onPress: () => {
-            deletePost(post.id);
+          onPress: async () => {
+            const deleted = await deletePost(post.id);
+            if (!deleted) {
+              Alert.alert(t('feed.deleteFailed', { defaultValue: 'Could not delete this post. Check your connection and try again.' }));
+              return;
+            }
             logContentAction('delete_post', {
               type: 'post',
               id: post.id,
@@ -177,7 +196,17 @@ export default function PostDetailModal({
           {
             text: t('postCard.delete'),
             style: 'destructive',
-            onPress: () => deleteComment(post.id, commentId),
+            onPress: async () => {
+              const deleted = await deleteComment(post.id, commentId);
+              if (!deleted) {
+                Alert.alert(
+                  t('postDetail.deleteCommentFailed', { defaultValue: 'Could not delete this comment. Please try again.' }),
+                  useFeedStore.getState().lastError || undefined,
+                );
+                return;
+              }
+              logContentAction('delete_comment', { type: 'comment', id: commentId, screenName: 'post_detail' });
+            },
           },
         ],
       );
@@ -299,9 +328,13 @@ export default function PostDetailModal({
                 <View style={styles.pollWrapper}>
                   <PollCard
                     poll={displayPost.poll}
-                    onVote={(optId) => {
+                    onVote={async (optId) => {
                       if (!gateContentAction('vote_poll')) return;
-                      votePoll(displayPost.id, optId);
+                      const saved = await votePoll(displayPost.id, optId);
+                      if (!saved) {
+                        Alert.alert(t('feed.voteFailed', { defaultValue: 'Could not record your vote. Check your connection and try again.' }));
+                        return;
+                      }
                       logContentAction('vote_poll', {
                         type: 'poll',
                         id: displayPost.id,
@@ -364,9 +397,13 @@ export default function PostDetailModal({
               <View style={[styles.metricsBar, { borderTopColor: colors.border, borderBottomColor: colors.border }]}>
                 <Pressable
                   style={styles.metricItem}
-                  onPress={() => {
+                  onPress={async () => {
                     if (!gateContentAction('react_post')) return;
-                    toggleReaction(post.id, 'like');
+                    const saved = await toggleReaction(post.id, 'like');
+                    if (!saved) {
+                      Alert.alert(t('feed.reactionFailed', { defaultValue: 'Could not update your reaction. Check your connection and try again.' }));
+                      return;
+                    }
                     logContentAction('react_post', {
                       type: 'post',
                       id: post.id,
@@ -435,9 +472,13 @@ export default function PostDetailModal({
                   <View style={styles.commentActions}>
                     <Pressable
                       style={styles.commentLikeButton}
-                      onPress={() => {
+                      onPress={async () => {
                         if (!gateContentAction('react_post')) return;
-                        toggleCommentReaction(post.id, item.id, 'like');
+                        const saved = await toggleCommentReaction(post.id, item.id, 'like');
+                        if (!saved) {
+                          Alert.alert(t('feed.reactionFailed', { defaultValue: 'Could not update your reaction. Check your connection and try again.' }));
+                          return;
+                        }
                         logContentAction('react_post', {
                           type: 'comment',
                           id: item.id,
@@ -478,6 +519,31 @@ export default function PostDetailModal({
                 <Text style={[styles.commentContent, { color: colors.text }]}>
                   {item.content}
                 </Text>
+                {item.syncStatus && item.syncStatus !== 'SYNCED' && (
+                  <Pressable
+                    disabled={item.syncStatus !== 'FAILED'}
+                    onPress={async () => {
+                      if (item.syncStatus !== 'FAILED') return;
+                      const retried = await retryComment(post.id, item.clientToken ?? item.id);
+                      if (!retried) {
+                        Alert.alert(
+                          t('sync.retryFailed', { defaultValue: 'Could not retry this comment.' }),
+                          useFeedStore.getState().lastError || undefined,
+                        );
+                      }
+                    }}
+                    style={{ alignSelf: 'flex-start', marginTop: 6 }}
+                    accessibilityRole={item.syncStatus === 'FAILED' ? 'button' : undefined}
+                  >
+                    <Text style={{ color: item.syncStatus === 'FAILED' ? '#EF4444' : colors.textMuted, fontSize: 11 }}>
+                      {item.syncStatus === 'SYNCING'
+                        ? t('sync.syncing', { defaultValue: 'Syncing…' })
+                        : item.syncStatus === 'QUEUED'
+                          ? t('sync.queued', { defaultValue: 'Queued' })
+                          : t('sync.failedRetry', { defaultValue: 'Failed · Tap to retry' })}
+                    </Text>
+                  </Pressable>
+                )}
               </View>
             );
           }}
@@ -519,7 +585,7 @@ export default function PostDetailModal({
               !commentText.trim() && styles.sendDisabled,
             ]}
             onPress={handleSendComment}
-            disabled={!commentText.trim()}
+            disabled={!commentText.trim() || isSendingComment}
           >
             <Ionicons name="send" size={16} color="#FFFFFF" />
           </Pressable>

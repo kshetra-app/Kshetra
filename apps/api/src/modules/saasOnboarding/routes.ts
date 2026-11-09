@@ -7,6 +7,7 @@
 
 import path from 'node:path';
 import fs from 'node:fs';
+import { Readable } from 'node:stream';
 import type { FastifyPluginAsync, FastifyRequest, FastifyReply } from 'fastify';
 import type { ApiSuccessEnvelope } from '@kshetra/shared';
 import YAML from 'yaml';
@@ -244,16 +245,33 @@ export const saasOnboardingRoutes: FastifyPluginAsync = async (app) => {
     }
   });
 
-  app.post('/api/vsaas/v1/billing/webhook', async (request, reply) => {
+  app.post('/api/vsaas/v1/billing/webhook', {
+    preParsing: async (request, _reply, payload) => {
+      const chunks: Buffer[] = [];
+      for await (const chunk of payload) {
+        chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+      }
+      const rawBody = Buffer.concat(chunks);
+      (request as FastifyRequest & { rawBody?: Buffer }).rawBody = rawBody;
+      return Readable.from([rawBody]);
+    },
+  }, async (request, reply) => {
     const signature =
       (request.headers['x-razorpay-signature'] as string) ||
       (request.headers['stripe-signature'] as string) ||
       '';
 
-    const rawBody =
-      typeof request.body === 'string'
-        ? request.body
-        : JSON.stringify(request.body);
+    const rawBody = (request as FastifyRequest & { rawBody?: Buffer }).rawBody;
+    if (!rawBody) {
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'Bad Request',
+        'Raw payment webhook payload is unavailable for signature verification.',
+        { code: 'WEBHOOK_RAW_BODY_MISSING' },
+      );
+    }
 
     try {
       const result = await billingService.processInboundWebhook(rawBody, signature, request.body);

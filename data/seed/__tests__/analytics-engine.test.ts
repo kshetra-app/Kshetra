@@ -38,7 +38,12 @@ describe('Election Analytics Engine', () => {
           expect(c.winnerName).toBeTruthy();
           expect(c.winnerVotes).toBeGreaterThan(0);
           expect(c.margin).toBeGreaterThanOrEqual(0);
-          expect(c.currentParty).toBeTruthy();
+          if (c.officeholderStatus === 'VACANT') {
+            expect(c.currentMLA).toBeUndefined();
+          } else {
+            expect(c.currentParty).toBeTruthy();
+            if (c.stateCode === 'TS') expect(c.currentMLA).toBeTruthy();
+          }
           expect(c.electionYear).toBeGreaterThan(2020);
         }
       });
@@ -112,7 +117,9 @@ describe('Election Analytics Engine', () => {
 
     it('should detect defections in TS', () => {
       const data = getUnifiedConstituenciesForState('TS');
-      const defected = data.filter((c: any) => c.currentParty !== c.winnerParty);
+      const defected = data.filter((c: any) =>
+        !c.byElection && c.currentParty !== c.winnerParty,
+      );
       // We know TS has 10 BRS→INC defections
       expect(defected.length).toBe(10);
     });

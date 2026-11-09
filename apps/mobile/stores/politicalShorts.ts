@@ -180,7 +180,6 @@ export const usePoliticalShortsStore = create<PoliticalShortsState>()(
           if (updatedFlags.length >= 5) {
             updatedShorts.splice(shortIndex, 1); // remove from active list
           } else {
-            short.commentCount += 1; // mock visual action updates
             updatedShorts[shortIndex] = short;
           }
 

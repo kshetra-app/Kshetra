@@ -17,6 +17,7 @@ import type {
 import { MILESTONE_THRESHOLDS, HEADLINE_PROMOTION_THRESHOLD } from '../lib/civicTypes';
 import * as dataService from '../lib/supabaseDataService';
 import { enqueue, type SyncStatus, retryFailedOp } from '../lib/offlineSync';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 import { useAuthStore } from './auth';
 
 // ─── Seed Issues (multi-state, full lifecycle showcase) ───
@@ -495,12 +496,12 @@ const SEED_HEADLINES: Headline[] = [
   {
     id: 'hl-3',
     stateCode: 'TS',
-    title: 'Anti-Defection Law: Supreme Court to hear Telangana BRS petitions next week',
-    summary: '10 BRS-to-INC defection cases pending. Court will examine Speaker\'s delayed disqualification proceedings.',
+    title: 'Supreme Court upholds Danam Nagender disqualification',
+    summary: 'Danam Nagender was disqualified from Khairatabad effective 23 April 2024. The Supreme Court upheld the Telangana High Court ruling on 24 September 2026; challenges involving other members continued separately.',
     sourceName: 'Indian Express',
-    sourceUrl: 'https://indianexpress.com',
+    sourceUrl: 'https://indianexpress.com/article/legal-news/supreme-court-upholds-telangana-mla-danam-nagender-disqualification-10892090/',
     category: 'law_and_order',
-    publishedAt: seedDate(1, 10),
+    publishedAt: '2026-09-24T12:00:00.000Z',
   },
   {
     id: 'hl-4',
@@ -736,11 +737,11 @@ interface CivicState {
 }
 
 export const useCivicStore = create<CivicState>()((set, get) => ({
-  issues: SEED_ISSUES,
-  headlines: SEED_HEADLINES,
-  sentiment: SEED_SENTIMENT,
-  comments: SEED_COMMENTS,
-  statusHistory: SEED_STATUS_HISTORY,
+  issues: IS_LIVE_ENVIRONMENT ? [] : SEED_ISSUES,
+  headlines: IS_LIVE_ENVIRONMENT ? [] : SEED_HEADLINES,
+  sentiment: IS_LIVE_ENVIRONMENT ? [] : SEED_SENTIMENT,
+  comments: IS_LIVE_ENVIRONMENT ? [] : SEED_COMMENTS,
+  statusHistory: IS_LIVE_ENVIRONMENT ? [] : SEED_STATUS_HISTORY,
   issueFilter: 'all',
   statusFilter: 'all',
   stateFilter: null,
@@ -1069,9 +1070,11 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
   },
 
   hydrateFromServer: (serverIssues) => {
-    if (!serverIssues || serverIssues.length === 0) return;
+    if (!serverIssues) return;
     const serverIds = new Set(serverIssues.map((i: any) => i.id));
-    const localOnly = SEED_ISSUES.filter((i) => !serverIds.has(i.id));
+    const localOnly = get().issues.filter((i) =>
+      !serverIds.has(i.id) && (!IS_LIVE_ENVIRONMENT || (i.syncStatus && i.syncStatus !== 'SYNCED')),
+    );
     const transformed: CivicIssue[] = serverIssues.map((i: any) => ({
       id: i.id,
       reporterId: i.reporter_id,

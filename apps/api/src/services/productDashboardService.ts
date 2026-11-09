@@ -1,159 +1,194 @@
 /**
- * Executive Product Dashboard & Metric Aggregator Service (JOB 066)
- *
- * Authority: Master Product Blueprint (Jobs 062-066), DEC-188, DEC-189
- * Features:
- * - 5-Dimensional Business Metric Aggregation: Activation, Retention, Engagement, Geography Density, Revenue
- * - Mathematical Proof & Zero-Discrepancy Direct Reconstruction from Raw Event and Organization Tables
+ * Executive product metrics. Production values come from the database RPC added
+ * in migration 097; caller-provided event reconstruction is a local diagnostic
+ * only and is never presented as verified production data.
  */
 
-import { universalAnalyticsService } from './universalAnalyticsService';
-import { developerPlatformService } from './developerPlatformService';
-import { DEVELOPER_TIER_CONFIGS, type ProductDashboardMetricsDTO, type UniversalAnalyticsEventDTO } from '@kshetra/shared';
+import type { ProductDashboardMetricsDTO, UniversalAnalyticsEventDTO } from '@kshetra/shared';
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
+import { isSupabaseAvailable, isUsingServiceRole, supabase } from '../lib/supabase';
+
+export class ProductDashboardDataUnavailableError extends Error {
+  constructor() {
+    super('Durable product analytics are unavailable. Apply the dashboard migration and verify the database connection.');
+    this.name = 'ProductDashboardDataUnavailableError';
+  }
+}
+
+const SIGNUP_EVENTS = new Set(['signup_completed', 'user_registered']);
+const VERIFIED_EVENTS = new Set(['otp_verified', 'kyc_verified']);
+const GEOGRAPHY_EVENTS = new Set(['constituency_selected', 'geography_selected']);
+const FIRST_ACTION_EVENTS = new Set([
+  'issue_created',
+  'issue_upvoted',
+  'representative_followed',
+  'pledge_signed',
+]);
+const CIVIC_INTERACTION_EVENTS = new Set([
+  ...FIRST_ACTION_EVENTS,
+  'comment_posted',
+  'video_shared',
+]);
 
 export class ProductDashboardService {
-  private static readonly TOTAL_NATIONAL_ACS = 4123;
-
-  /**
-   * Aggregates and returns the primary executive dashboard metrics.
-   */
+  /** Read a single database-side aggregation over durable source tables. */
   static async getExecutiveMetrics(): Promise<ProductDashboardMetricsDTO> {
-    const rawEvents = universalAnalyticsService.getRawEventBuffer();
-    return this.reconstructMetricsFromEvents(rawEvents);
+    if (!isSupabaseAvailable() || !isUsingServiceRole) {
+      throw new ProductDashboardDataUnavailableError();
+    }
+
+    try {
+      const { data, error } = await supabase.rpc('get_product_dashboard_metrics');
+      if (error || !data || typeof data !== 'object') {
+        throw new ProductDashboardDataUnavailableError();
+      }
+      return data as ProductDashboardMetricsDTO;
+    } catch {
+      throw new ProductDashboardDataUnavailableError();
+    }
   }
 
   /**
-   * Independently reconstructs all 5 metric dimensions from raw events and organizations.
-   * Enables strict mathematical verification in automated test suites (JOB 066 Evidence).
+   * Diagnostic calculation for non-production use. It intentionally leaves
+   * cohort retention, duration, catalogue coverage, and monetization unknown.
    */
   static reconstructMetricsFromEvents(
-    events: UniversalAnalyticsEventDTO[]
+    events: UniversalAnalyticsEventDTO[],
   ): ProductDashboardMetricsDTO {
+    if (isProductionLikeRuntime()) throw new ProductDashboardDataUnavailableError();
+
     const now = Date.now();
-    const oneDayAgo = now - 24 * 60 * 60 * 1000;
-    const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
-    const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
+    const day = 24 * 60 * 60 * 1000;
+    const recentEvents = events.filter((event) => {
+      const timestamp = Date.parse(event.timestamp);
+      return Number.isFinite(timestamp) && timestamp <= now && timestamp >= now - 30 * day;
+    });
+    const actor = (event: UniversalAnalyticsEventDTO) => event.userId || event.anonymousId;
+    const distinctActors = (rows: UniversalAnalyticsEventDTO[]) =>
+      new Set(rows.map(actor)).size;
 
-    // --- 1. ACTIVATION FUNNEL ---
-    const signupEvents = events.filter((e) => e.eventName === 'signup_completed' || e.eventName === 'user_registered');
-    const verifiedEvents = events.filter((e) => e.eventName === 'otp_verified' || e.eventName === 'kyc_verified');
-    const geoSelectedEvents = events.filter((e) => e.eventName === 'constituency_selected' || e.eventName === 'geography_selected');
-    const firstActionEvents = events.filter(
-      (e) =>
-        e.eventName === 'issue_created' ||
-        e.eventName === 'issue_upvoted' ||
-        e.eventName === 'representative_followed' ||
-        e.eventName === 'pledge_signed'
+    const signupUsers = new Set(
+      events.filter((event) => SIGNUP_EVENTS.has(event.eventName)).map(actor),
     );
-
-    const totalSignups = Math.max(signupEvents.length, 1);
-    const verifiedUsers = verifiedEvents.length;
-    const geographySelectedCount = geoSelectedEvents.length;
-    const firstCivicActionCount = firstActionEvents.length;
-    const activationRatePercent = Number(
-      ((firstCivicActionCount / totalSignups) * 100).toFixed(2)
+    const activatedUsers = new Set(
+      events
+        .filter((event) => FIRST_ACTION_EVENTS.has(event.eventName) && signupUsers.has(actor(event)))
+        .map(actor),
     );
-
-    // --- 2. RETENTION & STICKINESS ---
-    const dauUsers = new Set<string>();
-    const wauUsers = new Set<string>();
-    const mauUsers = new Set<string>();
-
-    for (const e of events) {
-      const ts = new Date(e.timestamp).getTime();
-      const id = e.userId || e.anonymousId;
-      if (ts >= oneDayAgo) dauUsers.add(id);
-      if (ts >= sevenDaysAgo) wauUsers.add(id);
-      if (ts >= thirtyDaysAgo) mauUsers.add(id);
+    const totalSignups = signupUsers.size;
+    const verifiedUsers = distinctActors(
+      events.filter((event) => VERIFIED_EVENTS.has(event.eventName)),
+    );
+    const geographySelectedCount = distinctActors(
+      events.filter((event) => GEOGRAPHY_EVENTS.has(event.eventName)),
+    );
+    const identitiesByWindow = (windowDays: number) => {
+      const cutoff = now - windowDays * day;
+      return new Set(
+        events
+          .filter((event) => {
+            const timestamp = Date.parse(event.timestamp);
+            return Number.isFinite(timestamp) && timestamp >= cutoff && timestamp <= now;
+          })
+          .map(actor),
+      );
+    };
+    const dau = identitiesByWindow(1).size;
+    const wau = identitiesByWindow(7).size;
+    const mau = identitiesByWindow(30).size;
+    const sessionIds = new Set(recentEvents.map((event) => event.sessionId));
+    const activeAcs = new Map<string, { users: Set<string>; eventCount: number }>();
+    for (const event of recentEvents) {
+      const acId = event.geography?.acId;
+      if (!acId) continue;
+      const aggregate = activeAcs.get(acId) || { users: new Set<string>(), eventCount: 0 };
+      aggregate.users.add(actor(event));
+      aggregate.eventCount++;
+      activeAcs.set(acId, aggregate);
     }
-
-    const dau = dauUsers.size;
-    const wau = wauUsers.size;
-    const mau = Math.max(mauUsers.size, 1);
-    const stickinessRatioPercent = Number(((dau / mau) * 100).toFixed(2));
-    const day7RetentionRatePercent = Number(((dau / Math.max(wau, 1)) * 100).toFixed(2));
-    const day30RetentionRatePercent = Number(((wau / mau) * 100).toFixed(2));
-
-    // --- 3. ENGAGEMENT ---
-    const sessionIds = new Set(events.map((e) => e.sessionId));
-    const totalSessions = Math.max(sessionIds.size, 1);
-    const totalCivicInteractions = firstActionEvents.length + events.filter((e) => e.eventName === 'comment_posted' || e.eventName === 'video_shared').length;
-    const avgInteractionsPerSession = Number(
-      (events.length / totalSessions).toFixed(2)
-    );
-    // Estimated average session duration in seconds (based on interaction count)
-    const avgSessionDurationSeconds = Math.round(avgInteractionsPerSession * 35);
-
-    // --- 4. GEOGRAPHIC DENSITY ---
-    const acMap = new Map<string, { users: Set<string>; count: number }>();
-    for (const e of events) {
-      const acId = e.geography?.acId;
-      if (acId) {
-        const item = acMap.get(acId) || { users: new Set<string>(), count: 0 };
-        item.users.add(e.userId || e.anonymousId);
-        item.count += 1;
-        acMap.set(acId, item);
-      }
-    }
-
-    const activeConstituencies = acMap.size;
-    const penetrationPercentage = Number(
-      ((activeConstituencies / this.TOTAL_NATIONAL_ACS) * 100).toFixed(2)
-    );
-
-    const sortedAcs = Array.from(acMap.entries())
-      .sort((a, b) => b[1].count - a[1].count)
-      .slice(0, 10);
-
-    const topActiveConstituencies = sortedAcs.map(([acId, data]) => ({
-      acId,
-      name: acId === 'TS-AC-61' ? 'Jubilee Hills' : `Constituency ${acId}`,
-      activeUsers: data.users.size,
-      eventCount: data.count,
-    }));
-
-    // --- 5. MONETIZATION & REVENUE ATTRIBUTION ---
-    // Computed from simulated B2B SaaS tiers and ad spend
-    const b2bSubscriptionMrrINR = 29_998; // 1 Pro (4,999) + 1 Enterprise (24,999)
-    const adRevenueINR = 145_250; // Performance ads + festival banner sponsorships
-    const totalPrepaidBalancesINR = 58_400;
-    const arpuINR = Number(
-      ((b2bSubscriptionMrrINR + adRevenueINR) / totalSignups).toFixed(2)
-    );
+    const topActiveConstituencies = [...activeAcs.entries()]
+      .sort((left, right) => right[1].eventCount - left[1].eventCount)
+      .slice(0, 10)
+      .map(([acId, aggregate]) => ({
+        acId,
+        name: acId,
+        activeUsers: aggregate.users.size,
+        eventCount: aggregate.eventCount,
+      }));
+    const firstEventTimestamp = events
+      .map((event) => Date.parse(event.timestamp))
+      .filter(Number.isFinite)
+      .sort((left, right) => left - right)[0];
 
     return {
       activation: {
         totalSignups,
         verifiedUsers,
         geographySelectedCount,
-        firstCivicActionCount,
-        activationRatePercent,
+        firstCivicActionCount: activatedUsers.size,
+        activationRatePercent:
+          totalSignups > 0
+            ? Number(((activatedUsers.size / totalSignups) * 100).toFixed(2))
+            : null,
       },
       retention: {
         dau,
         wau,
         mau,
-        stickinessRatioPercent,
-        day7RetentionRatePercent,
-        day30RetentionRatePercent,
+        stickinessRatioPercent: mau > 0 ? Number(((dau / mau) * 100).toFixed(2)) : null,
+        day7RetentionRatePercent: null,
+        day30RetentionRatePercent: null,
+        day7MaturedCohortSize: 0,
+        day30MaturedCohortSize: 0,
+      },
+      liveStreams: {
+        verifiedLiveCount: null,
+        staleReportedCount: null,
+        scheduledCount: null,
+        currentViewerCount: null,
+        freshnessWindowSeconds: 120,
+        latestHeartbeatAt: null,
+        inventory: [],
       },
       engagement: {
-        totalSessions,
-        avgSessionDurationSeconds,
-        avgInteractionsPerSession,
-        totalCivicInteractions,
+        totalSessions: sessionIds.size,
+        avgSessionDurationSeconds: null,
+        avgInteractionsPerSession:
+          sessionIds.size > 0
+            ? Number((recentEvents.length / sessionIds.size).toFixed(2))
+            : null,
+        totalCivicInteractions: recentEvents.filter((event) =>
+          CIVIC_INTERACTION_EVENTS.has(event.eventName),
+        ).length,
       },
       geographyDensity: {
-        totalConstituencies: this.TOTAL_NATIONAL_ACS,
-        activeConstituencies,
-        penetrationPercentage,
+        totalConstituencies: null,
+        activeConstituencies: activeAcs.size,
+        penetrationPercentage: null,
         topActiveConstituencies,
       },
       revenue: {
-        b2bSubscriptionMrrINR,
-        adRevenueINR,
-        totalPrepaidBalancesINR,
-        arpuINR,
+        b2bSubscriptionMrrINR: null,
+        activeB2bSubscriptions: null,
+        adDeliveryEnabled: false,
+        adRevenueINR: null,
+        totalPrepaidBalancesINR: null,
+        arpuINR: null,
+      },
+      dataQuality: {
+        source: 'local_development_buffer',
+        metricWindowDays: 30,
+        eventsInMetricWindow: recentEvents.length,
+        analyticsCoverageStart: Number.isFinite(firstEventTimestamp)
+          ? new Date(firstEventTimestamp).toISOString()
+          : null,
+        notes: [
+          'Diagnostic values use only caller-provided or process-local events and are not production-verified.',
+          'Core mobile emitters cover authentication, issue creation and upvotes, comments, and saved constituency selections; other flows remain uninstrumented and telemetry is best effort.',
+          'Client telemetry is not anti-fraud verified and must not be used for billing, election compliance, or financial reporting.',
+          'Anonymous-to-authenticated identity stitching is unavailable.',
+          'Cohort retention, session duration, constituency catalogue coverage, and monetization are unavailable in diagnostic reconstruction.',
+        ],
       },
       generatedAt: new Date().toISOString(),
     };

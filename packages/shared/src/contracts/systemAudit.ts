@@ -11,8 +11,8 @@
 export interface DeviceHardwareProfile {
   cpuCores: number;
   cpuArchitecture: string; // e.g. 'arm64-v8a', 'cortex-a53'
-  ramMb: number;           // e.g. 2048 MB
-  osVersion: string;       // e.g. 'Android 10 (Go edition)'
+  ramMb: number; // e.g. 2048 MB
+  osVersion: string; // e.g. 'Android 10 (Go edition)'
   jsEngine: 'Hermes' | 'V8' | 'JSC';
   networkThrottleProfile?: '2G' | '3G' | '4G_POOR' | 'WIFI';
 }
@@ -23,18 +23,19 @@ export interface PerformanceBenchmarkMetrics {
   warmStartupMs: number;
   warmStartupThresholdMs: number; // <= 800ms
   mapFps: number;
-  mapFrameTimeP95Ms: number;      // <= 16.6ms
+  mapFrameTimeP95Ms: number; // <= 16.6ms
   feedFps: number;
-  feedFrameTimeP95Ms: number;     // <= 16.6ms
-  droppedFrameRatio: number;      // <= 0.005 (0.5%)
+  feedFrameTimeP95Ms: number; // <= 16.6ms
+  droppedFrameRatio: number; // <= 0.005 (0.5%)
   navigationLatencyP95Ms: number; // <= 100ms
-  memoryPeakRssMb: number;        // <= 120MB
-  memoryGrowthOver15MinMb: number;// <= 5MB
+  memoryPeakRssMb: number; // <= 120MB
+  memoryGrowthOver15MinMb: number; // <= 5MB
 }
 
 export interface PerformanceBenchmarkReport {
   timestamp: string;
-  environment: 'in_engine_synthesizer' | 'low_end_android_emulator' | 'physical_device' | 'cloud_device_farm';
+  environment:
+    'in_engine_synthesizer' | 'low_end_android_emulator' | 'physical_device' | 'cloud_device_farm';
   deviceProfile: DeviceHardwareProfile;
   metrics: PerformanceBenchmarkMetrics;
   certified: boolean;
@@ -145,11 +146,11 @@ export interface MobileArtifactSizes {
   universalApkBytes: number;
   universalApkCeilingBytes: number; // 45 * 1024 * 1024 (45 MB)
   aabBaseModuleBytes: number;
-  aabCeilingBytes: number;           // 25 * 1024 * 1024 (25 MB)
+  aabCeilingBytes: number; // 25 * 1024 * 1024 (25 MB)
   hermesBundleBytes: number;
-  hermesBundleCeilingBytes: number;  // 25 * 1024 * 1024 (25 MB)
+  hermesBundleCeilingBytes: number; // 25 * 1024 * 1024 (25 MB)
   fontAssetsTotalBytes: number;
-  fontAssetsCeilingBytes: number;    // 10 * 1024 * 1024 (10 MB)
+  fontAssetsCeilingBytes: number; // 10 * 1024 * 1024 (10 MB)
 }
 
 export interface MobileSizeDeltas {
@@ -221,21 +222,43 @@ export interface SpatialTopologySummary {
   totalDistricts: number;
   validGeometriesCount: number;
   invalidGeometriesCount: number; // Must be 0
-  sliverPolygonsCount: number;    // Must be 0 (< 100m²)
+  sliverPolygonsCount: number; // Must be 0 (< 100m²)
   crossBoundaryOverlapsCount: number; // Must be 0
   stateContainmentViolationsCount: number; // Must be 0
   srid4326CompliantCount: number;
+  geometryTypeViolationsCount: number;
+  invalidSridCount: number;
+  assemblyBoundaryCoveragePercent: number;
+  missingAssemblyBoundaries: number;
+  pcBoundaryCoveragePercent: number;
+  missingPcBoundaries: number;
+  districtBoundaryCoveragePercent: number;
+  missingDistrictBoundaries: number;
+  statePolygonsAvailable: boolean;
+  sourceProvenanceViolationsCount: number;
+  stateCoverageGapCount: number;
+  checksComplete: boolean;
+  uncertifiedReasons: string[];
 }
 
 export interface SpatialTopologyViolation {
-  entityType: 'AC' | 'PC' | 'DISTRICT';
+  entityType: 'STATE' | 'AC' | 'PC' | 'DISTRICT';
   entityId: string;
   name: string;
-  violationType: 'INVALID_GEOMETRY' | 'SLIVER' | 'OVERLAP' | 'CONTAINMENT_BREACH' | 'INVALID_SRID';
+  violationType:
+    | 'INVALID_GEOMETRY'
+    | 'SLIVER'
+    | 'OVERLAP'
+    | 'CONTAINMENT_BREACH'
+    | 'INVALID_SRID'
+    | 'MISSING_GEOMETRY'
+    | 'SOURCE_PROVENANCE_MISSING'
+    | 'COVERAGE_GAP';
   details: string;
 }
 
 export interface SpatialTopologyAuditReport {
+  auditId: string;
   timestamp: string;
   summary: SpatialTopologySummary;
   certified: boolean;
@@ -307,12 +330,12 @@ export interface DisasterRecoveryDrillReport {
   snapshotSha256: string;
   snapshotAgeSeconds: number; // Must translate to RPO < 3600s
   rpoActualMinutes: number;
-  rpoTargetMinutes: number;  // 60 minutes
+  rpoTargetMinutes: number; // 60 minutes
   rpoPass: boolean;
   recoveryStartTimestamp: string;
   recoveryEndTimestamp: string;
   rtoActualMinutes: number;
-  rtoTargetMinutes: number;  // 30 minutes
+  rtoTargetMinutes: number; // 30 minutes
   rtoPass: boolean;
   dataIntegrityParity: {
     entitiesPreIncident: number;

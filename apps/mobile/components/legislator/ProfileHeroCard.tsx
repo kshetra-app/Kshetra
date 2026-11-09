@@ -108,7 +108,7 @@ export default function ProfileHeroCard({
 
   // Format Net Worth & Margin for Computed Metrics Pills
   const netWorthStr = useMemo(() => {
-    if (netWorth == null) return 'Not Declared';
+    if (netWorth == null) return 'Not available';
     const abs = Math.abs(netWorth);
     if (abs >= 10000000) return `₹${(netWorth / 10000000).toFixed(2)} Cr`;
     if (abs >= 100000) return `₹${(netWorth / 100000).toFixed(1)} L`;
@@ -122,11 +122,11 @@ export default function ProfileHeroCard({
 
   return (
     <View style={[styles.container, { backgroundColor: '#002B7F', borderColor: '#002B7F' }]}>
-      {/* Top Header Row with Verified Tag & Share */}
+      {/* Profile label and share */}
       <View style={styles.topBar}>
         <View style={styles.verifiedPill}>
-          <Ionicons name="shield-checkmark" size={12} color="#FDE68A" />
-          <Text style={styles.verifiedPillText}>ECI Verified Profile</Text>
+          <Ionicons name="person-circle-outline" size={12} color="#FDE68A" />
+          <Text style={styles.verifiedPillText}>Profile record</Text>
         </View>
         {onSharePress && (
           <Pressable style={styles.shareBtnNavy} onPress={onSharePress} hitSlop={8}>

@@ -4,7 +4,9 @@
  * Authority: Master Product Blueprint, Amendment v1.2, Amendment v1.5-A & DEC-192
  */
 
-import { defaultAIRegistry } from './aiProvider';
+import { AIProviderUnavailableError } from './aiProvider';
+import { executeAICompletion } from './aiExecutionService';
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import type {
   CivicClassificationRequest,
   CivicClassificationResult,
@@ -314,7 +316,7 @@ Return ONLY valid JSON matching this schema:
         { role: 'user', content: `Civic Complaint: "${text}"` },
       ];
 
-      const aiRes = await defaultAIRegistry.generateWithFallback({
+      const aiRes = await executeAICompletion({
         messages,
         responseFormat: 'json',
         tenantId: req.tenantId,
@@ -344,10 +346,16 @@ Return ONLY valid JSON matching this schema:
         };
       }
     } catch {
+      if (isProductionLikeRuntime()) {
+        throw new AIProviderUnavailableError('A verified civic classification is not available for this complaint.');
+      }
       // Fallback: if AI call or JSON parsing fails, use best heuristic
     }
 
     // 3. Graceful offline fallback to best heuristic or default
+    if (isProductionLikeRuntime()) {
+      throw new AIProviderUnavailableError('A verified civic classification is not available for this complaint.');
+    }
     if (heuristicMatch) {
       return {
         category: heuristicMatch.entry.category,

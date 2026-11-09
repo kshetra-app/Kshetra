@@ -1,4 +1,4 @@
-import { TELANGANA_CONSTITUENCIES, type ConstituencySeed, TELANGANA_DEMOGRAPHICS, type ConstituencyDemographics } from './data';
+import { TELANGANA_CONSTITUENCIES, type ConstituencySeed } from './data';
 import { getUnifiedConstituenciesForState, type UnifiedConstituency } from './stateDataAdapter';
 import { getDemographicsForState, getHistoryForState } from './stateDataDispatcher';
 import { STATES } from '@kshetra/shared';
@@ -6,11 +6,6 @@ import { STATES } from '@kshetra/shared';
 /** Lookup map from AC_NO to seed data for O(1) access */
 const seedByAcNo = new Map<number, ConstituencySeed>(
   TELANGANA_CONSTITUENCIES.map((c) => [c.acNo, c]),
-);
-
-/** Lookup map from AC_NO to demographics for O(1) access */
-const demoByAcNo = new Map<number, ConstituencyDemographics>(
-  TELANGANA_DEMOGRAPHICS.map((d) => [d.acNo, d]),
 );
 
 /**
@@ -29,7 +24,7 @@ export function enrichGeoJSON(
     features: geojson.features.map((feature) => {
       const acNo = feature.properties?.AC_NO;
       const seed = acNo != null ? seedByAcNo.get(acNo) : undefined;
-      const demo = acNo != null ? demoByAcNo.get(acNo) : undefined;
+      const demo = acNo != null ? getDemographicsForState('TS', acNo) : undefined;
 
       const history = acNo != null ? getHistoryForState('TS', acNo) : [];
       const historyProps: Record<string, string> = {};
@@ -37,16 +32,14 @@ export function enrichGeoJSON(
         historyProps[`WINNER_PARTY_${h.year}`] = h.party;
         historyProps[`WINNER_NAME_${h.year}`] = h.winner;
       }
-      historyProps['WINNER_PARTY_2023'] = seed?.winner2023 ?? 'IND';
+      historyProps['WINNER_PARTY_2023'] = seed?.winner2023 ?? '';
       historyProps['WINNER_NAME_2023'] = seed?.winnerName2023 ?? '';
 
       // Determine Battleground status
-      const margin = seed?.margin2023 ?? 0;
-      let battleground = 'safe';
-      if (margin > 0 && margin < 2000) {
-        battleground = 'critical';
-      } else if (margin >= 2000 && margin < 5000) {
-        battleground = 'competitive';
+      const margin = seed?.margin2023 ?? null;
+      let battleground = 'unknown';
+      if (margin != null) {
+        battleground = margin < 2000 ? 'critical' : margin < 5000 ? 'competitive' : 'safe';
       }
 
       // Determine Swing status
@@ -71,21 +64,21 @@ export function enrichGeoJSON(
         ...feature,
         properties: {
           ...feature.properties,
-          WINNER_PARTY: seed?.winner2023 ?? 'IND',
+          WINNER_PARTY: seed?.winner2023 ?? '',
           WINNER_NAME: seed?.winnerName2023 ?? '',
-          WINNER_VOTES: seed?.winnerVotes2023 ?? feature.properties?.WINNER_VOTES ?? 0,
+          WINNER_VOTES: seed?.winnerVotes2023 ?? feature.properties?.WINNER_VOTES ?? null,
           RUNNER_UP: seed?.runnerUp2023 ?? '',
           RUNNER_UP_NAME: seed?.runnerUpName2023 ?? feature.properties?.RUNNER_UP_NAME ?? '',
-          RUNNER_UP_VOTES: (seed?.winnerVotes2023 && seed?.margin2023) ? (seed.winnerVotes2023 - seed.margin2023) : (feature.properties?.RUNNER_UP_VOTES ?? 0),
-          TOTAL_VOTES: (seed?.winnerVotes2023 && seed?.margin2023) ? (2 * seed.winnerVotes2023 - seed.margin2023) : (feature.properties?.TOTAL_VOTES ?? 0),
-          MARGIN: seed?.margin2023 ?? 0,
-          RESERVATION: seed?.type ?? 'GEN',
+          RUNNER_UP_VOTES: (seed as any)?.runnerUpVotes2023 ?? feature.properties?.RUNNER_UP_VOTES ?? null,
+          TOTAL_VOTES: (seed as any)?.totalValidVotes2023 ?? (seed as any)?.totalVotes2023 ?? feature.properties?.TOTAL_VOTES ?? null,
+          MARGIN: seed?.margin2023 ?? null,
+          RESERVATION: seed?.type ?? '',
           DISTRICT: seed?.district ?? '',
-          POPULATION: demo?.population ?? 0,
-          LITERACY: demo?.literacy ?? 0,
-          TURNOUT: demo?.turnout2023 ?? 0,
-          URBAN_PCT: demo?.urbanPercent ?? 0,
-          TOTAL_VOTERS: demo?.totalVoters ?? 0,
+          POPULATION: demo?.population ?? null,
+          LITERACY: demo?.literacy ?? null,
+          TURNOUT: demo?.turnout2023 ?? null,
+          URBAN_PCT: demo?.urbanPercent ?? null,
+          TOTAL_VOTERS: demo?.totalVoters ?? null,
           BATTLEGROUND: battleground,
           IS_SWING: swingStatus,
           ...historyProps,
@@ -204,9 +197,9 @@ export function enrichGeoJSONForState(
       // Use seed's acNo if matched (corrects the AC_NO for tap handlers)
       const resolvedAcNo = c ? c.acNo : geoAcNo;
 
-      // Merge demographics so the map's Data overlays (population / literacy /
-      // turnout) render for every state, not just Telangana. Missing data
-      // falls back to 0 (renders at the low end of the heatmap scale).
+      // Merge only demographics eligible for the current environment. In
+      // production, unprovenanced bundled estimates are withheld and remain
+      // null so the map can render them as unknown.
       const demo =
         resolvedAcNo != null ? getDemographicsForState(stateCode, resolvedAcNo) : undefined;
 
@@ -216,17 +209,18 @@ export function enrichGeoJSONForState(
         historyProps[`WINNER_PARTY_${h.year}`] = h.party;
         historyProps[`WINNER_NAME_${h.year}`] = h.winner;
       }
-      const currentYear = c?.electionYear ?? 2024;
-      historyProps[`WINNER_PARTY_${currentYear}`] = c?.winnerParty ?? 'IND';
-      historyProps[`WINNER_NAME_${currentYear}`] = c?.winnerName ?? '';
+      if (c?.electionYear != null && c.winnerParty) {
+        historyProps[`WINNER_PARTY_${c.electionYear}`] = c.winnerParty;
+      }
+      if (c?.electionYear != null && c.winnerName) {
+        historyProps[`WINNER_NAME_${c.electionYear}`] = c.winnerName;
+      }
 
       // Determine Battleground status
-      const margin = c?.margin ?? 0;
-      let battleground = 'safe';
-      if (margin > 0 && margin < 2000) {
-        battleground = 'critical';
-      } else if (margin >= 2000 && margin < 5000) {
-        battleground = 'competitive';
+      const margin = c?.margin ?? null;
+      let battleground = 'unknown';
+      if (margin != null) {
+        battleground = margin < 2000 ? 'critical' : margin < 5000 ? 'competitive' : 'safe';
       }
 
       // Determine Swing status
@@ -253,21 +247,21 @@ export function enrichGeoJSONForState(
           ...feature.properties,
           AC_NO: resolvedAcNo,
           AC_NAME: c?.name ?? geoName,
-          WINNER_PARTY: c?.winnerParty ?? 'IND',
+          WINNER_PARTY: c?.winnerParty ?? '',
           WINNER_NAME: c?.winnerName ?? '',
-          WINNER_VOTES: c?.winnerVotes ?? feature.properties?.WINNER_VOTES ?? 0,
+          WINNER_VOTES: c?.winnerVotes ?? feature.properties?.WINNER_VOTES ?? null,
           RUNNER_UP: c?.runnerUp ?? '',
           RUNNER_UP_NAME: c?.runnerUpName ?? feature.properties?.RUNNER_UP_NAME ?? '',
-          RUNNER_UP_VOTES: c?.runnerUpVotes ?? (c?.winnerVotes && c?.margin ? c.winnerVotes - c.margin : (feature.properties?.RUNNER_UP_VOTES ?? 0)),
-          TOTAL_VOTES: (c?.winnerVotes && c?.runnerUpVotes) ? (c.winnerVotes + c.runnerUpVotes) : (feature.properties?.TOTAL_VOTES ?? 0),
-          RESERVATION: c?.type ?? 'GEN',
-          MARGIN: c?.margin ?? 0,
+          RUNNER_UP_VOTES: c?.runnerUpVotes ?? feature.properties?.RUNNER_UP_VOTES ?? null,
+          TOTAL_VOTES: (c as any)?.totalValidVotes ?? (c as any)?.totalVotes ?? feature.properties?.TOTAL_VOTES ?? null,
+          RESERVATION: c?.type ?? '',
+          MARGIN: c?.margin ?? null,
           DISTRICT: c?.district ?? feature.properties?.DIST_NAME ?? '',
-          POPULATION: demo?.population ?? 0,
-          LITERACY: demo?.literacy ?? 0,
-          TURNOUT: demo?.turnout2023 ?? 0,
-          URBAN_PCT: demo?.urbanPercent ?? 0,
-          TOTAL_VOTERS: demo?.totalVoters ?? 0,
+          POPULATION: demo?.population ?? null,
+          LITERACY: demo?.literacy ?? null,
+          TURNOUT: demo?.turnout2023 ?? null,
+          URBAN_PCT: demo?.urbanPercent ?? null,
+          TOTAL_VOTERS: demo?.totalVoters ?? null,
           BATTLEGROUND: battleground,
           IS_SWING: swingStatus,
           ...historyProps,

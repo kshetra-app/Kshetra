@@ -8,6 +8,7 @@ import {
   RefreshControl,
   Share,
   Modal,
+  ActivityIndicator,
 } from 'react-native';
 import { getUnifiedConstituenciesForState } from '../../lib/stateDataAdapter';
 import { useActiveStateStore } from '../../stores/activeState';
@@ -55,7 +56,7 @@ export default function PagesScreen() {
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const stateRepresentatives = useMemo(() => {
     const list = getUnifiedConstituenciesForState(stateCode === 'IN' ? 'AP' : stateCode);
-    return list.slice(0, 35);
+    return list.filter((c) => c.officeholderStatus !== 'VACANT').slice(0, 35);
   }, [stateCode]);
 
   const authUser = useAuthStore((s) => s.user);
@@ -63,12 +64,16 @@ export default function PagesScreen() {
 
   // Aspirant store
   const aspirantProfile = useAspirantStore((s) => s.profile);
+  const aspirantProfileStatus = useAspirantStore((s) => s.profileStatus);
   const publicAspirants = useAspirantStore((s) => s.publicAspirants);
   const getCivicScore = useAspirantStore((s) => s.getCivicScore);
   const badges = useAspirantStore((s) => s.badges);
   const endorseAspirant = useAspirantStore((s) => s.endorseAspirant);
   const endorsedIds = useAspirantStore((s) => s.endorsedIds);
   const hydrateAspirants = useAspirantStore((s) => s.hydrateAspirants);
+  const hydrateAspirantProfile = useAspirantStore((s) => s.hydrateAspirantProfile);
+  const hydrateAcademyBadges = useAspirantStore((s) => s.hydrateAcademyBadges);
+  const academyBadgesStatus = useAspirantStore((s) => s.academyBadgesStatus);
 
   const loadPoliticians = useCallback(async () => {
     setLoadingPoliticians(true);
@@ -79,8 +84,10 @@ export default function PagesScreen() {
 
   useEffect(() => {
     hydrateAspirants();
+    hydrateAspirantProfile();
+    hydrateAcademyBadges();
     loadPoliticians();
-  }, [hydrateAspirants, loadPoliticians]);
+  }, [hydrateAspirants, hydrateAspirantProfile, hydrateAcademyBadges, loadPoliticians, authUser?.id]);
 
   useEffect(() => {
     if (tab === 'my_page' || tab === 'aspirants' || tab === 'politicians') {
@@ -90,9 +97,9 @@ export default function PagesScreen() {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await Promise.all([hydrateAspirants(), loadPoliticians()]);
+    await Promise.all([hydrateAspirants(), hydrateAspirantProfile(), hydrateAcademyBadges(), loadPoliticians()]);
     setRefreshing(false);
-  }, [hydrateAspirants, loadPoliticians]);
+  }, [hydrateAspirants, hydrateAspirantProfile, hydrateAcademyBadges, loadPoliticians]);
 
   const isEmailVerified = authUser ? Boolean(authUser.email_confirmed_at) : false;
   const userCanCreate = canCreatePage(userProfile?.role, isEmailVerified);
@@ -461,7 +468,22 @@ export default function PagesScreen() {
         {/* ─── TAB 3: MY PAGE ─── */}
         {activeTab === 'my_page' && (
           <View style={styles.tabContent}>
-            {aspirantProfile || userCanCreate ? (
+            {aspirantProfileStatus === 'loading' ? (
+              <View style={[styles.createPromptCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <ActivityIndicator color={colors.primary} />
+                <Text style={[styles.promptDesc, { color: colors.textSecondary }]}>{t('common.loading')}</Text>
+              </View>
+            ) : aspirantProfileStatus === 'error' ? (
+              <View style={[styles.createPromptCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <Ionicons name="cloud-offline-outline" size={40} color={colors.textMuted} />
+                <Text style={[styles.promptDesc, { color: colors.textSecondary }]}>
+                  {t('pages.aspirantProfileUnavailable', { defaultValue: 'Your aspirant profile could not be loaded.' })}
+                </Text>
+                <Pressable style={[styles.btnActionPrimary, { backgroundColor: colors.primary }]} onPress={() => void hydrateAspirantProfile()}>
+                  <Text style={styles.btnActionPrimaryText}>{t('common.retry')}</Text>
+                </Pressable>
+              </View>
+            ) : aspirantProfile || userCanCreate ? (
               <>
                 {aspirantProfile ? (
                   <>
@@ -496,7 +518,17 @@ export default function PagesScreen() {
                       <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />
                     </Pressable>
 
-                    <CivicBadgeGrid earned={badges} />
+                    {academyBadgesStatus === 'loading' ? (
+                      <ActivityIndicator color={colors.primary} />
+                    ) : academyBadgesStatus === 'error' ? (
+                      <Pressable onPress={() => void hydrateAcademyBadges()}>
+                        <Text style={[styles.promptDesc, { color: colors.textSecondary }]}>
+                          {t('pages.badgesUnavailable', { defaultValue: 'Badges could not be loaded. Tap to retry.' })}
+                        </Text>
+                      </Pressable>
+                    ) : (
+                      <CivicBadgeGrid earned={badges} />
+                    )}
 
                     {/* Next Steps Card (FIX-14) */}
                     <View style={[styles.nextStepsCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>

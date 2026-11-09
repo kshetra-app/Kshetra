@@ -18,18 +18,25 @@ import { MODULE_CONTENT } from '../data/leadershipContent';
 import * as dataService from '../lib/supabaseDataService';
 import { enqueue } from '../lib/offlineSync';
 import { useAuthStore } from './auth';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 
 interface AspirantState {
   // Current user aspirant profile (null if not registered)
   profile: AspirantProfile | null;
+  profileStatus: 'idle' | 'loading' | 'ready' | 'error';
   badges: CivicBadge[];
   modules: LeadershipModule[];
+  academyStatus: 'idle' | 'loading' | 'ready' | 'error';
+  academyError?: string;
+  academyBadgesStatus: 'idle' | 'loading' | 'ready' | 'error';
+  academyChallengesStatus: 'idle' | 'loading' | 'ready' | 'error';
   moduleProgress: ModuleProgress[];
   challenges: CommunityChallenge[];
   challengeProgress: ChallengeParticipation[];
 
   // Public aspirants (community directory)
   publicAspirants: AspirantProfile[];
+  publicAspirantsStatus: 'idle' | 'loading' | 'ready' | 'error';
 
   // Queries
   getCivicScore: () => CivicScoreBreakdown | null;
@@ -42,12 +49,16 @@ interface AspirantState {
   registerAsAspirant: (profile: Omit<AspirantProfile, 'id' | 'civicScore' | 'issuesReported' | 'issuesResolved' | 'commentsCount' | 'evidenceSubmitted' | 'promisesTracked' | 'communityEndorsements' | 'modulesCompleted' | 'challengesCompleted'>) => Promise<void>;
   updateProfile: (updates: Partial<AspirantProfile>) => void;
   startModule: (moduleId: string) => Promise<void>;
-  completeModule: (moduleId: string, quizScore?: number) => void;
+  completeModule: (moduleId: string, quizScore?: number) => Promise<void>;
   joinChallenge: (challengeId: string) => Promise<void>;
   updateChallengeProgress: (challengeId: string, progress: number) => void;
   earnBadge: (badgeType: BadgeType) => void;
   endorseAspirant: (aspirantId: string, endorserId?: string) => Promise<void>;
   hydrateAspirants: (stateCode?: string, acNo?: number) => Promise<void>;
+  hydrateAspirantProfile: () => Promise<void>;
+  hydrateAcademyBadges: () => Promise<void>;
+  hydrateAcademy: () => Promise<void>;
+  submitModuleQuiz: (moduleId: string, answers: Array<{ questionId: string; selectedIndex: number }>) => Promise<any>;
   endorsedIds: string[];
 }
 
@@ -403,12 +414,17 @@ const SEED_PUBLIC_ASPIRANTS: AspirantProfile[] = [
 
 export const useAspirantStore = create<AspirantState>()((set, get) => ({
   profile: null,
+  profileStatus: IS_LIVE_ENVIRONMENT ? 'idle' : 'ready',
   badges: [],
-  modules: SEED_MODULES.map((m) => ({ ...m, ...MODULE_CONTENT[m.id] })),
+  modules: IS_LIVE_ENVIRONMENT ? [] : SEED_MODULES.map((m) => ({ ...m, ...MODULE_CONTENT[m.id] })),
+  academyStatus: IS_LIVE_ENVIRONMENT ? 'idle' : 'ready',
+  academyBadgesStatus: IS_LIVE_ENVIRONMENT ? 'idle' : 'ready',
+  academyChallengesStatus: IS_LIVE_ENVIRONMENT ? 'idle' : 'ready',
   moduleProgress: [],
-  challenges: SEED_CHALLENGES,
+  challenges: IS_LIVE_ENVIRONMENT ? [] : SEED_CHALLENGES,
   challengeProgress: [],
-  publicAspirants: SEED_PUBLIC_ASPIRANTS,
+  publicAspirants: IS_LIVE_ENVIRONMENT ? [] : SEED_PUBLIC_ASPIRANTS,
+  publicAspirantsStatus: IS_LIVE_ENVIRONMENT ? 'idle' : 'ready',
   endorsedIds: [],
 
   getCivicScore: () => {
@@ -431,6 +447,7 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
     get().challenges.filter((c) => {
       if (!c.isActive) return false;
       const now = new Date();
+      if (c.startsAt && new Date(c.startsAt) > now) return false;
       if (c.endsAt && new Date(c.endsAt) < now) return false;
       return true;
     }),
@@ -439,6 +456,116 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
     get().publicAspirants.filter(
       (a) => a.stateCode === stateCode && a.targetConstituencyAcNo === acNo,
     ),
+
+  hydrateAspirantProfile: async () => {
+    const userId = useAuthStore.getState().user?.id;
+    if (!userId) {
+      set({ profile: null, profileStatus: 'ready' });
+      return;
+    }
+
+    set({ profileStatus: 'loading' });
+    const result = await dataService.fetchMyAspirantProfile();
+    if (!result.success) {
+      if (IS_LIVE_ENVIRONMENT) set({ profile: null, profileStatus: 'error' });
+      else set({ profileStatus: 'error' });
+      return;
+    }
+
+    const row = result.profile;
+    if (!row) {
+      set({ profile: null, profileStatus: 'ready' });
+      return;
+    }
+
+    const profile: AspirantProfile = {
+      id: row.id,
+      userId: row.userId,
+      displayName: row.displayName,
+      bio: row.bio,
+      avatarUrl: row.avatarUrl,
+      stateCode: row.stateCode,
+      targetConstituencyAcNo: row.targetConstituencyAcNo,
+      targetConstituencyName: row.targetConstituencyName,
+      targetElectionYear: row.targetElectionYear,
+      partyAffiliation: row.partyAffiliation,
+      isIndependent: row.isIndependent,
+      civicScore: row.civicScore,
+      issuesReported: row.issuesReported,
+      issuesResolved: row.issuesResolved,
+      commentsCount: row.commentsCount,
+      evidenceSubmitted: row.evidenceSubmitted,
+      promisesTracked: row.promisesTracked,
+      communityEndorsements: row.communityEndorsements,
+      modulesCompleted: row.modulesCompleted,
+      challengesCompleted: row.challengesCompleted,
+      isPublic: row.isPublic,
+    };
+    set({ profile, profileStatus: 'ready' });
+  },
+
+  hydrateAcademyBadges: async () => {
+    const userId = useAuthStore.getState().user?.id;
+    if (!IS_LIVE_ENVIRONMENT) {
+      set({ academyBadgesStatus: 'ready' });
+      return;
+    }
+    if (!userId) {
+      set({ badges: [], academyBadgesStatus: 'ready' });
+      return;
+    }
+
+    set({ academyBadgesStatus: 'loading' });
+    const badges = await dataService.fetchAcademyBadges();
+    if (badges) set({ badges, academyBadgesStatus: 'ready' });
+    else set({ badges: [], academyBadgesStatus: 'error' });
+  },
+
+  hydrateAcademy: async () => {
+    set({
+      academyStatus: 'loading',
+      academyError: undefined,
+      ...(IS_LIVE_ENVIRONMENT ? { academyChallengesStatus: 'loading' as const } : {}),
+    });
+    try {
+      const remoteModules = await dataService.fetchLeadershipModules();
+      if (!remoteModules) throw new Error('Leadership Academy data is unavailable');
+      const modules = remoteModules.flatMap((remote: any) => {
+        const local = SEED_MODULES.find((module) => module.id === remote.id);
+        if (!local) return [];
+        const { quiz: _bundledQuiz, ...presentationContent } = MODULE_CONTENT[local.id] ?? {};
+        return [{ ...local, ...presentationContent, ...remote, quiz: remote.quiz ?? [] } as LeadershipModule];
+      });
+      const moduleProgress = remoteModules.map((module: any) => ({
+        moduleId: module.id,
+        completed: Boolean(module.completed),
+        quizScore: module.quizScore,
+        startedAt: '',
+      }));
+      set({ modules, moduleProgress, academyStatus: 'ready', academyError: undefined });
+    } catch (error: any) {
+      if (IS_LIVE_ENVIRONMENT) {
+        set({ modules: [], moduleProgress: [], challenges: [], academyStatus: 'error', academyError: error?.message || 'Leadership Academy is unavailable' });
+      } else {
+        set({ academyStatus: 'error', academyError: error?.message || 'Leadership Academy refresh failed' });
+      }
+    }
+
+    if (IS_LIVE_ENVIRONMENT) {
+      const challengeData = await dataService.fetchAcademyChallenges();
+
+      if (challengeData) {
+        set({
+          challenges: challengeData.challenges,
+          challengeProgress: challengeData.participation,
+          academyChallengesStatus: 'ready',
+        });
+      } else {
+        set({ challenges: [], challengeProgress: [], academyChallengesStatus: 'error' });
+      }
+
+    }
+  },
 
   registerAsAspirant: async (profileData) => {
     const tempId = `asp-${Date.now()}`;
@@ -455,7 +582,7 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
       modulesCompleted: 0,
       challengesCompleted: 0,
     };
-    set({ profile: newProfile });
+    if (!IS_LIVE_ENVIRONMENT) set({ profile: newProfile });
 
     // Asynchronously register in Supabase
     try {
@@ -465,16 +592,27 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
         stateCode: profileData.stateCode,
         targetConstituencyAcNo: profileData.targetConstituencyAcNo,
         targetConstituencyName: profileData.targetConstituencyName,
+        targetElectionYear: profileData.targetElectionYear,
         partyAffiliation: profileData.partyAffiliation,
         isIndependent: profileData.isIndependent,
       });
       if (res.success && res.id) {
-        set((state) => ({
-          profile: state.profile ? { ...state.profile, id: res.id! } : null,
-        }));
+        set({
+          profile: { ...newProfile, ...(res.profile ?? {}), id: res.id },
+          profileStatus: 'ready',
+        });
+        return;
       }
-    } catch {
-      // Offline fallback: profile remains stored locally
+      if (IS_LIVE_ENVIRONMENT) {
+        set({ profileStatus: 'error' });
+        throw new Error('Aspirant registration was not saved');
+      }
+    } catch (error) {
+      if (IS_LIVE_ENVIRONMENT) {
+        set({ profileStatus: 'error' });
+        throw error;
+      }
+      // Development keeps a local preview when the backend is unavailable.
     }
   },
 
@@ -485,7 +623,19 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
 
   startModule: async (moduleId) => {
     const exists = get().moduleProgress.find((mp) => mp.moduleId === moduleId);
-    if (exists) return;
+    if (exists?.completed || (exists && !IS_LIVE_ENVIRONMENT)) return;
+    const userId = useAuthStore.getState().user?.id;
+    if (IS_LIVE_ENVIRONMENT) {
+      if (!userId) throw new Error('Authentication required to start a module');
+      const ok = await dataService.startModule(userId, moduleId);
+      if (!ok) throw new Error('Module progress could not be saved');
+      set((state) => ({
+        moduleProgress: state.moduleProgress.some((mp) => mp.moduleId === moduleId)
+          ? state.moduleProgress
+          : [...state.moduleProgress, { moduleId, completed: false, startedAt: new Date().toISOString() }],
+      }));
+      return;
+    }
     set((state) => ({
       moduleProgress: [
         ...state.moduleProgress,
@@ -497,7 +647,6 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
       ],
     }));
 
-    const userId = useAuthStore.getState().user?.id;
     if (userId) {
       try {
         const ok = await dataService.startModule(userId, moduleId);
@@ -511,6 +660,25 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
   },
 
   completeModule: async (moduleId, quizScore) => {
+    const userId = useAuthStore.getState().user?.id;
+    if (IS_LIVE_ENVIRONMENT) {
+      if (!userId) throw new Error('Authentication required to complete a module');
+      const ok = await dataService.completeModule(userId, moduleId, quizScore);
+      if (!ok) throw new Error('Module completion could not be saved');
+      set((state) => {
+        const prior = state.moduleProgress.find((mp) => mp.moduleId === moduleId);
+        if (prior?.completed) return state;
+        return {
+          moduleProgress: state.moduleProgress.map((mp) => mp.moduleId === moduleId
+            ? { ...mp, completed: true, quizScore, completedAt: new Date().toISOString() }
+            : mp),
+          profile: state.profile
+            ? { ...state.profile, modulesCompleted: state.profile.modulesCompleted + 1 }
+            : null,
+        };
+      });
+      return;
+    }
     set((state) => ({
       moduleProgress: state.moduleProgress.map((mp) =>
         mp.moduleId === moduleId
@@ -522,7 +690,6 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
         : null,
     }));
 
-    const userId = useAuthStore.getState().user?.id;
     if (userId) {
       try {
         const ok = await dataService.completeModule(userId, moduleId, quizScore);
@@ -535,9 +702,39 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
     }
   },
 
+  submitModuleQuiz: async (moduleId, answers) => {
+    const userId = useAuthStore.getState().user?.id;
+    if (!userId) throw new Error('Authentication required to submit a quiz');
+    const result = await dataService.submitLeadershipQuiz(userId, moduleId, answers);
+    if (IS_LIVE_ENVIRONMENT && result.badgeAwarded) await get().hydrateAcademyBadges();
+    set((state) => ({
+      moduleProgress: state.moduleProgress.some((item) => item.moduleId === moduleId)
+        ? state.moduleProgress.map((item) => item.moduleId === moduleId
+          ? { ...item, quizScore: result.scorePercentage }
+          : item)
+        : [...state.moduleProgress, { moduleId, completed: false, quizScore: result.scorePercentage, startedAt: new Date().toISOString() }],
+      badges: !IS_LIVE_ENVIRONMENT && result.badgeAwarded && !state.badges.some((badge) => badge.type === result.badgeAwarded)
+          ? [...state.badges, { type: result.badgeAwarded as BadgeType, earnedAt: new Date().toISOString() }]
+          : state.badges,
+    }));
+    return result;
+  },
+
   joinChallenge: async (challengeId) => {
     const exists = get().challengeProgress.find((cp) => cp.challengeId === challengeId);
     if (exists) return;
+    const userId = useAuthStore.getState().user?.id;
+    if (IS_LIVE_ENVIRONMENT) {
+      if (!userId) throw new Error('Authentication required to join a challenge');
+      const ok = await dataService.joinChallenge(userId, challengeId);
+      if (!ok) throw new Error('Challenge participation could not be saved');
+      set((state) => ({
+        challengeProgress: state.challengeProgress.some((cp) => cp.challengeId === challengeId)
+          ? state.challengeProgress
+          : [...state.challengeProgress, { challengeId, progress: 0, completed: false }],
+      }));
+      return;
+    }
     set((state) => ({
       challengeProgress: [
         ...state.challengeProgress,
@@ -545,7 +742,6 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
       ],
     }));
 
-    const userId = useAuthStore.getState().user?.id;
     if (userId) {
       try {
         const ok = await dataService.joinChallenge(userId, challengeId);
@@ -560,6 +756,7 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
 
   updateChallengeProgress: (challengeId, progress) =>
     set((state) => {
+      if (IS_LIVE_ENVIRONMENT) return state;
       const challenge = state.challenges.find((c) => c.id === challengeId);
       const isComplete = challenge ? progress >= challenge.targetCount : false;
       return {
@@ -582,6 +779,7 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
 
   earnBadge: (badgeType) =>
     set((state) => {
+      if (IS_LIVE_ENVIRONMENT) return state;
       if (state.badges.some((b) => b.type === badgeType)) return state;
       return {
         badges: [...state.badges, { type: badgeType, earnedAt: new Date().toISOString() }],
@@ -598,7 +796,19 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
       throw new Error('Authentication required to endorse an aspirant');
     }
 
-    // Optimistic local update
+    if (IS_LIVE_ENVIRONMENT) {
+      const ok = await dataService.endorseAspirant(eId, aspirantId);
+      if (!ok) throw new Error('Endorsement could not be saved');
+      set((state) => ({
+        endorsedIds: [...state.endorsedIds, aspirantId],
+        publicAspirants: state.publicAspirants.map((aspirant) => aspirant.id === aspirantId
+          ? { ...aspirant, communityEndorsements: aspirant.communityEndorsements + 1, civicScore: aspirant.civicScore + 5 }
+          : aspirant),
+      }));
+      return;
+    }
+
+    // Optimistic local update for the non-production preview.
     set((state) => ({
       endorsedIds: [...state.endorsedIds, aspirantId],
       publicAspirants: state.publicAspirants.map((a) =>
@@ -624,9 +834,10 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
   },
 
   hydrateAspirants: async (stateCode, acNo) => {
+    set({ publicAspirantsStatus: 'loading' });
     try {
       const remoteAspirants = await dataService.fetchPublicAspirants(stateCode, acNo);
-      if (remoteAspirants && remoteAspirants.length > 0) {
+      if (remoteAspirants !== null) {
         const mapped: AspirantProfile[] = remoteAspirants.map((r: any) => ({
           id: r.id,
           userId: r.user_id,
@@ -636,9 +847,9 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
           stateCode: r.state_code,
           targetConstituencyAcNo: r.target_constituency_ac_no,
           targetConstituencyName: r.target_constituency_name,
-          targetElectionYear: r.target_election_year || 2028,
+          targetElectionYear: typeof r.target_election_year === 'number' ? r.target_election_year : undefined,
           partyAffiliation: r.party_affiliation || undefined,
-          isIndependent: r.is_independent ?? true,
+          isIndependent: r.is_independent === true,
           civicScore: r.civic_score || 0,
           issuesReported: r.issues_reported || 0,
           issuesResolved: r.issues_resolved || 0,
@@ -650,10 +861,15 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
           challengesCompleted: r.challenges_completed || 0,
           isPublic: r.is_public ?? true,
         }));
-        set({ publicAspirants: mapped });
+        set({ publicAspirants: mapped, publicAspirantsStatus: 'ready' });
+      } else if (IS_LIVE_ENVIRONMENT) {
+        set({ publicAspirants: [], publicAspirantsStatus: 'error' });
+      } else {
+        set({ publicAspirantsStatus: 'error' });
       }
     } catch {
-      // Retain existing seeds if fetch fails
+      if (IS_LIVE_ENVIRONMENT) set({ publicAspirants: [], publicAspirantsStatus: 'error' });
+      else set({ publicAspirantsStatus: 'error' });
     }
   },
 }));

@@ -65,6 +65,11 @@ export default function AIDashboardSummary({ constituencyName, issues }: AIDashb
           {summary ? (
             <>
               <Text style={[styles.summaryText, { color: colors.text }]}>{summary}</Text>
+              <Text style={[styles.provenanceText, { color: colors.textMuted }]}>
+                {t('ai.referenceDataNotVerified', {
+                  defaultValue: 'AI generated from supplied app data; source and date verification is unavailable.',
+                })}
+              </Text>
               <Pressable onPress={() => setSummary(null)} style={styles.resetLink}>
                 <Text style={[styles.resetText, { color: colors.primary }]}>{t('ai.regenerate')}</Text>
               </Pressable>
@@ -94,6 +99,11 @@ export default function AIDashboardSummary({ constituencyName, issues }: AIDashb
         {trendAnalysis ? (
           <>
             <Text style={[styles.summaryText, { color: colors.text }]}>{trendAnalysis}</Text>
+            <Text style={[styles.provenanceText, { color: colors.textMuted }]}>
+              {t('ai.referenceDataNotVerified', {
+                defaultValue: 'AI generated from supplied app data; source and date verification is unavailable.',
+              })}
+            </Text>
             <Pressable onPress={() => setTrendAnalysis(null)} style={styles.resetLink}>
               <Text style={[styles.resetText, { color: colors.primary }]}>{t('ai.regenerate')}</Text>
             </Pressable>
@@ -157,6 +167,11 @@ const styles = StyleSheet.create({
   summaryText: {
     fontSize: 13,
     lineHeight: 20,
+  },
+  provenanceText: {
+    fontSize: 10,
+    lineHeight: 14,
+    marginTop: 5,
   },
   resetLink: {
     marginTop: 6,

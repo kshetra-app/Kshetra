@@ -16,6 +16,7 @@
 
 import type { ApiClient } from '../client';
 import { ApiValidationError } from '../errors';
+import { trackProductEvent } from '../../analytics';
 
 export interface ReportIssueRequestDTO {
   title: string;
@@ -42,6 +43,13 @@ export class CivicEndpoint {
       {},
       { authPolicy: 'authenticated' },
     );
+    if (response.data.success) {
+      void trackProductEvent(this.client, 'issue_upvoted', {
+        screen: '/civic/issue',
+        entityType: 'civic_issue',
+        entityId: response.data.issueId,
+      });
+    }
     return { success: response.data.success, issueId: response.data.issueId };
   }
 
@@ -98,6 +106,14 @@ export class CivicEndpoint {
       payload,
       { authPolicy: 'authenticated' },
     );
+    if (response.data.success) {
+      void trackProductEvent(this.client, 'issue_created', {
+        screen: '/civic/issues/create',
+        constituencyId: payload.constituencyId,
+        entityType: 'civic_issue',
+        entityId: response.data.id,
+      });
+    }
     return { success: response.data.success, id: response.data.id };
   }
 
@@ -157,6 +173,13 @@ export class CivicEndpoint {
       { body, userName, imageUrl },
       { authPolicy: 'authenticated' },
     );
+    if (response.data.success) {
+      void trackProductEvent(this.client, 'comment_posted', {
+        screen: '/civic/issue',
+        entityType: 'civic_issue',
+        entityId: response.data.issueId,
+      });
+    }
     return {
       success: response.data.success,
       id: response.data.id,

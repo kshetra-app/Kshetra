@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   RefreshControl,
   Share,
+  Alert,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -110,10 +111,14 @@ export default function UserProfileScreen() {
     if (!userId || isSelf || followLoading) return;
     setFollowLoading(true);
     try {
-      if (isFollowing) {
-        await unfollowUser(userId);
-      } else {
-        await followUser(userId);
+      const updated = isFollowing
+        ? await unfollowUser(userId)
+        : await followUser(userId);
+      if (!updated) {
+        Alert.alert(
+          i18n.t('profile.followUpdateFailed', { defaultValue: 'Could not update follow status' }),
+          useFeedStore.getState().lastError || i18n.t('common.tryAgain', { defaultValue: 'Please try again.' }),
+        );
       }
     } finally {
       setFollowLoading(false);

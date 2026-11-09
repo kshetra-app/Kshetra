@@ -579,7 +579,7 @@ const pa = {
     "tryAsking": "ਯਹ ਪੂਛਕਰ ਦੇਖੇਂ:",
     "thinkingSearch": "ਡੇਟਾ ਕਾ ਵਿਸ਼੍ਲੇਸ਼ਣ ਕਿਯਾ ਜਾ ਰਹਾ ਹੈ…",
     "noResponse": "ਕੋਈ ਪ੍ਰਤਿਕ੍ਰਿਯਾ ਉਪਲਬ੍ਧ ਨਹੀਂ",
-    "poweredBy": "ਪੋਲੀਗ੍ਰਾਮ AI ਦੁਆਰਾ ਸੰਚਾਲਿਤ • Google Gemini",
+    "poweredBy": "ਪੋਲੀਗ੍ਰਾਮ AI ਦੁਆਰਾ ਸੰਚਾਲਿਤ",
     "qWinner2023": "2023 ਮੇਂ {{name}} ਕਿਸਨੇ ਜੀਤਾ?",
     "qMarginTrend": "{{name}} ਮੇਂ ਅਂਤਰ ਕਾ ਰੁਝਾਨ ਕ੍ਯਾ ਹੈ?",
     "qTellAboutMLA": "{{name}} ਕੇ ਵਿਧਾਯਕ ਕੇ ਬਾਰੇ ਮੇਂ ਬਤਾਏਂ",

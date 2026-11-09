@@ -89,7 +89,7 @@ export const VOLUNTEER_ROLE_CONFIG: Record<VolunteerRole, { label: string; icon:
 export interface Campaign {
   id: string;
   politicianId: string;
-  politicianName: string;
+  politicianName?: string;
   party?: string;
   name: string;
   description: string;
@@ -100,17 +100,17 @@ export interface Campaign {
   targetDistricts: string[];
   startDate: string;
   endDate: string;
-  totalBudgetINR: number;
-  spentBudgetINR: number;
-  adCount: number;
-  volunteerCount: number;
-  boothsCovered: number;
-  totalBooths: number;
-  impressions: number;
-  reach: number;
-  engagements: number;
-  conversions: number;
-  sentimentScore: number;
+  totalBudgetINR?: number;
+  spentBudgetINR?: number;
+  adCount?: number;
+  volunteerCount?: number;
+  boothsCovered?: number;
+  totalBooths?: number;
+  impressions?: number;
+  reach?: number;
+  engagements?: number;
+  conversions?: number;
+  sentimentScore?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -127,10 +127,11 @@ export interface AdCreative {
   mediaUrls: string[];
   thumbnailUrl?: string;
   landingUrl?: string;
-  targeting: AdTargeting;
-  budget: AdBudget;
-  schedule: AdSchedule;
-  performance: AdPerformance;
+  targeting?: AdTargeting;
+  budget?: AdBudget;
+  schedule?: AdSchedule;
+  /** Null until persisted delivery events can support real metrics. */
+  performance?: AdPerformance | null;
   abTestId?: string;
   abVariant?: 'A' | 'B' | 'C';
   disclosureText: string;
@@ -339,20 +340,23 @@ export interface CampaignServicePricing {
 export interface CampaignAnalytics {
   campaignId: string;
   period: 'daily' | 'weekly' | 'monthly' | 'total';
-  totalSpend: number;
-  totalImpressions: number;
-  totalReach: number;
-  totalEngagements: number;
-  totalConversions: number;
-  overallCTR: number;
-  overallROI: number;
-  costPerVoterReached: number;
+  totalSpend: number | null;
+  totalImpressions: number | null;
+  totalReach: number | null;
+  totalEngagements: number | null;
+  totalConversions: number | null;
+  overallCTR: number | null;
+  overallROI: number | null;
+  costPerVoterReached: number | null;
   sentimentTrend: { date: string; positive: number; neutral: number; negative: number }[];
-  topPerformingAds: { adId: string; name: string; roi: number; impressions: number }[];
+  /** Null when ad delivery metrics are not available; an empty array means no ads exist. */
+  topPerformingAds: { adId: string; name: string; roi: number; impressions: number }[] | null;
   segmentPerformance: { segment: VoterSegment; reached: number; engaged: number; cost: number }[];
   geographicHeatmap: { acNo: number; acName: string; impressions: number; sentiment: number }[];
-  volunteerMetrics: { totalVolunteers: number; activeVolunteers: number; totalHours: number; householdsReached: number };
-  boothReadiness: { total: number; ready: number; inProgress: number; notStarted: number };
+  /** Null when volunteer data is unavailable. Household reach has no persisted source yet. */
+  volunteerMetrics: { totalVolunteers: number; activeVolunteers: number; totalHours: number; householdsReached: number | null } | null;
+  /** Null when booth data is unavailable. */
+  boothReadiness: { total: number; ready: number; inProgress: number; notStarted: number } | null;
   channelBreakdown: { channel: ChannelType; impressions: number; engagements: number; cost: number }[];
   dailyMetrics: { date: string; spend: number; impressions: number; engagements: number; newVolunteers: number }[];
 }
@@ -411,7 +415,7 @@ export function calculateECICompliance(ad: AdCreative): { compliant: boolean; is
   if (!ad.disclosureText) issues.push('Missing disclosure text (ECI mandatory)');
   if (!ad.paidForBy) issues.push('Missing "Paid for by" attribution');
   if (ad.format === 'sms_blast' && !ad.eciDisclosureId) issues.push('SMS campaigns require ECI pre-certification');
-  if (ad.budget.totalINR > 7000000) issues.push('Expenditure may exceed ECI limit for AC');
+  if ((ad.budget?.totalINR ?? 0) > 7000000) issues.push('Expenditure may exceed ECI limit for AC');
   return { compliant: issues.length === 0, issues };
 }
 

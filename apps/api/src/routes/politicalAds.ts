@@ -1,3 +1,4 @@
+import { isIsolatedTestRuntime, isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 /**
  * Political Advertising & Statutory Transparency Ledger Routes
  * Master Product Blueprint — Domain 6 (JOB 057)
@@ -31,34 +32,9 @@ interface PoliticalAdRow {
 }
 
 // In-memory cache/fallback for legacy non-database test environments
-const MEMORY_ADS: PoliticalAdRow[] = [
-  {
-    id: 'pad-demo-1',
-    page_id: 'demo-page',
-    post_id: 'post-101',
-    mcmc_certificate_id: 'ECI/MCMC/2026/TS/0891',
-    status: 'active',
-    amount_paid: 250000, // ₹2,500
-    target_scope: 'constituency',
-    target_value: 'TS-AC-67',
-    impressions: 1420,
-    created_at: new Date(Date.now() - 86400000).toISOString(),
-    reviewed_by: 'admin-1',
-    reviewed_at: new Date(Date.now() - 82800000).toISOString(),
-  },
-  {
-    id: 'pad-demo-2',
-    page_id: 'demo-page',
-    post_id: 'post-102',
-    mcmc_certificate_id: 'ECI/MCMC/2026/TS/0892',
-    status: 'pending_certification',
-    amount_paid: 500000, // ₹5,000
-    target_scope: 'state',
-    target_value: 'TS',
-    impressions: 0,
-    created_at: new Date(Date.now() - 3600000).toISOString(),
-  },
-];
+// Never seed ad records or delivery metrics. The production routes remain closed
+// until durable storage, review, and delivery are connected.
+const MEMORY_ADS: PoliticalAdRow[] = [];
 
 const submitPoliticalAdSchema = {
   params: {
@@ -127,6 +103,15 @@ const libraryAdsQuerySchema = {
 };
 
 export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
+  // Both the legacy queue and Domain 6 ad service currently use process memory.
+  // Keep them available to isolated nonproduction demos, but never present them as live ads.
+  const isProductionRuntime = () => isProductionLikeRuntime();
+  app.addHook('preHandler', async (request, reply) => {
+    if (isProductionRuntime()) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Political advertising storage, compliance review, and delivery are not connected', { code: 'POLITICAL_AD_SERVICE_UNAVAILABLE' });
+    }
+  });
+
   // Helper: Resolve authenticated user
   async function resolveAuthUser(request: any): Promise<{ userId: string; role: string } | null> {
     let userId: string | null = null;
@@ -145,7 +130,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
 
     if (
       !userId &&
-      process.env.NODE_ENV !== 'production' &&
+      !isProductionLikeRuntime() &&
       (request.headers['x-user-id'] as string)
     ) {
       userId = request.headers['x-user-id'] as string;
@@ -153,14 +138,14 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
 
     if (!userId) return null;
 
-    if (process.env.NODE_ENV !== 'production' && (request.headers['x-user-role'] as string)) {
+    if (!isProductionLikeRuntime() && (request.headers['x-user-role'] as string)) {
       return { userId, role: request.headers['x-user-role'] as string };
     }
 
     if (!isSupabaseConfigured) {
       const testRole =
         (request.headers['x-user-role'] as string) ||
-        (process.env.NODE_ENV === 'test' ? 'citizen' : undefined);
+        (isIsolatedTestRuntime() ? 'citizen' : undefined);
       return { userId, role: testRole || 'citizen' };
     }
 

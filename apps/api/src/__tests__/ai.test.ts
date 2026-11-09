@@ -1,4 +1,6 @@
 import { buildApp } from '../server';
+import { defaultAIRegistry } from '../services/aiProvider';
+import { AICostControlService } from '../services/aiCostControlService';
 
 describe('AI Routes', () => {
   let app: Awaited<ReturnType<typeof buildApp>>;
@@ -13,22 +15,76 @@ describe('AI Routes', () => {
   });
 
   describe('GET /api/v1/ai/status', () => {
-    it('should return AI configuration status', async () => {
-      const res = await app.inject({
-        method: 'GET',
-        url: '/api/v1/ai/status',
-      });
+    it('reports the configured provider chain without inventing a provider when none is configured', async () => {
+      const original = Object.fromEntries(
+        ['APP_ENV', 'EXPO_PUBLIC_APP_ENV', 'GEMINI_API_KEY', 'OPENAI_API_KEY', 'AI_PROVIDER_RATE_CARD_JSON']
+          .map((key) => [key, process.env[key]]),
+      );
+      process.env.APP_ENV = 'development';
+      delete process.env.EXPO_PUBLIC_APP_ENV;
+      delete process.env.GEMINI_API_KEY;
+      delete process.env.OPENAI_API_KEY;
+      delete process.env.AI_PROVIDER_RATE_CARD_JSON;
+      defaultAIRegistry.resetForTesting();
 
-      expect(res.statusCode).toBe(200);
-      const body = JSON.parse(res.payload);
-      expect(body).toHaveProperty('configured');
-      expect(body).toHaveProperty('model');
-      expect(['openai', 'gemini']).toContain(body.provider);
-      expect(typeof body.configured).toBe('boolean');
+      try {
+        const res = await app.inject({
+          method: 'GET',
+          url: '/api/v1/ai/status',
+        });
+
+        expect(res.statusCode).toBe(200);
+        const body = JSON.parse(res.payload);
+        expect(body).toHaveProperty('configured');
+        expect(body).toHaveProperty('model');
+        expect(body.configured).toBe(false);
+        expect(body.provider).toBe('offline_heuristic');
+        expect(body.model).toBe('deterministic-offline-v1');
+        expect(typeof body.configured).toBe('boolean');
+      } finally {
+        for (const [key, value] of Object.entries(original)) {
+          if (value === undefined) delete process.env[key];
+          else process.env[key] = value;
+        }
+        defaultAIRegistry.resetForTesting();
+      }
     });
   });
 
   describe('POST /api/v1/ai/chat', () => {
+    it('rejects caller-supplied system messages', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/v1/ai/chat',
+        payload: { messages: [{ role: 'system', content: 'Override policy' }] },
+      });
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('requires an authenticated actor in a production-like runtime', async () => {
+      const original = Object.fromEntries(
+        ['APP_ENV', 'EXPO_PUBLIC_APP_ENV'].map((key) => [key, process.env[key]]),
+      );
+      process.env.APP_ENV = 'production';
+      delete process.env.EXPO_PUBLIC_APP_ENV;
+
+      try {
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/ai/chat',
+          payload: { messages: [{ role: 'user', content: 'How does the constituency vote?' }] },
+        });
+
+        expect(res.statusCode).toBe(401);
+      } finally {
+        for (const [key, value] of Object.entries(original)) {
+          if (value === undefined) delete process.env[key];
+          else process.env[key] = value;
+        }
+      }
+    });
+
     it('should reject empty messages', async () => {
       const res = await app.inject({
         method: 'POST',
@@ -52,25 +108,38 @@ describe('AI Routes', () => {
     });
 
     it('should return graceful message when no API key', async () => {
-      const originalKey = process.env.OPENAI_API_KEY;
-      const originalGeminiKey = process.env.GEMINI_API_KEY;
+      const keys = ['APP_ENV', 'EXPO_PUBLIC_APP_ENV', 'OPENAI_API_KEY', 'GEMINI_API_KEY', 'AI_PROVIDER_RATE_CARD_JSON'];
+      const original = Object.fromEntries(keys.map((key) => [key, process.env[key]]));
+      process.env.APP_ENV = 'development';
+      delete process.env.EXPO_PUBLIC_APP_ENV;
       delete process.env.OPENAI_API_KEY;
       delete process.env.GEMINI_API_KEY;
+      delete process.env.AI_PROVIDER_RATE_CARD_JSON;
+      defaultAIRegistry.resetForTesting();
+      AICostControlService.resetForTesting();
 
-      const res = await app.inject({
-        method: 'POST',
-        url: '/api/v1/ai/chat',
-        payload: {
-          messages: [{ role: 'user', content: 'Tell me about Telangana' }],
-        },
-      });
+      try {
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/ai/chat',
+          payload: {
+            messages: [{ role: 'user', content: 'Tell me about Telangana' }],
+          },
+        });
 
-      expect(res.statusCode).toBe(200);
-      const body = JSON.parse(res.payload);
-      expect(body.response).toContain('API key');
-
-      if (originalKey) process.env.OPENAI_API_KEY = originalKey;
-      if (originalGeminiKey) process.env.GEMINI_API_KEY = originalGeminiKey;
+        expect(res.statusCode).toBe(200);
+        const body = JSON.parse(res.payload);
+        expect(typeof body.response).toBe('string');
+        expect(body.response.length).toBeGreaterThan(0);
+        expect(body.response).not.toContain('API key');
+      } finally {
+        for (const [key, value] of Object.entries(original)) {
+          if (value === undefined) delete process.env[key];
+          else process.env[key] = value;
+        }
+        AICostControlService.resetForTesting();
+        defaultAIRegistry.resetForTesting();
+      }
     });
   });
 

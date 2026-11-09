@@ -16,14 +16,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../lib/theme';
 import { useCampaignStore } from '../../stores/campaign';
+import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
 
 type ServiceTab = 'whatsapp' | 'voice' | 'meta';
 
 const RECHARGE_PACKS = [
-  { amount: 1000, calls: 1111, label: '₹1,000' },
-  { amount: 2500, calls: 2777, label: '₹2,500' },
-  { amount: 5000, calls: 5555, label: '₹5,000' },
-  { amount: 10000, calls: 11111, label: '₹10,000' },
+  { amount: 1000, label: '₹1,000' },
+  { amount: 2500, label: '₹2,500' },
+  { amount: 5000, label: '₹5,000' },
+  { amount: 10000, label: '₹10,000' },
 ];
 
 export default function SimplifiedOutreach() {
@@ -32,7 +33,7 @@ export default function SimplifiedOutreach() {
 
   const [activeService, setActiveService] = useState<ServiceTab>('whatsapp');
   const [selectedWard, setSelectedWard] = useState<number | 'all'>('all');
-  const [targetGroup, setTargetGroup] = useState<'all' | 'cadre' | 'women' | 'youth'>('all');
+  const [targetGroup, setTargetGroup] = useState<'all' | 'cadre'>('all');
   const [customTitle, setCustomTitle] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [sentSuccess, setSentSuccess] = useState<string | null>(null);
@@ -44,30 +45,49 @@ export default function SimplifiedOutreach() {
   const [isRecharging, setIsRecharging] = useState(false);
 
   const pricing = useCampaignStore((s) => s.pricing);
+  const pricingAvailable = useCampaignStore((s) => s.pricingAvailable);
   const booths = useCampaignStore((s) => s.booths);
+  const boothsAvailable = useCampaignStore((s) => s.boothsAvailable);
   const volunteers = useCampaignStore((s) => s.volunteers);
+  const volunteersAvailable = useCampaignStore((s) => s.volunteersAvailable);
   const wallet = useCampaignStore((s) => s.wallet);
+  const walletAvailable = useCampaignStore((s) => s.walletAvailable);
   const obdBroadcasts = useCampaignStore((s) => s.obdBroadcasts);
+  const obdBroadcastsAvailable = useCampaignStore((s) => s.obdBroadcastsAvailable);
+  const obdBroadcastsLoading = useCampaignStore((s) => s.obdBroadcastsLoading);
+  const obdBroadcastsError = useCampaignStore((s) => s.obdBroadcastsError);
   const rechargeWallet = useCampaignStore((s) => s.rechargeWallet);
   const dispatchVoiceOBD = useCampaignStore((s) => s.dispatchVoiceOBD);
 
   // Audience calculations based on segmentation
   const audienceCount = React.useMemo(() => {
-    if (targetGroup === 'cadre') return volunteers.length;
-    if (selectedWard !== 'all') {
-      const wardBooths = booths.filter((b) => b.wardNo === selectedWard);
-      return wardBooths.reduce((s, b) => s + (b.totalVoters || 1000), 0) || 5000;
+    if (targetGroup === 'cadre') {
+      return volunteersAvailable
+        ? volunteers.filter((volunteer) => volunteer.status === 'active').length
+        : null;
     }
-    if (targetGroup === 'women') return 105000;
-    if (targetGroup === 'youth') return 45000;
-    return 215000; // All constituency voters
-  }, [targetGroup, selectedWard, volunteers.length, booths]);
+    const scopedBooths = selectedWard === 'all'
+      ? booths
+      : booths.filter((booth) => booth.wardNo === selectedWard);
+    if (!boothsAvailable || scopedBooths.length === 0 || scopedBooths.some((booth) => booth.totalVoters <= 0)) {
+      return null;
+    }
+    return scopedBooths.reduce((sum, booth) => sum + (booth.totalVoters || 0), 0);
+  }, [targetGroup, selectedWard, volunteers, volunteersAvailable, booths, boothsAvailable]);
 
-  // Voice OBD price calculation with 50% margin
-  const obdRate = pricing.voiceObd.finalRatePerCallINR;
-  const obdTotalCost = Math.round(audienceCount * obdRate);
-  const isBalanceSufficient = wallet.balanceINR >= obdTotalCost;
-  const balanceDeficit = Math.max(0, obdTotalCost - wallet.balanceINR);
+  const latestBroadcast = obdBroadcasts[0];
+  const reportedAttempts = latestBroadcast
+    ? latestBroadcast.answeredCount + latestBroadcast.busyCount + latestBroadcast.unreachableCount
+    : 0;
+  const deliveryProgress = latestBroadcast && latestBroadcast.totalRecipients > 0
+    ? Math.min(100, Math.round((reportedAttempts / latestBroadcast.totalRecipients) * 100))
+    : 0;
+
+  const obdRate = pricingAvailable ? pricing.voiceObd.finalRatePerCallINR : null;
+  const obdTotalCost = obdRate === null || audienceCount === null ? null : Math.round(audienceCount * obdRate);
+  const isBalanceSufficient = walletAvailable && obdTotalCost !== null && wallet.balanceINR >= obdTotalCost;
+  const balanceDeficit = obdTotalCost === null ? 0 : Math.max(0, obdTotalCost - wallet.balanceINR);
+  const wardOptions = [...new Set(booths.map((booth) => booth.wardNo).filter((ward): ward is number => typeof ward === 'number'))].sort((a, b) => a - b);
 
   // Handler: WhatsApp Share
   const handleWhatsAppShare = async () => {
@@ -91,6 +111,14 @@ export default function SimplifiedOutreach() {
 
   // Handler: Meta Publish & Boost
   const handleMetaPublish = (pkgId?: string) => {
+    if (IS_LIVE_ENVIRONMENT) {
+      Alert.alert(
+        t('campaignManager.providerUnavailableTitle', { defaultValue: 'Publishing unavailable' }),
+        t('campaignManager.providerUnavailableDescription', { defaultValue: 'No external publishing provider is connected. Nothing was published or scheduled.' }),
+      );
+      return;
+    }
+
     setIsSending(true);
     setTimeout(() => {
       setIsSending(false);
@@ -107,18 +135,28 @@ export default function SimplifiedOutreach() {
 
   // Handler: Voice OBD Call Dispatch
   const handleVoiceCallDispatch = async () => {
+    if (!pricingAvailable || !walletAvailable || audienceCount === null || audienceCount <= 0 || obdTotalCost === null) {
+      Alert.alert(
+        t('campaignManager.serviceUnavailableTitle', { defaultValue: 'Campaign service unavailable' }),
+        t('campaignManager.serviceUnavailableDescription', { defaultValue: 'Verified audience, pricing, wallet, and delivery service data are required before a broadcast can be scheduled.' }),
+      );
+      return;
+    }
+
     if (!isBalanceSufficient) {
       setSelectedPackAmount(balanceDeficit > 2500 ? Math.ceil(balanceDeficit / 1000) * 1000 : 2500);
       setRechargeModalVisible(true);
       return;
     }
 
+    const targetCount = audienceCount;
+    const totalCost = obdTotalCost;
     Alert.alert(
       t('campaignManager.confirmVoiceCall', { defaultValue: 'Confirm Voice Broadcast' }),
       t('campaignManager.confirmVoiceCallDesc', {
         defaultValue: 'Deliver 30-second recorded audio call to {{count}} voters for ₹{{cost}}? Amount will be deducted from your Campaign Wallet.',
-        count: audienceCount.toLocaleString('en-IN'),
-        cost: obdTotalCost.toLocaleString('en-IN'),
+        count: targetCount.toLocaleString('en-IN'),
+        cost: totalCost.toLocaleString('en-IN'),
       }),
       [
         { text: t('common.cancel', { defaultValue: 'Cancel' }), style: 'cancel' },
@@ -131,7 +169,7 @@ export default function SimplifiedOutreach() {
               {
                 type: selectedWard === 'all' ? 'constituency' : 'ward',
                 wardNo: selectedWard === 'all' ? undefined : selectedWard,
-                voterCount: audienceCount,
+                voterCount: targetCount,
               },
             );
             setIsSending(false);
@@ -160,9 +198,13 @@ export default function SimplifiedOutreach() {
     setIsRecharging(true);
     const res = await rechargeWallet(amount);
     setIsRecharging(false);
-    setRechargeModalVisible(false);
-    setCustomRechargeAmount('');
-    Alert.alert(t('campaignManager.walletCredited', { defaultValue: 'Wallet Credited' }), res.message);
+    if (res.success) {
+      setRechargeModalVisible(false);
+      setCustomRechargeAmount('');
+      Alert.alert(t('campaignManager.walletCredited', { defaultValue: 'Wallet Credited' }), res.message);
+    } else {
+      Alert.alert(t('campaignManager.rechargeFailed', { defaultValue: 'Recharge not completed' }), res.message);
+    }
   };
 
   return (
@@ -178,12 +220,12 @@ export default function SimplifiedOutreach() {
               {t('campaignManager.walletBalanceLabel', { defaultValue: 'Campaign Wallet' })}
             </Text>
             <Text style={[styles.walletBalance, { color: colors.text }]}>
-              ₹{wallet.balanceINR.toLocaleString('en-IN')}{' '}
-              <Text style={{ fontSize: 11, fontWeight: '600', color: '#10B981' }}>Available</Text>
+              {walletAvailable ? `₹${wallet.balanceINR.toLocaleString('en-IN')}` : t('campaignManager.balanceUnavailable', { defaultValue: 'Balance unavailable' })}{' '}
+              {walletAvailable ? <Text style={{ fontSize: 11, fontWeight: '600', color: '#10B981' }}>Available</Text> : null}
             </Text>
           </View>
         </View>
-        <Pressable style={styles.btnTopUp} onPress={() => setRechargeModalVisible(true)}>
+        <Pressable style={styles.btnTopUp} disabled={!walletAvailable} onPress={() => setRechargeModalVisible(true)}>
           <Ionicons name="add" size={16} color="#FFFFFF" />
           <Text style={styles.btnTopUpText}>
             {t('campaignManager.topUpBtn', { defaultValue: 'Top-up' })}
@@ -269,16 +311,20 @@ export default function SimplifiedOutreach() {
           <View style={[styles.pricingCard, { backgroundColor: '#DCFCE7', borderColor: '#86EFAC' }]}>
             <View style={styles.pricingHeader}>
               <View style={styles.badgeFree}>
-                <Text style={styles.badgeFreeText}>100% FREE</Text>
+                <Text style={styles.badgeFreeText}>{IS_LIVE_ENVIRONMENT ? 'NOT CONNECTED' : '100% FREE'}</Text>
               </View>
               <Text style={styles.pricingTitle}>
-                {t('campaignManager.whatsappFreeTitle', { defaultValue: 'Zero Cost · Direct Organic Reach' })}
+                {IS_LIVE_ENVIRONMENT
+                  ? t('campaignManager.whatsappUnavailable', { defaultValue: 'Sharing is unavailable' })
+                  : t('campaignManager.whatsappFreeTitle', { defaultValue: 'Zero Cost · Direct Organic Reach' })}
               </Text>
             </View>
             <Text style={styles.pricingDesc}>
-              {t('campaignManager.whatsappPricingDesc', {
-                defaultValue: 'Unlimited status shares and group broadcasts using your official device. No telecom approvals needed.',
-              })}
+              {IS_LIVE_ENVIRONMENT
+                ? t('campaignManager.whatsappUnavailableDescription', { defaultValue: 'No campaign profile or approved share content is connected.' })
+                : t('campaignManager.whatsappPricingDesc', {
+                  defaultValue: 'Unlimited status shares and group broadcasts using your official device. No telecom approvals needed.',
+                })}
             </Text>
           </View>
 
@@ -291,7 +337,9 @@ export default function SimplifiedOutreach() {
               </Text>
             </View>
             <Text style={[styles.guidanceBody, { color: colors.textSecondary }]}>
-              {pricing.whatsappOrganic.guidance.howItWorks}
+              {IS_LIVE_ENVIRONMENT
+                ? t('campaignManager.whatsappUnavailableDescription', { defaultValue: 'No campaign profile or approved share content is connected.' })
+                : pricing.whatsappOrganic.guidance.howItWorks}
             </Text>
 
             <View style={styles.doDontRow}>
@@ -313,26 +361,39 @@ export default function SimplifiedOutreach() {
           {/* 1-Tap Action Card */}
           <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <Text style={[styles.cardHeading, { color: colors.text }]}>
-              {t('campaignManager.readyPosterHeading', { defaultValue: "Today's Branded Campaign Poster" })}
+              {IS_LIVE_ENVIRONMENT
+                ? t('campaignManager.posterNotReady', { defaultValue: 'Campaign content is not connected.' })
+                : t('campaignManager.readyPosterHeading', { defaultValue: "Today's Branded Campaign Poster" })}
             </Text>
             <Text style={[styles.cardSub, { color: colors.textSecondary }]}>
-              {t('campaignManager.posterSubtext', { defaultValue: 'Candidate Photo · Slogan · AC #56 Nampally' })}
+              {IS_LIVE_ENVIRONMENT
+                ? t('campaignManager.posterNotConfigured', { defaultValue: 'A verified campaign profile and approved content are required before sharing.' })
+                : t('campaignManager.posterSubtext', { defaultValue: 'Candidate Photo · Slogan · AC #56 Nampally' })}
             </Text>
 
-            <View style={styles.posterPreview}>
-              <Ionicons name="image" size={36} color="#9CA3AF" />
-              <Text style={styles.posterText}>
-                "ఓటుతో మార్పు సాధ్యం — మన నాంపల్లి, మన భవిష్యత్తు"
-              </Text>
-              <Text style={styles.posterAuthor}>Revanth Reddy · INC</Text>
-            </View>
+            {IS_LIVE_ENVIRONMENT ? (
+              <View style={styles.posterPreview}>
+                <Ionicons name="information-circle-outline" size={36} color="#9CA3AF" />
+                <Text style={styles.posterText}>
+                  {t('campaignManager.posterNotReady', { defaultValue: 'Campaign content is not connected.' })}
+                </Text>
+              </View>
+            ) : (
+              <View style={styles.posterPreview}>
+                <Ionicons name="image" size={36} color="#9CA3AF" />
+                <Text style={styles.posterText}>
+                  "ఓటుతో మార్పు సాధ్యం — మన నాంపల్లి, మన భవిష్యత్తు"
+                </Text>
+                <Text style={styles.posterAuthor}>Revanth Reddy · INC</Text>
+              </View>
+            )}
 
-            <Pressable style={styles.btnWhatsAppAction} onPress={handleWhatsAppShare}>
+            {!IS_LIVE_ENVIRONMENT && <Pressable style={styles.btnWhatsAppAction} onPress={handleWhatsAppShare}>
               <Ionicons name="logo-whatsapp" size={20} color="#FFFFFF" />
               <Text style={styles.btnActionText}>
                 {t('campaignManager.shareToWhatsAppBtn', { defaultValue: 'Share to WhatsApp Status & Groups' })}
               </Text>
-            </Pressable>
+            </Pressable>}
           </View>
         </View>
       )}
@@ -346,24 +407,32 @@ export default function SimplifiedOutreach() {
           <View style={[styles.pricingCard, { backgroundColor: '#FEF3C7', borderColor: '#FCD34D' }]}>
             <View style={styles.pricingHeader}>
               <View style={[styles.badgeFree, { backgroundColor: '#D97706' }]}>
-                <Text style={styles.badgeFreeText}>INDICATIVE PRICING</Text>
+                <Text style={styles.badgeFreeText}>{pricingAvailable ? 'INDICATIVE PRICING' : 'PRICING UNAVAILABLE'}</Text>
               </View>
               <Text style={[styles.pricingTitle, { color: '#92400E' }]}>
-                ₹{obdRate.toFixed(2)} / {t('campaignManager.perVoterCall', { defaultValue: 'connected call' })}
+                {obdRate === null
+                  ? t('campaignManager.pricingUnavailable', { defaultValue: 'Pricing unavailable' })
+                  : `₹${obdRate.toFixed(2)} / ${t('campaignManager.perVoterCall', { defaultValue: 'connected call' })}`}
               </Text>
             </View>
             <Text style={[styles.pricingDesc, { color: '#78350F' }]}>
-              {t('campaignManager.obdPricingBreakdown', {
-                defaultValue: 'Indicative all-inclusive rate: ₹0.90 per connected 30-sec call.',
-              })}
+              {pricingAvailable
+                ? pricing.voiceObd.description
+                : t('campaignManager.pricingUnavailableDescription', { defaultValue: 'A verified price quote is not available right now.' })}
             </Text>
             <View style={styles.calcRow}>
               <Text style={styles.calcLabel}>
                 {t('campaignManager.selectedAudience', { defaultValue: 'Selected Audience:' })}{' '}
-                <Text style={{ fontWeight: '800' }}>{audienceCount.toLocaleString('en-IN')} voters</Text>
+                <Text style={{ fontWeight: '800' }}>
+                  {audienceCount === null
+                    ? '—'
+                    : `${audienceCount.toLocaleString('en-IN')} ${targetGroup === 'cadre' ? 'active workers' : 'voters'}`}
+                </Text>
               </Text>
               <Text style={styles.calcTotal}>
-                {t('campaignManager.totalPrice', { defaultValue: 'Total: ' })}₹{obdTotalCost.toLocaleString('en-IN')}
+                {obdTotalCost === null
+                  ? t('campaignManager.totalPriceUnavailable', { defaultValue: 'Total: unavailable' })
+                  : `${t('campaignManager.totalPrice', { defaultValue: 'Total: ' })}₹${obdTotalCost.toLocaleString('en-IN')}`}
               </Text>
             </View>
 
@@ -371,23 +440,25 @@ export default function SimplifiedOutreach() {
             <View
               style={[
                 styles.walletCheckBanner,
-                { backgroundColor: isBalanceSufficient ? '#DCFCE7' : '#FEE2E2' },
+                { backgroundColor: !walletAvailable || !pricingAvailable || audienceCount === null ? '#F3F4F6' : isBalanceSufficient ? '#DCFCE7' : '#FEE2E2' },
               ]}
             >
               <Ionicons
                 name={isBalanceSufficient ? 'checkmark-circle' : 'alert-circle'}
                 size={16}
-                color={isBalanceSufficient ? '#166534' : '#991B1B'}
+                color={!walletAvailable || !pricingAvailable || audienceCount === null ? '#4B5563' : isBalanceSufficient ? '#166534' : '#991B1B'}
               />
               <Text
                 style={[
                   styles.walletCheckText,
-                  { color: isBalanceSufficient ? '#166534' : '#991B1B' },
+                  { color: !walletAvailable || !pricingAvailable || audienceCount === null ? '#4B5563' : isBalanceSufficient ? '#166534' : '#991B1B' },
                 ]}
               >
-                {isBalanceSufficient
-                  ? `✓ Sufficient balance. Remaining after blast: ₹${(wallet.balanceINR - obdTotalCost).toLocaleString('en-IN')}`
-                  : `⚠️ Wallet balance short by ₹${balanceDeficit.toLocaleString('en-IN')}. Top-up required.`}
+                {!walletAvailable || !pricingAvailable || audienceCount === null
+                  ? t('campaignManager.walletOrPricingUnavailable', { defaultValue: 'Verified audience, wallet, and current pricing are required.' })
+                  : isBalanceSufficient
+                    ? `✓ Sufficient balance. Remaining after blast: ₹${(wallet.balanceINR - (obdTotalCost ?? 0)).toLocaleString('en-IN')}`
+                    : `⚠️ Wallet balance short by ₹${balanceDeficit.toLocaleString('en-IN')}. Top-up required.`}
               </Text>
             </View>
           </View>
@@ -411,7 +482,7 @@ export default function SimplifiedOutreach() {
                   {t('campaignManager.allWards', { defaultValue: 'All Constituency' })}
                 </Text>
               </Pressable>
-              {[1, 2, 3, 4, 5].map((w) => (
+              {wardOptions.map((w) => (
                 <Pressable
                   key={w}
                   style={[styles.chip, selectedWard === w && styles.chipActive]}
@@ -445,14 +516,6 @@ export default function SimplifiedOutreach() {
                   {t('campaignManager.groupCadre', { defaultValue: 'Cadre Only ({{count}})', count: volunteers.length })}
                 </Text>
               </Pressable>
-              <Pressable
-                style={[styles.groupBtn, targetGroup === 'women' && styles.groupBtnActive]}
-                onPress={() => setTargetGroup('women')}
-              >
-                <Text style={[styles.groupBtnText, targetGroup === 'women' && styles.groupBtnTextActive]}>
-                  {t('campaignManager.groupWomen', { defaultValue: 'Women' })}
-                </Text>
-              </Pressable>
             </View>
           </View>
 
@@ -461,7 +524,7 @@ export default function SimplifiedOutreach() {
             <View style={styles.guidanceTitleRow}>
               <Ionicons name="information-circle" size={20} color="#F59E0B" />
               <Text style={[styles.guidanceTitle, { color: colors.text }]}>
-                {t('campaignManager.voiceGuidanceTitle', { defaultValue: 'Voice Call Rules & TRAI Guidelines' })}
+                {t('campaignManager.voiceGuidanceTitle', { defaultValue: 'Voice Call Dispatch Guidance' })}
               </Text>
             </View>
             <Text style={[styles.guidanceBody, { color: colors.textSecondary }]}>
@@ -499,18 +562,22 @@ export default function SimplifiedOutreach() {
             />
 
             <View style={styles.audioMockBox}>
-              <Ionicons name="mic-circle" size={40} color="#D97706" />
+              <Ionicons name={IS_LIVE_ENVIRONMENT ? 'information-circle' : 'mic-circle'} size={40} color="#D97706" />
               <View style={{ flex: 1, marginLeft: 10 }}>
                 <Text style={[styles.audioMockTitle, { color: colors.text }]}>
-                  {t('campaignManager.recordedVoiceSample', { defaultValue: 'Candidate 30s Appeal (Telugu/Hindi)' })}
+                  {IS_LIVE_ENVIRONMENT
+                    ? t('campaignManager.audioNotConnected', { defaultValue: 'Audio upload is not connected' })
+                    : t('campaignManager.recordedVoiceSample', { defaultValue: 'Candidate 30s Appeal (Telugu/Hindi)' })}
                 </Text>
                 <Text style={[styles.audioMockSub, { color: colors.textSecondary }]}>
-                  Duration: 0:28 · Quality: High · Verified
+                  {IS_LIVE_ENVIRONMENT
+                    ? t('campaignManager.realAudioRequired', { defaultValue: 'A verified campaign audio file is required.' })
+                    : 'Duration: 0:28 · Quality: High · Verified'}
                 </Text>
               </View>
-              <Pressable style={styles.btnPlayAudio}>
+              {!IS_LIVE_ENVIRONMENT && <Pressable style={styles.btnPlayAudio}>
                 <Ionicons name="play" size={16} color="#FFFFFF" />
-              </Pressable>
+              </Pressable>}
             </View>
 
             {/* Action button: changes dynamically if balance is insufficient */}
@@ -520,7 +587,7 @@ export default function SimplifiedOutreach() {
                 !isBalanceSufficient && { backgroundColor: '#EF4444' },
               ]}
               onPress={handleVoiceCallDispatch}
-              disabled={isSending}
+                disabled={isSending || !pricingAvailable || !walletAvailable || audienceCount === null || audienceCount <= 0}
             >
               {isSending ? (
                 <ActivityIndicator color="#FFFFFF" />
@@ -528,7 +595,9 @@ export default function SimplifiedOutreach() {
                 <>
                   <Ionicons name={isBalanceSufficient ? 'call' : 'wallet'} size={20} color="#FFFFFF" />
                   <Text style={styles.btnActionText}>
-                    {isBalanceSufficient
+                    {!pricingAvailable || !walletAvailable || audienceCount === null || audienceCount <= 0 || obdTotalCost === null
+                      ? t('campaignManager.broadcastUnavailable', { defaultValue: 'Broadcast unavailable' })
+                      : isBalanceSufficient
                       ? t('campaignManager.dispatchVoiceCallBtn', { defaultValue: 'Schedule Call Blast (₹{{cost}})', cost: obdTotalCost.toLocaleString('en-IN') })
                       : `Top-Up ₹${balanceDeficit.toLocaleString('en-IN')} to Schedule Blast`}
                   </Text>
@@ -599,12 +668,7 @@ export default function SimplifiedOutreach() {
                   style={[
                     styles.progressBarFill,
                     {
-                      width:
-                        obdBroadcasts[0].status === 'completed'
-                          ? '100%'
-                          : obdBroadcasts[0].status === 'calling'
-                          ? '65%'
-                          : '10%',
+                      width: `${deliveryProgress}%`,
                     },
                   ]}
                 />
@@ -614,25 +678,43 @@ export default function SimplifiedOutreach() {
               <View style={styles.trackerStatsRow}>
                 <View style={styles.statBox}>
                   <Text style={styles.statBoxNum}>
-                    {obdBroadcasts[0].answeredCount || Math.floor(obdBroadcasts[0].totalRecipients * 0.88)}
+                    {obdBroadcasts[0].answeredCount}
                   </Text>
-                  <Text style={styles.statBoxLabel}>Answered (88%)</Text>
+                  <Text style={styles.statBoxLabel}>Answered</Text>
                 </View>
                 <View style={styles.statBox}>
                   <Text style={[styles.statBoxNum, { color: '#F59E0B' }]}>
-                    {obdBroadcasts[0].busyCount || Math.floor(obdBroadcasts[0].totalRecipients * 0.08)}
+                    {obdBroadcasts[0].busyCount}
                   </Text>
-                  <Text style={styles.statBoxLabel}>Busy (8%)</Text>
+                  <Text style={styles.statBoxLabel}>Busy</Text>
                 </View>
                 <View style={styles.statBox}>
                   <Text style={[styles.statBoxNum, { color: '#EF4444' }]}>
-                    {obdBroadcasts[0].unreachableCount || Math.floor(obdBroadcasts[0].totalRecipients * 0.04)}
+                    {obdBroadcasts[0].unreachableCount}
                   </Text>
-                  <Text style={styles.statBoxLabel}>Unreachable (4%)</Text>
+                  <Text style={styles.statBoxLabel}>Unreachable</Text>
                 </View>
               </View>
             </View>
           )}
+          {obdBroadcastsLoading ? (
+            <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border, flexDirection: 'row', alignItems: 'center', gap: 8 }]}>
+              <ActivityIndicator size="small" color={colors.primary} />
+              <Text style={[styles.cardSub, { color: colors.textSecondary }]}>{t('campaignManager.loadingBroadcastHistory', { defaultValue: 'Loading broadcast history…' })}</Text>
+            </View>
+          ) : !obdBroadcastsAvailable ? (
+            <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+              <Text style={[styles.cardSub, { color: colors.textSecondary }]}>
+                {obdBroadcastsError || t('campaignManager.broadcastHistoryUnavailable', { defaultValue: 'Broadcast history is unavailable.' })}
+              </Text>
+            </View>
+          ) : obdBroadcasts.length === 0 ? (
+            <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+              <Text style={[styles.cardSub, { color: colors.textSecondary }]}>
+                {t('campaignManager.noBroadcastHistory', { defaultValue: 'No broadcasts are recorded for this account yet.' })}
+              </Text>
+            </View>
+          ) : null}
         </View>
       )}
 
@@ -641,6 +723,18 @@ export default function SimplifiedOutreach() {
          ══════════════════════════════════════════════════════════ */}
       {activeService === 'meta' && (
         <View>
+          {IS_LIVE_ENVIRONMENT ? (
+            <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+              <Ionicons name="information-circle-outline" size={28} color={colors.textSecondary} />
+              <Text style={[styles.cardHeading, { color: colors.text }]}>
+                {t('campaignManager.providerUnavailableTitle', { defaultValue: 'Publishing unavailable' })}
+              </Text>
+              <Text style={[styles.cardSub, { color: colors.textSecondary }]}>
+                {t('campaignManager.providerUnavailableDescription', { defaultValue: 'No external publishing provider is connected. Nothing can be published, boosted, or reported here yet.' })}
+              </Text>
+            </View>
+          ) : (
+            <>
           {/* Pricing Box */}
           <View style={[styles.pricingCard, { backgroundColor: '#EFF6FF', borderColor: '#BFDBFE' }]}>
             <View style={styles.pricingHeader}>
@@ -715,6 +809,8 @@ export default function SimplifiedOutreach() {
               </View>
             ))}
           </View>
+            </>
+          )}
         </View>
       )}
 
@@ -761,7 +857,6 @@ export default function SimplifiedOutreach() {
                   >
                     {pack.label}
                   </Text>
-                  <Text style={styles.packCalls}>~{pack.calls.toLocaleString('en-IN')} calls</Text>
                 </Pressable>
               ))}
             </View>

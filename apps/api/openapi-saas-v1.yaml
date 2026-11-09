@@ -3339,7 +3339,6 @@ components:
         - orderId
         - paymentId
         - signature
-        - targetTier
       properties:
         orderId:
           type: string
@@ -3347,13 +3346,6 @@ components:
           type: string
         signature:
           type: string
-        targetTier:
-          type: string
-          enum: [pro, enterprise]
-        billingCycle:
-          type: string
-          enum: [monthly, annual]
-          default: monthly
 
     SaasBillingVerifyResponse:
       type: object

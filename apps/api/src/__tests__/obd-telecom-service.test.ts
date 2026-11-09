@@ -53,7 +53,7 @@ describe('OBD Telecom Service (obdTelecomService.ts)', () => {
         expect(result.currentISTHour).toBeLessThan(20);
         expect(result.message).toBeUndefined();
       } else {
-        expect(result.message).toContain('TRAI regulations restrict automated political calls');
+        expect(result.message).toContain('configured political voice dispatch window');
       }
     });
 
@@ -72,7 +72,7 @@ describe('OBD Telecom Service (obdTelecomService.ts)', () => {
         const nighttime = isWithinTraiWindow();
         expect(nighttime.permitted).toBe(false);
         expect(nighttime.currentISTHour).toBe(22);
-        expect(nighttime.message).toContain('TRAI regulations restrict automated political calls');
+        expect(nighttime.message).toContain('configured political voice dispatch window');
       } finally {
         jest.useRealTimers();
       }
@@ -84,6 +84,24 @@ describe('OBD Telecom Service (obdTelecomService.ts)', () => {
       setSupabaseConfiguredForTesting(false);
       const optedOut = await isNumberOptedOut('9848012345');
       expect(optedOut).toBe(false);
+    });
+
+    it('fails closed for production opt-out checks when the ledger is unavailable', async () => {
+      const originalNodeEnv = process.env.NODE_ENV;
+      const originalAppEnv = process.env.APP_ENV;
+      process.env.NODE_ENV = 'production';
+      process.env.APP_ENV = 'production';
+      setSupabaseConfiguredForTesting(false);
+
+      try {
+        await expect(isNumberOptedOut('9848012345')).rejects.toThrow('OPTOUT_LEDGER_UNAVAILABLE');
+      } finally {
+        if (originalNodeEnv === undefined) delete process.env.NODE_ENV;
+        else process.env.NODE_ENV = originalNodeEnv;
+        if (originalAppEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = originalAppEnv;
+        setSupabaseConfiguredForTesting(originalConfigured);
+      }
     });
 
     it('records and checks opt-outs when database is configured', async () => {
@@ -166,6 +184,36 @@ describe('OBD Telecom Service (obdTelecomService.ts)', () => {
   });
 
   describe('Broadcast Dispatch & Tracking', () => {
+    it('blocks direct production dispatch before any outbound call can be made', async () => {
+      const originalNodeEnv = process.env.NODE_ENV;
+      const originalAppEnv = process.env.APP_ENV;
+      process.env.NODE_ENV = 'production';
+      process.env.APP_ENV = 'production';
+      setSupabaseConfiguredForTesting(false);
+
+      try {
+        await expect(
+          dispatchOBDBroadcast({
+            campaignId: 'campaign-prod',
+            politicianId: 'politician-prod',
+            title: 'Production test',
+            audioUrl: 'https://example.com/audio.mp3',
+            targetSegment: { type: 'ward', voterCount: 100, phoneNumbers: ['9848012345'] },
+            ratePerCallINR: 1,
+          }),
+        ).rejects.toThrow('VOICE_DISPATCH_UNAVAILABLE');
+        await expect(getOBDBroadcasts('politician-prod')).rejects.toThrow(
+          'OBD_BROADCAST_STORE_UNAVAILABLE',
+        );
+      } finally {
+        if (originalNodeEnv === undefined) delete process.env.NODE_ENV;
+        else process.env.NODE_ENV = originalNodeEnv;
+        if (originalAppEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = originalAppEnv;
+        setSupabaseConfiguredForTesting(originalConfigured);
+      }
+    });
+
     it('dispatches OBD broadcast and creates tracking record in memory or DB', async () => {
       setSupabaseConfiguredForTesting(false);
 

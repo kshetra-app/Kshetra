@@ -7,6 +7,7 @@ import type {
   RealTimeDataConfig,
   DataPipelineStatus,
 } from '../lib/electionLiveTypes';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 
 // ─── Seed Live Election (demo / simulation) ───
 const SEED_ELECTION: LiveElectionState = {
@@ -96,9 +97,9 @@ interface ElectionLiveState {
 }
 
 export const useElectionLiveStore = create<ElectionLiveState>((set, get) => ({
-  liveElection: SEED_ELECTION,
+  liveElection: IS_LIVE_ENVIRONMENT ? null : SEED_ELECTION,
   simulation: null,
-  pipelineStatus: SEED_PIPELINE,
+  pipelineStatus: IS_LIVE_ENVIRONMENT ? [] : SEED_PIPELINE,
 
   getLiveElection: () => get().liveElection,
   getConstituencyResult: (acNo) => get().liveElection?.constituencies.find((c) => c.acNo === acNo),
@@ -108,7 +109,11 @@ export const useElectionLiveStore = create<ElectionLiveState>((set, get) => ({
     const pipeline = get().pipelineStatus;
     const healthy = pipeline.filter((p) => p.isHealthy).length;
     const total = pipeline.length;
-    const overallStatus = healthy === total ? 'healthy' : healthy >= total * 0.7 ? 'degraded' : 'down';
+    const overallStatus = total > 0 && healthy === total
+      ? 'healthy'
+      : total > 0 && healthy >= total * 0.7
+        ? 'degraded'
+        : 'down';
     return { healthy, total, overallStatus };
   },
 

@@ -579,7 +579,7 @@ const ne = {
     "tryAsking": "यह पूछकर देखें:",
     "thinkingSearch": "डेटा को विश्लेषण किया जा रहा छ…",
     "noResponse": "कोई प्रतिक्रिया उपलब्ध नहीं",
-    "poweredBy": "पोलिग्राम AI द्वारा सञ्चालित • Google Gemini",
+    "poweredBy": "पोलिग्राम AI द्वारा सञ्चालित",
     "qWinner2023": "2023 में {{name}} किसने जीता?",
     "qMarginTrend": "{{name}} में अंतर का रुझान क्या है?",
     "qTellAboutMLA": "{{name}} के विधायक के बारे में बताएं",

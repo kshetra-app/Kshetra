@@ -1,9 +1,13 @@
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import type { FastifyInstance } from 'fastify';
 import { sendApiError } from '../lib/replyHelper';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
+const isProductionRuntime = () => isProductionLikeRuntime();
+
 async function resolveAuthUser(request: any): Promise<{ userId: string; role: string } | null> {
   let userId: string | null = null;
+  let role = 'citizen';
   const authHeader = request.headers.authorization;
 
   if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -18,17 +22,24 @@ async function resolveAuthUser(request: any): Promise<{ userId: string; role: st
       } = await supabase.auth.getUser(token);
       if (!error && user) {
         userId = user.id;
+        const { data: profile, error: profileError } = await supabase
+          .from('user_profiles')
+          .select('role')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        if (!profileError && profile?.role) role = profile.role;
       }
     }
   }
 
-  if (!userId && (request.headers['x-user-id'] as string)) {
+  if (!isProductionRuntime() && !userId && (request.headers['x-user-id'] as string)) {
     userId = request.headers['x-user-id'] as string;
+    role = (request.headers['x-user-role'] as string) || 'citizen';
   }
 
   if (!userId) return null;
 
-  return { userId, role: (request.headers['x-user-role'] as string) || 'citizen' };
+  return { userId, role };
 }
 
 // ─── AJV SCHEMAS FOR POLITICIAN ROUTES ───
@@ -414,7 +425,7 @@ export async function politicianRoutes(app: FastifyInstance) {
           { onConflict: 'event_id,user_id' },
         );
       if (error) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProductionRuntime()) {
           return { success: true, eventId: id, message: 'RSVP recorded' };
         }
         return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
@@ -519,7 +530,7 @@ export async function politicianRoutes(app: FastifyInstance) {
           { onConflict: 'survey_id,user_id' },
         );
       if (error) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProductionRuntime()) {
           return { success: true, surveyId: id, message: 'Response submitted' };
         }
         return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {

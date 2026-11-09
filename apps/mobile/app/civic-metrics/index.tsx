@@ -1,6 +1,6 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -31,7 +31,6 @@ export default function CivicMetricsScreen() {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<Tab>('budget');
-  const [refreshing, setRefreshing] = useState(false);
   const [helpVisible, setHelpVisible] = useState(false);
   const activeState = useActiveStateStore((s) => s.stateCode) || 'TS';
 
@@ -39,15 +38,14 @@ export default function CivicMetricsScreen() {
   const budgetSummary = useMemo(() => store.getBudgetSummary(activeState), [store, activeState]);
   const attendance = useMemo(() => store.getAttendanceForState(activeState), [store, activeState]);
   const bills = useMemo(() => store.getBillsByState(activeState), [store, activeState]);
-  const activeBills = useMemo(() => store.getActiveBills(), [store]);
+  const activeBills = useMemo(() => bills.filter((b) => !['enacted', 'lapsed', 'withdrawn'].includes(b.status)), [bills]);
   const schemes = useMemo(() => store.getSchemesByState(activeState), [store, activeState]);
   const projects = useMemo(() => store.getProjectsByState(activeState), [store, activeState]);
   const publicRTIs = useMemo(() => store.getPublicRTIs(), [store]);
 
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 1000);
-  }, []);
+  const noConnectedData = t('civicMetrics.noConnectedData', {
+    defaultValue: 'Verified records are not available from a connected source yet.',
+  });
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
@@ -92,7 +90,6 @@ export default function CivicMetricsScreen() {
       <ScrollView
         style={styles.content}
         contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
         showsVerticalScrollIndicator={false}
       >
         {activeTab === 'budget' && (
@@ -106,42 +103,51 @@ export default function CivicMetricsScreen() {
 
         {activeTab === 'attendance' && (
           <>
-            <Text style={styles.sectionTitle}>{t('civicMetrics.legislatorAttendance', { count: attendance.length })}</Text>
-            {attendance.map((a) => (
-              <AttendanceCard key={`${a.legislatorId}-${a.sessionYear}`} attendance={a} />
-            ))}
+            {attendance.length ? (
+              <>
+                <Text style={styles.sectionTitle}>{t('civicMetrics.legislatorAttendance', { count: attendance.length })}</Text>
+                {attendance.map((a) => <AttendanceCard key={`${a.legislatorId}-${a.sessionYear}`} attendance={a} />)}
+              </>
+            ) : <View style={styles.empty}><Text style={styles.emptyText}>{noConnectedData}</Text></View>}
           </>
         )}
 
         {activeTab === 'bills' && (
           <>
-            <Text style={styles.sectionTitle}>{t('civicMetrics.activeBills', { count: activeBills.length })}</Text>
-            {bills.map((b) => (
-              <BillCard key={b.id} bill={b} onSupport={() => store.supportBill(b.id)} onOppose={() => store.opposeBill(b.id)} />
-            ))}
+            {bills.length ? (
+              <>
+                <Text style={styles.sectionTitle}>{t('civicMetrics.activeBills', { count: activeBills.length })}</Text>
+                {bills.map((b) => <BillCard key={b.id} bill={b} onSupport={() => store.supportBill(b.id)} onOppose={() => store.opposeBill(b.id)} />)}
+              </>
+            ) : <View style={styles.empty}><Text style={styles.emptyText}>{noConnectedData}</Text></View>}
           </>
         )}
 
         {activeTab === 'schemes' && (
           <>
-            <Text style={styles.sectionTitle}>{t('civicMetrics.governmentSchemes', { count: schemes.length })}</Text>
-            {schemes.map((s) => (
-              <SchemeCard key={s.id} scheme={s} />
-            ))}
+            {schemes.length ? (
+              <>
+                <Text style={styles.sectionTitle}>{t('civicMetrics.governmentSchemes', { count: schemes.length })}</Text>
+                {schemes.map((s) => <SchemeCard key={s.id} scheme={s} />)}
+              </>
+            ) : <View style={styles.empty}><Text style={styles.emptyText}>{noConnectedData}</Text></View>}
           </>
         )}
 
         {activeTab === 'projects' && (
           <>
-            <Text style={styles.sectionTitle}>{t('civicMetrics.developmentProjects', { count: projects.length })}</Text>
-            {projects.map((p) => (
-              <ProjectCard key={p.id} project={p} />
-            ))}
+            {projects.length ? (
+              <>
+                <Text style={styles.sectionTitle}>{t('civicMetrics.developmentProjects', { count: projects.length })}</Text>
+                {projects.map((p) => <ProjectCard key={p.id} project={p} />)}
+              </>
+            ) : <View style={styles.empty}><Text style={styles.emptyText}>{noConnectedData}</Text></View>}
           </>
         )}
 
         {activeTab === 'rti' && (
           <>
+            {publicRTIs.length ? <>
             <Text style={styles.sectionTitle}>{t('civicMetrics.publicRTIRequests', { count: publicRTIs.length })}</Text>
             {publicRTIs.map((r) => (
               <View key={r.id} style={styles.rtiCard}>
@@ -164,6 +170,7 @@ export default function CivicMetricsScreen() {
                 </View>
               </View>
             ))}
+            </> : <View style={styles.empty}><Text style={styles.emptyText}>{noConnectedData}</Text></View>}
           </>
         )}
       </ScrollView>

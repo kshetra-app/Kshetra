@@ -13,8 +13,12 @@ interface CampaignDashboardCardProps {
 export default function CampaignDashboardCard({ campaign, onPress }: CampaignDashboardCardProps) {
   const { t, i18n } = useTranslation();
   const typeConfig = CAMPAIGN_TYPE_CONFIG[campaign.type];
-  const budgetUtilization = campaign.totalBudgetINR > 0 ? Math.round((campaign.spentBudgetINR / campaign.totalBudgetINR) * 100) : 0;
-  const engagementRate = campaign.impressions > 0 ? ((campaign.engagements / campaign.impressions) * 100).toFixed(1) : '0';
+  const budgetUtilization = campaign.totalBudgetINR && campaign.totalBudgetINR > 0 && campaign.spentBudgetINR !== undefined
+    ? Math.round((campaign.spentBudgetINR / campaign.totalBudgetINR) * 100)
+    : null;
+  const engagementRate = campaign.impressions && campaign.engagements !== undefined
+    ? ((campaign.engagements / campaign.impressions) * 100).toFixed(1)
+    : '—';
 
   const localizeCampaignName = (name: string) => {
     if (name.includes('Telangana Development') || name.includes('Report Card')) return t('campaignManager.campaignNames.tsReportCard', { defaultValue: name });
@@ -50,12 +54,12 @@ export default function CampaignDashboardCard({ campaign, onPress }: CampaignDas
       <View style={styles.kpiGrid}>
         <View style={styles.kpi}>
           <Ionicons name="eye" size={16} color="#3B82F6" />
-          <Text style={styles.kpiValue}>{campaign.impressions > 1000000 ? `${(campaign.impressions / 1000000).toFixed(1)}M` : `${Math.round(campaign.impressions / 1000)}K`}</Text>
+          <Text style={styles.kpiValue}>{campaign.impressions === undefined ? '—' : campaign.impressions > 1000000 ? `${(campaign.impressions / 1000000).toFixed(1)}M` : `${Math.round(campaign.impressions / 1000)}K`}</Text>
           <Text style={styles.kpiLabel}>{t('campaignManager.impressions', { defaultValue: 'Impressions' })}</Text>
         </View>
         <View style={styles.kpi}>
           <Ionicons name="people" size={16} color="#8B5CF6" />
-          <Text style={styles.kpiValue}>{campaign.reach > 1000000 ? `${(campaign.reach / 1000000).toFixed(1)}M` : `${Math.round(campaign.reach / 1000)}K`}</Text>
+          <Text style={styles.kpiValue}>{campaign.reach === undefined ? '—' : campaign.reach > 1000000 ? `${(campaign.reach / 1000000).toFixed(1)}M` : `${Math.round(campaign.reach / 1000)}K`}</Text>
           <Text style={styles.kpiLabel}>{t('campaignManager.totalReach', { defaultValue: t('outreach.reach', { defaultValue: 'Total Reach' }) })}</Text>
         </View>
         <View style={styles.kpi}>
@@ -65,7 +69,7 @@ export default function CampaignDashboardCard({ campaign, onPress }: CampaignDas
         </View>
         <View style={styles.kpi}>
           <Ionicons name="trending-up" size={16} color="#10B981" />
-          <Text style={styles.kpiValue}>{campaign.sentimentScore}</Text>
+          <Text style={styles.kpiValue}>{campaign.sentimentScore ?? '—'}</Text>
           <Text style={styles.kpiLabel}>{t('campaignManager.sentiment', { defaultValue: t('outreach.sentiment', { defaultValue: 'Sentiment' }) })}</Text>
         </View>
       </View>
@@ -73,11 +77,11 @@ export default function CampaignDashboardCard({ campaign, onPress }: CampaignDas
       {/* Budget Bar */}
       <View style={styles.budgetSection}>
         <View style={styles.budgetHeader}>
-          <Text style={styles.budgetLabel}>{t('campaignManager.budget', { defaultValue: 'Budget' })}: {formatBudget(campaign.spentBudgetINR)} / {formatBudget(campaign.totalBudgetINR)}</Text>
-          <Text style={[styles.budgetPct, { color: budgetUtilization > 80 ? '#EF4444' : '#10B981' }]}>{budgetUtilization}%</Text>
+          <Text style={styles.budgetLabel}>{t('campaignManager.budget', { defaultValue: 'Budget' })}: {campaign.spentBudgetINR === undefined ? '—' : formatBudget(campaign.spentBudgetINR)} / {campaign.totalBudgetINR === undefined ? '—' : formatBudget(campaign.totalBudgetINR)}</Text>
+          <Text style={[styles.budgetPct, { color: budgetUtilization !== null && budgetUtilization > 80 ? '#EF4444' : '#10B981' }]}>{budgetUtilization === null ? '—' : `${budgetUtilization}%`}</Text>
         </View>
         <View style={styles.budgetBar}>
-          <View style={[styles.budgetBarFill, { width: `${Math.min(budgetUtilization, 100)}%`, backgroundColor: budgetUtilization > 80 ? '#EF4444' : '#4F8EF7' }]} />
+          <View style={[styles.budgetBarFill, { width: `${Math.min(budgetUtilization ?? 0, 100)}%`, backgroundColor: budgetUtilization !== null && budgetUtilization > 80 ? '#EF4444' : '#4F8EF7' }]} />
         </View>
       </View>
 
@@ -85,15 +89,15 @@ export default function CampaignDashboardCard({ campaign, onPress }: CampaignDas
       <View style={styles.bottomRow}>
         <View style={styles.bottomStat}>
           <Ionicons name="megaphone" size={12} color="#6B7280" />
-          <Text style={styles.bottomStatText}>{campaign.adCount} {t('campaignManager.tabs.ads', { defaultValue: 'ads' }).toLowerCase()}</Text>
+          <Text style={styles.bottomStatText}>{campaign.adCount ?? '—'} {t('campaignManager.tabs.ads', { defaultValue: 'ads' }).toLowerCase()}</Text>
         </View>
         <View style={styles.bottomStat}>
           <Ionicons name="people" size={12} color="#6B7280" />
-          <Text style={styles.bottomStatText}>{campaign.volunteerCount} {t('campaignManager.tabs.volunteers', { defaultValue: 'volunteers' }).toLowerCase()}</Text>
+          <Text style={styles.bottomStatText}>{campaign.volunteerCount ?? '—'} {t('campaignManager.tabs.volunteers', { defaultValue: 'volunteers' }).toLowerCase()}</Text>
         </View>
         <View style={styles.bottomStat}>
           <Ionicons name="location" size={12} color="#6B7280" />
-          <Text style={styles.bottomStatText}>{campaign.boothsCovered}/{campaign.totalBooths} {t('campaignManager.tabs.booths', { defaultValue: 'booths' }).toLowerCase()}</Text>
+          <Text style={styles.bottomStatText}>{campaign.boothsCovered ?? '—'}/{campaign.totalBooths ?? '—'} {t('campaignManager.tabs.booths', { defaultValue: 'booths' }).toLowerCase()}</Text>
         </View>
       </View>
     </Pressable>

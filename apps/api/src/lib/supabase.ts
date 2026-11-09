@@ -42,6 +42,11 @@ const resolvedKey = hasValidServiceKey
 export let isSupabaseConfigured = !!(supabaseUrl && (hasValidServiceKey || hasValidAnonKey));
 export const isUsingServiceRole = hasValidServiceKey;
 
+/** Read the mutable configuration state, including the isolated-test override. */
+export function isSupabaseAvailable(): boolean {
+  return isSupabaseConfigured;
+}
+
 export const setSupabaseConfiguredForTesting = (configured: boolean) => {
   isSupabaseConfigured = configured;
 };

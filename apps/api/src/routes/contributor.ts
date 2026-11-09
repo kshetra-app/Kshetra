@@ -1,3 +1,4 @@
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 /**
  * Contributor & Device Verification Routes
  * Fastify route handler for Contributor KYC, Fingerprinting, and Devices
@@ -8,6 +9,8 @@ import type { FastifyInstance } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
 import { resolveAuthenticatedUser, assertActingUserMatch } from '../lib/userAuth';
+
+const isProductionRuntime = isProductionLikeRuntime();
 
 export async function contributorRoutes(app: FastifyInstance) {
   /**
@@ -168,7 +171,7 @@ export async function contributorRoutes(app: FastifyInstance) {
         }
         resolvedUserId = auth.userId;
       } else if (
-        process.env.NODE_ENV !== 'production' &&
+        !isProductionRuntime &&
         (request.headers['x-user-id'] as string)
       ) {
         resolvedUserId = request.headers['x-user-id'] as string;

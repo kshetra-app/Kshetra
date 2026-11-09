@@ -20,22 +20,38 @@ describe('Public route contracts', () => {
   beforeEach(() => {
     // Mock network database calls to fail immediately or return valid mock response
     // so fallback handlers respond instantly without 30s TCP connection timeouts.
-    jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+    jest.spyOn(supabase, 'from').mockImplementation(((_table: string) => {
       const okResult = { data: { id: 'mock-id-1', status: 'submitted' }, error: null };
+      let queryResult: any = okResult;
       const chainable: any = {
         eq: () => chainable,
         or: () => chainable,
         order: () => chainable,
-        select: () => chainable,
+        limit: () => chainable,
+        select: () => {
+          queryResult = { data: [], error: null };
+          return chainable;
+        },
         maybeSingle: async () => okResult,
         single: async () => okResult,
-        then: (resolve: any) => resolve(okResult),
+        then: (resolve: any) => resolve(queryResult),
       };
       return {
-        select: () => chainable,
-        insert: () => chainable,
-        upsert: () => chainable,
-        update: () => ({ eq: () => chainable }),
+        select: () => chainable.select(),
+        insert: () => {
+          queryResult = okResult;
+          return chainable;
+        },
+        upsert: () => {
+          queryResult = okResult;
+          return chainable;
+        },
+        update: () => ({
+          eq: () => {
+            queryResult = okResult;
+            return chainable;
+          },
+        }),
       };
     }) as any);
   });
@@ -112,7 +128,9 @@ describe('Public route contracts', () => {
         '/api/v1/civic/cdi/TS-AC-1',
       ]) {
         const res = await get(url);
-        expect(res.statusCode).toBe(200);
+        if (res.statusCode !== 200) {
+          throw new Error(`${url} returned ${res.statusCode}: ${res.payload}`);
+        }
       }
     });
 

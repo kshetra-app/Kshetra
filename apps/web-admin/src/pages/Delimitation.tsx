@@ -1,161 +1,170 @@
-import React, { useState } from 'react';
-import {
-  GitMerge,
-  TrendingUp,
-  Scale,
-  Building,
-  Info,
-  Layers,
-  ArrowUpRight,
-  ArrowDownRight,
-} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { AlertCircle, ArrowDownRight, ArrowUpRight, GitMerge, RefreshCw } from 'lucide-react';
+import { api } from '../lib/api';
+import type { DelimitationProjectionsDTO } from '@kshetra/shared';
 
-interface DelimitationState {
-  state: string;
-  code: string;
-  currentSeats: number;
-  projectedSeats2026: number;
-  projectedSeats848: number;
-  shift: number;
-}
-
-const DELIMITATION_DATA: DelimitationState[] = [
-  { state: 'Uttar Pradesh', code: 'UP', currentSeats: 80, projectedSeats2026: 143, projectedSeats848: 128, shift: 63 },
-  { state: 'Bihar', code: 'BR', currentSeats: 40, projectedSeats2026: 79, projectedSeats848: 71, shift: 39 },
-  { state: 'Rajasthan', code: 'RJ', currentSeats: 25, projectedSeats2026: 50, projectedSeats848: 44, shift: 25 },
-  { state: 'Madhya Pradesh', code: 'MP', currentSeats: 29, projectedSeats2026: 52, projectedSeats848: 47, shift: 23 },
-  { state: 'Maharashtra', code: 'MH', currentSeats: 48, projectedSeats2026: 76, projectedSeats848: 68, shift: 28 },
-  { state: 'Gujarat', code: 'GJ', currentSeats: 26, projectedSeats2026: 43, projectedSeats848: 38, shift: 17 },
-  { state: 'Tamil Nadu', code: 'TN', currentSeats: 39, projectedSeats2026: 31, projectedSeats848: 41, shift: -8 },
-  { state: 'Andhra Pradesh', code: 'AP', currentSeats: 25, projectedSeats2026: 20, projectedSeats848: 28, shift: -5 },
-  { state: 'Telangana', code: 'TS', currentSeats: 17, projectedSeats2026: 15, projectedSeats848: 20, shift: -2 },
-  { state: 'Kerala', code: 'KL', currentSeats: 20, projectedSeats2026: 12, projectedSeats848: 19, shift: -8 },
-  { state: 'Karnataka', code: 'KA', currentSeats: 28, projectedSeats2026: 26, projectedSeats848: 36, shift: -2 },
-  { state: 'West Bengal', code: 'WB', currentSeats: 42, projectedSeats2026: 48, projectedSeats848: 52, shift: 6 },
-];
+type ProjectionModel = 'constitutional_proportional' | 'expansion_safe';
+const formatCount = (value: number) => value.toLocaleString('en-IN');
 
 export function Delimitation() {
-  const [modelType, setModelType] = useState<'848_seats' | 'population_pure'>('848_seats');
+  const [model, setModel] = useState<ProjectionModel>('constitutional_proportional');
+  const [projections, setProjections] = useState<DelimitationProjectionsDTO | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [retry, setRetry] = useState(0);
+
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setError(null);
+    setProjections(null);
+
+    void api.getDelimitationProjections(model)
+      .then((result) => { if (active) setProjections(result); })
+      .catch((requestError) => {
+        if (active) setError(requestError instanceof Error ? requestError.message : 'Delimitation projections are unavailable.');
+      })
+      .finally(() => { if (active) setLoading(false); });
+
+    return () => { active = false; };
+  }, [model, retry]);
+
+  const inputSources = projections?.provenance.inputDatasetVersions ?? [];
+  const sourceReviewPending = inputSources.some(
+    (source) => source.substantiveVerificationStatus !== 'PROVISION_VERIFIED_FOR_IMPLEMENTATION',
+  );
+  const sourceReviewStatus = inputSources.length === 0
+    ? 'No input verification metadata was returned'
+    : sourceReviewPending
+      ? 'At least one source is pending substantive verification'
+      : 'The API reports its inputs as verified for implementation';
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#111827] border border-slate-800 p-6 rounded-2xl">
-        <div className="space-y-1">
+        <div className="space-y-2">
           <h1 className="text-xl font-bold text-white flex items-center gap-2">
-            <GitMerge className="w-5 h-5 text-indigo-400" />
-            <span>Post-2026 Delimitation Scenario Simulator</span>
+            <GitMerge className="w-5 h-5 text-indigo-400" />Delimitation Scenario Projections
           </h1>
-          <p className="text-xs text-slate-400">
-            Interactive mathematical modeling of the upcoming Lok Sabha reapportionment and boundary re-demarcation based on 2026 census estimates.
+          <p className="text-xs text-slate-400 max-w-3xl">
+            Results are calculated by the configured API from its Census 2011 benchmark inputs. This is a research model, not an official ECI order or a prediction of future seat allocations.
           </p>
         </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setModelType('848_seats')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition ${
-              modelType === '848_seats'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
-                : 'bg-slate-800 text-slate-400 hover:text-white'
-            }`}
+        <div className="flex items-center gap-2 shrink-0">
+          <label htmlFor="projection-model" className="sr-only">Projection model</label>
+          <select
+            id="projection-model"
+            value={model}
+            onChange={(event) => setModel(event.target.value as ProjectionModel)}
+            className="bg-slate-900 border border-slate-700 text-slate-200 text-xs font-semibold px-3 py-2 rounded-xl"
           >
-            New Parliament (848 Seats Model)
-          </button>
+            <option value="constitutional_proportional">Equal-population quotient</option>
+            <option value="expansion_safe">Equal-population, no baseline reductions</option>
+          </select>
           <button
-            onClick={() => setModelType('population_pure')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition ${
-              modelType === 'population_pure'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
-                : 'bg-slate-800 text-slate-400 hover:text-white'
-            }`}
+            onClick={() => setRetry((current) => current + 1)}
+            disabled={loading}
+            className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 flex items-center gap-2 disabled:opacity-50"
           >
-            Pure Population Share (543 Base)
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />Refresh
           </button>
         </div>
       </div>
 
-      {/* Summary KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        <div className="bg-[#111827] border border-slate-800 p-5 rounded-2xl">
-          <div className="text-xs text-slate-400 font-bold uppercase mb-2">Total Lok Sabha Capacity</div>
-          <div className="text-3xl font-extrabold text-white">848 Seats</div>
-          <div className="text-xs text-indigo-400 mt-2 font-medium">New Sansad Bhavan Capable</div>
-        </div>
-
-        <div className="bg-[#111827] border border-slate-800 p-5 rounded-2xl">
-          <div className="text-xs text-slate-400 font-bold uppercase mb-2">Northern States Share Shift</div>
-          <div className="text-3xl font-extrabold text-emerald-400 flex items-center gap-1">
-            <span>+152 Seats</span>
-            <ArrowUpRight className="w-6 h-6" />
-          </div>
-          <div className="text-xs text-slate-400 mt-2 font-medium">UP, BR, MP, RJ demographic expansion</div>
-        </div>
-
-        <div className="bg-[#111827] border border-slate-800 p-5 rounded-2xl">
-          <div className="text-xs text-slate-400 font-bold uppercase mb-2">Southern States Share Shift</div>
-          <div className="text-3xl font-extrabold text-amber-400 flex items-center gap-1">
-            <span>-25 Seats</span>
-            <ArrowDownRight className="w-6 h-6" />
-          </div>
-          <div className="text-xs text-slate-400 mt-2 font-medium">Under pure proportional formula</div>
+      <div role="note" className="rounded-xl border border-amber-800/60 bg-amber-950/30 p-4 text-sm text-amber-200 flex items-start gap-3">
+        <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+        <div className="space-y-1">
+          <p className="font-semibold">Scenario output only</p>
+          <p>{projections?.disclaimer ?? 'This model must not be treated as a statutory allocation or official delimitation proposal.'}</p>
+          {projections && <p>Input review status: {sourceReviewStatus}.</p>}
         </div>
       </div>
 
-      {/* State-by-State Seat Reapportionment Table */}
-      <div className="bg-[#111827] border border-slate-800 rounded-2xl p-5 space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="font-bold text-xs uppercase tracking-wider text-slate-300">
-            State-by-State Projected Seat Allocations
-          </h3>
-          <span className="text-xs font-mono text-slate-400">ECI Article 82 Modeling</span>
+      {loading && <div className="rounded-xl border border-slate-800 bg-[#111827] p-8 text-center text-sm text-slate-400">Loading scenario output from the API…</div>}
+      {error && (
+        <div role="alert" className="rounded-xl border border-red-800/60 bg-red-950/30 p-6 text-sm text-red-300 flex items-center justify-between gap-4">
+          <span>{error}</span>
+          <button onClick={() => setRetry((current) => current + 1)} className="shrink-0 rounded-lg px-3 py-2 text-xs text-red-200 hover:bg-red-900/40">Retry</button>
         </div>
+      )}
 
-        <div className="overflow-x-auto border border-slate-800 rounded-xl">
-          <table className="w-full text-left text-xs font-mono">
-            <thead className="bg-[#0A0A1A] text-slate-400 border-b border-slate-800">
-              <tr>
-                <th className="p-3.5 font-bold uppercase">State</th>
-                <th className="p-3.5 font-bold uppercase">Code</th>
-                <th className="p-3.5 font-bold uppercase">Current Seats (1971 Base)</th>
-                <th className="p-3.5 font-bold uppercase text-indigo-400">
-                  {modelType === '848_seats' ? 'Projected (848 House)' : 'Projected (543 House)'}
-                </th>
-                <th className="p-3.5 font-bold uppercase">Seat Variance</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/60 bg-slate-900/40 text-slate-300">
-              {DELIMITATION_DATA.map((row) => {
-                const targetSeats = modelType === '848_seats' ? row.projectedSeats848 : row.projectedSeats2026;
-                const variance = targetSeats - row.currentSeats;
-                return (
-                  <tr key={row.code} className="hover:bg-slate-800/40 transition">
-                    <td className="p-3.5 font-sans font-bold text-white">{row.state}</td>
-                    <td className="p-3.5 text-slate-400">{row.code}</td>
-                    <td className="p-3.5 text-slate-200">{row.currentSeats}</td>
-                    <td className="p-3.5 font-bold text-indigo-300">{targetSeats}</td>
-                    <td className="p-3.5 font-bold">
-                      <span
-                        className={`inline-flex items-center gap-1 ${
-                          variance > 0
-                            ? 'text-emerald-400'
-                            : variance < 0
-                            ? 'text-amber-400'
-                            : 'text-slate-400'
-                        }`}
-                      >
-                        {variance > 0 ? `+${variance}` : variance}
-                        {variance > 0 && <ArrowUpRight className="w-3.5 h-3.5" />}
-                        {variance < 0 && <ArrowDownRight className="w-3.5 h-3.5" />}
-                      </span>
-                    </td>
+      {projections && !loading && (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <MetricCard label="States in API response" value={formatCount(projections.summary.statesAnalyzed)} detail={`Census benchmark: ${projections.censusYear}`} />
+            <MetricCard label="Baseline seats" value={formatCount(projections.summary.totalCurrentSeats)} detail="Source baseline returned by the API" />
+            <MetricCard label="Modeled seats" value={formatCount(projections.summary.totalProjectedSeats)} detail={projections.model} />
+          </div>
+
+          <section className="bg-[#111827] border border-slate-800 rounded-2xl p-5 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h2 className="font-bold text-sm text-slate-200">State model output</h2>
+                <p className="text-xs text-slate-400 mt-1">Population and seat values below come from this API response; they are not live electorate counts.</p>
+              </div>
+              <p className="text-xs text-slate-400">Increased: {formatCount(projections.summary.totalGained)} · Reduced: {formatCount(Math.abs(projections.summary.totalLost))}</p>
+            </div>
+
+            <div className="overflow-x-auto border border-slate-800 rounded-xl">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-[#0A0A1A] text-slate-400 border-b border-slate-800">
+                  <tr>
+                    <th className="p-3.5">State</th>
+                    <th className="p-3.5">Population input ({projections.censusYear})</th>
+                    <th className="p-3.5">Baseline seats</th>
+                    <th className="p-3.5">Modeled seats</th>
+                    <th className="p-3.5">Change</th>
+                    <th className="p-3.5">Data status</th>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60 bg-slate-900/40 text-slate-300">
+                  {projections.projections.map((row) => (
+                    <tr key={row.stateCode}>
+                      <td className="p-3.5"><span className="font-semibold text-white">{row.stateName}</span><span className="ml-2 text-slate-500">{row.stateCode}</span></td>
+                      <td className="p-3.5">{formatCount(row.population)}</td>
+                      <td className="p-3.5">{formatCount(row.currentSeats)}</td>
+                      <td className="p-3.5 font-semibold text-indigo-300">{formatCount(row.projectedSeats)}</td>
+                      <td className={`p-3.5 font-semibold ${row.seatChange > 0 ? 'text-emerald-400' : row.seatChange < 0 ? 'text-amber-300' : 'text-slate-400'}`}>
+                        <span className="inline-flex items-center gap-1">
+                          {row.seatChange > 0 ? <ArrowUpRight className="w-3.5 h-3.5" /> : row.seatChange < 0 ? <ArrowDownRight className="w-3.5 h-3.5" /> : null}
+                          {row.seatChange > 0 ? '+' : ''}{formatCount(row.seatChange)}
+                        </span>
+                      </td>
+                      <td className="p-3.5">{row.dataStatus}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section className="bg-[#111827] border border-slate-800 rounded-2xl p-5 space-y-3">
+            <h2 className="font-bold text-sm text-slate-200">Input provenance from API</h2>
+            <p className="text-xs text-slate-400">Method: {projections.methodology}</p>
+            {inputSources.length === 0 ? <p className="text-xs text-amber-300">No input-source records were returned.</p> : (
+              <ul className="space-y-2">
+                {inputSources.map((source) => (
+                  <li key={`${source.datasetId}:${source.versionTag}`} className="rounded-lg bg-slate-900/70 border border-slate-800 p-3 text-xs text-slate-300">
+                    <div className="font-semibold text-white">{source.sourceAuthority} · {source.datasetId} ({source.versionTag})</div>
+                    <div className="mt-1">Publication date: {source.publicationDate || 'Not supplied'} · substantive verification: {source.substantiveVerificationStatus ?? 'Not reported'}</div>
+                    <div className="mt-1 text-slate-400">{source.evidenceStatus ?? 'Evidence status not supplied by API'}</div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </>
+      )}
+    </div>
+  );
+}
+
+function MetricCard({ label, value, detail }: { label: string; value: string; detail: string }) {
+  return (
+    <div className="bg-[#111827] border border-slate-800 p-5 rounded-2xl">
+      <div className="text-xs text-slate-400 font-bold uppercase mb-2">{label}</div>
+      <div className="text-2xl font-extrabold text-white">{value}</div>
+      <div className="text-xs text-slate-400 mt-2">{detail}</div>
     </div>
   );
 }

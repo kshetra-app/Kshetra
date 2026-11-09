@@ -3,16 +3,12 @@ import { api } from '../lib/api';
 import type { AppFeatureFlags } from '@kshetra/shared';
 import { DEFAULT_FEATURE_FLAGS } from '@kshetra/shared';
 import {
-  ToggleLeft,
   ToggleRight,
   RefreshCw,
   RotateCcw,
   Save,
   CheckCircle2,
   AlertCircle,
-  Layers,
-  Sparkles,
-  Zap,
 } from 'lucide-react';
 
 interface FlagMetadata {
@@ -43,22 +39,27 @@ const ALL_FLAGS: FlagMetadata[] = [
   { key: 'enableAspirants', label: 'Political Aspirant Incubation', category: 'Phase 5: Commercial', description: 'New candidate onboarding & constituency readiness scores' },
   { key: 'enableCampaignManager', label: 'Campaign Manager HQ', category: 'Phase 5: Commercial', description: 'Voice OBD & booth/cadre campaign tools' },
   { key: 'enableLeadershipAcademy', label: 'Leadership Academy', category: 'Phase 5: Commercial', description: 'Training courses & governance certifications for youth leaders' },
+  { key: 'enablePoliticalAds', label: 'Political Advertising', category: 'Phase 5: Commercial', description: 'Political ad submission and compliance review' },
+  { key: 'enableNativeLive', label: 'Native Live Broadcast', category: 'Phase 5: Commercial', description: 'In-app live video broadcast feature' },
 ];
 
 export function FeatureFlags() {
-  const [flags, setFlags] = useState<AppFeatureFlags>(DEFAULT_FEATURE_FLAGS);
-  const [loading, setLoading] = useState(false);
+  const [flags, setFlags] = useState<AppFeatureFlags | null>(null);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
 
   const fetchFlags = async () => {
     setLoading(true);
+    setError(null);
     try {
       const data = await api.getFlags();
       setFlags(data);
-    } catch {
-      // Fallback to default
+    } catch (err) {
+      setFlags(null);
+      setError(err instanceof Error ? err.message : 'Feature flags could not be loaded.');
     } finally {
       setLoading(false);
     }
@@ -69,23 +70,20 @@ export function FeatureFlags() {
   }, []);
 
   const handleToggle = (key: keyof AppFeatureFlags) => {
-    setFlags((prev: AppFeatureFlags) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
+    setFlags((prev) => prev ? { ...prev, [key]: !prev[key] } : prev);
   };
 
   const handleSave = async () => {
+    if (!flags) return;
     setSaving(true);
     setSavedSuccess(false);
+    setError(null);
     try {
       await api.updateFlags(flags);
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 3000);
-    } catch {
-      // Offline fallback
-      setSavedSuccess(true);
-      setTimeout(() => setSavedSuccess(false), 3000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Feature flag changes were not saved.');
     } finally {
       setSaving(false);
     }
@@ -93,6 +91,8 @@ export function FeatureFlags() {
 
   const handleReset = () => {
     setFlags(DEFAULT_FEATURE_FLAGS);
+    setError(null);
+    setSavedSuccess(false);
   };
 
   const categories = ['ALL', 'Phase 1: Foundation', 'Phase 2: Engagement', 'Phase 3: Real-Time', 'Phase 4: Intelligence', 'Phase 5: Commercial'];
@@ -105,10 +105,10 @@ export function FeatureFlags() {
         <div className="space-y-1">
           <h1 className="text-xl font-bold text-white flex items-center gap-2">
             <ToggleRight className="w-5 h-5 text-blue-400" />
-            <span>Feature Flags & Live Kill Switches</span>
+            <span>Feature Flags</span>
           </h1>
           <p className="text-xs text-slate-400">
-            Control reactive feature visibility across the Android APK and Web clients in real-time.
+            Values load from the API. Saving requires an authorized administrator session and the configured persistent flag store.
           </p>
         </div>
 
@@ -119,22 +119,23 @@ export function FeatureFlags() {
             className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 flex items-center gap-1.5 transition"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>Sync with Server</span>
+            <span>Refresh from API</span>
           </button>
           <button
             onClick={handleReset}
+            disabled={!flags || loading || saving}
             className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-semibold border border-slate-700 flex items-center gap-1.5 transition"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span>Reset Defaults</span>
+            <span>Use Code Defaults</span>
           </button>
           <button
             onClick={handleSave}
-            disabled={saving}
+            disabled={saving || loading || !flags}
             className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-lg shadow-blue-600/30 flex items-center gap-2 transition"
           >
             <Save className="w-4 h-4" />
-            <span>{saving ? 'Publishing...' : 'Publish Flags'}</span>
+            <span>{saving ? 'Saving...' : 'Save Changes'}</span>
           </button>
         </div>
       </div>
@@ -142,9 +143,11 @@ export function FeatureFlags() {
       {savedSuccess && (
         <div className="p-4 rounded-xl bg-emerald-950/60 border border-emerald-700/60 text-emerald-300 text-xs flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-          <span>Feature flags published successfully! The changes are now active live across the mobile client.</span>
+          <span>The API confirmed the feature flag update.</span>
         </div>
       )}
+
+      {error && <div className="p-4 rounded-xl bg-red-950/40 border border-red-800/60 text-red-300 text-xs flex items-center gap-2"><AlertCircle className="w-4 h-4 shrink-0" />{error}</div>}
 
       {/* Category Tabs */}
       <div className="flex gap-2 overflow-x-auto pb-1">
@@ -164,7 +167,9 @@ export function FeatureFlags() {
       </div>
 
       {/* Flag Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {loading && <div className="p-8 rounded-xl bg-[#111827] border border-slate-800 text-slate-400 text-sm">Loading feature flags…</div>}
+      {!loading && !flags && <div className="p-8 rounded-xl bg-[#111827] border border-slate-800 text-slate-400 text-sm">No flag values are available. Refresh after the API and database are reachable.</div>}
+      {flags && <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredFlags.map((flag) => {
           const isEnabled = Boolean(flags[flag.key]);
           return (
@@ -203,7 +208,7 @@ export function FeatureFlags() {
             </div>
           );
         })}
-      </div>
+      </div>}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 /**
  * Test-Only Mock Providers
  * W009-B2: Bounded Provider Abstraction (Razorpay & Voice OBD)
@@ -22,7 +23,7 @@ import type {
 } from './types';
 
 function assertNotProduction(context: string): void {
-  if (process.env.NODE_ENV === 'production') {
+  if (isProductionLikeRuntime()) {
     throw new Error(
       `SECURITY_VIOLATION: Mock provider '${context}' cannot be instantiated or used in production environment!`,
     );
@@ -148,13 +149,13 @@ export class MockVoiceObdProvider implements VoiceObdProvider {
       currentISTHour = Math.floor(istMinutes / 60);
     }
 
-    const permitted = currentISTHour >= 8 && currentISTHour < 21;
+    const permitted = currentISTHour >= 9 && currentISTHour < 20;
     return {
       permitted,
       currentISTHour,
       message: permitted
         ? undefined
-        : `TRAI regulations restrict automated political calls to 8:00 AM – 9:00 PM IST (Current IST hour: ${currentISTHour}:00). Calls will be scheduled for delivery at 8:00 AM tomorrow.`,
+        : `The configured political voice dispatch window is 9:00 AM – 8:00 PM IST (Current IST hour: ${currentISTHour}:00). Calls are not dispatched outside this window.`,
     };
   }
 

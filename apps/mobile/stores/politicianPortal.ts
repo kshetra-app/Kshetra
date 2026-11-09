@@ -10,6 +10,7 @@ import type {
   PoliticianSurvey,
 } from '../lib/politicianPortalTypes';
 import { apiClient } from '../lib/api';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 
 // Fictional demo data only — no real, named public figures permitted here.
 // ─── Seed Politicians ───
@@ -163,14 +164,14 @@ interface PoliticianPortalState {
 }
 
 export const usePoliticianPortalStore = create<PoliticianPortalState>((set, get) => ({
-  politicians: SEED_POLITICIANS,
-  broadcasts: SEED_BROADCASTS,
-  events: SEED_EVENTS,
-  manifestos: SEED_MANIFESTOS,
-  mentorships: SEED_MENTORSHIPS,
-  endorsements: SEED_ENDORSEMENTS,
-  fundraiseProjects: SEED_FUNDRAISE,
-  surveys: SEED_SURVEYS,
+  politicians: IS_LIVE_ENVIRONMENT ? [] : SEED_POLITICIANS,
+  broadcasts: IS_LIVE_ENVIRONMENT ? [] : SEED_BROADCASTS,
+  events: IS_LIVE_ENVIRONMENT ? [] : SEED_EVENTS,
+  manifestos: IS_LIVE_ENVIRONMENT ? [] : SEED_MANIFESTOS,
+  mentorships: IS_LIVE_ENVIRONMENT ? [] : SEED_MENTORSHIPS,
+  endorsements: IS_LIVE_ENVIRONMENT ? [] : SEED_ENDORSEMENTS,
+  fundraiseProjects: IS_LIVE_ENVIRONMENT ? [] : SEED_FUNDRAISE,
+  surveys: IS_LIVE_ENVIRONMENT ? [] : SEED_SURVEYS,
   currentPoliticianId: null,
 
   getPolitician: (id) => get().politicians.find((p) => p.id === id),

@@ -9,6 +9,7 @@ import {
   Modal,
   Linking,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +29,11 @@ export default function GrassrootsWorkers() {
   const [newBooth, setNewBooth] = useState('');
 
   const volunteers = useCampaignStore((s) => s.volunteers);
+  const volunteersLoading = useCampaignStore((s) => s.volunteersLoading);
+  const volunteersAvailable = useCampaignStore((s) => s.volunteersAvailable);
+  const volunteersError = useCampaignStore((s) => s.volunteersError);
+  const campaigns = useCampaignStore((s) => s.campaigns);
+  const campaignsAvailable = useCampaignStore((s) => s.campaignsAvailable);
   const addCadre = useCampaignStore((s) => s.addCadre);
   const checkKshetraUser = useCampaignStore((s) => s.checkKshetraUser);
 
@@ -60,14 +66,23 @@ export default function GrassrootsWorkers() {
       return;
     }
 
-    const userCheck = await checkKshetraUser(newPhone.trim());
-    await addCadre({
-      name: newName.trim(),
-      phone: newPhone.trim(),
-      role: newRole,
-      assignedBooths: newBooth.trim() ? [newBooth.trim()] : [],
-      isKshetraUser: userCheck.isKshetraUser,
-    });
+    let userCheck: { isKshetraUser: boolean; displayName?: string };
+    try {
+      userCheck = await checkKshetraUser(newPhone.trim());
+      await addCadre({
+        name: newName.trim(),
+        phone: newPhone.trim(),
+        role: newRole,
+        assignedBooths: newBooth.trim() ? [newBooth.trim()] : [],
+        isKshetraUser: userCheck.isKshetraUser,
+      });
+    } catch (error) {
+      Alert.alert(
+        t('campaignManager.workerNotSaved', { defaultValue: 'Worker not saved' }),
+        error instanceof Error ? error.message : t('common.tryAgain', { defaultValue: 'Please try again.' }),
+      );
+      return;
+    }
 
     setModalVisible(false);
     setNewName('');
@@ -114,7 +129,12 @@ export default function GrassrootsWorkers() {
           ) : null}
         </View>
 
-        <Pressable style={styles.addBtn} onPress={() => setModalVisible(true)}>
+        <Pressable
+          style={[styles.addBtn, (!campaignsAvailable || campaigns.length === 0) && { opacity: 0.5 }]}
+          onPress={() => setModalVisible(true)}
+          disabled={!campaignsAvailable || campaigns.length === 0}
+          accessibilityState={{ disabled: !campaignsAvailable || campaigns.length === 0 }}
+        >
           <Ionicons name="person-add" size={16} color="#FFFFFF" />
           <Text style={styles.addBtnText}>
             {t('campaignManager.addWorker', { defaultValue: 'Add Cadre' })}
@@ -124,6 +144,31 @@ export default function GrassrootsWorkers() {
 
       {/* ─── Volunteer List ─── */}
       <ScrollView showsVerticalScrollIndicator={false}>
+        {volunteersLoading ? (
+          <View style={styles.dataNotice}>
+            <ActivityIndicator size="small" color={colors.primary} />
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>{t('common.loading', { defaultValue: 'Loading campaign workers…' })}</Text>
+          </View>
+        ) : volunteersError ? (
+          <View style={styles.dataNotice}>
+            <Ionicons name="alert-circle-outline" size={18} color="#B45309" />
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>{volunteersError}</Text>
+          </View>
+        ) : volunteersAvailable && volunteers.length === 0 ? (
+          <View style={styles.dataNotice}>
+            <Ionicons name="information-circle-outline" size={18} color={colors.textSecondary} />
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+              {campaigns.length === 0
+                ? t('campaignManager.noCampaignForWorkers', { defaultValue: 'A campaign must be available before campaign workers can be added.' })
+                : t('campaignManager.noWorkersYet', { defaultValue: 'No workers are registered for this campaign yet.' })}
+            </Text>
+          </View>
+        ) : volunteersAvailable && filteredVolunteers.length === 0 ? (
+          <View style={styles.dataNotice}>
+            <Ionicons name="search-outline" size={18} color={colors.textSecondary} />
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>{t('campaignManager.noWorkersMatchSearch', { defaultValue: 'No workers match this search.' })}</Text>
+          </View>
+        ) : null}
         {filteredVolunteers.map((v) => (
           <View
             key={v.id}
@@ -241,6 +286,8 @@ export default function GrassrootsWorkers() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 16 },
+  dataNotice: { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 12, marginVertical: 8 },
+  emptyText: { flex: 1, fontSize: 13 },
   searchRow: { flexDirection: 'row', gap: 10, marginVertical: 12 },
   searchBox: {
     flex: 1,

@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { bootstrapSupabase, teardownSupabase } from '../lib/supabaseBootstrap';
+import { apiClient } from '../lib/api';
+import { startProductAnalyticsSession, trackProductEvent } from '../lib/analytics';
 
 interface AuthState {
   session: Session | null;
@@ -41,6 +43,8 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       // Bootstrap backend connection if session exists
       if (session) {
         bootstrapSupabase();
+        startProductAnalyticsSession();
+        void trackProductEvent(apiClient, 'app_session_started', { screen: '/app' });
       }
 
       // Listen for auth state changes
@@ -68,18 +72,23 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     });
     set({ loading: false });
     if (!error) {
-      // Auth state change listener will trigger bootstrap
+      startProductAnalyticsSession();
+      void trackProductEvent(apiClient, 'app_session_started', { screen: '/auth/sign-in' });
     }
     return { error: error?.message ?? null };
   },
 
   signUpWithEmail: async (email, password) => {
     set({ loading: true });
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
     set({ loading: false });
+    if (!error && data.session) {
+      startProductAnalyticsSession();
+      void trackProductEvent(apiClient, 'signup_completed', { screen: '/auth/sign-up' });
+    }
     return { error: error?.message ?? null };
   },
 

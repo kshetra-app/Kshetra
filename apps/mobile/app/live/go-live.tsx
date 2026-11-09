@@ -16,6 +16,7 @@ import { useUserProfileStore } from '../../stores/userProfile';
 import { useLiveExchangeStore } from '../../stores/liveExchange';
 import { useContributorVerificationStore } from '../../stores/contributorVerification';
 import { useFeatureFlagsStore } from '../../lib/featureFlags';
+import { useActiveStateStore } from '../../stores/activeState';
 import { gateContentAction, logContentAction } from '../../lib/contentAccountability';
 import type {
   VisibilityMode,
@@ -35,7 +36,8 @@ import {
   type PrePollSilenceWindow
 } from '../../lib/lmxTypes';
 import LiveBroadcaster, { isBroadcastSupported } from '../../components/LiveBroadcaster';
-import { buildWhipPublishUrl } from '../../lib/mediaPipeline';
+import { buildWhipPublishUrl, isMediaPipelineConfigured } from '../../lib/mediaPipeline';
+import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
 import { useTheme } from '../../lib/theme';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
@@ -93,7 +95,7 @@ export default function GoLiveScreen() {
   const aiServiceEnabled = useLiveExchangeStore((s) => s.aiServiceEnabled);
   const requestAction = useContributorVerificationStore((s) => s.requestAction);
 
-  const stateCode = 'TS';
+  const stateCode = useActiveStateStore((s) => s.stateCode);
   const PRE_POLL_WINDOWS: PrePollSilenceWindow[] = []; // Populated from election schedule in production
   const silenceActive = isPrePollSilenceActive(PRE_POLL_WINDOWS, stateCode);
   const activeSilenceWindow = getActivePrePollSilence(PRE_POLL_WINDOWS);
@@ -118,6 +120,7 @@ export default function GoLiveScreen() {
   const [captureSeconds, setCaptureSeconds] = useState<number | null>(null);
   const [capturing, setCapturing] = useState(false);
   const [captureError, setCaptureError] = useState<string | null>(null);
+  const [broadcastError, setBroadcastError] = useState<string | null>(null);
 
   const selectedAffiliation = affiliations.find((a) => a.id === affiliationId);
   const tier = reporter.tier;
@@ -131,7 +134,7 @@ export default function GoLiveScreen() {
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
           if (!cancelled) {
-            setGps({ lat: 17.385, lng: 78.4867 });
+            setGps(null);
             setGpsStatus('unavailable');
           }
           return;
@@ -143,7 +146,7 @@ export default function GoLiveScreen() {
         }
       } catch {
         if (!cancelled) {
-          setGps({ lat: 17.385, lng: 78.4867 });
+          setGps(null);
           setGpsStatus('unavailable');
         }
       }
@@ -163,7 +166,8 @@ export default function GoLiveScreen() {
   const toggleDept = (d: DepartmentType) =>
     setAlertDepts((prev) => (prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d]));
 
-  const canGoLive = gps !== null;
+  const mediaPipelineReady = !IS_LIVE_ENVIRONMENT || isMediaPipelineConfigured();
+  const canGoLive = gps !== null && isBroadcastSupported() && mediaPipelineReady;
 
   const captureClip = async () => {
     setCaptureError(null);
@@ -172,7 +176,7 @@ export default function GoLiveScreen() {
       const ImagePicker = await import('expo-image-picker');
       const perm = await ImagePicker.requestCameraPermissionsAsync();
       if (!perm.granted) {
-        setCaptureError('Camera permission denied. You can still go live with a demo stream.');
+        setCaptureError('Camera permission denied. Allow camera access before broadcasting.');
         return;
       }
       const result = await ImagePicker.launchCameraAsync({
@@ -186,17 +190,19 @@ export default function GoLiveScreen() {
         setCaptureSeconds(asset.duration ? Math.round(asset.duration / 1000) : null);
       }
     } catch {
-      setCaptureError('Camera unavailable on this device. You can still go live with a demo stream.');
+      setCaptureError('Camera is unavailable on this device.');
     } finally {
       setCapturing(false);
     }
   };
 
-  const handleGoLive = () => {
+  const handleGoLive = async () => {
+    setBroadcastError(null);
+    if (!canGoLive || silenceActive) return;
     // KYC gate — going live is a high-severity content action.
     if (!gateContentAction('go_live')) return;
 
-    const event = startLiveEvent({
+    const event = await startLiveEvent({
       reporterId: reporter.id,
       reporterName: reporter.name,
       accreditationTier: selectedAffiliation ? 'organization' : tier,
@@ -207,10 +213,16 @@ export default function GoLiveScreen() {
       tags: tags.split(',').map((t) => t.trim()).filter(Boolean),
       gpsLat: gps?.lat ?? null,
       gpsLng: gps?.lng ?? null,
-      stateCode: 'TS',
-      districtName: 'Hyderabad',
+      stateCode,
+      districtName: null,
       locality: null,
     });
+    if (!event) {
+      setBroadcastError(t('lmx.goLiveScreen.createFailed', {
+        defaultValue: 'The broadcast could not be created. Check your connection and verified contributor access.',
+      }));
+      return;
+    }
 
     logContentAction('go_live', {
       type: 'live_stream',
@@ -520,6 +532,7 @@ export default function GoLiveScreen() {
 
       {/* Go Live button */}
       <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
+        {broadcastError ? <Text style={{ color: '#FCA5A5', marginBottom: 8, textAlign: 'center' }}>{broadcastError}</Text> : null}
         <Pressable
           style={[styles.goBtn, (!canGoLive || silenceActive) && styles.goBtnDisabled]}
           disabled={!canGoLive || silenceActive}
@@ -527,7 +540,15 @@ export default function GoLiveScreen() {
         >
           <Ionicons name="radio" size={20} color="#FFFFFF" />
           <Text style={styles.goBtnText}>
-            {canGoLive ? t('lmx.goLiveScreen.startBroadcasting') : t('lmx.goLiveScreen.locating')}
+            {gpsStatus === 'detecting'
+              ? t('lmx.goLiveScreen.locating')
+              : !isBroadcastSupported()
+                ? t('lmx.goLiveScreen.streamingUnavailable', { defaultValue: 'Streaming is unavailable on this device.' })
+                : !mediaPipelineReady
+                  ? t('lmx.goLiveScreen.mediaPlaneUnavailable', { defaultValue: 'Live streaming service is not configured.' })
+                : gpsStatus === 'unavailable'
+                  ? t('lmx.goLiveScreen.locationRequired', { defaultValue: 'Location permission is required.' })
+                  : t('lmx.goLiveScreen.startBroadcasting')}
           </Text>
         </Pressable>
         <Text style={styles.footerHint}>

@@ -297,7 +297,7 @@ const CURATED_TRIVIA: TriviaItem[] = [
     id: 'TRV-LEG-001',
     emoji: '⚖️',
     headline: 'The 2/3 Loophole',
-    body: 'India\'s anti-defection law (Tenth Schedule) has a crucial exception: if 2/3 of a party\'s MLAs "merge" with another party, it\'s legal. Telangana has seen this exploited twice — TDP in 2016 (12/15 = 80%) and INC in 2019 (12/18 = 67%). The 2024 BRS defections (10/39 = 26%) do NOT meet this threshold and face legal challenge.',
+    body: 'India\'s anti-defection law (Tenth Schedule) has a merger exception for at least two-thirds of a legislature party. In Telangana, ten BRS MLAs joined INC in 2024, below that threshold. The Speaker dismissed the disqualification petitions; Danam Nagender was later disqualified by the High Court, and the Supreme Court upheld that ruling. Challenges concerning other MLAs continued in the Telangana High Court in 2026.',
     category: 'LEGAL',
     contexts: [
       { type: 'GLOBAL' },
@@ -309,8 +309,8 @@ const CURATED_TRIVIA: TriviaItem[] = [
   {
     id: 'TRV-LEG-002',
     emoji: '🏛️',
-    headline: 'Supreme Court Challenge',
-    body: 'BRS filed a Special Leave Petition in the Supreme Court against the 10 defected MLAs. The Telangana High Court served notices to the Speaker and all 10 MLAs. This case could set a precedent for anti-defection enforcement in India.',
+    headline: 'Court Rulings on Telangana Party Changes',
+    body: 'The Speaker dismissed disqualification petitions against ten BRS MLAs who joined INC. The Telangana High Court later disqualified Danam Nagender from Khairatabad, and the Supreme Court upheld that ruling in September 2026. Challenges to the Speaker’s decisions concerning other MLAs were still before the Telangana High Court in August 2026.',
     category: 'LEGAL',
     contexts: [
       { type: 'PARTY', party: 'BRS' },
@@ -451,13 +451,13 @@ function deriveTriviaFromLedger(): TriviaItem[] {
     derived.push({
       id: 'TRV-DRV-CURRENT-STRENGTH',
       emoji: '📊',
-      headline: `${ruling[0]} Holds ${ruling[1]} of 119 Seats`,
-      body: `Current floor strength (after all defections): ` +
+      headline: `${ruling[0]} Affiliation: ${ruling[1]} Seated MLAs`,
+      body: `Ledger-derived seated-member count by reported current party affiliation: ` +
         Object.entries(current.parties)
           .sort(([, a], [, b]) => b - a)
           .map(([p, s]) => `${p}: ${s}`)
           .join(' | ') +
-        `. The majority mark is 60.`,
+        ` | Vacant: ${current.vacant}. The party affiliation of several former BRS MLAs remains part of ongoing court challenges.`,
       category: 'ELECTION',
       contexts: [{ type: 'GLOBAL' }],
       source: 'Computed from Kshetra Political Ledger',

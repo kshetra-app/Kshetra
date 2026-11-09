@@ -13,6 +13,7 @@ import type {
   RTIStatus,
 } from '../lib/civicMetricsTypes';
 import { apiClient } from '../lib/api';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 
 // ─── Seed Budget Data ───
 const SEED_BUDGET_SUMMARIES: StateBudgetSummary[] = [
@@ -259,15 +260,15 @@ interface CivicMetricsState {
 }
 
 export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => ({
-  budgetSummaries: SEED_BUDGET_SUMMARIES,
+  budgetSummaries: IS_LIVE_ENVIRONMENT ? [] : SEED_BUDGET_SUMMARIES,
   budgetAllocations: [],
-  rtiRequests: SEED_RTI,
-  attendance: SEED_ATTENDANCE,
-  bills: SEED_BILLS,
-  schemes: SEED_SCHEMES,
-  projects: SEED_PROJECTS,
-  hearings: SEED_HEARINGS,
-  cdiList: SEED_CDI,
+  rtiRequests: IS_LIVE_ENVIRONMENT ? [] : SEED_RTI,
+  attendance: IS_LIVE_ENVIRONMENT ? [] : SEED_ATTENDANCE,
+  bills: IS_LIVE_ENVIRONMENT ? [] : SEED_BILLS,
+  schemes: IS_LIVE_ENVIRONMENT ? [] : SEED_SCHEMES,
+  projects: IS_LIVE_ENVIRONMENT ? [] : SEED_PROJECTS,
+  hearings: IS_LIVE_ENVIRONMENT ? [] : SEED_HEARINGS,
+  cdiList: IS_LIVE_ENVIRONMENT ? [] : SEED_CDI,
 
   getBudgetSummary: (stateCode) => get().budgetSummaries.find((b) => b.stateCode === stateCode),
   getRTIByState: (stateCode) => get().rtiRequests.filter((r) => r.stateCode === stateCode),

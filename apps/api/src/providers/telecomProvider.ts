@@ -3,7 +3,7 @@
  * W009-B2: Bounded Provider Abstraction (Razorpay & Voice OBD)
  */
 
-import { isNumberOptedOut } from '../services/outreach/obdTelecomService';
+import { isNumberOptedOut, isWithinTraiWindow } from '../services/outreach/obdTelecomService';
 import type {
   VoiceObdProvider,
   TraiWindowCheckResult,
@@ -37,27 +37,11 @@ export class TelecomProvider implements VoiceObdProvider {
   }
 
   /**
-   * Checks whether the given reference time (or now) in India (IST, UTC+5:30)
-   * is within the legally permitted TRAI calling window: 08:00 to 21:00 IST (8:00 AM – 9:00 PM).
+   * Checks the application's configured political voice dispatch window in IST.
+   * This is an operational gate, not a determination of current legal requirements.
    */
   isWithinTraiCallingWindow(referenceTime?: Date): TraiWindowCheckResult {
-    const now = referenceTime || new Date();
-    // Compute IST offset: UTC + 5 hours 30 mins (330 minutes)
-    const istOffsetMinutes = 330;
-    const utcMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
-    const istMinutes = (utcMinutes + istOffsetMinutes) % 1440;
-    const currentISTHour = Math.floor(istMinutes / 60);
-
-    // Statutory TRAI calling window: 08:00 to 21:00 IST
-    const permitted = currentISTHour >= 8 && currentISTHour < 21;
-
-    return {
-      permitted,
-      currentISTHour,
-      message: permitted
-        ? undefined
-        : `TRAI regulations restrict automated political calls to 8:00 AM – 9:00 PM IST (Current IST hour: ${currentISTHour}:00). Calls will be scheduled for delivery at 8:00 AM tomorrow.`,
-    };
+    return isWithinTraiWindow(referenceTime);
   }
 
   async dispatchBroadcast(params: ObdDispatchParams): Promise<ObdDispatchResult> {
@@ -72,20 +56,41 @@ export class TelecomProvider implements VoiceObdProvider {
 
     if (!this.apiKey || !this.apiToken || !this.accountSid) {
       return {
-        success: true,
-        providerRef: `sim_${Date.now().toString(36)}`,
-        warning:
-          'TELECOM_CREDENTIALS_REQUIRED: Exotel API credentials are not configured in environment. Call recorded in queued state.',
+        success: false,
+        error:
+          'TELECOM_CREDENTIALS_REQUIRED: Exotel API credentials are not configured. No call was sent.',
       };
     }
 
-    const sampleRecipient = params.targetSegment.phoneNumbers?.[0] || '0000000000';
-    const isOptedOut = await isNumberOptedOut(sampleRecipient);
+    const recipients = params.targetSegment.phoneNumbers || [];
+    if (params.targetSegment.voterCount !== 1 || recipients.length !== 1) {
+      return {
+        success: false,
+        error: 'SINGLE_RECIPIENT_REQUIRED: This provider operation can dispatch exactly one explicit recipient.',
+      };
+    }
+
+    const sampleRecipient = recipients[0].trim();
+    if (!/^\+?\d{10,15}$/.test(sampleRecipient)) {
+      return {
+        success: false,
+        error: 'INVALID_RECIPIENT: Provide one valid phone number in international or local digits format.',
+      };
+    }
+
+    let isOptedOut: boolean;
+    try {
+      isOptedOut = await isNumberOptedOut(sampleRecipient);
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error?.message || 'OPTOUT_CHECK_UNAVAILABLE: Unable to verify recipient consent.',
+      };
+    }
     if (isOptedOut) {
       return {
-        success: true,
-        providerRef: `optout_${Date.now().toString(36)}`,
-        warning: 'Recipient has opted out under TRAI regulations. Call suppressed.',
+        success: false,
+        error: 'RECIPIENT_OPTED_OUT: Recipient has opted out. No call was sent.',
       };
     }
 

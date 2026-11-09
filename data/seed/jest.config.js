@@ -4,4 +4,7 @@ module.exports = {
   testEnvironment: 'node',
   roots: ['<rootDir>'],
   testMatch: ['**/__tests__/**/*.test.ts'],
+  moduleNameMapper: {
+    '^@kshetra/shared$': '<rootDir>/../../packages/shared/src/index.ts',
+  },
 };

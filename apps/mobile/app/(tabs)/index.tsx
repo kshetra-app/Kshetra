@@ -27,6 +27,7 @@ import { getStaticPhoto } from '../../lib/candidatePhotos';
 import { useUserLocation } from '../../lib/useUserLocation';
 import { findConstituencyAtPoint, pointInPolygon, pointInMultiPolygon, STATES } from '@kshetra/shared';
 import { useActiveStateStore } from '../../stores/activeState';
+import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
 import { usePreferencesStore } from '../../stores/preferences';
 import { useFeedStore } from '../../stores/feed';
 import { isStateSupported, getStateData } from '../../lib/stateRegistry';
@@ -71,7 +72,6 @@ import {
 } from '../../lib/stateDataAdapter';
 import { getTriviaForConstituencyInState, getAllTriviaForState } from '../../lib/stateTriviaAdapter';
 import { getHistoryForState, getMLAProfileForState } from '../../lib/stateDataDispatcher';
-import { getCanonicalElectionYear } from '../../lib/canonicalElections';
 import { selectFreshTrivia } from '../../lib/triviaSelector';
 import { computeAllSeatAllocations } from '../../lib/delimitation/seatCalculator';
 import { styles } from '../../lib/mapScreenStyles';
@@ -100,16 +100,16 @@ interface SelectedConstituency {
   acNo: number;
   name: string;
   district: string;
-  winner: string;
-  winnerName: string;
-  runnerUp: string;
+  winner: string | null;
+  winnerName: string | null;
+  runnerUp: string | null;
   runnerUpName?: string;
-  margin: number;
-  votes: number;
-  type: string;
+  margin: number | null;
+  votes: number | null;
+  type: string | null;
   localName?: string;
   currentParty?: string;
-  electionYear: number;
+  electionYear: number | null;
 }
 
 // idleTrivia is now computed per-state inside FullMapScreen
@@ -526,16 +526,16 @@ function FullMapScreen() {
         acNo,
         name: acName,
         district: distName,
-        winner: seed?.winnerParty ?? 'IND',
-        winnerName: seed?.winnerName ?? '',
-        runnerUp: seed?.runnerUp ?? '',
+        winner: seed?.winnerParty ?? null,
+        winnerName: seed?.winnerName ?? null,
+        runnerUp: seed?.runnerUp ?? null,
         runnerUpName: seed?.runnerUpName ?? '',
-        margin: seed?.margin ?? 0,
-        votes: seed?.winnerVotes ?? 0,
-        type: seed?.type ?? 'GEN',
+        margin: seed?.margin ?? null,
+        votes: seed?.winnerVotes ?? null,
+        type: seed?.type ?? null,
         localName: seed?.localName,
         currentParty: seed?.currentParty,
-        electionYear: seed?.electionYear ?? 2023,
+        electionYear: seed?.electionYear ?? null,
       };
     },
     [seedMap],
@@ -601,7 +601,7 @@ function FullMapScreen() {
     const hasMissingLocation = booths.some(
       (b) => !b.location || typeof b.location.latitude !== 'number' || typeof b.location.longitude !== 'number'
     );
-    if (hasMissingLocation && activeGeoJSON) {
+    if (!IS_LIVE_ENVIRONMENT && hasMissingLocation && activeGeoJSON) {
       const feature = activeGeoJSON.features.find((f: any) => Number(f.properties?.AC_NO) === selected.acNo);
       if (feature && feature.geometry) {
         let sumLng = 0;
@@ -650,7 +650,7 @@ function FullMapScreen() {
             name: b.nameEn,
             nameTe: (b as any).nameTe || '',
             boothNumber: b.boothNumber,
-            totalVoters: b.totalVoters ?? 0,
+            totalVoters: b.totalVoters ?? null,
             maleVoters: (b as any).maleVoters ?? null,
             femaleVoters: (b as any).femaleVoters ?? null,
             thirdGenderVoters: (b as any).thirdGenderVoters ?? null,
@@ -1689,7 +1689,7 @@ function FullMapScreen() {
             <View style={{ flex: 1, backgroundColor: '#1E293B', borderRadius: 10, padding: 10, borderWidth: 1, borderColor: '#334155' }}>
               <Text style={{ fontSize: 10, color: '#94A3B8', fontWeight: '600' }}>{t('mapExtended.registeredVoters')}</Text>
               <Text style={{ fontSize: 16, fontWeight: '800', color: '#FFFFFF', marginTop: 2 }}>
-                {(selectedBooth.totalVoters || 0).toLocaleString()}
+                {selectedBooth.totalVoters != null ? Number(selectedBooth.totalVoters).toLocaleString() : '—'}
               </Text>
             </View>
             {(selectedBooth.maleVoters != null || selectedBooth.femaleVoters != null) && (
@@ -1697,13 +1697,13 @@ function FullMapScreen() {
                 <View style={{ flex: 1, backgroundColor: '#1E293B', borderRadius: 10, padding: 10, borderWidth: 1, borderColor: '#334155' }}>
                   <Text style={{ fontSize: 10, color: '#60A5FA', fontWeight: '600' }}>{t('mapExtended.maleVoters', { defaultValue: 'Male Voters' })}</Text>
                   <Text style={{ fontSize: 15, fontWeight: '700', color: '#60A5FA', marginTop: 2 }}>
-                    {(selectedBooth.maleVoters || 0).toLocaleString()}
+                    {selectedBooth.maleVoters != null ? Number(selectedBooth.maleVoters).toLocaleString() : '—'}
                   </Text>
                 </View>
                 <View style={{ flex: 1, backgroundColor: '#1E293B', borderRadius: 10, padding: 10, borderWidth: 1, borderColor: '#334155' }}>
                   <Text style={{ fontSize: 10, color: '#F472B6', fontWeight: '600' }}>{t('mapExtended.femaleVoters', { defaultValue: 'Female Voters' })}</Text>
                   <Text style={{ fontSize: 15, fontWeight: '700', color: '#F472B6', marginTop: 2 }}>
-                    {(selectedBooth.femaleVoters || 0).toLocaleString()}
+                    {selectedBooth.femaleVoters != null ? Number(selectedBooth.femaleVoters).toLocaleString() : '—'}
                   </Text>
                 </View>
               </>
@@ -1883,7 +1883,7 @@ function FullMapScreen() {
                 (() => {
                   const counts = new Map<string, number>();
                   for (const c of stateConstituencies) {
-                    const p = c.currentParty || c.winnerParty;
+                    const p = c.officeholderStatus === 'VACANT' ? 'VACANT' : c.currentParty || c.winnerParty;
                     counts.set(p, (counts.get(p) ?? 0) + 1);
                   }
                   const sorted = Array.from(counts.entries()).sort((a, b) => b[1] - a[1]);
@@ -2063,22 +2063,22 @@ function FullMapScreen() {
             {/* Left Seat */}
             <View style={[styles.compareCol, styles.compareColLeft]}>
               <Text style={styles.compareSeatName} numberOfLines={1}>{selected.name ?? ''}</Text>
-              <Text style={styles.compareParty}>{selected.winner ?? 'IND'} (AC #{selected.acNo ?? -1})</Text>
+              <Text style={styles.compareParty}>{selected.winner || '—'} (AC #{selected.acNo ?? -1})</Text>
               <Text style={styles.compareStatLabel}>{t('mapExtended.margin')}</Text>
-              <Text style={styles.compareStatValue}>{(selected.margin ?? 0).toLocaleString()} {t('mapExtended.votes')}</Text>
+              <Text style={styles.compareStatValue}>{selected.margin != null ? `${selected.margin.toLocaleString()} ${t('mapExtended.votes')}` : '—'}</Text>
               <Text style={styles.compareStatLabel}>{t('mapExtended.winnerVotes')}</Text>
-              <Text style={styles.compareStatValue}>{(selected.votes ?? 0).toLocaleString()}</Text>
+              <Text style={styles.compareStatValue}>{selected.votes != null ? selected.votes.toLocaleString() : '—'}</Text>
             </View>
 
             {/* Right Seat */}
             {compareSelected ? (
               <View style={[styles.compareCol, styles.compareColRight]}>
                 <Text style={styles.compareSeatName} numberOfLines={1}>{compareSelected.name ?? ''}</Text>
-                <Text style={styles.compareParty}>{compareSelected.winner ?? 'IND'} (AC #{compareSelected.acNo ?? -1})</Text>
+                <Text style={styles.compareParty}>{compareSelected.winner || '—'} (AC #{compareSelected.acNo ?? -1})</Text>
                 <Text style={styles.compareStatLabel}>{t('mapExtended.margin')}</Text>
-                <Text style={styles.compareStatValue}>{(compareSelected.margin ?? 0).toLocaleString()} {t('mapExtended.votes')}</Text>
+                <Text style={styles.compareStatValue}>{compareSelected.margin != null ? `${compareSelected.margin.toLocaleString()} ${t('mapExtended.votes')}` : '—'}</Text>
                 <Text style={styles.compareStatLabel}>{t('mapExtended.winnerVotes')}</Text>
-                <Text style={styles.compareStatValue}>{(compareSelected.votes ?? 0).toLocaleString()}</Text>
+                <Text style={styles.compareStatValue}>{compareSelected.votes != null ? compareSelected.votes.toLocaleString() : '—'}</Text>
               </View>
             ) : (
               <View style={styles.compareCol}>
@@ -2165,12 +2165,11 @@ function FullMapScreen() {
           const podium = rawPodium ? sanitizeContestWithSeed(stateCode, selected.acNo, rawPodium) : null;
           const seed = seedMap.get(selected.acNo);
 
-          const winnerName = (seed?.winnerName && seed.winnerName.trim()) || podium?.winner?.name || selected.winnerName;
-          const winnerParty = seed?.winnerParty || podium?.winner?.party || selected.winner;
-          const winnerVotes = (seed?.winnerVotes && seed.winnerVotes > 0)
-            ? seed.winnerVotes
-            : (podium?.winner?.votes || selected.votes);
-          const winnerColor = getPartyColor(winnerParty);
+          const electionYear = podium?.year ?? seed?.electionYear ?? selected.electionYear;
+          const winnerName = (seed?.winnerName && seed.winnerName.trim()) || podium?.winner?.name || selected.winnerName || null;
+          const winnerParty = seed?.winnerParty || podium?.winner?.party || selected.winner || null;
+          const winnerVotes = seed?.winnerVotes ?? podium?.winner?.votes ?? selected.votes;
+          const winnerColor = getPartyColor(winnerParty || '');
 
           const isGenericCand = (n?: string | null) => {
             if (!n) return true;
@@ -2180,47 +2179,54 @@ function FullMapScreen() {
           let rawRuName = (seed?.runnerUpName && !isGenericCand(seed.runnerUpName) ? seed.runnerUpName : null) ||
                           (!isGenericCand(podium?.firstRunnerUp?.name) ? podium?.firstRunnerUp?.name : null) ||
                           (!isGenericCand(selected.runnerUpName) ? selected.runnerUpName : null) ||
-                          seed?.runnerUpName || podium?.firstRunnerUp?.name || selected.runnerUpName || selected.runnerUp;
+                          seed?.runnerUpName || podium?.firstRunnerUp?.name || selected.runnerUpName || selected.runnerUp || null;
           if (isGenericCand(rawRuName) && selected.runnerUpName && !isGenericCand(selected.runnerUpName)) {
             rawRuName = selected.runnerUpName;
           }
           const runnerUpName = rawRuName;
-          const runnerUpParty = seed?.runnerUp || podium?.firstRunnerUp?.party || selected.runnerUp;
-          const runnerUpVotes = (seed?.runnerUpVotes && seed.runnerUpVotes > 0)
-            ? seed.runnerUpVotes
-            : (podium?.firstRunnerUp?.votes || (winnerVotes > selected.margin ? winnerVotes - selected.margin : 0));
-          const runnerUpColor = getPartyColor(runnerUpParty);
+          const runnerUpParty = seed?.runnerUp || podium?.firstRunnerUp?.party || selected.runnerUp || null;
+          const runnerUpVotes = seed?.runnerUpVotes ?? podium?.firstRunnerUp?.votes ?? null;
+          const runnerUpColor = getPartyColor(runnerUpParty || '');
 
           const ru2Name = podium?.secondRunnerUp?.name;
           const ru2Party = podium?.secondRunnerUp?.party;
-          const ru2Votes = podium?.secondRunnerUp?.votes || 0;
+          const ru2Votes = podium?.secondRunnerUp?.votes ?? null;
           const ru2Color = ru2Party ? getPartyColor(ru2Party) : '#B45309';
 
-          const margin = (seed?.margin && seed.margin > 0) ? seed.margin : (podium?.marginWinnerToRunnerUp1 ?? selected.margin);
-          const totalValidVotes = (seed?.winnerVotes && runnerUpVotes > 0)
-            ? (seed.winnerVotes + runnerUpVotes + ru2Votes)
-            : (podium?.totalValidVotes || (winnerVotes + runnerUpVotes + ru2Votes));
-          const winnerShare = (totalValidVotes > 0 && winnerVotes > 0)
+          const margin = seed?.margin ?? podium?.marginWinnerToRunnerUp1 ?? selected.margin;
+          const totalValidVotesRaw = (seed as any)?.totalValidVotes ?? podium?.totalValidVotes;
+          const totalValidVotes = typeof totalValidVotesRaw === 'number' && totalValidVotesRaw > 0 ? totalValidVotesRaw : null;
+          const winnerShare = totalValidVotes && winnerVotes != null && winnerVotes > 0
             ? (winnerVotes / totalValidVotes) * 100
-            : (podium?.winner?.voteShare ?? 0);
-          const runnerUpShare = (totalValidVotes > 0 && runnerUpVotes > 0)
+            : podium?.winner?.voteShare ?? null;
+          const runnerUpShare = totalValidVotes && runnerUpVotes != null && runnerUpVotes > 0
             ? (runnerUpVotes / totalValidVotes) * 100
-            : (podium?.firstRunnerUp?.voteShare ?? 0);
-          const ru2Share = totalValidVotes > 0 && ru2Votes > 0 ? (ru2Votes / totalValidVotes) * 100 : 0;
-          const othersShare = Math.max(0, 100 - winnerShare - runnerUpShare - ru2Share);
+            : podium?.firstRunnerUp?.voteShare ?? null;
+          const ru2Share = totalValidVotes && ru2Votes != null && ru2Votes > 0
+            ? (ru2Votes / totalValidVotes) * 100
+            : podium?.secondRunnerUp?.voteShare ?? null;
+          const hasAllLeadingCandidateVotes = winnerVotes != null && runnerUpVotes != null && ru2Votes != null;
+          const othersShare = totalValidVotes && hasAllLeadingCandidateVotes
+            ? Math.max(0, 100 - (winnerShare ?? 0) - (runnerUpShare ?? 0) - (ru2Share ?? 0))
+            : null;
           const margin2 = podium?.marginWinnerToRunnerUp2 != null
             ? podium.marginWinnerToRunnerUp2
-            : (winnerVotes > 0 && ru2Votes > 0 ? winnerVotes - ru2Votes : null);
+            : (winnerVotes != null && winnerVotes > 0 && ru2Votes != null && ru2Votes > 0 ? winnerVotes - ru2Votes : null);
+          const hasElectionResult = Boolean(winnerName && winnerParty);
 
           const mla = getMLAProfileForState(stateCode, selected.acNo);
-          const affidavit = useAffidavitStore.getState().getWinnerAffidavit(stateCode, selected.acNo, selected.electionYear);
+          const affidavit = electionYear != null
+            ? useAffidavitStore.getState().getWinnerAffidavit(stateCode, selected.acNo, electionYear)
+            : null;
           const totalAssets = affidavit?.totalAssets || mla?.totalAssets || podium?.winner?.totalAssets;
           const totalLiabilities = affidavit?.totalLiabilities || mla?.totalLiabilities || podium?.winner?.totalLiabilities;
           const netWorth = (totalAssets != null && totalLiabilities != null) ? totalAssets - totalLiabilities : totalAssets;
           const age = affidavit?.age || mla?.age || podium?.winner?.age;
-          const criminalCases = affidavit?.criminalCases ?? mla?.criminalCases ?? podium?.winner?.criminalCases ?? 0;
-          const education = affidavit?.education || mla?.education || podium?.winner?.education || 'Graduate';
-          const profession = affidavit?.profession || mla?.profession || podium?.winner?.profession || 'Public Service';
+          const criminalCases = affidavit?.criminalCases ?? mla?.criminalCases ?? podium?.winner?.criminalCases ?? null;
+          const education = affidavit?.education || mla?.education || podium?.winner?.education || null;
+          const profession = affidavit?.profession || mla?.profession || podium?.winner?.profession || null;
+          const turnoutValue = (seed as any)?.turnout;
+          const turnout = typeof turnoutValue === 'number' && Number.isFinite(turnoutValue) ? turnoutValue : null;
 
           return (
             <BottomSheetView style={styles.sheetContent}>
@@ -2230,15 +2236,13 @@ function FullMapScreen() {
                   <View style={styles.sheetAcBadge}>
                     <Text style={styles.sheetAcBadgeText}>AC #{selected.acNo}</Text>
                   </View>
-                  <View style={styles.sheetCategoryBadge}>
-                    <Text style={styles.sheetCategoryBadgeText}>
-                      {getLocalizedReservation(selected.type, i18n.language) || selected.type}
-                    </Text>
-                  </View>
-                  <View style={styles.sheetVerifiedBadge}>
-                    <View style={styles.sheetVerifiedDot} />
-                    <Text style={styles.sheetVerifiedText}>ECI Verified</Text>
-                  </View>
+                  {selected.type ? (
+                    <View style={styles.sheetCategoryBadge}>
+                      <Text style={styles.sheetCategoryBadgeText}>
+                        {getLocalizedReservation(selected.type, i18n.language) || selected.type}
+                      </Text>
+                    </View>
+                  ) : null}
                 </View>
 
                 <View style={styles.sheetTitleRow}>
@@ -2255,7 +2259,9 @@ function FullMapScreen() {
                       {t('constituency.latestElection', { defaultValue: 'Latest Election' })}
                     </Text>
                     <Text style={styles.sheetLatestTagValue}>
-                      {getCanonicalElectionYear(stateCode, selected.electionYear)} {t('constituency.assemblyTag', { defaultValue: 'Assembly' })}
+                      {electionYear != null
+                        ? `${electionYear} ${t('constituency.assemblyTag', { defaultValue: 'Assembly' })}`
+                        : t('constituency.dataUnavailable', { defaultValue: 'Unavailable' })}
                     </Text>
                   </View>
                 </View>
@@ -2293,34 +2299,38 @@ function FullMapScreen() {
 
               {(!mapOnlyMode || sheetTab === 'mla') && (
                 <>
-                  {/* 1. HEAD-TO-HEAD PODIUM CARD (100% Real ECI Gazette Numbers) */}
+                  {/* Election result figures are shown only when present in a result record. */}
                   <View style={styles.s1Card}>
                     <View style={styles.s1CardHeader}>
                       <Text style={styles.s1CardHeaderTitle}>
-                        🏆 {getCanonicalElectionYear(stateCode, selected.electionYear)} {t('constituency.electionResults', { defaultValue: 'Election Results' })}
+                        🏆 {electionYear != null ? `${electionYear} ` : ''}{t('constituency.electionResults', { defaultValue: 'Election Results' })}
                       </Text>
                       <Text style={{ fontSize: 11.5, fontWeight: '800', color: '#047857' }}>
-                        {t('constituency.margin', { defaultValue: 'Margin' })}: +{margin.toLocaleString()}
+                        {margin != null ? `${t('constituency.margin', { defaultValue: 'Margin' })}: +${margin.toLocaleString()}` : ''}
                       </Text>
                     </View>
+
+                    {hasElectionResult ? (
+                    <>
 
                     {/* Winner Row (Rank 1) */}
                     <Pressable
                       style={({ pressed }) => [styles.s1CandidateBox, styles.s1WinnerBox, { opacity: pressed ? 0.85 : 1 }]}
                       onPress={() => {
+                        if (electionYear == null) return;
                         bottomSheetRef.current?.close();
-                        router.push(`/legislator/MLA_${stateCode}_${selected.electionYear}_${selected.acNo}_W` as any);
+                        router.push(`/legislator/MLA_${stateCode}_${electionYear}_${selected.acNo}_W` as any);
                       }}
                     >
                       <View style={styles.s1CandidateLeft}>
                         <View style={{ position: 'relative' }}>
                           <CandidateAvatar
                             key={winnerName}
-                            name={winnerName}
-                            party={winnerParty}
+                            name={winnerName || ''}
+                            party={winnerParty || ''}
                             size={40}
                             photoUrl={podium?.winner?.photoUrl || (winnerName ? getStaticPhoto(winnerName) : undefined) || mla?.photoUrl || undefined}
-                            onPress={(uri) => setPhotoViewer({ uri, name: winnerName, party: winnerParty })}
+                            onPress={(uri) => setPhotoViewer({ uri, name: winnerName || '', party: winnerParty || '' })}
                           />
                           <View style={[styles.s1RankBadge, { backgroundColor: '#F59E0B' }]}>
                             <Text style={styles.s1RankBadgeText}>1st</Text>
@@ -2328,24 +2338,24 @@ function FullMapScreen() {
                         </View>
                         <View style={{ flex: 1, minWidth: 0 }}>
                           <Text style={styles.s1CandidateName} numberOfLines={1}>
-                            {getLocalizedCandidateName(winnerName, i18n.language) || winnerName}
+                            {getLocalizedCandidateName(winnerName || '', i18n.language) || winnerName}
                           </Text>
                           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 }}>
                             <View style={[styles.s1CandidatePartyPill, { backgroundColor: winnerColor }]}>
                               <Text style={[styles.s1CandidatePartyPillText, { color: '#FFFFFF' }]}>
-                                {winnerParty}
+                                {winnerParty || '—'}
                               </Text>
                             </View>
                             <Text style={styles.s1CandidatePartyFullName} numberOfLines={1}>
-                              {getLocalizedPartyName(winnerParty, i18n.language) || winnerParty}
+                              {winnerParty ? getLocalizedPartyName(winnerParty, i18n.language) || winnerParty : '—'}
                             </Text>
                           </View>
                         </View>
                       </View>
                       <View style={styles.s1CandidateVotesCol}>
-                        <Text style={styles.s1CandidateVotes}>{winnerVotes > 0 ? winnerVotes.toLocaleString() : '—'}</Text>
+                        <Text style={styles.s1CandidateVotes}>{winnerVotes != null && winnerVotes > 0 ? winnerVotes.toLocaleString() : '—'}</Text>
                         <Text style={[styles.s1CandidateShare, { color: '#B45309' }]}>
-                          {winnerShare.toFixed(1)}%
+                          {winnerShare != null ? `${winnerShare.toFixed(1)}%` : ''}
                         </Text>
                       </View>
                     </Pressable>
@@ -2354,19 +2364,20 @@ function FullMapScreen() {
                     <Pressable
                       style={({ pressed }) => [styles.s1CandidateBox, styles.s1RunnerUpBox, { opacity: pressed ? 0.85 : 1 }]}
                       onPress={() => {
+                        if (electionYear == null) return;
                         bottomSheetRef.current?.close();
-                        router.push(`/legislator/MLA_${stateCode}_${selected.electionYear}_${selected.acNo}_RU1` as any);
+                        router.push(`/legislator/MLA_${stateCode}_${electionYear}_${selected.acNo}_RU1` as any);
                       }}
                     >
                       <View style={styles.s1CandidateLeft}>
                         <View style={{ position: 'relative' }}>
                           <CandidateAvatar
                             key={runnerUpName}
-                            name={runnerUpName}
-                            party={runnerUpParty}
+                            name={runnerUpName || ''}
+                            party={runnerUpParty || ''}
                             size={36}
                             photoUrl={podium?.firstRunnerUp?.photoUrl || (runnerUpName ? getStaticPhoto(runnerUpName) : undefined) || undefined}
-                            onPress={(uri) => setPhotoViewer({ uri, name: runnerUpName, party: runnerUpParty })}
+                            onPress={(uri) => setPhotoViewer({ uri, name: runnerUpName || '', party: runnerUpParty || '' })}
                           />
                           <View style={[styles.s1RankBadge, { backgroundColor: '#64748B' }]}>
                             <Text style={styles.s1RankBadgeText}>2nd</Text>
@@ -2374,46 +2385,47 @@ function FullMapScreen() {
                         </View>
                         <View style={{ flex: 1, minWidth: 0 }}>
                           <Text style={styles.s1CandidateName} numberOfLines={1}>
-                            {getLocalizedCandidateName(runnerUpName, i18n.language) || runnerUpName}
+                            {getLocalizedCandidateName(runnerUpName || '', i18n.language) || runnerUpName || '—'}
                           </Text>
                           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 }}>
                             <View style={[styles.s1CandidatePartyPill, { backgroundColor: runnerUpColor }]}>
                               <Text style={[styles.s1CandidatePartyPillText, { color: '#FFFFFF' }]}>
-                                {runnerUpParty}
+                                {runnerUpParty || '—'}
                               </Text>
                             </View>
                             <Text style={styles.s1CandidatePartyFullName} numberOfLines={1}>
-                              {getLocalizedPartyName(runnerUpParty, i18n.language) || runnerUpParty}
+                              {runnerUpParty ? getLocalizedPartyName(runnerUpParty, i18n.language) || runnerUpParty : '—'}
                             </Text>
                           </View>
                         </View>
                       </View>
                       <View style={styles.s1CandidateVotesCol}>
-                        <Text style={styles.s1CandidateVotes}>{runnerUpVotes > 0 ? runnerUpVotes.toLocaleString() : '—'}</Text>
+                        <Text style={styles.s1CandidateVotes}>{runnerUpVotes != null && runnerUpVotes > 0 ? runnerUpVotes.toLocaleString() : '—'}</Text>
                         <Text style={[styles.s1CandidateShare, { color: '#64748B' }]}>
-                          {runnerUpShare > 0 ? `${runnerUpShare.toFixed(1)}%` : ''}
+                          {runnerUpShare != null && runnerUpShare > 0 ? `${runnerUpShare.toFixed(1)}%` : ''}
                         </Text>
                       </View>
                     </Pressable>
 
                     {/* 2nd Runner-up Row (Rank 3) */}
-                    {Boolean(ru2Name || (ru2Votes > 0 && ru2Party)) && (
+                    {Boolean(ru2Name || (ru2Votes != null && ru2Votes > 0 && ru2Party)) && (
                       <Pressable
                         style={({ pressed }) => [styles.s1CandidateBox, styles.s1ThirdPlaceBox, { opacity: pressed ? 0.85 : 1 }]}
                         onPress={() => {
+                          if (electionYear == null) return;
                           bottomSheetRef.current?.close();
-                          router.push(`/legislator/MLA_${stateCode}_${selected.electionYear}_${selected.acNo}_RU2` as any);
+                          router.push(`/legislator/MLA_${stateCode}_${electionYear}_${selected.acNo}_RU2` as any);
                         }}
                       >
                         <View style={styles.s1CandidateLeft}>
                           <View style={{ position: 'relative' }}>
                             <CandidateAvatar
                               key={ru2Name || 'ru2'}
-                              name={ru2Name || `${ru2Party} Candidate`}
-                              party={ru2Party || 'IND'}
+                              name={ru2Name || ''}
+                              party={ru2Party || ''}
                               size={34}
                               photoUrl={podium?.secondRunnerUp?.photoUrl || (ru2Name ? getStaticPhoto(ru2Name) : undefined) || undefined}
-                              onPress={(uri) => setPhotoViewer({ uri, name: ru2Name || `${ru2Party} Candidate`, party: ru2Party || '' })}
+                              onPress={(uri) => setPhotoViewer({ uri, name: ru2Name || '', party: ru2Party || '' })}
                             />
                             <View style={[styles.s1RankBadge, { backgroundColor: '#B45309' }]}>
                               <Text style={styles.s1RankBadgeText}>3rd</Text>
@@ -2421,24 +2433,24 @@ function FullMapScreen() {
                           </View>
                           <View style={{ flex: 1, minWidth: 0 }}>
                             <Text style={styles.s1CandidateName} numberOfLines={1}>
-                              {getLocalizedCandidateName(ru2Name || `${ru2Party} Candidate`, i18n.language) || ru2Name || `${ru2Party} Candidate`}
+                              {getLocalizedCandidateName(ru2Name || '', i18n.language) || ru2Name || '—'}
                             </Text>
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 }}>
                               <View style={[styles.s1CandidatePartyPill, { backgroundColor: ru2Color }]}>
                                 <Text style={[styles.s1CandidatePartyPillText, { color: '#FFFFFF' }]}>
-                                  {ru2Party || 'IND'}
+                                  {ru2Party || '—'}
                                 </Text>
                               </View>
                               <Text style={styles.s1CandidatePartyFullName} numberOfLines={1}>
-                                {getLocalizedPartyName(ru2Party || 'IND', i18n.language) || ru2Party || 'IND'}
+                                {ru2Party ? getLocalizedPartyName(ru2Party, i18n.language) || ru2Party : '—'}
                               </Text>
                             </View>
                           </View>
                         </View>
                         <View style={styles.s1CandidateVotesCol}>
-                          <Text style={styles.s1CandidateVotes}>{ru2Votes > 0 ? ru2Votes.toLocaleString() : '—'}</Text>
+                          <Text style={styles.s1CandidateVotes}>{ru2Votes != null && ru2Votes > 0 ? ru2Votes.toLocaleString() : '—'}</Text>
                           <Text style={[styles.s1CandidateShare, { color: '#B45309' }]}>
-                            {ru2Share > 0 ? `${ru2Share.toFixed(1)}%` : ''}
+                            {ru2Share != null && ru2Share > 0 ? `${ru2Share.toFixed(1)}%` : ''}
                           </Text>
                         </View>
                       </Pressable>
@@ -2447,39 +2459,41 @@ function FullMapScreen() {
                     {/* Vote Share Tug-of-War Bar */}
                     <View style={{ marginTop: 6 }}>
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
-                        <Text style={{ fontSize: 10, fontWeight: '800', color: '#0F172A' }}>
-                          {winnerParty}: {winnerShare.toFixed(1)}%
-                        </Text>
-                        <Text style={{ fontSize: 10, fontWeight: '800', color: '#475569' }}>
-                          {runnerUpParty}: {runnerUpShare.toFixed(1)}%
-                        </Text>
-                        {ru2Share > 0 && (
+                        {winnerShare != null && <Text style={{ fontSize: 10, fontWeight: '800', color: '#0F172A' }}>
+                          {winnerParty || '—'}: {winnerShare.toFixed(1)}%
+                        </Text>}
+                        {runnerUpShare != null && <Text style={{ fontSize: 10, fontWeight: '800', color: '#475569' }}>
+                          {runnerUpParty || '—'}: {runnerUpShare.toFixed(1)}%
+                        </Text>}
+                        {ru2Share != null && ru2Share > 0 && (
                           <Text style={{ fontSize: 10, fontWeight: '800', color: '#9A3412' }}>
                             {ru2Party}: {ru2Share.toFixed(1)}%
                           </Text>
                         )}
-                        <Text style={{ fontSize: 10, fontWeight: '700', color: '#64748B' }}>
+                        {othersShare != null && <Text style={{ fontSize: 10, fontWeight: '700', color: '#64748B' }}>
                           Others: {othersShare.toFixed(1)}%
-                        </Text>
+                        </Text>}
                       </View>
+                      {winnerShare != null && runnerUpShare != null && othersShare != null && (
                       <View style={styles.s1TugBarTrack}>
                         <View style={{ width: `${Math.min(100, Math.max(1, winnerShare))}%`, backgroundColor: winnerColor }} />
                         <View style={{ width: `${Math.min(100, Math.max(1, runnerUpShare))}%`, backgroundColor: runnerUpColor }} />
-                        {ru2Share > 0 && (
+                        {ru2Share != null && ru2Share > 0 && (
                           <View style={{ width: `${Math.min(100, Math.max(1, ru2Share))}%`, backgroundColor: ru2Color }} />
                         )}
                         <View style={{ width: `${Math.min(100, Math.max(0, othersShare))}%`, backgroundColor: '#CBD5E1' }} />
                       </View>
+                      )}
                     </View>
 
-                    {/* 3-Column Electoral Metrics Grid */}
+                    {/* Electoral metrics appear only when the underlying values exist. */}
                     <View style={styles.s1MetricsGrid}>
                       <View style={styles.s1MetricBox}>
                         <Text style={styles.s1MetricLabel}>
                           {t('constituency.totalVotes', { defaultValue: 'Total Votes' })}
                         </Text>
                         <Text style={styles.s1MetricValue}>
-                          {totalValidVotes.toLocaleString()}
+                          {totalValidVotes != null ? totalValidVotes.toLocaleString() : '—'}
                         </Text>
                       </View>
                       <View style={styles.s1MetricBox}>
@@ -2487,7 +2501,7 @@ function FullMapScreen() {
                           {t('constituency.turnout', { defaultValue: 'Turnout' })}
                         </Text>
                         <Text style={[styles.s1MetricValue, { color: '#047857' }]}>
-                          {(selected as any)?.turnout || 78.5}%
+                          {turnout != null ? `${turnout}%` : '—'}
                         </Text>
                       </View>
                       <View style={styles.s1MetricBox}>
@@ -2495,32 +2509,37 @@ function FullMapScreen() {
                           {t('constituency.marginPct', { defaultValue: 'Margin %' })}
                         </Text>
                         <Text style={[styles.s1MetricValue, { color: '#002B7F' }]}>
-                          +{((margin / (totalValidVotes || 1)) * 100).toFixed(1)}%
+                          {margin != null && totalValidVotes != null
+                            ? `+${((margin / totalValidVotes) * 100).toFixed(1)}%`
+                            : '—'}
                         </Text>
                       </View>
                     </View>
+                    </>
+                    ) : (
+                      <Text style={{ color: '#64748B', fontSize: 13, paddingVertical: 8 }}>
+                        {t('constituency.resultUnavailable', { defaultValue: 'Election result data is not available from a connected source.' })}
+                      </Text>
+                    )}
                   </View>
 
-                  {/* 2. VERIFIED AFFIDAVIT TRANSPARENCY CARD (ECI Form 26) */}
+                  {/* Profile and disclosure fields are displayed without claiming a source not recorded here. */}
                   <View style={styles.s1Card}>
                     <View style={styles.s1CardHeader}>
                       <Text style={styles.s1CardHeaderTitle}>
                         ⚖️ {t('constituency.affidavitSummary', { defaultValue: 'MLA Affidavit & Disclosures' })}
                       </Text>
-                      <Text style={{ fontSize: 10, fontWeight: '800', color: '#047857' }}>
-                        ECI Form 26
-                      </Text>
                     </View>
                     <View style={styles.s1AffidavitGrid}>
                       <View style={styles.s1AffidavitBox}>
                         <Text style={styles.s1AffidavitLabel}>
-                          {t('legislator.assets', { defaultValue: 'Declared Assets' })}
+                          {t('legislator.assets', { defaultValue: 'Assets' })}
                         </Text>
                         <Text style={styles.s1AffidavitValue}>
-                          {totalAssets != null ? `₹${(totalAssets / 10000000).toFixed(2)} Cr` : 'Not Declared'}
+                          {totalAssets != null ? `₹${(totalAssets / 10000000).toFixed(2)} Cr` : '—'}
                         </Text>
                         <Text style={styles.s1AffidavitSub}>
-                          {netWorth != null ? `Net: ₹${(netWorth / 10000000).toFixed(2)} Cr` : (totalAssets != null ? 'Declared' : 'Unfiled')}
+                          {netWorth != null ? `Net: ₹${(netWorth / 10000000).toFixed(2)} Cr` : '—'}
                         </Text>
                       </View>
                       <View style={styles.s1AffidavitBox}>
@@ -2531,18 +2550,15 @@ function FullMapScreen() {
                           {age ? `${age} Yrs` : '—'}
                         </Text>
                         <Text style={[styles.s1AffidavitSub, { color: '#64748B' }]}>
-                          {(affidavit as any)?.dob ? `DOB: ${(affidavit as any).dob}` : 'ECI Form 26'}
+                          {(affidavit as any)?.dob ? `DOB: ${(affidavit as any).dob}` : '—'}
                         </Text>
                       </View>
                       <View style={styles.s1AffidavitBox}>
                         <Text style={styles.s1AffidavitLabel}>
                           {t('legislator.cases', { defaultValue: 'Criminal Cases' })}
                         </Text>
-                        <Text style={[styles.s1AffidavitValue, { color: criminalCases > 0 ? '#E11D48' : '#047857' }]}>
-                          {criminalCases} {criminalCases === 1 ? 'Case' : 'Cases'}
-                        </Text>
-                        <Text style={[styles.s1AffidavitSub, { color: '#64748B' }]}>
-                          0 Convictions
+                        <Text style={[styles.s1AffidavitValue, { color: criminalCases != null && criminalCases > 0 ? '#E11D48' : '#64748B' }]}>
+                          {criminalCases != null ? `${criminalCases} ${criminalCases === 1 ? 'Case' : 'Cases'}` : '—'}
                         </Text>
                       </View>
                       <View style={styles.s1AffidavitBox}>
@@ -2550,17 +2566,17 @@ function FullMapScreen() {
                           {t('legislator.education', { defaultValue: 'Education' })}
                         </Text>
                         <Text style={styles.s1AffidavitValue} numberOfLines={1}>
-                          {education}
+                          {education || '—'}
                         </Text>
                         <Text style={[styles.s1AffidavitSub, { color: '#64748B' }]} numberOfLines={1}>
-                          {profession}
+                          {profession || '—'}
                         </Text>
                       </View>
                     </View>
                   </View>
 
                   {/* Defection badge */}
-                  {selected.currentParty && selected.currentParty !== selected.winner && (
+                  {selected.currentParty && selected.winner && selected.currentParty !== selected.winner && (
                     <View style={styles.defectionRow}>
                       <DefectionBadge
                         electedParty={selected.winner}
@@ -2585,7 +2601,8 @@ function FullMapScreen() {
                       onPress={() => {
                         tapLight();
                         bottomSheetRef.current?.close();
-                        router.push(`/legislator/MLA_${stateCode}_${selected.electionYear}_${selected.acNo}_W` as any);
+                        if (electionYear == null) return;
+                        router.push(`/legislator/MLA_${stateCode}_${electionYear}_${selected.acNo}_W` as any);
                       }}
                     >
                       <Ionicons name="person" size={14} color="#002B7F" />
@@ -2614,7 +2631,9 @@ function FullMapScreen() {
                         tapLight();
                         try {
                           await Share.share({
-                            message: `${selected.name} (${selected.district}, ${stateCode}): ${selected.winner} Won by ${selected.margin.toLocaleString()} votes on Poligram.`,
+                            message: selected.winner && selected.margin != null
+                              ? `${selected.name} (${selected.district}, ${stateCode}): ${selected.winner} won by ${selected.margin.toLocaleString()} votes on Poligram.`
+                              : `${selected.name} (${selected.district}, ${stateCode}) on Poligram.`,
                           });
                         } catch {}
                       }}
@@ -2702,7 +2721,7 @@ function FullMapScreen() {
                             <Text style={styles.histMiniParty}>{e.party}</Text>
                           </View>
                         ))}
-                        {!hasCurrent && targetYear > 0 && !seenYears.has(targetYear) && (
+                        {!hasCurrent && targetYear > 0 && selected.winner && !seenYears.has(targetYear) && (
                           <View style={[styles.histMiniCard, styles.histMiniCardCurrent]}>
                             <Text style={styles.histMiniYear}>{selected.electionYear}</Text>
                             <Text style={styles.histMiniParty}>{selected.winner}</Text>

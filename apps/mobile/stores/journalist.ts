@@ -12,6 +12,7 @@ import type {
   BeatCategory,
   JournalistTier,
 } from '../lib/journalistTypes';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 
 // ─── Seed Journalist Profiles ───
 const SEED_JOURNALISTS: JournalistProfile[] = [
@@ -201,7 +202,7 @@ interface JournalistState {
   getFactChecks: () => FactCheck[];
   getAssignmentsForJournalist: (journalistId: string) => EditorialAssignment[];
   getTopJournalists: () => JournalistProfile[];
-  getJournalistAnalytics: (journalistId: string) => JournalistAnalytics;
+  getJournalistAnalytics: (journalistId: string) => JournalistAnalytics | null;
 
   // Actions
   setCurrentJournalist: (id: string) => void;
@@ -216,11 +217,11 @@ interface JournalistState {
 }
 
 export const useJournalistStore = create<JournalistState>((set, get) => ({
-  journalists: SEED_JOURNALISTS,
-  articles: SEED_ARTICLES,
-  factChecks: SEED_FACT_CHECKS,
-  breakingNews: SEED_BREAKING,
-  assignments: SEED_ASSIGNMENTS,
+  journalists: IS_LIVE_ENVIRONMENT ? [] : SEED_JOURNALISTS,
+  articles: IS_LIVE_ENVIRONMENT ? [] : SEED_ARTICLES,
+  factChecks: IS_LIVE_ENVIRONMENT ? [] : SEED_FACT_CHECKS,
+  breakingNews: IS_LIVE_ENVIRONMENT ? [] : SEED_BREAKING,
+  assignments: IS_LIVE_ENVIRONMENT ? [] : SEED_ASSIGNMENTS,
   tips: [],
   currentJournalistId: null,
   articleDraft: null,
@@ -239,6 +240,7 @@ export const useJournalistStore = create<JournalistState>((set, get) => ({
   getTopJournalists: () => [...get().journalists].sort((a, b) => b.reputation - a.reputation).slice(0, 10),
 
   getJournalistAnalytics: (journalistId) => {
+    if (IS_LIVE_ENVIRONMENT) return null;
     const articles = get().getArticlesByAuthor(journalistId);
     const totalViews = articles.reduce((s, a) => s + a.views, 0);
     const totalShares = articles.reduce((s, a) => s + a.shares, 0);

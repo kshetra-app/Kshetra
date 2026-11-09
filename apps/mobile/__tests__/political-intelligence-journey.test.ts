@@ -140,14 +140,21 @@ describe('CTO Directive 083 — Political Intelligence Vertical Slice', () => {
   // 3. Representative, Candidate and Financial Disclosures (§2.C)
   // ══════════════════════════════════════════════════════════════════════════
   describe('3. Representative, Candidate & Financial Disclosures', () => {
-    it('Case 1: Positive assets and liabilities with complete itemization and accurate net worth', () => {
+    it('Case 1: Uses sourced affidavit totals and keeps unitemized components unavailable', () => {
       const store = useAffidavitStore.getState();
-      const revanth = store.getWinnerAffidavit('TS', 65, 2023);
+      const revanth = store.getWinnerAffidavit('TS', 72, 2023);
       expect(revanth).toBeDefined();
       expect(revanth?.candidateName).toBe('Anumula Revanth Reddy');
-      expect(revanth?.totalAssets).toBe(74_00_00_000);
-      expect(revanth?.totalLiabilities).toBe(5_00_00_000);
-      expect(revanth?.criminalCases).toBe(2);
+      expect(revanth?.totalAssets).toBe(30_04_98_852);
+      expect(revanth?.totalLiabilities).toBe(1_90_26_339);
+      expect(revanth?.criminalCases).toBe(89);
+      expect(revanth?.seriousCriminalCases).toBeNull();
+
+      const older = store.getAffidavitsForCandidate('Anumula Revanth Reddy')
+        .find((affidavit) => affidavit.electionYear === 2018);
+      expect(older?.totalAssets).toBe(21_39_82_320);
+      expect(older?.totalLiabilities).toBe(2_82_28_024);
+      expect(older?.criminalCases).toBe(36);
 
       const record = {
         electionYear: 2023,
@@ -161,13 +168,14 @@ describe('CTO Directive 083 — Political Intelligence Vertical Slice', () => {
       };
 
       const breakdown = resolveBreakdownState(record);
-      expect(breakdown.hasCompleteBreakdown).toBe(true);
+      expect(breakdown.hasCompleteBreakdown).toBe(false);
+      expect(breakdown.hasAnyDisclosedComponent).toBe(false);
       expect(breakdown.isZeroTotal).toBe(false);
-      expect(breakdown.statusNotice).toBe('Complete itemization');
-      expect(breakdown.percentages).not.toBeNull();
-      expect(formatINR(record.totalAssets)).toBe('₹74.0 Cr');
-      expect(formatINR(record.totalLiabilities)).toBe('₹5.0 Cr');
-      expect(formatINR(record.netWorth)).toBe('₹69.0 Cr');
+      expect(breakdown.statusNotice).toBe('Component breakdown not itemized in filing');
+      expect(breakdown.percentages).toBeNull();
+      expect(formatINR(record.totalAssets)).toBe('₹30.0 Cr');
+      expect(formatINR(record.totalLiabilities)).toBe('₹1.9 Cr');
+      expect(formatINR(record.netWorth)).toBe('₹28.1 Cr');
     });
 
     it('Case 2: Genuine affirmative zero assets or liabilities preserved without coercion', () => {

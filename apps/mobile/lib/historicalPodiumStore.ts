@@ -72,17 +72,17 @@ export function sanitizeContestWithSeed(
     const consts = getUnifiedConstituenciesForState(stateCode);
     const acNum = typeof acNoOrName === 'number' ? acNoOrName : parseInt(String(acNoOrName), 10);
     const seed = consts?.find((c: any) => c.acNo === acNum);
-    if (seed && contest.year === (seed.electionYear || 2023)) {
-      const authenticWinnerVotes = seed.winnerVotes || seed.votes;
+    if (seed && seed.electionYear != null && contest.year === seed.electionYear) {
+      const authenticWinnerVotes = seed.winnerVotes ?? seed.votes;
       const authenticMargin = seed.margin;
-      const authenticRuVotes = seed.runnerUpVotes || (authenticWinnerVotes && authenticMargin ? authenticWinnerVotes - authenticMargin : 0);
+      const authenticRuVotes = seed.runnerUpVotes;
       const isGenericCand = (n?: string | null) => !n || /candidate|runner\s*up|winner|ind|nota/i.test(n.trim());
       const authenticRuName = (!isGenericCand(seed.runnerUpName) ? seed.runnerUpName : null) ||
                               (!isGenericCand(contest.firstRunnerUp?.name) ? contest.firstRunnerUp?.name : null) ||
                               seed.runnerUpName || contest.firstRunnerUp?.name || seed.runnerUp || '';
       const authenticWinnerName = seed.winnerName || contest.winner?.name || seed.winner || '';
 
-      if (authenticWinnerVotes && authenticWinnerVotes > 0) {
+      if (authenticWinnerVotes != null && authenticWinnerVotes > 0) {
         if (contest.winner) {
           contest.winner.votes = authenticWinnerVotes;
           if (authenticWinnerName) contest.winner.name = authenticWinnerName;
@@ -92,19 +92,10 @@ export function sanitizeContestWithSeed(
           contest.marginWinnerToRunnerUp1 = authenticMargin;
         }
         if (contest.firstRunnerUp) {
-          if (authenticRuVotes > 0) contest.firstRunnerUp.votes = authenticRuVotes;
+          if (authenticRuVotes != null) contest.firstRunnerUp.votes = authenticRuVotes;
           if (authenticRuName) contest.firstRunnerUp.name = authenticRuName;
           if (seed.runnerUp || (seed as any).runnerUpParty) contest.firstRunnerUp.party = seed.runnerUp || (seed as any).runnerUpParty;
-          contest.firstRunnerUp.marginToWinner = authenticMargin;
-        }
-        const ru2Votes = contest.secondRunnerUp?.votes || 0;
-        const total = authenticWinnerVotes + (contest.firstRunnerUp?.votes || 0) + ru2Votes;
-        contest.totalValidVotes = total;
-        if (contest.winner) {
-          contest.winner.voteShare = Math.round((authenticWinnerVotes / total) * 10000) / 100;
-        }
-        if (contest.firstRunnerUp && contest.firstRunnerUp.votes) {
-          contest.firstRunnerUp.voteShare = Math.round((contest.firstRunnerUp.votes / total) * 10000) / 100;
+          if (authenticMargin != null) contest.firstRunnerUp.marginToWinner = authenticMargin;
         }
       }
     }
@@ -181,8 +172,8 @@ export async function fetchHistoricalPodiumForConstituency(
       if (rows && rows.length > 0) {
         const converted: HistoricalPodiumContest[] = rows.map((r: any) => sanitizeContestWithSeed(code, acNum, {
           year: r.year,
-          delimitationId: String(r.delimitation_id || '4'),
-          totalValidVotes: r.total_valid_votes || 0,
+          ...(r.delimitation_id != null && String(r.delimitation_id).trim() !== '' ? { delimitationId: String(r.delimitation_id) } : {}),
+          totalValidVotes: r.total_valid_votes ?? undefined,
           constituencyName: r.constituency_name,
           marginWinnerToRunnerUp1: r.margin_winner_to_runner_up_1,
           marginWinnerToRunnerUp2: r.margin_winner_to_runner_up_2,
@@ -317,8 +308,8 @@ export function getHistoricalPodiumForConstituency(
       if (rows && rows.length > 0) {
         return rows.map((r: any) => sanitizeContestWithSeed(code, acNum, {
           year: r.year,
-          delimitationId: String(r.delimitation_id || '4'),
-          totalValidVotes: r.total_valid_votes || 0,
+          ...(r.delimitation_id != null && String(r.delimitation_id).trim() !== '' ? { delimitationId: String(r.delimitation_id) } : {}),
+          totalValidVotes: r.total_valid_votes ?? undefined,
           constituencyName: r.constituency_name,
           marginWinnerToRunnerUp1: r.margin_winner_to_runner_up_1,
           marginWinnerToRunnerUp2: r.margin_winner_to_runner_up_2,
@@ -384,40 +375,47 @@ export function getLatestPodiumForConstituency(
     }
     return contest;
   }
-  // Online-first fallback: synthesize authoritative latest contest from seed stateDataAdapter
+  // Use fields that the adapter actually carries. Do not infer runner-up votes,
+  // totals, shares, or an election year from partial records.
   try {
     const { getUnifiedConstituenciesForState } = require('./stateDataAdapter');
     const consts = getUnifiedConstituenciesForState(stateCode);
     const acNo = typeof acNoOrName === 'number' ? acNoOrName : parseInt(String(acNoOrName), 10);
     const match = consts?.find((c: any) => c.acNo === acNo);
     if (match) {
-      const winnerVotes = match.winnerVotes || match.votes || 0;
-      const margin = match.margin || 0;
-      const runnerUpVotes = match.runnerUpVotes || (winnerVotes > margin ? winnerVotes - margin : 0);
-      const totalValid = winnerVotes + runnerUpVotes;
-      const winnerShare = totalValid > 0 ? (winnerVotes / totalValid) * 100 : 0;
-      const runnerUpShare = totalValid > 0 ? (runnerUpVotes / totalValid) * 100 : 0;
-      const ruName = (!match.runnerUpName || /candidate/i.test(match.runnerUpName)) ? (match.runnerUpName || match.runnerUp || '') : match.runnerUpName;
+      const year = Number(match.electionYear);
+      const winnerName = typeof match.winnerName === 'string' ? match.winnerName.trim() : '';
+      const winnerParty = typeof match.winnerParty === 'string' ? match.winnerParty.trim() : '';
+      if (!Number.isInteger(year) || year <= 0 || !winnerName || !winnerParty) return null;
+
+      const readCount = (value: unknown): number | undefined =>
+        typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : undefined;
+      const winnerVotes = readCount(match.winnerVotes);
+      const runnerUpVotes = readCount(match.runnerUpVotes);
+      const totalValidVotes = readCount(match.totalValidVotes);
+      const margin = readCount(match.margin);
+      const runnerUpName = typeof match.runnerUpName === 'string' ? match.runnerUpName.trim() : '';
+      const runnerUpParty = typeof match.runnerUp === 'string' ? match.runnerUp.trim() : '';
 
       return {
-        year: match.electionYear || 2023,
+        year,
         constituencyName: match.name,
-        totalValidVotes: totalValid,
-        marginWinnerToRunnerUp1: margin,
+        ...(totalValidVotes != null ? { totalValidVotes } : {}),
+        ...(margin != null ? { marginWinnerToRunnerUp1: margin } : {}),
         winner: {
-          name: match.winnerName || match.winner || '',
-          party: match.winnerParty || match.winner || '',
-          votes: winnerVotes,
-          voteShare: Math.round(winnerShare * 10) / 10,
-          photoUrl: require('./candidatePhotos').getStaticPhoto(match.winnerName || match.winner) || undefined,
+          name: winnerName,
+          party: winnerParty,
+          ...(winnerVotes != null ? { votes: winnerVotes } : {}),
+          ...(typeof match.winnerVoteShare === 'number' ? { voteShare: match.winnerVoteShare } : {}),
+          photoUrl: require('./candidatePhotos').getStaticPhoto(winnerName) || undefined,
         },
-        firstRunnerUp: {
-          name: ruName,
-          party: match.runnerUpParty || match.runnerUp || '',
-          votes: runnerUpVotes,
-          voteShare: Math.round(runnerUpShare * 10) / 10,
-          photoUrl: ruName ? require('./candidatePhotos').getStaticPhoto(ruName) : undefined,
-        },
+        firstRunnerUp: runnerUpName && runnerUpParty ? {
+          name: runnerUpName,
+          party: runnerUpParty,
+          ...(runnerUpVotes != null ? { votes: runnerUpVotes } : {}),
+          ...(typeof match.runnerUpVoteShare === 'number' ? { voteShare: match.runnerUpVoteShare } : {}),
+          photoUrl: require('./candidatePhotos').getStaticPhoto(runnerUpName) || undefined,
+        } : null,
         secondRunnerUp: null,
       };
     }
@@ -435,7 +433,7 @@ export function getCandidatePodiumDetail(
   rank: 'winner' | 'ru1' | 'ru2',
 ): { candidate: CandidatePodiumDetail | null; contest: HistoricalPodiumContest | null } {
   const contests = getHistoricalPodiumForConstituency(stateCode, acNoOrName);
-  const match = contests.find(c => c.year === year) || (contests.length > 0 ? contests[0] : null);
+  const match = contests.find(c => c.year === year) || null;
   if (!match) return { candidate: null, contest: null };
 
   let candidate: CandidatePodiumDetail | null = null;

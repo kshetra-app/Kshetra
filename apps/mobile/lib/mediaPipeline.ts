@@ -16,6 +16,7 @@
  */
 
 import type { IssueCategory, VisibilityMode, DepartmentType } from './lmxTypes';
+import { IS_LIVE_ENVIRONMENT } from './environment';
 
 export type MediaTier = 'interactive' | 'llhls' | 'broadcast';
 export type IngestProtocol = 'rtmp' | 'srt' | 'whip';
@@ -66,7 +67,7 @@ function env(key: string, fallback: string): string {
 /** Read media hosts from env once (with safe self-hostable defaults). */
 export function getMediaHosts(): MediaHosts {
   const protocol = env('EXPO_PUBLIC_MEDIA_INGEST_PROTOCOL', 'rtmp');
-  const mode = env('EXPO_PUBLIC_MEDIA_MODE', 'demo');
+  const mode = env('EXPO_PUBLIC_MEDIA_MODE', IS_LIVE_ENVIRONMENT ? 'self_hosted' : 'demo');
   return {
     scheme: env('EXPO_PUBLIC_MEDIA_SCHEME', 'https'),
     ingestHost: env('EXPO_PUBLIC_MEDIA_INGEST_HOST', 'ingest.kshetra.example'),
@@ -77,6 +78,17 @@ export function getMediaHosts(): MediaHosts {
     ingestProtocol: (['rtmp', 'srt', 'whip'].includes(protocol) ? protocol : 'rtmp') as IngestProtocol,
     mode: (mode === 'self_hosted' ? 'self_hosted' : 'demo') as MediaMode,
   };
+}
+
+/** True only when the production publish and playback hosts are explicitly configured. */
+export function isMediaPipelineConfigured(hosts: MediaHosts = getMediaHosts()): boolean {
+  if (hosts.mode !== 'self_hosted') return false;
+  const configuredHosts = [hosts.ingestHost, hosts.srsHost, hosts.omeHost, hosts.livekitHost, hosts.edgeHost];
+  return configuredHosts.every((host) => {
+    const normalized = host.trim().toLowerCase();
+    return normalized.length > 0 && !normalized.endsWith('.example') &&
+      normalized !== 'localhost' && normalized !== '127.0.0.1';
+  });
 }
 
 /** Pick the tier purely from event signals (no side effects). */

@@ -8,6 +8,17 @@ import { execSync } from 'node:child_process';
  * When INTEGRATION_TESTS_ENABLED === 'true', assumes infrastructure is present.
  */
 export function isLocalDatabaseAvailable(host = '127.0.0.1', port = 54321): boolean {
+  const allowedLocalHosts = ['localhost', '127.0.0.1', '::1'];
+  if (!allowedLocalHosts.includes(host)) return false;
+
+  let configuredHost = '';
+  try {
+    configuredHost = new URL(process.env.SUPABASE_URL || '').hostname;
+  } catch {
+    return false;
+  }
+  if (!allowedLocalHosts.includes(configuredHost)) return false;
+
   if (process.env.INTEGRATION_TESTS_ENABLED === 'true') {
     return true;
   }

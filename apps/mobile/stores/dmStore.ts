@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
+import { apiClient } from '../lib/api';
 import {
   type DMConversationItem,
   type DMMessageItem,
@@ -19,6 +21,7 @@ interface DMState {
   loading: boolean;
   activeConversationId: string | null;
   unreadCount: number;
+  inboxUserId: string | null;
 
   loadInbox: (userId: string) => Promise<void>;
   loadThread: (conversationId: string, currentUserId?: string) => Promise<void>;
@@ -115,12 +118,13 @@ const DEFAULT_SAMPLE_MESSAGES: Record<string, DMMessageItem[]> = {
 };
 
 export const useDMStore = create<DMState>((set, get) => ({
-  chats: DEFAULT_SAMPLE_CHATS,
-  requests: DEFAULT_SAMPLE_REQUESTS,
-  activeMessages: DEFAULT_SAMPLE_MESSAGES,
+  chats: IS_LIVE_ENVIRONMENT ? [] : DEFAULT_SAMPLE_CHATS,
+  requests: IS_LIVE_ENVIRONMENT ? [] : DEFAULT_SAMPLE_REQUESTS,
+  activeMessages: IS_LIVE_ENVIRONMENT ? {} : DEFAULT_SAMPLE_MESSAGES,
   loading: false,
   activeConversationId: null,
-  unreadCount: 1,
+  unreadCount: 0,
+  inboxUserId: null,
 
   refreshUnreadCount: async (userId: string, token?: string | null) => {
     if (!userId) return;
@@ -133,27 +137,41 @@ export const useDMStore = create<DMState>((set, get) => ({
   },
 
   loadInbox: async (userId: string) => {
+    if (get().inboxUserId !== userId) {
+      const hasPreviousOwner = get().inboxUserId !== null;
+      set({
+        inboxUserId: userId,
+        chats: hasPreviousOwner || IS_LIVE_ENVIRONMENT ? [] : get().chats,
+        requests: hasPreviousOwner || IS_LIVE_ENVIRONMENT ? [] : get().requests,
+        activeMessages: hasPreviousOwner || IS_LIVE_ENVIRONMENT ? {} : get().activeMessages,
+        unreadCount: 0,
+      });
+    }
     set({ loading: true });
     try {
       const all = await fetchUserConversations(userId);
-      if (all && all.length > 0) {
+      if (all !== null) {
         const chats = all.filter((c) => c.status === 'accepted');
         const requests = all.filter((c) => c.status === 'pending');
         set({ chats, requests, loading: false });
-      } else {
+      } else if (!IS_LIVE_ENVIRONMENT) {
         set((s) => ({
           chats: s.chats.length > 0 ? s.chats : DEFAULT_SAMPLE_CHATS,
           requests: s.requests.length > 0 ? s.requests : DEFAULT_SAMPLE_REQUESTS,
           loading: false,
         }));
+      } else {
+        // Preserve already loaded server data on a transient request failure.
+        set({ loading: false });
       }
       await get().refreshUnreadCount(userId);
     } catch {
-      set((s) => ({
-        chats: s.chats.length > 0 ? s.chats : DEFAULT_SAMPLE_CHATS,
-        requests: s.requests.length > 0 ? s.requests : DEFAULT_SAMPLE_REQUESTS,
-        loading: false,
-      }));
+      if (IS_LIVE_ENVIRONMENT) set({ loading: false });
+      else set((s) => ({
+          chats: s.chats.length > 0 ? s.chats : DEFAULT_SAMPLE_CHATS,
+          requests: s.requests.length > 0 ? s.requests : DEFAULT_SAMPLE_REQUESTS,
+          loading: false,
+        }));
     }
   },
 
@@ -161,10 +179,11 @@ export const useDMStore = create<DMState>((set, get) => ({
     set({ activeConversationId: conversationId });
     try {
       const messages = await fetchConversationMessages(conversationId);
+      if (messages === null) return;
       set((s) => ({
         activeMessages: {
           ...s.activeMessages,
-          [conversationId]: messages && messages.length > 0 ? messages : (s.activeMessages[conversationId] || []),
+          [conversationId]: messages,
         },
       }));
 
@@ -211,15 +230,18 @@ export const useDMStore = create<DMState>((set, get) => ({
       }));
       return result;
     }
+    set((s) => ({
+      activeMessages: {
+        ...s.activeMessages,
+        [conversationId]: (s.activeMessages[conversationId] || []).filter((m) => m.id !== optimisticMsg.id),
+      },
+    }));
     return null;
   },
 
   acceptRequest: async (conversationId, userId) => {
-    try {
-      await acceptDMRequest(conversationId, userId);
-    } catch {
-      // API fallback
-    }
+    const accepted = await acceptDMRequest(conversationId, userId).catch(() => false);
+    if (!accepted && IS_LIVE_ENVIRONMENT) return false;
     set((s) => {
       const item = s.requests.find((r) => r.id === conversationId);
       if (!item) return s;
@@ -232,11 +254,8 @@ export const useDMStore = create<DMState>((set, get) => ({
   },
 
   declineRequest: async (conversationId, userId) => {
-    try {
-      await declineDMRequest(conversationId, userId);
-    } catch {
-      // API fallback
-    }
+    const declined = await declineDMRequest(conversationId, userId).catch(() => false);
+    if (!declined && IS_LIVE_ENVIRONMENT) return false;
     set((s) => ({
       requests: s.requests.filter((r) => r.id !== conversationId),
     }));
@@ -244,6 +263,7 @@ export const useDMStore = create<DMState>((set, get) => ({
   },
 
   simulateIncomingRequest: () => {
+    if (IS_LIVE_ENVIRONMENT) return;
     const newReqId = `conv-req-${Date.now()}`;
     const newReq: DMConversationItem = {
       id: newReqId,
@@ -295,28 +315,27 @@ export const useDMStore = create<DMState>((set, get) => ({
 
   startConversationWithUser: async (currentUserId, recipient, initialText) => {
     try {
-      const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'https://kshetra-api-production-9f06.up.railway.app';
-      const res = await fetch(`${apiUrl}/api/v1/dm/conversations`, {
+      const clientToken = initialText?.trim()
+        ? `dm_${Date.now()}_${Math.random().toString(36).slice(2, 14)}`
+        : undefined;
+      const res = await apiClient.request<{ conversation?: { id?: string } }>(`/api/v1/dm/conversations`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-user-id': currentUserId,
-        },
-        body: JSON.stringify({
+        body: {
           recipientId: recipient.id,
           initialMessage: initialText,
-        }),
+          ...(clientToken ? { clientToken } : {}),
+        },
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        const conv = data.conversation;
+      if (res.statusCode >= 200 && res.statusCode < 300 && res.data?.conversation?.id) {
         await get().loadInbox(currentUserId);
-        return conv.id;
+        return res.data.conversation.id;
       }
     } catch (err) {
       console.warn('[DM] Error starting conversation with API, using resilient fallback:', err);
     }
+
+    if (IS_LIVE_ENVIRONMENT) return null;
 
     // Resilient fallback: ensure conversation is created locally and user is never blocked
     const fallbackConvId = `conv-${currentUserId}-${recipient.id}`;

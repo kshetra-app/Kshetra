@@ -59,8 +59,9 @@ export interface QuizQuestion {
   id: string;
   question: string;
   options: string[];
-  correctIndex: number;
-  explanation: string;
+  /** Answer key is absent from production catalog responses; the API returns it only after grading. */
+  correctIndex?: number;
+  explanation?: string;
 }
 
 /** A citation/source reference shown to avoid copyright/legal issues. */

@@ -114,7 +114,8 @@ export default function MapFallback() {
           Top Constituencies by Margin
         </Text>
         {[...constituencies]
-          .sort((a, b) => b.margin - a.margin)
+          .filter((c) => c.margin != null)
+          .sort((a, b) => (b.margin ?? 0) - (a.margin ?? 0))
           .slice(0, 15)
           .map((c) => (
             <Pressable
@@ -138,7 +139,7 @@ export default function MapFallback() {
               </View>
               <View style={styles.rowRight}>
                 <Text style={styles.rowMargin}>
-                  +{c.margin.toLocaleString()}
+                  +{(c.margin ?? 0).toLocaleString()}
                 </Text>
                 <Text style={styles.rowWinner}>{c.winnerName}</Text>
               </View>

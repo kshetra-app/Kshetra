@@ -579,7 +579,7 @@ const or = {
     "tryAsking": "ଯହ ପୂଛକର ଦେଖେଂ:",
     "thinkingSearch": "ଡେଟା କା ୱିଶ୍ଲେଷଣ କିଯା ଜା ରହା ହୈ…",
     "noResponse": "କୋଈ ପ୍ରତିକ୍ରିଯା ଉପଲବ୍ଧ ନହୀଂ",
-    "poweredBy": "ପୋଲିଗ୍ରାମ୍ AI ଦ୍ୱାରା ପରିଚାଳିତ • Google Gemini",
+    "poweredBy": "ପୋଲିଗ୍ରାମ୍ AI ଦ୍ୱାରା ପରିଚାଳିତ",
     "qWinner2023": "2023 ମେଂ {{name}} କିସନେ ଜୀତା?",
     "qMarginTrend": "{{name}} ମେଂ ଅଂତର କା ରୁଝାନ କ୍ଯା ହୈ?",
     "qTellAboutMLA": "{{name}} କେ ୱିଧାଯକ କେ ବାରେ ମେଂ ବତାଏଂ",

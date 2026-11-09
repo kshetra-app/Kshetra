@@ -28,6 +28,7 @@ export interface ComposePostRequestDTO {
   language?: string;
   hashtags?: string[];
   pollOptions?: string[];
+  clientToken?: string;
 }
 
 export class FeedEndpoint {
@@ -36,11 +37,33 @@ export class FeedEndpoint {
   /**
    * 1. Compose post
    */
-  async composePost(payload: ComposePostRequestDTO): Promise<{ success: boolean; id: string; post?: any }> {
+  async composePost(payload: ComposePostRequestDTO): Promise<{
+    success: boolean;
+    id: string;
+    post?: any;
+    poll?: {
+      id: string;
+      question: string;
+      totalVotes: number;
+      isClosed: boolean;
+      options: { id: string; label: string; voteCount: number; sortOrder: number }[];
+    };
+  }> {
     if (!payload?.content || !payload?.stateCode) {
       throw new ApiValidationError('Invalid compose post payload: content and stateCode are required');
     }
-    const res = await this.client.post<{ success: boolean; id: string; post?: any }>(
+    const res = await this.client.post<{
+      success: boolean;
+      id: string;
+      post?: any;
+      poll?: {
+        id: string;
+        question: string;
+        totalVotes: number;
+        isClosed: boolean;
+        options: { id: string; label: string; voteCount: number; sortOrder: number }[];
+      };
+    }>(
       '/api/v1/feed/posts',
       payload,
       { authPolicy: 'authenticated' },
@@ -128,13 +151,14 @@ export class FeedEndpoint {
     postId: string,
     content: string,
     language: string = 'en',
+    clientToken?: string,
   ): Promise<{ success: boolean; id: string; comment?: any }> {
     if (!postId || !content) {
       throw new ApiValidationError('Invalid comment: postId and content are required');
     }
     const res = await this.client.post<{ success: boolean; id: string; comment?: any }>(
       `/api/v1/feed/posts/${encodeURIComponent(postId)}/comments`,
-      { content, language },
+      { content, language, ...(clientToken ? { clientToken } : {}) },
       { authPolicy: 'authenticated' },
     );
     return res.data;

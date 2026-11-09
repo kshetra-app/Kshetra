@@ -14,12 +14,16 @@ import { retentionService } from '../modules/compliance/retentionService';
 import { rightsService } from '../modules/compliance/rightsService';
 import { sdfService } from '../modules/compliance/sdfService';
 import { breachService } from '../modules/compliance/breachService';
+import { isSupabaseConfigured, setSupabaseConfiguredForTesting } from '../lib/supabase';
 
 describe('Milestone W051.5: Compliance, DPDP & Data Governance Readiness Suite', () => {
   let app: FastifyInstance;
   const testUserId = '99999999-9999-4999-8999-999999999999';
+  let initialSupabaseConfigured = false;
 
   beforeAll(async () => {
+    initialSupabaseConfigured = isSupabaseConfigured;
+    setSupabaseConfiguredForTesting(false);
     app = Fastify({ logger: false });
     await app.register(complianceRoutes);
     await app.ready();
@@ -27,6 +31,7 @@ describe('Milestone W051.5: Compliance, DPDP & Data Governance Readiness Suite',
 
   afterAll(async () => {
     await app.close();
+    setSupabaseConfiguredForTesting(initialSupabaseConfigured);
   });
 
   // ============================================================================
@@ -53,7 +58,21 @@ describe('Milestone W051.5: Compliance, DPDP & Data Governance Readiness Suite',
       expect(json.data.total).toBe(13);
       const locales = json.data.locales.map((l: any) => l.locale);
       expect(locales).toEqual(
-        expect.arrayContaining(['en', 'hi', 'te', 'ta', 'kn', 'ml', 'mr', 'bn', 'gu', 'or', 'pa', 'as', 'ne']),
+        expect.arrayContaining([
+          'en',
+          'hi',
+          'te',
+          'ta',
+          'kn',
+          'ml',
+          'mr',
+          'bn',
+          'gu',
+          'or',
+          'pa',
+          'as',
+          'ne',
+        ]),
       );
     });
 
@@ -119,7 +138,9 @@ describe('Milestone W051.5: Compliance, DPDP & Data Governance Readiness Suite',
       const stats = inventoryService.getErasureEligibilitySummary();
       expect(stats.citizenDataErasableCount).toBeGreaterThanOrEqual(17);
       expect(stats.statutoryPublicExemptCount).toBeGreaterThanOrEqual(2);
-      expect(stats.totalFieldsCount).toBe(stats.citizenDataErasableCount + stats.statutoryPublicExemptCount);
+      expect(stats.totalFieldsCount).toBe(
+        stats.citizenDataErasableCount + stats.statutoryPublicExemptCount,
+      );
     });
   });
 
@@ -169,7 +190,9 @@ describe('Milestone W051.5: Compliance, DPDP & Data Governance Readiness Suite',
       expect(financialRule).toBeDefined();
       expect(financialRule.statutoryReference).toContain('Companies Act 2013');
 
-      const statutoryPublicRule = policies.find((p: any) => p.retentionClass === 'permanent_statutory_public');
+      const statutoryPublicRule = policies.find(
+        (p: any) => p.retentionClass === 'permanent_statutory_public',
+      );
       expect(statutoryPublicRule).toBeDefined();
       expect(statutoryPublicRule.deletionTrigger).toContain('NEVER');
     });
@@ -199,7 +222,7 @@ describe('Milestone W051.5: Compliance, DPDP & Data Governance Readiness Suite',
       expect(res.statusCode).toBe(401);
     });
 
-    it('W051.5-RIGHTS-02: Executes Right to Access (Sec 11) and generates cryptographic archive', async () => {
+    it('W051.5-RIGHTS-02: Refuses to claim a data export when durable user stores are unavailable', async () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/compliance/rights/access',
@@ -207,31 +230,26 @@ describe('Milestone W051.5: Compliance, DPDP & Data Governance Readiness Suite',
         payload: { format: 'json', includeActivityHistory: true },
       });
 
-      expect(res.statusCode).toBe(200);
+      expect(res.statusCode).toBe(503);
       const json = JSON.parse(res.payload);
-      expect(json.success).toBe(true);
-      expect(json.data.userId).toBe(testUserId);
-      expect(json.data.archiveChecksumSha256).toMatch(/^[0-9a-f]{64}$/);
-      expect(json.data.summary.publicStatutoryRecordsNotice).toContain('statutory public records');
+      expect(json.code).toBe('DATA_EXPORT_UNAVAILABLE');
     });
 
-    it('W051.5-RIGHTS-03: Executes Right to Correction (Sec 12) with audit trail', async () => {
+    it('W051.5-RIGHTS-03: Refuses to acknowledge a correction without durable request storage', async () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/compliance/rights/correction',
         headers: { 'x-user-id': testUserId },
         payload: {
-          field: 'displayName',
+          field: 'display_name',
           correctedValue: 'Verified Citizen Advocate',
           reason: 'Legal name change updated on official voter ID',
         },
       });
 
-      expect(res.statusCode).toBe(200);
+      expect(res.statusCode).toBe(503);
       const json = JSON.parse(res.payload);
-      expect(json.success).toBe(true);
-      expect(json.data.field).toBe('displayName');
-      expect(json.data.status).toBe('completed');
+      expect(json.code).toBe('RIGHTS_STORAGE_UNAVAILABLE');
     });
 
     it('W051.5-RIGHTS-04: Rejects account erasure when explicit confirmation phrase is missing', async () => {
@@ -247,7 +265,7 @@ describe('Milestone W051.5: Compliance, DPDP & Data Governance Readiness Suite',
       expect(json.error).toBe('Bad Request');
     });
 
-    it('W051.5-RIGHTS-05: Executes Right to Erasure (Sec 12(3)) and issues formal certificate', async () => {
+    it('W051.5-RIGHTS-05: Never issues an erasure certificate without Auth deletion and durable completion', async () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/compliance/rights/erasure',
@@ -255,42 +273,35 @@ describe('Milestone W051.5: Compliance, DPDP & Data Governance Readiness Suite',
         payload: { confirmation: 'DELETE_MY_PERSONAL_DATA', reason: 'Moving overseas' },
       });
 
-      expect(res.statusCode).toBe(200);
+      expect(res.statusCode).toBe(503);
       const json = JSON.parse(res.payload);
-      expect(json.success).toBe(true);
-      expect(json.data.erasureCertificateId).toMatch(/^cert_dpdp_del_/);
-      expect(json.data.erasedEntities.length).toBeGreaterThan(0);
-      expect(json.data.retainedStatutoryEntities).toEqual(
-        expect.arrayContaining([expect.stringContaining('canonical_persons')]),
-      );
+      expect(json.code).toBe('ERASURE_NOT_COMPLETED');
     });
 
-    it('W051.5-RIGHTS-06: Lodges citizen grievance with DPO and establishes 30-day statutory SLA', async () => {
+    it('W051.5-RIGHTS-06: Does not issue an in-memory grievance ticket when storage is unavailable', async () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/compliance/grievance',
         headers: { 'x-user-id': testUserId },
         payload: {
           subject: 'Clarification on Constituency Feed Personalization',
-          description: 'Requesting clarification regarding how my assembly constituency feed is selected.',
+          description:
+            'Requesting clarification regarding how my assembly constituency feed is selected.',
           contactEmail: 'citizen@example.org',
           category: 'other',
         },
       });
 
-      expect(res.statusCode).toBe(201);
+      expect(res.statusCode).toBe(503);
       const json = JSON.parse(res.payload);
-      expect(json.success).toBe(true);
-      expect(json.data.ticketId).toMatch(/^grv_/);
-      expect(json.data.dpoEmail).toBe('dpo@kshetra.io');
-      expect(json.data.slaDays).toBe(30);
+      expect(json.code).toBe('GRIEVANCE_STORAGE_UNAVAILABLE');
 
       // Verify ticket retrieval
       const getRes = await app.inject({
         method: 'GET',
-        url: `/api/v1/compliance/grievance/${json.data.ticketId}`,
+        url: '/api/v1/compliance/grievance/grv_missing',
       });
-      expect(getRes.statusCode).toBe(200);
+      expect(getRes.statusCode).toBe(401);
     });
   });
 
@@ -298,7 +309,7 @@ describe('Milestone W051.5: Compliance, DPDP & Data Governance Readiness Suite',
   // 6. SIGNIFICANT DATA FIDUCIARY (SDF) EVALUATION
   // ============================================================================
   describe('Pillar 6: Significant Data Fiduciary (SDF) Evaluation', () => {
-    it('W051.5-SDF-01: Returns comprehensive Section 10 statutory assessment', async () => {
+    it('W051.5-SDF-01: Returns the development-only Section 10 assessment preview', async () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/compliance/sdf-assessment',
@@ -311,6 +322,27 @@ describe('Milestone W051.5: Compliance, DPDP & Data Governance Readiness Suite',
       expect(json.data.overallClassification).toBe('DATA_FIDUCIARY');
       expect(json.data.appointedDpo).toBe(true);
       expect(json.data.reassessmentTriggers.length).toBeGreaterThanOrEqual(4);
+    });
+
+    it('does not expose illustrative SDF scores as a production assessment', async () => {
+      const originalNodeEnv = process.env.NODE_ENV;
+      const originalAppEnv = process.env.APP_ENV;
+      process.env.NODE_ENV = 'production';
+      process.env.APP_ENV = 'production';
+
+      try {
+        const res = await app.inject({
+          method: 'GET',
+          url: '/api/v1/compliance/sdf-assessment',
+        });
+        expect(res.statusCode).toBe(503);
+        expect(JSON.parse(res.payload).code).toBe('SDF_ASSESSMENT_UNAVAILABLE');
+      } finally {
+        if (originalNodeEnv === undefined) delete process.env.NODE_ENV;
+        else process.env.NODE_ENV = originalNodeEnv;
+        if (originalAppEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = originalAppEnv;
+      }
     });
   });
 

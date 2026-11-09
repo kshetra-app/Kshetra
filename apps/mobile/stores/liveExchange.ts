@@ -3,6 +3,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import * as dataService from '../lib/supabaseDataService';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 import { useAuthStore } from './auth';
 import type {
   LiveEvent,
@@ -337,7 +338,7 @@ interface LiveExchangeState {
   setCurrentReporter: (id: string) => void;
 
   /** Go-live: build the Live Event Object, run buffer + dispatch dept alerts. */
-  startLiveEvent: (input: StartLiveInput) => LiveEvent;
+  startLiveEvent: (input: StartLiveInput) => Promise<LiveEvent | null>;
   clearBuffer: (eventId: string) => void;
   setHumanDecision: (eventId: string, decision: HumanDecision, note?: string) => void;
   incrementViewers: (eventId: string, delta?: number) => void;
@@ -388,15 +389,15 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
       aiServiceEnabled: false,
       aiModelProvider: null,
 
-      events: SEED_EVENTS,
-      departments: SEED_DEPARTMENTS,
-      affiliations: SEED_AFFILIATIONS,
-      brandKits: SEED_BRAND_KITS,
+      events: IS_LIVE_ENVIRONMENT ? [] : SEED_EVENTS,
+      departments: IS_LIVE_ENVIRONMENT ? [] : SEED_DEPARTMENTS,
+      affiliations: IS_LIVE_ENVIRONMENT ? [] : SEED_AFFILIATIONS,
+      brandKits: IS_LIVE_ENVIRONMENT ? [] : SEED_BRAND_KITS,
       alerts: [],
-      credibility: SEED_CREDIBILITY,
+      credibility: IS_LIVE_ENVIRONMENT ? [] : SEED_CREDIBILITY,
       moderationEvents: [],
       distribution: [],
-      currentReporterId: 'u-citizen-1',
+      currentReporterId: IS_LIVE_ENVIRONMENT ? '' : 'u-citizen-1',
 
       // ─── Queries ──────────────────────────────────────────────────────────
 
@@ -448,30 +449,42 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
       // ─── Actions ──────────────────────────────────────────────────────────
 
       hydrate: async () => {
-        if (!isSupabaseConfigured) return; // keep seed data as fallback
+        if (!isSupabaseConfigured) return;
         try {
-          const [events, departments, brandKits, alerts, credibility] = await Promise.all([
+          const userId = useAuthStore.getState().user?.id ?? null;
+          const [events, departments, brandKits, affiliations, alerts, credibility] = await Promise.all([
             dataService.fetchLiveEvents(),
             dataService.fetchDepartments(),
             dataService.fetchBrandKits(),
+            userId ? dataService.fetchAffiliations(userId) : Promise.resolve([]),
             dataService.fetchDepartmentAlerts(),
             (async () => {
-              const userId = useAuthStore.getState().user?.id;
               if (!userId) return null;
               return dataService.fetchReporterCredibility(userId);
             })(),
           ]);
           
           // Map Supabase snake_case to camelCase LiveEvent objects
-          // Only replace if we got real data
           set((state) => ({
             ...state,
-            ...(events.length > 0 ? { events: events.map(mapDbEventToLiveEvent) } : {}),
-            ...(departments.length > 0 ? { departments: departments.map(mapDbDepartmentToGovernmentDepartment) } : {}),
-            ...(brandKits.length > 0 ? { brandKits: brandKits.map(mapDbBrandKitToBrandKit) } : {}),
-            ...(alerts && alerts.length > 0
-              ? {
-                  alerts: alerts.map((d: any) => ({
+            ...(IS_LIVE_ENVIRONMENT || events.length > 0 ? { events: events.map(mapDbEventToLiveEvent) } : {}),
+            ...(IS_LIVE_ENVIRONMENT || departments.length > 0 ? { departments: departments.map(mapDbDepartmentToGovernmentDepartment) } : {}),
+            ...(IS_LIVE_ENVIRONMENT || brandKits.length > 0 ? { brandKits: brandKits.map(mapDbBrandKitToBrandKit) } : {}),
+            ...(IS_LIVE_ENVIRONMENT || affiliations.length > 0 ? {
+              affiliations: affiliations.map((row: any) => ({
+                id: row.id,
+                contributorId: row.contributor_id,
+                organizationId: row.organization_id,
+                organizationName: row.organization_name,
+                brandKitId: row.brand_kit_id ?? null,
+                contractStart: row.contract_start ?? null,
+                contractEnd: row.contract_end ?? null,
+                exclusivityFlag: row.exclusivity_flag ?? false,
+                status: row.status,
+              })),
+            } : {}),
+            ...(IS_LIVE_ENVIRONMENT || alerts.length > 0
+              ? { alerts: alerts.map((d: any) => ({
                     id: d.id,
                     liveEventId: d.live_event_id ?? '',
                     departmentId: d.department_id ?? '',
@@ -486,12 +499,27 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
                     acknowledgment: d.acknowledgment ?? null,
                     acknowledgedAt: d.acknowledged_at ?? null,
                     acknowledgedBy: d.acknowledged_by ?? null,
-                  })),
-                }
+                  })) }
               : {}),
+            ...(IS_LIVE_ENVIRONMENT ? {
+              credibility: credibility ? [{
+                reporterId: credibility.reporter_id ?? userId ?? '',
+                score: Number(credibility.score ?? credibility.credibility_score ?? 0),
+                totalStreams: Number(credibility.total_streams ?? 0),
+                genuineAlerts: Number(credibility.genuine_alerts ?? 0),
+                falseAlerts: Number(credibility.false_alerts ?? 0),
+                unverifiedAlerts: Number(credibility.unverified_alerts ?? 0),
+                mediaPickups: Number(credibility.media_pickups ?? 0),
+                communityUpvotes: Number(credibility.community_upvotes ?? 0),
+                communityDownvotes: Number(credibility.community_downvotes ?? 0),
+                departmentAlertsRestricted: credibility.department_alerts_restricted ?? false,
+                requiresModeratorCosign: credibility.requires_moderator_cosign ?? false,
+              }] : [],
+              currentReporterId: userId ?? '',
+            } : {}),
           }));
         } catch (e) {
-          console.warn('[LMX] hydrate error, using seed data:', e);
+          console.warn('[LMX] hydrate error:', e);
         }
       },
 
@@ -539,7 +567,7 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
 
       setCurrentReporter: (id) => set({ currentReporterId: id }),
 
-      startLiveEvent: (input) => {
+      startLiveEvent: async (input) => {
         const state = get();
         const cred = state.credibility.find((c) => c.reporterId === input.reporterId);
         const credibilityScore = cred?.score ?? 50;
@@ -551,11 +579,11 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
 
         const hasDeptAlert = input.alertDepartments.length > 0;
         const ai = neutralAI();
-        const bufferSeconds = computeBufferSeconds(input.accreditationTier, hasDeptAlert, ai);
+        const bufferSeconds = IS_LIVE_ENVIRONMENT ? 20 : computeBufferSeconds(input.accreditationTier, hasDeptAlert, ai);
 
         // Accredited+ tiers or department alerts skip the long public buffer.
         const shortTier = input.accreditationTier !== 'citizen';
-        const initialBuffer = shortTier || hasDeptAlert ? 'cleared' : 'buffering';
+        const initialBuffer = !IS_LIVE_ENVIRONMENT && (shortTier || hasDeptAlert) ? 'cleared' : 'buffering';
 
         const id = `le-${Date.now().toString(36)}`;
         const streamId = nextStreamId();
@@ -646,15 +674,11 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
           }
         }
 
-        set((s) => ({
-          events: [event, ...s.events],
-          alerts: [...newAlerts, ...s.alerts],
-        }));
-
-        // Persist to Supabase if configured
-        if (isSupabaseConfigured) {
-          dataService.createLiveEvent({
-            id: event.id,
+        // A production broadcast must be created by the authenticated API before
+        // the client advertises it or starts the publisher.
+        let persistedEvent: Record<string, any> | null = null;
+        if (IS_LIVE_ENVIRONMENT || isSupabaseConfigured) {
+          persistedEvent = await dataService.createLiveEvent({
             stream_id: event.streamId,
             reporter_id: event.reporterId,
             reporter_name: event.reporterName,
@@ -667,8 +691,6 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
             issue_category: event.issueCategory,
             tags: event.tags,
             language: event.language,
-            media_ingest_url: event.mediaIngestUrl,
-            media_playback_hls: event.mediaPlaybackHls,
             visibility_mode: event.visibilityMode,
             alert_departments: event.alertDepartments,
             buffer_state: event.bufferState,
@@ -676,8 +698,27 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
             status: event.status,
             priority_score: event.priorityScore,
             started_at: event.startedAt,
-          }).catch(e => console.warn('[LMX] createLiveEvent sync error:', e));
+          });
 
+          if (IS_LIVE_ENVIRONMENT && (!persistedEvent?.id || persistedEvent.stream_id !== event.streamId)) {
+            return null;
+          }
+          if (persistedEvent?.id) {
+            event.id = persistedEvent.id;
+            newAlerts.forEach((alert) => { alert.liveEventId = event.id; });
+          }
+          if (persistedEvent?.media_ingest_url) event.mediaIngestUrl = persistedEvent.media_ingest_url;
+          if (persistedEvent?.media_playback_hls !== undefined) event.mediaPlaybackHls = persistedEvent.media_playback_hls;
+          if (persistedEvent?.media_playback_webrtc !== undefined) event.mediaPlaybackWebrtc = persistedEvent.media_playback_webrtc;
+          if (persistedEvent?.buffer_state) event.bufferState = persistedEvent.buffer_state;
+        }
+
+        set((s) => ({
+          events: [event, ...s.events],
+          alerts: [...newAlerts, ...s.alerts],
+        }));
+
+        if (isSupabaseConfigured) {
           for (const al of newAlerts) {
             dataService.dispatchDepartmentAlert({
               live_event_id: al.liveEventId,
@@ -867,15 +908,17 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
     {
       name: 'kshetra-live-exchange',
       storage: createJSONStorage(() => AsyncStorage),
-      partialize: (state) => ({
-        aiServiceEnabled: state.aiServiceEnabled,
-        aiModelProvider: state.aiModelProvider,
-        // Persist user-created runtime data; seed arrays reset on load.
-        alerts: state.alerts,
-        credibility: state.credibility,
-        distribution: state.distribution,
-        currentReporterId: state.currentReporterId,
-      }),
+      partialize: (state) => IS_LIVE_ENVIRONMENT ? {} : ({
+          aiServiceEnabled: state.aiServiceEnabled,
+          aiModelProvider: state.aiModelProvider,
+          // Persist user-created runtime data; seed arrays reset on load.
+          alerts: state.alerts,
+          credibility: state.credibility,
+          distribution: state.distribution,
+          currentReporterId: state.currentReporterId,
+        }),
+      merge: (persistedState, currentState) =>
+        IS_LIVE_ENVIRONMENT ? currentState : ({ ...currentState, ...(persistedState as Partial<LiveExchangeState>) }),
     },
   ),
 );

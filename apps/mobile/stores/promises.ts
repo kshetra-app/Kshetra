@@ -18,6 +18,7 @@ import { computePDI, buildReportCard } from '../lib/promiseTypes';
 import * as dataService from '../lib/supabaseDataService';
 import { enqueue } from '../lib/offlineSync';
 import { useAuthStore } from './auth';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 
 interface PromiseState {
   promises: ElectionPromise[];
@@ -38,6 +39,7 @@ interface PromiseState {
   // Actions
   toggleFollowPromise: (promiseId: string) => Promise<void>;
   submitEvidence: (evidence: Omit<PromiseEvidence, 'id' | 'upvotes' | 'createdAt'>) => Promise<void>;
+  hydrateFromServer: (serverPromises: any[] | null) => void;
 }
 
 // ─── SEED: INC Telangana 2023 "6 Guarantees" + key promises ───
@@ -499,9 +501,54 @@ const SEED_EVIDENCE: PromiseEvidence[] = [
 ];
 
 export const usePromiseStore = create<PromiseState>()((set, get) => ({
-  promises: SEED_PROMISES,
-  updates: SEED_UPDATES,
-  evidence: SEED_EVIDENCE,
+  promises: IS_LIVE_ENVIRONMENT ? [] : SEED_PROMISES,
+  updates: IS_LIVE_ENVIRONMENT ? [] : SEED_UPDATES,
+  evidence: IS_LIVE_ENVIRONMENT ? [] : SEED_EVIDENCE,
+
+  hydrateFromServer: (serverPromises) => {
+    if (!serverPromises) return;
+    const promises: ElectionPromise[] = serverPromises.map((row: any) => ({
+      id: row.id,
+      stateCode: row.state_code,
+      constituencyAcNo: row.constituency_ac_no ?? undefined,
+      constituencyName: row.constituency_name ?? undefined,
+      party: row.party,
+      mlaName: row.mla_name ?? undefined,
+      title: row.title,
+      description: row.description,
+      category: row.category as PromiseCategory,
+      source: row.source,
+      sourceUrl: row.source_url ?? undefined,
+      promisedDate: row.promised_date,
+      deadline: row.deadline ?? undefined,
+      status: row.status as PromiseStatus,
+      deliveryPercentage: Number(row.delivery_percentage ?? 0),
+      electionYear: Number(row.election_year),
+      followCount: Number(row.follow_count ?? 0),
+      verificationCount: Number(row.verification_count ?? 0),
+      disputeCount: Number(row.dispute_count ?? 0),
+    }));
+    const updates: PromiseUpdate[] = serverPromises.flatMap((row: any) =>
+      (row.promise_updates ?? []).map((update: any) => ({
+        id: update.id,
+        promiseId: update.promise_id,
+        fromStatus: update.from_status as PromiseStatus,
+        toStatus: update.to_status as PromiseStatus,
+        note: update.note,
+        updatedBy: update.updated_by ?? undefined,
+        updatedByName: update.updated_by_name ?? 'System',
+        sourceUrl: update.source_url ?? undefined,
+        createdAt: update.created_at,
+      })),
+    );
+    set((state) => ({
+      promises,
+      updates,
+      evidence: IS_LIVE_ENVIRONMENT
+        ? state.evidence.filter((entry) => entry.syncStatus && entry.syncStatus !== 'SYNCED')
+        : state.evidence,
+    }));
+  },
 
   getPromisesForState: (stateCode) =>
     get().promises.filter((p) => p.stateCode === stateCode),

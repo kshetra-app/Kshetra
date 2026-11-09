@@ -579,7 +579,7 @@ const bn = {
     "tryAsking": "যহ পূছকর দেখেং:",
     "thinkingSearch": "ডেটা কা বিশ্লেষণ কিযা জা রহা হৈ…",
     "noResponse": "কোঈ প্রতিক্রিযা উপলব্ধ নহীং",
-    "poweredBy": "পলিগ্রাম AI দ্বারা চালিত • Google Gemini",
+    "poweredBy": "পলিগ্রাম AI দ্বারা চালিত",
     "qWinner2023": "2023 মেং {{name}} কিসনে জীতা?",
     "qMarginTrend": "{{name}} মেং অংতর কা রুঝান ক্যা হৈ?",
     "qTellAboutMLA": "{{name}} কে বিধাযক কে বারে মেং বতাএং",

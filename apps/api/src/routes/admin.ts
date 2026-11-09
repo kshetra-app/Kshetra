@@ -1,10 +1,8 @@
 import type { FastifyPluginAsync, FastifyRequest, FastifyReply } from 'fastify';
-import type { AdminRole } from '@kshetra/shared';
-import { adminService, type AdminActor } from '../services/adminService';
+import { adminService } from '../services/adminService';
 import { sendApiError } from '../lib/replyHelper';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-
-const ALLOWED_ADMIN_ROLES = new Set<string>(['admin', 'super_admin', 'compliance_officer', 'moderator']);
+import { resolveAdminActor, type AdminActor } from '../lib/adminAuthorization';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -18,64 +16,9 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
    * Fail-closed: non-admins receive HTTP 403 Forbidden with canonical ApiErrorEnvelope.
    */
   app.addHook('preHandler', async (request: FastifyRequest, reply: FastifyReply) => {
-    let userId: string | null = null;
-    let role: string | null = null;
-
-    const authHeader = request.headers.authorization;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.replace('Bearer ', '').trim();
-      if (token === 'invalid-token' || token === 'expired-token') {
-        return sendApiError(reply, request, 401, 'INVALID_CREDENTIALS', 'Provided authentication token is invalid or expired.');
-      }
-
-      if (token === 'admin-service-token' || token.startsWith('admin-test-token')) {
-        userId = 'admin-service-account';
-        role = 'super_admin';
-      } else if (isSupabaseConfigured) {
-        try {
-          const {
-            data: { user },
-            error,
-          } = await supabase.auth.getUser(token);
-          if (!error && user) {
-            userId = user.id;
-            role = (user.app_metadata?.role as string) || (user.user_metadata?.role as string) || 'citizen';
-          }
-        } catch {
-          // Token resolution fallback
-        }
-      }
-    }
-
-    // Header inspection for controlled integration environments
-    if (!userId && (request.headers['x-user-id'] as string)) {
-      userId = request.headers['x-user-id'] as string;
-      role = (request.headers['x-user-role'] as string) || 'citizen';
-    }
-
-    if (!userId) {
-      return sendApiError(reply, request, 401, 'UNAUTHORIZED', 'Authentication is required to access the Poligram Admin Control Plane.');
-    }
-
-    if (!role || !ALLOWED_ADMIN_ROLES.has(role)) {
-      return sendApiError(
-        reply,
-        request,
-        403,
-        'INSUFFICIENT_PERMISSIONS',
-        `Access denied. Role '${role || 'unassigned'}' is not authorized for administrative operations.`
-      );
-    }
-
-    const ipAddress = (request.headers['x-forwarded-for'] as string) || request.ip || '127.0.0.1';
-    const userAgent = request.headers['user-agent'];
-
-    request.adminActor = {
-      id: userId,
-      role: role as AdminRole,
-      ipAddress,
-      userAgent,
-    };
+    const actor = await resolveAdminActor(request, reply);
+    if (!actor) return;
+    request.adminActor = actor;
   });
 
   // 1. Users Action

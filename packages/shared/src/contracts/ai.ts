@@ -41,8 +41,12 @@ export interface AICompletionResponse {
     completionTokens: number;
     totalTokens: number;
   };
-  costUsd: number;
-  costInr: number;
+  costUsd: number | null;
+  costInr: number | null;
+  costBasis: 'provider_rate_card' | 'offline_demo' | 'unavailable';
+  costRateCardVersion?: string | null;
+  costRateCardSource?: string | null;
+  usageBasis: 'provider_reported' | 'estimated';
   latencyMs: number;
   degradedOffline: boolean;
 }
@@ -65,7 +69,10 @@ export interface NewsSummaryRecord {
   keyEntities: string[];
   providerUsed: string;
   tokensUsed: number;
-  estimatedCostUsd: number;
+  estimatedCostUsd: number | null;
+  costBasis: 'provider_rate_card' | 'offline_demo' | 'unavailable' | 'legacy_unverified';
+  costRateCardVersion?: string | null;
+  usageBasis: 'provider_reported' | 'estimated' | 'legacy_unverified';
   hitCount: number;
   cacheHit: boolean;
   latencyMs: number;
@@ -129,11 +136,20 @@ export interface AskPoligramResponse {
   answer: string;
   query: string;
   groundedContextSummary: string;
+  groundingStatus: 'reference_data_unverified' | 'not_applicable';
   citations: AskPoligramCitation[];
   deflectedInjection: boolean;
   provider: string;
   tokensUsed: number;
+  promptTokens: number;
+  completionTokens: number;
   latencyMs: number;
+  costUsd: number | null;
+  costInr: number | null;
+  costBasis: 'provider_rate_card' | 'offline_demo' | 'unavailable' | 'none';
+  costRateCardVersion?: string | null;
+  costRateCardSource?: string | null;
+  usageBasis: 'provider_reported' | 'estimated' | 'not_applicable';
 }
 
 export interface TenantAIBudget {
@@ -142,7 +158,7 @@ export interface TenantAIBudget {
   dailyTokenBudget: number;
   dailySpendLimitUsd: number;
   currentDayTokens: number;
-  currentDaySpendUsd: number;
+  currentDaySpendUsd: number | null;
   circuitBreakerTripped: boolean;
   resetAt: string;
 }
@@ -154,9 +170,12 @@ export interface AICostReport {
   cacheHits: number;
   cacheHitRatio: number;
   totalTokens: number;
-  totalCostUsd: number;
-  totalCostInr: number;
-  costByOperation: Record<string, { requests: number; tokens: number; costUsd: number }>;
-  costByProvider: Record<string, { requests: number; tokens: number; costUsd: number }>;
+  totalCostUsd: number | null;
+  totalCostInr: number | null;
+  costProvenance: 'complete' | 'partial' | 'unavailable';
+  costRateCardVersions: string[];
+  costSources: string[];
+  costByOperation: Record<string, { requests: number; tokens: number; costUsd: number | null }>;
+  costByProvider: Record<string, { requests: number; tokens: number; costUsd: number | null }>;
   circuitBreakerTripped: boolean;
 }

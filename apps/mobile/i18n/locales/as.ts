@@ -579,7 +579,7 @@ const as = {
     "tryAsking": "যহ পূছকৰ দেখেং:",
     "thinkingSearch": "ডেটা কা ৱিশ্লেষণ কিযা জা ৰহা হৈ…",
     "noResponse": "কোঈ প্ৰতিক্ৰিযা উপলৱ্ধ নহীং",
-    "poweredBy": "পলিগ্ৰাম AI দ্বাৰা পৰিচালিত • Google Gemini",
+    "poweredBy": "পলিগ্ৰাম AI দ্বাৰা পৰিচালিত",
     "qWinner2023": "2023 মেং {{name}} কিসনে জীতা?",
     "qMarginTrend": "{{name}} মেং অংতর কা রুঝান ক্যা হৈ?",
     "qTellAboutMLA": "{{name}} কে বিধাযক কে বারে মেং বতাএং",

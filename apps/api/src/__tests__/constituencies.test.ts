@@ -176,9 +176,9 @@ describe('Constituency Routes', () => {
       constituenciesWithElectionWinners: 119,
       constituenciesWithoutElectionWinners: 0,
       winnerCoveragePercentage: 100,
-      constituenciesWithUsableMargins: 118,
-      constituenciesWithoutUsableMargins: 1,
-      marginCoveragePercentage: 99.2,
+      constituenciesWithUsableMargins: 119,
+      constituenciesWithoutUsableMargins: 0,
+      marginCoveragePercentage: 100,
     });
     expect(body.totalDistricts).toBeGreaterThan(0);
 
@@ -362,7 +362,7 @@ describe('Constituency Routes', () => {
     expect(body.error).toBe('Bad Request');
   });
 
-  it('GET /constituencies/locate should find Goshamahal for Charminar coords', async () => {
+  it('GET /constituencies/locate should find Charminar for Charminar coords', async () => {
     const response = await app.inject({
       method: 'GET',
       url: '/api/v1/constituencies/locate?lat=17.3616&lng=78.4747',
@@ -373,8 +373,8 @@ describe('Constituency Routes', () => {
     expect(body.latitude).toBeCloseTo(17.3616);
     expect(body.longitude).toBeCloseTo(78.4747);
     expect(body.constituency).not.toBeNull();
-    expect(body.constituency.name).toBe('Goshamahal');
-    expect(body.constituency.currentParty).toBe('BJP');
+    expect(body.constituency.name).toBe('Charminar');
+    expect(body.constituency.currentParty).toBe('AIMIM');
   });
 
   it('GET /constituencies/locate should return null for out-of-state coords', async () => {

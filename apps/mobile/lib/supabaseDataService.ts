@@ -16,6 +16,9 @@ import { captureException, addBreadcrumb } from './errorReporting';
 import { API_BASE_URL } from './constants';
 import { telemetry } from './telemetry';
 import { apiClient } from './api';
+import { ApiNetworkError, ApiServerError, ApiTimeoutError } from './api/errors';
+import type { ChallengeParticipation, CivicBadge, CommunityChallenge } from './aspirantTypes';
+import type { Poll } from './feedTypes';
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 
@@ -69,6 +72,15 @@ export async function checkContentModeration(
 
 function guard(): boolean {
   return isSupabaseConfigured;
+}
+
+function isRetryableIdempotentWriteError(err: unknown): boolean {
+  if (err instanceof ApiNetworkError || err instanceof ApiTimeoutError) return true;
+  if (!(err instanceof ApiServerError)) return false;
+  const data = err.data as { code?: string; error?: { code?: string } } | undefined;
+  const code = data?.code ?? data?.error?.code;
+  if (code === 'POST_RECONCILIATION_UNAVAILABLE' || code === 'COMMENT_IDEMPOTENCY_UNAVAILABLE') return false;
+  return [502, 503, 504].includes(err.statusCode);
 }
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -252,8 +264,10 @@ export async function composePost(post: {
   constituencyId?: string;
   parentId?: string;
   language?: string;
-}): Promise<{ id: string | null; success: boolean }> {
-  if (!guard()) return { id: null, success: false };
+  pollOptions?: string[];
+  clientToken?: string;
+}): Promise<{ id: string | null; success: boolean; poll?: Poll | null; retryable?: boolean; error?: string }> {
+  if (!guard()) return { id: null, success: false, poll: null, error: 'Post service is unavailable.' };
   try {
     addBreadcrumb('feed', 'compose_post', { type: post.type });
     const res = await apiClient.feed.composePost({
@@ -265,11 +279,29 @@ export async function composePost(post: {
       parentId: post.parentId,
       language: post.language,
       hashtags: post.hashtags,
+      pollOptions: post.pollOptions,
+      clientToken: post.clientToken,
     });
-    return { id: res.id ?? null, success: res.success };
+    const poll = res.poll
+      ? {
+          id: res.poll.id,
+          question: res.poll.question,
+          totalVotes: res.poll.totalVotes,
+          isClosed: res.poll.isClosed,
+          options: res.poll.options,
+        }
+      : null;
+    const pollWasPersisted = post.type !== 'poll' || Boolean(poll?.id && poll.options.length >= 2);
+    return { id: res.id ?? null, success: res.success && pollWasPersisted, poll };
   } catch (err) {
     captureException(err as Error, { op: 'compose_post' });
-    return { id: null, success: false };
+    return {
+      id: null,
+      success: false,
+      poll: null,
+      retryable: isRetryableIdempotentWriteError(err),
+      error: err instanceof Error ? err.message : 'Could not submit post.',
+    };
   }
 }
 
@@ -318,15 +350,21 @@ export async function addPostComment(
   _userId: string,
   content: string,
   language?: string,
-): Promise<{ id: string | null; success: boolean }> {
-  if (!guard()) return { id: null, success: false };
+  clientToken?: string,
+): Promise<{ id: string | null; success: boolean; error?: string; retryable?: boolean }> {
+  if (!guard()) return { id: null, success: false, error: 'Comment service is unavailable.' };
   try {
     addBreadcrumb('feed', 'add_comment', { postId });
-    const res = await apiClient.feed.addPostComment(postId, content, language);
+    const res = await apiClient.feed.addPostComment(postId, content, language, clientToken);
     return { id: res.id ?? null, success: res.success };
   } catch (err) {
     captureException(err as Error, { op: 'add_comment', postId });
-    return { id: null, success: false };
+    return {
+      id: null,
+      success: false,
+      error: err instanceof Error ? err.message : 'Could not save comment.',
+      retryable: isRetryableIdempotentWriteError(err),
+    };
   }
 }
 
@@ -546,29 +584,40 @@ export async function registerAspirant(
     stateCode: string;
     targetConstituencyAcNo?: number;
     targetConstituencyName?: string;
+    targetElectionYear?: number;
     partyAffiliation?: string;
     isIndependent?: boolean;
   },
-): Promise<{ id: string | null; success: boolean }> {
+): Promise<{ id: string | null; success: boolean; profile?: any }> {
   if (!guard()) return { id: null, success: false };
   try {
     addBreadcrumb('aspirant', 'register', { userId });
     const res = await apiClient.aspirant.register(userId, profile);
-    return { id: res.profile?.id ?? null, success: res.success };
+    return { id: res.profile?.id ?? null, success: res.success, profile: res.profile };
   } catch (err) {
     captureException(err as Error, { op: 'register_aspirant' });
     return { id: null, success: false };
   }
 }
 
+export async function fetchMyAspirantProfile(): Promise<{ success: boolean; profile?: any | null }> {
+  try {
+    const result = await apiClient.aspirant.getMyProfile();
+    return { success: result.success, profile: result.profile ?? null };
+  } catch (err) {
+    captureException(err as Error, { op: 'fetch_my_aspirant_profile' });
+    return { success: false };
+  }
+}
+
 export async function startModule(
-  _userId: string,
+  userId: string,
   moduleId: string,
 ): Promise<boolean> {
   if (!guard()) return false;
   try {
     addBreadcrumb('academy', 'start_module', { moduleId });
-    const res = await apiClient.aspirant.startModule(moduleId);
+    const res = await apiClient.aspirant.startModule(moduleId, userId);
     return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'start_module', moduleId });
@@ -579,16 +628,8 @@ export async function startModule(
 export async function completeModule(userId: string, moduleId: string, quizScore?: number): Promise<boolean> {
   try {
     addBreadcrumb('academy', 'complete_module', { moduleId });
-    const res = await fetch(`${API_BASE_URL}/api/v1/aspirant/modules/${moduleId}/complete`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-user-id': userId,
-        ...telemetry.getTracingHeaders(),
-      },
-      body: JSON.stringify({ userId, quizScore }),
-    });
-    return res.ok;
+    const res = await apiClient.aspirant.completeModule(moduleId, quizScore, userId);
+    return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'complete_module', moduleId });
     return false;
@@ -598,16 +639,8 @@ export async function completeModule(userId: string, moduleId: string, quizScore
 export async function joinChallenge(userId: string, challengeId: string): Promise<boolean> {
   try {
     addBreadcrumb('academy', 'join_challenge', { challengeId });
-    const res = await fetch(`${API_BASE_URL}/api/v1/aspirant/challenges/${challengeId}/join`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-user-id': userId,
-        ...telemetry.getTracingHeaders(),
-      },
-      body: JSON.stringify({ userId }),
-    });
-    return res.ok;
+    const res = await apiClient.aspirant.joinChallenge(challengeId, userId);
+    return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'join_challenge', challengeId });
     return false;
@@ -617,16 +650,8 @@ export async function joinChallenge(userId: string, challengeId: string): Promis
 export async function endorseAspirant(endorserId: string, aspirantId: string, message?: string): Promise<boolean> {
   try {
     addBreadcrumb('aspirant', 'endorse', { aspirantId });
-    const res = await fetch(`${API_BASE_URL}/api/v1/aspirant/${aspirantId}/endorse`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-user-id': endorserId,
-        ...telemetry.getTracingHeaders(),
-      },
-      body: JSON.stringify({ endorserId, message }),
-    });
-    return res.ok;
+    const res = await apiClient.aspirant.endorseAspirant(aspirantId, message, endorserId);
+    return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'endorse_aspirant', aspirantId });
     return false;
@@ -864,18 +889,11 @@ export async function fetchIssuesForConstituency(
 // ─── User & Page Follow Graph (Ticket 0.3) ──────────────────────────
 
 export async function followUser(followerId: string, followedId: string): Promise<boolean> {
+  if (!guard()) return false;
   try {
     addBreadcrumb('social', 'follow_user', { followedId });
-    const res = await fetch(`${API_BASE_URL}/api/v1/users/${followedId}/follow`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-user-id': followerId,
-        ...telemetry.getTracingHeaders(),
-      },
-      body: JSON.stringify({ followerId }),
-    });
-    return res.ok;
+    const res = await apiClient.users.followUser(followedId);
+    return res.success && res.followed;
   } catch (err) {
     captureException(err as Error, { op: 'follow_user', followedId });
     return false;
@@ -883,36 +901,25 @@ export async function followUser(followerId: string, followedId: string): Promis
 }
 
 export async function unfollowUser(followerId: string, followedId: string): Promise<boolean> {
+  if (!guard()) return false;
   try {
     addBreadcrumb('social', 'unfollow_user', { followedId });
-    const res = await fetch(`${API_BASE_URL}/api/v1/users/${followedId}/follow`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-user-id': followerId,
-        ...telemetry.getTracingHeaders(),
-      },
-      body: JSON.stringify({ followerId }),
-    });
-    return res.ok;
+    const res = await apiClient.users.unfollowUser(followedId);
+    return res.success && res.unfollowed;
   } catch (err) {
     captureException(err as Error, { op: 'unfollow_user', followedId });
     return false;
   }
 }
 
-export async function fetchFollowedUserIds(followerId: string): Promise<string[]> {
-  if (!guard()) return [];
+export async function fetchFollowedUserIds(_followerId: string): Promise<string[] | null> {
+  if (!guard()) return null;
   try {
-    const { data, error } = await supabase
-      .from('user_follows')
-      .select('followed_id')
-      .eq('follower_id', followerId);
-    if (error) throw error;
-    return (data ?? []).map((row: any) => row.followed_id);
+    const res = await apiClient.users.getFollowedUserIds();
+    return res.success ? res.followedUserIds : null;
   } catch (err) {
-    captureException(err as Error, { op: 'fetch_followed_users', followerId });
-    return [];
+    captureException(err as Error, { op: 'fetch_followed_users' });
+    return null;
   }
 }
 
@@ -986,12 +993,15 @@ export async function fetchBlendedFeed(
   constituencyId?: string | null,
   stateCode?: string | null,
   limit = 50,
+  followedIdsOverride?: string[],
 ): Promise<any[] | null> {
   if (!guard()) return null;
   try {
     let followedIds: string[] = [];
-    if (viewerId) {
-      followedIds = await fetchFollowedUserIds(viewerId);
+    if (followedIdsOverride) {
+      followedIds = followedIdsOverride;
+    } else if (viewerId) {
+      followedIds = (await fetchFollowedUserIds(viewerId)) ?? [];
     }
 
     let query = supabase.from('posts').select('*').eq('is_deleted', false);
@@ -1079,34 +1089,60 @@ export async function fetchNotifications(userId: string, limit = 50): Promise<an
 }
 
 export async function fetchLeadershipModules(): Promise<any[] | null> {
-  if (!guard()) return null;
   try {
-    const { data, error } = await supabase
-      .from('leadership_modules')
-      .select('*')
-      .order('sort_order', { ascending: true });
-    if (error) throw error;
-    return data;
+    const result = await apiClient.aspirant.listModules();
+    return result.success ? result.modules : null;
   } catch (err) {
     captureException(err as Error, { op: 'fetch_modules' });
     return null;
   }
 }
 
-export async function fetchChallenges(stateCode?: string): Promise<any[] | null> {
-  if (!guard()) return null;
+export async function fetchAcademyChallenges(): Promise<{
+  challenges: CommunityChallenge[];
+  participation: ChallengeParticipation[];
+} | null> {
   try {
-    let query = supabase
-      .from('community_challenges')
-      .select('*')
-      .eq('is_active', true)
-      .order('created_at', { ascending: false });
-    if (stateCode) {
-      query = query.or(`state_code.eq.${stateCode},state_code.is.null`);
-    }
-    const { data, error } = await query;
-    if (error) throw error;
-    return data;
+    const result = await apiClient.aspirant.listChallenges();
+    if (!result.success) throw new Error('Challenge data is unavailable');
+    return { challenges: result.challenges, participation: result.participation };
+  } catch (err) {
+    captureException(err as Error, { op: 'fetch_academy_challenges' });
+    return null;
+  }
+}
+
+export async function fetchAcademyBadges(): Promise<CivicBadge[] | null> {
+  try {
+    const result = await apiClient.aspirant.listBadges();
+    if (!result.success) throw new Error('Badge data is unavailable');
+    return result.badges;
+  } catch (err) {
+    captureException(err as Error, { op: 'fetch_academy_badges' });
+    return null;
+  }
+}
+
+export async function submitLeadershipQuiz(
+  userId: string,
+  moduleId: string,
+  answers: Array<{ questionId: string; selectedIndex: number }>,
+): Promise<any> {
+  addBreadcrumb('academy', 'submit_quiz', { moduleId });
+  try {
+    const result = await apiClient.aspirant.submitQuiz(moduleId, answers, userId);
+    if (!result.success || !result.result) throw new Error('Quiz result was not persisted');
+    return result.result;
+  } catch (err) {
+    captureException(err as Error, { op: 'submit_academy_quiz', moduleId });
+    throw err;
+  }
+}
+
+export async function fetchChallenges(stateCode?: string): Promise<any[] | null> {
+  try {
+    const result = await apiClient.aspirant.listChallenges(stateCode);
+    return result.success ? result.challenges : null;
   } catch (err) {
     captureException(err as Error, { op: 'fetch_challenges' });
     return null;
@@ -1334,16 +1370,11 @@ export async function fetchLiveEvents(filters?: {
 
 export async function createLiveEvent(event: Record<string, any>): Promise<any | null> {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/v1/lmx/live`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...telemetry.getTracingHeaders(),
-      },
-      body: JSON.stringify(event),
-    });
-    if (!res.ok) return null;
-    return await res.json();
+    const res = await apiClient.request<Record<string, any>, Record<string, any>>(
+      '/api/v1/lmx/live',
+      { method: 'POST', body: event },
+    );
+    return res.statusCode >= 200 && res.statusCode < 300 ? res.data : null;
   } catch (e) {
     console.warn('[LMX] createLiveEvent exception:', e);
     return null;
@@ -1659,8 +1690,8 @@ export interface DMMessageItem {
   created_at: string;
 }
 
-export async function fetchUserConversations(userId: string): Promise<DMConversationItem[]> {
-  if (!guard()) return [];
+export async function fetchUserConversations(userId: string): Promise<DMConversationItem[] | null> {
+  if (!guard()) return null;
   try {
     const { data, error } = await supabase
       .from('conversations')
@@ -1703,12 +1734,12 @@ export async function fetchUserConversations(userId: string): Promise<DMConversa
     });
   } catch (err) {
     captureException(err as Error, { op: 'fetch_user_conversations', userId });
-    return [];
+    return null;
   }
 }
 
-export async function fetchConversationMessages(conversationId: string): Promise<DMMessageItem[]> {
-  if (!guard()) return [];
+export async function fetchConversationMessages(conversationId: string): Promise<DMMessageItem[] | null> {
+  if (!guard()) return null;
   try {
     const { data, error } = await supabase
       .from('messages')
@@ -1720,7 +1751,7 @@ export async function fetchConversationMessages(conversationId: string): Promise
     return data ?? [];
   } catch (err) {
     captureException(err as Error, { op: 'fetch_conversation_messages', conversationId });
-    return [];
+    return null;
   }
 }
 

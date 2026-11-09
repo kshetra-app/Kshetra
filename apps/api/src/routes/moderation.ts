@@ -1,3 +1,4 @@
+import { isIsolatedTestRuntime, isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import type { FastifyInstance } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
@@ -12,6 +13,8 @@ import {
   type UserRole,
 } from '../services/moderation';
 import { moderateContent, ModerationUnavailableError } from '../services/contentModeration';
+
+const isProductionRuntime = () => isProductionLikeRuntime();
 
 // In-memory fallback queue for testing or offline mode
 let MOCK_REPORTS_QUEUE = [
@@ -341,7 +344,7 @@ export async function moderationRoutes(app: FastifyInstance) {
     const userId = auth.userId;
 
     if (!isSupabaseConfigured) {
-      if (process.env.NODE_ENV === 'production') {
+      if (isProductionRuntime()) {
         return { state: 'DB_ERROR' };
       }
       const testRole =
@@ -350,7 +353,7 @@ export async function moderationRoutes(app: FastifyInstance) {
       return { state: 'RESOLVED', userId, role: testRole || 'moderator' };
     }
 
-    if (process.env.NODE_ENV !== 'production' && request.headers['x-test-role']) {
+    if (!isProductionRuntime() && request.headers['x-test-role']) {
       return { state: 'RESOLVED', userId, role: request.headers['x-test-role'] as UserRole };
     }
 
@@ -362,7 +365,7 @@ export async function moderationRoutes(app: FastifyInstance) {
         .maybeSingle();
 
       if (error) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProductionRuntime()) {
           return {
             state: 'RESOLVED',
             userId,
@@ -380,7 +383,7 @@ export async function moderationRoutes(app: FastifyInstance) {
       const verifiedRole = (profile?.role as UserRole) || (auth.role as UserRole) || 'citizen';
       return { state: 'RESOLVED', userId, role: verifiedRole };
     } catch (err: any) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (!isProductionRuntime()) {
         return {
           state: 'RESOLVED',
           userId,
@@ -467,7 +470,7 @@ export async function moderationRoutes(app: FastifyInstance) {
                 .update({ is_deleted: true, content: '[Removed by Moderator: Policy Violation]' })
                 .eq('id', payload.targetPostId);
               if (postErr) {
-                if (process.env.NODE_ENV === 'production') {
+                if (isProductionRuntime()) {
                   app.log.error({ err: postErr.message }, 'Failed to soft-delete post in Supabase');
                   return sendApiError(
                     reply,
@@ -489,7 +492,7 @@ export async function moderationRoutes(app: FastifyInstance) {
                 .update({ is_deleted: true, content: '[Removed by Moderator]' })
                 .eq('id', payload.targetCommentId);
               if (commentErr) {
-                if (process.env.NODE_ENV === 'production') {
+                if (isProductionRuntime()) {
                   app.log.error(
                     { err: commentErr.message },
                     'Failed to soft-delete comment in Supabase',
@@ -523,7 +526,7 @@ export async function moderationRoutes(app: FastifyInstance) {
               })
               .eq('id', payload.reportId);
             if (reportErr) {
-              if (process.env.NODE_ENV === 'production') {
+              if (isProductionRuntime()) {
                 app.log.error(
                   { err: reportErr.message },
                   'Failed to update report status in Supabase',
@@ -544,7 +547,7 @@ export async function moderationRoutes(app: FastifyInstance) {
             }
           }
         } catch (err: any) {
-          if (process.env.NODE_ENV === 'production') {
+          if (isProductionRuntime()) {
             app.log.error(
               { err: err?.message },
               'Exception persisting moderation action in Supabase',
@@ -678,7 +681,7 @@ export async function moderationRoutes(app: FastifyInstance) {
             .limit(50);
 
           if (error) {
-            if (process.env.NODE_ENV !== 'production') {
+            if (!isProductionRuntime()) {
               return reply.send({
                 success: true,
                 data: {
@@ -723,7 +726,7 @@ export async function moderationRoutes(app: FastifyInstance) {
             });
           }
         } catch (err: any) {
-          if (process.env.NODE_ENV !== 'production') {
+          if (!isProductionRuntime()) {
             return reply.send({
               success: true,
               data: {
@@ -745,7 +748,7 @@ export async function moderationRoutes(app: FastifyInstance) {
         }
       }
 
-      if (process.env.NODE_ENV === 'test') {
+      if (isIsolatedTestRuntime()) {
         return reply.send({
           success: true,
           data: {
@@ -882,7 +885,7 @@ export async function moderationRoutes(app: FastifyInstance) {
             .single();
 
           if (error) {
-            if (process.env.NODE_ENV !== 'production') {
+            if (!isProductionRuntime()) {
               return reply.send({
                 success: true,
                 data: {
@@ -920,7 +923,7 @@ export async function moderationRoutes(app: FastifyInstance) {
             },
           });
         } catch (err: any) {
-          if (process.env.NODE_ENV !== 'production') {
+          if (!isProductionRuntime()) {
             return reply.send({
               success: true,
               data: {
@@ -1018,7 +1021,7 @@ export async function moderationRoutes(app: FastifyInstance) {
         );
 
         if (error) {
-          if (process.env.NODE_ENV !== 'production') {
+          if (!isProductionRuntime()) {
             return reply.send({
               success: true,
               data: { blockerId: userId, blockedId: blockedUserId },
@@ -1035,7 +1038,7 @@ export async function moderationRoutes(app: FastifyInstance) {
           );
         }
       } catch (err: any) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProductionRuntime()) {
           return reply.send({
             success: true,
             data: { blockerId: userId, blockedId: blockedUserId },
@@ -1112,7 +1115,7 @@ export async function moderationRoutes(app: FastifyInstance) {
           .eq('blocked_id', targetUserId);
 
         if (error) {
-          if (process.env.NODE_ENV !== 'production') {
+          if (!isProductionRuntime()) {
             return reply.send({
               success: true,
               data: { unblocked: targetUserId },
@@ -1129,7 +1132,7 @@ export async function moderationRoutes(app: FastifyInstance) {
           );
         }
       } catch (err: any) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProductionRuntime()) {
           return reply.send({
             success: true,
             data: { unblocked: targetUserId },

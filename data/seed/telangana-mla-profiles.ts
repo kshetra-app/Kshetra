@@ -15,6 +15,8 @@
 export interface MLAProfile {
   acNo: number;
   name: string;
+  /** Name as recorded by the Election Commission for the most recent assembly election. */
+  officialElectionName?: string;
   party: string;
   electedParty?: string;
   age?: number;
@@ -65,6 +67,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 2,
     name: 'Gaddam Vivekanand',
+    officialElectionName: 'Vivek Venkat Swamy',
     party: 'INC',
     gender: 'M',
     terms: 1,
@@ -1021,6 +1024,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     name: 'Danam Nagender',
     party: 'INC',
     electedParty: 'BRS',
+    isCurrentMember: false,
     gender: 'M',
     terms: 2,
     age: 60,
@@ -1037,21 +1041,17 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   },
   {
     acNo: 61,
-    name: 'Maganti Gopinath',
-    party: 'BRS',
+    name: 'Naveen Yadav V',
+    officialElectionName: 'Naveen Yadav V',
+    party: 'INC',
+    electedParty: 'INC',
     gender: 'M',
-    terms: 3,
-    age: 60,
-    dob: '1963-01-01',
-    dobEstimated: true,
-    education: '12th Pass',
-    profession: 'Polictical Service/Member of Legislative Assembly',
-    criminalCases: 0,
-    totalAssets: 199303309,
-    totalLiabilities: 3000000,
-    maritalStatus: 'Married',
-    photoUrl: 'https://www.myneta.info/images_candidate/Telangana2023/37aa8812a529f1fc897fa45f5f6ee51f0f9223f5.jpg',
-    sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=109',
+    terms: 1,
+    constituencyName: 'Jubilee Hills',
+    district: 'Hyderabad',
+    isBypoll: true,
+    isCurrentMember: true,
+    sourceUrl: 'https://ceotelangana.nic.in/Bye-Election%20to%20the%2061-Jubilee%20Hills-2025/2080-163_AC_61_Declaration%20of%20result%20in%20Form-21D%20-%20Published%20in%20State%20GAzette.pdf',
   },
   {
     acNo: 62,
@@ -1205,20 +1205,16 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 71,
     name: 'Sri Ganesh Narayanan',
+    officialElectionName: 'Sri Ganesh',
     party: 'INC',
+    electedParty: 'INC',
     gender: 'M',
     terms: 1,
-    age: 45,
-    dob: '1979-01-01',
-    dobEstimated: true,
-    education: 'Post Graduate',
-    profession: 'Business & Social Work',
-    criminalCases: 0,
-    totalAssets: 47250000,
-    totalLiabilities: 8500000,
-    maritalStatus: 'Married',
-    photoUrl: 'https://www.myneta.info/images_candidate/Telangana2023/f978cd00d05ec2b8982b2fe43f29026cb032d8a5.jpg',
-    sourceUrl: 'https://results.eci.gov.in',
+    constituencyName: 'Secunderabad Cantonment',
+    district: 'Hyderabad',
+    isBypoll: true,
+    isCurrentMember: true,
+    sourceUrl: 'https://ceotelangana.nic.in/BYE_ELECTION%2871-SEC_CANTT%29/2090-82-Bye%20Elecs%20to%20TSLA%2071-Sec%27bad%20cant%20Declaration%20of%20Result-Reg.pdf',
   },
   {
     acNo: 72,
@@ -2060,6 +2056,11 @@ export function getDefectedMLAs(): MLAProfile[] {
   return TS_MLA_PROFILES.filter((p) => p.electedParty && p.electedParty !== p.party);
 }
 
+/** Profiles of members currently seated; excludes historical profiles for vacant seats. */
+export function getCurrentMLAProfiles(): MLAProfile[] {
+  return TS_MLA_PROFILES.filter((p) => p.isCurrentMember !== false);
+}
+
 /** Get all MLA profiles */
 export function getAllTSMLAs(): MLAProfile[] {
   return TS_MLA_PROFILES;
@@ -2068,7 +2069,7 @@ export function getAllTSMLAs(): MLAProfile[] {
 export const TELANGANA_MLA_PROFILES = TS_MLA_PROFILES;
 
 export function getMLAsByParty(party: string): MLAProfile[] {
-  return TS_MLA_PROFILES.filter((p) => p.party === party);
+  return getCurrentMLAProfiles().filter((p) => p.party === party);
 }
 
 export function getFemaleMLAs(): MLAProfile[] {

@@ -579,7 +579,7 @@ const ta = {
     "tryAsking": "இலா அடிகி சூடம்டி:",
     "thinkingSearch": "ஸமாசாரம் விச்லேஷிஸ்தோம்தி…",
     "noResponse": "ஸமாதாநம் அம்துபாடுலோ லேது",
-    "poweredBy": "பாலிகிராம் AI மூலம் இயக்கப்படுகிறது • Google Gemini",
+    "poweredBy": "பாலிகிராம் AI மூலம் இயக்கப்படுகிறது",
     "qWinner2023": "2023 லோ {{name}} எவரு கெலிசாரு?",
     "qMarginTrend": "{{name}} லோ ஆதிக்ய தோரணி ஏமிடி?",
     "qTellAboutMLA": "{{name}} எம்மெல்யே குரிம்சி செப்பம்டி",

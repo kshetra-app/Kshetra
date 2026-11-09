@@ -68,7 +68,7 @@ describe('<AdaptiveFloatingControls /> Component Behavioral Specs', () => {
     expect(screen.getByText('Locate')).toBeTruthy();
   });
 
-  it('renders District focus button when constituency is selected within state', () => {
+  it('keeps the map unobstructed on selection and shows District control when expanded', () => {
     render(
       <AdaptiveFloatingControls
         {...defaultProps}
@@ -77,6 +77,9 @@ describe('<AdaptiveFloatingControls /> Component Behavioral Specs', () => {
       />
     );
 
+    const expandControls = screen.getByLabelText('Expand Controls');
+    expect(expandControls).toBeTruthy();
+    fireEvent.press(expandControls);
     expect(screen.getByText('District')).toBeTruthy();
   });
 

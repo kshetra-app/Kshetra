@@ -186,7 +186,7 @@ describe('Providers Comprehensive Unit Tests', () => {
       const nightCheck = provider.isWithinTraiCallingWindow();
       expect(nightCheck.permitted).toBe(false);
       expect(nightCheck.currentISTHour).toBe(22);
-      expect(nightCheck.message).toContain('TRAI regulations restrict automated political calls');
+      expect(nightCheck.message).toContain('configured political voice dispatch window');
 
       // Test fallback when simulatedISTHour is undefined
       provider.simulatedISTHour = undefined;
@@ -327,7 +327,7 @@ describe('Providers Comprehensive Unit Tests', () => {
       expect(result.error).toBe('OUTSIDE_TRAI_WINDOW');
     });
 
-    it('returns simulation queued warning when telecom credentials are not configured', async () => {
+    it('fails dispatch when telecom credentials are not configured', async () => {
       const provider = new TelecomProvider({});
       jest.spyOn(provider, 'isWithinTraiCallingWindow').mockReturnValue({
         permitted: true,
@@ -335,8 +335,9 @@ describe('Providers Comprehensive Unit Tests', () => {
       });
 
       const result = await provider.dispatchBroadcast(makeDispatchParams());
-      expect(result.success).toBe(true);
-      expect(result.warning).toContain('TELECOM_CREDENTIALS_REQUIRED');
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('TELECOM_CREDENTIALS_REQUIRED');
+      expect(result.providerRef).toBeUndefined();
     });
 
     it('parses delivery report for completed, busy, and in-progress statuses', () => {
@@ -394,8 +395,47 @@ describe('Providers Comprehensive Unit Tests', () => {
         }),
       );
 
-      expect(result.success).toBe(true);
-      expect(result.warning).toContain('Recipient has opted out under TRAI regulations');
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('RECIPIENT_OPTED_OUT');
+    });
+
+    it('rejects segment counts that do not match the explicit one-recipient operation', async () => {
+      const provider = new TelecomProvider({
+        apiKey: 'test-key',
+        apiToken: 'test-tok',
+        accountSid: 'test-acc',
+      });
+      jest.spyOn(provider, 'isWithinTraiCallingWindow').mockReturnValue({
+        permitted: true,
+        currentISTHour: 11,
+      });
+
+      const result = await provider.dispatchBroadcast(makeDispatchParams());
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('SINGLE_RECIPIENT_REQUIRED');
+    });
+
+    it('fails closed when the production opt-out ledger cannot be checked', async () => {
+      const provider = new TelecomProvider({
+        apiKey: 'test-key',
+        apiToken: 'test-tok',
+        accountSid: 'test-acc',
+      });
+      jest.spyOn(provider, 'isWithinTraiCallingWindow').mockReturnValue({
+        permitted: true,
+        currentISTHour: 11,
+      });
+      jest.spyOn(obdTelecomService, 'isNumberOptedOut').mockRejectedValue(
+        new Error('OPTOUT_LEDGER_UNAVAILABLE'),
+      );
+
+      const result = await provider.dispatchBroadcast(
+        makeDispatchParams({
+          targetSegment: { type: 'ward', voterCount: 1, phoneNumbers: ['9876543210'] },
+        }),
+      );
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('OPTOUT_LEDGER_UNAVAILABLE');
     });
 
     it('successfully dispatches broadcast via mocked fetch', async () => {
@@ -469,8 +509,8 @@ describe('Providers Comprehensive Unit Tests', () => {
           campaignId: 'cmp_fail',
           targetSegment: {
             type: 'ward',
-            voterCount: 0,
-            phoneNumbers: [],
+            voterCount: 1,
+            phoneNumbers: ['919876543210'],
           },
         }),
       );

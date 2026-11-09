@@ -288,30 +288,30 @@ describe('State Data Service (stateData.ts) Unit Tests', () => {
       expect(years).toContain(2019);
     });
 
-    it('covers Tamil Nadu (2021 winner and 2016 historical results)', () => {
+    it('covers Tamil Nadu (2026 winner and historical results)', () => {
       const data = getConstituencyElectionData('TN', 1);
       expect(data).not.toBeNull();
-      expect(data?.recentElection.electionYear).toBe(2021);
+      expect(data?.recentElection.electionYear).toBe(2026);
       const years = data?.elections.map((e) => e.electionYear);
-      expect(years).toContain(2021);
+      expect(years).toContain(2026);
       expect(years).toContain(2016);
     });
 
-    it('covers Kerala (2021 winner and 2016 historical results)', () => {
+    it('covers Kerala (2026 winner and historical results)', () => {
       const data = getConstituencyElectionData('KL', 1);
       expect(data).not.toBeNull();
-      expect(data?.recentElection.electionYear).toBe(2021);
+      expect(data?.recentElection.electionYear).toBe(2026);
       const years = data?.elections.map((e) => e.electionYear);
-      expect(years).toContain(2021);
+      expect(years).toContain(2026);
       expect(years).toContain(2016);
     });
 
-    it('covers West Bengal (2021 winner and 2016 historical results)', () => {
+    it('covers West Bengal (2026 winner and historical results)', () => {
       const data = getConstituencyElectionData('WB', 1);
       expect(data).not.toBeNull();
-      expect(data?.recentElection.electionYear).toBe(2021);
+      expect(data?.recentElection.electionYear).toBe(2026);
       const years = data?.elections.map((e) => e.electionYear);
-      expect(years).toContain(2021);
+      expect(years).toContain(2026);
       expect(years).toContain(2016);
     });
 

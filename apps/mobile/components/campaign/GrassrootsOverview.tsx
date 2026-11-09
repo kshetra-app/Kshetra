@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../lib/theme';
@@ -15,28 +15,87 @@ export default function GrassrootsOverview({ onNavigateTab }: GrassrootsOverview
   const { colors } = useTheme();
 
   const campaigns = useCampaignStore((s) => s.campaigns);
+  const selectedCampaignId = useCampaignStore((s) => s.selectedCampaignId);
+  const selectCampaign = useCampaignStore((s) => s.selectCampaign);
+  const campaignsLoading = useCampaignStore((s) => s.campaignsLoading);
+  const campaignsAvailable = useCampaignStore((s) => s.campaignsAvailable);
+  const campaignsError = useCampaignStore((s) => s.campaignsError);
   const booths = useCampaignStore((s) => s.booths);
+  const boothsAvailable = useCampaignStore((s) => s.boothsAvailable);
   const volunteers = useCampaignStore((s) => s.volunteers);
+  const volunteersAvailable = useCampaignStore((s) => s.volunteersAvailable);
 
-  const activeCampaign = campaigns.find((c) => c.status === 'active') || campaigns[0];
+  const activeCampaign = campaigns.find((c) => c.id === selectedCampaignId)
+    || campaigns.find((c) => c.status === 'active')
+    || campaigns[0];
+  const hasBoothData = booths.length > 0;
+  const hasVoterCounts = booths.length > 0 && booths.every((booth) => booth.totalVoters > 0);
+  const hasCampaignData = Boolean(activeCampaign);
+  const activeVolunteerCount = volunteers.filter((volunteer) => volunteer.status === 'active').length;
 
-  // Real booth metrics
-  const totalBooths = booths.length > 0 ? booths.length : 185;
+  const totalBooths = booths.length;
   const assignedBoothsCount = booths.filter((b) => !!b.agentPhone).length;
   const unassignedBoothsCount = booths.filter((b) => !b.agentPhone).length;
   const criticalBoothsCount = booths.filter((b) => b.priority === 'critical' || b.priority === 'high').length;
 
-  const totalVoters = booths.reduce((sum, b) => sum + (b.totalVoters || 0), 0) || 215000;
-  const avgSupport = booths.length > 0
-    ? Math.round(booths.reduce((sum, b) => sum + (b.supportEstimate || 50), 0) / booths.length)
-    : 62;
+  const totalVoters = booths.reduce((sum, b) => sum + (b.totalVoters || 0), 0);
+  const hasSupportData = booths.length > 0 && booths.every((booth) => booth.supportEstimate > 0);
+  const avgSupport = hasSupportData
+    ? Math.round(booths.reduce((sum, booth) => sum + booth.supportEstimate, 0) / booths.length)
+    : null;
 
-  const spentBudget = activeCampaign?.spentBudgetINR || 145000;
-  const totalBudget = activeCampaign?.totalBudgetINR || 500000;
-  const budgetUtilization = totalBudget > 0 ? Math.round((spentBudget / totalBudget) * 100) : 0;
+  const spentBudget = activeCampaign?.spentBudgetINR;
+  const totalBudget = activeCampaign?.totalBudgetINR;
+  const budgetUtilization = totalBudget !== undefined && totalBudget > 0 && spentBudget !== undefined
+    ? Math.round((spentBudget / totalBudget) * 100)
+    : null;
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      {campaignsLoading ? (
+        <View style={[styles.dataNotice, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <ActivityIndicator size="small" color={colors.primary} />
+          <Text style={{ color: colors.textSecondary }}>{t('common.loading', { defaultValue: 'Loading campaign data…' })}</Text>
+        </View>
+      ) : campaignsError ? (
+        <View style={[styles.dataNotice, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Ionicons name="alert-circle-outline" size={18} color="#B45309" />
+          <Text style={{ color: colors.textSecondary, flex: 1 }}>{campaignsError}</Text>
+        </View>
+      ) : campaignsAvailable && !activeCampaign ? (
+        <View style={[styles.dataNotice, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Ionicons name="information-circle-outline" size={18} color={colors.textSecondary} />
+          <Text style={{ color: colors.textSecondary, flex: 1 }}>{t('campaignManager.noCampaignsYet', { defaultValue: 'No campaigns are available for this account yet.' })}</Text>
+        </View>
+      ) : null}
+
+      {campaigns.length > 1 ? (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.campaignPicker}>
+          {campaigns.map((campaign) => {
+            const selected = campaign.id === activeCampaign?.id;
+            return (
+              <Pressable
+                key={campaign.id}
+                accessibilityRole="button"
+                accessibilityState={{ selected }}
+                onPress={() => selectCampaign(campaign.id)}
+                style={[
+                  styles.campaignChoice,
+                  { backgroundColor: selected ? colors.primary : colors.surface, borderColor: selected ? colors.primary : colors.border },
+                ]}
+              >
+                <Text style={{ color: selected ? '#FFFFFF' : colors.text, fontSize: 12, fontWeight: '700' }} numberOfLines={1}>
+                  {campaign.name}
+                </Text>
+                <Text style={{ color: selected ? '#FFFFFFCC' : colors.textSecondary, fontSize: 10 }}>
+                  {campaign.status}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
+      ) : null}
+
       {/* ─── Candidate & Constituency Banner ─── */}
       <View style={[styles.profileBanner, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}>
         <View style={styles.bannerRow}>
@@ -47,14 +106,14 @@ export default function GrassrootsOverview({ onNavigateTab }: GrassrootsOverview
           </View>
           <View style={styles.bannerInfo}>
             <Text style={[styles.candidateName, { color: colors.text }]}>
-              {activeCampaign?.politicianName || 'Revanth Reddy'}
+              {activeCampaign?.politicianName || t('campaignManager.noCampaignSelected', { defaultValue: 'No campaign selected' })}
             </Text>
             <View style={styles.partyBadgeRow}>
-              <View style={[styles.partyPill, { backgroundColor: '#3B82F620' }]}>
-                <Text style={styles.partyPillText}>{activeCampaign?.party || 'INC'}</Text>
-              </View>
+              {activeCampaign?.party ? <View style={[styles.partyPill, { backgroundColor: '#3B82F620' }]}>
+                <Text style={styles.partyPillText}>{activeCampaign.party}</Text>
+              </View> : null}
               <Text style={[styles.constituencyText, { color: colors.textSecondary }]}>
-                {t('campaignManager.constituencyLabel', { defaultValue: 'Nampally AC #56 · Telangana' })}
+                {activeCampaign?.stateCode || t('campaignManager.campaignLocationNotSet', { defaultValue: 'Campaign location not set' })}
               </Text>
             </View>
           </View>
@@ -71,11 +130,11 @@ export default function GrassrootsOverview({ onNavigateTab }: GrassrootsOverview
             </View>
             <View style={[styles.trendBadge, { backgroundColor: '#10B98115' }]}>
               <Ionicons name="trending-up" size={12} color="#10B981" />
-              <Text style={[styles.trendText, { color: '#10B981' }]}>{avgSupport}% {t('campaignManager.supportShort', { defaultValue: 'Support' })}</Text>
+              <Text style={[styles.trendText, { color: '#10B981' }]}>{avgSupport === null ? '—' : `${avgSupport}% ${t('campaignManager.supportShort', { defaultValue: 'Support' })}`}</Text>
             </View>
           </View>
           <Text style={[styles.metricValue, { color: colors.text }]}>
-            {totalVoters.toLocaleString('en-IN')}
+            {hasVoterCounts ? totalVoters.toLocaleString('en-IN') : '—'}
           </Text>
           <Text style={[styles.metricLabel, { color: colors.textSecondary }]}>
             {t('campaignManager.totalVotersLabel', { defaultValue: 'Total Voters in Constituency' })}
@@ -91,20 +150,20 @@ export default function GrassrootsOverview({ onNavigateTab }: GrassrootsOverview
             <View style={[styles.iconBox, { backgroundColor: '#F59E0B15' }]}>
               <Ionicons name="location" size={20} color="#F59E0B" />
             </View>
-            {unassignedBoothsCount > 0 ? (
+            {hasBoothData && unassignedBoothsCount > 0 ? (
               <View style={[styles.trendBadge, { backgroundColor: '#EF444415' }]}>
                 <Text style={[styles.trendText, { color: '#EF4444' }]}>
                   {unassignedBoothsCount} {t('campaignManager.unassigned', { defaultValue: 'Empty' })}
                 </Text>
               </View>
-            ) : (
+            ) : hasBoothData ? (
               <View style={[styles.trendBadge, { backgroundColor: '#10B98115' }]}>
                 <Text style={[styles.trendText, { color: '#10B981' }]}>100%</Text>
               </View>
-            )}
+            ) : null}
           </View>
           <Text style={[styles.metricValue, { color: colors.text }]}>
-            {assignedBoothsCount} / {totalBooths}
+            {boothsAvailable ? `${assignedBoothsCount} / ${totalBooths}` : '—'}
           </Text>
           <Text style={[styles.metricLabel, { color: colors.textSecondary }]}>
             {t('campaignManager.boothsWithIncharge', { defaultValue: 'Booths with In-charge' })}
@@ -125,7 +184,7 @@ export default function GrassrootsOverview({ onNavigateTab }: GrassrootsOverview
             </View>
           </View>
           <Text style={[styles.metricValue, { color: colors.text }]}>
-            {volunteers.length}
+            {volunteersAvailable ? activeVolunteerCount : '—'}
           </Text>
           <Text style={[styles.metricLabel, { color: colors.textSecondary }]}>
             {t('campaignManager.groundCadreLabel', { defaultValue: 'Active Ground Cadre' })}
@@ -138,15 +197,15 @@ export default function GrassrootsOverview({ onNavigateTab }: GrassrootsOverview
             <View style={[styles.iconBox, { backgroundColor: '#10B98115' }]}>
               <Ionicons name="cash" size={20} color="#10B981" />
             </View>
-            <Text style={[styles.trendText, { color: budgetUtilization > 80 ? '#EF4444' : '#10B981' }]}>
+            {hasCampaignData && budgetUtilization !== null ? <Text style={[styles.trendText, { color: budgetUtilization > 80 ? '#EF4444' : '#10B981' }]}>
               {budgetUtilization}%
-            </Text>
+            </Text> : null}
           </View>
           <Text style={[styles.metricValue, { color: colors.text }]}>
-            {formatBudget(spentBudget)}
+            {spentBudget === undefined ? '—' : formatBudget(spentBudget)}
           </Text>
           <Text style={[styles.metricLabel, { color: colors.textSecondary }]}>
-            {t('campaignManager.budgetSpentOf', { defaultValue: 'Spent of' })} {formatBudget(totalBudget)}
+            {totalBudget === undefined ? t('campaignManager.budgetNotAvailable', { defaultValue: 'Budget not available' }) : `${t('campaignManager.budgetSpentOf', { defaultValue: 'Spent of' })} ${formatBudget(totalBudget)}`}
           </Text>
         </View>
       </View>
@@ -191,7 +250,7 @@ export default function GrassrootsOverview({ onNavigateTab }: GrassrootsOverview
       </View>
 
       {/* ─── Urgent Alert: Unassigned Booths ─── */}
-      {unassignedBoothsCount > 0 && (
+      {hasBoothData && unassignedBoothsCount > 0 && (
         <Pressable
           style={[styles.alertBanner, { backgroundColor: '#FEF2F2', borderColor: '#FECACA' }]}
           onPress={() => onNavigateTab('booths')}
@@ -225,6 +284,17 @@ export default function GrassrootsOverview({ onNavigateTab }: GrassrootsOverview
 
 const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 16 },
+  dataNotice: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    padding: 12,
+    marginBottom: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  campaignPicker: { marginBottom: 12 },
+  campaignChoice: { maxWidth: 230, minWidth: 140, borderWidth: 1, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 8, marginRight: 8, gap: 3 },
   profileBanner: {
     padding: 16,
     borderRadius: 16,

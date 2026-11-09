@@ -1,54 +1,222 @@
-import type { FastifyPluginAsync } from 'fastify';
-import { dataIngestionService } from '../services/dataIngestionService';
-import { delimitationSourcePipeline } from '../services/delimitationSourcePipeline';
+import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify';
+import { z } from 'zod';
+import {
+  dataIngestionService,
+  IngestionPersistenceError,
+  IngestionValidationError,
+} from '../services/dataIngestionService';
+import {
+  delimitationSourcePipeline,
+  DelimitationPersistenceError,
+  DelimitationValidationError,
+} from '../services/delimitationSourcePipeline';
+import { resolveAuthenticatedUser } from '../lib/userAuth';
 import { sendApiError } from '../lib/replyHelper';
 
+const urlSchema = z
+  .string()
+  .url()
+  .refine((value) => {
+    const protocol = new URL(value).protocol;
+    return protocol === 'https:' || protocol === 'http:';
+  }, 'sourceUri must use HTTP or HTTPS');
+
+const ingestionSchema = z
+  .object({
+    datasetName: z.string().trim().min(1).max(100),
+    sourceUri: urlSchema,
+    rawPayload: z.unknown().refine((value) => value !== undefined, 'rawPayload is required'),
+    versionTag: z
+      .string()
+      .trim()
+      .min(1)
+      .max(100)
+      .default(() => `v${Date.now()}`),
+  })
+  .strict();
+
+const geometrySchema = z
+  .object({
+    type: z.enum(['Polygon', 'MultiPolygon']),
+    coordinates: z.unknown(),
+  })
+  .passthrough();
+
+const delimitationSchema = z
+  .object({
+    orderNumber: z.string().trim().min(1).max(150),
+    gazetteDate: z.string().date(),
+    stateCode: z
+      .string()
+      .trim()
+      .regex(/^[A-Z0-9]{2,5}$/),
+    boundaries: z
+      .array(
+        z
+          .object({
+            constituencyId: z.string().trim().min(1).max(100),
+            geojsonGeometry: geometrySchema,
+          })
+          .strict(),
+      )
+      .min(1)
+      .max(1000),
+  })
+  .strict();
+
+async function requireAdmin(request: FastifyRequest, reply: FastifyReply): Promise<boolean> {
+  const user = await resolveAuthenticatedUser(request, reply);
+  if (!user) return false;
+  if (user.role !== 'admin' && user.role !== 'super_admin' && user.role !== 'data_engineer') {
+    sendApiError(
+      reply,
+      request,
+      403,
+      'Forbidden',
+      'Administrator or data engineer role required.',
+      { code: 'FORBIDDEN' },
+    );
+    return false;
+  }
+  return true;
+}
+
 export const dataPipelineRoutes: FastifyPluginAsync = async (app) => {
-  /**
-   * Dispatches an 8-stage data ingestion pipeline job (JOB 075).
-   */
   app.post('/api/v1/pipelines/ingest', async (request, reply) => {
-    const body = request.body as any;
-
-    if (!body || !body.datasetName || !body.sourceUri) {
-      return sendApiError(reply, request, 400, 'INVALID_PAYLOAD', 'datasetName and sourceUri are required.');
+    if (!(await requireAdmin(request, reply))) return reply;
+    const parsed = ingestionSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'Bad Request',
+        parsed.error.errors[0]?.message || 'Invalid ingestion payload',
+        { code: 'VALIDATION_ERROR' },
+      );
     }
-
-    const job = await dataIngestionService.processDataset({
-      datasetName: body.datasetName,
-      sourceUri: body.sourceUri,
-      rawPayload: body.rawPayload,
-      versionTag: body.versionTag || `v${Date.now()}`,
-    });
-
-    return reply.send({ success: true, data: job });
+    try {
+      const job = await dataIngestionService.processDataset({
+        ...parsed.data,
+        versionTag: parsed.data.versionTag,
+      });
+      if (job.status === 'FAILED') {
+        return reply.status(422).send({
+          success: false,
+          data: job,
+          message: 'Dataset was rejected and the failed job was durably recorded.',
+        });
+      }
+      return reply.status(201).send({ success: true, data: job, committedTo: 'durable_staging' });
+    } catch (error) {
+      if (error instanceof IngestionValidationError) {
+        return sendApiError(reply, request, 400, 'Bad Request', error.message, {
+          code: 'VALIDATION_ERROR',
+        });
+      }
+      if (error instanceof IngestionPersistenceError) {
+        request.log.error({ err: error }, 'Could not durably persist ingestion job');
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Ingestion storage is unavailable; no completion was reported.',
+          { code: 'INGESTION_STORAGE_UNAVAILABLE' },
+        );
+      }
+      request.log.error({ err: error }, 'Unexpected ingestion pipeline failure');
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Ingestion failed before a durable job result was available.',
+      );
+    }
   });
 
-  /**
-   * Retrieves status and stage counters for a specific data ingestion job.
-   */
   app.get('/api/v1/pipelines/status/:jobId', async (request, reply) => {
+    if (!(await requireAdmin(request, reply))) return reply;
     const { jobId } = request.params as { jobId: string };
-
-    const job = await dataIngestionService.getJobStatus(jobId);
-    if (!job) {
-      return sendApiError(reply, request, 404, 'JOB_NOT_FOUND', `Data ingestion job '${jobId}' was not found.`);
+    if (!z.string().uuid().safeParse(jobId).success) {
+      return sendApiError(reply, request, 400, 'Bad Request', 'jobId must be a UUID.', {
+        code: 'VALIDATION_ERROR',
+      });
     }
-
-    return reply.send({ success: true, data: job });
+    try {
+      const job = await dataIngestionService.getJobStatus(jobId);
+      if (!job)
+        return sendApiError(
+          reply,
+          request,
+          404,
+          'Not Found',
+          `Data ingestion job '${jobId}' was not found.`,
+          { code: 'JOB_NOT_FOUND' },
+        );
+      return reply.send({ success: true, data: job });
+    } catch (error) {
+      request.log.error({ err: error }, 'Could not load persisted ingestion status');
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Ingestion status storage is unavailable.',
+        { code: 'INGESTION_STORAGE_UNAVAILABLE' },
+      );
+    }
   });
 
-  /**
-   * Executes Delimitation spatial topological audit & calculates geographic impact deltas (JOB 076).
-   */
   app.post('/api/v1/pipelines/delimitation/audit', async (request, reply) => {
-    const body = request.body as any;
-
-    if (!body || !body.orderNumber || !body.stateCode || !Array.isArray(body.boundaries)) {
-      return sendApiError(reply, request, 400, 'INVALID_PAYLOAD', 'orderNumber, stateCode, and boundaries array are required.');
+    if (!(await requireAdmin(request, reply))) return reply;
+    const parsed = delimitationSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'Bad Request',
+        parsed.error.errors[0]?.message || 'Invalid delimitation payload',
+        { code: 'VALIDATION_ERROR' },
+      );
     }
-
-    const report = await delimitationSourcePipeline.processDelimitationRevision(body);
-    return reply.send({ success: true, data: report });
+    try {
+      const report = await delimitationSourcePipeline.processDelimitationRevision(parsed.data);
+      return reply.status(201).send({
+        success: true,
+        data: report,
+        geometryEngine: 'PostGIS',
+      });
+    } catch (error) {
+      if (error instanceof DelimitationValidationError) {
+        return sendApiError(reply, request, 422, 'Unprocessable Entity', error.message, {
+          code: 'DELIMITATION_VALIDATION_FAILED',
+        });
+      }
+      if (error instanceof DelimitationPersistenceError) {
+        request.log.error(
+          { err: error },
+          'Delimitation audit could not complete against canonical PostGIS data',
+        );
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Canonical geometry storage is unavailable; no report was persisted.',
+          { code: 'SPATIAL_STORAGE_UNAVAILABLE' },
+        );
+      }
+      request.log.error({ err: error }, 'Unexpected PostGIS delimitation failure');
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Spatial audit failed before a persisted report was available.',
+      );
+    }
   });
 };

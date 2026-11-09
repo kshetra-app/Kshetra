@@ -31,6 +31,7 @@ export type ContentActionType =
   | 'delete_post'
   | 'create_comment'
   | 'edit_comment'
+  | 'delete_comment'
   | 'vote_poll'
   | 'report_issue'
   | 'update_issue'
@@ -77,6 +78,7 @@ export const ACTION_TYPE_CONFIG: Record<ContentActionType, { label: string; seve
   delete_post: { label: 'Delete Post', severity: 'medium' },
   create_comment: { label: 'Comment', severity: 'high' },
   edit_comment: { label: 'Edit Comment', severity: 'medium' },
+  delete_comment: { label: 'Delete Comment', severity: 'medium' },
   vote_poll: { label: 'Vote on Poll', severity: 'low' },
   report_issue: { label: 'Report Issue', severity: 'high' },
   update_issue: { label: 'Update Issue', severity: 'medium' },

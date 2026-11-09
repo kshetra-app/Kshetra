@@ -120,6 +120,7 @@ export interface ConstituencyBrief {
   reservationStatus: ReservationStatus;
   currentParty: string;
   currentMLA: string;
+  officeholderStatus?: 'INCUMBENT_ACTIVE' | 'BY_ELECTION_SEATED' | 'VACANT' | 'UNRESOLVED';
 }
 
 export interface ConstituencyDetail extends ConstituencyBrief {

@@ -16,7 +16,7 @@
  * ── PARTY TALLY (as elected, Dec 2023) ──────────────────────────────────
  *  INC: 64 | BRS: 39 | BJP: 8 | AIMIM: 7 | CPI: 1 | Total: 119
  *
- * ── POST-ELECTION DEFECTIONS (BRS → INC, 2024) ─────────────────────────
+ * ── POST-ELECTION PARTY CHANGES (BRS → INC, 2024) ──────────────────────
  *  AC 14  Banswada        — Pocharam Srinivas Reddy
  *  AC 21  Jagtial         — M. Sanjay Kumar
  *  AC 40  Patancheru      — Gudem Mahipal Reddy
@@ -53,8 +53,19 @@ export interface ConstituencySeed {
   runnerUpName2023?: string;
   /** Winning margin (0 = pending ECI verification) */
   margin2023: number;
-  /** Current party if different from winner2023 due to post-election defection */
+  /** Reported current political affiliation if different from the election winner's party. */
   currentParty?: string;
+  /** Sitting member where a later by-election or vacancy changed representation. */
+  currentMemberName?: string;
+  /** Later by-election winner; general-election result fields remain unchanged. */
+  byElection?: {
+    year: number;
+    month: string;
+    winnerName: string;
+    winnerParty: string;
+  };
+  /** Current seat status after later events. */
+  officeholderStatus?: 'INCUMBENT_ACTIVE' | 'BY_ELECTION_SEATED' | 'VACANT';
 }
 
 /**
@@ -64,7 +75,7 @@ export interface ConstituencySeed {
 export const TELANGANA_CONSTITUENCIES: ConstituencySeed[] = [
   // ─── KUMURAM BHEEM ASIFABAD / MANCHERIAL / ADILABAD / NIRMAL ───
   { acNo: 1, name: 'Sirpur', localName: 'సిర్పూర్', district: 'Kumuram Bheem Asifabad', type: 'ST', winner2023: 'BJP', winnerName2023: 'Palvai Harish Babu', winnerVotes2023: 63702, runnerUp2023: 'BRS', runnerUpName2023: 'Koneru Konappa', margin2023: 3088 },
-  { acNo: 2, name: 'Chennur', localName: 'చెన్నూరు', district: 'Mancherial', type: 'SC', winner2023: 'INC', winnerName2023: 'G. Vivekanand', winnerVotes2023: 87541, runnerUp2023: 'BRS', runnerUpName2023: 'Balka Suman', margin2023: 37515 },
+  { acNo: 2, name: 'Chennur', localName: 'చెన్నూరు', district: 'Mancherial', type: 'SC', winner2023: 'INC', winnerName2023: 'Vivek Venkat Swamy', winnerVotes2023: 87541, runnerUp2023: 'BRS', runnerUpName2023: 'Balka Suman', margin2023: 37515 },
   { acNo: 3, name: 'Bellampalli', localName: 'బెల్లంపల్లి', district: 'Mancherial', type: 'SC', winner2023: 'INC', winnerName2023: 'Gaddam Vinod Kumar', winnerVotes2023: 82217, runnerUp2023: 'BRS', runnerUpName2023: 'Durgam Chinnaiah', margin2023: 36878 },
   { acNo: 4, name: 'Mancherial', localName: 'మంచిర్యాల', district: 'Mancherial', type: 'GEN', winner2023: 'INC', winnerName2023: 'Kokkirala Premsagar Rao', winnerVotes2023: 105945, runnerUp2023: 'BJP', runnerUpName2023: 'Raghunath Verabelli', margin2023: 66116 },
   { acNo: 5, name: 'Asifabad', localName: 'ఆసిఫాబాద్', district: 'Kumuram Bheem Asifabad', type: 'ST', winner2023: 'BRS', winnerName2023: 'Kova Laxmi', winnerVotes2023: 83052, runnerUp2023: 'INC', runnerUpName2023: 'Ajmera Shyam', margin2023: 22810 },
@@ -121,7 +132,7 @@ export const TELANGANA_CONSTITUENCIES: ConstituencySeed[] = [
   { acNo: 48, name: 'Ibrahimpatnam', localName: 'ఇబ్రహీంపట్నం', district: 'Rangareddy', type: 'GEN', winner2023: 'INC', winnerName2023: 'Malreddy Ranga Reddy', winnerVotes2023: 126506, runnerUp2023: 'BRS', runnerUpName2023: 'Manchireddy Kishan Reddy', margin2023: 36700 },
   { acNo: 49, name: 'L. B. Nagar', localName: 'ఎల్బీ నగర్', district: 'Rangareddy', type: 'GEN', winner2023: 'BRS', winnerName2023: 'Devireddy Sudheer Reddy', winnerVotes2023: 82347, runnerUp2023: 'BJP', runnerUpName2023: 'Sama Ranga Reddy', margin2023: 5634 },
   { acNo: 50, name: 'Maheshwaram', localName: 'మహేశ్వరం', district: 'Rangareddy', type: 'GEN', winner2023: 'BRS', winnerName2023: 'Sabitha Indra Reddy', winnerVotes2023: 125578, runnerUp2023: 'BJP', runnerUpName2023: 'Andela Sriramulu Yadav', margin2023: 26187 },
-  { acNo: 51, name: 'Rajendranagar', localName: 'రాజేంద్రనగర్', district: 'Rangareddy', type: 'GEN', winner2023: 'BRS', winnerName2023: 'T. Prakash Goud{{efn', winnerVotes2023: 87654, runnerUp2023: 'BJP', runnerUpName2023: 'Thokala Srinivas Reddy', margin2023: -1984, currentParty: 'INC' },
+  { acNo: 51, name: 'Rajendranagar', localName: 'రాజేంద్రనగర్', district: 'Rangareddy', type: 'GEN', winner2023: 'BRS', winnerName2023: 'T. Prakash Goud', winnerVotes2023: 121734, runnerUp2023: 'BJP', runnerUpName2023: 'Thokala Srinivas Reddy', margin2023: 32096, currentParty: 'INC' },
   { acNo: 52, name: 'Serilingampally', localName: 'శేరిలింగంపల్లి', district: 'Rangareddy', type: 'GEN', winner2023: 'BRS', winnerName2023: 'Arekapudi Gandhi', winnerVotes2023: 157332, runnerUp2023: 'INC', runnerUpName2023: 'Jagadeeswar Goud', margin2023: 46552, currentParty: 'INC' },
   { acNo: 53, name: 'Chevella', localName: 'చేవెళ్ల', district: 'Rangareddy', type: 'SC', winner2023: 'BRS', winnerName2023: 'Kale Yadaiah', winnerVotes2023: 76218, runnerUp2023: 'INC', runnerUpName2023: 'Pamena Beem Bharat', margin2023: 268, currentParty: 'INC' },
 
@@ -134,22 +145,22 @@ export const TELANGANA_CONSTITUENCIES: ConstituencySeed[] = [
   { acNo: 57, name: 'Musheerabad', localName: 'ముషీరాబాద్', district: 'Hyderabad', type: 'GEN', winner2023: 'BRS', winnerName2023: 'Muta Gopal', winnerVotes2023: 75207, runnerUp2023: 'INC', runnerUpName2023: 'M. Anjan Kumar Yadav', margin2023: 37797 },
   { acNo: 58, name: 'Malakpet', localName: 'మలక్పేట', district: 'Hyderabad', type: 'GEN', winner2023: 'AIMIM', winnerName2023: 'Ahmed Bin Abdullah Balala', winnerVotes2023: 55805, runnerUp2023: 'INC', runnerUpName2023: 'Shaik Akbar', margin2023: 26106 },
   { acNo: 59, name: 'Amberpet', localName: 'అంబర్పేట', district: 'Hyderabad', type: 'GEN', winner2023: 'BRS', winnerName2023: 'Kaleru Venkatesh', winnerVotes2023: 74416, runnerUp2023: 'BJP', runnerUpName2023: 'Chenaboyanna Krishna Yadav', margin2023: 24537 },
-  { acNo: 60, name: 'Khairatabad', localName: 'ఖైరతాబాద్', district: 'Hyderabad', type: 'GEN', winner2023: 'BRS', winnerName2023: 'Danam Nagender', winnerVotes2023: 67368, runnerUp2023: 'INC', runnerUpName2023: 'P. Vijaya Reddy', margin2023: 22010, currentParty: 'INC' },
-  { acNo: 61, name: 'Jubilee Hills', localName: 'జూబ్లీహిల్స్', district: 'Hyderabad', type: 'GEN', winner2023: 'BRS', winnerName2023: 'Maganti Gopinath', winnerVotes2023: 80549, runnerUp2023: 'INC', runnerUpName2023: 'Mohammed Azharuddin', margin2023: 16337 },
+  { acNo: 60, name: 'Khairatabad', localName: 'ఖైరతాబాద్', district: 'Hyderabad', type: 'GEN', winner2023: 'BRS', winnerName2023: 'Danam Nagender', winnerVotes2023: 67368, runnerUp2023: 'INC', runnerUpName2023: 'P. Vijaya Reddy', margin2023: 22010, currentParty: 'INC', officeholderStatus: 'VACANT' },
+  { acNo: 61, name: 'Jubilee Hills', localName: 'జూబ్లీహిల్స్', district: 'Hyderabad', type: 'GEN', winner2023: 'BRS', winnerName2023: 'Maganti Gopinath', winnerVotes2023: 80549, runnerUp2023: 'INC', runnerUpName2023: 'Mohammed Azharuddin', margin2023: 16337, currentParty: 'INC', currentMemberName: 'Naveen Yadav V', byElection: { year: 2025, month: 'November', winnerName: 'Naveen Yadav V', winnerParty: 'INC' }, officeholderStatus: 'BY_ELECTION_SEATED' },
   { acNo: 62, name: 'Sanathnagar', localName: 'సనత్నగర్', district: 'Hyderabad', type: 'GEN', winner2023: 'BRS', winnerName2023: 'Talasani Srinivas Yadav', winnerVotes2023: 72557, runnerUp2023: 'BJP', runnerUpName2023: 'Marri Shashidhar Reddy', margin2023: 41827 },
   { acNo: 63, name: 'Nampally', localName: 'నాంపల్లి', district: 'Hyderabad', type: 'GEN', winner2023: 'AIMIM', winnerName2023: 'Mohammad Majid Hussain', winnerVotes2023: 62185, runnerUp2023: 'INC', runnerUpName2023: 'Mohammad Feroz Khan', margin2023: 2037 },
   { acNo: 64, name: 'Karwan', localName: 'కార్వాన్', district: 'Hyderabad', type: 'GEN', winner2023: 'AIMIM', winnerName2023: 'Kausar Mohiuddin', winnerVotes2023: 83388, runnerUp2023: 'BJP', runnerUpName2023: 'Amar Singh', margin2023: 41986 },
   { acNo: 65, name: 'Goshamahal', localName: 'గోషామహల్', district: 'Hyderabad', type: 'GEN', winner2023: 'BJP', winnerName2023: 'T. Raja Singh', winnerVotes2023: 80182, runnerUp2023: 'BRS', runnerUpName2023: 'Nand Kishore Vyas', margin2023: 15764 },
   { acNo: 66, name: 'Charminar', localName: 'చార్మినార్', district: 'Hyderabad', type: 'GEN', winner2023: 'AIMIM', winnerName2023: 'Mir Zulfeqar Ali', winnerVotes2023: 49103, runnerUp2023: 'BJP', runnerUpName2023: 'Megha Rani Agarwal', margin2023: 22853 },
   { acNo: 67, name: 'Chandrayangutta', localName: 'చంద్రాయణగుట్ట', district: 'Hyderabad', type: 'GEN', winner2023: 'AIMIM', winnerName2023: 'Akbaruddin Owaisi', winnerVotes2023: 99776, runnerUp2023: 'BRS', runnerUpName2023: 'Sitharam Reddy Muppi', margin2023: 81660 },
-  { acNo: 68, name: 'Yakutpura', localName: 'యాకుత్పురా', district: 'Hyderabad', type: 'GEN', winner2023: 'AIMIM', winnerName2023: 'Jaffer Hussain', winnerVotes2023: 46153, runnerUp2023: 'MAJLIS BACHAO TEHREEK', runnerUpName2023: 'Amjed Ullah Khan', margin2023: 878 },
+  { acNo: 68, name: 'Yakutpura', localName: 'యాకుత్పురా', district: 'Hyderabad', type: 'GEN', winner2023: 'AIMIM', winnerName2023: 'Jaffer Hussain', winnerVotes2023: 46153, runnerUp2023: 'MBT', runnerUpName2023: 'Amjed Ullah Khan', margin2023: 878 },
   { acNo: 69, name: 'Bahadurpura', localName: 'బహదూర్పురా', district: 'Hyderabad', type: 'GEN', winner2023: 'AIMIM', winnerName2023: 'Mohammed Mubeen', winnerVotes2023: 89451, runnerUp2023: 'BRS', runnerUpName2023: 'Mir Inayath Ali Baqri', margin2023: 67025 },
   { acNo: 70, name: 'Secunderabad', localName: 'సికింద్రాబాద్', district: 'Hyderabad', type: 'GEN', winner2023: 'BRS', winnerName2023: 'T. Padma Rao Goud', winnerVotes2023: 78223, runnerUp2023: 'INC', runnerUpName2023: 'Santhosh Kumar', margin2023: 45240 },
-  { acNo: 71, name: 'Secunderabad Cantonment', localName: 'సికింద్రాబాద్ కంటోన్మెంట్', district: 'Hyderabad', type: 'SC', winner2023: 'BRS', winnerName2023: 'G. Lasya Nanditha', winnerVotes2023: 59057, runnerUp2023: 'BJP', runnerUpName2023: 'Sri Ganesh', margin2023: 17169, currentParty: 'INC' },
+  { acNo: 71, name: 'Secunderabad Cantonment', localName: 'సికింద్రాబాద్ కంటోన్మెంట్', district: 'Hyderabad', type: 'SC', winner2023: 'BRS', winnerName2023: 'G. Lasya Nanditha', winnerVotes2023: 59057, runnerUp2023: 'BJP', runnerUpName2023: 'Sri Ganesh', margin2023: 17169, currentParty: 'INC', currentMemberName: 'Sri Ganesh Narayanan', byElection: { year: 2024, month: 'June', winnerName: 'Sri Ganesh Narayanan', winnerParty: 'INC' }, officeholderStatus: 'BY_ELECTION_SEATED' },
 
   // ─── VIKARABAD (KODANGAL) / NARAYANPET / MAHABUBNAGAR / WANAPARTHY / JOGULAMBA GADWAL ───
   { acNo: 72, name: 'Kodangal', localName: 'కొడంగల్', district: 'Vikarabad', type: 'GEN', winner2023: 'INC', winnerName2023: 'Anumula Revanth Reddy', winnerVotes2023: 107429, runnerUp2023: 'BRS', runnerUpName2023: 'Patnam Narender Reddy', margin2023: 32532 },
-  { acNo: 73, name: 'Narayanpet', localName: 'నారాయణపేట', district: 'Narayanpet', type: 'GEN', winner2023: 'INC', winnerName2023: 'Gaddam Prasad Kumar', winnerVotes2023: 86885, runnerUp2023: 'BRS', runnerUpName2023: 'Methuku Anand', margin2023: 12893 },
+  { acNo: 73, name: 'Narayanpet', localName: 'నారాయణపేట', district: 'Narayanpet', type: 'GEN', winner2023: 'INC', winnerName2023: 'Chittem Parnika Reddy', winnerVotes2023: 84708, runnerUp2023: 'BRS', runnerUpName2023: 'S. Rajender Reddy', margin2023: 7951 },
   { acNo: 74, name: 'Mahbubnagar', localName: 'మహబూబ్నగర్', district: 'Mahabubnagar', type: 'GEN', winner2023: 'INC', winnerName2023: 'Yennam Srinivas Reddy', winnerVotes2023: 87227, runnerUp2023: 'BRS', runnerUpName2023: 'V. Srinivas Goud', margin2023: 18738 },
   { acNo: 75, name: 'Jadcherla', localName: 'జడ్చర్ల', district: 'Mahabubnagar', type: 'GEN', winner2023: 'INC', winnerName2023: 'Janampalli Anirudh Reddy', winnerVotes2023: 90865, runnerUp2023: 'BRS', runnerUpName2023: 'C. Laxma Reddy', margin2023: 15171 },
   { acNo: 76, name: 'Devarkadra', localName: 'దేవరకద్ర', district: 'Mahabubnagar', type: 'GEN', winner2023: 'INC', winnerName2023: 'Gavinolla Madhusudan Reddy', winnerVotes2023: 88551, runnerUp2023: 'BRS', runnerUpName2023: 'Alla Venkateshwar Reddy', margin2023: 1392 },

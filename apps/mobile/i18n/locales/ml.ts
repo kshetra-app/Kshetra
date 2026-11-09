@@ -579,7 +579,7 @@ const ml = {
     "tryAsking": "ഇലാ അഡിഗി ചൂഡംഡി:",
     "thinkingSearch": "സമാചാരം വിശ്ലേഷിസ്തോംദി…",
     "noResponse": "സമാധാനം അംദുബാടുലോ ലേദു",
-    "poweredBy": "പോളിഗ്രാം AI പിന്തുണയോടെ • Google Gemini",
+    "poweredBy": "പോളിഗ്രാം AI പിന്തുണയോടെ",
     "qWinner2023": "2023 ലോ {{name}} എവരു ഗെലിചാരു?",
     "qMarginTrend": "{{name}} ലോ ആധിക്യ ധോരണി ഏമിടി?",
     "qTellAboutMLA": "{{name}} എമ്മെല്യേ ഗുരിംചി ചെപ്പംഡി",

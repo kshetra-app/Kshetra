@@ -18,6 +18,7 @@ import {
   Linking,
   ActivityIndicator,
   Platform,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -32,7 +33,11 @@ interface ModuleDetailModalProps {
   module: LeadershipModule | null;
   isCompleted: boolean;
   onClose: () => void;
-  onComplete: (quizScore?: number) => void;
+  onComplete: (quizScore?: number) => void | Promise<void>;
+  onSubmitQuiz: (answers: Array<{ questionId: string; selectedIndex: number }>) => Promise<{
+    scorePercentage: number;
+    explanations: Array<{ questionId: string; correctIndex: number; explanation: string; wasCorrect: boolean }>;
+  }>;
 }
 
 export default function ModuleDetailModal({
@@ -41,6 +46,7 @@ export default function ModuleDetailModal({
   isCompleted,
   onClose,
   onComplete,
+  onSubmitQuiz,
 }: ModuleDetailModalProps) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -48,21 +54,24 @@ export default function ModuleDetailModal({
   // Quiz state
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [submittingQuiz, setSubmittingQuiz] = useState(false);
+  const [savingComplete, setSavingComplete] = useState(false);
+  const [quizResult, setQuizResult] = useState<{
+    scorePercentage: number;
+    explanations: Array<{ questionId: string; correctIndex: number; explanation: string; wasCorrect: boolean }>;
+  } | null>(null);
 
   const quiz = module?.quiz ?? [];
   const hasQuiz = quiz.length > 0;
 
-  const score = useMemo(() => {
-    if (!hasQuiz) return undefined;
-    const correct = quiz.filter((q) => answers[q.id] === q.correctIndex).length;
-    return Math.round((correct / quiz.length) * 100);
-  }, [hasQuiz, quiz, answers]);
+  const score = quizResult?.scorePercentage;
 
   const allAnswered = hasQuiz && quiz.every((q) => answers[q.id] !== undefined);
 
   const reset = useCallback(() => {
     setAnswers({});
     setSubmitted(false);
+    setQuizResult(null);
   }, []);
 
   const handleClose = useCallback(() => {
@@ -70,10 +79,35 @@ export default function ModuleDetailModal({
     onClose();
   }, [reset, onClose]);
 
-  const handleComplete = useCallback(() => {
-    onComplete(hasQuiz ? score : undefined);
-    reset();
-  }, [onComplete, hasQuiz, score, reset]);
+  const handleSubmitQuiz = useCallback(async () => {
+    if (!allAnswered || submittingQuiz) return;
+    setSubmittingQuiz(true);
+    try {
+      const result = await onSubmitQuiz(Object.entries(answers).map(([questionId, selectedIndex]) => ({
+        questionId,
+        selectedIndex,
+      })));
+      setQuizResult(result);
+      setSubmitted(true);
+    } catch {
+      Alert.alert('Quiz could not be saved', 'Check your connection and try submitting your answers again.');
+    } finally {
+      setSubmittingQuiz(false);
+    }
+  }, [allAnswered, submittingQuiz, onSubmitQuiz, answers]);
+
+  const handleComplete = useCallback(async () => {
+    if (savingComplete) return;
+    setSavingComplete(true);
+    try {
+      await onComplete(hasQuiz ? score : undefined);
+      reset();
+    } catch {
+      Alert.alert('Progress could not be saved', 'Your module is still open. Please try again.');
+    } finally {
+      setSavingComplete(false);
+    }
+  }, [onComplete, hasQuiz, score, reset, savingComplete]);
 
   if (!module) return null;
 
@@ -157,58 +191,63 @@ export default function ModuleDetailModal({
                 )}
               </View>
 
-              {quiz.map((q, qi) => (
-                <View key={q.id} style={styles.question}>
-                  <Text style={styles.questionText}>
-                    {qi + 1}. {q.question}
-                  </Text>
-                  {q.options.map((opt, oi) => {
-                    const selected = answers[q.id] === oi;
-                    const isCorrect = oi === q.correctIndex;
-                    let optStyle = styles.option;
-                    let icon: string | null = selected ? 'radio-button-on' : 'radio-button-off';
-                    let iconColor = selected ? '#4F8EF7' : '#6B7280';
-                    if (submitted) {
-                      if (isCorrect) {
-                        optStyle = styles.optionCorrect;
-                        icon = 'checkmark-circle';
-                        iconColor = '#10B981';
-                      } else if (selected && !isCorrect) {
-                        optStyle = styles.optionWrong;
-                        icon = 'close-circle';
-                        iconColor = '#EF4444';
-                      } else {
-                        icon = 'ellipse-outline';
-                        iconColor = '#374151';
+              {quiz.map((q, qi) => {
+                const serverAnswer = quizResult?.explanations.find((item) => item.questionId === q.id);
+                return (
+                  <View key={q.id} style={styles.question}>
+                    <Text style={styles.questionText}>
+                      {qi + 1}. {q.question}
+                    </Text>
+                    {q.options.map((opt, oi) => {
+                      const selected = answers[q.id] === oi;
+                      const isCorrect = serverAnswer?.correctIndex === oi;
+                      let optStyle = styles.option;
+                      let icon: string | null = selected ? 'radio-button-on' : 'radio-button-off';
+                      let iconColor = selected ? '#4F8EF7' : '#6B7280';
+                      if (submitted) {
+                        if (isCorrect) {
+                          optStyle = styles.optionCorrect;
+                          icon = 'checkmark-circle';
+                          iconColor = '#10B981';
+                        } else if (selected && !isCorrect) {
+                          optStyle = styles.optionWrong;
+                          icon = 'close-circle';
+                          iconColor = '#EF4444';
+                        } else {
+                          icon = 'ellipse-outline';
+                          iconColor = '#374151';
+                        }
                       }
-                    }
-                    return (
-                      <Pressable
-                        key={oi}
-                        style={optStyle}
-                        disabled={submitted}
-                        onPress={() => setAnswers((a) => ({ ...a, [q.id]: oi }))}
-                      >
-                        <Ionicons name={icon as any} size={16} color={iconColor} />
-                        <Text style={styles.optionText}>{opt}</Text>
-                      </Pressable>
-                    );
-                  })}
-                  {submitted && (
-                    <Text style={styles.explanation}>{q.explanation}</Text>
-                  )}
-                </View>
-              ))}
+                      return (
+                        <Pressable
+                          key={oi}
+                          style={optStyle}
+                          disabled={submitted}
+                          onPress={() => setAnswers((a) => ({ ...a, [q.id]: oi }))}
+                        >
+                          <Ionicons name={icon as any} size={16} color={iconColor} />
+                          <Text style={styles.optionText}>{opt}</Text>
+                        </Pressable>
+                      );
+                    })}
+                    {submitted && serverAnswer && (
+                      <Text style={styles.explanation}>{serverAnswer.explanation}</Text>
+                    )}
+                  </View>
+                );
+              })}
 
               {!submitted ? (
                 <Pressable
                   style={[styles.quizSubmit, !allAnswered && styles.btnDisabled]}
-                  disabled={!allAnswered}
-                  onPress={() => setSubmitted(true)}
+                  disabled={!allAnswered || submittingQuiz}
+                  onPress={handleSubmitQuiz}
                 >
-                  <Text style={styles.quizSubmitText}>
-                    {allAnswered ? t('moduleDetail.submitQuiz') : t('leadershipAcademy.answerAllQuestions')}
-                  </Text>
+                  {submittingQuiz ? <ActivityIndicator color="#FFFFFF" /> : (
+                    <Text style={styles.quizSubmitText}>
+                      {allAnswered ? t('moduleDetail.submitQuiz') : t('leadershipAcademy.answerAllQuestions')}
+                    </Text>
+                  )}
                 </Pressable>
               ) : (
                 <Pressable style={styles.retry} onPress={reset}>
@@ -257,13 +296,15 @@ export default function ModuleDetailModal({
           ) : (
             <Pressable
               style={[styles.completeBtn, !canComplete && styles.btnDisabled]}
-              disabled={!canComplete}
+              disabled={!canComplete || savingComplete}
               onPress={handleComplete}
             >
-              <Ionicons name="checkmark-done" size={18} color="#FFFFFF" />
-              <Text style={styles.completeBtnText}>
-                {hasQuiz && !submitted ? t('leadershipAcademy.takeQuizToComplete') : t('moduleDetail.markComplete')}
-              </Text>
+              {savingComplete ? <ActivityIndicator color="#FFFFFF" /> : <>
+                <Ionicons name="checkmark-done" size={18} color="#FFFFFF" />
+                <Text style={styles.completeBtnText}>
+                  {hasQuiz && !submitted ? t('leadershipAcademy.takeQuizToComplete') : t('moduleDetail.markComplete')}
+                </Text>
+              </>}
             </Pressable>
           )}
         </View>

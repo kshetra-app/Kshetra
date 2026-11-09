@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { api, type HealthResponse } from '../lib/api';
+import { supabase } from '../lib/supabase';
 import { Activity, RefreshCw, Shield, Globe, Terminal } from 'lucide-react';
 
 export function Topbar() {
   const [health, setHealth] = useState<HealthResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [accountEmail, setAccountEmail] = useState('');
 
   const checkHealth = async () => {
     setLoading(true);
@@ -23,7 +25,14 @@ export function Topbar() {
   useEffect(() => {
     checkHealth();
     const interval = setInterval(checkHealth, 30000);
-    return () => clearInterval(interval);
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setAccountEmail(session?.user.email ?? '');
+    });
+    void supabase.auth.getSession().then(({ data }) => setAccountEmail(data.session?.user.email ?? ''));
+    return () => {
+      clearInterval(interval);
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
   return (
@@ -32,11 +41,9 @@ export function Topbar() {
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-slate-800/80 border border-slate-700/60 text-xs font-mono text-slate-300">
           <Globe className="w-3.5 h-3.5 text-blue-400" />
-          <span>Production Core</span>
+          <span>Admin Console</span>
         </div>
-        <div className="text-xs text-slate-400 hidden md:block">
-          Fastify v5 + Supabase PostGIS + WebRTC Media Plane
-        </div>
+        <div className="text-xs text-slate-400 hidden md:block">Poligram platform operations</div>
       </div>
 
       {/* Right actions */}
@@ -46,17 +53,17 @@ export function Topbar() {
           className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-semibold ${
             error
               ? 'bg-red-950/50 border-red-800/60 text-red-400'
-              : health?.status === 'ok'
+            : health?.status === 'ok'
               ? 'bg-emerald-950/50 border-emerald-800/60 text-emerald-300'
               : 'bg-amber-950/50 border-amber-800/60 text-amber-300'
           }`}
         >
           <span
             className={`w-2 h-2 rounded-full ${
-              error ? 'bg-red-500' : 'bg-emerald-400 animate-pulse'
+              error ? 'bg-red-500' : health?.status === 'ok' ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
             }`}
           />
-          <span>{error ? 'API Offline' : `API: ${health?.service || 'Online'} (v${health?.version || '0.1.0'})`}</span>
+          <span>{error ? 'API Unavailable' : health ? `API: ${health.service} (v${health.version})` : 'API: Checking'}</span>
           <button
             onClick={checkHealth}
             disabled={loading}
@@ -67,15 +74,13 @@ export function Topbar() {
           </button>
         </div>
 
-        {/* Superadmin Badge */}
+        {/* Signed-in account */}
         <div className="flex items-center gap-2 pl-3 border-l border-slate-800">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center text-xs font-black text-white shadow-md shadow-purple-500/20">
-            A
+          <div className="hidden lg:block text-right">
+            <div className="text-xs font-bold text-slate-200 leading-tight">{accountEmail || 'Signed-in account'}</div>
+            <div className="text-[10px] text-slate-400 font-mono">Administrator access checked by API</div>
           </div>
-          <div className="hidden lg:block text-left">
-            <div className="text-xs font-bold text-slate-200 leading-tight">Master Admin</div>
-            <div className="text-[10px] text-purple-400 font-mono">Super Admin</div>
-          </div>
+          <button onClick={() => void supabase.auth.signOut()} className="px-2.5 py-1.5 rounded-lg bg-slate-800 text-xs text-slate-300 hover:text-white">Sign out</button>
         </div>
       </div>
     </header>

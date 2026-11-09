@@ -1,3 +1,4 @@
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 /**
  * Poligram Broadcast Management Service
  * Manages official channels, streams, ephemeral hashed stream keys, 
@@ -6,7 +7,7 @@
 
 import crypto from 'node:crypto';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { getMediaHosts } from '../lib/mediaPipeline';
+import { getMediaHosts, isMediaPipelineConfigured } from '../lib/mediaPipeline';
 import type { 
   BroadcastChannel, 
   BroadcastStream, 
@@ -137,6 +138,9 @@ export class BroadcastManagementService {
     const streamId = crypto.randomUUID();
     const now = new Date().toISOString();
     const hosts = getMediaHosts();
+    if (isProductionLikeRuntime() && !isMediaPipelineConfigured(hosts)) {
+      throw new Error('Production media pipeline is not configured');
+    }
 
     const latencyProfile = req.latencyProfile || 'BROADCAST_HLS';
     const playbackHlsUrl = `${hosts.scheme}://${hosts.edgeHost}/live/${streamId}.m3u8`;

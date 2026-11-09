@@ -6,6 +6,15 @@
  */
 
 import type { RetentionPolicyRule, RetentionPeriodClass } from '@kshetra/shared';
+import crypto from 'node:crypto';
+import { supabase, isSupabaseConfigured, isUsingServiceRole } from '../../lib/supabase';
+
+export class ErasureExecutionError extends Error {
+  constructor(message = 'Account erasure did not complete durably') {
+    super(message);
+    this.name = 'ErasureExecutionError';
+  }
+}
 
 export const COMPLIANCE_RETENTION_POLICY_MATRIX: RetentionPolicyRule[] = [
   {
@@ -82,7 +91,8 @@ export const COMPLIANCE_RETENTION_POLICY_MATRIX: RetentionPolicyRule[] = [
     ],
     retentionClass: 'permanent_statutory_public',
     retentionDurationDays: null, // Infinite
-    statutoryReference: 'Representation of the People Act 1950/1951, Delimitation Act 2002 & ECI Regulations',
+    statutoryReference:
+      'Representation of the People Act 1950/1951, Delimitation Act 2002 & ECI Regulations',
     deletionTrigger: 'NEVER (Statutory public records exempt from citizen erasure)',
     deletionMethod: 'immutable_archive',
     auditRequirements: 'Cryptographic batch provenance anchors and version snapshots preserved',
@@ -120,60 +130,156 @@ export class RetentionService {
     if (statutoryPublicTables.includes(cleanName)) {
       return {
         canErase: false,
-        reason: 'Statutory public electoral record published pursuant to Representation of the People Act 1951. Exempt from DPDP Act erasure.',
-        exemptionReference: 'DPDP Act 2023 Section 3(c)(ii) & Representation of the People Act 1951',
+        reason:
+          'Statutory public electoral record published pursuant to Representation of the People Act 1951. Exempt from DPDP Act erasure.',
+        exemptionReference:
+          'DPDP Act 2023 Section 3(c)(ii) & Representation of the People Act 1951',
       };
     }
 
     if (cleanName === 'wallet_transactions' || cleanName === 'campaign_wallets') {
       return {
         canErase: false,
-        reason: 'Financial ledger records must be retained for 7 years pursuant to Companies Act 2013 and Tax accounting mandates.',
+        reason:
+          'Financial ledger records must be retained for 7 years pursuant to Companies Act 2013 and Tax accounting mandates.',
         exemptionReference: 'Companies Act 2013 Section 128',
       };
     }
 
     return {
       canErase: true,
-      reason: 'Citizen private personal data subject to unconditional right of erasure upon verified request.',
+      reason:
+        'Citizen private personal data subject to unconditional right of erasure upon verified request.',
     };
   }
 
-  /**
-   * Simulates/executes the deletion cascade for a user account.
-   */
-  async processAccountErasure(userId: string, customClient?: any): Promise<{
+  /** Deletes the authenticated account only after a durable request ledger row exists. */
+  async processAccountErasure(
+    userId: string,
+    reason?: string,
+  ): Promise<{
     success: boolean;
+    requestId: string;
     userId: string;
     erasedEntities: string[];
     retainedStatutoryEntities: string[];
     completedAt: string;
     erasureCertificateId: string;
   }> {
-    const erasedEntities = [
-      'auth.users (credentials, phone, email, session tokens)',
-      'public.user_profiles (display_name, bio, avatar)',
-      'public.user_favourites (bookmarked constituencies)',
-      'public.civic_badges (gamification badges)',
-      'public.user_verification (KYC proofs and identity records)',
-    ];
+    if (!isSupabaseConfigured || !isUsingServiceRole)
+      throw new ErasureExecutionError(
+        'Service-role database and Auth administration are required for account erasure.',
+      );
+    if (!/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(userId))
+      throw new ErasureExecutionError('Authenticated user identifier is invalid.');
 
-    const retainedStatutoryEntities = [
-      'public.wallet_transactions (financial audit trail retained 7 years per Companies Act 2013)',
-      'public.canonical_persons (contesting political candidates exempt under RP Act 1951)',
-      'public.candidate_affidavits (Form 26 statutory disclosures exempt under RP Act 1951)',
-    ];
+    const requestId = crypto.randomUUID();
+    const subjectSha256 = crypto.createHash('sha256').update(userId).digest('hex');
+    const { error: ledgerError } = await supabase.from('data_principal_erasure_ledger').insert({
+      request_id: requestId,
+      subject_sha256: subjectSha256,
+      status: 'PENDING',
+      reason: reason ?? null,
+    });
+    if (ledgerError)
+      throw new ErasureExecutionError(
+        `Could not durably record erasure request: ${ledgerError.message}`,
+      );
 
-    const nowIso = new Date().toISOString();
-    const erasureCertificateId = `cert_dpdp_del_${Date.now()}_${userId.slice(0, 8)}`;
+    const { error: deleteError } = await supabase.auth.admin.deleteUser(userId);
+    if (deleteError) {
+      const { error: failureLedgerError } = await supabase
+        .from('data_principal_erasure_ledger')
+        .update({ status: 'FAILED', failure_code: 'AUTH_DELETE_FAILED' })
+        .eq('request_id', requestId)
+        .eq('status', 'PENDING');
+      if (failureLedgerError)
+        throw new ErasureExecutionError(
+          'Account deletion failed and its failure status could not be persisted.',
+        );
+      throw new ErasureExecutionError(
+        `Supabase Auth did not delete the account: ${deleteError.message}`,
+      );
+    }
+
+    const { data: validation, error: validationError } = await supabase.rpc(
+      'fn_validate_user_erasure',
+      { p_user_id: userId },
+    );
+    const validationComplete =
+      !validationError &&
+      validation?.validated === true &&
+      Number(validation.checkedDependencies) > 0 &&
+      Array.isArray(validation.remainingTables) &&
+      validation.remainingTables.length === 0;
+    if (!validationComplete) {
+      const validationSummary = validationError
+        ? { validationAvailable: false }
+        : {
+            validationAvailable: true,
+            checkedDependencies: Number(validation?.checkedDependencies ?? 0),
+            remainingTables: Array.isArray(validation?.remainingTables)
+              ? validation.remainingTables
+              : [],
+          };
+      const { error: failedValidationLedgerError } = await supabase
+        .from('data_principal_erasure_ledger')
+        .update({
+          status: 'FAILED',
+          failure_code: validationError
+            ? 'ERASURE_VALIDATION_UNAVAILABLE'
+            : 'ERASURE_RESIDUAL_DATA',
+          validation_summary: validationSummary,
+        })
+        .eq('request_id', requestId)
+        .eq('status', 'PENDING');
+      if (failedValidationLedgerError)
+        throw new ErasureExecutionError(
+          'Auth account was deleted, but residual-data validation failed and could not be durably recorded.',
+        );
+      throw new ErasureExecutionError(
+        'Auth account was deleted, but configured cascade dependencies did not validate as fully erased. No certificate was issued.',
+      );
+    }
+
+    const completedAt = new Date().toISOString();
+    const certificateUuid = crypto.randomUUID();
+    const { data: completedRow, error: completeError } = await supabase
+      .from('data_principal_erasure_ledger')
+      .update({
+        status: 'COMPLETED',
+        certificate_id: certificateUuid,
+        completed_at: completedAt,
+        validation_summary: validation,
+      })
+      .eq('request_id', requestId)
+      .eq('status', 'PENDING')
+      .select('request_id, status, certificate_id, completed_at, validation_summary')
+      .maybeSingle();
+    if (
+      completeError ||
+      !completedRow ||
+      completedRow.status !== 'COMPLETED' ||
+      completedRow.certificate_id !== certificateUuid
+    ) {
+      // The Auth deletion may have succeeded, but no certificate is returned until the completion ledger is durable.
+      throw new ErasureExecutionError(
+        'Auth account was deleted, but the completion record could not be confirmed. Reconcile the pending ledger entry before issuing a certificate.',
+      );
+    }
 
     return {
       success: true,
+      requestId,
       userId,
-      erasedEntities,
-      retainedStatutoryEntities,
-      completedAt: nowIso,
-      erasureCertificateId,
+      erasedEntities: [
+        'Supabase Auth account and rows deleted by configured ON DELETE CASCADE constraints',
+      ],
+      retainedStatutoryEntities: [
+        'Statutory electoral geography and public election records are outside the account deletion cascade',
+      ],
+      completedAt: completedRow.completed_at,
+      erasureCertificateId: `cert_dpdp_del_${completedRow.certificate_id}`,
     };
   }
 }

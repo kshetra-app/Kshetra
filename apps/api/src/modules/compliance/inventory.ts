@@ -273,7 +273,7 @@ export const COMPLIANCE_PERSONAL_DATA_INVENTORY: PersonalDataInventoryItem[] = [
     thirdPartySharing: ['Exotel (Voice OBD gateway)'],
     retentionPeriod: 'operational_180_days',
     deletionMechanism: 'Deleted after 180-day TRAI regulatory audit requirement',
-    securityControls: ['TRAI time window enforcement (09:00 - 21:00)', 'DND registry filter'],
+    securityControls: ['Configured dispatch window (09:00 - 20:00 IST)', 'DND registry filter (production verification required)'],
     isStatutoryPublicRecord: false,
   },
 

@@ -6,6 +6,7 @@
  */
 
 import OpenAI from 'openai';
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import type {
   AIProviderType,
   AIProviderConfig,
@@ -19,7 +20,106 @@ export interface IAIProvider {
   generateCompletion(req: AICompletionRequest): Promise<AICompletionResponse>;
 }
 
-const USD_TO_INR_RATE = 86.5;
+interface ModelRate {
+  promptUsdPerMillionTokens: number;
+  completionUsdPerMillionTokens: number;
+}
+
+interface ConfiguredRateCard {
+  version: string;
+  effectiveAt: string;
+  source: string;
+  rates: Record<string, ModelRate>;
+}
+
+function configuredRateCard(): ConfiguredRateCard | null {
+  const raw = process.env.AI_PROVIDER_RATE_CARD_JSON;
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as Partial<ConfiguredRateCard>;
+    if (
+      typeof parsed.version !== 'string' || !parsed.version.trim() ||
+      typeof parsed.effectiveAt !== 'string' || !parsed.effectiveAt.trim() ||
+      typeof parsed.source !== 'string' || !parsed.source.trim() ||
+      !parsed.rates || typeof parsed.rates !== 'object'
+    ) return null;
+    return parsed as ConfiguredRateCard;
+  } catch {
+    return null;
+  }
+}
+
+function modelRate(provider: AIProviderType, model: string): ModelRate | null {
+  const rate = configuredRateCard()?.rates[`${provider}:${model}`];
+  if (!rate || !Number.isFinite(rate.promptUsdPerMillionTokens) || !Number.isFinite(rate.completionUsdPerMillionTokens)) {
+    return null;
+  }
+  if (rate.promptUsdPerMillionTokens < 0 || rate.completionUsdPerMillionTokens < 0) return null;
+  return rate;
+}
+
+function hasConfiguredUsdInrRate(): boolean {
+  const rate = Number(process.env.AI_USD_TO_INR_RATE);
+  return Number.isFinite(rate) && rate > 0 && !!process.env.AI_USD_TO_INR_RATE_SOURCE?.trim();
+}
+
+function reportedOrEstimatedUsage(
+  reportedPromptTokens: number | undefined,
+  reportedCompletionTokens: number | undefined,
+  messages: AICompletionRequest['messages'],
+  content: string,
+) {
+  const reported = Number.isFinite(reportedPromptTokens) && Number.isFinite(reportedCompletionTokens);
+  const promptTokens = reported
+    ? Number(reportedPromptTokens)
+    : Math.ceil(messages.reduce((acc, message) => acc + message.content.length, 0) / 4);
+  const completionTokens = reported ? Number(reportedCompletionTokens) : Math.ceil(content.length / 4);
+  return {
+    promptTokens,
+    completionTokens,
+    totalTokens: promptTokens + completionTokens,
+    usageBasis: reported ? 'provider_reported' as const : 'estimated' as const,
+  };
+}
+
+function configuredCosts(provider: AIProviderType, model: string, promptTokens: number, completionTokens: number, usageBasis: 'provider_reported' | 'estimated') {
+  const card = configuredRateCard();
+  const rate = modelRate(provider, model);
+  if (!card || !rate || usageBasis !== 'provider_reported') {
+    return {
+      costUsd: null,
+      costInr: null,
+      costBasis: 'unavailable' as const,
+      costRateCardVersion: card?.version ?? null,
+      costRateCardSource: card?.source ?? null,
+    };
+  }
+
+  const costUsd = Number((
+    (promptTokens * rate.promptUsdPerMillionTokens + completionTokens * rate.completionUsdPerMillionTokens) / 1_000_000
+  ).toFixed(6));
+  const fxRate = Number(process.env.AI_USD_TO_INR_RATE);
+  const costInr = hasConfiguredUsdInrRate() ? Number((costUsd * fxRate).toFixed(4)) : null;
+  const fxSource = process.env.AI_USD_TO_INR_RATE_SOURCE?.trim();
+  return {
+    costUsd,
+    costInr,
+    costBasis: 'provider_rate_card' as const,
+    costRateCardVersion: card.version,
+    costRateCardSource: costInr === null ? card.source : `${card.source}; INR conversion: ${fxSource}`,
+  };
+}
+
+export class AIProviderUnavailableError extends Error {
+  readonly code = 'AI_PROVIDER_UNAVAILABLE';
+  readonly attemptedProviders: string[];
+
+  constructor(message = 'No configured AI provider is available for this runtime.', attemptedProviders: string[] = []) {
+    super(message);
+    this.name = 'AIProviderUnavailableError';
+    this.attemptedProviders = attemptedProviders;
+  }
+}
 
 /** Tier 1: Gemini Provider (Default Google Gemini 2.0 Flash) */
 export class GeminiAIProvider implements IAIProvider {
@@ -46,12 +146,12 @@ export class GeminiAIProvider implements IAIProvider {
   }
 
   public isAvailable(): boolean {
-    return !!this.apiKey && !!this.client;
+    return !!this.apiKey && !!this.client && !!modelRate(this.name, this.model);
   }
 
   public async generateCompletion(req: AICompletionRequest): Promise<AICompletionResponse> {
-    if (!this.client) {
-      throw new Error('GeminiAIProvider is not configured with an API key.');
+    if (!this.client || !modelRate(this.name, this.model)) {
+      throw new AIProviderUnavailableError('Gemini requires credentials and a sourced rate-card entry for the selected model.');
     }
 
     const startTime = Date.now();
@@ -69,21 +169,21 @@ export class GeminiAIProvider implements IAIProvider {
 
     const latencyMs = Date.now() - startTime;
     const content = response.choices[0]?.message?.content ?? '';
-    const promptTokens = response.usage?.prompt_tokens ?? Math.ceil(req.messages.reduce((acc, m) => acc + m.content.length, 0) / 4);
-    const completionTokens = response.usage?.completion_tokens ?? Math.ceil(content.length / 4);
-    const totalTokens = promptTokens + completionTokens;
-
-    // Gemini 2.0 Flash pricing: $0.10 / 1M prompt, $0.40 / 1M completion
-    const costUsd = (promptTokens * 0.0000001) + (completionTokens * 0.0000004);
-    const costInr = costUsd * USD_TO_INR_RATE;
+    const usage = reportedOrEstimatedUsage(
+      response.usage?.prompt_tokens,
+      response.usage?.completion_tokens,
+      req.messages,
+      content,
+    );
+    const costs = configuredCosts(this.name, this.model, usage.promptTokens, usage.completionTokens, usage.usageBasis);
 
     return {
       content,
       provider: 'gemini',
       model: this.model,
-      usage: { promptTokens, completionTokens, totalTokens },
-      costUsd: Number(costUsd.toFixed(6)),
-      costInr: Number(costInr.toFixed(4)),
+      usage: { promptTokens: usage.promptTokens, completionTokens: usage.completionTokens, totalTokens: usage.totalTokens },
+      usageBasis: usage.usageBasis,
+      ...costs,
       latencyMs,
       degradedOffline: false,
     };
@@ -112,12 +212,12 @@ export class OpenAIProvider implements IAIProvider {
   }
 
   public isAvailable(): boolean {
-    return !!this.apiKey && !!this.client;
+    return !!this.apiKey && !!this.client && !!modelRate(this.name, this.model);
   }
 
   public async generateCompletion(req: AICompletionRequest): Promise<AICompletionResponse> {
-    if (!this.client) {
-      throw new Error('OpenAIProvider is not configured with an API key.');
+    if (!this.client || !modelRate(this.name, this.model)) {
+      throw new AIProviderUnavailableError('OpenAI requires credentials and a sourced rate-card entry for the selected model.');
     }
 
     const startTime = Date.now();
@@ -135,21 +235,21 @@ export class OpenAIProvider implements IAIProvider {
 
     const latencyMs = Date.now() - startTime;
     const content = response.choices[0]?.message?.content ?? '';
-    const promptTokens = response.usage?.prompt_tokens ?? Math.ceil(req.messages.reduce((acc, m) => acc + m.content.length, 0) / 4);
-    const completionTokens = response.usage?.completion_tokens ?? Math.ceil(content.length / 4);
-    const totalTokens = promptTokens + completionTokens;
-
-    // GPT-4o-mini pricing: $0.15 / 1M prompt, $0.60 / 1M completion
-    const costUsd = (promptTokens * 0.00000015) + (completionTokens * 0.0000006);
-    const costInr = costUsd * USD_TO_INR_RATE;
+    const usage = reportedOrEstimatedUsage(
+      response.usage?.prompt_tokens,
+      response.usage?.completion_tokens,
+      req.messages,
+      content,
+    );
+    const costs = configuredCosts(this.name, this.model, usage.promptTokens, usage.completionTokens, usage.usageBasis);
 
     return {
       content,
       provider: 'openai',
       model: this.model,
-      usage: { promptTokens, completionTokens, totalTokens },
-      costUsd: Number(costUsd.toFixed(6)),
-      costInr: Number(costInr.toFixed(4)),
+      usage: { promptTokens: usage.promptTokens, completionTokens: usage.completionTokens, totalTokens: usage.totalTokens },
+      usageBasis: usage.usageBasis,
+      ...costs,
       latencyMs,
       degradedOffline: false,
     };
@@ -177,12 +277,12 @@ export class CustomLLMProvider implements IAIProvider {
   }
 
   public isAvailable(): boolean {
-    return !!this.baseUrl;
+    return !!this.baseUrl && !!modelRate(this.name, this.model);
   }
 
   public async generateCompletion(req: AICompletionRequest): Promise<AICompletionResponse> {
-    if (!this.baseUrl) {
-      throw new Error('CustomLLMProvider requires a valid baseUrl.');
+    if (!this.baseUrl || !modelRate(this.name, this.model)) {
+      throw new AIProviderUnavailableError('Custom LLM requires a base URL and a sourced rate-card entry for the selected model.');
     }
 
     const startTime = Date.now();
@@ -225,21 +325,21 @@ export class CustomLLMProvider implements IAIProvider {
 
     const latencyMs = Date.now() - startTime;
     const content = json.choices?.[0]?.message?.content ?? '';
-    const promptTokens = json.usage?.prompt_tokens ?? Math.ceil(req.messages.reduce((acc, m) => acc + m.content.length, 0) / 4);
-    const completionTokens = json.usage?.completion_tokens ?? Math.ceil(content.length / 4);
-    const totalTokens = promptTokens + completionTokens;
-
-    // Custom LLM nominal cost: $0.05 / 1M prompt, $0.15 / 1M completion
-    const costUsd = (promptTokens * 0.00000005) + (completionTokens * 0.00000015);
-    const costInr = costUsd * USD_TO_INR_RATE;
+    const usage = reportedOrEstimatedUsage(
+      json.usage?.prompt_tokens,
+      json.usage?.completion_tokens,
+      req.messages,
+      content,
+    );
+    const costs = configuredCosts(this.name, this.model, usage.promptTokens, usage.completionTokens, usage.usageBasis);
 
     return {
       content,
       provider: 'custom',
       model: this.model,
-      usage: { promptTokens, completionTokens, totalTokens },
-      costUsd: Number(costUsd.toFixed(6)),
-      costInr: Number(costInr.toFixed(4)),
+      usage: { promptTokens: usage.promptTokens, completionTokens: usage.completionTokens, totalTokens: usage.totalTokens },
+      usageBasis: usage.usageBasis,
+      ...costs,
       latencyMs,
       degradedOffline: false,
     };
@@ -252,10 +352,14 @@ export class DeterministicOfflineAIProvider implements IAIProvider {
   public model = 'deterministic-offline-v1';
 
   public isAvailable(): boolean {
-    return true; // Always available
+    return !isProductionLikeRuntime();
   }
 
   public async generateCompletion(req: AICompletionRequest): Promise<AICompletionResponse> {
+    if (isProductionLikeRuntime()) {
+      throw new AIProviderUnavailableError('The deterministic AI demo provider is disabled in deployed runtimes.');
+    }
+
     const startTime = Date.now();
     const userMessage = [...req.messages].reverse().find((m) => m.role === 'user')?.content || '';
     const systemMessage = req.messages.find((m) => m.role === 'system')?.content || '';
@@ -306,8 +410,12 @@ export class DeterministicOfflineAIProvider implements IAIProvider {
       provider: 'offline_heuristic',
       model: this.model,
       usage: { promptTokens, completionTokens, totalTokens },
-      costUsd: 0,
-      costInr: 0,
+      costUsd: null,
+      costInr: null,
+      costBasis: 'offline_demo',
+      costRateCardVersion: null,
+      costRateCardSource: null,
+      usageBasis: 'estimated',
       latencyMs,
       degradedOffline: true,
     };
@@ -367,8 +475,8 @@ export class AIProviderRegistry {
         chain.push(p);
       }
     }
-    // Guarantee offline fallback is always present at tail
-    if (!chain.some((p) => p.name === 'offline_heuristic')) {
+    // Keep deterministic demo output available only in development and isolated tests.
+    if (!isProductionLikeRuntime() && !chain.some((p) => p.name === 'offline_heuristic')) {
       const offline = this.providers.get('offline_heuristic') || new DeterministicOfflineAIProvider();
       chain.push(offline);
     }
@@ -381,12 +489,25 @@ export class AIProviderRegistry {
     logger?: { warn: (obj: unknown, msg: string) => void },
   ): Promise<AICompletionResponse> {
     const chain = this.getActiveChain();
+    if (chain.length === 0) {
+      throw new AIProviderUnavailableError();
+    }
     let lastError: Error | null = null;
+    const attemptedProviders: string[] = [];
 
     for (const provider of chain) {
+      attemptedProviders.push(provider.name);
       try {
         const response = await provider.generateCompletion(req);
-        return response;
+        if (attemptedProviders.length === 1) return response;
+        return {
+          ...response,
+          costUsd: null,
+          costInr: null,
+          costBasis: 'unavailable',
+          costRateCardVersion: null,
+          costRateCardSource: `Total request cost is unknown because these earlier provider attempts failed: ${attemptedProviders.slice(0, -1).join(', ')}.`,
+        };
       } catch (err: unknown) {
         lastError = err instanceof Error ? err : new Error(String(err));
         if (logger) {
@@ -398,9 +519,22 @@ export class AIProviderRegistry {
       }
     }
 
-    // Fail-safe: execute deterministic offline provider directly
+    if (isProductionLikeRuntime()) {
+      throw new AIProviderUnavailableError(
+        lastError ? 'Configured AI providers failed to generate a response.' : undefined,
+        attemptedProviders,
+      );
+    }
+
+    // Development/test fallback only. Never present this heuristic as production AI.
     const offline = new DeterministicOfflineAIProvider();
-    return offline.generateCompletion(req);
+    const offlineResponse = await offline.generateCompletion(req);
+    if (attemptedProviders.length === 0) return offlineResponse;
+    return {
+      ...offlineResponse,
+      costBasis: 'unavailable',
+      costRateCardSource: `Total request cost is unknown because these provider attempts failed: ${attemptedProviders.join(', ')}.`,
+    };
   }
 }
 

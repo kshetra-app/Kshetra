@@ -1,5 +1,8 @@
+import { isProductionLikeRuntime } from '../../lib/runtimeEnvironment';
 import crypto from 'node:crypto';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+
+function isProductionRuntime(): boolean { return isProductionLikeRuntime(); }
 
 export interface OBDBroadcastInput {
   campaignId: string;
@@ -59,15 +62,23 @@ export function hashPhoneNumber(phone: string): string {
 
 export async function isNumberOptedOut(phone: string): Promise<boolean> {
   const hash = hashPhoneNumber(phone);
-  if (!isSupabaseConfigured) return false;
+  if (!isSupabaseConfigured) {
+    if (isProductionRuntime()) throw new Error('OPTOUT_LEDGER_UNAVAILABLE');
+    return false;
+  }
   try {
     const { data, error } = await supabase
       .from('trai_opt_outs')
       .select('id')
       .eq('phone_number_hash', hash)
       .maybeSingle();
-    return !error && !!data;
-  } catch {
+    if (error) {
+      if (isProductionRuntime()) throw new Error(`OPTOUT_LEDGER_QUERY_FAILED: ${error.message}`);
+      return false;
+    }
+    return !!data;
+  } catch (error: any) {
+    if (isProductionRuntime()) throw error;
     return false;
   }
 }
@@ -76,6 +87,8 @@ export async function recordOptOut(phone: string, campaignId?: string): Promise<
   const cleaned = phone.replace(/\D/g, '').slice(-10);
   if (!cleaned) return false;
   const hash = hashPhoneNumber(cleaned);
+
+  if (isProductionRuntime() && !isSupabaseConfigured) return false;
 
   if (isSupabaseConfigured) {
     const { error } = await supabase.from('trai_opt_outs').upsert(
@@ -98,15 +111,15 @@ export async function recordOptOut(phone: string, campaignId?: string): Promise<
 }
 
 /**
- * Checks whether the current time in India (IST, UTC+5:30) is within
- * the legally permitted TRAI calling window: 9:00 AM to 8:00 PM (09:00 to 20:00).
+ * Checks the configured political voice dispatch window in India (IST, UTC+5:30).
+ * This operational gate does not determine current legal requirements.
  */
-export function isWithinTraiWindow(): {
+export function isWithinTraiWindow(referenceTime?: Date): {
   permitted: boolean;
   currentISTHour: number;
   message?: string;
 } {
-  const now = new Date();
+  const now = referenceTime || new Date();
   // Compute IST offset: UTC + 5 hours 30 mins (330 minutes)
   const istOffsetMinutes = 330;
   const utcMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
@@ -121,7 +134,7 @@ export function isWithinTraiWindow(): {
     currentISTHour,
     message: permitted
       ? undefined
-      : `TRAI regulations restrict automated political calls to 9:00 AM – 8:00 PM IST (Current IST hour: ${currentISTHour}:00). Calls will be scheduled for delivery at 9:00 AM tomorrow.`,
+      : `The configured political voice dispatch window is 9:00 AM – 8:00 PM IST (Current IST hour: ${currentISTHour}:00). Calls are not dispatched outside this window.`,
   };
 }
 
@@ -183,7 +196,7 @@ async function initiateExotelCall(params: {
 
 /**
  * Dispatches an outbound voice call batch.
- * Enforces TRAI calling windows, checks opt-outs, and initiates real telecom calls.
+ * Applies the configured calling window, checks opt-outs, and initiates telecom calls.
  * Fails loudly if Supabase write fails.
  */
 export async function dispatchOBDBroadcast(input: OBDBroadcastInput): Promise<{
@@ -191,6 +204,13 @@ export async function dispatchOBDBroadcast(input: OBDBroadcastInput): Promise<{
   broadcast: OBDBroadcastRecord;
   warning?: string;
 }> {
+  // This legacy operation accepts a voter count plus a single-number field but has no
+  // batch queue, durable reservation, or delivery reconciliation. The API route also
+  // blocks it in production; keep this service boundary protected against future callers.
+  if (isProductionRuntime()) {
+    throw new Error('VOICE_DISPATCH_UNAVAILABLE: Production dispatch requires recipient batching, durable consent, and atomic settlement.');
+  }
+
   const traiCheck = isWithinTraiWindow();
   const initialStatus = traiCheck.permitted ? 'calling' : 'outside_trai_window';
 
@@ -278,6 +298,7 @@ export async function dispatchOBDBroadcast(input: OBDBroadcastInput): Promise<{
  */
 export async function getOBDBroadcasts(politicianId: string): Promise<OBDBroadcastRecord[]> {
   if (!isSupabaseConfigured) {
+    if (isProductionRuntime()) throw new Error('OBD_BROADCAST_STORE_UNAVAILABLE');
     return [];
   }
 
@@ -313,7 +334,10 @@ export async function processTelecomWebhook(payload: {
 
   // 1. Mandatory Press 9 Opt-Out Handling
   if (payload.Digits === '9' && callerPhone) {
-    await recordOptOut(callerPhone, broadcastId);
+    const persisted = await recordOptOut(callerPhone, broadcastId);
+    if (!persisted && isProductionRuntime()) {
+      return { ok: false, error: 'OPTOUT_PERSISTENCE_FAILED' };
+    }
     return {
       ok: true,
       action: 'opt_out_recorded',

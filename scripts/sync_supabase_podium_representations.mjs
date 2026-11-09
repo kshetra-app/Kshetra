@@ -33,7 +33,7 @@ import {
 
 const ROOT = process.cwd();
 const MIGRATION_PATH = path.resolve(ROOT, 'supabase/migrations/083_podium_runner_ups_and_13_language_data_architecture.sql');
-const VERIFICATION_GATE_PATH = path.resolve(ROOT, 'supabase/migrations/083_verification_gate.sql');
+const VERIFICATION_GATE_PATH = path.resolve(ROOT, 'supabase/verification/083_verification_gate.sql');
 const FIXTURE_OUT = path.resolve(ROOT, 'data/seed/entity-multilingual-representations.json');
 
 // Parse CLI flags
@@ -62,7 +62,7 @@ const migrationSql = fs.readFileSync(MIGRATION_PATH, 'utf8');
 const migrationHash = crypto.createHash('sha256').update(migrationSql).digest('hex');
 console.log(`[SCHEMA] Migration 083 loaded (SHA-256: ${migrationHash.slice(0, 16)}...)`);
 if (fs.existsSync(VERIFICATION_GATE_PATH)) {
-  console.log(`[SCHEMA] SQL Verification Gate available: supabase/migrations/083_verification_gate.sql`);
+  console.log(`[SCHEMA] SQL Verification Gate available: supabase/verification/083_verification_gate.sql`);
 }
 
 // ISO 15924 script mapping per language

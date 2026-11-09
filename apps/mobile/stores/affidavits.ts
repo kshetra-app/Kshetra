@@ -2,11 +2,13 @@
  * Affidavit Store — Election affidavit data with seed entries.
  * Provides candidate transparency: assets, criminal cases, education, wealth growth.
  *
- * Seed data based on MyNeta/ADR public records for key Telangana candidates.
- * NOTE: All financial figures are approximated from publicly available affidavit summaries.
- *       Do NOT treat as exact — always link to sourceUrl for official data.
+ * Development seed data for candidate transparency screens.
+ * The fixture set is excluded in staging and production; many entries are
+ * approximate and must never be treated as verified disclosures. Exact source
+ * URLs are attached to the individually verified Revanth Reddy records below.
  */
 import { create } from 'zustand';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 import type {
   CandidateAffidavit,
   WealthGrowth,
@@ -35,53 +37,55 @@ interface AffidavitState {
 // ─── SEED AFFIDAVITS (Telangana key candidates, multi-election) ───
 
 const SEED_AFFIDAVITS: CandidateAffidavit[] = [
-  // ── Revanth Reddy (CM) — Kodangal AC#65 — INC ──
+  // ── Revanth Reddy (CM) — Kodangal AC#72 — INC ──
   {
-    id: 'aff-ts-65-2023-revanth',
+    id: 'aff-ts-72-2023-revanth',
     candidateName: 'Anumula Revanth Reddy',
-    acNo: 65,
+    acNo: 72,
     constituencyName: 'Kodangal',
     stateCode: 'TS',
     party: 'INC',
     electionYear: 2023,
-    selfMovableAssets: 12_30_00_000,
-    selfImmovableAssets: 38_50_00_000,
-    spouseMovableAssets: 8_20_00_000,
-    spouseImmovableAssets: 15_00_00_000,
-    totalAssets: 74_00_00_000,
-    totalLiabilities: 5_00_00_000,
-    criminalCases: 2,
-    seriousCriminalCases: 0,
+    selfMovableAssets: null,
+    selfImmovableAssets: null,
+    spouseMovableAssets: null,
+    spouseImmovableAssets: null,
+    totalAssets: 30_04_98_852,
+    // MyNeta's headline total includes the disputed property-tax amount;
+    // the affidavit table separately lists ₹1,30,19,901 as its grand total.
+    totalLiabilities: 1_90_26_339,
+    criminalCases: 89,
+    seriousCriminalCases: null,
     education: 'graduate',
     profession: 'Politician',
-    age: 54,
-    selfIncome: 45_00_000,
-    spouseIncome: 12_00_000,
-    sourceUrl: 'https://myneta.info/telangana2023/',
+    age: 56,
+    selfIncome: null,
+    spouseIncome: null,
+    sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=141',
     isWinner: true,
   },
   {
-    id: 'aff-ts-65-2018-revanth',
+    id: 'aff-ts-72-2018-revanth',
     candidateName: 'Anumula Revanth Reddy',
-    acNo: 65,
+    acNo: 72,
     constituencyName: 'Kodangal',
     stateCode: 'TS',
     party: 'INC',
     electionYear: 2018,
-    selfMovableAssets: 5_80_00_000,
-    selfImmovableAssets: 18_00_00_000,
-    spouseMovableAssets: 3_50_00_000,
-    spouseImmovableAssets: 6_00_00_000,
-    totalAssets: 33_30_00_000,
-    totalLiabilities: 3_00_00_000,
-    criminalCases: 2,
-    seriousCriminalCases: 0,
+    selfMovableAssets: null,
+    selfImmovableAssets: null,
+    spouseMovableAssets: null,
+    spouseImmovableAssets: null,
+    totalAssets: 21_39_82_320,
+    totalLiabilities: 2_82_28_024,
+    criminalCases: 36,
+    seriousCriminalCases: null,
     education: 'graduate',
     profession: 'Politician',
-    age: 49,
-    selfIncome: 28_00_000,
-    spouseIncome: 8_00_000,
-    sourceUrl: 'https://myneta.info/telangana2018/',
+    age: 51,
+    selfIncome: null,
+    spouseIncome: null,
+    sourceUrl: 'https://www.myneta.info/Telangana2018/candidate.php?candidate_id=5048',
     isWinner: false,
   },
 
@@ -863,7 +867,7 @@ function generateAllAffidavits(): CandidateAffidavit[] {
   return generated;
 }
 
-const ALL_AFFIDAVITS = [...SEED_AFFIDAVITS, ...generateAllAffidavits()];
+const ALL_AFFIDAVITS = IS_LIVE_ENVIRONMENT ? [] : [...SEED_AFFIDAVITS, ...generateAllAffidavits()];
 
 export const useAffidavitStore = create<AffidavitState>()((set, get) => ({
   affidavits: ALL_AFFIDAVITS,
@@ -922,7 +926,7 @@ export const useAffidavitStore = create<AffidavitState>()((set, get) => ({
     const latest = affidavits.filter((a) => a.electionYear === latestYear);
 
     const withCases = latest.filter((a) => a.criminalCases > 0).length;
-    const withSerious = latest.filter((a) => a.seriousCriminalCases > 0).length;
+    const withSerious = latest.filter((a) => a.seriousCriminalCases != null && a.seriousCriminalCases > 0).length;
     const disclosedAssets = latest.filter((a): a is typeof a & { totalAssets: number } => a.totalAssets != null);
     const avgAssets = disclosedAssets.length > 0
       ? disclosedAssets.reduce((s, a) => s + a.totalAssets, 0) / disclosedAssets.length
@@ -973,7 +977,7 @@ export const useAffidavitStore = create<AffidavitState>()((set, get) => ({
     return {
       total: yearAffidavits.length,
       withCases: yearAffidavits.filter((a) => a.criminalCases > 0).length,
-      withSerious: yearAffidavits.filter((a) => a.seriousCriminalCases > 0).length,
+      withSerious: yearAffidavits.filter((a) => a.seriousCriminalCases != null && a.seriousCriminalCases > 0).length,
     };
   },
 }));

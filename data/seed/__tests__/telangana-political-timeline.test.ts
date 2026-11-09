@@ -118,13 +118,25 @@ describe('Telangana Political Ledger — Double-Entry Audit', () => {
     expect(snap.totalSeats).toBe(119);
   });
 
-  it('should reflect 10 BRS→INC defections (2024)', () => {
+  it('should reflect party changes, by-elections, and Khairatabad vacancy by the end of 2024', () => {
     const snap = computePartyStrength('2024-12-31', 3);
-    expect(snap.parties['INC']).toBe(74);  // 64 + 10
-    expect(snap.parties['BRS']).toBe(29);  // 39 - 10
+    expect(snap.parties['INC']).toBe(74);
+    expect(snap.parties['BRS']).toBe(28);
+    expect(snap.vacant).toBe(1);
     expect(snap.parties['BJP']).toBe(8);
     expect(snap.parties['AIMIM']).toBe(7);
     expect(snap.parties['CPI']).toBe(1);
+    expect(snap.totalSeats).toBe(119);
+  });
+
+  it('should show the verified latest party strength and one vacant seat', () => {
+    const snap = computePartyStrength(undefined, 3);
+    expect(snap.parties['INC']).toBe(75);
+    expect(snap.parties['BRS']).toBe(27);
+    expect(snap.parties['BJP']).toBe(8);
+    expect(snap.parties['AIMIM']).toBe(7);
+    expect(snap.parties['CPI']).toBe(1);
+    expect(snap.vacant).toBe(1);
     expect(snap.totalSeats).toBe(119);
   });
 

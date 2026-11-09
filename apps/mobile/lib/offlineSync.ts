@@ -15,6 +15,7 @@
 
 import { mmkv, isMMKVAvailable, mmkvStorage } from './storage';
 import { isOnline } from './networkStatus';
+import type { Poll } from './feedTypes';
 
 function readQueue(): string | null {
   if (isMMKVAvailable && mmkv) return mmkv.getString(QUEUE_KEY) ?? null;
@@ -69,6 +70,7 @@ export interface SyncEvent {
   clientToken?: string;
   status: SyncStatus;
   serverId?: string | null;
+  poll?: Poll;
   error?: string;
 }
 
@@ -101,7 +103,7 @@ function defaultStoreReconciler(event: SyncEvent): void {
   try {
     if (event.opType === 'compose_post') {
       const { useFeedStore } = require('../stores/feed');
-      useFeedStore.getState().reconcilePostSync?.(event.clientToken, event.status, event.serverId);
+      useFeedStore.getState().reconcilePostSync?.(event.clientToken, event.status, event.serverId, event.poll);
     } else if (event.opType === 'report_issue') {
       const { useCivicStore } = require('../stores/civic');
       useCivicStore.getState().reconcileIssueSync?.(event.clientToken, event.status, event.serverId);
@@ -220,7 +222,13 @@ export async function enqueue(
     notifySyncStateChange({ opType: type, clientToken: token, status: 'SYNCING' });
     const result = await executeOp(op);
     if (result.success) {
-      notifySyncStateChange({ opType: type, clientToken: token, status: 'SYNCED', serverId: result.id });
+      notifySyncStateChange({
+        opType: type,
+        clientToken: token,
+        status: 'SYNCED',
+        serverId: result.id,
+        ...(result.poll ? { poll: result.poll } : {}),
+      });
       return; // Done — no need to queue
     }
   }
@@ -260,6 +268,7 @@ export async function flushQueue(): Promise<{ processed: number; failed: number 
         clientToken,
         status: 'SYNCED',
         serverId: result.id,
+        ...(result.poll ? { poll: result.poll } : {}),
       });
     } else {
       op.retries++;
@@ -288,9 +297,9 @@ export async function flushQueue(): Promise<{ processed: number; failed: number 
   return { processed, failed };
 }
 
-let customExecutor: ((op: SyncOperation) => Promise<{ success: boolean; id?: string | null; error?: string }>) | null = null;
+let customExecutor: ((op: SyncOperation) => Promise<{ success: boolean; id?: string | null; poll?: Poll; error?: string }>) | null = null;
 
-export function setSyncExecutor(executor: ((op: SyncOperation) => Promise<{ success: boolean; id?: string | null; error?: string }>) | null): void {
+export function setSyncExecutor(executor: ((op: SyncOperation) => Promise<{ success: boolean; id?: string | null; poll?: Poll; error?: string }>) | null): void {
   customExecutor = executor;
 }
 
@@ -298,7 +307,7 @@ export function setSyncExecutor(executor: ((op: SyncOperation) => Promise<{ succ
  * Execute a single sync operation against the API.
  * Returns { success, id?, error? }.
  */
-export async function executeOp(op: SyncOperation): Promise<{ success: boolean; id?: string | null; error?: string }> {
+export async function executeOp(op: SyncOperation): Promise<{ success: boolean; id?: string | null; poll?: Poll; error?: string }> {
   if (customExecutor) {
     return customExecutor(op);
   }
@@ -329,10 +338,16 @@ export async function executeOp(op: SyncOperation): Promise<{ success: boolean; 
       }
       case 'compose_post': {
         const res = await getSvc().composePost(p);
-        return { success: res.success, id: res.id };
+        return { success: res.success, id: res.id, poll: res.poll ?? undefined };
       }
       case 'add_comment': {
-        const res = await getSvc().addPostComment(p.postId as string, p.userId as string, p.content as string, p.language as string | undefined);
+        const res = await getSvc().addPostComment(
+          p.postId as string,
+          p.userId as string,
+          p.content as string,
+          p.language as string | undefined,
+          p.clientToken as string | undefined,
+        );
         return { success: res.success, id: res.id };
       }
       case 'issue_comment': {

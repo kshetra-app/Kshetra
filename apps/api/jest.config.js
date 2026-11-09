@@ -1,6 +1,7 @@
 // Inject fallback test environment credentials for isolated unit tests so isSupabaseConfigured is initialized
 process.env.SUPABASE_URL = process.env.SUPABASE_URL || 'https://test-fixture.supabase.co';
 process.env.SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlc3QiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTYwMDAwMDAwMCwiZXhwIjoxOTAwMDAwMDAwfQ.dummy_signature_for_test_environment_only';
+process.env.AD_VIEW_TOKEN_SECRET = process.env.AD_VIEW_TOKEN_SECRET || 'isolated-test-view-token-secret-32-bytes-minimum';
 
 /** @type {import('jest').Config} */
 module.exports = {
@@ -11,6 +12,9 @@ module.exports = {
   roots: ['<rootDir>/src'],
   testMatch: ['**/__tests__/**/*.test.ts'],
   moduleFileExtensions: ['ts', 'js', 'json'],
+  moduleNameMapper: {
+    '^@kshetra/shared$': '<rootDir>/../../packages/shared/src/index.ts',
+  },
   collectCoverageFrom: ['src/**/*.ts', '!src/**/__tests__/**', '!src/server.ts'],
   coverageThreshold: {
     // Thresholds set as regression floors just below current comprehensive actuals

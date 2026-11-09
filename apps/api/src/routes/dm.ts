@@ -1,7 +1,16 @@
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import type { FastifyPluginAsync } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
 import { resolveAuthenticatedUser, assertActingUserMatch } from '../lib/userAuth';
+
+function isProductionRuntime(): boolean {
+  return isProductionLikeRuntime();
+}
+
+function isTestMockRuntime(): boolean {
+  return process.env.NODE_ENV === 'test' && !isProductionRuntime();
+}
 
 interface RateLimitBucket {
   hourTimestamp: number;
@@ -26,6 +35,7 @@ const createConversationSchema = {
     properties: {
       recipientId: { type: 'string', minLength: 1, maxLength: 64 },
       initialMessage: { type: 'string', minLength: 1, maxLength: 2000 },
+      clientToken: { type: 'string', minLength: 1, maxLength: 128 },
     },
   },
 };
@@ -165,7 +175,7 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
 
     if (
       !userId &&
-      process.env.NODE_ENV !== 'production' &&
+      !isProductionRuntime() &&
       (request.headers['x-user-id'] as string)
     ) {
       userId = request.headers['x-user-id'] as string;
@@ -267,7 +277,7 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
    * Start or retrieve a direct conversation between two users
    */
   app.post<{
-    Body: { recipientId: string; initialMessage?: string };
+    Body: { recipientId: string; initialMessage?: string; clientToken?: string };
   }>('/api/v1/dm/conversations', { schema: createConversationSchema }, async (request, reply) => {
     const auth = await resolveAuthUser(request);
     if (!auth) {
@@ -276,7 +286,7 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
       });
     }
 
-    const { recipientId, initialMessage } = request.body || {};
+    const { recipientId, initialMessage, clientToken } = request.body || {};
     if (!recipientId || recipientId === auth.userId) {
       return sendApiError(
         reply,
@@ -291,28 +301,39 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
     }
 
     if (!isSupabaseConfigured) {
-      // Mock mode fallback for local testing
-      return reply.send({
-        success: true,
-        conversation: {
-          id: `conv-${auth.userId}-${recipientId}`,
-          participant_one: auth.userId,
-          participant_two: recipientId,
-          status: 'accepted',
-          initiated_by: auth.userId,
-          last_message_preview: initialMessage ?? null,
-        },
+      if (isTestMockRuntime()) {
+        return reply.send({
+          success: true,
+          conversation: {
+            id: `conv-${auth.userId}-${recipientId}`,
+            participant_one: auth.userId,
+            participant_two: recipientId,
+            status: 'accepted',
+            initiated_by: auth.userId,
+            last_message_preview: initialMessage ?? null,
+          },
+        });
+      }
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Direct messaging storage is unavailable.', {
+        code: 'DATABASE_UNAVAILABLE',
       });
     }
 
     // 1. Blocklist check (bidirectional)
-    const { data: isBlocked } = await supabase
+    const { data: isBlocked, error: blocklistErr } = await supabase
       .from('blocked_users')
       .select('blocker_id')
       .or(
         `and(blocker_id.eq.${auth.userId},blocked_id.eq.${recipientId}),and(blocker_id.eq.${recipientId},blocked_id.eq.${auth.userId})`,
       )
       .maybeSingle();
+
+    if (blocklistErr) {
+      request.log.error({ err: blocklistErr }, 'Failed to check DM blocklist');
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Direct messaging safety checks are temporarily unavailable.', {
+        code: 'DM_SAFETY_CHECK_UNAVAILABLE',
+      });
+    }
 
     if (isBlocked) {
       return sendApiError(
@@ -329,24 +350,38 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
     const [p1, p2] = [auth.userId, recipientId].sort();
 
     // Check if conversation already exists
-    const { data: existing } = await supabase
+    const { data: existing, error: existingErr } = await supabase
       .from('conversations')
       .select('*')
       .eq('participant_one', p1)
       .eq('participant_two', p2)
       .maybeSingle();
 
+    if (existingErr) {
+      request.log.error({ err: existingErr }, 'Failed to check for an existing DM conversation');
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Direct messaging is temporarily unavailable.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
+    }
+
     if (existing) {
       return reply.send({ success: true, conversation: existing });
     }
 
     // 2. Check follow relationship: does recipient follow sender?
-    const { data: followRel } = await supabase
+    const { data: followRel, error: followErr } = await supabase
       .from('user_follows')
       .select('id')
       .eq('follower_id', recipientId)
       .eq('followed_id', auth.userId)
       .maybeSingle();
+
+    if (followErr) {
+      request.log.error({ err: followErr }, 'Failed to check DM follow relationship');
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Direct messaging is temporarily unavailable.', {
+        code: 'DATABASE_UNAVAILABLE',
+      });
+    }
 
     const isMutualFollow = !!followRel;
 
@@ -382,20 +417,22 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
     // Status: if recipient follows sender, accepted; otherwise pending (lands in Requests)
     const initialStatus = isMutualFollow ? 'accepted' : 'pending';
 
-    const { data: newConv, error: createErr } = await supabase
-      .from('conversations')
-      .insert({
-        participant_one: p1,
-        participant_two: p2,
-        status: initialStatus,
-        initiated_by: auth.userId,
-        last_message_preview: initialMessage ? initialMessage.slice(0, 100) : null,
-      })
-      .select()
-      .single();
+    const normalizedInitialMessage = initialMessage?.trim() || null;
+    const { data: creationResult, error: createErr } = await supabase.rpc(
+      'create_dm_conversation_with_initial_message',
+      {
+        p_participant_one: p1,
+        p_participant_two: p2,
+        p_initiated_by: auth.userId,
+        p_status: initialStatus,
+        p_initial_message: normalizedInitialMessage,
+        p_client_token: normalizedInitialMessage ? clientToken ?? null : null,
+      },
+    );
 
     if (createErr) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (isTestMockRuntime()) {
+        const fallbackPreview = normalizedInitialMessage ? normalizedInitialMessage.slice(0, 100) : null;
         return reply.status(201).send({
           success: true,
           conversation: {
@@ -404,25 +441,56 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
             participant_two: p2,
             status: initialStatus,
             initiated_by: auth.userId,
-            last_message_preview: initialMessage ? initialMessage.slice(0, 100) : null,
+            last_message_preview: fallbackPreview,
           },
         });
       }
-      return sendApiError(reply, request, 500, 'Internal Server Error', createErr.message, {
+
+      request.log.error({ err: createErr }, 'Atomic DM conversation creation failed');
+      if (createErr.code === '42883' || createErr.code === 'PGRST202') {
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Direct messaging storage needs its latest database migration.', {
+          code: 'DM_ATOMIC_CREATE_UNAVAILABLE',
+        });
+      }
+      if (createErr.message?.toLowerCase().includes('blocked')) {
+        return sendApiError(reply, request, 403, 'Forbidden', 'Direct messaging is unavailable between these accounts.', {
+          code: 'USER_BLOCKED',
+        });
+      }
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Could not create the direct conversation.', {
         code: 'DATABASE_ERROR',
       });
     }
 
-    // If initial message provided, insert it
-    if (initialMessage && initialMessage.trim()) {
-      await supabase.from('messages').insert({
-        conversation_id: newConv.id,
-        sender_id: auth.userId,
-        content: initialMessage.trim(),
+    const result = creationResult as {
+      success?: boolean;
+      created?: boolean;
+      messageCreated?: boolean;
+      notificationTriggered?: boolean;
+      code?: string;
+      conversation?: Record<string, unknown> & { id?: string };
+      initialMessage?: Record<string, unknown> | null;
+    } | null;
+
+    if (result?.success !== true || !result.conversation?.id) {
+      const code = result?.code || 'ATOMIC_CREATE_INVALID_RESULT';
+      if (code === 'IDEMPOTENCY_KEY_REUSE') {
+        return sendApiError(reply, request, 409, 'Conflict', 'The retry token was already used for a different message.', {
+          code,
+        });
+      }
+      request.log.error({ code }, 'Atomic DM conversation creation returned an invalid result');
+      return sendApiError(reply, request, 500, 'Internal Server Error', 'Could not create the direct conversation.', {
+        code: code === 'INVALID_CONVERSATION' ? 'VALIDATION_ERROR' : 'DATABASE_ERROR',
       });
     }
 
-    return reply.status(201).send({ success: true, conversation: newConv });
+    return reply.status(result.created ? 201 : 200).send({
+      success: true,
+      conversation: result.conversation,
+      ...(result.initialMessage ? { initialMessage: result.initialMessage } : {}),
+      notificationTriggered: result.notificationTriggered === true,
+    });
   });
 
   /**
@@ -464,18 +532,23 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
       }
 
       if (!isSupabaseConfigured) {
-        return reply.send({
-          success: true,
-          message: {
-            id: `msg-${Date.now()}`,
-            conversation_id: conversationId,
-            sender_id: auth.userId,
-            content: content || '',
-            media_url: mediaUrl,
-            media_type: mediaType,
-            is_media_locked: false,
-            created_at: new Date().toISOString(),
-          },
+        if (isTestMockRuntime()) {
+          return reply.send({
+            success: true,
+            message: {
+              id: `msg-${Date.now()}`,
+              conversation_id: conversationId,
+              sender_id: auth.userId,
+              content: content || '',
+              media_url: mediaUrl,
+              media_type: mediaType,
+              is_media_locked: false,
+              created_at: new Date().toISOString(),
+            },
+          });
+        }
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Direct messaging storage is unavailable.', {
+          code: 'DATABASE_UNAVAILABLE',
         });
       }
 
@@ -615,7 +688,10 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
       const conversationId = request.params.id;
 
       if (!isSupabaseConfigured) {
-        return reply.send({ success: true, status: 'accepted' });
+        if (isTestMockRuntime()) return reply.send({ success: true, status: 'accepted' });
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Direct messaging storage is unavailable.', {
+          code: 'DATABASE_UNAVAILABLE',
+        });
       }
 
       const { data: conv } = await supabase
@@ -682,18 +758,70 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
       const conversationId = request.params.id;
 
       if (!isSupabaseConfigured) {
-        return reply.send({ success: true, status: 'declined' });
+        if (isTestMockRuntime()) return reply.send({ success: true, status: 'declined' });
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Direct messaging storage is unavailable.', {
+          code: 'DATABASE_UNAVAILABLE',
+        });
       }
 
-      const { error } = await supabase
+      const { data: conversation, error: conversationError } = await supabase
+        .from('conversations')
+        .select('id, participant_one, participant_two, status')
+        .eq('id', conversationId)
+        .maybeSingle();
+
+      if (conversationError) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', 'Could not read the message request.', {
+          code: 'DATABASE_ERROR',
+        });
+      }
+      if (
+        !conversation ||
+        (conversation.participant_one !== auth.userId && conversation.participant_two !== auth.userId)
+      ) {
+        return sendApiError(reply, request, 404, 'Not Found', 'Conversation not found', {
+          code: 'NOT_FOUND',
+        });
+      }
+      if (conversation.status === 'declined') {
+        return reply.send({ success: true, status: 'declined' });
+      }
+      if (conversation.status !== 'pending') {
+        return sendApiError(reply, request, 409, 'Conflict', 'Only a pending message request can be declined.', {
+          code: 'REQUEST_NOT_PENDING',
+        });
+      }
+
+      const { data: updated, error } = await supabase
         .from('conversations')
         .update({ status: 'declined', updated_at: new Date().toISOString() })
         .eq('id', conversationId)
-        .or(`participant_one.eq.${auth.userId},participant_two.eq.${auth.userId}`);
+        .eq('status', 'pending')
+        .or(`participant_one.eq.${auth.userId},participant_two.eq.${auth.userId}`)
+        .select('id')
+        .maybeSingle();
 
       if (error) {
         return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
           code: 'DATABASE_ERROR',
+        });
+      }
+      if (!updated) {
+        const { data: latest, error: latestError } = await supabase
+          .from('conversations')
+          .select('status')
+          .eq('id', conversationId)
+          .maybeSingle();
+        if (latestError) {
+          return sendApiError(reply, request, 500, 'Internal Server Error', 'Could not confirm request status.', {
+            code: 'DATABASE_ERROR',
+          });
+        }
+        if (latest?.status === 'declined') {
+          return reply.send({ success: true, status: 'declined' });
+        }
+        return sendApiError(reply, request, 409, 'Conflict', 'Message request changed before it could be declined.', {
+          code: 'REQUEST_STATUS_CHANGED',
         });
       }
 

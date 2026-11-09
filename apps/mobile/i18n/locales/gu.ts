@@ -579,7 +579,7 @@ const gu = {
     "tryAsking": "યહ પૂછકર દેખેં:",
     "thinkingSearch": "ડેટા કા વિશ્લેષણ કિયા જા રહા હૈ…",
     "noResponse": "કોઈ પ્રતિક્રિયા ઉપલબ્ધ નહીં",
-    "poweredBy": "પોલિગ્રામ AI દ્વારા સંચાલિત • Google Gemini",
+    "poweredBy": "પોલિગ્રામ AI દ્વારા સંચાલિત",
     "qWinner2023": "2023 મેં {{name}} કિસને જીતા?",
     "qMarginTrend": "{{name}} મેં અંતર કા રુઝાન ક્યા હૈ?",
     "qTellAboutMLA": "{{name}} કે વિધાયક કે બારે મેં બતાએં",

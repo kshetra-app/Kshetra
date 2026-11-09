@@ -85,11 +85,11 @@ export interface UnifiedConstituency {
   /** Winning party in the most recent verified general election */
   winnerParty: string;
   winnerName: string;
-  winnerVotes: number;
+  winnerVotes: number | null;
   runnerUp: string;
   runnerUpName?: string;
   runnerUpVotes?: number;
-  margin: number;
+  margin: number | null;
   /** Current verified party of sitting representative */
   currentParty: string;
   /** Current sitting representative name */
@@ -133,9 +133,9 @@ function genericAdapter(
   const isBihar2025Fallback = stateCode === 'BR' && year === 2025;
   const rawWinner = c[winnerKey] ?? (isBihar2025Fallback ? (c.winner2025 ?? c.winner2020 ?? c.currentParty) : isAssam2021Fallback ? c.winner2026 : (c.winner ?? ''));
   const rawWinnerName = c[winnerNameKey] ?? (isBihar2025Fallback ? (c.winnerName2025 ?? c.winnerName2020) : isAssam2021Fallback ? c.winnerName2026 : (c.winnerName ?? ''));
-  const rawWinnerVotes = c[winnerVotesKey] ?? (isBihar2025Fallback ? (c.winnerVotes2025 ?? c.winnerVotes2020) : isAssam2021Fallback ? c.winnerVotes2026 : 0);
+  const rawWinnerVotes = c[winnerVotesKey] ?? (isBihar2025Fallback ? (c.winnerVotes2025 ?? c.winnerVotes2020) : isAssam2021Fallback ? c.winnerVotes2026 : null);
   const rawRunnerUp = c[runnerUpKey] ?? (isBihar2025Fallback ? (c.runnerUp2025 ?? c.runnerUp2020) : isAssam2021Fallback ? c.runnerUp2026 : '');
-  const rawMargin = c[marginKey] ?? (isBihar2025Fallback ? (c.margin2025 ?? c.margin2020) : isAssam2021Fallback ? c.margin2026 : 0);
+  const rawMargin = c[marginKey] ?? (isBihar2025Fallback ? (c.margin2025 ?? c.margin2020) : isAssam2021Fallback ? c.margin2026 : null);
 
   // If a future simulation field exists, preserve it in projection metadata only
   const hasFutureSimulation = c.winner2026 && year < 2026 && stateCode !== 'AS';
@@ -207,10 +207,10 @@ function genericAdapter(
     stateCode,
     winnerParty: rawWinner ?? '',
     winnerName: rawWinnerName ?? '',
-    winnerVotes: rawWinnerVotes ?? 0,
+    winnerVotes: typeof rawWinnerVotes === 'number' && Number.isFinite(rawWinnerVotes) ? rawWinnerVotes : null,
     runnerUp: cleanRunnerUp,
     runnerUpName: cleanRunnerUpName,
-    margin: rawMargin ?? 0,
+    margin: typeof rawMargin === 'number' && Number.isFinite(rawMargin) ? rawMargin : null,
     currentParty: effectiveCurrentParty,
     currentMLA: effectiveCurrentMLA,
     electionYear: year,
@@ -229,26 +229,44 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
   switch (stateCode.toUpperCase()) {
     // ─── Original 8 (manually typed) ──────────────────────────────
     case 'TS':
-      return TELANGANA_CONSTITUENCIES.map((c) => ({
-        acNo: c.acNo,
-        name: c.name,
-        district: c.district,
-        type: c.type,
-        stateCode: 'TS',
-        winnerParty: c.winner2023,
-        winnerName: c.winnerName2023,
-        winnerVotes: c.winnerVotes2023,
-        runnerUp: c.runnerUp2023,
-        runnerUpName: (c as any).runnerUpName2023 || '',
-        runnerUpVotes: (c as any).runnerUpVotes2023 || (c.winnerVotes2023 && c.margin2023 ? c.winnerVotes2023 - c.margin2023 : 0),
-        margin: c.margin2023,
-        currentParty: c.currentParty ?? c.winner2023,
-        electionYear: 2023,
-        localName: c.localName,
-        dataStatus: 'CURRENT',
-        isStale: false,
-        termStatus: 'ACTIVE',
-      }));
+      return TELANGANA_CONSTITUENCIES.map((c) => {
+        const isVacant = c.officeholderStatus === 'VACANT';
+        const byElection: ByElectionRecord | undefined = c.byElection
+          ? {
+              year: c.byElection.year,
+              month: c.byElection.month,
+              winnerName: c.byElection.winnerName,
+              winnerParty: c.byElection.winnerParty,
+            }
+          : undefined;
+        const officeholderStatus = isVacant
+          ? 'VACANT' as const
+          : byElection
+            ? 'BY_ELECTION_SEATED' as const
+            : 'INCUMBENT_ACTIVE' as const;
+        return {
+          acNo: c.acNo,
+          name: c.name,
+          district: c.district,
+          type: c.type,
+          stateCode: 'TS',
+          winnerParty: c.winner2023,
+          winnerName: c.winnerName2023,
+          winnerVotes: c.winnerVotes2023,
+          runnerUp: c.runnerUp2023,
+          runnerUpName: c.runnerUpName2023 ?? '',
+          margin: c.margin2023,
+          currentParty: isVacant ? '' : c.currentParty ?? c.winner2023,
+          currentMLA: isVacant ? undefined : c.currentMemberName ?? c.winnerName2023,
+          electionYear: 2023,
+          byElection,
+          officeholderStatus,
+          localName: c.localName,
+          dataStatus: byElection ? 'BY_ELECTION_UPDATED' as const : 'CURRENT' as const,
+          isStale: false,
+          termStatus: isVacant ? 'VACANT' : byElection ? 'BY_ELECTION_SEATED' : 'ACTIVE',
+        };
+      });
     case 'AP':
       return AP_CONSTITUENCIES.map((c) => ({
         acNo: c.acNo,
@@ -261,7 +279,7 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
         winnerVotes: c.winnerVotes2024,
         runnerUp: c.runnerUp2024,
         runnerUpName: (c as any).runnerUpName2024 || '',
-        runnerUpVotes: (c as any).runnerUpVotes2024 || (c.winnerVotes2024 && c.margin2024 ? c.winnerVotes2024 - c.margin2024 : 0),
+        runnerUpVotes: (c as any).runnerUpVotes2024 ?? undefined,
         margin: c.margin2024,
         currentParty: c.currentParty ?? c.winner2024,
         electionYear: 2024,
@@ -282,7 +300,7 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
         winnerVotes: c.winnerVotes2023,
         runnerUp: c.runnerUp2023,
         runnerUpName: (c as any).runnerUpName2023 || '',
-        runnerUpVotes: (c as any).runnerUpVotes2023 || (c.winnerVotes2023 && c.margin2023 ? c.winnerVotes2023 - c.margin2023 : 0),
+        runnerUpVotes: (c as any).runnerUpVotes2023 ?? undefined,
         margin: c.margin2023,
         currentParty: c.currentParty ?? c.winner2023,
         electionYear: 2023,
@@ -303,7 +321,7 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
         winnerVotes: c.winnerVotes2024,
         runnerUp: c.runnerUp2024,
         runnerUpName: (c as any).runnerUpName2024 || '',
-        runnerUpVotes: (c as any).runnerUpVotes2024 || (c.winnerVotes2024 && c.margin2024 ? c.winnerVotes2024 - c.margin2024 : 0),
+        runnerUpVotes: (c as any).runnerUpVotes2024 ?? undefined,
         margin: c.margin2024,
         currentParty: c.currentParty ?? c.winner2024,
         electionYear: 2024,
@@ -314,11 +332,12 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
       }));
     case 'TN':
       return TN_CONSTITUENCIES.map((c) => {
-        const winnerParty = c.winner2026 ?? c.currentParty ?? c.winner2021 ?? '';
-        const winnerName = c.winnerName2026 ?? c.winnerName2021 ?? '';
-        const winnerVotes = c.winnerVotes2026 ?? c.winnerVotes2021 ?? 0;
+        const has2026Result = Boolean(c.winner2026 || c.winnerName2026 || c.winnerVotes2026 != null);
+        const winnerParty = (has2026Result ? c.winner2026 : null) ?? c.winner2021 ?? '';
+        const winnerName = (has2026Result ? c.winnerName2026 : null) ?? c.winnerName2021 ?? '';
+        const winnerVotes = (has2026Result ? c.winnerVotes2026 : null) ?? c.winnerVotes2021 ?? null;
         const runnerUp = c.runnerUp2026 ?? c.runnerUp2021 ?? '';
-        const margin = c.margin2026 ?? c.margin2021 ?? 0;
+        const margin = (has2026Result ? c.margin2026 : null) ?? c.margin2021 ?? null;
         const currentParty = c.currentParty ?? winnerParty;
         const currentMLA = winnerName;
 
@@ -336,7 +355,7 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
           margin,
           currentParty,
           currentMLA,
-          electionYear: 2026,
+          electionYear: has2026Result ? 2026 : 2021,
           officeholderStatus: 'INCUMBENT_ACTIVE' as const,
           localName: c.localName,
           dataStatus: 'CURRENT' as const,
@@ -346,11 +365,12 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
       });
     case 'KL':
       return KL_CONSTITUENCIES.map((c) => {
-        const winnerParty = c.winner2026 ?? c.currentParty ?? c.winner2021 ?? '';
-        const winnerName = c.winnerName2026 ?? c.winnerName2021 ?? '';
-        const winnerVotes = c.winnerVotes2026 ?? c.winnerVotes2021 ?? 0;
+        const has2026Result = Boolean(c.winner2026 || c.winnerName2026 || c.winnerVotes2026 != null);
+        const winnerParty = (has2026Result ? c.winner2026 : null) ?? c.winner2021 ?? '';
+        const winnerName = (has2026Result ? c.winnerName2026 : null) ?? c.winnerName2021 ?? '';
+        const winnerVotes = (has2026Result ? c.winnerVotes2026 : null) ?? c.winnerVotes2021 ?? null;
         const runnerUp = c.runnerUp2026 ?? c.runnerUp2021 ?? '';
-        const margin = c.margin2026 ?? c.margin2021 ?? 0;
+        const margin = (has2026Result ? c.margin2026 : null) ?? c.margin2021 ?? null;
         const currentParty = c.currentParty ?? winnerParty;
         const currentMLA = winnerName;
 
@@ -368,7 +388,7 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
           margin,
           currentParty,
           currentMLA,
-          electionYear: 2026,
+          electionYear: has2026Result ? 2026 : 2021,
           officeholderStatus: 'INCUMBENT_ACTIVE' as const,
           localName: c.localName,
           dataStatus: 'CURRENT' as const,
@@ -378,11 +398,12 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
       });
     case 'WB':
       return WB_CONSTITUENCIES.map((c) => {
-        const winnerParty = c.winner2026 ?? c.currentParty ?? c.winner2021 ?? '';
-        const winnerName = c.winnerName2026 ?? c.winnerName2021 ?? '';
-        const winnerVotes = c.winnerVotes2026 ?? c.winnerVotes2021 ?? 0;
+        const has2026Result = Boolean(c.winner2026 || c.winnerName2026 || c.winnerVotes2026 != null);
+        const winnerParty = (has2026Result ? c.winner2026 : null) ?? c.winner2021 ?? '';
+        const winnerName = (has2026Result ? c.winnerName2026 : null) ?? c.winnerName2021 ?? '';
+        const winnerVotes = (has2026Result ? c.winnerVotes2026 : null) ?? c.winnerVotes2021 ?? null;
         const runnerUp = c.runnerUp2026 ?? c.runnerUp2021 ?? '';
-        const margin = c.margin2026 ?? c.margin2021 ?? 0;
+        const margin = (has2026Result ? c.margin2026 : null) ?? c.margin2021 ?? null;
         const currentParty = c.currentParty ?? winnerParty;
         const currentMLA = winnerName;
 
@@ -400,7 +421,7 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
           margin,
           currentParty,
           currentMLA,
-          electionYear: 2026,
+          electionYear: has2026Result ? 2026 : 2021,
           officeholderStatus: 'INCUMBENT_ACTIVE' as const,
           localName: c.localName,
           dataStatus: 'CURRENT' as const,
@@ -462,6 +483,7 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
 
 /** Adapt Telangana seed → ConstituencyBrief */
 function tsAdapter(c: ConstituencySeed): ConstituencyBrief {
+  const isVacant = c.officeholderStatus === 'VACANT';
   return {
     id: `TS-AC-${c.acNo}`,
     name: c.name,
@@ -469,8 +491,9 @@ function tsAdapter(c: ConstituencySeed): ConstituencyBrief {
     stateCode: 'TS',
     district: c.district,
     reservationStatus: c.type,
-    currentParty: c.winner2023,
-    currentMLA: c.winnerName2023,
+    currentParty: isVacant ? '' : c.currentParty ?? c.winner2023,
+    currentMLA: isVacant ? '' : c.currentMemberName ?? c.winnerName2023,
+    officeholderStatus: isVacant ? 'VACANT' : c.byElection ? 'BY_ELECTION_SEATED' : 'INCUMBENT_ACTIVE',
   };
 }
 

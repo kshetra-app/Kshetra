@@ -46,8 +46,6 @@ export const verifyPaymentBodySchema = z.object({
   orderId: z.string().trim().min(1, 'Order ID is required'),
   paymentId: z.string().trim().min(1, 'Payment ID is required'),
   signature: z.string().trim().min(1, 'Cryptographic signature is required'),
-  targetTier: z.enum(['pro', 'enterprise']),
-  billingCycle: z.enum(['monthly', 'annual']).optional(),
 });
 
 export type SignupBody = z.infer<typeof signupBodySchema>;

@@ -15,33 +15,58 @@ jest.mock('openai', () => ({
 
 import {
   chatWithAI,
+  buildAIContextualPrompt,
+  buildConstituencyContext,
   smartSearch,
   analyzeConstituency,
   analyzeElectionTrends,
   summarizeIssues,
 } from '../services/ai';
+import { defaultAIRegistry } from '../services/aiProvider';
+import { AICostControlService } from '../services/aiCostControlService';
 import { TELANGANA_CONSTITUENCIES } from '../../../../data/seed/telangana-constituencies';
 
 function mockReply(content: unknown) {
-  mockCreate.mockResolvedValueOnce({ choices: [{ message: { content } }] });
+  mockCreate.mockResolvedValueOnce({
+    choices: [{ message: { content } }],
+    usage: { prompt_tokens: 100, completion_tokens: 50, total_tokens: 150 },
+  });
 }
 
 describe('ai service — OpenAI-configured path (mocked client)', () => {
-  const original = process.env.OPENAI_API_KEY;
-  const originalGemini = process.env.GEMINI_API_KEY;
+  const original = Object.fromEntries(
+    ['APP_ENV', 'EXPO_PUBLIC_APP_ENV', 'OPENAI_API_KEY', 'GEMINI_API_KEY', 'OPENAI_MODEL', 'GEMINI_MODEL', 'AI_PROVIDER_RATE_CARD_JSON']
+      .map((key) => [key, process.env[key]]),
+  );
 
   beforeAll(() => {
+    process.env.APP_ENV = 'development';
+    delete process.env.EXPO_PUBLIC_APP_ENV;
     delete process.env.GEMINI_API_KEY;
     process.env.OPENAI_API_KEY = 'test-key';
+    delete process.env.GEMINI_MODEL;
+    delete process.env.OPENAI_MODEL;
+    process.env.AI_PROVIDER_RATE_CARD_JSON = JSON.stringify({
+      version: 'unit-test-rate-card',
+      effectiveAt: '2026-01-01T00:00:00Z',
+      source: 'unit-test fixture',
+      rates: {
+        'openai:gpt-4o-mini': { promptUsdPerMillionTokens: 1, completionUsdPerMillionTokens: 1 },
+        'gemini:gemini-flash-lite-latest': { promptUsdPerMillionTokens: 1, completionUsdPerMillionTokens: 1 },
+      },
+    });
   });
   afterAll(() => {
-    if (original) process.env.OPENAI_API_KEY = original;
-    else delete process.env.OPENAI_API_KEY;
-    if (originalGemini) process.env.GEMINI_API_KEY = originalGemini;
-    else delete process.env.GEMINI_API_KEY;
+    for (const [key, value] of Object.entries(original)) {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
+    defaultAIRegistry.resetForTesting();
   });
   beforeEach(() => {
     mockCreate.mockReset();
+    defaultAIRegistry.resetForTesting();
+    AICostControlService.resetForTesting();
   });
 
   it('returns the model content for a basic chat', async () => {
@@ -52,7 +77,10 @@ describe('ai service — OpenAI-configured path (mocked client)', () => {
   });
 
   it('falls back when the model returns no content', async () => {
-    mockCreate.mockResolvedValueOnce({ choices: [{}] });
+    mockCreate.mockResolvedValueOnce({
+      choices: [{}],
+      usage: { prompt_tokens: 100, completion_tokens: 0, total_tokens: 100 },
+    });
     const res = await chatWithAI({ messages: [{ role: 'user', content: 'hi' }] });
     expect(res).toBe('No response generated.');
   });
@@ -64,6 +92,18 @@ describe('ai service — OpenAI-configured path (mocked client)', () => {
       constituencyAcNo: 99999,
     });
     expect(res).toBe('ok');
+  });
+
+  it('does not pass unprovenanced demographic figures into constituency AI context', () => {
+    const context = buildConstituencyContext(1, 'TS');
+    expect(context).toContain('No provenance-backed constituency demographic records are connected');
+    expect(context).not.toContain('Population:');
+    expect(context).not.toContain('Turnout 2023:');
+  });
+
+  it('does not attach Telangana statewide history to another state context', () => {
+    expect(buildAIContextualPrompt({ stateCode: 'AP', constituencyAcNo: 1 })).not.toContain('Election History:');
+    expect(buildAIContextualPrompt({ stateCode: 'TS', constituencyAcNo: 1 })).toContain('Election History:');
   });
 
   it('builds rich context across all Telangana constituencies (all branches)', async () => {
@@ -119,21 +159,39 @@ describe('ai service — OpenAI-configured path (mocked client)', () => {
 });
 
 describe('ai service — Gemini-configured path (mocked client)', () => {
-  const originalOpenAI = process.env.OPENAI_API_KEY;
-  const originalGemini = process.env.GEMINI_API_KEY;
+  const original = Object.fromEntries(
+    ['APP_ENV', 'EXPO_PUBLIC_APP_ENV', 'OPENAI_API_KEY', 'GEMINI_API_KEY', 'OPENAI_MODEL', 'GEMINI_MODEL', 'AI_PROVIDER_RATE_CARD_JSON']
+      .map((key) => [key, process.env[key]]),
+  );
 
   beforeAll(() => {
+    process.env.APP_ENV = 'development';
+    delete process.env.EXPO_PUBLIC_APP_ENV;
     delete process.env.OPENAI_API_KEY;
     process.env.GEMINI_API_KEY = 'test-gemini-key';
+    process.env.GEMINI_MODEL = 'gemini-flash-lite-latest';
+    delete process.env.OPENAI_MODEL;
+    process.env.AI_PROVIDER_RATE_CARD_JSON = JSON.stringify({
+      version: 'unit-test-rate-card',
+      effectiveAt: '2026-01-01T00:00:00Z',
+      source: 'unit-test fixture',
+      rates: {
+        'openai:gpt-4o-mini': { promptUsdPerMillionTokens: 1, completionUsdPerMillionTokens: 1 },
+        'gemini:gemini-flash-lite-latest': { promptUsdPerMillionTokens: 1, completionUsdPerMillionTokens: 1 },
+      },
+    });
   });
   afterAll(() => {
-    if (originalOpenAI) process.env.OPENAI_API_KEY = originalOpenAI;
-    else delete process.env.OPENAI_API_KEY;
-    if (originalGemini) process.env.GEMINI_API_KEY = originalGemini;
-    else delete process.env.GEMINI_API_KEY;
+    for (const [key, value] of Object.entries(original)) {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
+    defaultAIRegistry.resetForTesting();
   });
   beforeEach(() => {
     mockCreate.mockReset();
+    defaultAIRegistry.resetForTesting();
+    AICostControlService.resetForTesting();
   });
 
   it('uses gemini model for chat completions', async () => {

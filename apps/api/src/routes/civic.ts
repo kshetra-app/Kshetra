@@ -12,7 +12,7 @@ import {
 import { canonicalGeographyService } from '../services/canonicalGeographyService';
 import { checkContentModeration } from '../services/contentModeration';
 
-const isProductionRuntime = isProductionLikeRuntime();
+const isProductionRuntime = () => isProductionLikeRuntime();
 
 // Schema definitions for civic endpoints
 const budgetSchema = {
@@ -29,7 +29,12 @@ const budgetSchema = {
       properties: {
         stateCode: { type: 'string' },
         message: { type: 'string' },
-        budget: { type: 'object', additionalProperties: true },
+        budget: {
+          anyOf: [
+            { type: 'object', additionalProperties: true },
+            { type: 'null' },
+          ],
+        },
       },
       required: ['stateCode', 'message'],
       additionalProperties: true,
@@ -610,6 +615,8 @@ const listGroupsSchema = {
     required: ['constituencyId'],
     properties: {
       constituencyId: { type: 'string', minLength: 1 },
+      mandal: { type: 'string', minLength: 1 },
+      ward: { type: 'string', minLength: 1 },
     },
   },
   response: {
@@ -632,8 +639,10 @@ const createGroupSchema = {
     properties: {
       name: { type: 'string', minLength: 3, maxLength: 100 },
       constituencyId: { type: 'string', minLength: 1 },
-      category: { type: 'string', minLength: 1 },
+      category: { type: 'string', enum: ['sanitation', 'roads', 'water', 'electricity', 'education', 'environment', 'public_safety', 'healthcare', 'general'] },
       description: { type: 'string', maxLength: 500 },
+      mandal: { type: 'string', maxLength: 100 },
+      ward: { type: 'string', maxLength: 100 },
     },
   },
   response: {
@@ -703,6 +712,7 @@ const addIssueCommentSchema = {
 
 async function resolveAuthUser(request: any): Promise<{ userId: string; role: string } | null> {
   let userId: string | null = null;
+  let role = 'citizen';
   const authHeader = request.headers.authorization;
 
   if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -717,17 +727,24 @@ async function resolveAuthUser(request: any): Promise<{ userId: string; role: st
       } = await supabase.auth.getUser(token);
       if (!error && user) {
         userId = user.id;
+        const { data: profile, error: profileError } = await supabase
+          .from('user_profiles')
+          .select('role')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        if (!profileError && profile?.role) role = profile.role;
       }
     }
   }
 
-  if (!userId && (request.headers['x-user-id'] as string)) {
+  if (!isProductionRuntime() && !userId && (request.headers['x-user-id'] as string)) {
     userId = request.headers['x-user-id'] as string;
+    role = (request.headers['x-user-role'] as string) || 'citizen';
   }
 
   if (!userId) return null;
 
-  return { userId, role: (request.headers['x-user-role'] as string) || 'citizen' };
+  return { userId, role };
 }
 
 export async function civicRoutes(app: FastifyInstance) {
@@ -737,12 +754,41 @@ export async function civicRoutes(app: FastifyInstance) {
     {
       schema: budgetSchema,
     },
-    async (request) => {
+    async (request, reply) => {
       const { stateCode } = request.params;
-      return {
-        stateCode,
-        message: 'Budget endpoint — connect to Supabase for live data',
-      };
+      if (!isSupabaseConfigured) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'State budget data is unavailable because storage is not configured.', {
+          code: 'DATABASE_UNAVAILABLE',
+        });
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('state_budget_summaries')
+          .select('*')
+          .eq('state_code', stateCode)
+          .order('fiscal_year', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (error) {
+          request.log.error({ err: error.message, stateCode }, 'Failed to load state budget summary');
+          return sendApiError(reply, request, 503, 'Service Unavailable', 'State budget data could not be loaded from storage.', {
+            code: 'DATABASE_ERROR',
+          });
+        }
+
+        return {
+          stateCode,
+          message: data ? 'Budget summary loaded from stored records.' : 'No state budget record is available yet.',
+          budget: data ?? null,
+        };
+      } catch (error: any) {
+        request.log.error({ err: error?.message, stateCode }, 'Exception loading state budget summary');
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'State budget data could not be loaded from storage.', {
+          code: 'DATABASE_ERROR',
+        });
+      }
     },
   );
 
@@ -818,7 +864,7 @@ export async function civicRoutes(app: FastifyInstance) {
         .eq('id', id)
         .maybeSingle();
       if (fetchErr) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProductionRuntime()) {
           return { success: true, billId: id, support, message: 'Opinion recorded' };
         }
         return sendApiError(reply, request, 500, 'Internal Server Error', fetchErr.message, {
@@ -826,7 +872,7 @@ export async function civicRoutes(app: FastifyInstance) {
         });
       }
       if (!bill) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProductionRuntime()) {
           return { success: true, billId: id, support, message: 'Opinion recorded' };
         }
         return sendApiError(reply, request, 404, 'Not Found', `Bill ${id} not found`, {
@@ -841,7 +887,7 @@ export async function civicRoutes(app: FastifyInstance) {
         .update({ public_opinion: opinion, updated_at: new Date().toISOString() })
         .eq('id', id);
       if (updateErr) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProductionRuntime()) {
           return { success: true, billId: id, support, message: 'Opinion recorded' };
         }
         return sendApiError(reply, request, 500, 'Internal Server Error', updateErr.message, {
@@ -869,7 +915,7 @@ export async function civicRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { state, category, level } = request.query;
       let schemesList: any[] = [];
-      if (!isSupabaseConfigured && isProductionRuntime) {
+      if (!isSupabaseConfigured && isProductionRuntime()) {
         return sendApiError(
           reply,
           request,
@@ -885,7 +931,7 @@ export async function civicRoutes(app: FastifyInstance) {
           if (state) q = q.or(`state_code.eq.${state},state_code.is.null`);
           if (category) q = q.eq('category', category);
           const { data, error } = await q;
-          if (error && isProductionRuntime) {
+          if (error && isProductionRuntime()) {
             return sendApiError(
               reply,
               request,
@@ -897,7 +943,7 @@ export async function civicRoutes(app: FastifyInstance) {
           }
           if (!error) schemesList = data || [];
         } catch {
-          if (isProductionRuntime) {
+          if (isProductionRuntime()) {
             return sendApiError(
               reply,
               request,
@@ -909,7 +955,7 @@ export async function civicRoutes(app: FastifyInstance) {
           }
         }
       }
-      if (!isProductionRuntime && schemesList.length === 0) {
+      if (!isProductionRuntime() && schemesList.length === 0) {
         schemesList = await civicService.getSchemes({ stateCode: state, category });
       }
       return {
@@ -938,7 +984,7 @@ export async function civicRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { state, phase, category, constituency } = request.query;
       let projectsList: any[] = [];
-      if (!isSupabaseConfigured && isProductionRuntime) {
+      if (!isSupabaseConfigured && isProductionRuntime()) {
         return sendApiError(
           reply,
           request,
@@ -955,7 +1001,7 @@ export async function civicRoutes(app: FastifyInstance) {
           if (constituency) q = q.eq('constituency_id', constituency);
           if (category) q = q.eq('category', category);
           const { data, error } = await q;
-          if (error && isProductionRuntime) {
+          if (error && isProductionRuntime()) {
             return sendApiError(
               reply,
               request,
@@ -967,7 +1013,7 @@ export async function civicRoutes(app: FastifyInstance) {
           }
           if (!error) projectsList = data || [];
         } catch {
-          if (isProductionRuntime) {
+          if (isProductionRuntime()) {
             return sendApiError(
               reply,
               request,
@@ -979,7 +1025,7 @@ export async function civicRoutes(app: FastifyInstance) {
           }
         }
       }
-      if (!isProductionRuntime && projectsList.length === 0) {
+      if (!isProductionRuntime() && projectsList.length === 0) {
         projectsList = await civicService.getProjects({ constituencyId: constituency, stateCode: state });
       }
       return {
@@ -1057,7 +1103,7 @@ export async function civicRoutes(app: FastifyInstance) {
         .select('id')
         .single();
       if (error || !data) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProductionRuntime()) {
           return { success: true, id: 'rti-test-1', message: 'RTI request filed', data: body };
         }
         return sendApiError(
@@ -1109,7 +1155,7 @@ export async function civicRoutes(app: FastifyInstance) {
         .eq('id', id)
         .maybeSingle();
       if (fetchErr) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProductionRuntime()) {
           return { success: true, rtiId: id, message: 'RTI request upvoted' };
         }
         return sendApiError(reply, request, 500, 'Internal Server Error', fetchErr.message, {
@@ -1117,7 +1163,7 @@ export async function civicRoutes(app: FastifyInstance) {
         });
       }
       if (!rti) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProductionRuntime()) {
           return { success: true, rtiId: id, message: 'RTI request upvoted' };
         }
         return sendApiError(reply, request, 404, 'Not Found', `RTI request ${id} not found`, {
@@ -1130,7 +1176,7 @@ export async function civicRoutes(app: FastifyInstance) {
         .update({ upvotes: newUpvotes, updated_at: new Date().toISOString() })
         .eq('id', id);
       if (updateErr) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProductionRuntime()) {
           return { success: true, rtiId: id, message: 'Upvote recorded' };
         }
         return sendApiError(reply, request, 500, 'Internal Server Error', updateErr.message, {
@@ -1172,7 +1218,7 @@ export async function civicRoutes(app: FastifyInstance) {
       schema: cdiSchema,
     },
     async (request, reply) => {
-      if (isProductionRuntime) {
+      if (isProductionRuntime()) {
         return sendApiError(
           reply,
           request,
@@ -1828,9 +1874,8 @@ export async function civicRoutes(app: FastifyInstance) {
     {
       schema: listIssuesSchema,
     },
-    async (request) => {
+    async (request, reply) => {
       const { constituencyId, stateCode, category, status } = request.query;
-      let issuesList: any[] = [];
       if (isSupabaseConfigured) {
         try {
           let q = supabase.from('civic_issues').select('*');
@@ -1839,12 +1884,26 @@ export async function civicRoutes(app: FastifyInstance) {
           if (category && category !== 'all') q = q.eq('category', category);
           if (status && status !== 'all') q = q.eq('status', status);
           const { data, error } = await q.order('created_at', { ascending: false });
-          if (!error && data && data.length > 0) issuesList = data;
-        } catch {}
+          if (error) {
+            if (isProductionRuntime()) {
+              request.log.error({ err: error.message }, 'Failed to load civic issues');
+              return sendApiError(reply, request, 503, 'Service Unavailable', 'Civic issue data is currently unavailable', { code: 'DATABASE_ERROR' });
+            }
+            request.log.warn({ err: error.message }, 'Civic issue query failed; using isolated nonproduction store');
+          } else {
+            return { issues: data ?? [], total: data?.length ?? 0 };
+          }
+        } catch (error: any) {
+          if (isProductionRuntime()) {
+            request.log.error({ err: error?.message }, 'Exception loading civic issues');
+            return sendApiError(reply, request, 503, 'Service Unavailable', 'Civic issue data is currently unavailable', { code: 'DATABASE_ERROR' });
+          }
+        }
       }
-      if (issuesList.length === 0) {
-        issuesList = await civicService.listIssues({ constituencyId, stateCode, category, status });
+      if (isProductionRuntime()) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Civic issue storage is not configured', { code: 'DATABASE_UNAVAILABLE' });
       }
+      const issuesList = await civicService.listIssues({ constituencyId, stateCode, category, status });
       return { issues: issuesList, total: issuesList.length };
     },
   );
@@ -1965,7 +2024,7 @@ export async function civicRoutes(app: FastifyInstance) {
       schema: getSentimentSchema,
     },
     async (request, reply) => {
-      if (isProductionRuntime) {
+      if (isProductionRuntime()) {
         return sendApiError(
           reply,
           request,
@@ -1983,35 +2042,56 @@ export async function civicRoutes(app: FastifyInstance) {
 
   /** 26. GET /api/v1/civic/groups — list community working groups */
   app.get<{
-    Querystring: { constituencyId: string };
+    Querystring: { constituencyId: string; mandal?: string; ward?: string };
   }>(
     '/api/v1/civic/groups',
     {
       schema: listGroupsSchema,
     },
-    async (request) => {
+    async (request, reply) => {
       const { constituencyId } = request.query;
-      let groupsList: any[] = [];
-      if (isSupabaseConfigured) {
-        try {
-          const { data, error } = await supabase
-            .from('community_groups')
-            .select('*')
-            .eq('constituency_id', constituencyId)
-            .eq('is_active', true);
-          if (!error && data) groupsList = data;
-        } catch {}
+      if (!isSupabaseConfigured) {
+        if (isProductionRuntime()) {
+          return sendApiError(reply, request, 503, 'Service Unavailable', 'Community group storage is not configured', { code: 'DATABASE_UNAVAILABLE' });
+        }
+        const groupsList = await civicService.listGroups(constituencyId, request.query);
+        return { groups: groupsList, total: groupsList.length };
       }
-      if (groupsList.length === 0) {
-        groupsList = await civicService.listGroups(constituencyId);
+
+      try {
+        let query = supabase
+          .from('community_groups')
+          .select('*')
+          .eq('constituency_id', constituencyId)
+          .eq('is_active', true);
+        if (request.query.mandal) query = query.eq('mandal', request.query.mandal);
+        if (request.query.ward) query = query.eq('ward', request.query.ward);
+        const { data, error } = await query.order('created_at', { ascending: false });
+        if (error) {
+          if (isProductionRuntime()) {
+            request.log.error({ err: error.message }, 'Failed to load community groups');
+            return sendApiError(reply, request, 503, 'Service Unavailable', 'Community group data is currently unavailable', { code: 'DATABASE_ERROR' });
+          }
+          request.log.warn({ err: error.message }, 'Community group query failed; using isolated nonproduction store');
+          const groupsList = await civicService.listGroups(constituencyId, request.query);
+          return { groups: groupsList, total: groupsList.length };
+        }
+        const groupsList = data ?? [];
+        return { groups: groupsList, total: groupsList.length };
+      } catch (error: any) {
+        if (isProductionRuntime()) {
+          request.log.error({ err: error?.message }, 'Exception loading community groups');
+          return sendApiError(reply, request, 503, 'Service Unavailable', 'Community group data is currently unavailable', { code: 'DATABASE_ERROR' });
+        }
+        const groupsList = await civicService.listGroups(constituencyId, request.query);
+        return { groups: groupsList, total: groupsList.length };
       }
-      return { groups: groupsList, total: groupsList.length };
     },
   );
 
   /** 27. POST /api/v1/civic/groups — create community working group */
   app.post<{
-    Body: { name: string; constituencyId: string; category: string; description?: string };
+    Body: { name: string; constituencyId: string; category: string; description?: string; mandal?: string; ward?: string };
   }>(
     '/api/v1/civic/groups',
     {
@@ -2033,7 +2113,8 @@ export async function civicRoutes(app: FastifyInstance) {
         const group = await civicService.createGroup(request.body, auth.userId);
         return { success: true, group };
       } catch (err: any) {
-        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+        const statusCode = Number(err.statusCode) || (err.code === 'COMMUNITY_GROUP_SLUG_CONFLICT' ? 409 : 400);
+        return sendApiError(reply, request, statusCode, statusCode === 503 ? 'Service Unavailable' : statusCode === 409 ? 'Conflict' : 'Bad Request', err.message, {
           code: err.code || 'BAD_REQUEST',
         });
       }
@@ -2065,7 +2146,8 @@ export async function civicRoutes(app: FastifyInstance) {
         const result = await civicService.joinGroup(id, auth.userId);
         return { success: true, groupId: id, memberCount: result.memberCount, message: 'Joined community group' };
       } catch (err: any) {
-        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+        const statusCode = Number(err.statusCode) || 400;
+        return sendApiError(reply, request, statusCode, statusCode === 503 ? 'Service Unavailable' : statusCode === 409 ? 'Conflict' : statusCode === 404 ? 'Not Found' : 'Bad Request', err.message, {
           code: err.code || 'BAD_REQUEST',
         });
       }
@@ -2097,7 +2179,8 @@ export async function civicRoutes(app: FastifyInstance) {
         const result = await civicService.leaveGroup(id, auth.userId);
         return { success: true, groupId: id, memberCount: result.memberCount, message: 'Left community group' };
       } catch (err: any) {
-        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+        const statusCode = Number(err.statusCode) || 400;
+        return sendApiError(reply, request, statusCode, statusCode === 503 ? 'Service Unavailable' : statusCode === 409 ? 'Conflict' : statusCode === 404 ? 'Not Found' : 'Bad Request', err.message, {
           code: err.code || 'BAD_REQUEST',
         });
       }

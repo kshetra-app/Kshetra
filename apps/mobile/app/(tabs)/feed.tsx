@@ -286,8 +286,12 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
           {
             text: t('postCard.delete'),
             style: 'destructive',
-            onPress: () => {
-              deletePost(post.id);
+            onPress: async () => {
+              const deleted = await deletePost(post.id);
+              if (!deleted) {
+                Alert.alert(t('feed.deleteFailed', { defaultValue: 'Could not delete this post. Check your connection and try again.' }));
+                return;
+              }
               logContentAction('delete_post', {
                 type: 'post',
                 id: post.id,
@@ -302,8 +306,8 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
   );
 
   const handleEditSubmit = useCallback(
-    (postId: string, content: string) => {
-      editPostAction(postId, content);
+    async (postId: string, content: string) => {
+      return editPostAction(postId, content);
     },
     [editPostAction],
   );
@@ -566,9 +570,13 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
                 post={item}
                 isOwner={isOwner}
                 onPress={() => handleCardPress(item)}
-                onReact={(reaction) => {
+                onReact={async (reaction) => {
                   if (!gateContentAction('react_post')) return;
-                  toggleReaction(item.id, reaction);
+                  const saved = await toggleReaction(item.id, reaction);
+                  if (!saved) {
+                    Alert.alert(t('feed.reactionFailed', { defaultValue: 'Could not update your reaction. Check your connection and try again.' }));
+                    return;
+                  }
                   logContentAction('react_post', {
                     type: 'post',
                     id: item.id,
@@ -586,9 +594,13 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
                 <View style={styles.pollContainer}>
                   <PollCard
                     poll={item.poll}
-                    onVote={(optionId) => {
+                    onVote={async (optionId) => {
                       if (!gateContentAction('vote_poll')) return;
-                      votePoll(item.id, optionId);
+                      const saved = await votePoll(item.id, optionId);
+                      if (!saved) {
+                        Alert.alert(t('feed.voteFailed', { defaultValue: 'Could not record your vote. Check your connection and try again.' }));
+                        return;
+                      }
                       logContentAction('vote_poll', {
                         type: 'poll',
                         id: item.id,

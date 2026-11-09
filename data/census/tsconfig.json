@@ -5,6 +5,9 @@
     "moduleResolution": "node",
     "strict": true,
     "esModuleInterop": true,
+    "paths": {
+      "@kshetra/shared": ["../../packages/shared/src"]
+    },
     "skipLibCheck": true,
     "outDir": "./dist",
     "rootDir": "."

@@ -18,6 +18,7 @@ import { useMyConstituencyStore } from '../stores/myConstituency';
 import { useActiveStateStore } from '../stores/activeState';
 import { useFeedStore } from '../stores/feed';
 import { useCivicStore } from '../stores/civic';
+import { usePromiseStore } from '../stores/promises';
 import { useFavoritesStore } from '../stores/favorites';
 import { useNotificationsStore } from '../stores/notifications';
 import { usePoliticalShortsStore } from '../stores/politicalShorts';
@@ -174,15 +175,20 @@ async function hydrateStoresFromServer(): Promise<void> {
   ]);
 
   // Hydrate feed store if server returned data
-  if (feedData.status === 'fulfilled' && feedData.value && feedData.value.length > 0) {
+  if (feedData.status === 'fulfilled' && feedData.value !== null) {
     useFeedStore.getState().hydrateFromServer(feedData.value);
     addBreadcrumb('bootstrap', 'feed_hydrated', { count: feedData.value.length });
   }
 
   // Hydrate civic store
-  if (issuesData.status === 'fulfilled' && issuesData.value && issuesData.value.length > 0) {
+  if (issuesData.status === 'fulfilled' && issuesData.value !== null) {
     useCivicStore.getState().hydrateFromServer(issuesData.value);
     addBreadcrumb('bootstrap', 'issues_hydrated', { count: issuesData.value.length });
+  }
+
+  if (promisesData.status === 'fulfilled' && promisesData.value !== null) {
+    usePromiseStore.getState().hydrateFromServer(promisesData.value);
+    addBreadcrumb('bootstrap', 'promises_hydrated', { count: promisesData.value.length });
   }
 
   // Hydrate shorts store
