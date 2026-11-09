@@ -16,6 +16,7 @@
  */
 
 import { supabase } from '../lib/supabase';
+import { isIsolatedTestRuntime } from '../lib/runtimeEnvironment';
 import {
   type WebhookQueueProvider,
   type LeasedDeliveryJob,
@@ -53,7 +54,7 @@ export class WebhookWorker {
   constructor(options: WebhookWorkerOptions = {}) {
     if (options.queueProvider) {
       this.queueProvider = options.queueProvider;
-    } else if (process.env.NODE_ENV === 'test') {
+    } else if (isIsolatedTestRuntime()) {
       this.queueProvider = new InMemoryQueueProvider();
     } else {
       if (!process.env.DATABASE_URL) {
@@ -70,7 +71,7 @@ export class WebhookWorker {
       options.pollIntervalMs || Number(process.env.WEBHOOK_WORKER_POLL_INTERVAL_MS) || 1000;
     this.leaseSeconds = options.leaseSeconds || 30;
     this.concurrency = options.concurrency || 5;
-    this.allowLocalhostInTest = options.allowLocalhostInTest ?? process.env.NODE_ENV === 'test';
+    this.allowLocalhostInTest = options.allowLocalhostInTest ?? isIsolatedTestRuntime();
     this.onJobProcessed = options.onJobProcessed;
   }
 

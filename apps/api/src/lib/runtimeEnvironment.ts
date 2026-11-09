@@ -9,3 +9,8 @@ export function isProductionLikeRuntime(): boolean {
   return [process.env.EXPO_PUBLIC_APP_ENV, process.env.APP_ENV, process.env.NODE_ENV]
     .some((candidate) => candidate !== undefined && isProductionLikeEnvironment(candidate));
 }
+
+/** A test flag must never override a staging or production deployment marker. */
+export function isIsolatedTestRuntime(): boolean {
+  return process.env.NODE_ENV === 'test' && !isProductionLikeRuntime();
+}

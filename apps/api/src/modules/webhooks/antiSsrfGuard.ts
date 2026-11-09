@@ -12,6 +12,7 @@ import http from 'node:http';
 import net from 'node:net';
 import tls from 'node:tls';
 import { URL } from 'node:url';
+import { isIsolatedTestRuntime } from '../../lib/runtimeEnvironment';
 
 export interface ValidatedEgressTarget {
   rawUrl: string;
@@ -187,12 +188,13 @@ export async function validateAndPinEgressTarget(
   // Localhost test override validation
   const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1';
   const allowLocalhost =
+    isIsolatedTestRuntime() &&
     (options.allowLocalhostInTest || process.env.ALLOW_LOCALHOST_TEST_ONLY === 'true') &&
     isLocalhost;
 
   if (allowLocalhost) {
     // Fail-closed gate: Localhost testing is strictly forbidden outside NODE_ENV === 'test'
-    if (process.env.NODE_ENV !== 'test') {
+    if (!isIsolatedTestRuntime()) {
       throw new Error(
         'FATAL_SSRF_CONFIGURATION_VIOLATION: Localhost override attempted outside NODE_ENV=test',
       );

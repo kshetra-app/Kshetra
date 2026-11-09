@@ -9,6 +9,7 @@
 import crypto from 'node:crypto';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { supabase } from '../../lib/supabase';
+import { isIsolatedTestRuntime } from '../../lib/runtimeEnvironment';
 import {
   generateWebhookSecret,
   encryptSecret,
@@ -56,7 +57,7 @@ export class WebhookService {
   ) {
     if (queueProvider) {
       this.queueProvider = queueProvider;
-    } else if (process.env.NODE_ENV === 'test') {
+    } else if (isIsolatedTestRuntime()) {
       this.queueProvider = new InMemoryQueueProvider();
     } else {
       // In deployed/production/staging runtimes, require valid database configuration
