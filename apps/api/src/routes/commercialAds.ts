@@ -4,6 +4,7 @@
  * Ratified under DEC-186
  */
 
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import type { FastifyPluginAsync } from 'fastify';
 import { adService } from '../services/adService';
 import { sendApiError } from '../lib/replyHelper';
@@ -14,7 +15,23 @@ import type {
   AdTelemetryEventInput,
 } from '@kshetra/shared';
 
+const isProductionRuntime = isProductionLikeRuntime();
+
 export const commercialAdRoutes: FastifyPluginAsync = async (app) => {
+  // The current ad service stores money, delivery, and telemetry only in process memory.
+  // Do not expose simulated commercial ad operations as production activity.
+  app.addHook('preHandler', async (request, reply) => {
+    if (isProductionRuntime) {
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Commercial advertising storage and delivery providers are not connected.',
+        { code: 'AD_SERVICE_UNAVAILABLE' },
+      );
+    }
+  });
   // Onboard Local Merchant Account (JOB 061 Step 1)
   app.post<{ Body: CreateCommercialAccountInput }>(
     '/accounts',
