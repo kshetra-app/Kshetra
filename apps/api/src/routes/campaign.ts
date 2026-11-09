@@ -1,4 +1,4 @@
-import { isIsolatedTestRuntime } from '../lib/runtimeEnvironment';
+import { isIsolatedTestRuntime, isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import crypto from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
@@ -40,6 +40,7 @@ const checkKshetraQuerySchema = {
     additionalProperties: false,
     properties: {
       phone: { type: 'string', minLength: 10, maxLength: 20 },
+      campaignId: { type: 'string', minLength: 1, maxLength: 64 },
     },
   },
 };
@@ -220,13 +221,14 @@ async function resolveAuthUser(
     }
   }
 
-  if (!userId && (request.headers['x-user-id'] as string)) {
+  if (!isProductionLikeRuntime() && !userId && (request.headers['x-user-id'] as string)) {
     userId = request.headers['x-user-id'] as string;
   }
 
   if (!userId) return null;
 
   if (!isSupabaseConfigured) {
+    if (isProductionLikeRuntime()) return null;
     const testRole =
       (request.headers['x-user-role'] as string) ||
       (isIsolatedTestRuntime() ? 'citizen' : undefined);
@@ -540,11 +542,24 @@ async function findCampaignById(
       }
     } catch {}
   }
+  if (isProductionLikeRuntime()) return null;
   const mem = inMemoryCampaigns.find((c) => c.id === campaignId);
   if (mem) {
     return { id: mem.id, politician_id: mem.politicianId };
   }
   return null;
+}
+
+async function findPoliticianProfileIdForUser(userId: string): Promise<string | null> {
+  if (!isSupabaseConfigured) return null;
+  const { data, error } = await supabase
+    .from('politician_portal_profiles')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('is_active', true)
+    .maybeSingle();
+  if (error) throw new Error(`POLITICIAN_PROFILE_LOOKUP_FAILED: ${error.message}`);
+  return data?.id || null;
 }
 
 /**
@@ -569,13 +584,18 @@ async function verifyCampaignAuthority(
     return { authorized: true, campaign };
   }
 
-  // Owning politician
-  if (campaign.politician_id === auth.userId) {
+  // Owning politician. Production campaign rows reference portal profile IDs.
+  if (isProductionLikeRuntime()) {
+    const profileId = await findPoliticianProfileIdForUser(auth.userId);
+    if (profileId && campaign.politician_id === profileId) {
+      return { authorized: true, campaign };
+    }
+  } else if (campaign.politician_id === auth.userId) {
     return { authorized: true, campaign };
   }
 
   // Campaign coordinator
-  if (auth.role === 'coordinator') {
+  if (auth.role === 'coordinator' && !isProductionLikeRuntime()) {
     return { authorized: true, campaign };
   }
 
@@ -596,7 +616,7 @@ async function verifyCampaignAuthority(
   }
 
   // In-memory volunteer coordinator check
-  const memVol = inMemoryVolunteers.find(
+  const memVol = isProductionLikeRuntime() ? undefined : inMemoryVolunteers.find(
     (v) =>
       v.campaignId === campaignId &&
       (v.id === auth.userId || v.name === auth.userId) &&
@@ -706,6 +726,50 @@ export async function campaignRoutes(app: FastifyInstance) {
         });
       }
 
+      if (isProductionLikeRuntime()) {
+        if (!campaignId) {
+          return sendApiError(reply, request, 400, 'Bad Request', 'campaignId is required to check a campaign contact.', {
+            code: 'VALIDATION_ERROR',
+          });
+        }
+        const auth = await resolveAuthUser(request, campaignId);
+        if (!auth) {
+          return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication is required to check account registration.', {
+            code: 'UNAUTHORIZED',
+          });
+        }
+        const authority = await verifyCampaignAuthority(auth, campaignId);
+        if (!authority.authorized) {
+          return sendApiError(reply, request, 403, 'Forbidden', 'Not authorized to manage contacts for this campaign.', {
+            code: 'FORBIDDEN',
+          });
+        }
+        if (!isSupabaseConfigured) {
+          return sendApiError(reply, request, 503, 'Service Unavailable', 'Account registration could not be verified.', {
+            code: 'DATABASE_UNAVAILABLE',
+          });
+        }
+        try {
+          const { data, error } = await supabase
+            .from('user_profiles')
+            .select('user_id, display_name, avatar_url, role')
+            .eq('phone', cleaned)
+            .maybeSingle();
+          if (error) throw error;
+          return {
+            isKshetraUser: Boolean(data),
+            displayName: data?.display_name,
+            avatarUrl: data?.avatar_url,
+            role: data?.role,
+            phone: cleaned,
+          };
+        } catch {
+          return sendApiError(reply, request, 503, 'Service Unavailable', 'Account registration could not be verified.', {
+            code: 'DATABASE_ERROR',
+          });
+        }
+      }
+
       if (isSupabaseConfigured) {
         try {
           const { data } = await supabase
@@ -741,21 +805,79 @@ export async function campaignRoutes(app: FastifyInstance) {
   );
 
   /** GET /api/v1/campaign/campaigns — list campaigns */
-  app.get('/api/v1/campaign/campaigns', { schema: campaignsQuerySchema }, async (request) => {
+  app.get('/api/v1/campaign/campaigns', { schema: campaignsQuerySchema }, async (request, reply) => {
     const { status, politicianId } = request.query as { status?: string; politicianId?: string };
+    let scopedPoliticianId = politicianId;
+
+    if (isProductionLikeRuntime()) {
+      const auth = await resolveAuthUser(request);
+      if (!auth) {
+        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication is required to read campaign records.', {
+          code: 'UNAUTHORIZED',
+        });
+      }
+      if (auth.role === 'admin') {
+        if (politicianId) {
+          const { data, error } = await supabase
+            .from('politician_portal_profiles')
+            .select('id')
+            .eq('id', politicianId)
+            .maybeSingle();
+          if (error) {
+            return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign owner profile could not be verified.', {
+              code: 'POLITICIAN_PROFILE_UNAVAILABLE',
+            });
+          }
+          if (!data) {
+            return sendApiError(reply, request, 403, 'Forbidden', 'Unknown campaign owner profile.', {
+              code: 'FORBIDDEN',
+            });
+          }
+          scopedPoliticianId = data.id;
+        }
+      } else {
+        let profileId: string | null;
+        try {
+          profileId = await findPoliticianProfileIdForUser(auth.userId);
+        } catch {
+          return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign owner profile could not be resolved.', {
+            code: 'POLITICIAN_PROFILE_UNAVAILABLE',
+          });
+        }
+        if (!profileId) return { campaigns: [], total: 0 };
+        if (politicianId && politicianId !== profileId) {
+          return sendApiError(reply, request, 403, 'Forbidden', 'Cannot read another principal’s campaign records.', {
+            code: 'FORBIDDEN',
+          });
+        }
+        scopedPoliticianId = profileId;
+      }
+    }
 
     if (isSupabaseConfigured) {
       try {
         let query = supabase.from('campaigns').select('*');
         if (status) query = query.eq('status', status);
-        if (politicianId) query = query.eq('politician_id', politicianId);
+        if (scopedPoliticianId) query = query.eq('politician_id', scopedPoliticianId);
         const { data, error } = await query;
-        if (!error && data && data.length > 0) {
-          return { campaigns: data, total: data.length };
+        if (!error) {
+          const campaigns = data || [];
+          return { campaigns, total: campaigns.length };
         }
       } catch {
-        // fall through to mock
+        // Development-only fallback is guarded below.
       }
+    }
+
+    if (isProductionLikeRuntime()) {
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Campaign data could not be loaded from the authoritative database.',
+        { code: 'CAMPAIGN_DATA_UNAVAILABLE' },
+      );
     }
 
     return {
@@ -784,8 +906,28 @@ export async function campaignRoutes(app: FastifyInstance) {
   });
 
   /** GET /api/v1/campaign/booths — booth strategy and in-charge management */
-  app.get('/api/v1/campaign/booths', { schema: boothsQuerySchema }, async (request) => {
+  app.get('/api/v1/campaign/booths', { schema: boothsQuerySchema }, async (request, reply) => {
     const { campaignId, priority } = request.query as { campaignId?: string; priority?: string };
+
+    if (isProductionLikeRuntime()) {
+      const auth = await resolveAuthUser(request, campaignId);
+      if (!auth) {
+        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication is required to read booth records.', {
+          code: 'UNAUTHORIZED',
+        });
+      }
+      if (!campaignId) {
+        return sendApiError(reply, request, 400, 'Bad Request', 'campaignId is required.', {
+          code: 'VALIDATION_ERROR',
+        });
+      }
+      const authority = await verifyCampaignAuthority(auth, campaignId);
+      if (!authority.authorized) {
+        return sendApiError(reply, request, 403, 'Forbidden', authority.reason || 'Not authorized for this campaign.', {
+          code: 'FORBIDDEN',
+        });
+      }
+    }
 
     if (isSupabaseConfigured) {
       try {
@@ -793,12 +935,24 @@ export async function campaignRoutes(app: FastifyInstance) {
         if (campaignId) query = query.eq('campaign_id', campaignId);
         if (priority) query = query.eq('priority', priority);
         const { data, error } = await query;
-        if (!error && data && data.length > 0) {
-          return { booths: data, total: data.length };
+        if (!error) {
+          const booths = data || [];
+          return { booths, total: booths.length };
         }
       } catch {
         // fallback
       }
+    }
+
+    if (isProductionLikeRuntime()) {
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Booth data could not be loaded from the authoritative database.',
+        { code: 'BOOTH_DATA_UNAVAILABLE' },
+      );
     }
 
     let filtered = inMemoryBooths;
@@ -930,8 +1084,28 @@ export async function campaignRoutes(app: FastifyInstance) {
   });
 
   /** GET /api/v1/campaign/volunteers — list ground cadre */
-  app.get('/api/v1/campaign/volunteers', { schema: volunteersQuerySchema }, async (request) => {
+  app.get('/api/v1/campaign/volunteers', { schema: volunteersQuerySchema }, async (request, reply) => {
     const { campaignId, role } = request.query as { campaignId?: string; role?: string };
+
+    if (isProductionLikeRuntime()) {
+      const auth = await resolveAuthUser(request, campaignId);
+      if (!auth) {
+        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication is required to read campaign volunteer records.', {
+          code: 'UNAUTHORIZED',
+        });
+      }
+      if (!campaignId) {
+        return sendApiError(reply, request, 400, 'Bad Request', 'campaignId is required.', {
+          code: 'VALIDATION_ERROR',
+        });
+      }
+      const authority = await verifyCampaignAuthority(auth, campaignId);
+      if (!authority.authorized) {
+        return sendApiError(reply, request, 403, 'Forbidden', authority.reason || 'Not authorized for this campaign.', {
+          code: 'FORBIDDEN',
+        });
+      }
+    }
 
     if (isSupabaseConfigured) {
       try {
@@ -939,10 +1113,22 @@ export async function campaignRoutes(app: FastifyInstance) {
         if (campaignId) query = query.eq('campaign_id', campaignId);
         if (role) query = query.eq('role', role);
         const { data, error } = await query;
-        if (!error && data && data.length > 0) {
-          return { volunteers: data, total: data.length };
+        if (!error) {
+          const volunteers = data || [];
+          return { volunteers, total: volunteers.length };
         }
       } catch {}
+    }
+
+    if (isProductionLikeRuntime()) {
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Campaign volunteer data could not be loaded from the authoritative database.',
+        { code: 'VOLUNTEER_DATA_UNAVAILABLE' },
+      );
     }
 
     let filtered = inMemoryVolunteers;
@@ -962,6 +1148,11 @@ export async function campaignRoutes(app: FastifyInstance) {
         });
       }
 
+      if (isProductionLikeRuntime() && !body.campaignId) {
+        return sendApiError(reply, request, 400, 'Bad Request', 'campaignId is required for campaign volunteer registration.', {
+          code: 'VALIDATION_ERROR',
+        });
+      }
       const campaignId = body.campaignId || 'c1';
 
       // 1. Authenticate caller
@@ -1033,7 +1224,26 @@ export async function campaignRoutes(app: FastifyInstance) {
       let verifiedKshetraUser = false;
 
       if (body.isKshetraUser !== undefined) {
-        if (isSupabaseConfigured) {
+        if (isProductionLikeRuntime()) {
+          if (!isSupabaseConfigured) {
+            return sendApiError(reply, request, 503, 'Service Unavailable', 'Account registration could not be verified.', {
+              code: 'DATABASE_UNAVAILABLE',
+            });
+          }
+          try {
+            const { data, error } = await supabase
+              .from('user_profiles')
+              .select('user_id')
+              .eq('phone', cleanedPhone)
+              .maybeSingle();
+            if (error) throw error;
+            verifiedKshetraUser = Boolean(data);
+          } catch {
+            return sendApiError(reply, request, 503, 'Service Unavailable', 'Account registration could not be verified.', {
+              code: 'DATABASE_ERROR',
+            });
+          }
+        } else if (isSupabaseConfigured) {
           try {
             const { data: userProfile } = await supabase
               .from('user_profiles')
