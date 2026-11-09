@@ -1,4 +1,5 @@
 import type { FastifyInstance } from 'fastify';
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 
 export async function debugRoutes(app: FastifyInstance) {
   /**
@@ -16,7 +17,7 @@ export async function debugRoutes(app: FastifyInstance) {
     const incomingSecret = request.headers['x-debug-bypass-secret'];
 
     // In production, strictly reject unless authorized via explicit debug bypass secret
-    if (env === 'production') {
+    if (isProductionLikeRuntime()) {
       const isAuthorized =
         bypassSecret &&
         incomingSecret &&

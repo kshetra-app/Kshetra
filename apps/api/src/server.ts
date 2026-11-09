@@ -29,6 +29,7 @@ import { manageRoutes } from './routes/manage';
 import { pagesRoutes } from './routes/pages';
 import { policyRoutes } from './routes/policy';
 import { randomUUID } from 'crypto';
+import { isIsolatedTestRuntime } from './lib/runtimeEnvironment';
 import { dmRoutes } from './routes/dm';
 import { politicalAdsRoutes } from './routes/politicalAds';
 import { politicalCampaignRoutes } from './routes/politicalCampaigns';
@@ -318,7 +319,7 @@ export async function start() {
 
 // Only start automatically when directly executed as the main entry point
 const isDirectExecution = typeof require !== 'undefined' && require.main === module;
-if (process.env.NODE_ENV !== 'test' && (process.env.START_SERVER === 'true' || isDirectExecution)) {
+if (!isIsolatedTestRuntime() && (process.env.START_SERVER === 'true' || isDirectExecution)) {
   start().catch((err) => {
     console.error('Fatal startup error in KSHETRA API server:', err);
     process.exit(1);

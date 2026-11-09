@@ -17,6 +17,7 @@
  * - Standardized error envelopes via sendApiError.
  */
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import { isIsolatedTestRuntime } from '../lib/runtimeEnvironment';
 import { politicalEntityService } from '../services/politicalEntityService';
 import { sendApiError } from '../lib/replyHelper';
 import { supabase } from '../lib/supabase';
@@ -80,7 +81,7 @@ export async function politicalEntityRoutes(app: FastifyInstance): Promise<void>
     const testRole = request.headers['x-test-role'] as string | undefined;
     const testUserId = request.headers['x-test-user-id'] as string | undefined;
 
-    if (process.env.NODE_ENV === 'test' && testRole) {
+    if (isIsolatedTestRuntime() && testRole) {
       if (testRole === 'service_role' || testRole === 'authenticated') {
         return {
           role: testRole as 'service_role' | 'authenticated',

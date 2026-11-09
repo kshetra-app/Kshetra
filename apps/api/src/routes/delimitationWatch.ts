@@ -6,6 +6,7 @@
  */
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { isIsolatedTestRuntime } from '../lib/runtimeEnvironment';
 import { sendApiError } from '../lib/replyHelper';
 import {
   DelimitationWatchOrchestrator,
@@ -56,7 +57,7 @@ export function getWatchRepository(): IDelimitationWatchRepository {
           );
         }
       }
-    } else if (process.env.NODE_ENV === 'test') {
+    } else if (isIsolatedTestRuntime()) {
       watchRepository = new InMemoryDelimitationWatchRepository();
     } else {
       throw new Error(
@@ -99,7 +100,7 @@ export async function delimitationWatchRoutes(app: FastifyInstance) {
     '/api/v1/delimitation/watch/health',
     async (request: FastifyRequest, reply: FastifyReply) => {
       const { repo, error } = resolveRepository();
-      const isTest = process.env.NODE_ENV === 'test';
+      const isTest = isIsolatedTestRuntime();
 
       if (!repo) {
         return reply.status(503).send({

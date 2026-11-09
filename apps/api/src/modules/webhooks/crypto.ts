@@ -7,6 +7,7 @@
  */
 
 import crypto from 'node:crypto';
+import { isIsolatedTestRuntime } from '../../lib/runtimeEnvironment';
 
 // Master encryption key for secrets at rest (AES-256-GCM requires 32 bytes)
 const DEFAULT_TEST_MASTER_KEY = '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
@@ -23,7 +24,7 @@ export function getMasterEncryptionKey(): Buffer {
     );
   }
   // Allow test fallback strictly when NODE_ENV is explicitly 'test'
-  if (process.env.NODE_ENV === 'test') {
+  if (isIsolatedTestRuntime()) {
     return Buffer.from(DEFAULT_TEST_MASTER_KEY, 'hex');
   }
   throw new Error(
