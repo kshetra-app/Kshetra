@@ -1171,7 +1171,17 @@ export async function civicRoutes(app: FastifyInstance) {
     {
       schema: cdiSchema,
     },
-    async (request) => {
+    async (request, reply) => {
+      if (isProductionRuntime) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'The constituency development index is not backed by durable production analytics yet.',
+          { code: 'CIVIC_ANALYTICS_UNAVAILABLE' },
+        );
+      }
       const { constituencyId } = request.params;
       const metrics = await civicService.getConstituencyDevelopmentIndex(constituencyId);
       return {
@@ -1954,7 +1964,17 @@ export async function civicRoutes(app: FastifyInstance) {
     {
       schema: getSentimentSchema,
     },
-    async (request) => {
+    async (request, reply) => {
+      if (isProductionRuntime) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Constituency civic activity metrics are not backed by durable production analytics yet.',
+          { code: 'CIVIC_ANALYTICS_UNAVAILABLE' },
+        );
+      }
       const { constituencyId } = request.params;
       const sentiment = await civicService.getSentiment(constituencyId);
       return sentiment;
