@@ -5,6 +5,7 @@
  * Ratified under DEC-186
  */
 
+import { isIsolatedTestRuntime, isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import type { FastifyPluginAsync } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
@@ -145,7 +146,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
 
     if (
       !userId &&
-      process.env.NODE_ENV !== 'production' &&
+      !isProductionLikeRuntime() &&
       (request.headers['x-user-id'] as string)
     ) {
       userId = request.headers['x-user-id'] as string;
@@ -153,14 +154,14 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
 
     if (!userId) return null;
 
-    if (process.env.NODE_ENV !== 'production' && (request.headers['x-user-role'] as string)) {
+    if (!isProductionLikeRuntime() && (request.headers['x-user-role'] as string)) {
       return { userId, role: request.headers['x-user-role'] as string };
     }
 
     if (!isSupabaseConfigured) {
       const testRole =
         (request.headers['x-user-role'] as string) ||
-        (process.env.NODE_ENV === 'test' ? 'citizen' : undefined);
+        (isIsolatedTestRuntime() ? 'citizen' : undefined);
       return { userId, role: testRole || 'citizen' };
     }
 

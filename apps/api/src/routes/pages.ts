@@ -1,3 +1,4 @@
+import { isIsolatedTestRuntime, isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import crypto from 'node:crypto';
 import type { FastifyPluginAsync } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
@@ -61,13 +62,13 @@ let testPageAuthorityResolver: PageAuthorityResolver | null = null;
  * Never accessible or activatable by external HTTP callers.
  */
 export function setTestAuthResolver(resolver: AuthResolver | null) {
-  if (process.env.NODE_ENV !== 'production') {
+  if (!isProductionLikeRuntime()) {
     testAuthResolver = resolver;
   }
 }
 
 export function setTestPageAuthorityResolver(resolver: PageAuthorityResolver | null) {
-  if (process.env.NODE_ENV !== 'production') {
+  if (!isProductionLikeRuntime()) {
     testPageAuthorityResolver = resolver;
   }
 }
@@ -114,7 +115,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
         });
       }
 
-      if (process.env.NODE_ENV !== 'production' && testPageAuthorityResolver) {
+      if (!isProductionLikeRuntime() && testPageAuthorityResolver) {
         const testAuth = testAuthResolver
           ? await testAuthResolver(request)
           : { userId: 'user-1', role: 'politician' };
@@ -160,7 +161,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       const { data: page, error } = await query.maybeSingle();
 
       if (error) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProductionLikeRuntime()) {
           return reply.send({
             success: true,
             pageId,
@@ -299,7 +300,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
    * Fails closed when authoritative Supabase authentication infrastructure is unconfigured.
    */
   async function resolveAuthUser(request: any): Promise<{ userId: string; role: string } | null> {
-    if (process.env.NODE_ENV === 'test' && testAuthResolver) {
+    if (isIsolatedTestRuntime() && testAuthResolver) {
       return testAuthResolver(request);
     }
 
@@ -348,7 +349,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
     pageId: string,
     request: any,
   ): Promise<{ authorized: boolean; notFound: boolean; page?: any }> {
-    if (process.env.NODE_ENV === 'test' && testPageAuthorityResolver) {
+    if (isIsolatedTestRuntime() && testPageAuthorityResolver) {
       return testPageAuthorityResolver(auth, pageId, request);
     }
 
@@ -442,7 +443,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       });
 
       if (insertError) {
-        if (process.env.NODE_ENV === 'production') {
+        if (isProductionLikeRuntime()) {
           return sendApiError(
             reply,
             request,
@@ -541,7 +542,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
 
     // DEF-B5-PAY-01: A valid cryptographic razorpay_signature is mandatory.
     // Under unit/test environment, sandboxBypass is permitted only if explicitly requested.
-    const isTestSandboxBypass = process.env.NODE_ENV === 'test' && body.sandboxBypass === true;
+    const isTestSandboxBypass = isIsolatedTestRuntime() && body.sandboxBypass === true;
 
     if (!body.razorpay_signature && !isTestSandboxBypass) {
       return sendApiError(
@@ -617,7 +618,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
           .eq('provider_order_id', body.razorpay_order_id)
           .maybeSingle();
 
-        if (orderFetchErr && process.env.NODE_ENV === 'production') {
+        if (orderFetchErr && isProductionLikeRuntime()) {
           return sendApiError(
             reply,
             request,
@@ -683,7 +684,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
           }
         }
       } catch (err: any) {
-        if (process.env.NODE_ENV === 'production') {
+        if (isProductionLikeRuntime()) {
           return sendApiError(
             reply,
             request,
@@ -763,7 +764,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
     }
 
     // Authoritative persistence check: fail closed if Supabase is unconfigured (unless test fixture is active)
-    if (!isSupabaseConfigured && !(process.env.NODE_ENV === 'test' && testPageAuthorityResolver)) {
+    if (!isSupabaseConfigured && !(isIsolatedTestRuntime() && testPageAuthorityResolver)) {
       return sendApiError(
         reply,
         request,
@@ -791,7 +792,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       );
 
       if (rpcError) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProductionLikeRuntime()) {
           const expiryDate = new Date();
           if (body.billingCycle === 'annual') {
             expiryDate.setFullYear(expiryDate.getFullYear() + 1);

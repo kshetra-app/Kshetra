@@ -1,3 +1,4 @@
+import { isIsolatedTestRuntime } from '../lib/runtimeEnvironment';
 import crypto from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
@@ -228,7 +229,7 @@ async function resolveAuthUser(
   if (!isSupabaseConfigured) {
     const testRole =
       (request.headers['x-user-role'] as string) ||
-      (process.env.NODE_ENV === 'test' ? 'citizen' : undefined);
+      (isIsolatedTestRuntime() ? 'citizen' : undefined);
     return { userId, role: testRole || 'citizen' };
   }
 
