@@ -10,6 +10,7 @@
 
 import type { ApiClient } from '../client';
 import { ApiValidationError } from '../errors';
+import { trackProductEvent } from '../../analytics';
 
 export interface UpdateProfileRequestDTO {
   displayName?: string;
@@ -32,6 +33,13 @@ export class UsersEndpoint {
       payload,
       { authPolicy: 'authenticated' },
     );
+    if (res.data.success && payload.constituencyId) {
+      void trackProductEvent(this.client, 'constituency_selected', {
+        screen: '/profile',
+        constituencyId: payload.constituencyId,
+        entityType: 'user_profile',
+      });
+    }
     return res.data;
   }
 
@@ -59,6 +67,15 @@ export class UsersEndpoint {
     }
     const res = await this.client.delete<{ success: boolean; targetUserId: string; unfollowed: boolean }>(
       `/api/v1/users/${encodeURIComponent(targetUserId)}/follow`,
+      { authPolicy: 'authenticated' },
+    );
+    return res.data;
+  }
+
+  /** Load the authenticated user's private follow graph. */
+  async getFollowedUserIds(): Promise<{ success: boolean; followedUserIds: string[] }> {
+    const res = await this.client.get<{ success: boolean; followedUserIds: string[] }>(
+      '/api/v1/users/me/following',
       { authPolicy: 'authenticated' },
     );
     return res.data;

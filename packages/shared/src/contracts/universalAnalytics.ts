@@ -10,12 +10,13 @@
 export interface PublicStateOverviewDTO {
   stateCode: string;
   name: string;
-  capital: string;
-  totalAssemblyConstituencies: number;
-  totalParliamentaryConstituencies: number;
-  rulingParty: string;
-  districtsCount: number;
-  delimitationSeatChange: number;
+  capital: string | null;
+  totalAssemblyConstituencies: number | null;
+  totalParliamentaryConstituencies: number | null;
+  rulingParty: string | null;
+  districtsCount: number | null;
+  delimitationSeatChange: number | null;
+  sourceVerificationStatus: 'not_verified';
   canonicalUrl: string;
 }
 
@@ -24,47 +25,49 @@ export interface PublicConstituencyProfileDTO {
   acNo: number;
   name: string;
   stateCode: string;
-  districtId: string;
-  districtName: string;
-  reservedCategory: 'GEN' | 'SC' | 'ST';
+  districtId: string | null;
+  districtName: string | null;
+  reservedCategory: 'GEN' | 'SC' | 'ST' | null;
   currentRepresentative: {
     id: string;
     name: string;
-    party: string;
-    termStart: string;
+    party: string | null;
+    termStart: string | null;
   } | null;
   electorateSummary: {
-    totalElectors: number;
-    maleElectors: number;
-    femaleElectors: number;
-    turnoutPercentage: number;
+    totalElectors: number | null;
+    maleElectors: number | null;
+    femaleElectors: number | null;
+    turnoutPercentage: number | null;
   };
   delimitationImpact: {
-    previousBoundaries: string;
-    newBoundaries2026: string;
-    boundaryShiftMagnitude: 'LOW' | 'MEDIUM' | 'HIGH';
-  };
+    previousBoundaries: string | null;
+    newBoundaries2026: string | null;
+    boundaryShiftMagnitude: 'LOW' | 'MEDIUM' | 'HIGH' | null;
+  } | null;
   civicSummary: {
-    openIssuesCount: number;
-    resolvedIssuesCount: number;
-    cdiScore: number;
+    openIssuesCount: number | null;
+    resolvedIssuesCount: number | null;
+    cdiScore: number | null;
   };
+  sourceVerificationStatus: 'not_verified';
   canonicalUrl: string;
 }
 
 export interface PublicRepresentativeProfileDTO {
   id: string;
   name: string;
-  stateCode: string;
-  constituencyId: string;
-  constituencyName: string;
-  party: string;
-  termStart: string;
-  attendancePercentage: number;
-  questionsAsked: number;
-  debatesParticipated: number;
-  declaredAssetsINR: number;
-  criminalCasesCount: number;
+  stateCode: string | null;
+  constituencyId: string | null;
+  constituencyName: string | null;
+  party: string | null;
+  termStart: string | null;
+  attendancePercentage: number | null;
+  questionsAsked: number | null;
+  debatesParticipated: number | null;
+  declaredAssetsINR: number | null;
+  criminalCasesCount: number | null;
+  sourceVerificationStatus: 'not_verified';
   canonicalUrl: string;
 }
 
@@ -144,26 +147,26 @@ export interface ProductDashboardMetricsDTO {
     verifiedUsers: number;
     geographySelectedCount: number;
     firstCivicActionCount: number;
-    activationRatePercent: number;
+    activationRatePercent: number | null;
   };
   retention: {
     dau: number;
     wau: number;
     mau: number;
-    stickinessRatioPercent: number;
-    day7RetentionRatePercent: number;
-    day30RetentionRatePercent: number;
+    stickinessRatioPercent: number | null;
+    day7RetentionRatePercent: number | null;
+    day30RetentionRatePercent: number | null;
   };
   engagement: {
     totalSessions: number;
-    avgSessionDurationSeconds: number;
-    avgInteractionsPerSession: number;
+    avgSessionDurationSeconds: number | null;
+    avgInteractionsPerSession: number | null;
     totalCivicInteractions: number;
   };
   geographyDensity: {
-    totalConstituencies: number;
+    totalConstituencies: number | null;
     activeConstituencies: number;
-    penetrationPercentage: number;
+    penetrationPercentage: number | null;
     topActiveConstituencies: Array<{
       acId: string;
       name: string;
@@ -172,10 +175,17 @@ export interface ProductDashboardMetricsDTO {
     }>;
   };
   revenue: {
-    b2bSubscriptionMrrINR: number;
-    adRevenueINR: number;
-    totalPrepaidBalancesINR: number;
-    arpuINR: number;
+    b2bSubscriptionMrrINR: number | null;
+    adRevenueINR: number | null;
+    totalPrepaidBalancesINR: number | null;
+    arpuINR: number | null;
+  };
+  dataQuality: {
+    source: 'durable_database' | 'local_development_buffer';
+    metricWindowDays: number;
+    eventsInMetricWindow: number;
+    analyticsCoverageStart: string | null;
+    notes: string[];
   };
   generatedAt: string;
 }

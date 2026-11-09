@@ -13,28 +13,31 @@ import { Verifications } from './pages/Verifications';
 import { CivicIssues } from './pages/CivicIssues';
 import { Delimitation } from './pages/Delimitation';
 import { SystemHealth } from './pages/SystemHealth';
+import { AdminAuthGate } from './components/AdminAuthGate';
 
 export function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="feature-flags" element={<FeatureFlags />} />
-          <Route path="moderation" element={<Moderation />} />
-          <Route path="political-ads" element={<PoliticalAdReview />} />
-          <Route path="representative-edits" element={<RepresentativeEdits />} />
-          <Route path="constituencies" element={<Constituencies />} />
-          <Route path="representatives" element={<Representatives />} />
-          <Route path="bulk-import" element={<BulkImport />} />
-          <Route path="verifications" element={<Verifications />} />
-          <Route path="civic-issues" element={<CivicIssues />} />
-          <Route path="delimitation" element={<Delimitation />} />
-          <Route path="system-health" element={<SystemHealth />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <AdminAuthGate>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="feature-flags" element={<FeatureFlags />} />
+            <Route path="moderation" element={<Moderation />} />
+            <Route path="political-ads" element={<PoliticalAdReview />} />
+            <Route path="representative-edits" element={<RepresentativeEdits />} />
+            <Route path="constituencies" element={<Constituencies />} />
+            <Route path="representatives" element={<Representatives />} />
+            <Route path="bulk-import" element={<BulkImport />} />
+            <Route path="verifications" element={<Verifications />} />
+            <Route path="civic-issues" element={<CivicIssues />} />
+            <Route path="delimitation" element={<Delimitation />} />
+            <Route path="system-health" element={<SystemHealth />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AdminAuthGate>
   );
 }
 
