@@ -1,3 +1,4 @@
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 /**
  * Commercial Advertising, Local Merchant Portal, Serving Engine & Telemetry Routes
  * Master Product Blueprint — Domain 6 (JOB 058, JOB 059, JOB 060, JOB 061)
@@ -15,6 +16,14 @@ import type {
 } from '@kshetra/shared';
 
 export const commercialAdRoutes: FastifyPluginAsync = async (app) => {
+  // This service is process-memory backed. Never present simulated spend,
+  // delivery, click, impression, or invoice data as live in deployed runtimes.
+  app.addHook('preHandler', async (request, reply) => {
+    if (isProductionLikeRuntime()) {
+      return sendApiError(reply, request, 503, 'Service Unavailable', 'Commercial advertising storage and delivery are not connected', { code: 'AD_SERVICE_UNAVAILABLE' });
+    }
+  });
+
   // Onboard Local Merchant Account (JOB 061 Step 1)
   app.post<{ Body: CreateCommercialAccountInput }>(
     '/accounts',
