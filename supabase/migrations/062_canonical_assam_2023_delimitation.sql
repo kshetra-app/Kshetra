@@ -22,38 +22,87 @@ BEGIN;
 
 -- ─── SECTION 1: DATASET VERSION & EVIDENCE RECORD REGISTRATION ─────────────────
 
+INSERT INTO public.datasets (id, name, domain, description, source_id, license)
+VALUES (
+  'eci_assam_delimitation_2023',
+  'Election Commission of India - Assam Delimitation Order 2023',
+  'geography',
+  'Statutory reorganisation of Assam parliamentary and assembly constituencies under ECI Order No. 282/AS/2023(DEL)/Vol.V, effective 2023-08-16.',
+  'eci',
+  'Government Open Data'
+)
+ON CONFLICT (id) DO NOTHING;
+
 INSERT INTO public.dataset_versions (
-  id, dataset_name, version_tag, authority, description, effective_date, checksum
+  id, dataset_id, version_tag, effective_from, effective_to, record_count,
+  checksum_sha256, default_status, metadata
 )
 VALUES (
   'eci_national_ac_2023_as_v1',
-  'Election Commission of India - Assam Delimitation Order 2023',
+  'eci_assam_delimitation_2023',
   '2023-AS-DELIM-V1',
-  'Election Commission of India',
-  'Delimitation Order No. 282/AS/2023(DEL)/Vol.V dated 11th August 2023 reorganising 126 Assembly and 14 Parliamentary Constituencies in Assam',
   '2023-08-16'::date,
-  'sha256:eci_delimitation_order_282_as_2023_final_statutory_table'
+  NULL,
+  140,
+  'bd2a6faade27b02a615830330e02093dd602bde9aaeaa59e2e097ea8f12f126b',
+  'UNKNOWN',
+  jsonb_build_object(
+    'authority', 'Election Commission of India',
+    'order_number', '282/AS/2023(DEL)/Vol.V',
+    'gazette_issue', 'Gazette of India Extraordinary No. 434',
+    'record_count_definition', '126 Assam Assembly and 14 Assam Parliamentary constituencies',
+    'source_uri', 'https://www.eci.gov.in/Documents/Delimitation/DELIMITATIONASSAM_UPDATED.pdf',
+    'artifact_name', 'DELIMITATIONASSAM_UPDATED.pdf',
+    'artifact_sha256', 'bd2a6faade27b02a615830330e02093dd602bde9aaeaa59e2e097ea8f12f126b'
+  )
 )
-ON CONFLICT (id) DO UPDATE SET
-  description = EXCLUDED.description,
-  effective_date = EXCLUDED.effective_date;
+ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.evidence_records (
-  id, evidence_type, title, description, citation, source_uri, collected_at
+  id, dataset_version_id, artifact_name, artifact_sha256,
+  verification_authority, verified_by, verification_notes
 )
 VALUES (
   'a55a0023-0000-4000-8000-000000000001'::uuid,
-  'STATUTORY_GAZETTE_ORDER',
-  'ECI Assam Delimitation Final Order 2023',
-  'Final Order No. 282/AS/2023(DEL)/Vol.V under Section 8A Representation of the People Act, 1950',
-  'ECI Notification No. 282/AS/2023 published in Gazette of India Extraordinary No. 434 dated 11 August 2023',
-  'https://eci.gov.in/files/file/15264-delimitation-of-assembly-and-parliamentary-constituencies-in-the-state-of-assam/',
-  '2023-08-11 12:00:00+00'::timestamptz
+  'eci_national_ac_2023_as_v1',
+  'DELIMITATIONASSAM_UPDATED.pdf',
+  'bd2a6faade27b02a615830330e02093dd602bde9aaeaa59e2e097ea8f12f126b',
+  'Election Commission of India',
+  'migration_062_source_reconciliation',
+  'ECI official Assam delimitation publication, including final order No. 282/AS/2023(DEL)/Vol.V. Source artifact SHA-256 was computed from the downloaded ECI PDF.'
 )
-ON CONFLICT (id) DO UPDATE SET
-  title = EXCLUDED.title,
-  citation = EXCLUDED.citation,
-  source_uri = EXCLUDED.source_uri;
+ON CONFLICT (id) DO NOTHING;
+
+UPDATE public.dataset_versions
+SET default_status = 'OFFICIAL',
+    verification_evidence_id = 'a55a0023-0000-4000-8000-000000000001'::uuid
+WHERE id = 'eci_national_ac_2023_as_v1';
+
+INSERT INTO public.provenance_records (
+  id, dataset_version_id, source_record_id, status, transformation_type,
+  transform_version, operator, metadata
+)
+VALUES (
+  'a55a0023-0000-4000-8000-000000000002'::uuid,
+  'eci_national_ac_2023_as_v1',
+  'ECI-ASSAM-DELIMITATION-2023',
+  'UNKNOWN',
+  'official_source_reconciliation',
+  '1.0.0',
+  'migration_062_source_reconciliation',
+  jsonb_build_object(
+    'authority', 'Election Commission of India',
+    'evidence_record_id', 'a55a0023-0000-4000-8000-000000000001',
+    'scope', jsonb_build_array('126 Assam Assembly constituencies', '14 Assam Parliamentary constituencies')
+  )
+)
+ON CONFLICT (id) DO NOTHING;
+
+UPDATE public.provenance_records
+SET status = 'OFFICIAL',
+    verification_evidence_id = 'a55a0023-0000-4000-8000-000000000001'::uuid,
+    verified_by = 'migration_062_source_reconciliation'
+WHERE id = 'a55a0023-0000-4000-8000-000000000002'::uuid;
 
 -- ─── SECTION 2: CANONICAL PARLIAMENTARY CONSTITUENCIES & VERSIONS ──────────────
 
@@ -478,13 +527,13 @@ ON CONFLICT (assembly_constituency_version_id, parliamentary_constituency_versio
 -- ─── SECTION 5: STATUTORY RECORD PROVENANCE LINKAGE ────────────────────────────
 
 INSERT INTO public.record_provenance_linkages (domain_table, domain_record_id, provenance_id, is_canonical)
-SELECT 'constituencies', c.id, 'a55a0023-0000-4000-8000-000000000001'::uuid, true
+SELECT 'constituencies', c.id, 'a55a0023-0000-4000-8000-000000000002'::uuid, true
 FROM public.constituencies c
 WHERE c.state_code = 'AS'
 ON CONFLICT (domain_table, domain_record_id, provenance_id) DO NOTHING;
 
 INSERT INTO public.record_provenance_linkages (domain_table, domain_record_id, provenance_id, is_canonical)
-SELECT 'parliamentary_constituencies', pc.code, 'a55a0023-0000-4000-8000-000000000001'::uuid, true
+SELECT 'parliamentary_constituencies', pc.code, 'a55a0023-0000-4000-8000-000000000002'::uuid, true
 FROM public.parliamentary_constituencies pc
 WHERE pc.state_code = 'AS'
 ON CONFLICT (domain_table, domain_record_id, provenance_id) DO NOTHING;

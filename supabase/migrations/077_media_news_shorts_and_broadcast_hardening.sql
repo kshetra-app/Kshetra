@@ -8,7 +8,7 @@
 CREATE TABLE IF NOT EXISTS representative_civic_responses (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   issue_id UUID NOT NULL REFERENCES civic_issues(id) ON DELETE CASCADE,
-  representative_id UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+  representative_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE RESTRICT,
   response_text TEXT NOT NULL,
   action_plan TEXT,
   estimated_completion_date DATE,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS political_news_articles (
   category TEXT NOT NULL DEFAULT 'governance',
   state_code VARCHAR(2),
   constituency_id TEXT REFERENCES constituencies(id) ON DELETE SET NULL,
-  tagged_representative_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  tagged_representative_id UUID REFERENCES canonical_persons(id) ON DELETE SET NULL,
   sentiment_score NUMERIC(3, 2) DEFAULT 0.00,
   language VARCHAR(5) NOT NULL DEFAULT 'en',
   is_fact_checked BOOLEAN NOT NULL DEFAULT false,
@@ -62,7 +62,7 @@ CREATE INDEX IF NOT EXISTS idx_shorts_analytics_recorded_at ON political_shorts_
 
 -- 4. User Notification Subscriptions & Anti-Spam Controls (JOB 044)
 CREATE TABLE IF NOT EXISTS user_notification_subscriptions (
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   constituency_id TEXT NOT NULL REFERENCES constituencies(id) ON DELETE CASCADE,
   topic TEXT NOT NULL, -- 'civic_alerts', 'breaking_news', 'live_townhalls', 'weekly_digest'
   push_token TEXT,
@@ -91,19 +91,10 @@ CREATE TABLE IF NOT EXISTS constituency_retention_digests (
 CREATE INDEX IF NOT EXISTS idx_retention_digests_ac_type ON constituency_retention_digests(constituency_id, digest_type);
 
 -- 6. Live Streaming Enhancements (JOB 051, JOB 052, JOB 053)
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM information_schema.columns 
-    WHERE table_name = 'broadcast_sessions' AND column_name = 'hls_playback_url'
-  ) THEN
-    ALTER TABLE broadcast_sessions 
-    ADD COLUMN hls_playback_url TEXT,
-    ADD COLUMN vod_archive_url TEXT,
-    ADD COLUMN peak_live_viewers INTEGER DEFAULT 0,
-    ADD COLUMN total_views INTEGER DEFAULT 0;
-  END IF;
-END $$;
+-- Migration 074 is the canonical broadcast schema and already defines HLS/VOD
+-- URLs and view counters on broadcast_streams. The earlier broadcast_sessions
+-- table name has never existed in this migration chain, so no duplicate ALTER
+-- is required here.
 
 -- 7. Row Level Security Policies
 ALTER TABLE representative_civic_responses ENABLE ROW LEVEL SECURITY;
