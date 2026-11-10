@@ -12,8 +12,11 @@ COPY apps/api ./apps/api
 WORKDIR /app/apps/api
 RUN npm ci --omit=dev --workspaces=false --no-audit --no-fund
 
+# Railway's configured start command is relative to /app.
+WORKDIR /app
+
 # Runtime Environment
 ENV PORT=3001
 ENV HOST=0.0.0.0
 EXPOSE 3001
-CMD ["node", "--import=tsx", "src/server.ts"]
+CMD ["node", "--import=tsx", "apps/api/src/server.ts"]
