@@ -1,23 +1,19 @@
-FROM node:22-alpine AS base
+FROM node:22-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 
-# Copy root manifests & workspaces
-COPY package.json package-lock.json ./
-COPY packages ./packages
-COPY apps/api ./apps/api
+# Install from the API's standalone, lockfile-backed manifest. The monorepo
+# root manifest includes unrelated mobile and test tooling, so it is not part
+# of the deployed API image.
+COPY packages/shared ./packages/shared
 COPY data ./data
+COPY apps/api ./apps/api
 
-# Install dependencies with platform flexibility for Docker Linux container
-RUN npm install --no-audit --no-fund --force
-
-# Build shared package
-RUN npm run build --prefix packages/shared
+WORKDIR /app/apps/api
+RUN npm ci --omit=dev --workspaces=false --no-audit --no-fund
 
 # Runtime Environment
 ENV PORT=3001
 ENV HOST=0.0.0.0
 EXPOSE 3001
-WORKDIR /app
-
-CMD ["npx", "tsx", "apps/api/src/server.ts"]
+CMD ["node", "--import=tsx", "src/server.ts"]

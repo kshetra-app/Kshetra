@@ -1,22 +1,21 @@
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-# Copy root and package manifests
-COPY package.json package-lock.json* ./
-COPY packages/shared/package.json ./packages/shared/
-COPY apps/web-admin/package.json ./apps/web-admin/
+# Install from the admin's own lockfile. Its local shared-package reference
+# keeps the shared TypeScript source available without bringing in unrelated
+# API, mobile, or test-tool dependencies.
+COPY packages/shared ./packages/shared
+COPY apps/web-admin/package.json apps/web-admin/package-lock.json ./apps/web-admin/
 
-# Install dependencies
-RUN npm install --force
+WORKDIR /app/apps/web-admin
+RUN npm ci --workspaces=false --no-audit --no-fund
 
 # Copy source code
-COPY packages/shared ./packages/shared
-COPY apps/web-admin ./apps/web-admin
+COPY apps/web-admin ./
 
-# Build shared and web-admin
-RUN npm run build --prefix packages/shared
-RUN npm run build --prefix apps/web-admin
+# The admin's tsconfig maps the shared workspace source directly.
+RUN npm run build
 
 # Production static serving
 FROM nginx:alpine

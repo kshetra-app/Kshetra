@@ -108,7 +108,7 @@ function resolveCorsOrigin(env: string): boolean | string[] {
 export async function buildApp() {
   const env = process.env.NODE_ENV ?? 'development';
 
-  const app = Fastify({
+  const fastifyOptions: any = {
     logger: envToLogger[env] ?? true,
     genReqId: (req: any) => {
       const headers = req?.headers;
@@ -125,8 +125,18 @@ export async function buildApp() {
     },
     // Set requestIdHeader to false so Fastify delegates ID resolution strictly to genReqId (enforcing length and regex rules)
     requestIdHeader: false,
-    requestIdLogLabel: 'reqId',
-  });
+  };
+
+  // Fastify 5.11+ moved requestIdLogLabel under LogController. Keep the
+  // legacy option only for older supported local installs.
+  const LogController = (Fastify as any).LogController;
+  if (typeof LogController === 'function') {
+    fastifyOptions.logController = new LogController({ requestIdLogLabel: 'reqId' });
+  } else {
+    fastifyOptions.requestIdLogLabel = 'reqId';
+  }
+
+  const app = Fastify(fastifyOptions);
 
   // Track request start time for high-resolution latency tracking and metrics collection
   app.addHook('onRequest', async (request: FastifyRequest) => {

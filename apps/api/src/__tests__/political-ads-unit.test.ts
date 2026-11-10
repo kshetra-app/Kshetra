@@ -69,7 +69,7 @@ describe('Political advertising routes', () => {
     const created = await app.inject({
       method: 'POST',
       url: '/api/v1/pages/page-unit-test/political-ads',
-      headers: { 'x-user-id': 'user-unit-test' },
+      headers: { 'x-user-id': 'user-unit-test', 'x-user-role': 'citizen' },
       payload: submission(),
     });
 
