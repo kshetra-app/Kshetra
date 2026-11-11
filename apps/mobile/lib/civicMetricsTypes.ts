@@ -162,17 +162,17 @@ export interface LegislatorAttendance {
   legislatorName: string;
   party: string;
   stateCode: string;
-  constituencyAcNo?: number;
+  constituencyAcNo?: number | null;
   sessionYear: string;
   type: AttendanceType;
-  totalSessions: number;
-  attended: number;
-  attendancePercent: number;
-  questionsAsked: number;
-  debatesParticipated: number;
-  privateMemberBills: number;
-  ranking: number;
-  totalLegislators: number;
+  totalSessions: number | null;
+  attended: number | null;
+  attendancePercent: number | null;
+  questionsAsked: number | null;
+  debatesParticipated: number | null;
+  privateMemberBills: number | null;
+  ranking: number | null;
+  totalLegislators: number | null;
 }
 
 export interface Bill {

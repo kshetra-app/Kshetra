@@ -230,6 +230,8 @@ interface CivicMetricsState {
   budgetAllocations: BudgetAllocation[];
   rtiRequests: RTIRequest[];
   attendance: LegislatorAttendance[];
+  attendanceLoading: boolean;
+  attendanceError: boolean;
   bills: Bill[];
   schemes: GovernmentScheme[];
   projects: DevelopmentProject[];
@@ -254,16 +256,23 @@ interface CivicMetricsState {
 
   // Actions
   fileRTI: (rti: Partial<RTIRequest>) => Promise<boolean>;
+  loadAttendance: (stateCode: string) => Promise<void>;
   upvoteRTI: (rtiId: string) => Promise<boolean>;
   supportBill: (billId: string) => Promise<boolean>;
   opposeBill: (billId: string) => Promise<boolean>;
 }
+
+let attendanceRequestGeneration = 0;
+const ATTENDANCE_PAGE_SIZE = 100;
+const MAX_ATTENDANCE_PAGES = 20;
 
 export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => ({
   budgetSummaries: IS_LIVE_ENVIRONMENT ? [] : SEED_BUDGET_SUMMARIES,
   budgetAllocations: [],
   rtiRequests: IS_LIVE_ENVIRONMENT ? [] : SEED_RTI,
   attendance: IS_LIVE_ENVIRONMENT ? [] : SEED_ATTENDANCE,
+  attendanceLoading: false,
+  attendanceError: false,
   bills: IS_LIVE_ENVIRONMENT ? [] : SEED_BILLS,
   schemes: IS_LIVE_ENVIRONMENT ? [] : SEED_SCHEMES,
   projects: IS_LIVE_ENVIRONMENT ? [] : SEED_PROJECTS,
@@ -273,7 +282,7 @@ export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => ({
   getBudgetSummary: (stateCode) => get().budgetSummaries.find((b) => b.stateCode === stateCode),
   getRTIByState: (stateCode) => get().rtiRequests.filter((r) => r.stateCode === stateCode),
   getPublicRTIs: () => get().rtiRequests.filter((r) => r.isPublic),
-  getAttendanceForState: (stateCode) => get().attendance.filter((a) => a.stateCode === stateCode).sort((a, b) => b.attendancePercent - a.attendancePercent),
+  getAttendanceForState: (stateCode) => get().attendance.filter((a) => a.stateCode === stateCode).sort((a, b) => (b.attendancePercent ?? -1) - (a.attendancePercent ?? -1)),
   getAttendanceForLegislator: (name) => get().attendance.filter((a) => a.legislatorName === name),
   getBillsByState: (stateCode) => get().bills.filter((b) => stateCode ? b.stateCode === stateCode : true),
   getActiveBills: () => get().bills.filter((b) => !['enacted', 'lapsed', 'withdrawn'].includes(b.status)),
@@ -284,6 +293,50 @@ export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => ({
   getDelayedProjects: () => get().projects.filter((p) => p.phase === 'delayed' || p.phase === 'stalled' || p.delayDays > 90),
   getUpcomingHearings: (stateCode) => get().hearings.filter((h) => (stateCode ? h.stateCode === stateCode : true) && new Date(h.date).getTime() > Date.now()).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
   getCDI: (acNo, stateCode) => get().cdiList.find((c) => c.constituencyAcNo === acNo && c.stateCode === stateCode),
+
+  loadAttendance: async (stateCode) => {
+    if (!IS_LIVE_ENVIRONMENT) return;
+    const normalizedStateCode = stateCode.trim().toUpperCase();
+    if (!/^[A-Z]{2}$/.test(normalizedStateCode)) return;
+
+    const generation = ++attendanceRequestGeneration;
+    set({ attendanceLoading: true, attendanceError: false });
+
+    try {
+      const rows: LegislatorAttendance[] = [];
+      let total = Number.POSITIVE_INFINITY;
+      for (let page = 1; page <= MAX_ATTENDANCE_PAGES; page += 1) {
+        const response = await apiClient.civic.listAttendance({
+          stateCode: normalizedStateCode,
+          page,
+          limit: ATTENDANCE_PAGE_SIZE,
+        });
+        rows.push(...response.attendance);
+        total = response.total;
+        if (rows.length >= total || response.attendance.length < ATTENDANCE_PAGE_SIZE) break;
+      }
+
+      if (generation !== attendanceRequestGeneration) return;
+      set((state) => {
+        const byId = new Map(
+          state.attendance
+            .filter((row) => row.stateCode !== normalizedStateCode)
+            .map((row) => [`${row.legislatorId}:${row.sessionYear}:${row.type}`, row]),
+        );
+        for (const row of rows) {
+          byId.set(`${row.legislatorId}:${row.sessionYear}:${row.type}`, row);
+        }
+        return {
+          attendance: [...byId.values()],
+          attendanceLoading: false,
+          attendanceError: false,
+        };
+      });
+    } catch {
+      if (generation !== attendanceRequestGeneration) return;
+      set({ attendanceLoading: false, attendanceError: true });
+    }
+  },
 
   fileRTI: async (rti) => {
     try {

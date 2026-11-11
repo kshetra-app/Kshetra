@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, ScrollView, Pressable, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -35,6 +35,10 @@ export default function CivicMetricsScreen() {
   const activeState = useActiveStateStore((s) => s.stateCode) || 'TS';
 
   const store = useCivicMetricsStore();
+  const loadAttendance = useCivicMetricsStore((s) => s.loadAttendance);
+  useEffect(() => {
+    if (activeTab === 'attendance') void loadAttendance(activeState);
+  }, [activeState, activeTab, loadAttendance]);
   const budgetSummary = useMemo(() => store.getBudgetSummary(activeState), [store, activeState]);
   const attendance = useMemo(() => store.getAttendanceForState(activeState), [store, activeState]);
   const bills = useMemo(() => store.getBillsByState(activeState), [store, activeState]);
@@ -106,9 +110,24 @@ export default function CivicMetricsScreen() {
             {attendance.length ? (
               <>
                 <Text style={styles.sectionTitle}>{t('civicMetrics.legislatorAttendance', { count: attendance.length })}</Text>
-                {attendance.map((a) => <AttendanceCard key={`${a.legislatorId}-${a.sessionYear}`} attendance={a} />)}
+                {attendance.map((a) => (
+                  <AttendanceCard
+                    key={`${a.legislatorId}-${a.sessionYear}-${a.type}`}
+                    attendance={a}
+                  />
+                ))}
               </>
-            ) : <View style={styles.empty}><Text style={styles.emptyText}>{noConnectedData}</Text></View>}
+            ) : (
+              <View style={styles.empty}>
+                <Text style={styles.emptyText}>
+                  {store.attendanceLoading
+                    ? t('common.loading', { defaultValue: 'Loading…' })
+                    : store.attendanceError
+                      ? t('civicMetrics.attendanceLoadError', { defaultValue: 'Attendance records could not be loaded right now.' })
+                      : noConnectedData}
+                </Text>
+              </View>
+            )}
           </>
         )}
 

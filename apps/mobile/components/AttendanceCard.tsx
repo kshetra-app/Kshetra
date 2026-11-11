@@ -11,14 +11,28 @@ interface AttendanceCardProps {
 
 export default function AttendanceCard({ attendance, onPress }: AttendanceCardProps) {
   const { t } = useTranslation();
-  const grade = getAttendanceGrade(attendance.attendancePercent);
+  const grade = attendance.attendancePercent === null
+    ? {
+        grade: '—',
+        color: '#6B7280',
+        label: t('common.unavailable', { defaultValue: 'Unavailable' }),
+      }
+    : getAttendanceGrade(attendance.attendancePercent);
+  const attendanceDetail =
+    attendance.attended !== null && attendance.totalSessions !== null
+      ? `${attendance.attended} / ${attendance.totalSessions} ${t('civicMetrics.sessions')} (${attendance.sessionYear})`
+      : t('common.unavailable', { defaultValue: 'Unavailable' });
+  const legislatorLocation = [
+    attendance.constituencyAcNo != null ? `AC #${attendance.constituencyAcNo}` : null,
+    attendance.stateCode,
+  ].filter(Boolean).join(' · ');
 
   return (
     <Pressable style={styles.card} onPress={onPress}>
       <View style={styles.header}>
         <View style={styles.nameSection}>
           <Text style={styles.name}>{attendance.legislatorName}</Text>
-          <Text style={styles.meta}>{attendance.party} · AC #{attendance.constituencyAcNo} · {attendance.stateCode}</Text>
+          <Text style={styles.meta}>{[attendance.party, legislatorLocation].filter(Boolean).join(' · ')}</Text>
         </View>
         <View style={[styles.gradeBadge, { backgroundColor: grade.color + '20' }]}>
           <Text style={[styles.gradeText, { color: grade.color }]}>{grade.grade}</Text>
@@ -30,35 +44,39 @@ export default function AttendanceCard({ attendance, onPress }: AttendanceCardPr
       <View style={styles.attendanceSection}>
         <View style={styles.attendanceHeader}>
           <Text style={styles.attendanceLabel}>{t('civicMetrics.assemblyAttendance')}</Text>
-          <Text style={[styles.attendancePct, { color: grade.color }]}>{attendance.attendancePercent}%</Text>
+          <Text style={[styles.attendancePct, { color: grade.color }]}>
+            {attendance.attendancePercent === null ? '—' : `${attendance.attendancePercent}%`}
+          </Text>
         </View>
         <View style={styles.attendanceBar}>
-          <View style={[styles.attendanceBarFill, { width: `${attendance.attendancePercent}%`, backgroundColor: grade.color }]} />
+          {attendance.attendancePercent !== null && (
+            <View style={[styles.attendanceBarFill, { width: `${Math.max(0, Math.min(100, attendance.attendancePercent))}%`, backgroundColor: grade.color }]} />
+          )}
         </View>
-        <Text style={styles.attendanceDetail}>{attendance.attended} / {attendance.totalSessions} {t('civicMetrics.sessions')} ({attendance.sessionYear})</Text>
+        <Text style={styles.attendanceDetail}>{attendanceDetail}</Text>
       </View>
 
       {/* Performance metrics */}
       <View style={styles.metricsRow}>
         <View style={styles.metric}>
           <Ionicons name="help-circle" size={14} color="#3B82F6" />
-          <Text style={styles.metricValue}>{attendance.questionsAsked}</Text>
+          <Text style={styles.metricValue}>{attendance.questionsAsked ?? '—'}</Text>
           <Text style={styles.metricLabel}>{t('civicMetrics.questionsRaised')}</Text>
         </View>
         <View style={styles.metric}>
           <Ionicons name="chatbubbles" size={14} color="#8B5CF6" />
-          <Text style={styles.metricValue}>{attendance.debatesParticipated}</Text>
+          <Text style={styles.metricValue}>{attendance.debatesParticipated ?? '—'}</Text>
           <Text style={styles.metricLabel}>{t('civicMetrics.debatesParticipated')}</Text>
         </View>
         <View style={styles.metric}>
           <Ionicons name="document-text" size={14} color="#F59E0B" />
-          <Text style={styles.metricValue}>{attendance.privateMemberBills}</Text>
+          <Text style={styles.metricValue}>{attendance.privateMemberBills ?? '—'}</Text>
           <Text style={styles.metricLabel}>{t('civicMetrics.privateBills')}</Text>
         </View>
         <View style={styles.metric}>
           <Ionicons name="trophy" size={14} color="#10B981" />
-          <Text style={styles.metricValue}>#{attendance.ranking}</Text>
-          <Text style={styles.metricLabel}>of {attendance.totalLegislators}</Text>
+          <Text style={styles.metricValue}>{attendance.ranking == null ? '—' : `#${attendance.ranking}`}</Text>
+          <Text style={styles.metricLabel}>{attendance.totalLegislators == null ? t('common.unavailable', { defaultValue: 'Unavailable' }) : `of ${attendance.totalLegislators}`}</Text>
         </View>
       </View>
     </Pressable>

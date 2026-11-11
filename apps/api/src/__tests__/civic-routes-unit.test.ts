@@ -86,18 +86,94 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
   });
 
   describe('2. Legislator Attendance (/api/v1/civic/attendance)', () => {
-    it('returns attendance listing and echoes query filters', async () => {
+    it('returns an empty listing in isolated test mode when storage is not configured', async () => {
+      const originalAppEnv = process.env.APP_ENV;
+      const originalExpoAppEnv = process.env.EXPO_PUBLIC_APP_ENV;
+      delete process.env.APP_ENV;
+      delete process.env.EXPO_PUBLIC_APP_ENV;
+      setSupabaseConfiguredForTesting(false);
+
+      try {
+        const res = await app.inject({
+          method: 'GET',
+          url: '/api/v1/civic/attendance?state=TS&sessionYear=2024&page=1&limit=20',
+        });
+
+        expect(res.statusCode).toBe(200);
+        const body = JSON.parse(res.payload);
+        expect(Array.isArray(body.attendance)).toBe(true);
+        expect(body.total).toBe(0);
+        expect(body.filters.state).toBe('TS');
+        expect(body.filters.sessionYear).toBe('2024');
+      } finally {
+        if (originalAppEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = originalAppEnv;
+        if (originalExpoAppEnv === undefined) delete process.env.EXPO_PUBLIC_APP_ENV;
+        else process.env.EXPO_PUBLIC_APP_ENV = originalExpoAppEnv;
+        setSupabaseConfiguredForTesting(true);
+      }
+    });
+
+    it('reads persisted attendance, maps database columns, and applies page filters', async () => {
+      setSupabaseConfiguredForTesting(true);
+      const conditions: Array<[string, unknown]> = [];
+      const query: any = {
+        select: jest.fn(() => query),
+        eq: jest.fn((column: string, value: unknown) => {
+          conditions.push([column, value]);
+          return query;
+        }),
+        order: jest.fn(() => query),
+        range: jest.fn(async () => ({
+          data: [
+            {
+              id: 'attendance-1',
+              legislator_name: 'A. Representative',
+              party: 'ABC',
+              state_code: 'TS',
+              constituency_ac_no: 12,
+              session_year: '2025',
+              type: 'assembly_session',
+              total_sessions: 10,
+              attended: 8,
+              attendance_percent: '80.00',
+              questions_asked: null,
+              debates_participated: 3,
+              private_member_bills: 1,
+              ranking: null,
+              total_legislators: 119,
+            },
+          ],
+          count: 21,
+          error: null,
+        })),
+      };
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        expect(table).toBe('legislator_attendance');
+        return query;
+      }) as any);
+
       const res = await app.inject({
         method: 'GET',
-        url: '/api/v1/civic/attendance?state=TS&sessionYear=2024&page=1&limit=20',
+        url: '/api/v1/civic/attendance?state=TS&sessionYear=2025&page=2&limit=20',
       });
 
       expect(res.statusCode).toBe(200);
+      expect(conditions).toEqual([
+        ['state_code', 'TS'],
+        ['session_year', '2025'],
+      ]);
+      expect(query.range).toHaveBeenCalledWith(20, 39);
       const body = JSON.parse(res.payload);
-      expect(Array.isArray(body.attendance)).toBe(true);
-      expect(body.total).toBe(0);
-      expect(body.filters.state).toBe('TS');
-      expect(body.filters.sessionYear).toBe('2024');
+      expect(body).toMatchObject({ total: 21, page: 2, limit: 20 });
+      expect(body.attendance[0]).toMatchObject({
+        legislatorId: 'attendance-1',
+        legislatorName: 'A. Representative',
+        constituencyAcNo: 12,
+        attendancePercent: 80,
+        questionsAsked: null,
+        ranking: null,
+      });
     });
 
     it('rejects limit exceeding 100 with 400', async () => {

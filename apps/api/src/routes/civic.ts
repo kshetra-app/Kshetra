@@ -14,6 +14,33 @@ import { checkContentModeration } from '../services/contentModeration';
 
 const isProductionRuntime = () => isProductionLikeRuntime();
 
+function nullableFiniteNumber(value: unknown): number | null {
+  if (value === null || value === undefined || value === '') return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function mapLegislatorAttendanceRow(row: Record<string, unknown>) {
+  const text = (value: unknown) => (typeof value === 'string' ? value : '');
+  return {
+    legislatorId: text(row.id),
+    legislatorName: text(row.legislator_name),
+    party: text(row.party),
+    stateCode: text(row.state_code),
+    constituencyAcNo: nullableFiniteNumber(row.constituency_ac_no),
+    sessionYear: text(row.session_year),
+    type: text(row.type),
+    totalSessions: nullableFiniteNumber(row.total_sessions),
+    attended: nullableFiniteNumber(row.attended),
+    attendancePercent: nullableFiniteNumber(row.attendance_percent),
+    questionsAsked: nullableFiniteNumber(row.questions_asked),
+    debatesParticipated: nullableFiniteNumber(row.debates_participated),
+    privateMemberBills: nullableFiniteNumber(row.private_member_bills),
+    ranking: nullableFiniteNumber(row.ranking),
+    totalLegislators: nullableFiniteNumber(row.total_legislators),
+  };
+}
+
 // Schema definitions for civic endpoints
 const budgetSchema = {
   params: {
@@ -58,6 +85,8 @@ const attendanceSchema = {
       properties: {
         attendance: { type: 'array' },
         total: { type: 'number' },
+        page: { type: 'integer' },
+        limit: { type: 'integer' },
         filters: {
           type: 'object',
           properties: {
@@ -805,13 +834,51 @@ export async function civicRoutes(app: FastifyInstance) {
     {
       schema: attendanceSchema,
     },
-    async (request) => {
+    async (request, reply) => {
       const { state, sessionYear } = request.query;
-      return {
-        attendance: [],
-        total: 0,
-        filters: { state, sessionYear },
-      };
+      const page = request.query.page ?? 1;
+      const limit = request.query.limit ?? 100;
+      if (!isSupabaseConfigured) {
+        if (isProductionRuntime()) {
+          return sendApiError(reply, request, 503, 'Service Unavailable', 'Legislator attendance is unavailable because storage is not configured.', {
+            code: 'CIVIC_ATTENDANCE_UNAVAILABLE',
+          });
+        }
+        return { attendance: [], total: 0, page, limit, filters: { state, sessionYear } };
+      }
+
+      try {
+        let query: any = supabase.from('legislator_attendance').select('*', { count: 'exact' });
+        if (state) query = query.eq('state_code', state);
+        if (sessionYear) query = query.eq('session_year', sessionYear);
+
+        const from = (page - 1) * limit;
+        const { data, error, count } = await query
+          .order('session_year', { ascending: false })
+          .order('legislator_name', { ascending: true })
+          .range(from, from + limit - 1);
+
+        if (error) {
+          request.log.error({ err: error.message, state, sessionYear }, 'Failed to load legislator attendance');
+          return sendApiError(reply, request, 503, 'Service Unavailable', 'Legislator attendance could not be loaded from storage.', {
+            code: 'CIVIC_ATTENDANCE_UNAVAILABLE',
+          });
+        }
+
+        const rows = (data ?? []).map((row: Record<string, unknown>) => mapLegislatorAttendanceRow(row));
+        return {
+          attendance: rows,
+          total: count ?? rows.length,
+          page,
+          limit,
+          filters: { state, sessionYear },
+        };
+      } catch (error: any) {
+        request.log.error({ err: error?.message, state, sessionYear }, 'Exception loading legislator attendance');
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Legislator attendance could not be loaded from storage.', {
+          code: 'CIVIC_ATTENDANCE_UNAVAILABLE',
+        });
+      }
     },
   );
 
