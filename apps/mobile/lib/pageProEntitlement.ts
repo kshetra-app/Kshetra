@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { API_BASE_URL } from './constants';
 
 export interface PageEntitlement {
   pageId: string;
@@ -44,9 +45,7 @@ export function usePageEntitlement(pageId?: string) {
     setLoading(true);
     setError(null);
     try {
-      // In mobile, we check the production API or local fallback
-      const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'https://kshetra-api-production-9f06.up.railway.app';
-      const res = await fetch(`${apiUrl}/api/v1/pages/${pageId}/entitlement`);
+      const res = await fetch(`${API_BASE_URL}/api/v1/pages/${pageId}/entitlement`);
       if (res.ok) {
         const data = await res.json();
         setEntitlement({

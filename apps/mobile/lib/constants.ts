@@ -1,5 +1,6 @@
 import { STATES, PARTY_CONFIG } from '@kshetra/shared';
 import { Dimensions } from 'react-native';
+import { CURRENT_ENVIRONMENT, resolveApiBaseUrl } from './environment';
 
 /** Telangana centroid — default map center (kept for backward compat) */
 export const TELANGANA_CENTER: [number, number] = [79.0193, 17.8495];
@@ -14,9 +15,11 @@ export const CONSTITUENCY_ZOOM = 10;
 export const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
 export const MAP_STYLE_LIGHT = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
 
-/** API base URL — points to live Railway production backend */
-export const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL || 'https://kshetra-api-production-9f06.up.railway.app';
+/** Environment-aware API host; callers append their versioned API paths. */
+export const API_BASE_URL = resolveApiBaseUrl(
+  process.env.EXPO_PUBLIC_API_URL,
+  CURRENT_ENVIRONMENT,
+);
 
 /**
  * A *hosted* API base URL, or live Railway backend.
@@ -24,7 +27,7 @@ export const API_BASE_URL =
  * Used to decide the news source of truth and remote GeoJSON streaming.
  */
 export const REMOTE_API_URL: string | null = (() => {
-  const url = process.env.EXPO_PUBLIC_API_URL || 'https://kshetra-api-production-9f06.up.railway.app';
+  const url = API_BASE_URL;
   if (/localhost|127\.0\.0\.1|10\.0\.2\.2/i.test(url)) return null;
   return url;
 })();
