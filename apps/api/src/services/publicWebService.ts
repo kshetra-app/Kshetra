@@ -326,7 +326,6 @@ export class PublicWebService {
       constituencyName,
       party,
       termStart,
-      attendancePercentage: null,
       questionsAsked: null,
       debatesParticipated: null,
       declaredAssetsINR: null,
@@ -387,7 +386,7 @@ export class PublicWebService {
   }
 
   static renderRepresentativeHtml(rep: PublicRepresentativeProfileDTO): string {
-    return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${escapeHtml(rep.name)} — Representative Profile</title><style>${this.baseStyles()}</style></head><body><main><h1>${escapeHtml(rep.name)}</h1><p>Party: ${escapeHtml(unavailable(rep.party))}</p><p>Constituency: ${escapeHtml(unavailable(rep.constituencyName))}</p><p>Attendance: ${escapeHtml(rep.attendancePercentage == null ? 'Not available' : `${rep.attendancePercentage}%`)}</p><p>Declared assets: ${escapeHtml(unavailable(rep.declaredAssetsINR))}</p><footer>Database snapshot · source verification pending</footer></main></body></html>`;
+    return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${escapeHtml(rep.name)} — Representative Profile</title><style>${this.baseStyles()}</style></head><body><main><h1>${escapeHtml(rep.name)}</h1><p>Party: ${escapeHtml(unavailable(rep.party))}</p><p>Constituency: ${escapeHtml(unavailable(rep.constituencyName))}</p><p>Declared assets: ${escapeHtml(unavailable(rep.declaredAssetsINR))}</p><footer>Database snapshot · source verification pending</footer></main></body></html>`;
   }
 
   static renderElectionHtml(election: Record<string, unknown>): string {

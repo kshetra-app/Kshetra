@@ -1666,7 +1666,7 @@ const ml = {
   },
   "civicMetrics": {
     "screenTitle": "പൗര പ്രകടനവും അളവുകോലുകളും",
-    "screenSubtitle": "ബജറ്റ്, ഹാജർ, ബില്ലുകൾ, പദ്ധതികൾ",
+    "screenSubtitle": "ബജറ്റ്, ബില്ലുകൾ, പദ്ധതികൾ",
     "stateBudgetOverview": "സംസ്ഥാന ബജറ്റ് അവലോകനം",
     "noBudgetData": "ഈ സംസ്ഥാനത്തിന് ബജറ്റ് വിവരങ്ങൾ ലഭ്യമല്ല",
     "legislatorAttendance": "ജനപ്രതിനിധികളുടെ ഹാജർ ({{count}})",

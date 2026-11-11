@@ -1666,7 +1666,7 @@ const bn = {
   },
   "civicMetrics": {
     "screenTitle": "নাগরিক পারফরম্যান্স ও মেট্রিক্স",
-    "screenSubtitle": "বাজেট, উপস্থিতি, বিল ও প্রকল্প",
+    "screenSubtitle": "বাজেট, বিল ও প্রকল্প",
     "stateBudgetOverview": "রাজ্য বাজেট পর্যালোচনা",
     "noBudgetData": "এই রাজ্যের জন্য কোনো বাজেট তথ্য নেই",
     "legislatorAttendance": "বিধায়কদের উপস্থিতি ({{count}})",

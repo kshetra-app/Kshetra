@@ -104,4 +104,24 @@ describe('Public web data source', () => {
     expect(html).toContain('Not available');
     expect(html).not.toContain('<script>alert(1)</script>');
   });
+
+  it('does not publish an unsupported legislator attendance figure on representative pages', () => {
+    const html = PublicWebService.renderRepresentativeHtml({
+      id: 'person-1',
+      name: 'Recorded Person',
+      stateCode: 'TS',
+      constituencyId: null,
+      constituencyName: null,
+      party: null,
+      termStart: null,
+      questionsAsked: null,
+      debatesParticipated: null,
+      declaredAssetsINR: null,
+      criminalCasesCount: null,
+      sourceVerificationStatus: 'not_verified',
+      canonicalUrl: 'https://poligram.in/public/representatives/person-1',
+    });
+
+    expect(html).not.toContain('Attendance');
+  });
 });

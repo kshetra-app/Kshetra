@@ -62,7 +62,6 @@ export interface PublicRepresentativeProfileDTO {
   constituencyName: string | null;
   party: string | null;
   termStart: string | null;
-  attendancePercentage: number | null;
   questionsAsked: number | null;
   debatesParticipated: number | null;
   declaredAssetsINR: number | null;

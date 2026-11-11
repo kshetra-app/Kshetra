@@ -39,7 +39,6 @@ export interface MPProfile {
   sourceUrl?: string;
   isMinister?: boolean;
   ministerialPortfolio?: string;
-  attendancePercent?: number;
   questionsAsked?: number;
   debatesParticipated?: number;
   citation?: string;

@@ -22,7 +22,6 @@ const FLAG_ICON: Record<string, string> = {
   multiple_cases: 'documents',
   zero_liability_anomaly: 'help-circle',
   party_hopping: 'swap-horizontal',
-  low_attendance: 'time',
   charges_framed: 'hammer',
 };
 

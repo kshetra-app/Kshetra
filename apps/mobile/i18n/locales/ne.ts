@@ -1666,7 +1666,7 @@ const ne = {
   },
   "civicMetrics": {
     "screenTitle": "नागरिक प्रदर्शन र मेट्रिक्स",
-    "screenSubtitle": "बजेट, उपस्थिति, विधेयक र योजनाहरू",
+    "screenSubtitle": "बजेट, विधेयक र योजनाहरू",
     "stateBudgetOverview": "राज्य बजेट अवलोकन",
     "noBudgetData": "यस राज्यको लागि कुनै बजेट डेटा उपलब्ध छैन",
     "legislatorAttendance": "सांसद/विधायकको उपस्थिति ({{count}})",

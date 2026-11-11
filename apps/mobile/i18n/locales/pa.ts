@@ -1666,7 +1666,7 @@ const pa = {
   },
   "civicMetrics": {
     "screenTitle": "ਨਾਗਰਿਕ ਕਾਰਗੁਜ਼ਾਰੀ ਅਤੇ ਮੈਟ੍ਰਿਕਸ",
-    "screenSubtitle": "ਬਜਟ, ਹਾਜ਼ਰੀ, ਬਿੱਲ ਅਤੇ ਸਕੀਮਾਂ",
+    "screenSubtitle": "ਬਜਟ, ਬਿੱਲ ਅਤੇ ਸਕੀਮਾਂ",
     "stateBudgetOverview": "ਰਾਜ ਬਜਟ ਸੰਖੇਪ",
     "noBudgetData": "ਇਸ ਰਾਜ ਲਈ ਕੋਈ ਬਜਟ ਡੇਟਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ",
     "legislatorAttendance": "ਵਿਧਾਇਕਾਂ ਦੀ ਹਾਜ਼ਰੀ ({{count}})",

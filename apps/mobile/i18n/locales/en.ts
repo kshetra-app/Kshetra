@@ -1692,7 +1692,7 @@ const en =  {
   },
   "civicMetrics": {
     "screenTitle": "Civic Performance & Metrics",
-    "screenSubtitle": "Budget, attendance, bills & schemes",
+    "screenSubtitle": "Budget, bills & schemes",
     "stateBudgetOverview": "State Budget Overview",
     "noBudgetData": "No budget data available for this state",
     "noConnectedData": "Verified records are not available from a connected source yet.",
@@ -1705,7 +1705,7 @@ const en =  {
     "views": "{{count}} views",
     "filed": "Filed on {{date}}",
     "title": "Civic Metrics",
-    "subtitle": "Budget, attendance, bills & schemes",
+    "subtitle": "Budget, bills & schemes",
     "tabs": {
       "budget": "Budget",
       "attendance": "Attendance",
@@ -2934,7 +2934,7 @@ const en =  {
       },
       "findRepresentatives": {
         "title": "Find my representatives",
-        "desc": "Lookup MPs, MLAs, municipal councillors, and attendance records"
+        "desc": "Look up MPs, MLAs, and municipal councillors"
       },
       "stayInformed": {
         "title": "Stay informed",
@@ -2965,7 +2965,7 @@ const en =  {
       },
       "civicMetrics": {
         "title": "Civic Metrics",
-        "desc": "Legislative attendance, fund utilization, and RTI disclosures"
+        "desc": "Budget transparency, fund utilization, and RTI disclosures"
       },
       "localBodies": {
         "title": "Local Bodies",

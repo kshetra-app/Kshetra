@@ -148,39 +148,6 @@ describe('W009-B4 Mobile Strangler / Mutation Consolidation', () => {
     });
   });
 
-  describe('Civic attendance database-backed reads', () => {
-    it('requests a public, paginated attendance list through the canonical API client', async () => {
-      const payload = {
-        attendance: [],
-        total: 0,
-        page: 2,
-        limit: 100,
-      };
-      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
-        const reqId = (init.headers as Record<string, string>)['x-request-id'];
-        return createMockResponse(200, payload, { 'x-request-id': reqId });
-      });
-
-      await expect(
-        apiClient.civic.listAttendance({
-          stateCode: 'TS',
-          sessionYear: '2025',
-          page: 2,
-          limit: 100,
-        }),
-      ).resolves.toEqual(payload);
-
-      const [url, init] = mockFetch.mock.calls[0];
-      const parsedUrl = new URL(String(url));
-      expect(parsedUrl.pathname).toBe('/api/v1/civic/attendance');
-      expect(parsedUrl.searchParams.get('state')).toBe('TS');
-      expect(parsedUrl.searchParams.get('sessionYear')).toBe('2025');
-      expect(parsedUrl.searchParams.get('page')).toBe('2');
-      expect(parsedUrl.searchParams.get('limit')).toBe('100');
-      expect(init.method).toBe('GET');
-    });
-  });
-
   describe('1. Canonical API Dispatching (11 Authorized Operations)', () => {
     it('1. Upvote issue dispatches to POST /api/v1/civic/issues/:id/upvote', async () => {
       mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {

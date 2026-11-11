@@ -1,5 +1,5 @@
 // ─── Enhanced Civic Metrics Types ───
-// Covers: Budget/expenditure tracking, RTI integration, MLA/MP attendance,
+// Covers: Budget/expenditure tracking, RTI integration,
 // bill/legislation tracker, government scheme tracker, development projects,
 // public hearing calendar, comparative constituency metrics
 
@@ -8,8 +8,6 @@
 export type BudgetCategory = 'education' | 'healthcare' | 'infrastructure' | 'agriculture' | 'social_welfare' | 'law_enforcement' | 'rural_development' | 'urban_development' | 'environment' | 'industry' | 'defence' | 'debt_servicing' | 'salaries' | 'other';
 
 export type RTIStatus = 'draft' | 'filed' | 'acknowledged' | 'first_appeal' | 'second_appeal' | 'information_received' | 'denied' | 'partial_response' | 'transferred' | 'closed';
-
-export type AttendanceType = 'assembly_session' | 'committee_meeting' | 'question_hour' | 'debate' | 'voting' | 'zero_hour';
 
 export type BillStatus = 'introduced' | 'first_reading' | 'committee_review' | 'second_reading' | 'passed_lower' | 'passed_upper' | 'presidential_assent' | 'enacted' | 'lapsed' | 'withdrawn' | 'referred_select';
 
@@ -155,24 +153,6 @@ export interface RTIRequest {
   views: number;
   tags: string[];
   createdAt: string;
-}
-
-export interface LegislatorAttendance {
-  legislatorId: string;
-  legislatorName: string;
-  party: string;
-  stateCode: string;
-  constituencyAcNo?: number | null;
-  sessionYear: string;
-  type: AttendanceType;
-  totalSessions: number | null;
-  attended: number | null;
-  attendancePercent: number | null;
-  questionsAsked: number | null;
-  debatesParticipated: number | null;
-  privateMemberBills: number | null;
-  ranking: number | null;
-  totalLegislators: number | null;
 }
 
 export interface Bill {
@@ -321,15 +301,6 @@ export function getUtilizationColor(pct: number): string {
   if (pct >= 60) return '#F59E0B';
   if (pct >= 40) return '#F97316';
   return '#EF4444';
-}
-
-export function getAttendanceGrade(pct: number): { grade: string; color: string; label: string } {
-  if (pct >= 90) return { grade: 'A+', color: '#10B981', label: 'Excellent' };
-  if (pct >= 80) return { grade: 'A', color: '#84CC16', label: 'Very Good' };
-  if (pct >= 70) return { grade: 'B', color: '#F59E0B', label: 'Good' };
-  if (pct >= 50) return { grade: 'C', color: '#F97316', label: 'Average' };
-  if (pct >= 30) return { grade: 'D', color: '#EF4444', label: 'Poor' };
-  return { grade: 'F', color: '#991B1B', label: 'Very Poor' };
 }
 
 export function getProjectHealthColor(phase: ProjectPhase): string {

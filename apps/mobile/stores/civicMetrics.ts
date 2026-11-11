@@ -3,7 +3,6 @@ import type {
   BudgetAllocation,
   StateBudgetSummary,
   RTIRequest,
-  LegislatorAttendance,
   Bill,
   GovernmentScheme,
   DevelopmentProject,
@@ -76,14 +75,6 @@ const SEED_RTI: RTIRequest[] = [
     fees: 10, isPublic: true, upvotes: 567, views: 12000, tags: ['education', 'teachers', 'vacancies'],
     createdAt: '2026-03-01',
   },
-];
-
-// ─── Seed Attendance ───
-const SEED_ATTENDANCE: LegislatorAttendance[] = [
-  { legislatorId: 'mla-1', legislatorName: 'Revanth Reddy', party: 'INC', stateCode: 'TS', constituencyAcNo: 116, sessionYear: '2025', type: 'assembly_session', totalSessions: 45, attended: 42, attendancePercent: 93.3, questionsAsked: 12, debatesParticipated: 8, privateMemberBills: 1, ranking: 3, totalLegislators: 119 },
-  { legislatorId: 'mla-2', legislatorName: 'KT Rama Rao', party: 'BRS', stateCode: 'TS', constituencyAcNo: 53, sessionYear: '2025', type: 'assembly_session', totalSessions: 45, attended: 38, attendancePercent: 84.4, questionsAsked: 25, debatesParticipated: 15, privateMemberBills: 3, ranking: 8, totalLegislators: 119 },
-  { legislatorId: 'mla-3', legislatorName: 'Akbaruddin Owaisi', party: 'AIMIM', stateCode: 'TS', constituencyAcNo: 56, sessionYear: '2025', type: 'assembly_session', totalSessions: 45, attended: 30, attendancePercent: 66.7, questionsAsked: 18, debatesParticipated: 12, privateMemberBills: 0, ranking: 25, totalLegislators: 119 },
-  { legislatorId: 'mla-4', legislatorName: 'Siddaramaiah', party: 'INC', stateCode: 'KA', constituencyAcNo: 86, sessionYear: '2025', type: 'assembly_session', totalSessions: 50, attended: 46, attendancePercent: 92.0, questionsAsked: 8, debatesParticipated: 10, privateMemberBills: 0, ranking: 5, totalLegislators: 224 },
 ];
 
 // ─── Seed Bills ───
@@ -229,9 +220,6 @@ interface CivicMetricsState {
   budgetSummaries: StateBudgetSummary[];
   budgetAllocations: BudgetAllocation[];
   rtiRequests: RTIRequest[];
-  attendance: LegislatorAttendance[];
-  attendanceLoading: boolean;
-  attendanceError: boolean;
   bills: Bill[];
   schemes: GovernmentScheme[];
   projects: DevelopmentProject[];
@@ -242,8 +230,6 @@ interface CivicMetricsState {
   getBudgetSummary: (stateCode: string) => StateBudgetSummary | undefined;
   getRTIByState: (stateCode: string) => RTIRequest[];
   getPublicRTIs: () => RTIRequest[];
-  getAttendanceForState: (stateCode: string) => LegislatorAttendance[];
-  getAttendanceForLegislator: (name: string) => LegislatorAttendance[];
   getBillsByState: (stateCode?: string) => Bill[];
   getActiveBills: () => Bill[];
   getSchemesByCategory: (category: string) => GovernmentScheme[];
@@ -256,23 +242,15 @@ interface CivicMetricsState {
 
   // Actions
   fileRTI: (rti: Partial<RTIRequest>) => Promise<boolean>;
-  loadAttendance: (stateCode: string) => Promise<void>;
   upvoteRTI: (rtiId: string) => Promise<boolean>;
   supportBill: (billId: string) => Promise<boolean>;
   opposeBill: (billId: string) => Promise<boolean>;
 }
 
-let attendanceRequestGeneration = 0;
-const ATTENDANCE_PAGE_SIZE = 100;
-const MAX_ATTENDANCE_PAGES = 20;
-
 export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => ({
   budgetSummaries: IS_LIVE_ENVIRONMENT ? [] : SEED_BUDGET_SUMMARIES,
   budgetAllocations: [],
   rtiRequests: IS_LIVE_ENVIRONMENT ? [] : SEED_RTI,
-  attendance: IS_LIVE_ENVIRONMENT ? [] : SEED_ATTENDANCE,
-  attendanceLoading: false,
-  attendanceError: false,
   bills: IS_LIVE_ENVIRONMENT ? [] : SEED_BILLS,
   schemes: IS_LIVE_ENVIRONMENT ? [] : SEED_SCHEMES,
   projects: IS_LIVE_ENVIRONMENT ? [] : SEED_PROJECTS,
@@ -282,8 +260,6 @@ export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => ({
   getBudgetSummary: (stateCode) => get().budgetSummaries.find((b) => b.stateCode === stateCode),
   getRTIByState: (stateCode) => get().rtiRequests.filter((r) => r.stateCode === stateCode),
   getPublicRTIs: () => get().rtiRequests.filter((r) => r.isPublic),
-  getAttendanceForState: (stateCode) => get().attendance.filter((a) => a.stateCode === stateCode).sort((a, b) => (b.attendancePercent ?? -1) - (a.attendancePercent ?? -1)),
-  getAttendanceForLegislator: (name) => get().attendance.filter((a) => a.legislatorName === name),
   getBillsByState: (stateCode) => get().bills.filter((b) => stateCode ? b.stateCode === stateCode : true),
   getActiveBills: () => get().bills.filter((b) => !['enacted', 'lapsed', 'withdrawn'].includes(b.status)),
   getSchemesByCategory: (category) => get().schemes.filter((s) => s.category === category && s.status === 'active'),
@@ -293,50 +269,6 @@ export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => ({
   getDelayedProjects: () => get().projects.filter((p) => p.phase === 'delayed' || p.phase === 'stalled' || p.delayDays > 90),
   getUpcomingHearings: (stateCode) => get().hearings.filter((h) => (stateCode ? h.stateCode === stateCode : true) && new Date(h.date).getTime() > Date.now()).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
   getCDI: (acNo, stateCode) => get().cdiList.find((c) => c.constituencyAcNo === acNo && c.stateCode === stateCode),
-
-  loadAttendance: async (stateCode) => {
-    if (!IS_LIVE_ENVIRONMENT) return;
-    const normalizedStateCode = stateCode.trim().toUpperCase();
-    if (!/^[A-Z]{2}$/.test(normalizedStateCode)) return;
-
-    const generation = ++attendanceRequestGeneration;
-    set({ attendanceLoading: true, attendanceError: false });
-
-    try {
-      const rows: LegislatorAttendance[] = [];
-      let total = Number.POSITIVE_INFINITY;
-      for (let page = 1; page <= MAX_ATTENDANCE_PAGES; page += 1) {
-        const response = await apiClient.civic.listAttendance({
-          stateCode: normalizedStateCode,
-          page,
-          limit: ATTENDANCE_PAGE_SIZE,
-        });
-        rows.push(...response.attendance);
-        total = response.total;
-        if (rows.length >= total || response.attendance.length < ATTENDANCE_PAGE_SIZE) break;
-      }
-
-      if (generation !== attendanceRequestGeneration) return;
-      set((state) => {
-        const byId = new Map(
-          state.attendance
-            .filter((row) => row.stateCode !== normalizedStateCode)
-            .map((row) => [`${row.legislatorId}:${row.sessionYear}:${row.type}`, row]),
-        );
-        for (const row of rows) {
-          byId.set(`${row.legislatorId}:${row.sessionYear}:${row.type}`, row);
-        }
-        return {
-          attendance: [...byId.values()],
-          attendanceLoading: false,
-          attendanceError: false,
-        };
-      });
-    } catch {
-      if (generation !== attendanceRequestGeneration) return;
-      set({ attendanceLoading: false, attendanceError: true });
-    }
-  },
 
   fileRTI: async (rti) => {
     try {

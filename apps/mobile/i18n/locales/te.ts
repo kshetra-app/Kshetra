@@ -1666,7 +1666,7 @@ const te = {
   },
   "civicMetrics": {
     "screenTitle": "పౌర పనితీరు & కొలమానాలు",
-    "screenSubtitle": "బడ్జెట్, హాజరు, బిల్లులు & పథకాలు",
+    "screenSubtitle": "బడ్జెట్, బిల్లులు & పథకాలు",
     "stateBudgetOverview": "రాష్ట్ర బడ్జెట్ అవలోకనం",
     "noBudgetData": "ఈ రాష్ట్రానికి బడ్జెట్ వివరాలు అందుబాటులో లేవు",
     "legislatorAttendance": "శాసనసభ్యుల హాజరు ({{count}})",

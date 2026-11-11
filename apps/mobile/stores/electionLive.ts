@@ -72,7 +72,6 @@ const SEED_PIPELINE: DataPipelineStatus[] = [
   { source: 'Gazette Monitor', lastFetched: new Date(Date.now() - 21600000).toISOString(), freshness: 'hours_ago', recordCount: 0, isHealthy: true, nextScheduledFetch: new Date(Date.now() + 21600000).toISOString() },
   { source: 'ECI Website Monitor', lastFetched: new Date(Date.now() - 21600000).toISOString(), freshness: 'hours_ago', recordCount: 0, isHealthy: true, nextScheduledFetch: new Date(Date.now() + 21600000).toISOString() },
   { source: 'Parliament Monitor', lastFetched: new Date(Date.now() - 21600000).toISOString(), freshness: 'hours_ago', recordCount: 0, isHealthy: true, nextScheduledFetch: new Date(Date.now() + 21600000).toISOString() },
-  { source: 'PRS Attendance', lastFetched: new Date(Date.now() - 604800000).toISOString(), freshness: 'weekly', recordCount: 0, isHealthy: true, nextScheduledFetch: new Date(Date.now() + 604800000).toISOString() },
   { source: 'Wikipedia Enricher', lastFetched: new Date(Date.now() - 86400000).toISOString(), freshness: 'daily', recordCount: 1665, isHealthy: true, nextScheduledFetch: new Date(Date.now() + 86400000).toISOString() },
 ];
 

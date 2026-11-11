@@ -1666,7 +1666,7 @@ const or = {
   },
   "civicMetrics": {
     "screenTitle": "ନାଗରିକ ପ୍ରଦର୍ଶନ ଓ ମେଟ୍ରିକ୍ସ",
-    "screenSubtitle": "ବଜେଟ୍, ଉପସ୍ଥିତି, ବିଲ୍ ଏବଂ ଯୋଜନା",
+    "screenSubtitle": "ବଜେଟ୍, ବିଲ୍ ଏବଂ ଯୋଜନା",
     "stateBudgetOverview": "ରାଜ୍ୟ ବଜେଟ୍ ସମୀକ୍ଷା",
     "noBudgetData": "ଏହି ରାଜ୍ୟ ପାଇଁ କୌଣସି ବଜେଟ୍ ତଥ୍ୟ ଉପଲବ୍ଧ ନାହିଁ",
     "legislatorAttendance": "ବିଧାୟକଙ୍କ ଉପସ୍ଥିତି ({{count}})",

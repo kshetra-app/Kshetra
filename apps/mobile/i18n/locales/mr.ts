@@ -1666,7 +1666,7 @@ const mr = {
   },
   "civicMetrics": {
     "screenTitle": "नागरी कार्यक्षमता आणि मापदंड",
-    "screenSubtitle": "अर्थसंकल्प, उपस्थिती, विधेयके आणि योजना",
+    "screenSubtitle": "अर्थसंकल्प, विधेयके आणि योजना",
     "stateBudgetOverview": "राज्य अर्थसंकल्प आढावा",
     "noBudgetData": "या राज्यासाठी अर्थसंकल्प माहिती उपलब्ध नाही",
     "legislatorAttendance": "विधायक उपस्थिति ({{count}})",

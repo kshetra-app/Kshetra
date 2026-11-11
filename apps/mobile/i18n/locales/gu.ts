@@ -1666,7 +1666,7 @@ const gu = {
   },
   "civicMetrics": {
     "screenTitle": "નાગરિક કામગીરી અને મેટ્રિક્સ",
-    "screenSubtitle": "બજેટ, હાજરી, બિલ અને યોજનાઓ",
+    "screenSubtitle": "બજેટ, બિલ અને યોજનાઓ",
     "stateBudgetOverview": "રાજ્ય બજેટ ઝાંખી",
     "noBudgetData": "આ રાજ્ય માટે બજેટ ડેટા ઉપલબ્ધ નથી",
     "legislatorAttendance": "ધારાસભ્યોની હાજરી ({{count}})",

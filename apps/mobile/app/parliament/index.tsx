@@ -611,16 +611,10 @@ export default function ParliamentScreen() {
                 </View>
 
                 {/* Performance Metrics */}
-                {(selectedMP.attendancePercent !== undefined || selectedMP.questionsAsked !== undefined || selectedMP.debatesParticipated !== undefined) && (
+                {(selectedMP.questionsAsked !== undefined || selectedMP.debatesParticipated !== undefined) && (
                   <View style={[styles.detailSection, { backgroundColor: colors.surfaceElevated, borderColor: colors.border, borderWidth: 1 }]}>
                     <Text style={[styles.detailSectionTitle, { color: colors.text }]}>{t('parliament.trackRecord', { defaultValue: 'Parliamentary Track Record' })}</Text>
                     <View style={styles.perfRow}>
-                      {selectedMP.attendancePercent !== undefined && (
-                        <View style={styles.perfCol}>
-                          <Text style={[styles.perfVal, { color: colors.primary }]}>{selectedMP.attendancePercent}%</Text>
-                          <Text style={[styles.perfLabel, { color: colors.textMuted }]}>{t('parliament.attendance', { defaultValue: 'Attendance' })}</Text>
-                        </View>
-                      )}
                       {selectedMP.questionsAsked !== undefined && (
                         <View style={styles.perfCol}>
                           <Text style={[styles.perfVal, { color: '#3B82F6' }]}>{selectedMP.questionsAsked}</Text>

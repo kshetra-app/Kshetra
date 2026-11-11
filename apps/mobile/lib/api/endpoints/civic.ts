@@ -17,7 +17,6 @@
 import type { ApiClient } from '../client';
 import { ApiValidationError } from '../errors';
 import { trackProductEvent } from '../../analytics';
-import type { LegislatorAttendance } from '../../civicMetricsTypes';
 
 export interface ReportIssueRequestDTO {
   title: string;
@@ -29,38 +28,8 @@ export interface ReportIssueRequestDTO {
   mediaUrls?: string[];
 }
 
-export interface ListAttendanceQueryDTO {
-  stateCode: string;
-  sessionYear?: string;
-  page?: number;
-  limit?: number;
-}
-
-export interface AttendancePageDTO {
-  attendance: LegislatorAttendance[];
-  total: number;
-  page: number;
-  limit: number;
-}
-
 export class CivicEndpoint {
   constructor(private readonly client: ApiClient) {}
-
-  async listAttendance(query: ListAttendanceQueryDTO): Promise<AttendancePageDTO> {
-    if (!query || !/^[A-Z]{2}$/.test(query.stateCode)) {
-      throw new ApiValidationError('Invalid attendance stateCode: expected a two-letter uppercase code');
-    }
-
-    const params = new URLSearchParams({ state: query.stateCode });
-    if (query.sessionYear) params.set('sessionYear', query.sessionYear);
-    if (query.page !== undefined) params.set('page', String(query.page));
-    if (query.limit !== undefined) params.set('limit', String(query.limit));
-
-    const response = await this.client.get<AttendancePageDTO>(
-      `/api/v1/civic/attendance?${params.toString()}`,
-    );
-    return response.data;
-  }
 
   /**
    * 1. Upvote a civic issue.

@@ -1666,7 +1666,7 @@ const ta = {
   },
   "civicMetrics": {
     "screenTitle": "குடிமை செயல்பாடு & அளவீடுகள்",
-    "screenSubtitle": "பட்ஜெட், வருகை, மசோதாக்கள் & திட்டங்கள்",
+    "screenSubtitle": "பட்ஜெட், மசோதாக்கள் & திட்டங்கள்",
     "stateBudgetOverview": "மாநில பட்ஜெட் கண்ணோட்டம்",
     "noBudgetData": "இந்த மாநிலத்திற்கு பட்ஜெட் விவரங்கள் இல்லை",
     "legislatorAttendance": "சட்டமன்ற உறுப்பினர் வருகை ({{count}})",

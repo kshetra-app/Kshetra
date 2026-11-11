@@ -1666,7 +1666,7 @@ const as = {
   },
   "civicMetrics": {
     "screenTitle": "নাগৰিক প্ৰদৰ্শন আৰু মেট্ৰিক্স",
-    "screenSubtitle": "বাজেট, উপস্থিতি, বিধেয়ক আৰু আঁচনি",
+    "screenSubtitle": "বাজেট, বিধেয়ক আৰু আঁচনি",
     "stateBudgetOverview": "ৰাজ্যিক বাজেট পৰ্যালোচনা",
     "noBudgetData": "এই ৰাজ্যৰ বাবে কোনো বাজেট তথ্য উপলব্ধ নহয়",
     "legislatorAttendance": "বিধায়কসকলৰ উপস্থিতি ({{count}})",

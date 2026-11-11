@@ -1666,7 +1666,7 @@ const kn = {
   },
   "civicMetrics": {
     "screenTitle": "ನಾಗರಿಕ ಸಾಧನೆ ಮತ್ತು ಅಂಕಿಅಂಶಗಳು",
-    "screenSubtitle": "ಬಜೆಟ್, ಹಾಜರಾತಿ, ಮಸೂದೆಗಳು ಮತ್ತು ಯೋಜನೆಗಳು",
+    "screenSubtitle": "ಬಜೆಟ್, ಮಸೂದೆಗಳು ಮತ್ತು ಯೋಜನೆಗಳು",
     "stateBudgetOverview": "ರಾಜ್ಯ ಬಜೆಟ್ ಅವಲೋಕನ",
     "noBudgetData": "ಈ ರಾಜ್ಯಕ್ಕೆ ಬಜೆಟ್ ಮಾಹಿತಿ ಲಭ್ಯವಿಲ್ಲ",
     "legislatorAttendance": "ಶಾసನసಭ್ಯುಲ ಹಾಜరು ({{count}})",
