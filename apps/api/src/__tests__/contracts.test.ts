@@ -540,17 +540,6 @@ describe('W008 API Contract Standardization & Schema Envelopes', () => {
     });
 
     // Civic Pagination Bounds
-    it('Civic: rejects attendance query with limit > 100 with 400', async () => {
-      const res = await app.inject({
-        method: 'GET',
-        url: '/api/v1/civic/attendance?limit=150',
-      });
-      expect(res.statusCode).toBe(400);
-      const body = JSON.parse(res.payload);
-      expect(body.statusCode).toBe(400);
-      expect(body.code).toBe('FST_ERR_VALIDATION');
-    });
-
     it('Civic: rejects bills query with page < 1 with 400', async () => {
       const res = await app.inject({
         method: 'GET',

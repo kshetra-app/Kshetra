@@ -39,35 +39,6 @@ const budgetSchema = {
   },
 };
 
-const attendanceSchema = {
-  querystring: {
-    type: 'object',
-    properties: {
-      state: { type: 'string', pattern: '^[A-Z]{2}$' },
-      sessionYear: { type: 'string' },
-      page: { type: 'integer', minimum: 1 },
-      limit: { type: 'integer', minimum: 1, maximum: 100 },
-    },
-  },
-  response: {
-    200: {
-      type: 'object',
-      properties: {
-        attendance: { type: 'array' },
-        total: { type: 'number' },
-        filters: {
-          type: 'object',
-          properties: {
-            state: { type: 'string' },
-            sessionYear: { type: 'string' },
-          },
-        },
-      },
-      required: ['attendance', 'total'],
-    },
-  },
-};
-
 const billsSchema = {
   querystring: {
     type: 'object',
@@ -833,24 +804,6 @@ export async function civicRoutes(app: FastifyInstance) {
           },
         );
       }
-    },
-  );
-
-  /** 2. GET /api/v1/civic/attendance — legislator attendance */
-  app.get<{
-    Querystring: { state?: string; sessionYear?: string; page?: number; limit?: number };
-  }>(
-    '/api/v1/civic/attendance',
-    {
-      schema: attendanceSchema,
-    },
-    async (request) => {
-      const { state, sessionYear } = request.query;
-      return {
-        attendance: [],
-        total: 0,
-        filters: { state, sessionYear },
-      };
     },
   );
 

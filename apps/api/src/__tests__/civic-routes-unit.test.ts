@@ -85,31 +85,6 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
     });
   });
 
-  describe('2. Legislator Attendance (/api/v1/civic/attendance)', () => {
-    it('returns attendance listing and echoes query filters', async () => {
-      const res = await app.inject({
-        method: 'GET',
-        url: '/api/v1/civic/attendance?state=TS&sessionYear=2024&page=1&limit=20',
-      });
-
-      expect(res.statusCode).toBe(200);
-      const body = JSON.parse(res.payload);
-      expect(Array.isArray(body.attendance)).toBe(true);
-      expect(body.total).toBe(0);
-      expect(body.filters.state).toBe('TS');
-      expect(body.filters.sessionYear).toBe('2024');
-    });
-
-    it('rejects limit exceeding 100 with 400', async () => {
-      const res = await app.inject({
-        method: 'GET',
-        url: '/api/v1/civic/attendance?limit=150',
-      });
-
-      expect(res.statusCode).toBe(400);
-    });
-  });
-
   describe('3. Bills and Legislation (/api/v1/civic/bills)', () => {
     it('returns bills listing with filters', async () => {
       const res = await app.inject({

@@ -119,10 +119,9 @@ describe('Public route contracts', () => {
 
   // ── Civic ───────────────────────────────────────────────
   describe('civic', () => {
-    it('budget, attendance, bills, schemes, projects, rti, hearings, cdi', async () => {
+    it('budget, bills, schemes, projects, rti, hearings, cdi', async () => {
       for (const url of [
         '/api/v1/civic/budget/TS',
-        '/api/v1/civic/attendance?state=TS',
         '/api/v1/civic/bills?state=TS',
         '/api/v1/civic/schemes',
         '/api/v1/civic/projects',
