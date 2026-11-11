@@ -1,7 +1,7 @@
 import { enrichGeoJSON, enrichGeoJSONForState, enrichIndiaGeoJSON } from './enrichGeoJSON';
 import { getStateGeoJSON, isBundledGeoJSON } from './geoLoader';
 import { fetchStateGeoJSON, getGeoBaseUrl } from './remoteGeoLoader';
-import { getManifestEntry } from './geoManifest';
+import { getManifestEntry, type GeoManifestEntry } from './geoManifest';
 
 /**
  * Universal enriched GeoJSON cache — keyed by state code.
@@ -68,24 +68,75 @@ export function getCachedEnrichedGeo(code: string): GeoJSON.FeatureCollection | 
  * raw boundary from the API when it isn't bundled. Enrichment runs once per
  * state, then the stable reference is reused on every switch-back.
  */
-let remoteManifestPromise: Promise<Record<string, any> | null> | null = null;
+const REMOTE_MANIFEST_TTL_MS = 60_000;
+let remoteManifestCheckedAt = 0;
+let remoteManifestCache: Record<string, GeoManifestEntry> | null = null;
+let remoteManifestPromise: Promise<Record<string, GeoManifestEntry> | null> | null = null;
+const loadedGeoAssets = new Map<string, string>();
 
-async function fetchRemoteManifest(): Promise<Record<string, any> | null> {
+function geoAssetKey(entry: GeoManifestEntry | undefined): string {
+  return entry ? `${entry.file}:${entry.version ?? ''}` : '';
+}
+
+function parseRemoteManifest(value: unknown): Record<string, GeoManifestEntry> | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+
+  const entries: Record<string, GeoManifestEntry> = {};
+  for (const [rawCode, rawEntry] of Object.entries(value)) {
+    if (!/^[A-Z0-9_-]{2,10}$/i.test(rawCode)) continue;
+    if (!rawEntry || typeof rawEntry !== 'object' || Array.isArray(rawEntry)) continue;
+
+    const entry = rawEntry as Partial<GeoManifestEntry>;
+    if (
+      typeof entry.file !== 'string' ||
+      !/^[a-z0-9-]+\.json$/.test(entry.file) ||
+      typeof entry.version !== 'string' ||
+      !/^[a-z0-9._-]{1,64}$/i.test(entry.version) ||
+      typeof entry.hasPolygons !== 'boolean' ||
+      typeof entry.count !== 'number' ||
+      !Number.isFinite(entry.count) ||
+      entry.count < 0
+    ) {
+      continue;
+    }
+
+    entries[rawCode.toUpperCase()] = entry as GeoManifestEntry;
+  }
+
+  return Object.keys(entries).length > 0 ? entries : null;
+}
+
+async function fetchRemoteManifest(): Promise<Record<string, GeoManifestEntry> | null> {
   if (remoteManifestPromise) return remoteManifestPromise;
+  if (
+    remoteManifestCheckedAt > 0 &&
+    Date.now() - remoteManifestCheckedAt < REMOTE_MANIFEST_TTL_MS
+  ) {
+    return remoteManifestCache;
+  }
 
-  remoteManifestPromise = (async () => {
+  const request = (async () => {
     try {
       const geoBaseUrl = getGeoBaseUrl();
-      const response = await fetch(`${geoBaseUrl}/geo/geo-manifest.json`);
-      if (!response.ok) return null;
-      return await response.json();
+      const response = await fetch(`${geoBaseUrl}/geo/manifest.json`, {
+        headers: { Accept: 'application/json' },
+      });
+      if (!response.ok) return remoteManifestCache;
+
+      const manifest = parseRemoteManifest(await response.json());
+      if (manifest) remoteManifestCache = manifest;
+      return remoteManifestCache;
     } catch (err) {
       console.warn('[enrichedGeoCache] Failed to fetch remote geo-manifest:', err);
-      return null;
+      return remoteManifestCache;
+    } finally {
+      remoteManifestCheckedAt = Date.now();
+      remoteManifestPromise = null;
     }
   })();
 
-  return remoteManifestPromise;
+  remoteManifestPromise = request;
+  return request;
 }
 
 /**
@@ -105,11 +156,13 @@ export async function loadEnrichedGeoForState(
       const remoteManifest = await fetchRemoteManifest();
       const remoteEntry = remoteManifest ? remoteManifest[key] : null;
       const localEntry = getManifestEntry(key);
+      const currentAsset = loadedGeoAssets.get(key) ?? geoAssetKey(localEntry);
 
-      if (remoteEntry && remoteEntry.version && remoteEntry.version !== localEntry?.version) {
+      if (remoteEntry && geoAssetKey(remoteEntry) !== currentAsset) {
         // A newer version is available remotely! Fetch and enrich it
-        const updatedRaw = await fetchStateGeoJSON(key, remoteEntry.version);
+        const updatedRaw = await fetchStateGeoJSON(key, remoteEntry.version, remoteEntry.file);
         if (updatedRaw) {
+          loadedGeoAssets.set(key, geoAssetKey(remoteEntry));
           enrichRaw(key, updatedRaw);
         }
       }
@@ -127,6 +180,8 @@ export async function loadEnrichedGeoForState(
   let raw = isBundledGeoJSON(key) ? getStateGeoJSON(key) : null;
   if (raw) {
     const baseline = enrichRaw(key, raw);
+    const bundledEntry = getManifestEntry(key);
+    if (bundledEntry) loadedGeoAssets.set(key, geoAssetKey(bundledEntry));
     void triggerBackgroundCheck();
     return baseline;
   }
@@ -135,9 +190,12 @@ export async function loadEnrichedGeoForState(
   try {
     const remoteManifest = await fetchRemoteManifest();
     const remoteEntry = remoteManifest ? remoteManifest[key] : null;
-    const version = remoteEntry?.version ?? getManifestEntry(key)?.version ?? '';
-    const remoteRaw = await fetchStateGeoJSON(key, version);
+    const localEntry = getManifestEntry(key);
+    const entry = remoteEntry ?? localEntry;
+    const version = entry?.version ?? '';
+    const remoteRaw = await fetchStateGeoJSON(key, version, entry?.file);
     if (remoteRaw) {
+      if (entry) loadedGeoAssets.set(key, geoAssetKey(entry));
       return enrichRaw(key, remoteRaw);
     }
   } catch (err) {
@@ -147,6 +205,8 @@ export async function loadEnrichedGeoForState(
   // Fallback to fetchStateGeoJSON default
   const fallback = await fetchStateGeoJSON(key);
   if (fallback) {
+    const localEntry = getManifestEntry(key);
+    if (localEntry) loadedGeoAssets.set(key, geoAssetKey(localEntry));
     return enrichRaw(key, fallback);
   }
 

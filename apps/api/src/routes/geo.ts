@@ -65,6 +65,7 @@ function sendFile(
   reply: FastifyReply,
   fileName: string,
   immutable: boolean,
+  cacheControl?: string,
 ) {
   const plainPath = join(GEO_DIR, fileName);
   if (!existsSync(plainPath)) {
@@ -76,9 +77,10 @@ function sendFile(
   reply.header('Content-Type', 'application/json; charset=utf-8');
   reply.header(
     'Cache-Control',
-    immutable
-      ? 'public, max-age=31536000, immutable'
-      : 'public, max-age=86400, stale-while-revalidate=604800',
+    cacheControl ??
+      (immutable
+        ? 'public, max-age=31536000, immutable'
+        : 'public, max-age=86400, stale-while-revalidate=604800'),
   );
 
   const acceptsGzip = (request.headers['accept-encoding'] ?? '').includes('gzip');
@@ -97,7 +99,13 @@ function sendFile(
 export async function geoRoutes(app: FastifyInstance) {
   // Manifest is small and changes every build → short cache, revalidate.
   app.get('/geo/manifest.json', { schema: geoManifestSchema }, (request, reply) =>
-    sendFile(request, reply, 'manifest.json', false),
+    sendFile(
+      request,
+      reply,
+      'manifest.json',
+      false,
+      'public, max-age=60, stale-while-revalidate=60',
+    ),
   );
 
   app.get<{ Params: { file: string } }>(

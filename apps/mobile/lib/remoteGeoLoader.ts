@@ -60,18 +60,23 @@ async function loadFromNetwork(
   fileName: string,
   version: string,
 ): Promise<GeoJSON.FeatureCollection | null> {
-  const entry = getManifestEntry(code);
-  if (!entry) return null;
+  if (!/^[a-z0-9-]+\.json$/.test(fileName)) {
+    throw new Error(`Invalid boundary file name for ${code}`);
+  }
+  if (version && !/^[a-z0-9._-]{1,64}$/i.test(version)) {
+    throw new Error(`Invalid boundary version for ${code}`);
+  }
 
   await ensureDir();
-  const localFile = `${code}.${version}.json`;
+  const fileStem = fileName.replace(/\.json$/, '');
+  const localFile = `${code}.${fileStem}.${version || 'unversioned'}.json`;
   const localPath = CACHE_DIR + localFile;
 
   // Disk hit?
   const info = await FileSystem.getInfoAsync(localPath);
   if (!info.exists) {
-    const v = version ? `?v=${version}` : '';
-    const url = `${getGeoBaseUrl()}/geo/${entry.file}${v}`;
+    const v = version ? `?v=${encodeURIComponent(version)}` : '';
+    const url = `${getGeoBaseUrl()}/geo/${fileName}${v}`;
     const res = await FileSystem.downloadAsync(url, localPath);
     if (res.status !== 200) {
       await FileSystem.deleteAsync(localPath, { idempotent: true });
@@ -93,13 +98,15 @@ async function loadFromNetwork(
 export async function fetchStateGeoJSON(
   code: string,
   versionOverride?: string,
+  fileOverride?: string,
 ): Promise<GeoJSON.FeatureCollection | null> {
   const key = code.toUpperCase();
   const entry = getManifestEntry(key);
   if (!entry) return null;
 
   const version = versionOverride ?? entry.version ?? '';
-  const cacheKey = `${key}_${version}`;
+  const fileName = fileOverride ?? entry.file;
+  const cacheKey = `${key}_${fileName}_${version}`;
 
   const cached = memCache.get(cacheKey);
   if (cached) return cached;
@@ -107,7 +114,7 @@ export async function fetchStateGeoJSON(
   const existing = inFlight.get(cacheKey);
   if (existing) return existing;
 
-  const promise = loadFromNetwork(key, entry.file, version)
+  const promise = loadFromNetwork(key, fileName, version)
     .then((fc) => {
       if (fc) memCache.set(cacheKey, fc);
       return fc;
