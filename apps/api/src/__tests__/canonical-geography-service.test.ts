@@ -260,5 +260,130 @@ describe('Canonical Geography Service & Decoupled State Data Adapter', () => {
       const singlePC = await canonicalGeographyService.getParliamentaryConstituency('TS-PC-01');
       expect(singlePC?.name).toBe('Adilabad');
     });
+
+    it('preserves missing booth voter counts as unavailable', async () => {
+      setSupabaseConfiguredForTesting(true);
+      jest.spyOn(canonicalGeographyService, 'getConstituency').mockResolvedValue({
+        id: 'TS-AC-1',
+        acNo: 1,
+        name: 'Sirpur',
+        stateCode: 'TS',
+        district: 'Kumuram Bheem Asifabad',
+        reservationStatus: 'ST',
+        currentParty: '',
+        currentMLA: '',
+      });
+
+      const rowsByTable: Record<string, unknown[]> = {
+        urban_local_bodies: [],
+        polling_booths: [
+          {
+            id: 'booth-empty-count',
+            internal_id: 'booth-empty-count',
+            booth_number: 1,
+            booth_name: 'Polling station 1',
+            polling_station_name: null,
+            total_voters: 0,
+          },
+          {
+            id: 'booth-recorded-count',
+            internal_id: 'booth-recorded-count',
+            booth_number: 2,
+            booth_name: 'Polling station 2',
+            polling_station_name: null,
+            total_voters: 950,
+            panchayat_id: 'TS-GP-501',
+            gp_ward_internal_id: 'gpw-internal-1',
+          },
+        ],
+        ulb_wards: [],
+        gp_wards: [
+          {
+            id: 'gpw-1',
+            internal_id: 'gpw-internal-1',
+            panchayat_id: 'TS-GP-501',
+            ward_no: 1,
+            name: 'Ward 1',
+            reservation: 'GEN',
+          },
+        ],
+        gram_panchayats: [
+          {
+            id: 'TS-GP-501',
+            internal_id: 'gp-internal-1',
+            name: 'Panchayat 1',
+            local_name: null,
+            mandal_id: 'TS-MDL-50',
+            lgd_code: 501,
+          },
+        ],
+      };
+      const queryCalls: Record<string, { eq: jest.Mock; in: jest.Mock }> = {};
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        const eq = jest.fn().mockResolvedValue({ data: rowsByTable[table] ?? [], error: null });
+        const inFilter = jest
+          .fn()
+          .mockResolvedValue({ data: rowsByTable[table] ?? [], error: null });
+        queryCalls[table] = { eq, in: inFilter };
+        return { select: jest.fn(() => ({ eq, in: inFilter })) } as any;
+      }) as any);
+
+      const hierarchy = await canonicalGeographyService.getSubConstituencyHierarchy('TS', 1);
+
+      expect(hierarchy?.pollingBooths.map((booth) => booth.totalVoters)).toEqual([null, 950]);
+      expect(queryCalls.polling_booths.eq).toHaveBeenCalledWith('constituency_id', 'TS-AC-1');
+      expect(queryCalls.gp_wards.in).toHaveBeenCalledWith('internal_id', ['gpw-internal-1']);
+      expect(queryCalls.gram_panchayats.in).toHaveBeenCalledWith('id', ['TS-GP-501']);
+      expect(hierarchy?.gramPanchayats[0].wards).toEqual([
+        expect.objectContaining({ id: 'gpw-1', wardNo: 1, name: 'Ward 1' }),
+      ]);
+    });
+
+    it('surfaces live hierarchy query failures instead of returning an empty success', async () => {
+      const previousAppEnv = process.env.APP_ENV;
+      process.env.APP_ENV = 'production';
+      setSupabaseConfiguredForTesting(true);
+      jest.spyOn(canonicalGeographyService, 'getConstituency').mockResolvedValue({
+        id: 'TS-AC-1',
+        acNo: 1,
+        name: 'Sirpur',
+        stateCode: 'TS',
+        district: 'Kumuram Bheem Asifabad',
+        reservationStatus: 'ST',
+        currentParty: '',
+        currentMLA: '',
+      });
+      jest.spyOn(supabase, 'from').mockImplementation((() => ({
+        select: jest.fn(() => ({
+          eq: jest
+            .fn()
+            .mockResolvedValue({ data: null, error: new Error('hierarchy table unavailable') }),
+        })),
+      })) as any);
+
+      try {
+        await expect(
+          canonicalGeographyService.getSubConstituencyHierarchy('TS', 1),
+        ).rejects.toThrow('hierarchy table unavailable');
+      } finally {
+        if (previousAppEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = previousAppEnv;
+      }
+    });
+
+    it('does not return a live empty success when the canonical datastore is not configured', async () => {
+      const previousAppEnv = process.env.APP_ENV;
+      process.env.APP_ENV = 'production';
+      setSupabaseConfiguredForTesting(false);
+
+      try {
+        await expect(
+          canonicalGeographyService.getSubConstituencyHierarchy('TS', 1),
+        ).rejects.toThrow('Canonical geography datastore is not configured');
+      } finally {
+        if (previousAppEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = previousAppEnv;
+      }
+    });
   });
 });

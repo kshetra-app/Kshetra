@@ -52,7 +52,7 @@ export interface SubConstituencyHierarchyDTO {
     boothNumber: number;
     boothName: string;
     pollingStationName: string | null;
-    totalVoters: number;
+    totalVoters: number | null;
     localBodyType: 'ulb' | 'gram_panchayat' | 'unassigned';
     panchayatId?: string | null;
     ulbWardId?: string | null;

@@ -10,7 +10,7 @@
 
 import type { ApiClient } from '../client';
 import { ApiValidationError } from '../errors';
-import type { ConstituencyBrief } from '@kshetra/shared';
+import type { ConstituencyBrief, SubConstituencyHierarchyDTO } from '@kshetra/shared';
 
 export interface ConstituencyElectionSummary {
   electionYear: number | null;
@@ -51,6 +51,158 @@ export interface ConstituenciesListResponseDTO {
   state: string;
   count: number;
   data: ConstituencyBrief[];
+}
+
+function hierarchyRecord(value: unknown, context: string): Record<string, unknown> {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    throw new ApiValidationError(`Invalid hierarchy data at ${context}: expected object`);
+  }
+  return value as Record<string, unknown>;
+}
+
+function hierarchyString(value: unknown, context: string): string {
+  if (typeof value !== 'string' || !value.trim()) {
+    throw new ApiValidationError(`Invalid hierarchy data at ${context}: expected non-empty string`);
+  }
+  return value;
+}
+
+function hierarchyArray(value: unknown, context: string): unknown[] {
+  if (!Array.isArray(value)) {
+    throw new ApiValidationError(`Invalid hierarchy data at ${context}: expected array`);
+  }
+  return value;
+}
+
+function hierarchyNullableNumber(value: unknown, context: string): number | null {
+  if (value === null) return null;
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    throw new ApiValidationError(`Invalid hierarchy data at ${context}: expected finite number or null`);
+  }
+  return value;
+}
+
+function hierarchyNullableString(value: unknown, context: string): string | null {
+  if (value === null) return null;
+  return hierarchyString(value, context);
+}
+
+function hierarchyOptionalString(value: unknown, context: string): string | undefined {
+  if (value === undefined || value === null) return undefined;
+  return hierarchyString(value, context);
+}
+
+function validateHierarchyWards(value: unknown, context: string): Array<{
+  id: string;
+  internalId: string;
+  wardNo: number;
+  name: string | null;
+  reservation: string;
+}> {
+  return hierarchyArray(value, context).map((wardValue, index) => {
+    const wardContext = `${context}[${index}]`;
+    const ward = hierarchyRecord(wardValue, wardContext);
+    const wardNo = hierarchyNullableNumber(ward.wardNo, `${wardContext}.wardNo`);
+    if (wardNo === null || !Number.isInteger(wardNo) || wardNo <= 0) {
+      throw new ApiValidationError(`Invalid hierarchy data at ${wardContext}.wardNo`);
+    }
+    return {
+      id: hierarchyString(ward.id, `${wardContext}.id`),
+      internalId: hierarchyString(ward.internalId, `${wardContext}.internalId`),
+      wardNo,
+      name: hierarchyNullableString(ward.name, `${wardContext}.name`),
+      reservation: hierarchyString(ward.reservation, `${wardContext}.reservation`),
+    };
+  });
+}
+
+export function validateConstituencyHierarchy(data: unknown): SubConstituencyHierarchyDTO {
+  const root = hierarchyRecord(data, 'root');
+  const rawConstituency = hierarchyRecord(root.constituency, 'constituency');
+  const reservationStatus = rawConstituency.reservationStatus;
+  if (reservationStatus !== 'GEN' && reservationStatus !== 'SC' && reservationStatus !== 'ST') {
+    throw new ApiValidationError('Invalid hierarchy data at constituency.reservationStatus');
+  }
+
+  const acNo = hierarchyNullableNumber(rawConstituency.acNo, 'constituency.acNo');
+  if (acNo === null || !Number.isInteger(acNo) || acNo <= 0) {
+    throw new ApiValidationError('Invalid hierarchy data at constituency.acNo');
+  }
+  if (typeof rawConstituency.district !== 'string') {
+    throw new ApiValidationError('Invalid hierarchy data at constituency.district');
+  }
+
+  const constituency: SubConstituencyHierarchyDTO['constituency'] = {
+    id: hierarchyString(rawConstituency.id, 'constituency.id'),
+    internalId: hierarchyString(rawConstituency.internalId, 'constituency.internalId'),
+    acNo,
+    name: hierarchyString(rawConstituency.name, 'constituency.name'),
+    stateCode: hierarchyString(rawConstituency.stateCode, 'constituency.stateCode'),
+    district: rawConstituency.district,
+    reservationStatus,
+  };
+  const urbanLocalBodies: SubConstituencyHierarchyDTO['urbanLocalBodies'] = hierarchyArray(root.urbanLocalBodies, 'urbanLocalBodies').map((value, index) => {
+    const context = `urbanLocalBodies[${index}]`;
+    const row = hierarchyRecord(value, context);
+    return {
+      id: hierarchyString(row.id, `${context}.id`),
+      internalId: hierarchyString(row.internalId, `${context}.internalId`),
+      name: hierarchyString(row.name, `${context}.name`),
+      localName: hierarchyOptionalString(row.localName, `${context}.localName`),
+      type: hierarchyString(row.type, `${context}.type`),
+      lgdCode: hierarchyNullableNumber(row.lgdCode, `${context}.lgdCode`),
+      totalWards: hierarchyNullableNumber(row.totalWards, `${context}.totalWards`),
+      wards: validateHierarchyWards(row.wards, `${context}.wards`),
+    };
+  });
+  const gramPanchayats: SubConstituencyHierarchyDTO['gramPanchayats'] = hierarchyArray(root.gramPanchayats, 'gramPanchayats').map((value, index) => {
+    const context = `gramPanchayats[${index}]`;
+    const row = hierarchyRecord(value, context);
+    return {
+      id: hierarchyString(row.id, `${context}.id`),
+      internalId: hierarchyString(row.internalId, `${context}.internalId`),
+      name: hierarchyString(row.name, `${context}.name`),
+      localName: hierarchyOptionalString(row.localName, `${context}.localName`),
+      mandalId: hierarchyString(row.mandalId, `${context}.mandalId`),
+      lgdCode: hierarchyNullableNumber(row.lgdCode, `${context}.lgdCode`),
+      wards: validateHierarchyWards(row.wards, `${context}.wards`),
+    };
+  });
+  const pollingBooths = hierarchyArray(root.pollingBooths, 'pollingBooths').map((value, index) => {
+    const context = `pollingBooths[${index}]`;
+    const row = hierarchyRecord(value, context);
+    const localBodyType = row.localBodyType;
+    if (localBodyType !== 'ulb' && localBodyType !== 'gram_panchayat' && localBodyType !== 'unassigned') {
+      throw new ApiValidationError(`Invalid hierarchy data at ${context}.localBodyType`);
+    }
+    const validatedLocalBodyType: SubConstituencyHierarchyDTO['pollingBooths'][number]['localBodyType'] = localBodyType;
+    const boothNumber = hierarchyNullableNumber(row.boothNumber, `${context}.boothNumber`);
+    if (boothNumber === null || !Number.isInteger(boothNumber) || boothNumber < 0) {
+      throw new ApiValidationError(`Invalid hierarchy data at ${context}.boothNumber`);
+    }
+    const totalVoters = hierarchyNullableNumber(row.totalVoters, `${context}.totalVoters`);
+    if (totalVoters !== null && totalVoters < 0) {
+      throw new ApiValidationError(`Invalid hierarchy data at ${context}.totalVoters`);
+    }
+    const panchayatId = row.panchayatId;
+    const ulbWardId = row.ulbWardId;
+    const gpWardId = row.gpWardId;
+
+    return {
+      id: hierarchyString(row.id, `${context}.id`),
+      internalId: hierarchyString(row.internalId, `${context}.internalId`),
+      boothNumber,
+      boothName: hierarchyString(row.boothName, `${context}.boothName`),
+      pollingStationName: hierarchyNullableString(row.pollingStationName, `${context}.pollingStationName`),
+      totalVoters: totalVoters !== null && totalVoters > 0 ? totalVoters : null,
+      localBodyType: validatedLocalBodyType,
+      panchayatId: panchayatId === undefined || panchayatId === null ? panchayatId : hierarchyString(panchayatId, `${context}.panchayatId`),
+      ulbWardId: ulbWardId === undefined || ulbWardId === null ? ulbWardId : hierarchyString(ulbWardId, `${context}.ulbWardId`),
+      gpWardId: gpWardId === undefined || gpWardId === null ? gpWardId : hierarchyString(gpWardId, `${context}.gpWardId`),
+    };
+  });
+
+  return { constituency, urbanLocalBodies, gramPanchayats, pollingBooths };
 }
 
 export interface SearchConstituenciesOptions {
@@ -259,5 +411,21 @@ export class ConstituenciesEndpoint {
       },
     );
     return validateConstituenciesListResponse(res.data);
+  }
+
+  /** Fetch only persisted hierarchy records for one assembly constituency. */
+  async getHierarchy(stateCode: string, acNo: number): Promise<SubConstituencyHierarchyDTO> {
+    if (!stateCode || typeof stateCode !== 'string') {
+      throw new ApiValidationError('Invalid stateCode: must be a non-empty string');
+    }
+    if (!Number.isInteger(acNo) || acNo <= 0) {
+      throw new ApiValidationError('Invalid acNo: must be a positive integer');
+    }
+
+    const res = await this.client.get<unknown>(
+      `/api/v1/constituencies/${encodeURIComponent(stateCode.toUpperCase())}/${acNo}/hierarchy`,
+      { authPolicy: 'public' },
+    );
+    return validateConstituencyHierarchy(res.data);
   }
 }

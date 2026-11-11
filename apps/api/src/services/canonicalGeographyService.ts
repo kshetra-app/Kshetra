@@ -777,6 +777,9 @@ export class CanonicalGeographyService {
       brief = getStateConstituency(code, acNo);
     }
     if (!brief) return null;
+    if (isProductionLikeRuntime() && !this.isAvailable()) {
+      throw new Error('Canonical geography datastore is not configured');
+    }
 
     let ulbs: any[] = [];
     let gps: any[] = [];
@@ -784,67 +787,120 @@ export class CanonicalGeographyService {
 
     if (this.isAvailable()) {
       try {
-        // Query ULBs via constituency_internal_id or primary_constituency_id
-        const ulbRes = await supabase
-          .from('urban_local_bodies')
-          .select('id, internal_id, name, local_name, type, lgd_code, total_wards')
-          .eq('state_code', code);
-        if (ulbRes.data && Array.isArray(ulbRes.data)) {
-          ulbs = ulbRes.data.map((u: any) => ({
-            id: u.id,
-            internalId: u.internal_id || u.id,
-            name: u.name,
-            localName: u.local_name,
-            type: u.type,
-            lgdCode: u.lgd_code,
-            totalWards: u.total_wards,
-            wards: [],
-          }));
-        }
-
-        // Query Gram Panchayats
-        const gpRes = await supabase
-          .from('gram_panchayats')
-          .select('id, internal_id, name, local_name, mandal_id, lgd_code')
-          .eq('state_code', code);
-        if (gpRes.data && Array.isArray(gpRes.data)) {
-          gps = gpRes.data.map((g: any) => ({
-            id: g.id,
-            internalId: g.internal_id || g.id,
-            name: g.name,
-            localName: g.local_name,
-            mandalId: g.mandal_id,
-            lgdCode: g.lgd_code,
-            wards: [],
-          }));
-        }
-
-        // Query Polling Booths
+        // Start with constituency-scoped booth rows; parent records are fetched
+        // only for IDs referenced by those rows, never as a full-state dump.
         const boothRes = await supabase
           .from('polling_booths')
           .select(
             'id, internal_id, booth_number, booth_name, polling_station_name, total_voters, panchayat_id, ulb_ward_internal_id, gp_ward_internal_id',
           )
           .eq('constituency_id', brief.id);
-        if (boothRes.data && Array.isArray(boothRes.data)) {
-          booths = boothRes.data.map((b: any) => ({
-            id: b.id,
-            internalId: b.internal_id || b.id,
-            boothNumber: b.booth_number,
-            boothName: b.booth_name,
-            pollingStationName: b.polling_station_name,
-            totalVoters: b.total_voters || 0,
-            localBodyType: b.ulb_ward_internal_id
-              ? 'ulb'
-              : b.panchayat_id
-                ? 'gram_panchayat'
-                : 'unassigned',
-            panchayatId: b.panchayat_id,
-            ulbWardId: b.ulb_ward_internal_id,
-            gpWardId: b.gp_ward_internal_id,
+        if (boothRes.error) throw boothRes.error;
+        const boothRows = Array.isArray(boothRes.data) ? boothRes.data : [];
+        booths = boothRows.map((b: any) => ({
+          id: b.id,
+          internalId: b.internal_id || b.id,
+          boothNumber: b.booth_number,
+          boothName: b.booth_name,
+          pollingStationName: b.polling_station_name,
+          totalVoters:
+            typeof b.total_voters === 'number' &&
+            Number.isFinite(b.total_voters) &&
+            b.total_voters > 0
+              ? b.total_voters
+              : null,
+          localBodyType: b.ulb_ward_internal_id
+            ? 'ulb'
+            : b.panchayat_id
+              ? 'gram_panchayat'
+              : 'unassigned',
+          panchayatId: b.panchayat_id,
+          ulbWardId: b.ulb_ward_internal_id,
+          gpWardId: b.gp_ward_internal_id,
+        }));
+
+        const ulbWardRes = await supabase
+          .from('ulb_wards')
+          .select('id, internal_id, ulb_id, ward_no, name, reservation')
+          .eq('constituency_id', brief.id);
+        if (ulbWardRes.error) throw ulbWardRes.error;
+        const ulbWardRows = Array.isArray(ulbWardRes.data) ? ulbWardRes.data : [];
+        const ulbIds = [...new Set(ulbWardRows.map((ward: any) => ward.ulb_id).filter(Boolean))];
+        if (ulbIds.length > 0) {
+          const ulbRes = await supabase
+            .from('urban_local_bodies')
+            .select('id, internal_id, name, local_name, type, lgd_code, total_wards')
+            .in('id', ulbIds);
+          if (ulbRes.error) throw ulbRes.error;
+          const ulbRows = Array.isArray(ulbRes.data) ? ulbRes.data : [];
+          ulbs = ulbRows.map((ulb: any) => ({
+            id: ulb.id,
+            internalId: ulb.internal_id || ulb.id,
+            name: ulb.name,
+            localName: ulb.local_name,
+            type: ulb.type,
+            lgdCode: ulb.lgd_code,
+            totalWards: ulb.total_wards,
+            wards: ulbWardRows
+              .filter((ward: any) => ward.ulb_id === ulb.id)
+              .map((ward: any) => ({
+                id: ward.id,
+                internalId: ward.internal_id || ward.id,
+                wardNo: ward.ward_no,
+                name: ward.name,
+                reservation: ward.reservation,
+              })),
           }));
         }
-      } catch {
+
+        const gpWardIds = [
+          ...new Set(boothRows.map((booth: any) => booth.gp_ward_internal_id).filter(Boolean)),
+        ];
+        const gpWardRows: any[] = [];
+        if (gpWardIds.length > 0) {
+          const gpWardRes = await supabase
+            .from('gp_wards')
+            .select('id, internal_id, panchayat_id, ward_no, name, reservation')
+            .in('internal_id', gpWardIds);
+          if (gpWardRes.error) throw gpWardRes.error;
+          if (Array.isArray(gpWardRes.data)) gpWardRows.push(...gpWardRes.data);
+        }
+
+        const panchayatIds = [
+          ...new Set(
+            [
+              ...boothRows.map((booth: any) => booth.panchayat_id),
+              ...gpWardRows.map((ward: any) => ward.panchayat_id),
+            ].filter(Boolean),
+          ),
+        ];
+        if (panchayatIds.length > 0) {
+          const gpRes = await supabase
+            .from('gram_panchayats')
+            .select('id, internal_id, name, local_name, mandal_id, lgd_code')
+            .in('id', panchayatIds);
+          if (gpRes.error) throw gpRes.error;
+          const gpRows = Array.isArray(gpRes.data) ? gpRes.data : [];
+          gps = gpRows.map((gp: any) => ({
+            id: gp.id,
+            internalId: gp.internal_id || gp.id,
+            name: gp.name,
+            localName: gp.local_name,
+            mandalId: gp.mandal_id,
+            lgdCode: gp.lgd_code,
+            wards: gpWardRows
+              .filter((ward: any) => ward.panchayat_id === gp.id)
+              .map((ward: any) => ({
+                id: ward.id,
+                internalId: ward.internal_id || ward.id,
+                wardNo: ward.ward_no,
+                name: ward.name,
+                reservation: ward.reservation,
+              })),
+          }));
+        }
+      } catch (error) {
+        if (isProductionLikeRuntime()) throw error;
         // Fall back to synthetic canonical hierarchy below
       }
     }

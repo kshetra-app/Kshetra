@@ -96,9 +96,18 @@ const constituencyId = (stateCode: string, acNo: number) =>
 // Loaded via require (not import) so TypeScript does not infer a giant literal
 // type from the ~58k-entry JSON, which would cripple type-checking performance.
 type Raw2017Booth = { n: number; name: string; lat: number; lng: number };
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const BOOTHS_2017_TYPED: Record<string, Record<string, Raw2017Booth[]>> =
-  require('../../../data/seed/booth-locations-2017.json');
+let booths2017Cache: Record<string, Record<string, Raw2017Booth[]>> | null = null;
+
+function get2017BoothSeed(): Record<string, Record<string, Raw2017Booth[]>> {
+  if (booths2017Cache !== null) return booths2017Cache;
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const loaded = require('../../../data/seed/booth-locations-2017.json') as Record<
+    string,
+    Record<string, Raw2017Booth[]>
+  >;
+  booths2017Cache = loaded;
+  return loaded;
+}
 
 function titleCase(s: string): string {
   return s.replace(/\w\S*/g, (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
@@ -110,7 +119,7 @@ function titleCase(s: string): string {
  * `totalVoters` is 0 and `historical` is set (the UI labels these accordingly).
  */
 function get2017Booths(stateCode: string, acNo: number): PollingBooth[] {
-  const st = BOOTHS_2017_TYPED[stateCode?.toUpperCase()];
+  const st = get2017BoothSeed()[stateCode?.toUpperCase()];
   const rows = st?.[String(acNo)];
   if (!rows || rows.length === 0) return [];
   const cid = constituencyId(stateCode, acNo);
@@ -317,7 +326,7 @@ export function hasBoothData(stateCode: string, acNo: number): boolean {
   const b = getResolvedBundle(stateCode, acNo);
   const cid = constituencyId(stateCode, acNo);
   if (b && b.booths.some((bo) => bo.constituencyId === cid)) return true;
-  const st = BOOTHS_2017_TYPED[stateCode?.toUpperCase()];
+  const st = get2017BoothSeed()[stateCode?.toUpperCase()];
   return !!(st && st[String(acNo)]?.length);
 }
 

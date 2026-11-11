@@ -7,10 +7,13 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import type { SubConstituencyHierarchyDTO } from '@kshetra/shared';
+import { apiClient, ApiError } from '../../lib/api';
+import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
 import { useTheme } from '../../lib/useTheme';
 import { getPartyColor } from '../../lib/constants';
 import { useActiveStateStore } from '../../stores/activeState';
@@ -32,6 +35,10 @@ import DataPendingCard from '../../components/DataPendingCard';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
 type Level = 'mandals' | 'panchayats' | 'booths';
+type LiveHierarchyState = {
+  status: 'loading' | 'ready' | 'missing' | 'error';
+  data: SubConstituencyHierarchyDTO | null;
+};
 
 export default function HierarchyScreen() {
   const { t } = useTranslation();
@@ -56,6 +63,8 @@ export default function HierarchyScreen() {
 
   const stateCode = parsedStateCode;
   const acNo = parsedAcNo;
+  const [liveHierarchy, setLiveHierarchy] = useState<LiveHierarchyState>({ status: 'loading', data: null });
+  const [liveReloadToken, setLiveReloadToken] = useState(0);
 
   useEffect(() => {
     if (parsedStateCode && parsedStateCode !== 'IN' && parsedStateCode !== stateCodeStore) {
@@ -63,8 +72,31 @@ export default function HierarchyScreen() {
     }
   }, [parsedStateCode, stateCodeStore, setStateCode]);
 
-  const config = getHierarchyConfig(stateCode);
-  const summary = useMemo(() => getConstituencyHierarchySummary(stateCode, acNo), [stateCode, acNo]);
+  useEffect(() => {
+    if (!IS_LIVE_ENVIRONMENT) return;
+    if (!stateCode || stateCode === 'IN' || !Number.isInteger(acNo) || acNo <= 0) {
+      setLiveHierarchy({ status: 'missing', data: null });
+      return;
+    }
+    let active = true;
+    setLiveHierarchy({ status: 'loading', data: null });
+    void apiClient.constituencies.getHierarchy(stateCode, acNo).then((data) => {
+      if (active) setLiveHierarchy({ status: 'ready', data });
+    }).catch((error: unknown) => {
+      if (!active) return;
+      setLiveHierarchy({
+        status: error instanceof ApiError && error.statusCode === 404 ? 'missing' : 'error',
+        data: null,
+      });
+    });
+    return () => { active = false; };
+  }, [stateCode, acNo, liveReloadToken]);
+
+  const config = IS_LIVE_ENVIRONMENT ? null : getHierarchyConfig(stateCode);
+  const summary = useMemo(
+    () => (IS_LIVE_ENVIRONMENT ? null : getConstituencyHierarchySummary(stateCode, acNo)),
+    [stateCode, acNo],
+  );
   const constituency = useMemo(
     () => getUnifiedConstituenciesForState(stateCode).find((c) => c.acNo === acNo) ?? null,
     [stateCode, acNo],
@@ -75,12 +107,16 @@ export default function HierarchyScreen() {
   const [panchayat, setPanchayat] = useState<GramPanchayat | null>(null);
   const [helpVisible, setHelpVisible] = useState(false);
 
-  const mandals = useMemo(() => getMandalsForConstituency(stateCode, acNo), [stateCode, acNo]);
+  const mandals = useMemo(
+    () => (IS_LIVE_ENVIRONMENT ? [] : getMandalsForConstituency(stateCode, acNo)),
+    [stateCode, acNo],
+  );
   const panchayats = useMemo(
-    () => (mandal ? getPanchayatsForMandal(stateCode, mandal.id) : []),
+    () => (!IS_LIVE_ENVIRONMENT && mandal ? getPanchayatsForMandal(stateCode, mandal.id) : []),
     [stateCode, mandal],
   );
   const booths = useMemo(() => {
+    if (IS_LIVE_ENVIRONMENT) return [];
     if (panchayat) return getBoothsForPanchayat(stateCode, panchayat.id);
     return getBoothsForConstituency(stateCode, acNo);
   }, [stateCode, acNo, panchayat]);
@@ -90,6 +126,79 @@ export default function HierarchyScreen() {
   // ─── Data-pending state (zero-fabrication) ───
   // When no verified LGD/CEO pilot seed covers this constituency we show an
   // explicit "Data pending" state — never synthesized drill-down data.
+  if (IS_LIVE_ENVIRONMENT) {
+    const liveBooths = liveHierarchy.data?.pollingBooths ?? [];
+    const liveConstituency = liveHierarchy.data?.constituency;
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <Stack.Screen options={{ title: t('hierarchy.screenTitle'), headerBackTitle: t('hierarchy.back') }} />
+        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 32 }}>
+          <View style={styles.pendingHeader}>
+            <Ionicons name="git-branch-outline" size={40} color={colors.textMuted} />
+            <Text style={[styles.emptyTitle, { color: colors.text }]}>
+              {liveConstituency?.name ?? constituency?.name ?? `AC ${acNo}`}
+            </Text>
+          </View>
+
+          {liveHierarchy.status === 'loading' ? (
+            <View style={{ paddingVertical: 28, alignItems: 'center' }}>
+              <ActivityIndicator color={colors.primary} />
+              <Text style={[styles.note, { color: colors.textSecondary, marginTop: 10 }]}>
+                {t('common.loading')}
+              </Text>
+            </View>
+          ) : liveHierarchy.status === 'error' ? (
+            <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+              <Text style={[styles.note, { color: colors.textSecondary }]}>
+                {t('common.error')}
+              </Text>
+              <Pressable onPress={() => setLiveReloadToken((token) => token + 1)} style={{ marginTop: 12 }}>
+                <Text style={{ color: colors.primary, fontWeight: '700' }}>
+                  {t('common.retry')}
+                </Text>
+              </Pressable>
+            </View>
+          ) : liveBooths.length === 0 ? (
+            <DataPendingCard
+              title={`${t('hierarchy.booth')} records`}
+              message={t('hierarchy.noBoothSamples')}
+              sourceNote="Persisted constituency geography records"
+            />
+          ) : (
+            liveBooths.map((booth) => (
+              <View key={booth.id} style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <View style={styles.cardHead}>
+                  <View style={[styles.boothNo, { backgroundColor: colors.primaryLight }]}>
+                    <Text style={[styles.boothNoText, { color: colors.primary }]}>{booth.boothNumber}</Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={[styles.cardTitle, { color: colors.text }]}>
+                      {booth.boothName || booth.pollingStationName || t('hierarchy.pollingStation')}
+                    </Text>
+                    {booth.pollingStationName && booth.pollingStationName !== booth.boothName ? (
+                      <Text style={[styles.cardSub, { color: colors.textSecondary }]}>{booth.pollingStationName}</Text>
+                    ) : null}
+                  </View>
+                </View>
+                <View style={styles.boothStats}>
+                  {booth.totalVoters !== null && booth.totalVoters > 0 ? (
+                    <Text style={[styles.boothStat, { color: colors.text }]}>
+                      {booth.totalVoters.toLocaleString('en-IN')} {t('hierarchy.voters')}
+                    </Text>
+                  ) : (
+                    <Text style={[styles.boothStatMuted, { color: colors.textMuted }]}>
+                      {t('hierarchy.registeredVoters')}: —
+                    </Text>
+                  )}
+                </View>
+              </View>
+            ))
+          )}
+        </ScrollView>
+      </View>
+    );
+  }
+
   const dataStatus = getConstituencyDataStatus(stateCode, acNo);
   if (dataStatus !== 'verified' || !config || !summary || summary.mandalCount === 0) {
     const labelCfg = getHierarchyLabelsConfig(stateCode);
