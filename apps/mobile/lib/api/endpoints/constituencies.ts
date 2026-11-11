@@ -40,10 +40,10 @@ export interface ConstituencyDetailDTO extends ConstituencyBrief {
   election2023?: {
     winner: string;
     winnerName: string;
-    winnerVotes: number;
+    winnerVotes: number | null;
     runnerUp: string;
-    margin: number;
-    marginPercent: number;
+    margin: number | null;
+    marginPercent: number | null;
   };
 }
 
@@ -166,10 +166,10 @@ export function validateConstituencyDetail(data: unknown, context: string): Cons
     election2023 = {
       winner: typeof el.winner === 'string' ? el.winner : '',
       winnerName: typeof el.winnerName === 'string' ? el.winnerName : '',
-      winnerVotes: typeof el.winnerVotes === 'number' ? el.winnerVotes : 0,
+      winnerVotes: typeof el.winnerVotes === 'number' ? el.winnerVotes : null,
       runnerUp: typeof el.runnerUp === 'string' ? el.runnerUp : '',
-      margin: typeof el.margin === 'number' ? el.margin : 0,
-      marginPercent: typeof el.marginPercent === 'number' ? el.marginPercent : 0,
+      margin: typeof el.margin === 'number' ? el.margin : null,
+      marginPercent: typeof el.marginPercent === 'number' ? el.marginPercent : null,
     };
   }
 

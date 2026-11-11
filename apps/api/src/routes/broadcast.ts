@@ -28,12 +28,13 @@ interface BroadcastConstituency {
   name: string;
   district: string;
   type: 'GEN' | 'SC' | 'ST';
-  status: 'WON' | 'LEADING';
+  status: 'WON' | 'UNAVAILABLE';
   winnerParty: string;
-  winnerName: string;
-  winnerVotes: number;
+  winnerName: string | null;
+  winnerVotes: number | null;
   runnerUpParty: string;
-  margin: number;
+  margin: number | null;
+  electionYear: number | null;
 }
 
 function getDetailedConstituencies(stateCode: string): BroadcastConstituency[] {
@@ -44,17 +45,20 @@ function getDetailedConstituencies(stateCode: string): BroadcastConstituency[] {
   return list.map((c) => {
     const election = getConstituencyElectionData(code, c.acNo);
     const recent = election?.recentElection;
+    const recordedWinner =
+      recent && recent.electionYear != null && recent.winner.trim().length > 0 ? recent : null;
     return {
       acNo: c.acNo,
       name: c.name,
       district: c.district,
       type: (c.reservationStatus as 'GEN' | 'SC' | 'ST') || 'GEN',
-      status: 'WON',
-      winnerParty: recent?.winner || c.currentParty || 'UNKNOWN',
-      winnerName: recent?.winnerName || c.currentMLA || 'UNKNOWN',
-      winnerVotes: recent?.winnerVotes ?? 0,
-      runnerUpParty: recent?.runnerUp || '',
-      margin: recent?.margin ?? 0,
+      status: recordedWinner ? 'WON' : 'UNAVAILABLE',
+      winnerParty: recordedWinner ? recordedWinner.winner : 'UNKNOWN',
+      winnerName: recordedWinner ? recordedWinner.winnerName || null : null,
+      winnerVotes: recordedWinner ? recordedWinner.winnerVotes : null,
+      runnerUpParty: recordedWinner ? recordedWinner.runnerUp || '' : '',
+      margin: recordedWinner ? recordedWinner.margin : null,
+      electionYear: recordedWinner ? recordedWinner.electionYear : null,
     };
   });
 }
@@ -204,33 +208,39 @@ export async function broadcastRoutes(app: FastifyInstance) {
 
       const constituencies = getDetailedConstituencies(code);
 
-      // Compute standings
-      const partyCounts: Record<string, { won: number; leading: number }> = {};
+      // Only count constituencies with an election year and recorded winning party.
+      const partyCounts: Record<string, { won: number }> = {};
       for (const c of constituencies) {
+        if (c.status !== 'WON' || c.winnerParty === 'UNKNOWN') continue;
         const p = c.winnerParty;
         if (!partyCounts[p]) {
-          partyCounts[p] = { won: 0, leading: 0 };
+          partyCounts[p] = { won: 0 };
         }
-        if (c.status === 'WON') {
-          partyCounts[p].won += 1;
-        } else {
-          partyCounts[p].leading += 1;
-        }
+        partyCounts[p].won += 1;
       }
 
       const standings = Object.entries(partyCounts)
         .map(([party, counts]) => ({
           party,
           won: counts.won,
-          leading: counts.leading,
-          total: counts.won + counts.leading,
+          leading: null,
+          total: counts.won,
         }))
         .sort((a, b) => b.won - a.won);
+      const constituenciesWithResults = constituencies.filter((c) => c.status === 'WON');
 
       return {
         stateCode: stateInfo.code,
         stateName: stateInfo.name,
         totalSeats: stateInfo.assemblySeats,
+        resultCoverage: {
+          totalConstituencies: constituencies.length,
+          withRecordedWinner: constituenciesWithResults.length,
+          unavailable: constituencies.length - constituenciesWithResults.length,
+          electionYears: [...new Set(constituenciesWithResults.map((c) => c.electionYear))].sort(
+            (a, b) => (b ?? 0) - (a ?? 0),
+          ),
+        },
         standings,
         constituencies,
       };

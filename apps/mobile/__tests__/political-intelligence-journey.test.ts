@@ -320,6 +320,36 @@ describe('CTO Directive 083 — Political Intelligence Vertical Slice', () => {
       expect(res.election2023?.marginPercent).toBe(30.3);
     });
 
+    it('keeps unavailable legacy election metrics null instead of coercing them to zero', () => {
+      const detail = {
+        id: 'TS-AC-65',
+        name: 'Kodangal',
+        acNo: 65,
+        stateCode: 'TS',
+        district: 'Vikarabad',
+        reservationStatus: 'GEN',
+        currentParty: 'INC',
+        currentMLA: 'Anumula Revanth Reddy',
+        recentElection: null,
+        elections: [],
+        election2023: {
+          winner: '',
+          winnerName: '',
+          winnerVotes: null,
+          runnerUp: '',
+          margin: null,
+          marginPercent: null,
+        },
+      };
+
+      const res = validateConstituencyDetail(detail, 'test');
+      expect(res.recentElection).toBeUndefined();
+      expect(res.elections).toEqual([]);
+      expect(res.election2023?.winnerVotes).toBeNull();
+      expect(res.election2023?.margin).toBeNull();
+      expect(res.election2023?.marginPercent).toBeNull();
+    });
+
     it('validateConstituenciesListResponse validates list array payload', () => {
       const payload = {
         state: 'TS',

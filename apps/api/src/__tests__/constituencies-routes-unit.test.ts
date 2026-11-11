@@ -98,7 +98,7 @@ describe('Constituencies Routes Unit Tests (Exhaustive Branch Coverage)', () => 
       expect(res.statusCode).toBe(404);
     });
 
-    it('handles missing election data with fallback defaults', async () => {
+    it('preserves missing election data without manufacturing winner or result metrics', async () => {
       jest.spyOn(stateData, 'getConstituencyElectionData').mockReturnValue(null as any);
       const res = await app.inject({
         method: 'GET',
@@ -106,12 +106,13 @@ describe('Constituencies Routes Unit Tests (Exhaustive Branch Coverage)', () => 
       });
       expect(res.statusCode).toBe(200);
       const json = JSON.parse(res.payload);
-      expect(json.recentElection.electionYear).toBeNull();
-      expect(json.recentElection.winnerVotes).toBeNull();
-      expect(json.election2023.winnerVotes).toBe(0);
-      expect(json.election2023.margin).toBe(0);
-      expect(json.election2023.marginPercent).toBe(0);
-      expect(json.elections).toHaveLength(1);
+      expect(json.recentElection).toBeNull();
+      expect(json.election2023.winner).toBe('');
+      expect(json.election2023.winnerName).toBe('');
+      expect(json.election2023.winnerVotes).toBeNull();
+      expect(json.election2023.margin).toBeNull();
+      expect(json.election2023.marginPercent).toBeNull();
+      expect(json.elections).toEqual([]);
     });
 
     it('handles election data where elections array is null', async () => {

@@ -23,8 +23,21 @@ import {
   getCanonicalMLAProfiles,
   getTSElectionHistory,
 } from '../services/stateData';
+import type { ConstituencyElectionSummary } from '../services/stateData';
 import { sendApiError } from '../lib/replyHelper';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+
+/** Preserve the legacy response field while keeping unavailable figures explicit. */
+function toLegacyElection2023(recentElection: ConstituencyElectionSummary | null) {
+  return {
+    winner: recentElection?.winner ?? '',
+    winnerName: recentElection?.winnerName ?? '',
+    winnerVotes: recentElection?.winnerVotes ?? null,
+    runnerUp: recentElection?.runnerUp ?? '',
+    margin: recentElection?.margin ?? null,
+    marginPercent: recentElection?.marginPercent ?? null,
+  };
+}
 
 /** Convert only explicit election winner records; reject current-seat fallbacks. */
 function constituencyToRecord(c: ConstituencyBrief): ConstituencyRecord | null {
@@ -123,7 +136,7 @@ const getConstituencyDetailSchema = {
         currentParty: { type: 'string' },
         currentMLA: { type: 'string' },
         recentElection: {
-          type: 'object',
+          type: ['object', 'null'],
           properties: {
             electionYear: { type: ['integer', 'null'] },
             electionType: { type: ['string', 'null'], enum: ['GENERAL', 'BYPOLL', null] },
@@ -158,10 +171,10 @@ const getConstituencyDetailSchema = {
           properties: {
             winner: { type: 'string' },
             winnerName: { type: 'string' },
-            winnerVotes: { type: 'number' },
+            winnerVotes: { type: ['number', 'null'] },
             runnerUp: { type: 'string' },
-            margin: { type: 'number' },
-            marginPercent: { type: 'number' },
+            margin: { type: ['number', 'null'] },
+            marginPercent: { type: ['number', 'null'] },
           },
           required: ['winner', 'winnerName', 'winnerVotes', 'runnerUp', 'margin', 'marginPercent'],
         },
@@ -504,27 +517,14 @@ export async function constituencyRoutes(app: FastifyInstance) {
           const row = await canonicalGeographyService.getConstituency(code, acNo);
           if (row) {
             const electionData = await getCanonicalConstituencyElectionData(code, acNo);
-            const recentElection = electionData?.recentElection ?? {
-              electionYear: null,
-              electionType: 'GENERAL' as const,
-              winner: row.currentParty || '',
-              winnerName: row.currentMLA || '',
-              winnerVotes: null,
-              runnerUp: '',
-              margin: null,
-              marginPercent: null,
-            };
-
-            const elections = electionData?.elections ?? [recentElection];
-
-            const election2023 = {
-              winner: recentElection.winner,
-              winnerName: recentElection.winnerName,
-              winnerVotes: recentElection.winnerVotes ?? 0,
-              runnerUp: recentElection.runnerUp,
-              margin: recentElection.margin ?? 0,
-              marginPercent: recentElection.marginPercent ?? 0,
-            };
+            const electionRows = electionData?.elections ?? [];
+            const recentElection = electionData?.recentElection ?? electionRows[0] ?? null;
+            const elections = electionRows.length
+              ? electionRows
+              : recentElection
+                ? [recentElection]
+                : [];
+            const election2023 = toLegacyElection2023(recentElection);
 
             return {
               ...row,
@@ -573,30 +573,13 @@ export async function constituencyRoutes(app: FastifyInstance) {
       }
 
       const electionData = getConstituencyElectionData(code, brief.acNo);
-      const recentElection = electionData?.recentElection ?? {
-        electionYear: null,
-        electionType: 'GENERAL' as const,
-        winner: brief.currentParty,
-        winnerName: brief.currentMLA,
-        winnerVotes: null,
-        runnerUp: '',
-        margin: null,
-        marginPercent: null,
-      };
-
-      const elections = electionData?.elections ?? [recentElection];
+      const electionRows = electionData?.elections ?? [];
+      const recentElection = electionData?.recentElection ?? electionRows[0] ?? null;
+      const elections = electionRows.length ? electionRows : recentElection ? [recentElection] : [];
 
       // @deprecated LEGACY COMPATIBILITY ALIAS (CTO Directive 085)
-      // Preserved strictly for unmigrated legacy clients expecting election2023.
-      // Warning: this alias coerces null values to 0. Modern clients MUST consume recentElection and elections[].
-      const election2023 = {
-        winner: recentElection.winner,
-        winnerName: recentElection.winnerName,
-        winnerVotes: recentElection.winnerVotes ?? 0,
-        runnerUp: recentElection.runnerUp,
-        margin: recentElection.margin ?? 0,
-        marginPercent: recentElection.marginPercent ?? 0,
-      };
+      // Preserved for unmigrated clients; missing result metrics remain null.
+      const election2023 = toLegacyElection2023(recentElection);
 
       return {
         ...brief,
