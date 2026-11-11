@@ -12,7 +12,10 @@ function mockRazorpayOrderCreation(): () => void {
   process.env.RAZORPAY_KEY_ID = 'rzp_test_campaign_key';
   process.env.RAZORPAY_KEY_SECRET = 'campaign_test_secret';
   const fetchSpy = jest.spyOn(global, 'fetch').mockImplementation(async (_input, init) => {
-    const requestBody = JSON.parse(String(init?.body || '{}')) as { amount: number; currency: string };
+    const requestBody = JSON.parse(String(init?.body || '{}')) as {
+      amount: number;
+      currency: string;
+    };
     return {
       ok: true,
       status: 200,
@@ -52,6 +55,10 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
   });
 
   beforeEach(() => {
+    jest.spyOn(supabase, 'rpc').mockResolvedValue({
+      data: null,
+      error: { code: 'PGRST202', message: 'aggregate RPC is not installed in this test fixture' },
+    } as any);
     jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
       if (table === 'booth_strategies') {
         return {
@@ -105,7 +112,9 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
           headers: { 'x-user-id': 'pp1', 'x-user-role': 'politician' },
         });
         expect(list.statusCode).toBe(200);
-        expect(JSON.parse(list.payload).ads).toEqual([expect.objectContaining({ id: created.id, status: 'draft' })]);
+        expect(JSON.parse(list.payload).ads).toEqual([
+          expect.objectContaining({ id: created.id, status: 'draft' }),
+        ]);
       } finally {
         setSupabaseConfiguredForTesting(originalConfigured);
       }
@@ -167,24 +176,43 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
       } as any);
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role: 'admin' }, error: null }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({ maybeSingle: async () => ({ data: { role: 'admin' }, error: null }) }),
+            }),
+          } as any;
         }
         if (table === 'campaigns') {
-          return { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { id: 'campaign-prod-1', politician_id: 'owner-id' }, error: null }) }) }) } as any;
+          return {
+            select: () => ({
+              eq: () => ({
+                maybeSingle: async () => ({
+                  data: { id: 'campaign-prod-1', politician_id: 'owner-id' },
+                  error: null,
+                }),
+              }),
+            }),
+          } as any;
         }
         if (table === 'ad_creatives') {
           return {
             insert: (values: Record<string, unknown>) => {
               expect(values.status).toBe('draft');
               expect(values.is_eci_compliant).toBe(false);
-              return { select: (columns: string) => {
-                selectedAdColumns = columns;
-                return { single: async () => ({ data: storedAd, error: null }) };
-              } };
+              return {
+                select: (columns: string) => {
+                  selectedAdColumns = columns;
+                  return { single: async () => ({ data: storedAd, error: null }) };
+                },
+              };
             },
             select: (columns: string) => {
               selectedAdColumns = columns;
-              return { eq: () => ({ eq: () => ({ order: async () => ({ data: [storedAd], error: null }) }) }) };
+              return {
+                eq: () => ({
+                  eq: () => ({ order: async () => ({ data: [storedAd], error: null }) }),
+                }),
+              };
             },
           } as any;
         }
@@ -804,6 +832,375 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
     });
   });
 
+  describe('Campaign canvassing work logs', () => {
+    const makeQuery = (result: any) => {
+      const query: any = {
+        select: () => query,
+        eq: () => query,
+        order: () => query,
+        range: async () => result,
+        maybeSingle: async () => result,
+        then: (resolve: any, reject: any) => Promise.resolve(result).then(resolve, reject),
+      };
+      return query;
+    };
+
+    it('derives totals from completed persisted records and ignores default counter columns', async () => {
+      const previousConfigured = isSupabaseConfigured;
+      setSupabaseConfiguredForTesting(true);
+      const volunteers = [
+        { id: 'vol-1', tasks_completed: 99, hours_logged: 99, rating: 5 },
+        { id: 'vol-2', tasks_completed: 0, hours_logged: 0, rating: 0 },
+      ];
+      const logs = [
+        {
+          volunteer_id: 'vol-1',
+          status: 'completed',
+          start_time: '2026-11-10T09:00:00Z',
+          end_time: '2026-11-10T10:00:00Z',
+        },
+        {
+          volunteer_id: 'vol-1',
+          status: 'completed',
+          start_time: '2026-11-10T10:00:00Z',
+          end_time: '2026-11-10T11:30:00Z',
+        },
+        {
+          volunteer_id: 'vol-1',
+          status: 'in_progress',
+          start_time: '2026-11-10T12:00:00Z',
+          end_time: null,
+        },
+      ];
+      let selectedColumns = '';
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        if (table === 'campaign_volunteers')
+          return makeQuery({ data: volunteers, error: null }) as any;
+        if (table === 'canvassing_records') {
+          const query = makeQuery({ data: logs, error: null });
+          const select = query.select;
+          query.select = (columns: string) => {
+            selectedColumns = columns;
+            return select(columns);
+          };
+          return query;
+        }
+        return {} as any;
+      }) as any);
+
+      try {
+        const response = await app.inject({
+          method: 'GET',
+          url: '/api/v1/campaign/volunteers?campaignId=campaign-work-log-test',
+        });
+        expect(response.statusCode).toBe(200);
+        const body = JSON.parse(response.payload);
+        expect(body.workLogMetricsAvailable).toBe(true);
+        expect(body.volunteerRatingsAvailable).toBe(false);
+        expect(body.volunteers).toEqual([
+          expect.objectContaining({
+            id: 'vol-1',
+            tasks_completed: 2,
+            hours_logged: 2.5,
+            rating: null,
+          }),
+          expect.objectContaining({
+            id: 'vol-2',
+            tasks_completed: 0,
+            hours_logged: 0,
+            rating: null,
+          }),
+        ]);
+        expect(selectedColumns).toBe('volunteer_id,status,start_time,end_time');
+      } finally {
+        setSupabaseConfiguredForTesting(previousConfigured);
+      }
+    });
+
+    it('preserves completed-session counts while withholding invalid duration totals', async () => {
+      const previousConfigured = isSupabaseConfigured;
+      setSupabaseConfiguredForTesting(true);
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        if (table === 'campaign_volunteers') {
+          return makeQuery({
+            data: [{ id: 'vol-invalid-duration', tasks_completed: 0, hours_logged: 0, rating: 0 }],
+            error: null,
+          }) as any;
+        }
+        if (table === 'canvassing_records') {
+          return makeQuery({
+            data: [
+              {
+                volunteer_id: 'vol-invalid-duration',
+                status: 'completed',
+                start_time: '2026-11-10T09:00:00Z',
+                end_time: null,
+              },
+              {
+                volunteer_id: 'vol-invalid-duration',
+                status: 'completed',
+                start_time: new Date(Date.now() + 10 * 60_000).toISOString(),
+                end_time: new Date(Date.now() + 20 * 60_000).toISOString(),
+              },
+            ],
+            error: null,
+          }) as any;
+        }
+        return {} as any;
+      }) as any);
+
+      try {
+        const response = await app.inject({
+          method: 'GET',
+          url: '/api/v1/campaign/volunteers?campaignId=campaign-work-log-test',
+        });
+        expect(response.statusCode).toBe(200);
+        const body = JSON.parse(response.payload);
+        expect(body.workLogMetricsAvailable).toBe(true);
+        expect(body.volunteers[0]).toEqual(
+          expect.objectContaining({
+            tasks_completed: 2,
+            hours_logged: null,
+            rating: null,
+          }),
+        );
+      } finally {
+        setSupabaseConfiguredForTesting(previousConfigured);
+      }
+    });
+
+    it('uses the database aggregate when available and preserves invalid hours as unknown', async () => {
+      const previousConfigured = isSupabaseConfigured;
+      setSupabaseConfiguredForTesting(true);
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        if (table === 'campaign_volunteers') {
+          return makeQuery({
+            data: [
+              { id: 'vol-invalid-duration', tasks_completed: 0, hours_logged: 0, rating: 0 },
+              { id: 'vol-no-records', tasks_completed: 0, hours_logged: 0, rating: 0 },
+            ],
+            error: null,
+          }) as any;
+        }
+        throw new Error(`Unexpected table scan after aggregate success: ${table}`);
+      }) as any);
+      jest.spyOn(supabase, 'rpc').mockResolvedValueOnce({
+        data: [{ volunteer_id: 'vol-invalid-duration', tasks_completed: '1', hours_logged: null }],
+        error: null,
+      } as any);
+
+      try {
+        const response = await app.inject({
+          method: 'GET',
+          url: '/api/v1/campaign/volunteers?campaignId=campaign-work-log-test',
+        });
+        expect(response.statusCode).toBe(200);
+        const body = JSON.parse(response.payload);
+        expect(body.workLogMetricsAvailable).toBe(true);
+        expect(body.volunteers).toEqual([
+          expect.objectContaining({ tasks_completed: 1, hours_logged: null, rating: null }),
+          expect.objectContaining({ tasks_completed: 0, hours_logged: 0, rating: null }),
+        ]);
+        expect(supabase.rpc).toHaveBeenCalledWith('get_campaign_volunteer_work_metrics', {
+          p_campaign_id: 'campaign-work-log-test',
+        });
+      } finally {
+        setSupabaseConfiguredForTesting(previousConfigured);
+      }
+    });
+
+    it('withholds malformed aggregate metrics instead of treating null counts as zero', async () => {
+      const previousConfigured = isSupabaseConfigured;
+      setSupabaseConfiguredForTesting(true);
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        if (table === 'campaign_volunteers') {
+          return makeQuery({
+            data: [
+              { id: 'vol-malformed-aggregate', tasks_completed: 0, hours_logged: 0, rating: 0 },
+            ],
+            error: null,
+          }) as any;
+        }
+        throw new Error(`Unexpected fallback for malformed aggregate: ${table}`);
+      }) as any);
+      jest.spyOn(supabase, 'rpc').mockResolvedValueOnce({
+        data: [
+          { volunteer_id: 'vol-malformed-aggregate', tasks_completed: null, hours_logged: null },
+        ],
+        error: null,
+      } as any);
+
+      try {
+        const response = await app.inject({
+          method: 'GET',
+          url: '/api/v1/campaign/volunteers?campaignId=campaign-work-log-test',
+        });
+        expect(response.statusCode).toBe(200);
+        const body = JSON.parse(response.payload);
+        expect(body.workLogMetricsAvailable).toBe(false);
+        expect(body.volunteers[0]).toEqual(
+          expect.objectContaining({ tasks_completed: null, hours_logged: null, rating: null }),
+        );
+      } finally {
+        setSupabaseConfiguredForTesting(previousConfigured);
+      }
+    });
+
+    it('keeps the roster usable and returns null totals when work-log storage is unavailable', async () => {
+      const previousConfigured = isSupabaseConfigured;
+      setSupabaseConfiguredForTesting(true);
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        if (table === 'campaign_volunteers') {
+          return makeQuery({
+            data: [{ id: 'vol-legacy', tasks_completed: 41, hours_logged: 90, rating: 4.8 }],
+            error: null,
+          }) as any;
+        }
+        if (table === 'canvassing_records') {
+          return makeQuery({
+            data: null,
+            error: { code: '42P01', message: 'table unavailable' },
+          }) as any;
+        }
+        return {} as any;
+      }) as any);
+
+      try {
+        const response = await app.inject({
+          method: 'GET',
+          url: '/api/v1/campaign/volunteers?campaignId=campaign-work-log-test',
+        });
+        expect(response.statusCode).toBe(200);
+        const body = JSON.parse(response.payload);
+        expect(body.workLogMetricsAvailable).toBe(false);
+        expect(body.volunteers[0]).toEqual(
+          expect.objectContaining({ tasks_completed: null, hours_logged: null, rating: null }),
+        );
+      } finally {
+        setSupabaseConfiguredForTesting(previousConfigured);
+      }
+    });
+
+    it('requires authenticated campaign authority and saves only campaign-owned work sessions', async () => {
+      const anonymous = await app.inject({
+        method: 'POST',
+        url: '/api/v1/campaign/canvassing-records',
+        payload: {
+          campaignId: 'campaign-work-log-test',
+          volunteerId: 'vol-1',
+          boothId: 'booth-1',
+          startTime: new Date(Date.now() - 20 * 60_000).toISOString(),
+          endTime: new Date(Date.now() - 10 * 60_000).toISOString(),
+          householdsVisited: 3,
+        },
+      });
+      expect(anonymous.statusCode).toBe(401);
+
+      const previousConfigured = isSupabaseConfigured;
+      const previousNodeEnv = process.env.NODE_ENV;
+      const previousAppEnv = process.env.APP_ENV;
+      setSupabaseConfiguredForTesting(true);
+      process.env.NODE_ENV = 'production';
+      process.env.APP_ENV = 'production';
+      const end = new Date(Date.now() - 5 * 60_000);
+      const start = new Date(end.getTime() - 30 * 60_000);
+      const record = {
+        id: 'work-log-1',
+        campaign_id: 'campaign-work-log-test',
+        volunteer_id: 'vol-1',
+        booth_id: 'booth-1',
+        booth_name: 'Polling booth 1',
+        ward_no: 3,
+        constituency_ac_no: 56,
+        status: 'completed',
+        households_visited: 7,
+        issues_raised: [],
+        notes: '',
+        reported_by_user_id: 'admin-user',
+        start_time: start.toISOString(),
+        end_time: end.toISOString(),
+        created_at: end.toISOString(),
+      };
+      let inserted: Record<string, unknown> | null = null;
+      let selectedColumns = '';
+      jest
+        .spyOn(supabase.auth, 'getUser')
+        .mockResolvedValue({ data: { user: { id: 'admin-user' } as any }, error: null } as any);
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        if (table === 'user_profiles')
+          return makeQuery({ data: { role: 'admin' }, error: null }) as any;
+        if (table === 'campaigns')
+          return makeQuery({
+            data: { id: 'campaign-work-log-test', politician_id: 'owner' },
+            error: null,
+          }) as any;
+        if (table === 'campaign_volunteers')
+          return makeQuery({ data: { id: 'vol-1' }, error: null }) as any;
+        if (table === 'booth_strategies')
+          return makeQuery({
+            data: {
+              booth_id: 'booth-1',
+              booth_name: 'Polling booth 1',
+              ward_no: 3,
+              constituency_ac_no: 56,
+            },
+            error: null,
+          }) as any;
+        if (table === 'canvassing_records') {
+          return {
+            insert: (values: Record<string, unknown>) => {
+              inserted = values;
+              return {
+                select: (columns: string) => {
+                  selectedColumns = columns;
+                  return { single: async () => ({ data: record, error: null }) };
+                },
+              };
+            },
+          } as any;
+        }
+        return {} as any;
+      }) as any);
+
+      try {
+        const response = await app.inject({
+          method: 'POST',
+          url: '/api/v1/campaign/canvassing-records',
+          headers: { authorization: 'Bearer valid-admin-token' },
+          payload: {
+            campaignId: 'campaign-work-log-test',
+            volunteerId: 'vol-1',
+            boothId: 'booth-1',
+            startTime: start.toISOString(),
+            endTime: end.toISOString(),
+            householdsVisited: 7,
+          },
+        });
+        expect(response.statusCode).toBe(201);
+        expect(JSON.parse(response.payload)).toEqual({ success: true, record });
+        expect(inserted).toEqual(
+          expect.objectContaining({
+            campaign_id: 'campaign-work-log-test',
+            volunteer_id: 'vol-1',
+            booth_id: 'booth-1',
+            status: 'completed',
+            households_visited: 7,
+            reported_by_user_id: 'admin-user',
+            constituency_ac_no: 56,
+          }),
+        );
+        expect(selectedColumns).not.toContain('supporter_count');
+        expect(selectedColumns).not.toContain('gps_track');
+      } finally {
+        setSupabaseConfiguredForTesting(previousConfigured);
+        if (previousNodeEnv === undefined) delete process.env.NODE_ENV;
+        else process.env.NODE_ENV = previousNodeEnv;
+        if (previousAppEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = previousAppEnv;
+      }
+    });
+  });
+
   describe('6. Wallet & Transactions Endpoints (/api/v1/campaign/wallet)', () => {
     it('GET /api/v1/campaign/wallet: rejects unauthenticated call with 401', async () => {
       const res = await app.inject({
@@ -1006,33 +1403,33 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
     it('POST /api/v1/campaign/wallet/recharge/order: fails closed with 500 when DB persist fails', async () => {
       const restoreRazorpay = mockRazorpayOrderCreation();
       try {
-      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
-        if (table === 'user_profiles') {
-          return {
-            select: () => ({
-              eq: () => ({
-                maybeSingle: async () => ({ data: { role: 'politician' }, error: null }),
+        jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+          if (table === 'user_profiles') {
+            return {
+              select: () => ({
+                eq: () => ({
+                  maybeSingle: async () => ({ data: { role: 'politician' }, error: null }),
+                }),
               }),
-            }),
-          } as any;
-        }
-        if (table === 'campaign_recharge_orders') {
-          return {
-            insert: async () => ({ data: null, error: { message: 'DB connection failure' } }),
-          } as any;
-        }
-        return {} as any;
-      }) as any);
+            } as any;
+          }
+          if (table === 'campaign_recharge_orders') {
+            return {
+              insert: async () => ({ data: null, error: { message: 'DB connection failure' } }),
+            } as any;
+          }
+          return {} as any;
+        }) as any);
 
-      const res = await app.inject({
-        method: 'POST',
-        url: '/api/v1/campaign/wallet/recharge/order',
-        headers: { 'x-user-id': 'my-pol-id' },
-        payload: { amountINR: 1000 },
-      });
-      expect(res.statusCode).toBe(500);
-      const body = JSON.parse(res.payload);
-      expect(body.code).toBe('DATABASE_ERROR');
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/campaign/wallet/recharge/order',
+          headers: { 'x-user-id': 'my-pol-id' },
+          payload: { amountINR: 1000 },
+        });
+        expect(res.statusCode).toBe(500);
+        const body = JSON.parse(res.payload);
+        expect(body.code).toBe('DATABASE_ERROR');
       } finally {
         restoreRazorpay();
       }
@@ -1041,38 +1438,38 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
     it('POST /api/v1/campaign/wallet/recharge/order: creates recharge order successfully', async () => {
       const restoreRazorpay = mockRazorpayOrderCreation();
       try {
-      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
-        if (table === 'user_profiles') {
-          return {
-            select: () => ({
-              eq: () => ({
-                maybeSingle: async () => ({ data: { role: 'politician' }, error: null }),
+        jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+          if (table === 'user_profiles') {
+            return {
+              select: () => ({
+                eq: () => ({
+                  maybeSingle: async () => ({ data: { role: 'politician' }, error: null }),
+                }),
               }),
-            }),
-          } as any;
-        }
-        if (table === 'campaign_recharge_orders') {
-          return {
-            insert: async () => ({ data: null, error: null }),
-          } as any;
-        }
-        return {} as any;
-      }) as any);
+            } as any;
+          }
+          if (table === 'campaign_recharge_orders') {
+            return {
+              insert: async () => ({ data: null, error: null }),
+            } as any;
+          }
+          return {} as any;
+        }) as any);
 
-      const res = await app.inject({
-        method: 'POST',
-        url: '/api/v1/campaign/wallet/recharge/order',
-        headers: { 'x-user-id': 'my-pol-id' },
-        payload: { amountINR: 1000 },
-      });
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/campaign/wallet/recharge/order',
+          headers: { 'x-user-id': 'my-pol-id' },
+          payload: { amountINR: 1000 },
+        });
 
-      expect(res.statusCode).toBe(200);
-      const body = JSON.parse(res.payload);
-      expect(body.success).toBe(true);
-      expect(body.order.amountINR).toBe(1000);
-      expect(body.order.currency).toBe('INR');
-      expect(body.order.orderId).toBe('order_razorpay_campaign_test');
-      expect(body.order.isSandbox).toBe(true);
+        expect(res.statusCode).toBe(200);
+        const body = JSON.parse(res.payload);
+        expect(body.success).toBe(true);
+        expect(body.order.amountINR).toBe(1000);
+        expect(body.order.currency).toBe('INR');
+        expect(body.order.orderId).toBe('order_razorpay_campaign_test');
+        expect(body.order.isSandbox).toBe(true);
       } finally {
         restoreRazorpay();
       }
@@ -1229,7 +1626,9 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
         if (table === 'user_profiles') {
           return {
             select: () => ({
-              eq: () => ({ maybeSingle: async () => ({ data: { role: 'politician' }, error: null }) }),
+              eq: () => ({
+                maybeSingle: async () => ({ data: { role: 'politician' }, error: null }),
+              }),
             }),
           } as any;
         }
@@ -2683,11 +3082,13 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
       }) as any);
       jest
         .spyOn(RazorpayProvider.prototype, 'createOrder')
-        .mockRejectedValueOnce(new PaymentProviderError(
-          'PAYMENT_PROVIDER_TIMEOUT',
-          503,
-          'Payment provider did not respond in time.',
-        ));
+        .mockRejectedValueOnce(
+          new PaymentProviderError(
+            'PAYMENT_PROVIDER_TIMEOUT',
+            503,
+            'Payment provider did not respond in time.',
+          ),
+        );
       const resOrderFail = await app.inject({
         method: 'POST',
         url: '/api/v1/campaign/wallet/recharge/order',

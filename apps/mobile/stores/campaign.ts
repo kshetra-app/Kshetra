@@ -434,9 +434,9 @@ function mapVolunteerRow(row: any): Volunteer | null {
     assignedBooths: readStringArray(row.assigned_booths ?? row.assignedBooths),
     assignedWards: readNumberArray(row.assigned_wards ?? row.assignedWards),
     constituencyAcNo: readNumber(row.constituency_ac_no ?? row.constituencyAcNo),
-    tasksCompleted: readNumber(row.tasks_completed ?? row.tasksCompleted) ?? 0,
-    hoursLogged: readNumber(row.hours_logged ?? row.hoursLogged) ?? 0,
-    rating: readNumber(row.rating) ?? 0,
+    tasksCompleted: readNumber(row.tasks_completed ?? row.tasksCompleted) ?? null,
+    hoursLogged: readNumber(row.hours_logged ?? row.hoursLogged) ?? null,
+    rating: readNumber(row.rating) ?? null,
     isKshetraUser: row.user_id !== undefined
       ? Boolean(row.user_id)
       : row.is_kshetra_user ?? row.isKshetraUser,
@@ -510,6 +510,7 @@ interface CampaignState {
   volunteersLoading: boolean;
   volunteersAvailable: boolean;
   volunteersError: string | null;
+  volunteerWorkLogsAvailable: boolean;
   pricing: CampaignServicePricing;
   pricingAvailable: boolean;
   wallet: CampaignWallet;
@@ -563,7 +564,7 @@ interface CampaignState {
   checkKshetraUser: (phone: string) => Promise<{ isKshetraUser: boolean; displayName?: string }>;
   dispatchObdBroadcast: (title: string, voterCount: number) => Promise<{ success: boolean; cost: number | null; message: string }>;
   updateBoothStatus: (boothId: string, status: BoothStrategy['status']) => Promise<void>;
-  logCanvassing: (record: Partial<CanvassingRecord>) => void;
+  logCanvassing: (record: Partial<CanvassingRecord>) => Promise<void>;
 }
 
 export const useCampaignStore = create<CampaignState>((set, get) => ({
@@ -587,6 +588,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
   volunteersLoading: false,
   volunteersAvailable: !IS_LIVE_ENVIRONMENT,
   volunteersError: null,
+  volunteerWorkLogsAvailable: !IS_LIVE_ENVIRONMENT,
   pricing: DEFAULT_PRICING,
   pricingAvailable: !IS_LIVE_ENVIRONMENT,
   wallet: {
@@ -671,6 +673,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
       ads: [], adsLoading: false, adsAvailable: false, adsError: null,
       booths: [], boothsLoading: false, boothsAvailable: false, boothsError: null,
       volunteers: [], volunteersLoading: false, volunteersAvailable: false, volunteersError: null,
+      volunteerWorkLogsAvailable: false,
     });
     try {
       const { data } = await apiClient.request<{ campaigns?: unknown[] }>(
@@ -766,13 +769,29 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
   fetchVolunteers: async (campaignId) => {
     if (!IS_LIVE_ENVIRONMENT) return;
     if (!campaignId) {
-      set({ volunteers: [], volunteersLoading: false, volunteersAvailable: true, volunteersError: null });
+      set({
+        volunteers: [],
+        volunteersLoading: false,
+        volunteersAvailable: true,
+        volunteersError: null,
+        volunteerWorkLogsAvailable: false,
+      });
       return;
     }
 
-    set({ volunteers: [], volunteersLoading: true, volunteersAvailable: false, volunteersError: null });
+    set({
+      volunteers: [],
+      volunteersLoading: true,
+      volunteersAvailable: false,
+      volunteersError: null,
+      volunteerWorkLogsAvailable: false,
+    });
     try {
-      const { data } = await apiClient.request<{ volunteers?: unknown[] }>(
+      const { data } = await apiClient.request<{
+        volunteers?: unknown[];
+        workLogMetricsAvailable?: boolean;
+        volunteerRatingsAvailable?: boolean;
+      }>(
         '/api/v1/campaign/volunteers',
         { query: { campaignId } },
       );
@@ -780,15 +799,31 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
       const rows = data.volunteers;
       const mapped = rows.map(mapVolunteerRow).filter((volunteer): volunteer is Volunteer => volunteer !== null);
       const hasInvalidRows = mapped.length !== rows.length;
+      const workLogMetricsAvailable = data.workLogMetricsAvailable === true && !hasInvalidRows;
+      const volunteerRatingsAvailable = data.volunteerRatingsAvailable === true && !hasInvalidRows;
+      const trustedVolunteers = mapped.map((volunteer) => ({
+        ...volunteer,
+        // Older API deployments may still return legacy zero/default counters.
+        // Require the explicit capability flag before treating them as metrics.
+        tasksCompleted: workLogMetricsAvailable ? volunteer.tasksCompleted : null,
+        hoursLogged: workLogMetricsAvailable ? volunteer.hoursLogged : null,
+        rating: volunteerRatingsAvailable ? volunteer.rating : null,
+      }));
       if (get().selectedCampaignId !== campaignId) return;
       set({
-        volunteers: mapped,
+        volunteers: trustedVolunteers,
         volunteersAvailable: !hasInvalidRows,
         volunteersError: hasInvalidRows ? 'Some worker records could not be displayed.' : null,
+        volunteerWorkLogsAvailable: workLogMetricsAvailable,
       });
     } catch {
       if (get().selectedCampaignId === campaignId) {
-        set({ volunteers: [], volunteersAvailable: false, volunteersError: 'Worker data could not be loaded.' });
+        set({
+          volunteers: [],
+          volunteersAvailable: false,
+          volunteersError: 'Worker data could not be loaded.',
+          volunteerWorkLogsAvailable: false,
+        });
       }
     } finally {
       if (get().selectedCampaignId === campaignId) set({ volunteersLoading: false });
@@ -813,6 +848,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
       set({
         booths: [], boothsLoading: false, boothsAvailable: false, boothsError: message,
         volunteers: [], volunteersLoading: false, volunteersAvailable: false, volunteersError: message,
+        volunteerWorkLogsAvailable: false,
       });
       return;
     }
@@ -825,6 +861,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
         ads: [], adsLoading: false, adsAvailable: true, adsError: null,
         booths: [], boothsLoading: false, boothsAvailable: true, boothsError: null,
         volunteers: [], volunteersLoading: false, volunteersAvailable: true, volunteersError: null,
+        volunteerWorkLogsAvailable: false,
       });
       return;
     }
@@ -848,6 +885,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
       volunteers: IS_LIVE_ENVIRONMENT ? [] : SEED_VOLUNTEERS.filter((volunteer) => volunteer.campaignId === campaign.id),
       volunteersLoading: false,
       volunteersAvailable: !IS_LIVE_ENVIRONMENT,
+      volunteerWorkLogsAvailable: !IS_LIVE_ENVIRONMENT,
       volunteersError: null,
     });
     if (IS_LIVE_ENVIRONMENT) {
@@ -1253,9 +1291,9 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
         assignedBooths: persisted.assigned_booths || [],
         assignedWards: persisted.assigned_wards || [],
         isKshetraUser: Boolean(persisted.user_id),
-        tasksCompleted: 0,
-        hoursLogged: 0,
-        rating: 0,
+        tasksCompleted: null,
+        hoursLogged: null,
+        rating: null,
         joinedAt: persisted.created_at || new Date().toISOString(),
         lastActiveAt: persisted.created_at || new Date().toISOString(),
       };
@@ -1388,7 +1426,9 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
         ? {
             totalVolunteers: vols.length,
             activeVolunteers: vols.filter((v) => v.status === 'active').length,
-            totalHours: vols.reduce((total, volunteer) => total + volunteer.hoursLogged, 0),
+            totalHours: get().volunteerWorkLogsAvailable && vols.every((volunteer) => volunteer.hoursLogged !== null)
+                ? vols.reduce((total, volunteer) => total + volunteer.hoursLogged!, 0)
+                : null,
             householdsReached: null,
           }
         : null,
@@ -1437,6 +1477,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
         selectedCampaignId: persisted.id,
         booths: [], boothsLoading: false, boothsAvailable: false, boothsError: null,
         volunteers: [], volunteersLoading: false, volunteersAvailable: false, volunteersError: null,
+        volunteerWorkLogsAvailable: false,
         campaignsAvailable: true,
         campaignsError: null,
       }));
@@ -1466,6 +1507,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
       selectedCampaignId: created.id,
       booths: [], boothsAvailable: true,
       volunteers: [], volunteersAvailable: true,
+      volunteerWorkLogsAvailable: true,
     }));
     return created;
   },
@@ -1549,8 +1591,87 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
     }));
   },
 
-  logCanvassing: (record) => {
-    if (IS_LIVE_ENVIRONMENT) throw new Error('Canvassing records are unavailable until their persistence workflow is connected.');
-    set((s) => ({ canvassingRecords: [...s.canvassingRecords, { id: `cr-${Date.now()}`, campaignId: '', volunteerId: '', boothId: '', boothName: '', constituencyAcNo: 0, status: 'in_progress', householdsVisited: 0, householdsTotal: 0, supporterCount: 0, oppositionCount: 0, undecidedCount: 0, issuesRaised: [], notes: '', startTime: new Date().toISOString(), createdAt: new Date().toISOString(), ...record } as CanvassingRecord] }));
+  logCanvassing: async (record) => {
+    if (!record.campaignId || !record.volunteerId || !record.boothId || !record.startTime || !record.endTime) {
+      throw new Error('Choose a campaign worker and booth, and provide a completed session time.');
+    }
+    if (!Number.isInteger(record.householdsVisited) || Number(record.householdsVisited) < 0) {
+      throw new Error('Enter a valid number of households visited.');
+    }
+    const campaignId = record.campaignId;
+    const volunteerId = record.volunteerId;
+    const boothId = record.boothId;
+    const startTime = record.startTime;
+    const endTime = record.endTime;
+    const visitedCount = record.householdsVisited!;
+    const startMs = Date.parse(startTime);
+    const endMs = Date.parse(endTime);
+    const nowMs = Date.now();
+    if (
+      !Number.isFinite(startMs) || !Number.isFinite(endMs) ||
+      endMs <= startMs || endMs - startMs > 24 * 60 * 60 * 1000 ||
+      endMs > nowMs + 5 * 60 * 1000
+    ) {
+      throw new Error('The work session must have valid times, last no more than 24 hours, and not end in the future.');
+    }
+
+    if (IS_LIVE_ENVIRONMENT) {
+      const { data } = await apiClient.request<{ success?: boolean; record?: unknown }>(
+        '/api/v1/campaign/canvassing-records',
+        {
+          method: 'POST',
+          body: {
+            campaignId,
+            volunteerId,
+            boothId,
+            startTime,
+            endTime,
+            householdsVisited: visitedCount,
+            notes: record.notes || '',
+          },
+        },
+      );
+      if (data.success !== true || !data.record) {
+        throw new Error('The campaign service did not confirm saving this work session.');
+      }
+      await get().fetchVolunteers(campaignId);
+      return;
+    }
+
+    const sessionHours = Math.round(((endMs - startMs) / 3_600_000) * 100) / 100;
+    set((state) => ({
+      canvassingRecords: [
+        ...state.canvassingRecords,
+        {
+          id: `cr-${Date.now()}`,
+          campaignId,
+          volunteerId,
+          volunteerName: record.volunteerName || '',
+          boothId,
+          boothName: record.boothName || '',
+          constituencyAcNo: record.constituencyAcNo || 0,
+          status: 'completed',
+          householdsVisited: visitedCount,
+          householdsTotal: record.householdsTotal || 0,
+          supporterCount: 0,
+          oppositionCount: 0,
+          undecidedCount: 0,
+          issuesRaised: [],
+          notes: record.notes || '',
+          startTime,
+          endTime,
+          createdAt: new Date().toISOString(),
+        },
+      ],
+      volunteers: state.volunteers.map((volunteer) => volunteer.id === volunteerId
+        ? {
+            ...volunteer,
+            tasksCompleted: (volunteer.tasksCompleted ?? 0) + 1,
+            hoursLogged: Math.round(((volunteer.hoursLogged ?? 0) + sessionHours) * 100) / 100,
+            lastActiveAt: endTime,
+          }
+        : volunteer),
+      volunteerWorkLogsAvailable: true,
+    }));
   },
 }));

@@ -17,8 +17,9 @@
  * 10. All pre-existing Directive 122 protections remain intact: no modulo selection, no silent TS fallback, no synthetic ACs.
  */
 
-import { buildApp } from '../server';
+import Fastify from 'fastify';
 import type { FastifyInstance } from 'fastify';
+import { delimitationRoutes } from '../routes/delimitation';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
@@ -40,7 +41,9 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
   let app: FastifyInstance;
 
   beforeAll(async () => {
-    app = await buildApp();
+    app = Fastify({ logger: false });
+    await app.register(delimitationRoutes);
+    await app.ready();
   });
 
   afterAll(async () => {
@@ -211,6 +214,16 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
   });
 
   describe('Assertion 7: Ambiguous or incomplete evidence produces regional-only or unavailable output', () => {
+    it('keeps PINs outside the independently audited directory regional-only', () => {
+      for (const pin of ['504208', '509338', '781001']) {
+        const result = delimitationService.getCitizenImpact(pin);
+        expect(result.status).toBe('REGIONAL_ONLY');
+        expect(result.currentConstituency).toBeUndefined();
+        expect(result.candidateConstituencies).toBeUndefined();
+        expect(result.linkageNotice).toContain('cannot be reliably derived');
+      }
+    });
+
     it('unmapped postal prefix fails closed with 404 PIN_NOT_FOUND', async () => {
       const res = await app.inject({
         method: 'GET',

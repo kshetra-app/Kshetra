@@ -3,12 +3,12 @@
     "job": "W008",
     "title": "Fastify API Route Contract Inventory",
     "specification": "Master Execution Framework Amendment v1.5-A / DEC-041",
-    "timestamp": "2026-10-26T06:57:01.457Z"
+    "timestamp": "2026-11-11T05:42:01.903Z"
   },
   "summary": {
-    "totalRoutesRegistered": 208,
-    "pioneerAndPhase1Routes": 64,
-    "schemaCoveredRoutes": 162
+    "totalRoutesRegistered": 393,
+    "pioneerAndPhase1Routes": 94,
+    "schemaCoveredRoutes": 221
   },
   "routes": [
     {
@@ -28,6 +28,132 @@
       "schemaDefined": false,
       "preValidationDefined": false,
       "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/users/action",
+      "file": "admin.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/moderation/decide",
+      "file": "admin.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/verification/candidate",
+      "file": "admin.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/data-correction",
+      "file": "admin.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/feature-flags",
+      "file": "admin.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/admin/feature-flags/:key",
+      "file": "admin.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/audit-logs",
+      "file": "admin.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/ai/news/summarize",
+      "file": "ai.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/ai/civic/classify",
+      "file": "ai.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/ai/ask-poligram",
+      "file": "ai.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/ai/tenant-budget",
+      "file": "ai.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/ai/tenant-budget",
+      "file": "ai.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/ai/providers",
+      "file": "ai.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/ai/configure-provider",
+      "file": "ai.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
     },
     {
       "method": "POST",
@@ -103,6 +229,114 @@
     },
     {
       "method": "POST",
+      "path": "/api/v1/aspirant/register",
+      "file": "aspirant.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aspirant/me",
+      "file": "aspirant.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aspirant/kyc/submit",
+      "file": "aspirant.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aspirant/kyc/status",
+      "file": "aspirant.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aspirant/profile/:id",
+      "file": "aspirant.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aspirants",
+      "file": "aspirant.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aspirant/modules",
+      "file": "aspirant.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aspirant/challenges",
+      "file": "aspirant.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aspirant/badges",
+      "file": "aspirant.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aspirant/modules/:id",
+      "file": "aspirant.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aspirant/modules/:id/quiz",
+      "file": "aspirant.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/aspirant/modules/:id/start",
+      "file": "aspirant.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
       "path": "/api/v1/aspirant/modules/:id/complete",
       "file": "aspirant.ts",
       "phase": "Phase 2-4",
@@ -156,6 +390,159 @@
       "standardizedEnvelope": true
     },
     {
+      "method": "POST",
+      "path": "/api/v1/broadcast/channels",
+      "file": "broadcast.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/broadcast/channels/:idOrSlug",
+      "file": "broadcast.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/broadcast/streams",
+      "file": "broadcast.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/broadcast/streams",
+      "file": "broadcast.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/broadcast/streams/:id",
+      "file": "broadcast.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/broadcast/streams/:id/status",
+      "file": "broadcast.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/broadcast/streams/:id/telemetry",
+      "file": "broadcast.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/broadcast/streams/:id/polls",
+      "file": "broadcast.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/broadcast/streams/:id/polls/active",
+      "file": "broadcast.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/broadcast/streams/:id/polls/:pollId/vote",
+      "file": "broadcast.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/broadcast/streams/:id/polls/:pollId/close",
+      "file": "broadcast.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/broadcast/streams/:id/questions",
+      "file": "broadcast.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/broadcast/streams/:id/questions",
+      "file": "broadcast.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/broadcast/streams/:id/questions/:qId/vote",
+      "file": "broadcast.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/broadcast/streams/:id/questions/:qId/moderate",
+      "file": "broadcast.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/studio",
+      "file": "broadcast.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/broadcast/studio",
+      "file": "broadcast.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
       "method": "GET",
       "path": "/api/v1/campaign/pricing",
       "file": "campaign.ts",
@@ -183,8 +570,35 @@
       "standardizedEnvelope": true
     },
     {
+      "method": "POST",
+      "path": "/api/v1/campaign/campaigns",
+      "file": "campaign.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
       "method": "GET",
       "path": "/api/v1/campaign/campaigns",
+      "file": "campaign.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/campaign/ads",
+      "file": "campaign.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/campaign/ads",
       "file": "campaign.ts",
       "phase": "Phase 2-4",
       "schemaDefined": true,
@@ -212,6 +626,15 @@
     {
       "method": "GET",
       "path": "/api/v1/campaign/volunteers",
+      "file": "campaign.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/campaign/canvassing-records",
       "file": "campaign.ts",
       "phase": "Phase 2-4",
       "schemaDefined": true,
@@ -453,6 +876,204 @@
       "standardizedEnvelope": true
     },
     {
+      "method": "POST",
+      "path": "/api/v1/civic/issues/:id/tag-mla",
+      "file": "civic.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/civic/issues/:id/dispute",
+      "file": "civic.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/civic/issues",
+      "file": "civic.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/civic/issues/:id",
+      "file": "civic.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/civic/issues/:id/evidence",
+      "file": "civic.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/civic/issues/:id/history",
+      "file": "civic.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/civic/issues/:id/comments",
+      "file": "civic.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/civic/sentiment/:constituencyId",
+      "file": "civic.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/civic/groups",
+      "file": "civic.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/civic/groups",
+      "file": "civic.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/civic/groups/:id/join",
+      "file": "civic.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/civic/groups/:id/leave",
+      "file": "civic.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/accounts",
+      "file": "commercialAds.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/accounts/:id",
+      "file": "commercialAds.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/accounts/:id/recharge",
+      "file": "commercialAds.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/accounts/:id/invoices",
+      "file": "commercialAds.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/",
+      "file": "commercialAds.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/serve",
+      "file": "commercialAds.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/telemetry/impression",
+      "file": "commercialAds.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/telemetry/click",
+      "file": "commercialAds.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/pricing-configurations",
+      "file": "commercialAds.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "PATCH",
+      "path": "/pricing-configurations/:key",
+      "file": "commercialAds.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
       "method": "GET",
       "path": "/config/flags",
       "file": "config.ts",
@@ -511,9 +1132,36 @@
       "path": "/states/:stateCode/mla",
       "file": "constituencies.ts",
       "phase": "Phase 1 (Standardized)",
-      "schemaDefined": true,
+      "schemaDefined": false,
       "preValidationDefined": false,
-      "standardizedEnvelope": true
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/states/:stateCode/constituencies/:acNo/mla",
+      "file": "constituencies.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/states/:stateCode/podium",
+      "file": "constituencies.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/states/:stateCode/constituencies/:acNo/podium",
+      "file": "constituencies.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
     },
     {
       "method": "GET",
@@ -527,6 +1175,24 @@
     {
       "method": "GET",
       "path": "/constituencies/locate",
+      "file": "constituencies.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/constituencies/locate/pin/:pinCode",
+      "file": "constituencies.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/constituencies/:stateCode/:acNo/hierarchy",
       "file": "constituencies.ts",
       "phase": "Phase 2-4",
       "schemaDefined": true,
@@ -559,6 +1225,33 @@
       "schemaDefined": true,
       "preValidationDefined": false,
       "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/pipelines/ingest",
+      "file": "dataPipelines.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/pipelines/status/:jobId",
+      "file": "dataPipelines.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/pipelines/delimitation/audit",
+      "file": "dataPipelines.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
     },
     {
       "method": "GET",
@@ -750,6 +1443,33 @@
       "standardizedEnvelope": true
     },
     {
+      "method": "POST",
+      "path": "/api/v1/delimitation/share",
+      "file": "delimitationShare.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/delimitation/share/:shareId",
+      "file": "delimitationShare.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/share/delimitation/:shareId",
+      "file": "delimitationShare.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
       "method": "GET",
       "path": "/api/v1/delimitation/watch/health",
       "file": "delimitationWatch.ts",
@@ -807,6 +1527,105 @@
       "method": "GET",
       "path": "/api/v1/delimitation/watch/versions/:sourceId",
       "file": "delimitationWatch.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/developer/organizations",
+      "file": "developerPlatform.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/developer/organizations/:id",
+      "file": "developerPlatform.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/developer/organizations/:id/members",
+      "file": "developerPlatform.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/developer/organizations/:id/members",
+      "file": "developerPlatform.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/developer/organizations/:id/keys",
+      "file": "developerPlatform.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/developer/organizations/:id/keys",
+      "file": "developerPlatform.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/developer/organizations/:id/keys/:keyId/revoke",
+      "file": "developerPlatform.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/developer/organizations/:id/usage",
+      "file": "developerPlatform.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/developer/organizations/:id/billing/checkout",
+      "file": "developerPlatform.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/docs/json",
+      "file": "developerPlatform.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/docs",
+      "file": "developerPlatform.ts",
       "phase": "Phase 2-4",
       "schemaDefined": false,
       "preValidationDefined": false,
@@ -915,6 +1734,159 @@
       "method": "GET",
       "path": "/api/v1/elections/persons/:personId",
       "file": "elections.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/embed/poligram-widgets.js",
+      "file": "embeds.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/embed/delimitation/:acId",
+      "file": "embeds.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/embed/election/:id",
+      "file": "embeds.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/embed/candidate/:id",
+      "file": "embeds.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/embed/issue/:id",
+      "file": "embeds.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/embed/live/:id",
+      "file": "embeds.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/embed/short/:id",
+      "file": "embeds.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/feed/posts",
+      "file": "feed.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/feed/posts/:id",
+      "file": "feed.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/feed/posts/:id",
+      "file": "feed.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/feed/posts/:id/react",
+      "file": "feed.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/feed/posts/:id/react",
+      "file": "feed.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/feed/polls/:id/vote",
+      "file": "feed.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/feed/posts/:id/comments",
+      "file": "feed.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/feed/comments/:id",
+      "file": "feed.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/feed/comments/:id/react",
+      "file": "feed.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/feed/comments/:id/react",
+      "file": "feed.ts",
       "phase": "Phase 2-4",
       "schemaDefined": true,
       "preValidationDefined": false,
@@ -1218,6 +2190,168 @@
       "standardizedEnvelope": false
     },
     {
+      "method": "POST",
+      "path": "/api/v1/media/representative/responses",
+      "file": "media.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/media/representative/responses/:issueId",
+      "file": "media.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/media/news",
+      "file": "media.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/media/news/feed",
+      "file": "media.ts",
+      "phase": "Pioneer (W007/W008)",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/media/news/:articleId/context",
+      "file": "media.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/media/shorts",
+      "file": "media.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/media/shorts/feed",
+      "file": "media.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/media/shorts/analytics",
+      "file": "media.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/media/shorts/:shortId/analytics",
+      "file": "media.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/media/notifications/subscribe",
+      "file": "media.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/media/notifications/subscriptions",
+      "file": "media.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/media/notifications/dispatch",
+      "file": "media.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/media/digests/:constituencyId",
+      "file": "media.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/media/broadcasts/live",
+      "file": "media.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/media/broadcasts/studio",
+      "file": "media.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/media/broadcasts/studio/:sessionId/start",
+      "file": "media.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/media/broadcasts/studio/:sessionId/end",
+      "file": "media.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/media/broadcasts/:sessionId/viewers",
+      "file": "media.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
       "method": "GET",
       "path": "/metrics",
       "file": "metrics.ts",
@@ -1425,6 +2559,69 @@
       "standardizedEnvelope": true
     },
     {
+      "method": "POST",
+      "path": "/api/v1/pages",
+      "file": "pages.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/pages/:id",
+      "file": "pages.ts",
+      "phase": "Pioneer (W007/W008)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/pages/:id/follow",
+      "file": "pages.ts",
+      "phase": "Pioneer (W007/W008)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/pages/:id/follow",
+      "file": "pages.ts",
+      "phase": "Pioneer (W007/W008)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/pages/:id/events",
+      "file": "pages.ts",
+      "phase": "Pioneer (W007/W008)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/pages/:id/events",
+      "file": "pages.ts",
+      "phase": "Pioneer (W007/W008)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/pages/events/:eventId/rsvp",
+      "file": "pages.ts",
+      "phase": "Pioneer (W007/W008)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
       "method": "GET",
       "path": "/policy/grievance",
       "file": "policy.ts",
@@ -1453,16 +2650,7 @@
     },
     {
       "method": "POST",
-      "path": "/api/v1/pages/:pageId/political-ads",
-      "file": "politicalAds.ts",
-      "phase": "Pioneer (W007/W008)",
-      "schemaDefined": true,
-      "preValidationDefined": false,
-      "standardizedEnvelope": true
-    },
-    {
-      "method": "GET",
-      "path": "/api/v1/admin/political-ads/review-queue",
+      "path": "/api/v1/political-ads",
       "file": "politicalAds.ts",
       "phase": "Phase 2-4",
       "schemaDefined": false,
@@ -1471,7 +2659,43 @@
     },
     {
       "method": "POST",
-      "path": "/api/v1/admin/political-ads/:adId/certify",
+      "path": "/api/v1/political-ads/:id/review",
+      "file": "politicalAds.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/political-ads/transparency",
+      "file": "politicalAds.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/political-ads/electoral-state/:constituencyId",
+      "file": "politicalAds.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/pages/:pageId/political-ads",
+      "file": "politicalAds.ts",
+      "phase": "Pioneer (W007/W008)",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/political-ads/admin/:adId/certify",
       "file": "politicalAds.ts",
       "phase": "Phase 2-4",
       "schemaDefined": true,
@@ -1498,8 +2722,107 @@
     },
     {
       "method": "GET",
-      "path": "/ad-library",
+      "path": "/political-ads/library/view",
       "file": "politicalAds.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/",
+      "file": "politicalCampaigns.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/:id",
+      "file": "politicalCampaigns.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/",
+      "file": "politicalCampaigns.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/:id/members",
+      "file": "politicalCampaigns.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/:id/members",
+      "file": "politicalCampaigns.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/:id/intelligence",
+      "file": "politicalCampaigns.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/:id/content",
+      "file": "politicalCampaigns.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/:id/content/:contentId/submit",
+      "file": "politicalCampaigns.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/:id/content/:contentId/review",
+      "file": "politicalCampaigns.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/:id/content/:contentId/publish",
+      "file": "politicalCampaigns.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/:id/content",
+      "file": "politicalCampaigns.ts",
       "phase": "Phase 2-4",
       "schemaDefined": false,
       "preValidationDefined": false,
@@ -1639,6 +2962,177 @@
       "schemaDefined": true,
       "preValidationDefined": false,
       "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/dashboard/metrics",
+      "file": "productDashboard.ts",
+      "phase": "System & Diagnostics",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/dashboard/reconstruct",
+      "file": "productDashboard.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/promises/:id/follow",
+      "file": "promises.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/promises/:id/evidence",
+      "file": "promises.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/user/favorites/toggle",
+      "file": "promises.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/public/states/:stateCode",
+      "file": "publicWeb.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/public/constituency/:acId",
+      "file": "publicWeb.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/public/districts/:districtId",
+      "file": "publicWeb.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/public/representatives/:repId",
+      "file": "publicWeb.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/public/elections/:electionId",
+      "file": "publicWeb.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/public/delimitation/:acId",
+      "file": "publicWeb.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/public/states/:stateCode",
+      "file": "publicWeb.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/public/constituency/:acId",
+      "file": "publicWeb.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/public/districts/:districtId",
+      "file": "publicWeb.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/public/representatives/:repId",
+      "file": "publicWeb.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/public/elections/:electionId",
+      "file": "publicWeb.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/public/delimitation/:acId",
+      "file": "publicWeb.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/sitemap.xml",
+      "file": "publicWeb.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/sitemap-geography.xml",
+      "file": "publicWeb.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
     },
     {
       "method": "GET",
@@ -1795,6 +3289,33 @@
     },
     {
       "method": "POST",
+      "path": "/api/v1/shorts",
+      "file": "shorts.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/shorts/:id/approve",
+      "file": "shorts.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/shorts/:id/flag",
+      "file": "shorts.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
       "path": "/api/v1/spatial/analytics/overlap",
       "file": "spatialAnalytics.ts",
       "phase": "Phase 2-4",
@@ -1839,6 +3360,141 @@
       "standardizedEnvelope": true
     },
     {
+      "method": "GET",
+      "path": "/api/v1/system/audit/topology",
+      "file": "systemAudit.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/system/audit/topology/run",
+      "file": "systemAudit.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/demo/system/audit/database",
+      "file": "systemAudit.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/demo/system/audit/load-test",
+      "file": "systemAudit.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/demo/system/audit/security",
+      "file": "systemAudit.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/demo/system/audit/dr",
+      "file": "systemAudit.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/demo/system/audit/performance",
+      "file": "systemAudit.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/demo/system/audit/database/run",
+      "file": "systemAudit.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/demo/system/audit/load-test/run",
+      "file": "systemAudit.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/demo/system/audit/dr/drill",
+      "file": "systemAudit.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/demo/system/audit/dr/rollback",
+      "file": "systemAudit.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/demo/system/audit/security/run",
+      "file": "systemAudit.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/analytics/events",
+      "file": "universalAnalytics.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/analytics/events",
+      "file": "universalAnalytics.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users/me/following",
+      "file": "users.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
       "method": "POST",
       "path": "/api/v1/users/:id/follow",
       "file": "users.ts",
@@ -1850,6 +3506,15 @@
     {
       "method": "DELETE",
       "path": "/api/v1/users/:id/follow",
+      "file": "users.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/user/profile",
       "file": "users.ts",
       "phase": "Phase 2-4",
       "schemaDefined": true,

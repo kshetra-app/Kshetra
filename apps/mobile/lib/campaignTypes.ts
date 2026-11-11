@@ -246,9 +246,12 @@ export interface Volunteer {
   assignedBooths: string[];
   assignedWards: number[];
   constituencyAcNo?: number;
-  tasksCompleted: number;
-  hoursLogged: number;
-  rating: number;
+  /** Derived from persisted completed canvassing records; null until that source is available. */
+  tasksCompleted: number | null;
+  /** Sum of valid persisted completed-session durations; null when the source is unavailable or incomplete. */
+  hoursLogged: number | null;
+  /** No in-app volunteer-rating source is currently implemented. */
+  rating: number | null;
   isKshetraUser?: boolean;
   joinedAt: string;
   lastActiveAt: string;
@@ -354,7 +357,7 @@ export interface CampaignAnalytics {
   segmentPerformance: { segment: VoterSegment; reached: number; engaged: number; cost: number }[];
   geographicHeatmap: { acNo: number; acName: string; impressions: number; sentiment: number }[];
   /** Null when volunteer data is unavailable. Household reach has no persisted source yet. */
-  volunteerMetrics: { totalVolunteers: number; activeVolunteers: number; totalHours: number; householdsReached: number | null } | null;
+  volunteerMetrics: { totalVolunteers: number; activeVolunteers: number; totalHours: number | null; householdsReached: number | null } | null;
   /** Null when booth data is unavailable. */
   boothReadiness: { total: number; ready: number; inProgress: number; notStarted: number } | null;
   channelBreakdown: { channel: ChannelType; impressions: number; engagements: number; cost: number }[];

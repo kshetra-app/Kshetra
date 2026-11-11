@@ -20,7 +20,9 @@ import { PaymentProviderError, RazorpayProvider } from '../providers/razorpayPro
 import { TelecomProvider } from '../providers/telecomProvider';
 import type { PaymentProvider, VoiceObdProvider } from '../providers/types';
 
-function isProductionRuntime(): boolean { return isProductionLikeRuntime(); }
+function isProductionRuntime(): boolean {
+  return isProductionLikeRuntime();
+}
 
 function normalizePhoneNumber(phone: string): string {
   return phone.replace(/\D/g, '').slice(-10);
@@ -56,7 +58,10 @@ const campaignsQuerySchema = {
     type: 'object',
     additionalProperties: false,
     properties: {
-      status: { type: 'string', enum: ['draft', 'planned', 'active', 'paused', 'completed', 'cancelled'] },
+      status: {
+        type: 'string',
+        enum: ['draft', 'planned', 'active', 'paused', 'completed', 'cancelled'],
+      },
       politicianId: { type: 'string', minLength: 1, maxLength: 64 },
       limit: { type: 'integer', minimum: 1, maximum: 100 },
     },
@@ -71,13 +76,32 @@ const campaignCreateSchema = {
     properties: {
       name: { type: 'string', minLength: 1, maxLength: 120 },
       description: { type: 'string', maxLength: 2000 },
-      type: { type: 'string', enum: ['election', 'awareness', 'fundraising', 'outreach', 'issue_advocacy', 'brand_building', 'get_out_vote'] },
+      type: {
+        type: 'string',
+        enum: [
+          'election',
+          'awareness',
+          'fundraising',
+          'outreach',
+          'issue_advocacy',
+          'brand_building',
+          'get_out_vote',
+        ],
+      },
       stateCode: { type: 'string', pattern: '^[A-Z]{2}$' },
       startDate: { type: 'string', format: 'date' },
       endDate: { type: 'string', format: 'date' },
       totalBudgetINR: { type: 'number', minimum: 0, maximum: 1000000000000 },
-      targetConstituencies: { type: 'array', maxItems: 1000, items: { type: 'integer', minimum: 1 } },
-      targetDistricts: { type: 'array', maxItems: 1000, items: { type: 'string', minLength: 1, maxLength: 100 } },
+      targetConstituencies: {
+        type: 'array',
+        maxItems: 1000,
+        items: { type: 'integer', minimum: 1 },
+      },
+      targetDistricts: {
+        type: 'array',
+        maxItems: 1000,
+        items: { type: 'string', minLength: 1, maxLength: 100 },
+      },
     },
   },
 };
@@ -100,12 +124,29 @@ const campaignAdDraftSchema = {
     additionalProperties: false,
     properties: {
       campaignId: { type: 'string', minLength: 1, maxLength: 64 },
-      format: { type: 'string', enum: ['promoted_post', 'banner', 'video_ad', 'carousel', 'native_story', 'constituency_spotlight', 'push_notification', 'sms_blast', 'whatsapp_broadcast'] },
+      format: {
+        type: 'string',
+        enum: [
+          'promoted_post',
+          'banner',
+          'video_ad',
+          'carousel',
+          'native_story',
+          'constituency_spotlight',
+          'push_notification',
+          'sms_blast',
+          'whatsapp_broadcast',
+        ],
+      },
       name: { type: 'string', minLength: 1, maxLength: 120 },
       headline: { type: 'string', minLength: 1, maxLength: 300 },
       body: { type: 'string', maxLength: 4000 },
       callToAction: { type: 'string', maxLength: 80 },
-      mediaUrls: { type: 'array', maxItems: 10, items: { type: 'string', minLength: 1, maxLength: 2048 } },
+      mediaUrls: {
+        type: 'array',
+        maxItems: 10,
+        items: { type: 'string', minLength: 1, maxLength: 2048 },
+      },
       thumbnailUrl: { type: 'string', maxLength: 2048 },
       landingUrl: { type: 'string', maxLength: 2048 },
       paidForBy: { type: 'string', minLength: 1, maxLength: 200 },
@@ -115,10 +156,24 @@ const campaignAdDraftSchema = {
 };
 
 const CAMPAIGN_AD_DRAFT_COLUMNS = [
-  'id', 'campaign_id', 'format', 'status', 'name', 'headline', 'body',
-  'call_to_action', 'media_urls', 'thumbnail_url', 'landing_url',
-  'disclosure_text', 'paid_for_by', 'eci_disclosure_id', 'is_eci_compliant',
-  'review_note', 'created_at', 'updated_at',
+  'id',
+  'campaign_id',
+  'format',
+  'status',
+  'name',
+  'headline',
+  'body',
+  'call_to_action',
+  'media_urls',
+  'thumbnail_url',
+  'landing_url',
+  'disclosure_text',
+  'paid_for_by',
+  'eci_disclosure_id',
+  'is_eci_compliant',
+  'review_note',
+  'created_at',
+  'updated_at',
 ].join(',');
 
 const boothsQuerySchema = {
@@ -145,7 +200,10 @@ const boothPatchSchema = {
     additionalProperties: false,
     properties: {
       priority: { type: 'string', enum: ['critical', 'high', 'medium', 'low'] },
-      status: { type: 'string', enum: ['not_started', 'canvassing', 'ready', 'polling_day', 'counted'] },
+      status: {
+        type: 'string',
+        enum: ['not_started', 'canvassing', 'ready', 'polling_day', 'counted'],
+      },
       canvassingCompletion: { type: 'number', minimum: 0, maximum: 100 },
       agentName: { type: 'string', maxLength: 100 },
       agentPhone: { type: 'string', maxLength: 20 },
@@ -164,7 +222,19 @@ const volunteersQuerySchema = {
     additionalProperties: false,
     properties: {
       campaignId: { type: 'string', minLength: 1, maxLength: 64 },
-      role: { type: 'string', enum: ['canvasser', 'booth_agent', 'social_media', 'logistics', 'data_entry', 'coordinator', 'driver', 'caller'] },
+      role: {
+        type: 'string',
+        enum: [
+          'canvasser',
+          'booth_agent',
+          'social_media',
+          'logistics',
+          'data_entry',
+          'coordinator',
+          'driver',
+          'caller',
+        ],
+      },
     },
   },
 };
@@ -178,13 +248,174 @@ const volunteerCreateSchema = {
       campaignId: { type: 'string', minLength: 1, maxLength: 64 },
       name: { type: 'string', minLength: 1, maxLength: 100 },
       phone: { type: 'string', minLength: 10, maxLength: 20 },
-      role: { type: 'string', enum: ['canvasser', 'booth_agent', 'social_media', 'logistics', 'data_entry', 'coordinator', 'driver', 'caller'] },
+      role: {
+        type: 'string',
+        enum: [
+          'canvasser',
+          'booth_agent',
+          'social_media',
+          'logistics',
+          'data_entry',
+          'coordinator',
+          'driver',
+          'caller',
+        ],
+      },
       assignedBooths: { type: 'array', items: { type: 'string' } },
       assignedWards: { type: 'array', items: { type: 'integer' } },
       isKshetraUser: { type: 'boolean' },
     },
   },
 };
+
+const canvassingRecordCreateSchema = {
+  body: {
+    type: 'object',
+    required: ['campaignId', 'volunteerId', 'boothId', 'startTime', 'endTime', 'householdsVisited'],
+    additionalProperties: false,
+    properties: {
+      campaignId: { type: 'string', minLength: 1, maxLength: 64 },
+      volunteerId: { type: 'string', minLength: 1, maxLength: 64 },
+      boothId: { type: 'string', minLength: 1, maxLength: 128 },
+      startTime: { type: 'string', format: 'date-time' },
+      endTime: { type: 'string', format: 'date-time' },
+      householdsVisited: { type: 'integer', minimum: 0, maximum: 100000 },
+      notes: { type: 'string', maxLength: 1000 },
+    },
+  },
+};
+
+const CANVASSING_RECORD_COLUMNS = [
+  'id',
+  'campaign_id',
+  'volunteer_id',
+  'booth_id',
+  'booth_name',
+  'ward_no',
+  'constituency_ac_no',
+  'status',
+  'households_visited',
+  'issues_raised',
+  'notes',
+  'reported_by_user_id',
+  'start_time',
+  'end_time',
+  'created_at',
+].join(',');
+
+const VOLUNTEER_WORK_LOG_PAGE_SIZE = 1000;
+const VOLUNTEER_WORK_LOG_MAX_RECORDS = 50000;
+const MAX_WORK_SESSION_DURATION_MS = 24 * 60 * 60 * 1000;
+const MAX_WORK_LOG_CLOCK_SKEW_MS = 5 * 60 * 1000;
+
+type VolunteerWorkMetrics = {
+  tasksCompleted: number;
+  hoursLogged: number | null;
+};
+
+/**
+ * Derive campaign-worker totals only from persisted work logs. Legacy counter
+ * columns on campaign_volunteers default to zero but have no application
+ * writer, so they are not an authoritative reporting source.
+ */
+async function loadVolunteerWorkMetrics(
+  campaignId: string,
+): Promise<Map<string, VolunteerWorkMetrics> | null> {
+  let rpcResult: { data: unknown; error: { code?: string } | null };
+  try {
+    rpcResult = await supabase.rpc('get_campaign_volunteer_work_metrics', {
+      p_campaign_id: campaignId,
+    });
+  } catch {
+    return null;
+  }
+
+  if (!rpcResult.error) {
+    if (!Array.isArray(rpcResult.data)) return null;
+    const aggregated = new Map<string, VolunteerWorkMetrics>();
+    for (const row of rpcResult.data as Array<Record<string, unknown>>) {
+      const volunteerId = row?.volunteer_id;
+      const rawTasksCompleted = row?.tasks_completed;
+      const tasksCompleted =
+        typeof rawTasksCompleted === 'number'
+          ? rawTasksCompleted
+          : typeof rawTasksCompleted === 'string' && /^\d+$/.test(rawTasksCompleted)
+            ? Number(rawTasksCompleted)
+            : Number.NaN;
+      const rawHoursLogged = row?.hours_logged;
+      const hoursLogged =
+        rawHoursLogged === null
+          ? null
+          : typeof rawHoursLogged === 'number' || typeof rawHoursLogged === 'string'
+            ? Number(rawHoursLogged)
+            : Number.NaN;
+      if (
+        typeof volunteerId !== 'string' ||
+        !Number.isSafeInteger(tasksCompleted) ||
+        tasksCompleted < 0 ||
+        (hoursLogged !== null && (!Number.isFinite(hoursLogged) || hoursLogged < 0)) ||
+        aggregated.has(volunteerId)
+      ) {
+        return null;
+      }
+      aggregated.set(volunteerId, { tasksCompleted, hoursLogged });
+    }
+    return aggregated;
+  }
+
+  // Older deployments may not have the aggregate RPC yet. Use the bounded,
+  // ordered row scan only for that expected migration gap; other database
+  // errors should produce unavailable metrics instead of a costly retry path.
+  if (!['PGRST202', '42883'].includes(rpcResult.error.code || '')) return null;
+
+  const metrics = new Map<string, VolunteerWorkMetrics>();
+  let offset = 0;
+
+  while (offset <= VOLUNTEER_WORK_LOG_MAX_RECORDS) {
+    const { data, error } = await supabase
+      .from('canvassing_records')
+      .select('volunteer_id,status,start_time,end_time')
+      .eq('campaign_id', campaignId)
+      .order('created_at', { ascending: true })
+      .order('id', { ascending: true })
+      .range(offset, offset + VOLUNTEER_WORK_LOG_PAGE_SIZE - 1);
+
+    if (error || !data) return null;
+    if (offset === VOLUNTEER_WORK_LOG_MAX_RECORDS && data.length > 0) return null;
+
+    for (const row of data) {
+      if (row.status !== 'completed' || typeof row.volunteer_id !== 'string') continue;
+      const current = metrics.get(row.volunteer_id) || { tasksCompleted: 0, hoursLogged: 0 };
+      current.tasksCompleted += 1;
+
+      const startMs = Date.parse(String(row.start_time ?? ''));
+      const endMs = Date.parse(String(row.end_time ?? ''));
+      if (
+        !Number.isFinite(startMs) ||
+        !Number.isFinite(endMs) ||
+        endMs <= startMs ||
+        endMs - startMs > MAX_WORK_SESSION_DURATION_MS ||
+        endMs > Date.now() + MAX_WORK_LOG_CLOCK_SKEW_MS
+      ) {
+        current.hoursLogged = null;
+      } else if (current.hoursLogged !== null) {
+        current.hoursLogged += (endMs - startMs) / 3_600_000;
+      }
+      metrics.set(row.volunteer_id, current);
+    }
+
+    if (data.length < VOLUNTEER_WORK_LOG_PAGE_SIZE) break;
+    offset += VOLUNTEER_WORK_LOG_PAGE_SIZE;
+  }
+
+  for (const current of metrics.values()) {
+    if (current.hoursLogged !== null) {
+      current.hoursLogged = Math.round(current.hoursLogged * 100) / 100;
+    }
+  }
+
+  return metrics;
+}
 
 const walletQuerySchema = {
   querystring: {
@@ -679,12 +910,14 @@ async function verifyCampaignAuthority(
   }
 
   // In-memory volunteer coordinator check
-  const memVol = isProductionRuntime() ? undefined : inMemoryVolunteers.find(
-    (v) =>
-      v.campaignId === campaignId &&
-      (v.id === auth.userId || v.name === auth.userId) &&
-      v.role === 'coordinator',
-  );
+  const memVol = isProductionRuntime()
+    ? undefined
+    : inMemoryVolunteers.find(
+        (v) =>
+          v.campaignId === campaignId &&
+          (v.id === auth.userId || v.name === auth.userId) &&
+          v.role === 'coordinator',
+      );
   if (memVol) {
     return { authorized: true, campaign };
   }
@@ -837,26 +1070,54 @@ export async function campaignRoutes(app: FastifyInstance) {
 
       if (isProductionRuntime()) {
         if (!campaignId) {
-          return sendApiError(reply, request, 400, 'Bad Request', 'campaignId is required to check a campaign contact.', {
-            code: 'VALIDATION_ERROR',
-          });
+          return sendApiError(
+            reply,
+            request,
+            400,
+            'Bad Request',
+            'campaignId is required to check a campaign contact.',
+            {
+              code: 'VALIDATION_ERROR',
+            },
+          );
         }
         const auth = await resolveAuthUser(request, campaignId);
         if (!auth) {
-          return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication is required to check account registration.', {
-            code: 'UNAUTHORIZED',
-          });
+          return sendApiError(
+            reply,
+            request,
+            401,
+            'Unauthorized',
+            'Authentication is required to check account registration.',
+            {
+              code: 'UNAUTHORIZED',
+            },
+          );
         }
         const authority = await verifyCampaignAuthority(auth, campaignId);
         if (!authority.authorized) {
-          return sendApiError(reply, request, 403, 'Forbidden', 'Not authorized to manage contacts for this campaign.', {
-            code: 'FORBIDDEN',
-          });
+          return sendApiError(
+            reply,
+            request,
+            403,
+            'Forbidden',
+            'Not authorized to manage contacts for this campaign.',
+            {
+              code: 'FORBIDDEN',
+            },
+          );
         }
         if (!isSupabaseConfigured) {
-          return sendApiError(reply, request, 503, 'Service Unavailable', 'Account registration could not be verified.', {
-            code: 'DATABASE_UNAVAILABLE',
-          });
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Account registration could not be verified.',
+            {
+              code: 'DATABASE_UNAVAILABLE',
+            },
+          );
         }
         try {
           const { data, error } = await supabase
@@ -872,9 +1133,16 @@ export async function campaignRoutes(app: FastifyInstance) {
             role: data?.role,
           };
         } catch {
-          return sendApiError(reply, request, 503, 'Service Unavailable', 'Account registration could not be verified.', {
-            code: 'DATABASE_ERROR',
-          });
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Account registration could not be verified.',
+            {
+              code: 'DATABASE_ERROR',
+            },
+          );
         }
       }
 
@@ -913,234 +1181,378 @@ export async function campaignRoutes(app: FastifyInstance) {
   );
 
   /** POST /api/v1/campaign/campaigns — create a persisted draft campaign */
-  app.post('/api/v1/campaign/campaigns', { schema: campaignCreateSchema }, async (request, reply) => {
-    const body = request.body as {
-      name: string;
-      description?: string;
-      type: string;
-      stateCode: string;
-      startDate: string;
-      endDate: string;
-      totalBudgetINR?: number;
-      targetConstituencies?: number[];
-      targetDistricts?: string[];
-    };
-    if (body.endDate < body.startDate) {
-      return sendApiError(reply, request, 400, 'Bad Request', 'Campaign end date must be on or after the start date.', {
-        code: 'VALIDATION_ERROR',
-      });
-    }
-
-    const auth = await resolveAuthUser(request);
-    if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication is required to create a campaign.', {
-        code: 'UNAUTHORIZED',
-      });
-    }
-    if (!['politician', 'aspirant', 'party'].includes(auth.role)) {
-      return sendApiError(reply, request, 403, 'Forbidden', 'A verified campaign owner account is required to create a campaign.', {
-        code: 'FORBIDDEN',
-      });
-    }
-
-    if (isProductionRuntime()) {
-      if (!isSupabaseConfigured) {
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign persistence is not configured.', {
-          code: 'DATABASE_UNAVAILABLE',
-        });
-      }
-      let binding: { authorized: boolean; effectivePoliticianId: string };
-      try {
-        binding = await resolveEffectivePoliticianId(auth);
-      } catch {
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign owner profile could not be resolved.', {
-          code: 'POLITICIAN_PROFILE_UNAVAILABLE',
-        });
-      }
-      if (!binding.authorized) {
-        return sendApiError(reply, request, 403, 'Forbidden', 'An active campaign owner profile is required to create a campaign.', {
-          code: 'POLITICIAN_PROFILE_REQUIRED',
-        });
+  app.post(
+    '/api/v1/campaign/campaigns',
+    { schema: campaignCreateSchema },
+    async (request, reply) => {
+      const body = request.body as {
+        name: string;
+        description?: string;
+        type: string;
+        stateCode: string;
+        startDate: string;
+        endDate: string;
+        totalBudgetINR?: number;
+        targetConstituencies?: number[];
+        targetDistricts?: string[];
+      };
+      if (body.endDate < body.startDate) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'Campaign end date must be on or after the start date.',
+          {
+            code: 'VALIDATION_ERROR',
+          },
+        );
       }
 
-      try {
-        const { data, error } = await supabase
-          .from('campaigns')
-          .insert({
-            politician_id: binding.effectivePoliticianId,
-            name: body.name.trim(),
-            description: body.description?.trim() || '',
-            type: body.type,
-            status: 'draft',
-            state_code: body.stateCode,
-            start_date: body.startDate,
-            end_date: body.endDate,
-            total_budget_inr: body.totalBudgetINR ?? 0,
-            target_constituencies: body.targetConstituencies || [],
-            target_districts: body.targetDistricts || [],
-          })
-          .select('*, politician_portal_profiles(display_name, party)')
-          .single();
-        if (error || !data) {
-          return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign could not be saved to the authoritative database.', {
-            code: 'CAMPAIGN_PERSISTENCE_FAILED',
-          });
-        }
-        return reply.code(201).send({ campaign: data });
-      } catch {
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign could not be saved to the authoritative database.', {
-          code: 'CAMPAIGN_PERSISTENCE_FAILED',
-        });
-      }
-    }
-
-    const campaign = {
-      id: crypto.randomUUID(),
-      politicianId: auth.userId,
-      name: body.name.trim(),
-      description: body.description?.trim() || '',
-      type: body.type,
-      status: 'draft',
-      stateCode: body.stateCode,
-      startDate: body.startDate,
-      endDate: body.endDate,
-      targetConstituencies: body.targetConstituencies || [],
-      targetDistricts: body.targetDistricts || [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    inMemoryCampaigns = [campaign as unknown as (typeof inMemoryCampaigns)[number], ...inMemoryCampaigns];
-    return reply.code(201).send({ campaign });
-  });
-
-  /** GET /api/v1/campaign/campaigns — list campaigns */
-  app.get('/api/v1/campaign/campaigns', { schema: campaignsQuerySchema }, async (request, reply) => {
-    const { status, politicianId } = request.query as { status?: string; politicianId?: string };
-    let scopedPoliticianId = politicianId;
-
-    if (isProductionRuntime()) {
       const auth = await resolveAuthUser(request);
       if (!auth) {
-        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication is required to read campaign records.', {
-          code: 'UNAUTHORIZED',
-        });
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication is required to create a campaign.',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
       }
-      if (auth.role === 'admin') {
-        if (politicianId) {
-          const binding = await resolveEffectivePoliticianId(auth, politicianId);
-          if (!binding.authorized) {
-            return sendApiError(reply, request, 403, 'Forbidden', 'Unknown campaign owner profile.', {
-              code: 'FORBIDDEN',
-            });
-          }
-          scopedPoliticianId = binding.effectivePoliticianId;
-        }
-      } else {
-        let profileId: string | null;
-        try {
-          profileId = await findPoliticianProfileIdForUser(auth.userId);
-        } catch {
-          return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign owner profile could not be resolved.', {
-            code: 'POLITICIAN_PROFILE_UNAVAILABLE',
-          });
-        }
-        if (!profileId) return { campaigns: [], total: 0 };
-        if (politicianId && politicianId !== profileId) {
-          return sendApiError(reply, request, 403, 'Forbidden', 'Cannot read another principal’s campaign records.', {
+      if (!['politician', 'aspirant', 'party'].includes(auth.role)) {
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          'A verified campaign owner account is required to create a campaign.',
+          {
             code: 'FORBIDDEN',
-          });
-        }
-        scopedPoliticianId = profileId;
+          },
+        );
       }
-    }
 
-    if (isSupabaseConfigured) {
-      try {
-        let query = supabase
-          .from('campaigns')
-          .select('*, politician_portal_profiles(display_name, party)');
-        if (status) query = query.eq('status', status);
-        if (scopedPoliticianId) query = query.eq('politician_id', scopedPoliticianId);
-        const { data, error } = await query;
-        if (!error) {
-          const campaigns = data || [];
-          return { campaigns, total: campaigns.length };
+      if (isProductionRuntime()) {
+        if (!isSupabaseConfigured) {
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Campaign persistence is not configured.',
+            {
+              code: 'DATABASE_UNAVAILABLE',
+            },
+          );
         }
-        if (isProductionRuntime()) {
-          return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign data could not be loaded from the authoritative database.', {
-            code: 'DATABASE_ERROR',
-          });
+        let binding: { authorized: boolean; effectivePoliticianId: string };
+        try {
+          binding = await resolveEffectivePoliticianId(auth);
+        } catch {
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Campaign owner profile could not be resolved.',
+            {
+              code: 'POLITICIAN_PROFILE_UNAVAILABLE',
+            },
+          );
         }
-      } catch {
-        if (isProductionRuntime()) {
-          return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign data could not be loaded from the authoritative database.', {
-            code: 'DATABASE_ERROR',
-          });
+        if (!binding.authorized) {
+          return sendApiError(
+            reply,
+            request,
+            403,
+            'Forbidden',
+            'An active campaign owner profile is required to create a campaign.',
+            {
+              code: 'POLITICIAN_PROFILE_REQUIRED',
+            },
+          );
+        }
+
+        try {
+          const { data, error } = await supabase
+            .from('campaigns')
+            .insert({
+              politician_id: binding.effectivePoliticianId,
+              name: body.name.trim(),
+              description: body.description?.trim() || '',
+              type: body.type,
+              status: 'draft',
+              state_code: body.stateCode,
+              start_date: body.startDate,
+              end_date: body.endDate,
+              total_budget_inr: body.totalBudgetINR ?? 0,
+              target_constituencies: body.targetConstituencies || [],
+              target_districts: body.targetDistricts || [],
+            })
+            .select('*, politician_portal_profiles(display_name, party)')
+            .single();
+          if (error || !data) {
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Campaign could not be saved to the authoritative database.',
+              {
+                code: 'CAMPAIGN_PERSISTENCE_FAILED',
+              },
+            );
+          }
+          return reply.code(201).send({ campaign: data });
+        } catch {
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Campaign could not be saved to the authoritative database.',
+            {
+              code: 'CAMPAIGN_PERSISTENCE_FAILED',
+            },
+          );
         }
       }
-    }
 
-    if (isProductionRuntime()) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign persistence is not configured.', {
-        code: 'DATABASE_UNAVAILABLE',
-      });
-    }
+      const campaign = {
+        id: crypto.randomUUID(),
+        politicianId: auth.userId,
+        name: body.name.trim(),
+        description: body.description?.trim() || '',
+        type: body.type,
+        status: 'draft',
+        stateCode: body.stateCode,
+        startDate: body.startDate,
+        endDate: body.endDate,
+        targetConstituencies: body.targetConstituencies || [],
+        targetDistricts: body.targetDistricts || [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      inMemoryCampaigns = [
+        campaign as unknown as (typeof inMemoryCampaigns)[number],
+        ...inMemoryCampaigns,
+      ];
+      return reply.code(201).send({ campaign });
+    },
+  );
 
-    return {
-      campaigns: [
-        {
-          id: 'c1',
-          politicianId: politicianId || 'pp1',
-          name: 'Nampally AC 2026 People Campaign',
-          description: 'Grassroots voter outreach across all 185 polling stations in Nampally.',
-          type: 'election',
-          status: 'active',
-          stateCode: 'TS',
-          targetConstituencies: [56],
-          totalBudgetINR: 500000,
-          spentBudgetINR: 145000,
-          totalBooths: 185,
-          boothsCovered: 112,
-          volunteerCount: 42,
-          impressions: 450000,
-          reach: 85000,
-          sentimentScore: 72,
-        },
-      ],
-      total: 1,
-    };
-  });
+  /** GET /api/v1/campaign/campaigns — list campaigns */
+  app.get(
+    '/api/v1/campaign/campaigns',
+    { schema: campaignsQuerySchema },
+    async (request, reply) => {
+      const { status, politicianId } = request.query as { status?: string; politicianId?: string };
+      let scopedPoliticianId = politicianId;
+
+      if (isProductionRuntime()) {
+        const auth = await resolveAuthUser(request);
+        if (!auth) {
+          return sendApiError(
+            reply,
+            request,
+            401,
+            'Unauthorized',
+            'Authentication is required to read campaign records.',
+            {
+              code: 'UNAUTHORIZED',
+            },
+          );
+        }
+        if (auth.role === 'admin') {
+          if (politicianId) {
+            const binding = await resolveEffectivePoliticianId(auth, politicianId);
+            if (!binding.authorized) {
+              return sendApiError(
+                reply,
+                request,
+                403,
+                'Forbidden',
+                'Unknown campaign owner profile.',
+                {
+                  code: 'FORBIDDEN',
+                },
+              );
+            }
+            scopedPoliticianId = binding.effectivePoliticianId;
+          }
+        } else {
+          let profileId: string | null;
+          try {
+            profileId = await findPoliticianProfileIdForUser(auth.userId);
+          } catch {
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Campaign owner profile could not be resolved.',
+              {
+                code: 'POLITICIAN_PROFILE_UNAVAILABLE',
+              },
+            );
+          }
+          if (!profileId) return { campaigns: [], total: 0 };
+          if (politicianId && politicianId !== profileId) {
+            return sendApiError(
+              reply,
+              request,
+              403,
+              'Forbidden',
+              'Cannot read another principal’s campaign records.',
+              {
+                code: 'FORBIDDEN',
+              },
+            );
+          }
+          scopedPoliticianId = profileId;
+        }
+      }
+
+      if (isSupabaseConfigured) {
+        try {
+          let query = supabase
+            .from('campaigns')
+            .select('*, politician_portal_profiles(display_name, party)');
+          if (status) query = query.eq('status', status);
+          if (scopedPoliticianId) query = query.eq('politician_id', scopedPoliticianId);
+          const { data, error } = await query;
+          if (!error) {
+            const campaigns = data || [];
+            return { campaigns, total: campaigns.length };
+          }
+          if (isProductionRuntime()) {
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Campaign data could not be loaded from the authoritative database.',
+              {
+                code: 'DATABASE_ERROR',
+              },
+            );
+          }
+        } catch {
+          if (isProductionRuntime()) {
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Campaign data could not be loaded from the authoritative database.',
+              {
+                code: 'DATABASE_ERROR',
+              },
+            );
+          }
+        }
+      }
+
+      if (isProductionRuntime()) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Campaign persistence is not configured.',
+          {
+            code: 'DATABASE_UNAVAILABLE',
+          },
+        );
+      }
+
+      return {
+        campaigns: [
+          {
+            id: 'c1',
+            politicianId: politicianId || 'pp1',
+            name: 'Nampally AC 2026 People Campaign',
+            description: 'Grassroots voter outreach across all 185 polling stations in Nampally.',
+            type: 'election',
+            status: 'active',
+            stateCode: 'TS',
+            targetConstituencies: [56],
+            totalBudgetINR: 500000,
+            spentBudgetINR: 145000,
+            totalBooths: 185,
+            boothsCovered: 112,
+            volunteerCount: 42,
+            impressions: 450000,
+            reach: 85000,
+            sentimentScore: 72,
+          },
+        ],
+        total: 1,
+      };
+    },
+  );
 
   /** GET /api/v1/campaign/ads — list persisted draft creatives for an authorized campaign */
   app.get('/api/v1/campaign/ads', { schema: campaignAdsQuerySchema }, async (request, reply) => {
     const { campaignId } = request.query as { campaignId: string };
     const auth = await resolveAuthUser(request, campaignId);
     if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication is required to read campaign ad drafts.', {
-        code: 'UNAUTHORIZED',
-      });
+      return sendApiError(
+        reply,
+        request,
+        401,
+        'Unauthorized',
+        'Authentication is required to read campaign ad drafts.',
+        {
+          code: 'UNAUTHORIZED',
+        },
+      );
     }
 
     let authority: Awaited<ReturnType<typeof verifyCampaignAuthority>>;
     try {
       authority = await verifyCampaignAuthority(auth, campaignId);
     } catch {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign access could not be verified.', {
-        code: 'CAMPAIGN_AUTHORITY_UNAVAILABLE',
-      });
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Campaign access could not be verified.',
+        {
+          code: 'CAMPAIGN_AUTHORITY_UNAVAILABLE',
+        },
+      );
     }
     if (!authority.authorized) {
       const notFound = !authority.campaign;
-      return sendApiError(reply, request, notFound ? 404 : 403, notFound ? 'Not Found' : 'Forbidden', authority.reason || 'Not authorized to read this campaign.', {
-        code: notFound ? 'CAMPAIGN_NOT_FOUND' : 'FORBIDDEN',
-      });
+      return sendApiError(
+        reply,
+        request,
+        notFound ? 404 : 403,
+        notFound ? 'Not Found' : 'Forbidden',
+        authority.reason || 'Not authorized to read this campaign.',
+        {
+          code: notFound ? 'CAMPAIGN_NOT_FOUND' : 'FORBIDDEN',
+        },
+      );
     }
 
     if (isProductionRuntime()) {
       if (!isSupabaseConfigured) {
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign ad draft storage is not configured.', {
-          code: 'DATABASE_UNAVAILABLE',
-        });
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Campaign ad draft storage is not configured.',
+          {
+            code: 'DATABASE_UNAVAILABLE',
+          },
+        );
       }
       try {
         const { data, error } = await supabase
@@ -1150,15 +1562,29 @@ export async function campaignRoutes(app: FastifyInstance) {
           .eq('status', 'draft')
           .order('created_at', { ascending: false });
         if (error || !data) {
-          return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign ad drafts could not be loaded from the authoritative database.', {
-            code: 'CAMPAIGN_AD_READ_FAILED',
-          });
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Campaign ad drafts could not be loaded from the authoritative database.',
+            {
+              code: 'CAMPAIGN_AD_READ_FAILED',
+            },
+          );
         }
         return reply.send({ ads: data, total: data.length });
       } catch {
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign ad drafts could not be loaded from the authoritative database.', {
-          code: 'CAMPAIGN_AD_READ_FAILED',
-        });
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Campaign ad drafts could not be loaded from the authoritative database.',
+          {
+            code: 'CAMPAIGN_AD_READ_FAILED',
+          },
+        );
       }
     }
 
@@ -1183,24 +1609,45 @@ export async function campaignRoutes(app: FastifyInstance) {
     };
     const auth = await resolveAuthUser(request, body.campaignId);
     if (!auth) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication is required to save a campaign ad draft.', {
-        code: 'UNAUTHORIZED',
-      });
+      return sendApiError(
+        reply,
+        request,
+        401,
+        'Unauthorized',
+        'Authentication is required to save a campaign ad draft.',
+        {
+          code: 'UNAUTHORIZED',
+        },
+      );
     }
 
     let authority: Awaited<ReturnType<typeof verifyCampaignAuthority>>;
     try {
       authority = await verifyCampaignAuthority(auth, body.campaignId);
     } catch {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign access could not be verified.', {
-        code: 'CAMPAIGN_AUTHORITY_UNAVAILABLE',
-      });
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Campaign access could not be verified.',
+        {
+          code: 'CAMPAIGN_AUTHORITY_UNAVAILABLE',
+        },
+      );
     }
     if (!authority.authorized) {
       const notFound = !authority.campaign;
-      return sendApiError(reply, request, notFound ? 404 : 403, notFound ? 'Not Found' : 'Forbidden', authority.reason || 'Not authorized to manage this campaign.', {
-        code: notFound ? 'CAMPAIGN_NOT_FOUND' : 'FORBIDDEN',
-      });
+      return sendApiError(
+        reply,
+        request,
+        notFound ? 404 : 403,
+        notFound ? 'Not Found' : 'Forbidden',
+        authority.reason || 'Not authorized to manage this campaign.',
+        {
+          code: notFound ? 'CAMPAIGN_NOT_FOUND' : 'FORBIDDEN',
+        },
+      );
     }
 
     const draft = {
@@ -1222,9 +1669,16 @@ export async function campaignRoutes(app: FastifyInstance) {
 
     if (isProductionRuntime()) {
       if (!isSupabaseConfigured) {
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign ad draft storage is not configured.', {
-          code: 'DATABASE_UNAVAILABLE',
-        });
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Campaign ad draft storage is not configured.',
+          {
+            code: 'DATABASE_UNAVAILABLE',
+          },
+        );
       }
       try {
         const { data, error } = await supabase
@@ -1233,15 +1687,29 @@ export async function campaignRoutes(app: FastifyInstance) {
           .select(CAMPAIGN_AD_DRAFT_COLUMNS)
           .single();
         if (error || !data) {
-          return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign ad draft could not be saved to the authoritative database.', {
-            code: 'CAMPAIGN_AD_WRITE_FAILED',
-          });
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Campaign ad draft could not be saved to the authoritative database.',
+            {
+              code: 'CAMPAIGN_AD_WRITE_FAILED',
+            },
+          );
         }
         return reply.code(201).send({ ad: data });
       } catch {
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign ad draft could not be saved to the authoritative database.', {
-          code: 'CAMPAIGN_AD_WRITE_FAILED',
-        });
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Campaign ad draft could not be saved to the authoritative database.',
+          {
+            code: 'CAMPAIGN_AD_WRITE_FAILED',
+          },
+        );
       }
     }
 
@@ -1261,9 +1729,16 @@ export async function campaignRoutes(app: FastifyInstance) {
     if (isProductionRuntime()) {
       const auth = await resolveAuthUser(request, campaignId);
       if (!auth) {
-        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication is required to read booth records.', {
-          code: 'UNAUTHORIZED',
-        });
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication is required to read booth records.',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
       }
       if (!campaignId) {
         return sendApiError(reply, request, 400, 'Bad Request', 'campaignId is required.', {
@@ -1272,9 +1747,16 @@ export async function campaignRoutes(app: FastifyInstance) {
       }
       const authority = await verifyCampaignAuthority(auth, campaignId);
       if (!authority.authorized) {
-        return sendApiError(reply, request, 403, 'Forbidden', authority.reason || 'Not authorized for this campaign.', {
-          code: 'FORBIDDEN',
-        });
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          authority.reason || 'Not authorized for this campaign.',
+          {
+            code: 'FORBIDDEN',
+          },
+        );
       }
     }
 
@@ -1294,23 +1776,44 @@ export async function campaignRoutes(app: FastifyInstance) {
           };
         }
         if (isProductionRuntime()) {
-          return sendApiError(reply, request, 503, 'Service Unavailable', 'Booth data could not be loaded from the authoritative database.', {
-            code: 'DATABASE_ERROR',
-          });
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Booth data could not be loaded from the authoritative database.',
+            {
+              code: 'DATABASE_ERROR',
+            },
+          );
         }
       } catch {
         if (isProductionRuntime()) {
-          return sendApiError(reply, request, 503, 'Service Unavailable', 'Booth data could not be loaded from the authoritative database.', {
-            code: 'DATABASE_ERROR',
-          });
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Booth data could not be loaded from the authoritative database.',
+            {
+              code: 'DATABASE_ERROR',
+            },
+          );
         }
       }
     }
 
     if (isProductionRuntime()) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign persistence is not configured.', {
-        code: 'DATABASE_UNAVAILABLE',
-      });
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Campaign persistence is not configured.',
+        {
+          code: 'DATABASE_UNAVAILABLE',
+        },
+      );
     }
 
     let filtered = inMemoryBooths;
@@ -1399,7 +1902,10 @@ export async function campaignRoutes(app: FastifyInstance) {
           supportEstimate: 'support_estimate',
         };
         const databaseUpdates = Object.fromEntries(
-          Object.entries(updates).map(([field, value]) => [databaseColumnByField[field] || field, value]),
+          Object.entries(updates).map(([field, value]) => [
+            databaseColumnByField[field] || field,
+            value,
+          ]),
         );
         delete databaseUpdates.isKshetraUser;
         if (typeof updates.agentPhone === 'string') {
@@ -1411,9 +1917,16 @@ export async function campaignRoutes(app: FastifyInstance) {
               .eq('phone', cleanedPhone)
               .maybeSingle();
             if (agentLookupError) {
-              return sendApiError(reply, request, 503, 'Service Unavailable', 'In-charge account registration could not be verified.', {
-                code: 'ACCOUNT_LOOKUP_FAILED',
-              });
+              return sendApiError(
+                reply,
+                request,
+                503,
+                'Service Unavailable',
+                'In-charge account registration could not be verified.',
+                {
+                  code: 'ACCOUNT_LOOKUP_FAILED',
+                },
+              );
             }
             databaseUpdates.agent_id = agentProfile?.user_id || null;
           } else {
@@ -1473,63 +1986,312 @@ export async function campaignRoutes(app: FastifyInstance) {
   });
 
   /** GET /api/v1/campaign/volunteers — list ground cadre */
-  app.get('/api/v1/campaign/volunteers', { schema: volunteersQuerySchema }, async (request, reply) => {
-    const { campaignId, role } = request.query as { campaignId?: string; role?: string };
+  app.get(
+    '/api/v1/campaign/volunteers',
+    { schema: volunteersQuerySchema },
+    async (request, reply) => {
+      const { campaignId, role } = request.query as { campaignId?: string; role?: string };
 
-    if (isProductionRuntime()) {
-      const auth = await resolveAuthUser(request, campaignId);
+      if (isProductionRuntime()) {
+        const auth = await resolveAuthUser(request, campaignId);
+        if (!auth) {
+          return sendApiError(
+            reply,
+            request,
+            401,
+            'Unauthorized',
+            'Authentication is required to read campaign volunteer records.',
+            {
+              code: 'UNAUTHORIZED',
+            },
+          );
+        }
+        if (!campaignId) {
+          return sendApiError(reply, request, 400, 'Bad Request', 'campaignId is required.', {
+            code: 'VALIDATION_ERROR',
+          });
+        }
+        const authority = await verifyCampaignAuthority(auth, campaignId);
+        if (!authority.authorized) {
+          return sendApiError(
+            reply,
+            request,
+            403,
+            'Forbidden',
+            authority.reason || 'Not authorized for this campaign.',
+            {
+              code: 'FORBIDDEN',
+            },
+          );
+        }
+      }
+
+      if (isSupabaseConfigured) {
+        try {
+          let query = supabase.from('campaign_volunteers').select('*');
+          if (campaignId) query = query.eq('campaign_id', campaignId);
+          if (role) query = query.eq('role', role);
+          const { data, error } = await query;
+          if (!error) {
+            const rows = data || [];
+            let workMetrics: Map<string, VolunteerWorkMetrics> | null = null;
+            if (campaignId) {
+              try {
+                workMetrics = await loadVolunteerWorkMetrics(campaignId);
+              } catch {
+                workMetrics = null;
+              }
+            }
+            const volunteers = rows.map((volunteer: Record<string, any>) => {
+              const metrics = workMetrics?.get(String(volunteer.id));
+              return {
+                ...volunteer,
+                // Legacy counters have no writer in this app; only expose totals
+                // derived from completed, persisted canvassing sessions.
+                tasks_completed: workMetrics === null ? null : (metrics?.tasksCompleted ?? 0),
+                hours_logged: workMetrics === null ? null : metrics ? metrics.hoursLogged : 0,
+                // There is no review/rating workflow or persisted rating source.
+                rating: null,
+              };
+            });
+            return {
+              volunteers,
+              total: volunteers.length,
+              workLogMetricsAvailable: workMetrics !== null,
+              volunteerRatingsAvailable: false,
+            };
+          }
+          if (isProductionRuntime()) {
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Campaign volunteer data could not be loaded from the authoritative database.',
+              {
+                code: 'DATABASE_ERROR',
+              },
+            );
+          }
+        } catch {
+          if (isProductionRuntime()) {
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Campaign volunteer data could not be loaded from the authoritative database.',
+              {
+                code: 'DATABASE_ERROR',
+              },
+            );
+          }
+        }
+      }
+
+      if (isProductionRuntime()) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Campaign persistence is not configured.',
+          {
+            code: 'DATABASE_UNAVAILABLE',
+          },
+        );
+      }
+
+      let filtered = inMemoryVolunteers;
+      if (role) filtered = filtered.filter((v) => v.role === role);
+      return { volunteers: filtered, total: filtered.length };
+    },
+  );
+
+  /** POST /api/v1/campaign/canvassing-records — persist a completed field session */
+  app.post(
+    '/api/v1/campaign/canvassing-records',
+    { schema: canvassingRecordCreateSchema },
+    async (request, reply) => {
+      const body = request.body as {
+        campaignId: string;
+        volunteerId: string;
+        boothId: string;
+        startTime: string;
+        endTime: string;
+        householdsVisited: number;
+        notes?: string;
+      };
+      const startMs = Date.parse(body.startTime);
+      const endMs = Date.parse(body.endTime);
+      const nowMs = Date.now();
+      if (
+        !Number.isFinite(startMs) ||
+        !Number.isFinite(endMs) ||
+        endMs <= startMs ||
+        endMs - startMs > MAX_WORK_SESSION_DURATION_MS ||
+        endMs > nowMs + MAX_WORK_LOG_CLOCK_SKEW_MS
+      ) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'The work session must have valid times, last no more than 24 hours, and not end in the future.',
+          {
+            code: 'INVALID_WORK_SESSION',
+          },
+        );
+      }
+
+      const auth = await resolveAuthUser(request, body.campaignId);
       if (!auth) {
-        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication is required to read campaign volunteer records.', {
-          code: 'UNAUTHORIZED',
-        });
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication is required to record campaign work.',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
       }
-      if (!campaignId) {
-        return sendApiError(reply, request, 400, 'Bad Request', 'campaignId is required.', {
-          code: 'VALIDATION_ERROR',
-        });
-      }
-      const authority = await verifyCampaignAuthority(auth, campaignId);
+      const authority = await verifyCampaignAuthority(auth, body.campaignId);
       if (!authority.authorized) {
-        return sendApiError(reply, request, 403, 'Forbidden', authority.reason || 'Not authorized for this campaign.', {
-          code: 'FORBIDDEN',
-        });
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          authority.reason || 'Not authorized to record work for this campaign.',
+          {
+            code: 'FORBIDDEN',
+          },
+        );
       }
-    }
+      if (!isSupabaseConfigured) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Campaign work-log persistence is not configured.',
+          {
+            code: 'WORK_LOG_UNAVAILABLE',
+          },
+        );
+      }
 
-    if (isSupabaseConfigured) {
       try {
-        let query = supabase.from('campaign_volunteers').select('*');
-        if (campaignId) query = query.eq('campaign_id', campaignId);
-        if (role) query = query.eq('role', role);
-        const { data, error } = await query;
-        if (!error) {
-          const volunteers = data || [];
-          return { volunteers, total: volunteers.length };
+        const { data: volunteer, error: volunteerError } = await supabase
+          .from('campaign_volunteers')
+          .select('id')
+          .eq('id', body.volunteerId)
+          .eq('campaign_id', body.campaignId)
+          .maybeSingle();
+        if (volunteerError) {
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'The campaign worker could not be verified.',
+            {
+              code: 'WORKER_LOOKUP_FAILED',
+            },
+          );
         }
-        if (isProductionRuntime()) {
-          return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign volunteer data could not be loaded from the authoritative database.', {
-            code: 'DATABASE_ERROR',
-          });
+        if (!volunteer) {
+          return sendApiError(
+            reply,
+            request,
+            404,
+            'Not Found',
+            'The selected worker is not part of this campaign.',
+            {
+              code: 'WORKER_NOT_FOUND',
+            },
+          );
         }
+
+        const { data: booth, error: boothError } = await supabase
+          .from('booth_strategies')
+          .select('booth_id,booth_name,ward_no,constituency_ac_no')
+          .eq('campaign_id', body.campaignId)
+          .eq('booth_id', body.boothId)
+          .maybeSingle();
+        if (boothError) {
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'The campaign booth could not be verified.',
+            {
+              code: 'BOOTH_LOOKUP_FAILED',
+            },
+          );
+        }
+        if (!booth) {
+          return sendApiError(
+            reply,
+            request,
+            404,
+            'Not Found',
+            'The selected booth is not part of this campaign.',
+            {
+              code: 'BOOTH_NOT_FOUND',
+            },
+          );
+        }
+
+        const { data: record, error: insertError } = await supabase
+          .from('canvassing_records')
+          .insert({
+            campaign_id: body.campaignId,
+            volunteer_id: body.volunteerId,
+            booth_id: booth.booth_id,
+            booth_name: booth.booth_name || '',
+            ward_no: booth.ward_no ?? null,
+            constituency_ac_no: booth.constituency_ac_no,
+            status: 'completed',
+            households_visited: body.householdsVisited,
+            notes: body.notes?.trim() || '',
+            reported_by_user_id: auth.userId,
+            start_time: new Date(startMs).toISOString(),
+            end_time: new Date(endMs).toISOString(),
+          })
+          .select(CANVASSING_RECORD_COLUMNS)
+          .single();
+        if (insertError || !record) {
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'The completed work session could not be saved.',
+            {
+              code: 'WORK_LOG_SAVE_FAILED',
+            },
+          );
+        }
+
+        return reply.code(201).send({ success: true, record });
       } catch {
-        if (isProductionRuntime()) {
-          return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign volunteer data could not be loaded from the authoritative database.', {
-            code: 'DATABASE_ERROR',
-          });
-        }
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'The completed work session could not be saved.',
+          {
+            code: 'WORK_LOG_SAVE_FAILED',
+          },
+        );
       }
-    }
-
-    if (isProductionRuntime()) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign persistence is not configured.', {
-        code: 'DATABASE_UNAVAILABLE',
-      });
-    }
-
-    let filtered = inMemoryVolunteers;
-    if (role) filtered = filtered.filter((v) => v.role === role);
-    return { volunteers: filtered, total: filtered.length };
-  });
+    },
+  );
 
   /** POST /api/v1/campaign/volunteers — add new cadre member */
   app.post(
@@ -1544,9 +2306,16 @@ export async function campaignRoutes(app: FastifyInstance) {
       }
 
       if (isProductionRuntime() && !body.campaignId) {
-        return sendApiError(reply, request, 400, 'Bad Request', 'campaignId is required for campaign cadre registration.', {
-          code: 'VALIDATION_ERROR',
-        });
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'campaignId is required for campaign cadre registration.',
+          {
+            code: 'VALIDATION_ERROR',
+          },
+        );
       }
       const campaignId = body.campaignId || 'c1';
 
@@ -1621,9 +2390,16 @@ export async function campaignRoutes(app: FastifyInstance) {
       // (the authenticated caller) as the worker account by default.
       const cleanedPhone = normalizePhoneNumber(body.phone);
       if (cleanedPhone.length !== 10) {
-        return sendApiError(reply, request, 400, 'Bad Request', 'A valid 10-digit phone number is required.', {
-          code: 'VALIDATION_ERROR',
-        });
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'A valid 10-digit phone number is required.',
+          {
+            code: 'VALIDATION_ERROR',
+          },
+        );
       }
 
       if (!isSupabaseConfigured) {
@@ -1646,14 +2422,28 @@ export async function campaignRoutes(app: FastifyInstance) {
           .eq('phone', cleanedPhone)
           .maybeSingle();
         if (profileError) {
-          return sendApiError(reply, request, 503, 'Service Unavailable', 'Worker account registration could not be verified.', {
-            code: 'ACCOUNT_LOOKUP_FAILED',
-          });
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Worker account registration could not be verified.',
+            {
+              code: 'ACCOUNT_LOOKUP_FAILED',
+            },
+          );
         }
         if (body.isKshetraUser === true && !userProfile) {
-          return sendApiError(reply, request, 403, 'Forbidden', 'The supplied phone number is not linked to a registered account.', {
-            code: 'PRIVILEGE_SPOOFING_REJECTED',
-          });
+          return sendApiError(
+            reply,
+            request,
+            403,
+            'Forbidden',
+            'The supplied phone number is not linked to a registered account.',
+            {
+              code: 'PRIVILEGE_SPOOFING_REJECTED',
+            },
+          );
         }
 
         const { data: existingContact, error: contactLookupError } = await supabase
@@ -1663,14 +2453,28 @@ export async function campaignRoutes(app: FastifyInstance) {
           .eq('phone', cleanedPhone)
           .maybeSingle();
         if (contactLookupError) {
-          return sendApiError(reply, request, 503, 'Service Unavailable', 'Existing campaign contacts could not be checked.', {
-            code: 'CONTACT_LOOKUP_FAILED',
-          });
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Existing campaign contacts could not be checked.',
+            {
+              code: 'CONTACT_LOOKUP_FAILED',
+            },
+          );
         }
         if (existingContact) {
-          return sendApiError(reply, request, 409, 'Conflict', 'This phone number is already registered on the campaign team.', {
-            code: 'DUPLICATE_VOLUNTEER',
-          });
+          return sendApiError(
+            reply,
+            request,
+            409,
+            'Conflict',
+            'This phone number is already registered on the campaign team.',
+            {
+              code: 'DUPLICATE_VOLUNTEER',
+            },
+          );
         }
 
         const { data, error } = await supabase
@@ -1690,9 +2494,16 @@ export async function campaignRoutes(app: FastifyInstance) {
 
         if (error || !data) {
           if (error?.code === '23505') {
-            return sendApiError(reply, request, 409, 'Conflict', 'This account is already registered on the campaign team.', {
-              code: 'DUPLICATE_VOLUNTEER',
-            });
+            return sendApiError(
+              reply,
+              request,
+              409,
+              'Conflict',
+              'This account is already registered on the campaign team.',
+              {
+                code: 'DUPLICATE_VOLUNTEER',
+              },
+            );
           }
           return sendApiError(
             reply,
@@ -1762,9 +2573,16 @@ export async function campaignRoutes(app: FastifyInstance) {
       return { status: 'ok', wallet };
     } catch (error: any) {
       if (isProductionRuntime()) {
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Campaign wallet data is unavailable from the durable ledger.', {
-          code: 'WALLET_UNAVAILABLE',
-        });
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Campaign wallet data is unavailable from the durable ledger.',
+          {
+            code: 'WALLET_UNAVAILABLE',
+          },
+        );
       }
       throw error;
     }
@@ -1809,9 +2627,16 @@ export async function campaignRoutes(app: FastifyInstance) {
         return { status: 'ok', transactions, total: transactions.length };
       } catch (error: any) {
         if (isProductionRuntime()) {
-          return sendApiError(reply, request, 503, 'Service Unavailable', 'Wallet transactions are unavailable from the durable ledger.', {
-            code: 'WALLET_UNAVAILABLE',
-          });
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Wallet transactions are unavailable from the durable ledger.',
+            {
+              code: 'WALLET_UNAVAILABLE',
+            },
+          );
         }
         throw error;
       }
@@ -1853,9 +2678,16 @@ export async function campaignRoutes(app: FastifyInstance) {
       }
 
       if (isProductionRuntime() && !isSupabaseConfigured) {
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Durable wallet storage is required before recharge orders can be created.', {
-          code: 'WALLET_PERSISTENCE_UNAVAILABLE',
-        });
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Durable wallet storage is required before recharge orders can be created.',
+          {
+            code: 'WALLET_PERSISTENCE_UNAVAILABLE',
+          },
+        );
       }
 
       const amountINR = body.amountINR || 1000;
@@ -1922,13 +2754,14 @@ export async function campaignRoutes(app: FastifyInstance) {
       } catch (err: any) {
         const providerError = err instanceof PaymentProviderError ? err : null;
         const statusCode = providerError?.statusCode ?? 500;
-        const statusText = statusCode === 503
-          ? 'Service Unavailable'
-          : statusCode === 502
-            ? 'Bad Gateway'
-            : statusCode === 400
-              ? 'Bad Request'
-              : 'Internal Server Error';
+        const statusText =
+          statusCode === 503
+            ? 'Service Unavailable'
+            : statusCode === 502
+              ? 'Bad Gateway'
+              : statusCode === 400
+                ? 'Bad Request'
+                : 'Internal Server Error';
         return sendApiError(
           reply,
           request,
@@ -2000,15 +2833,21 @@ export async function campaignRoutes(app: FastifyInstance) {
       }
 
       if (isProductionRuntime() && !isSupabaseConfigured) {
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Durable wallet storage is required before payment verification can be processed.', {
-          code: 'WALLET_PERSISTENCE_UNAVAILABLE',
-        });
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Durable wallet storage is required before payment verification can be processed.',
+          {
+            code: 'WALLET_PERSISTENCE_UNAVAILABLE',
+          },
+        );
       }
 
       // Check test bypass header for test suites that explicitly simulate mock payments
       const testBypassRequested = request.headers['x-test-bypass-signature'] === 'true';
-      const isExplicitTestBypass =
-        isIsolatedTestRuntime() && testBypassRequested;
+      const isExplicitTestBypass = isIsolatedTestRuntime() && testBypassRequested;
       if (testBypassRequested && !isExplicitTestBypass) {
         return sendApiError(
           reply,
@@ -2133,10 +2972,7 @@ export async function campaignRoutes(app: FastifyInstance) {
       const orderPoliticianId = dbOrder?.politician_id || memOrder?.politicianId;
       const orderAmount = dbOrder ? Number(dbOrder.amount_inr) : (memOrder?.amountINR ?? 0);
 
-      if (
-        !isExplicitTestBypass &&
-        body.razorpay_order_id !== effectiveOrderId
-      ) {
+      if (!isExplicitTestBypass && body.razorpay_order_id !== effectiveOrderId) {
         return sendApiError(
           reply,
           request,
@@ -2200,11 +3036,12 @@ export async function campaignRoutes(app: FastifyInstance) {
         } catch (err: any) {
           if (err instanceof PaymentProviderError) {
             const statusCode = err.statusCode;
-            const statusText = statusCode === 503
-              ? 'Service Unavailable'
-              : statusCode === 502
-                ? 'Bad Gateway'
-                : 'Bad Request';
+            const statusText =
+              statusCode === 503
+                ? 'Service Unavailable'
+                : statusCode === 502
+                  ? 'Bad Gateway'
+                  : 'Bad Request';
             // Fail closed: if a signature verification was requested or supplied, but secret is missing, do not credit!
             return sendApiError(
               reply,
