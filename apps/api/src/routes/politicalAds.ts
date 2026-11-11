@@ -105,7 +105,14 @@ const libraryAdsQuerySchema = {
 export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
   app.addHook('preHandler', async (request, reply) => {
     if (isProductionLikeRuntime()) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'Political advertising storage, compliance review, and delivery are not connected', { code: 'POLITICAL_AD_SERVICE_UNAVAILABLE' });
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Political advertising storage, compliance review, and delivery are not connected',
+        { code: 'POLITICAL_AD_SERVICE_UNAVAILABLE' },
+      );
     }
   });
 
@@ -125,11 +132,7 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
       }
     }
 
-    if (
-      !userId &&
-      !isProductionLikeRuntime() &&
-      (request.headers['x-user-id'] as string)
-    ) {
+    if (!userId && !isProductionLikeRuntime() && (request.headers['x-user-id'] as string)) {
       userId = request.headers['x-user-id'] as string;
     }
 
@@ -163,37 +166,31 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
   // ─────────────────────────────────────────────────────────────────────────────
 
   // Create Political Ad (JOB 057)
-  app.post<{ Body: CreatePoliticalAdInput }>(
-    '/api/v1/political-ads',
-    async (request, reply) => {
-      try {
-        const ad = await adService.createPoliticalAd(request.body);
-        return reply.code(201).send(ad);
-      } catch (err: any) {
-        return sendApiError(reply, request, 400, 'BadRequest', err.message);
-      }
-    },
-  );
+  app.post<{ Body: CreatePoliticalAdInput }>('/api/v1/political-ads', async (request, reply) => {
+    try {
+      const ad = await adService.createPoliticalAd(request.body);
+      return reply.code(201).send(ad);
+    } catch (err: any) {
+      return sendApiError(reply, request, 400, 'BadRequest', err.message);
+    }
+  });
 
   // Review Political Ad (Adaptive Gating: Fast-track vs Strict MCMC)
   app.post<{
     Params: { id: string };
     Body: { decision: 'approved' | 'rejected'; reviewerId?: string };
-  }>(
-    '/api/v1/political-ads/:id/review',
-    async (request, reply) => {
-      try {
-        const ad = await adService.reviewPoliticalAd(
-          request.params.id,
-          request.body.decision,
-          request.body.reviewerId,
-        );
-        return reply.send(ad);
-      } catch (err: any) {
-        return sendApiError(reply, request, 400, 'BadRequest', err.message);
-      }
-    },
-  );
+  }>('/api/v1/political-ads/:id/review', async (request, reply) => {
+    try {
+      const ad = await adService.reviewPoliticalAd(
+        request.params.id,
+        request.body.decision,
+        request.body.reviewerId,
+      );
+      return reply.send(ad);
+    } catch (err: any) {
+      return sendApiError(reply, request, 400, 'BadRequest', err.message);
+    }
+  });
 
   // Public Ad Transparency Ledger (Section 127A RPA 1951)
   app.get<{
@@ -202,39 +199,30 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
       category?: PoliticalAdCategory;
       sponsorName?: string;
     };
-  }>(
-    '/api/v1/political-ads/transparency',
-    async (request, reply) => {
-      try {
-        const ads = await adService.getPublicTransparencyLedger(request.query);
-        return reply.send({ ads, total: ads.length });
-      } catch (err: any) {
-        return sendApiError(reply, request, 500, 'InternalError', err.message);
-      }
-    },
-  );
+  }>('/api/v1/political-ads/transparency', async (request, reply) => {
+    try {
+      const ads = await adService.getPublicTransparencyLedger(request.query);
+      return reply.send({ ads, total: ads.length });
+    } catch (err: any) {
+      return sendApiError(reply, request, 500, 'InternalError', err.message);
+    }
+  });
 
   // Set Electoral Window State for AC (e.g. ROUTINE_CIVIC vs MCC_ACTIVE)
   app.post<{
     Params: { constituencyId: string };
     Body: { state: ElectoralWindowState };
-  }>(
-    '/api/v1/political-ads/electoral-state/:constituencyId',
-    async (request, reply) => {
-      try {
-        adService.setConstituencyElectoralState(
-          request.params.constituencyId,
-          request.body.state,
-        );
-        return reply.send({
-          constituencyId: request.params.constituencyId.toUpperCase(),
-          electoralState: request.body.state,
-        });
-      } catch (err: any) {
-        return sendApiError(reply, request, 400, 'BadRequest', err.message);
-      }
-    },
-  );
+  }>('/api/v1/political-ads/electoral-state/:constituencyId', async (request, reply) => {
+    try {
+      adService.setConstituencyElectoralState(request.params.constituencyId, request.body.state);
+      return reply.send({
+        constituencyId: request.params.constituencyId.toUpperCase(),
+        electoralState: request.body.state,
+      });
+    } catch (err: any) {
+      return sendApiError(reply, request, 400, 'BadRequest', err.message);
+    }
+  });
 
   // ─────────────────────────────────────────────────────────────────────────────
   // LEGACY ENDPOINTS (FOR COMPLETE BACKWARD COMPATIBILITY)
@@ -318,47 +306,44 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
   // GET /api/v1/political-ads/active
   app.get<{
     Querystring: { state?: string; constituency?: string; limit?: number };
-  }>(
-    '/api/v1/political-ads/active',
-    { schema: activeAdsQuerySchema },
-    async (request, reply) => {
-      const { state, constituency, limit = 20 } = request.query;
-      let ads = MEMORY_ADS.filter((a) => a.status === 'active');
-      if (state) {
-        ads = ads.filter((a) => a.target_scope === 'state' && a.target_value === state);
-      }
-      if (constituency) {
-        ads = ads.filter((a) => a.target_scope === 'constituency' && a.target_value === constituency);
-      }
-      return reply.send({ ads: ads.slice(0, limit) });
-    },
-  );
+  }>('/api/v1/political-ads/active', { schema: activeAdsQuerySchema }, async (request, reply) => {
+    const { state, constituency, limit = 20 } = request.query;
+    let ads = MEMORY_ADS.filter((a) => a.status === 'active');
+    if (state) {
+      ads = ads.filter((a) => a.target_scope === 'state' && a.target_value === state);
+    }
+    if (constituency) {
+      ads = ads.filter((a) => a.target_scope === 'constituency' && a.target_value === constituency);
+    }
+    return reply.send({ ads: ads.slice(0, limit) });
+  });
 
   // GET /api/v1/political-ads/library
   app.get<{
     Querystring: { search?: string; state?: string; page?: number; limit?: number };
-  }>(
-    '/api/v1/political-ads/library',
-    { schema: libraryAdsQuerySchema },
-    async (request, reply) => {
-      const { search, state, page = 1, limit = 20 } = request.query;
-      let ads = MEMORY_ADS.filter((a) => a.status === 'active' || a.status === 'certified' || a.status === 'ended');
-      if (search) {
-        const s = search.toLowerCase();
-        ads = ads.filter((a) => a.mcmc_certificate_id.toLowerCase().includes(s) || a.page_id.toLowerCase().includes(s));
-      }
-      if (state) {
-        ads = ads.filter((a) => a.target_scope === 'state' && a.target_value === state);
-      }
-      const offset = (page - 1) * limit;
-      return reply.send({
-        ads: ads.slice(offset, offset + limit),
-        total: ads.length,
-        page,
-        limit,
-      });
-    },
-  );
+  }>('/api/v1/political-ads/library', { schema: libraryAdsQuerySchema }, async (request, reply) => {
+    const { search, state, page = 1, limit = 20 } = request.query;
+    let ads = MEMORY_ADS.filter(
+      (a) => a.status === 'active' || a.status === 'certified' || a.status === 'ended',
+    );
+    if (search) {
+      const s = search.toLowerCase();
+      ads = ads.filter(
+        (a) =>
+          a.mcmc_certificate_id.toLowerCase().includes(s) || a.page_id.toLowerCase().includes(s),
+      );
+    }
+    if (state) {
+      ads = ads.filter((a) => a.target_scope === 'state' && a.target_value === state);
+    }
+    const offset = (page - 1) * limit;
+    return reply.send({
+      ads: ads.slice(offset, offset + limit),
+      total: ads.length,
+      page,
+      limit,
+    });
+  });
 
   // GET /political-ads/library/view (Public HTML View)
   app.get('/political-ads/library/view', async (_request, reply) => {

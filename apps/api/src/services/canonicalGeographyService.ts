@@ -680,7 +680,9 @@ export class CanonicalGeographyService {
     try {
       const { data, error } = await supabase
         .from('constituencies')
-        .select('id, ac_no, name, state_code, district, reservation_status, current_party, current_mla')
+        .select(
+          'id, ac_no, name, state_code, district, reservation_status, current_party, current_mla',
+        )
         .eq('state_code', code)
         .eq('ac_no', acNo)
         .maybeSingle();
@@ -721,7 +723,9 @@ export class CanonicalGeographyService {
     try {
       const { data, error } = await supabase
         .from('constituencies')
-        .select('id, ac_no, name, state_code, district, reservation_status, current_party, current_mla')
+        .select(
+          'id, ac_no, name, state_code, district, reservation_status, current_party, current_mla',
+        )
         .eq('state_code', code)
         .order('ac_no');
 
@@ -817,7 +821,9 @@ export class CanonicalGeographyService {
         // Query Polling Booths
         const boothRes = await supabase
           .from('polling_booths')
-          .select('id, internal_id, booth_number, booth_name, polling_station_name, total_voters, panchayat_id, ulb_ward_internal_id, gp_ward_internal_id')
+          .select(
+            'id, internal_id, booth_number, booth_name, polling_station_name, total_voters, panchayat_id, ulb_ward_internal_id, gp_ward_internal_id',
+          )
           .eq('constituency_id', brief.id);
         if (boothRes.data && Array.isArray(boothRes.data)) {
           booths = boothRes.data.map((b: any) => ({
@@ -827,7 +833,11 @@ export class CanonicalGeographyService {
             boothName: b.booth_name,
             pollingStationName: b.polling_station_name,
             totalVoters: b.total_voters || 0,
-            localBodyType: b.ulb_ward_internal_id ? 'ulb' : b.panchayat_id ? 'gram_panchayat' : 'unassigned',
+            localBodyType: b.ulb_ward_internal_id
+              ? 'ulb'
+              : b.panchayat_id
+                ? 'gram_panchayat'
+                : 'unassigned',
             panchayatId: b.panchayat_id,
             ulbWardId: b.ulb_ward_internal_id,
             gpWardId: b.gp_ward_internal_id,
@@ -840,7 +850,8 @@ export class CanonicalGeographyService {
 
     // Default canonical hierarchy pilot for known assembly constituencies when DB is offline or empty
     if (ulbs.length === 0 && gps.length === 0 && booths.length === 0) {
-      if (acNo === 4) { // Mancherial
+      if (acNo === 4) {
+        // Mancherial
         ulbs = [
           {
             id: 'TS-ULB-803420',
@@ -873,7 +884,8 @@ export class CanonicalGeographyService {
             ulbWardId: '00000000-0000-0000-0000-000000040101',
           },
         ];
-      } else if (acNo === 72) { // Kodangal
+      } else if (acNo === 72) {
+        // Kodangal
         gps = [
           {
             id: 'TS-GP-210001',
@@ -933,7 +945,9 @@ export class CanonicalGeographyService {
     const { lat, lng } = coords;
 
     if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-      throw new Error('INVALID_COORDINATES: Latitude must be in [-90, 90] and Longitude in [-180, 180]');
+      throw new Error(
+        'INVALID_COORDINATES: Latitude must be in [-90, 90] and Longitude in [-180, 180]',
+      );
     }
 
     // 1. Query PostGIS via Supabase when configured
@@ -969,7 +983,10 @@ export class CanonicalGeographyService {
 
     // 2. Point-in-Polygon scan over local authoritative GeoJSON if available
     try {
-      const geojsonPath = path.resolve(__dirname, '../../../../data/geo/telangana-assembly.geojson');
+      const geojsonPath = path.resolve(
+        __dirname,
+        '../../../../data/geo/telangana-assembly.geojson',
+      );
       if (fs.existsSync(geojsonPath)) {
         const geojson = JSON.parse(fs.readFileSync(geojsonPath, 'utf8'));
         const found = findConstituencyAtPoint(lng, lat, geojson);
@@ -999,9 +1016,9 @@ export class CanonicalGeographyService {
       { name: 'Mancherial', lat: 18.8714, lng: 79.4637, stateCode: 'TS', acNo: 4 },
       { name: 'Charminar', lat: 17.3616, lng: 78.4747, stateCode: 'TS', acNo: 66 },
       { name: 'Secunderabad', lat: 17.4399, lng: 78.4983, stateCode: 'TS', acNo: 70 },
-      { name: 'Secunderabad Cantonment', lat: 17.4800, lng: 78.4900, stateCode: 'TS', acNo: 71 },
+      { name: 'Secunderabad Cantonment', lat: 17.48, lng: 78.49, stateCode: 'TS', acNo: 71 },
       { name: 'Jubilee Hills', lat: 17.4319, lng: 78.4074, stateCode: 'TS', acNo: 61 },
-      { name: 'Nampally', lat: 17.3850, lng: 78.4710, stateCode: 'TS', acNo: 63 },
+      { name: 'Nampally', lat: 17.385, lng: 78.471, stateCode: 'TS', acNo: 63 },
     ];
 
     for (const lm of landmarks) {

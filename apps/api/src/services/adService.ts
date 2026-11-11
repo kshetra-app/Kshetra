@@ -26,7 +26,8 @@ import type {
 } from '@kshetra/shared';
 
 // Cryptographic Secret for ViewToken Generation & Verification
-const VIEW_TOKEN_SECRET = process.env.AD_VIEW_TOKEN_SECRET || 'poligram-ad-telemetry-secret-key-2026';
+const VIEW_TOKEN_SECRET =
+  process.env.AD_VIEW_TOKEN_SECRET || 'poligram-ad-telemetry-secret-key-2026';
 
 // In-Memory Storage for High-Throughput Serving & Standalone Test Resilience
 const MEMORY_POLITICAL_ADS: Map<string, PoliticalAdDTO> = new Map();
@@ -40,17 +41,127 @@ const RECENT_CLICKS: Map<string, number> = new Map(); // sessionHash -> lastClic
 // Initialize Default Pricing Configurations (Ratified DEC-186)
 function initDefaultPricing() {
   const configs: Array<Omit<AdPricingConfigDTO, 'id'>> = [
-    { pricingModel: 'cpm', placementSlot: 'feed_inline', adType: 'commercial', tier: 'tier_1_metro', baseRateInr: 150, seasonalMultiplier: 1.0, effectiveRateInr: 150, minBudgetInr: 500, isActive: true },
-    { pricingModel: 'cpm', placementSlot: 'feed_inline', adType: 'commercial', tier: 'tier_2_urban', baseRateInr: 100, seasonalMultiplier: 1.0, effectiveRateInr: 100, minBudgetInr: 500, isActive: true },
-    { pricingModel: 'cpm', placementSlot: 'feed_inline', adType: 'commercial', tier: 'tier_3_rural', baseRateInr: 75, seasonalMultiplier: 1.0, effectiveRateInr: 75, minBudgetInr: 500, isActive: true },
-    { pricingModel: 'cpc', placementSlot: 'feed_inline', adType: 'commercial', tier: 'tier_1_metro', baseRateInr: 5.0, seasonalMultiplier: 1.0, effectiveRateInr: 5.0, minBudgetInr: 500, isActive: true },
-    { pricingModel: 'cpc', placementSlot: 'feed_inline', adType: 'commercial', tier: 'tier_2_urban', baseRateInr: 3.5, seasonalMultiplier: 1.0, effectiveRateInr: 3.5, minBudgetInr: 500, isActive: true },
-    { pricingModel: 'cpc', placementSlot: 'feed_inline', adType: 'commercial', tier: 'tier_3_rural', baseRateInr: 2.5, seasonalMultiplier: 1.0, effectiveRateInr: 2.5, minBudgetInr: 500, isActive: true },
-    { pricingModel: 'fixed_daily_flight', placementSlot: 'constituency_banner', adType: 'commercial', tier: 'tier_1_metro', baseRateInr: 1500, seasonalMultiplier: 1.0, effectiveRateInr: 1500, minBudgetInr: 1500, isActive: true },
-    { pricingModel: 'fixed_daily_flight', placementSlot: 'constituency_banner', adType: 'commercial', tier: 'tier_2_urban', baseRateInr: 1000, seasonalMultiplier: 1.0, effectiveRateInr: 1000, minBudgetInr: 1000, isActive: true },
-    { pricingModel: 'fixed_daily_flight', placementSlot: 'constituency_banner', adType: 'commercial', tier: 'tier_3_rural', baseRateInr: 750, seasonalMultiplier: 1.0, effectiveRateInr: 750, minBudgetInr: 750, isActive: true },
-    { pricingModel: 'cpm', placementSlot: 'feed_inline', adType: 'political', tier: 'tier_1_metro', baseRateInr: 200, seasonalMultiplier: 1.0, effectiveRateInr: 200, minBudgetInr: 1000, isActive: true },
-    { pricingModel: 'fixed_daily_flight', placementSlot: 'constituency_banner', adType: 'political', tier: 'tier_1_metro', baseRateInr: 3000, seasonalMultiplier: 1.0, effectiveRateInr: 3000, minBudgetInr: 3000, isActive: true },
+    {
+      pricingModel: 'cpm',
+      placementSlot: 'feed_inline',
+      adType: 'commercial',
+      tier: 'tier_1_metro',
+      baseRateInr: 150,
+      seasonalMultiplier: 1.0,
+      effectiveRateInr: 150,
+      minBudgetInr: 500,
+      isActive: true,
+    },
+    {
+      pricingModel: 'cpm',
+      placementSlot: 'feed_inline',
+      adType: 'commercial',
+      tier: 'tier_2_urban',
+      baseRateInr: 100,
+      seasonalMultiplier: 1.0,
+      effectiveRateInr: 100,
+      minBudgetInr: 500,
+      isActive: true,
+    },
+    {
+      pricingModel: 'cpm',
+      placementSlot: 'feed_inline',
+      adType: 'commercial',
+      tier: 'tier_3_rural',
+      baseRateInr: 75,
+      seasonalMultiplier: 1.0,
+      effectiveRateInr: 75,
+      minBudgetInr: 500,
+      isActive: true,
+    },
+    {
+      pricingModel: 'cpc',
+      placementSlot: 'feed_inline',
+      adType: 'commercial',
+      tier: 'tier_1_metro',
+      baseRateInr: 5.0,
+      seasonalMultiplier: 1.0,
+      effectiveRateInr: 5.0,
+      minBudgetInr: 500,
+      isActive: true,
+    },
+    {
+      pricingModel: 'cpc',
+      placementSlot: 'feed_inline',
+      adType: 'commercial',
+      tier: 'tier_2_urban',
+      baseRateInr: 3.5,
+      seasonalMultiplier: 1.0,
+      effectiveRateInr: 3.5,
+      minBudgetInr: 500,
+      isActive: true,
+    },
+    {
+      pricingModel: 'cpc',
+      placementSlot: 'feed_inline',
+      adType: 'commercial',
+      tier: 'tier_3_rural',
+      baseRateInr: 2.5,
+      seasonalMultiplier: 1.0,
+      effectiveRateInr: 2.5,
+      minBudgetInr: 500,
+      isActive: true,
+    },
+    {
+      pricingModel: 'fixed_daily_flight',
+      placementSlot: 'constituency_banner',
+      adType: 'commercial',
+      tier: 'tier_1_metro',
+      baseRateInr: 1500,
+      seasonalMultiplier: 1.0,
+      effectiveRateInr: 1500,
+      minBudgetInr: 1500,
+      isActive: true,
+    },
+    {
+      pricingModel: 'fixed_daily_flight',
+      placementSlot: 'constituency_banner',
+      adType: 'commercial',
+      tier: 'tier_2_urban',
+      baseRateInr: 1000,
+      seasonalMultiplier: 1.0,
+      effectiveRateInr: 1000,
+      minBudgetInr: 1000,
+      isActive: true,
+    },
+    {
+      pricingModel: 'fixed_daily_flight',
+      placementSlot: 'constituency_banner',
+      adType: 'commercial',
+      tier: 'tier_3_rural',
+      baseRateInr: 750,
+      seasonalMultiplier: 1.0,
+      effectiveRateInr: 750,
+      minBudgetInr: 750,
+      isActive: true,
+    },
+    {
+      pricingModel: 'cpm',
+      placementSlot: 'feed_inline',
+      adType: 'political',
+      tier: 'tier_1_metro',
+      baseRateInr: 200,
+      seasonalMultiplier: 1.0,
+      effectiveRateInr: 200,
+      minBudgetInr: 1000,
+      isActive: true,
+    },
+    {
+      pricingModel: 'fixed_daily_flight',
+      placementSlot: 'constituency_banner',
+      adType: 'political',
+      tier: 'tier_1_metro',
+      baseRateInr: 3000,
+      seasonalMultiplier: 1.0,
+      effectiveRateInr: 3000,
+      minBudgetInr: 3000,
+      isActive: true,
+    },
   ];
 
   for (const c of configs) {
@@ -177,7 +288,9 @@ export class AdService {
       // Categories 'election_campaign' and 'rally_meeting' require MCMC or Party Authorization
       if (ad.category === 'election_campaign') {
         if (!ad.mcmcCertificateId) {
-          throw new Error('Election campaign vote-solicitation ads require an ECI MCMC pre-certification number.');
+          throw new Error(
+            'Election campaign vote-solicitation ads require an ECI MCMC pre-certification number.',
+          );
         }
       }
       // Categories 'festival_wishes', 'birthday_congratulatory', 'milestone_achievement' pass fast-track
@@ -236,7 +349,9 @@ export class AdService {
   /**
    * Onboard a local business merchant account
    */
-  async createCommercialAccount(input: CreateCommercialAccountInput): Promise<CommercialAdAccountDTO> {
+  async createCommercialAccount(
+    input: CreateCommercialAccountInput,
+  ): Promise<CommercialAdAccountDTO> {
     if (!input.businessName || input.businessName.trim().length === 0) {
       throw new Error('Business name is required');
     }
@@ -338,7 +453,11 @@ export class AdService {
   generateViewToken(adId: string, userSessionHash: string): string {
     const timestamp = Date.now();
     const payload = `${adId}:${userSessionHash}:${timestamp}`;
-    const signature = crypto.createHmac('sha256', VIEW_TOKEN_SECRET).update(payload).digest('hex').slice(0, 16);
+    const signature = crypto
+      .createHmac('sha256', VIEW_TOKEN_SECRET)
+      .update(payload)
+      .digest('hex')
+      .slice(0, 16);
     return Buffer.from(`${payload}:${signature}`).toString('base64url');
   }
 
@@ -353,7 +472,11 @@ export class AdService {
 
       const [adId, sessionHash, timestampStr, signature] = parts;
       const expectedPayload = `${adId}:${sessionHash}:${timestampStr}`;
-      const expectedSignature = crypto.createHmac('sha256', VIEW_TOKEN_SECRET).update(expectedPayload).digest('hex').slice(0, 16);
+      const expectedSignature = crypto
+        .createHmac('sha256', VIEW_TOKEN_SECRET)
+        .update(expectedPayload)
+        .digest('hex')
+        .slice(0, 16);
 
       if (signature !== expectedSignature) return { valid: false };
 
@@ -395,7 +518,7 @@ export class AdService {
       const selected = commercialCandidates.sort((a, b) => {
         if (a.pricingModel === 'fixed_daily_flight') return -1;
         if (b.pricingModel === 'fixed_daily_flight') return 1;
-        return (b.totalBudgetInr - b.spentAmountInr) - (a.totalBudgetInr - a.spentAmountInr);
+        return b.totalBudgetInr - b.spentAmountInr - (a.totalBudgetInr - a.spentAmountInr);
       })[0];
 
       const viewToken = this.generateViewToken(selected.id, userSessionHash);
@@ -446,7 +569,9 @@ export class AdService {
   /**
    * JOB 059: Record Ad Impression & Telemetry
    */
-  async recordImpression(input: AdTelemetryEventInput): Promise<{ recorded: boolean; effectiveDebitInr: number }> {
+  async recordImpression(
+    input: AdTelemetryEventInput,
+  ): Promise<{ recorded: boolean; effectiveDebitInr: number }> {
     const verification = this.verifyViewToken(input.viewToken);
     if (!verification.valid || verification.adId !== input.adId) {
       throw new Error('Invalid or forged viewToken for ad impression');
@@ -490,7 +615,9 @@ export class AdService {
   /**
    * JOB 059: Record Ad Click with Anti-Fraud IVT Filter
    */
-  async recordClick(input: AdTelemetryEventInput): Promise<{ recorded: boolean; ivtFiltered: boolean; effectiveDebitInr: number }> {
+  async recordClick(
+    input: AdTelemetryEventInput,
+  ): Promise<{ recorded: boolean; ivtFiltered: boolean; effectiveDebitInr: number }> {
     const verification = this.verifyViewToken(input.viewToken);
     if (!verification.valid || verification.adId !== input.adId) {
       throw new Error('Invalid or forged viewToken for ad click');
@@ -540,7 +667,10 @@ export class AdService {
   /**
    * Recharge Wallet (Prepaid Credit)
    */
-  async rechargeCommercialWallet(accountId: string, amountInr: number): Promise<CommercialAdAccountDTO> {
+  async rechargeCommercialWallet(
+    accountId: string,
+    amountInr: number,
+  ): Promise<CommercialAdAccountDTO> {
     if (amountInr <= 0) {
       throw new Error('Recharge amount must be positive');
     }
@@ -626,7 +756,8 @@ export class AdService {
     }
 
     if (update.baseRateInr !== undefined) config.baseRateInr = update.baseRateInr;
-    if (update.seasonalMultiplier !== undefined) config.seasonalMultiplier = update.seasonalMultiplier;
+    if (update.seasonalMultiplier !== undefined)
+      config.seasonalMultiplier = update.seasonalMultiplier;
     if (update.isActive !== undefined) config.isActive = update.isActive;
 
     config.effectiveRateInr = config.baseRateInr * config.seasonalMultiplier;

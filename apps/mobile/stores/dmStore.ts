@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { API_BASE_URL } from '../lib/constants';
 import {
   type DMConversationItem,
   type DMMessageItem,
@@ -295,8 +296,7 @@ export const useDMStore = create<DMState>((set, get) => ({
 
   startConversationWithUser: async (currentUserId, recipient, initialText) => {
     try {
-      const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'https://kshetra-api-production-9f06.up.railway.app';
-      const res = await fetch(`${apiUrl}/api/v1/dm/conversations`, {
+      const res = await fetch(`${API_BASE_URL}/api/v1/dm/conversations`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

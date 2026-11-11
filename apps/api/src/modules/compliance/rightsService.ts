@@ -85,7 +85,8 @@ export class RightsService {
       archiveChecksumSha256: checksum,
       summary: {
         profileRecordsCount: Object.keys(payload.profile || {}).length,
-        activityRecordsCount: (payload.civicBadges?.length || 0) + (payload.userFavourites?.length || 0),
+        activityRecordsCount:
+          (payload.civicBadges?.length || 0) + (payload.userFavourites?.length || 0),
         walletTransactionsCount: payload.walletHistory?.length || 0,
         sessionsCount: 1,
         publicStatutoryRecordsNotice:

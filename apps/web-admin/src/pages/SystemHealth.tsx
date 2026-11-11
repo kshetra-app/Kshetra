@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { api, type HealthResponse } from '../lib/api';
+import { API_BASE_URL } from '../lib/constants';
 import {
   Activity,
   Server,
@@ -9,37 +9,56 @@ import {
   CheckCircle2,
   AlertCircle,
   Cpu,
-  HardDrive,
-  Clock,
-  Terminal,
 } from 'lucide-react';
 
 export function SystemHealth() {
-  const [health, setHealth] = useState<HealthResponse | null>(null);
-  const [latencyMs, setLatencyMs] = useState<number | null>(null);
   const [testing, setTesting] = useState(false);
-  const [endpoints, setEndpoints] = useState<
-    { name: string; url: string; status: 'ok' | 'error' | 'pending'; latency: number }[]
-  >([
-    { name: 'Core Healthcheck', url: '/api/health', status: 'ok', latency: 42 },
-    { name: 'Feature Config Flags', url: '/api/v1/config/flags', status: 'ok', latency: 68 },
-    { name: 'Telangana AC List', url: '/api/v1/states/TS/constituencies', status: 'ok', latency: 114 },
-    { name: 'Delimitation Engine', url: '/api/v1/delimitation/scenarios/TS', status: 'ok', latency: 95 },
-  ]);
+  const [endpoints, setEndpoints] = useState<EndpointProbe[]>(
+    ENDPOINTS.map((endpoint) => ({ ...endpoint, state: 'pending', statusCode: null, latencyMs: null, connected: null })),
+  );
+  const apiProbe = endpoints.find((endpoint) => endpoint.path === '/api/health') ?? null;
+  const databaseProbe = endpoints.find((endpoint) => endpoint.path === '/api/health/db') ?? null;
 
   const testAllEndpoints = async () => {
     setTesting(true);
-    const start = performance.now();
-    try {
-      const data = await api.getHealth();
-      const end = performance.now();
-      setHealth(data);
-      setLatencyMs(Math.round(end - start));
-    } catch {
-      setLatencyMs(null);
-    } finally {
-      setTesting(false);
-    }
+    const results = await Promise.all(
+      ENDPOINTS.map(async (endpoint): Promise<EndpointProbe> => {
+        const controller = new AbortController();
+        const timeout = window.setTimeout(() => controller.abort(), 10_000);
+        const start = performance.now();
+        try {
+          const response = await fetch(`${API_BASE_URL}${endpoint.path}`, {
+            headers: { Accept: 'application/json' },
+            signal: controller.signal,
+          });
+          let payload: Record<string, unknown> | null = null;
+          try {
+            payload = await response.json();
+          } catch {
+            // A non-JSON response still provides a valid HTTP reachability result.
+          }
+          return {
+            ...endpoint,
+            state: response.ok ? 'ok' : 'error',
+            statusCode: response.status,
+            latencyMs: Math.round(performance.now() - start),
+            connected: typeof payload?.connected === 'boolean' ? payload.connected : null,
+          };
+        } catch {
+          return {
+            ...endpoint,
+            state: 'error',
+            statusCode: null,
+            latencyMs: Math.round(performance.now() - start),
+            connected: null,
+          };
+        } finally {
+          window.clearTimeout(timeout);
+        }
+      }),
+    );
+    setEndpoints(results);
+    setTesting(false);
   };
 
   useEffect(() => {
@@ -56,7 +75,7 @@ export function SystemHealth() {
             <span>Infrastructure Health & Real-Time Telemetry</span>
           </h1>
           <p className="text-xs text-slate-400">
-            Real-time diagnostics for Railway Fastify production service, Supabase PostGIS, and MediaMTX WebRTC server.
+            Live HTTP checks against the selected API environment. Streaming and mobile build telemetry is not collected here.
           </p>
         </div>
 
@@ -66,7 +85,7 @@ export function SystemHealth() {
           className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-lg shadow-blue-600/30 flex items-center gap-2 transition"
         >
           <RefreshCw className={`w-4 h-4 ${testing ? 'animate-spin' : ''}`} />
-          <span>{testing ? 'Ping Telemetry...' : 'Run Diagnostics Ping'}</span>
+          <span>{testing ? 'Checking endpoints...' : 'Run Diagnostics'}</span>
         </button>
       </div>
 
@@ -77,23 +96,25 @@ export function SystemHealth() {
             <span>Railway API Gateway</span>
             <Server className="w-4 h-4 text-emerald-400" />
           </div>
-          <div className="text-2xl font-extrabold text-white">HTTP 200 OK</div>
-          <div className="text-xs text-emerald-400 flex items-center gap-1 font-semibold">
-            <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>Latency: {latencyMs ?? 55} ms</span>
+          <div className="text-2xl font-extrabold text-white">
+            {apiProbe ? (apiProbe.statusCode === null ? 'Unreachable' : `HTTP ${apiProbe.statusCode}`) : 'Not checked'}
           </div>
+          <div className="text-xs text-emerald-400 flex items-center gap-1 font-semibold">
+            {apiProbe?.state === 'ok' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <AlertCircle className="w-3.5 h-3.5" />}
+            <span>{apiProbe ? `HTTP ${apiProbe.statusCode ?? 'unreachable'} · ${apiProbe.latencyMs ?? '—'} ms` : 'Not checked yet'}</span>
+          </div>
+          <div className="text-xs text-slate-500">{new URL(API_BASE_URL).host}</div>
         </div>
 
         <div className="bg-[#111827] border border-slate-800 p-5 rounded-2xl space-y-3">
           <div className="flex items-center justify-between text-xs text-slate-400 font-bold uppercase">
-            <span>PostGIS Database</span>
+            <span>Supabase Database</span>
             <Database className="w-4 h-4 text-blue-400" />
           </div>
-          <div className="text-2xl font-extrabold text-white">Connected</div>
-          <div className="text-xs text-blue-400 flex items-center gap-1 font-semibold">
-            <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>Supabase Pool Active</span>
+          <div className="text-2xl font-extrabold text-white">
+            {databaseProbe?.connected === true ? 'Connected' : databaseProbe ? 'Unavailable' : 'Not checked'}
           </div>
+          <div className="text-xs text-blue-400">{databaseProbe ? `Database probe HTTP ${databaseProbe.statusCode ?? 'unreachable'}` : 'Run diagnostics to check the database connection'}</div>
         </div>
 
         <div className="bg-[#111827] border border-slate-800 p-5 rounded-2xl space-y-3">
@@ -101,11 +122,8 @@ export function SystemHealth() {
             <span>WHIP Media Ingest</span>
             <Radio className="w-4 h-4 text-purple-400" />
           </div>
-          <div className="text-2xl font-extrabold text-white">Port :8889</div>
-          <div className="text-xs text-purple-400 flex items-center gap-1 font-semibold">
-            <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>Low-Latency WebRTC</span>
-          </div>
+          <div className="text-2xl font-extrabold text-white">Not configured</div>
+          <div className="text-xs text-purple-300">No streaming health endpoint is configured</div>
         </div>
 
         <div className="bg-[#111827] border border-slate-800 p-5 rounded-2xl space-y-3">
@@ -113,11 +131,8 @@ export function SystemHealth() {
             <span>Android HBC Bytecode</span>
             <Cpu className="w-4 h-4 text-amber-400" />
           </div>
-          <div className="text-2xl font-extrabold text-white font-mono">C6-1F-BC-03</div>
-          <div className="text-xs text-amber-400 flex items-center gap-1 font-semibold">
-            <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>Hermes Verified</span>
-          </div>
+          <div className="text-2xl font-extrabold text-white">Not collected</div>
+          <div className="text-xs text-amber-300">Mobile build telemetry is not connected</div>
         </div>
       </div>
 
@@ -127,7 +142,7 @@ export function SystemHealth() {
           <h3 className="font-bold text-xs uppercase tracking-wider text-slate-300">
             API Endpoints Telemetry Matrix
           </h3>
-          <span className="text-xs font-mono text-emerald-400">Target: kshetra-api-production-9f06.up.railway.app</span>
+          <span className="text-xs font-mono text-slate-300">Target: {new URL(API_BASE_URL).host}</span>
         </div>
 
         <div className="overflow-x-auto border border-slate-800 rounded-xl">
@@ -144,13 +159,13 @@ export function SystemHealth() {
               {endpoints.map((ep, idx) => (
                 <tr key={idx} className="hover:bg-slate-800/40 transition">
                   <td className="p-3.5 font-sans font-bold text-white">{ep.name}</td>
-                  <td className="p-3.5 text-blue-400">{ep.url}</td>
+                  <td className="p-3.5 text-blue-400">{ep.path}</td>
                   <td className="p-3.5">
-                    <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-bold border border-emerald-800/60">
-                      200 OK
+                    <span className={`px-2 py-0.5 rounded font-bold border ${ep.state === 'ok' ? 'bg-emerald-950 text-emerald-300 border-emerald-800/60' : ep.state === 'error' ? 'bg-red-950 text-red-300 border-red-800/60' : 'bg-slate-800 text-slate-300 border-slate-700'}`}>
+                      {ep.state === 'pending' ? 'Not checked' : ep.statusCode === null ? 'Unreachable' : `HTTP ${ep.statusCode}`}
                     </span>
                   </td>
-                  <td className="p-3.5 text-emerald-400 font-semibold">{ep.latency} ms</td>
+                  <td className="p-3.5 text-slate-300 font-semibold">{ep.latencyMs === null ? '—' : `${ep.latencyMs} ms`}</td>
                 </tr>
               ))}
             </tbody>
@@ -160,3 +175,20 @@ export function SystemHealth() {
     </div>
   );
 }
+
+type ProbeState = 'pending' | 'ok' | 'error';
+type EndpointDefinition = { name: string; path: string };
+type EndpointProbe = EndpointDefinition & {
+  state: ProbeState;
+  statusCode: number | null;
+  latencyMs: number | null;
+  connected: boolean | null;
+};
+
+const ENDPOINTS: EndpointDefinition[] = [
+  { name: 'Core health', path: '/api/health' },
+  { name: 'Database readiness', path: '/api/health/db' },
+  { name: 'Feature configuration', path: '/api/v1/config/flags' },
+  { name: 'Telangana constituencies', path: '/api/v1/states/TS/constituencies' },
+  { name: 'Delimitation scenarios', path: '/api/v1/delimitation/scenarios/TS' },
+];

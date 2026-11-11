@@ -16,6 +16,7 @@ import { useUserProfileStore } from '../../stores/userProfile';
 import { useAuthStore } from '../../stores/auth';
 import { useTheme } from '../../lib/theme';
 import { useFeedStore } from '../../stores/feed';
+import { API_BASE_URL } from '../../lib/constants';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import i18n from '../../i18n';
 
@@ -79,8 +80,7 @@ export default function GeneralModerationQueueScreen() {
 
   const loadQueue = async () => {
     try {
-      const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'https://kshetra-api-production-9f06.up.railway.app';
-      const res = await fetch(`${apiUrl}/api/v1/moderation/queue`, {
+      const res = await fetch(`${API_BASE_URL}/api/v1/moderation/queue`, {
         headers: getAuthHeaders(),
       });
       const data = await res.json();
@@ -106,8 +106,7 @@ export default function GeneralModerationQueueScreen() {
   const handleAction = async (report: ReportItem, actionType: 'delete_content' | 'warn' | 'dismiss' | 'escalate') => {
     setActionInProgress(report.id);
     try {
-      const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'https://kshetra-api-production-9f06.up.railway.app';
-      const res = await fetch(`${apiUrl}/api/v1/moderation/action`, {
+      const res = await fetch(`${API_BASE_URL}/api/v1/moderation/action`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

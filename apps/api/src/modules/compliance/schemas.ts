@@ -25,7 +25,9 @@ export type DataCorrectionRequestInput = z.infer<typeof dataCorrectionRequestSch
 
 export const dataErasureRequestSchema = z.object({
   confirmation: z.literal('DELETE_MY_PERSONAL_DATA', {
-    errorMap: () => ({ message: "Must explicitly provide confirmation phrase 'DELETE_MY_PERSONAL_DATA'" }),
+    errorMap: () => ({
+      message: "Must explicitly provide confirmation phrase 'DELETE_MY_PERSONAL_DATA'",
+    }),
   }),
   reason: z.string().max(500).optional(),
 });
@@ -36,14 +38,16 @@ export const grievanceSubmissionSchema = z.object({
   subject: z.string().min(3, 'Subject must be at least 3 characters').max(150),
   description: z.string().min(10, 'Description must be at least 10 characters').max(2000),
   contactEmail: z.string().email('Valid contact email is required'),
-  category: z.enum([
-    'unauthorized_processing',
-    'erasure_delay',
-    'inaccurate_data',
-    'excessive_collection',
-    'security_concern',
-    'other',
-  ]).default('other'),
+  category: z
+    .enum([
+      'unauthorized_processing',
+      'erasure_delay',
+      'inaccurate_data',
+      'excessive_collection',
+      'security_concern',
+      'other',
+    ])
+    .default('other'),
 });
 
 export type GrievanceSubmissionInput = z.infer<typeof grievanceSubmissionSchema>;

@@ -27,7 +27,10 @@ export class SecurityHardening {
 
       // Prohibited cloud metadata IP
       if (host === '169.254.169.254' || host === 'metadata.google.internal') {
-        return { allowed: false, reason: 'Access to cloud instance metadata service is prohibited' };
+        return {
+          allowed: false,
+          reason: 'Access to cloud instance metadata service is prohibited',
+        };
       }
 
       // Prohibited loopback & private subnets
@@ -40,7 +43,10 @@ export class SecurityHardening {
         host.startsWith('192.168.') ||
         /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host)
       ) {
-        return { allowed: false, reason: 'Access to loopback or private RFC 1918 network is prohibited' };
+        return {
+          allowed: false,
+          reason: 'Access to loopback or private RFC 1918 network is prohibited',
+        };
       }
 
       return { allowed: true };
@@ -55,7 +61,7 @@ export class SecurityHardening {
   public static validateResourceOwnership(
     requestingUserId: string,
     resourceOwnerId: string,
-    userRole: string = 'citizen'
+    userRole: string = 'citizen',
   ): boolean {
     if (userRole === 'super_admin' || userRole === 'admin') return true;
     return requestingUserId === resourceOwnerId;
@@ -98,7 +104,7 @@ export class SecurityHardening {
    */
   public static stripPrivilegedFields<T extends Record<string, unknown>>(
     payload: T,
-    callerIsAdmin: boolean = false
+    callerIsAdmin: boolean = false,
   ): Partial<T> {
     if (callerIsAdmin) return { ...payload };
 
@@ -137,10 +143,13 @@ export class SecurityHardening {
     let redacted = text.replace(/(\+?91[\s-]?)?([6-9]\d{2})\d{4}(\d{3})/g, '$1$2XXXX$3');
 
     // Mask email addresses
-    redacted = redacted.replace(/([a-zA-Z0-9_\-.+]+)@([a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)/g, (_match, user, domain) => {
-      const maskedUser = user.length <= 2 ? '*' : `${user[0]}***${user[user.length - 1]}`;
-      return `${maskedUser}@${domain}`;
-    });
+    redacted = redacted.replace(
+      /([a-zA-Z0-9_\-.+]+)@([a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)/g,
+      (_match, user, domain) => {
+        const maskedUser = user.length <= 2 ? '*' : `${user[0]}***${user[user.length - 1]}`;
+        return `${maskedUser}@${domain}`;
+      },
+    );
 
     // Mask Indian Voter ID (EPIC) format (3 letters + 7 numbers)
     redacted = redacted.replace(/\b([A-Z]{3})\d{4}(\d{3})\b/g, '$1XXXX$2');
@@ -153,7 +162,8 @@ export class SecurityHardening {
    */
   public static getSecurityHeaders(): Record<string, string> {
     return {
-      'Content-Security-Policy': "default-src 'self'; img-src 'self' data: https:; script-src 'self'; frame-ancestors 'none';",
+      'Content-Security-Policy':
+        "default-src 'self'; img-src 'self' data: https:; script-src 'self'; frame-ancestors 'none';",
       'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
       'X-Content-Type-Options': 'nosniff',
       'X-Frame-Options': 'DENY',
@@ -179,7 +189,8 @@ export class SecurityHardening {
       {
         category: 'BROKEN_AUTHENTICATION',
         description: 'Unsigned JWT spoofing with alg: "none"',
-        payloadTested: 'Authorization: Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJhZG1pbiJ9.',
+        payloadTested:
+          'Authorization: Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJhZG1pbiJ9.',
         targetEndpoint: '/api/v1/admin/users',
         expectedStatus: 401,
         actualStatus: 401,
@@ -189,7 +200,8 @@ export class SecurityHardening {
       {
         category: 'BROKEN_OBJECT_PROPERTY_AUTH',
         description: 'Mass assignment of is_super_admin: true in ordinary user profile update',
-        payloadTested: 'PATCH /api/v1/users/profile { "displayName": "Citizen", "is_super_admin": true }',
+        payloadTested:
+          'PATCH /api/v1/users/profile { "displayName": "Citizen", "is_super_admin": true }',
         targetEndpoint: '/api/v1/users/profile',
         expectedStatus: 200,
         actualStatus: 200,
@@ -219,7 +231,8 @@ export class SecurityHardening {
       {
         category: 'SSRF_HOST_PINNING',
         description: 'External RSS scraper attempting to fetch AWS metadata service IP',
-        payloadTested: 'POST /api/v1/media/rss-subscribe { "url": "http://169.254.169.254/latest/meta-data/" }',
+        payloadTested:
+          'POST /api/v1/media/rss-subscribe { "url": "http://169.254.169.254/latest/meta-data/" }',
         targetEndpoint: '/api/v1/media/rss-subscribe',
         expectedStatus: 400,
         actualStatus: 400,
@@ -228,7 +241,8 @@ export class SecurityHardening {
       },
       {
         category: 'SECURITY_MISCONFIGURATION',
-        description: 'Verification of mandatory security response headers (CSP, HSTS, X-Content-Type)',
+        description:
+          'Verification of mandatory security response headers (CSP, HSTS, X-Content-Type)',
         payloadTested: 'GET /health',
         targetEndpoint: '/health',
         expectedStatus: 200,
@@ -239,16 +253,18 @@ export class SecurityHardening {
       {
         category: 'INJECTION_SQL_NOSQL',
         description: 'SQL injection payload in search query parameter',
-        payloadTested: 'GET /api/v1/constituencies?q=\' OR 1=1; DROP TABLE users;--',
+        payloadTested: "GET /api/v1/constituencies?q=' OR 1=1; DROP TABLE users;--",
         targetEndpoint: '/api/v1/constituencies',
         expectedStatus: 200,
         actualStatus: 200,
         mitigationVerified: true,
-        details: 'Parameterized SQL queries completely neutralized injection string; 0 syntax errors leaked',
+        details:
+          'Parameterized SQL queries completely neutralized injection string; 0 syntax errors leaked',
       },
       {
         category: 'DPDP_PII_LEAKAGE',
-        description: 'Verification of DPDP 2023 phone number and voter identity masking in application logs',
+        description:
+          'Verification of DPDP 2023 phone number and voter identity masking in application logs',
         payloadTested: 'Log message: Citizen OTP sent to +91 9876543210 with EPIC ABC1234567',
         targetEndpoint: '/api/v1/system/audit/security',
         expectedStatus: 200,
@@ -258,7 +274,7 @@ export class SecurityHardening {
       },
     ];
 
-    const passedProbes = probes.filter(p => p.mitigationVerified).length;
+    const passedProbes = probes.filter((p) => p.mitigationVerified).length;
     const failedProbes = probes.length - passedProbes;
 
     const report: SecurityAuditReport = {

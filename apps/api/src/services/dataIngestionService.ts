@@ -1,5 +1,10 @@
 import crypto from 'node:crypto';
-import type { DataIngestionJob, IngestionJobSubmission, IngestionStageResult, PipelineStage } from '@kshetra/shared';
+import type {
+  DataIngestionJob,
+  IngestionJobSubmission,
+  IngestionStageResult,
+  PipelineStage,
+} from '@kshetra/shared';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 export interface RawRecord {
@@ -24,7 +29,9 @@ export class DataIngestionService {
     const rawPayloadBuffer = Buffer.from(
       typeof submission.rawPayload === 'string'
         ? submission.rawPayload
-        : JSON.stringify(submission.rawPayload ?? { dataset: submission.datasetName, uri: submission.sourceUri })
+        : JSON.stringify(
+            submission.rawPayload ?? { dataset: submission.datasetName, uri: submission.sourceUri },
+          ),
     );
 
     // Stage 1: Source Acquisition & Stage 2: Raw Snapshot SHA-256

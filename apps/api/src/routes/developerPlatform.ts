@@ -38,14 +38,20 @@ export async function developerPlatformRoutes(app: FastifyInstance) {
     async (request, reply) => {
       try {
         if (!request.body?.name || !request.body?.billingEmail || !request.body?.adminUserId) {
-          return sendApiError(reply, request, 400, 'BadRequest', 'name, billingEmail, and adminUserId are required');
+          return sendApiError(
+            reply,
+            request,
+            400,
+            'BadRequest',
+            'name, billingEmail, and adminUserId are required',
+          );
         }
         const org = await developerPlatformService.createOrganization(request.body);
         return sendSuccess(reply, request, org, 201);
       } catch (err: any) {
         return sendApiError(reply, request, 500, 'InternalError', err.message);
       }
-    }
+    },
   );
 
   // 2. GET /api/v1/developer/organizations/:id
@@ -55,13 +61,19 @@ export async function developerPlatformRoutes(app: FastifyInstance) {
       try {
         const org = await developerPlatformService.getOrganization(request.params.id);
         if (!org) {
-          return sendApiError(reply, request, 404, 'NotFound', `Organization '${request.params.id}' not found`);
+          return sendApiError(
+            reply,
+            request,
+            404,
+            'NotFound',
+            `Organization '${request.params.id}' not found`,
+          );
         }
         return sendSuccess(reply, request, org);
       } catch (err: any) {
         return sendApiError(reply, request, 500, 'InternalError', err.message);
       }
-    }
+    },
   );
 
   // 3. POST /api/v1/developer/organizations/:id/members
@@ -72,12 +84,15 @@ export async function developerPlatformRoutes(app: FastifyInstance) {
         if (!request.body?.userId || !request.body?.role) {
           return sendApiError(reply, request, 400, 'BadRequest', 'userId and role are required');
         }
-        const member = await developerPlatformService.addOrganizationMember(request.params.id, request.body);
+        const member = await developerPlatformService.addOrganizationMember(
+          request.params.id,
+          request.body,
+        );
         return sendSuccess(reply, request, member, 201);
       } catch (err: any) {
         return sendApiError(reply, request, 500, 'InternalError', err.message);
       }
-    }
+    },
   );
 
   // 4. GET /api/v1/developer/organizations/:id/members
@@ -90,31 +105,37 @@ export async function developerPlatformRoutes(app: FastifyInstance) {
       } catch (err: any) {
         return sendApiError(reply, request, 500, 'InternalError', err.message);
       }
-    }
+    },
   );
 
   // 5. POST /api/v1/developer/organizations/:id/keys
-  app.post<{ Params: { id: string }; Body: { name: string; environment?: 'live' | 'test'; scopes?: string[] } }>(
-    '/api/v1/developer/organizations/:id/keys',
-    async (request, reply) => {
-      try {
-        if (!request.body?.name) {
-          return sendApiError(reply, request, 400, 'BadRequest', 'Key name is required');
-        }
-        const req: CreateDeveloperApiKeyRequest = {
-          organizationId: request.params.id,
-          name: request.body.name,
-          environment: request.body.environment,
-          scopes: request.body.scopes,
-        };
-        const keyResponse = await developerPlatformService.createApiKey(req);
-        return sendSuccess(reply, request, keyResponse, 201);
-      } catch (err: any) {
-        const statusCode = err.message.includes('limit reached') ? 403 : 500;
-        return sendApiError(reply, request, statusCode, statusCode === 403 ? 'QuotaExceeded' : 'InternalError', err.message);
+  app.post<{
+    Params: { id: string };
+    Body: { name: string; environment?: 'live' | 'test'; scopes?: string[] };
+  }>('/api/v1/developer/organizations/:id/keys', async (request, reply) => {
+    try {
+      if (!request.body?.name) {
+        return sendApiError(reply, request, 400, 'BadRequest', 'Key name is required');
       }
+      const req: CreateDeveloperApiKeyRequest = {
+        organizationId: request.params.id,
+        name: request.body.name,
+        environment: request.body.environment,
+        scopes: request.body.scopes,
+      };
+      const keyResponse = await developerPlatformService.createApiKey(req);
+      return sendSuccess(reply, request, keyResponse, 201);
+    } catch (err: any) {
+      const statusCode = err.message.includes('limit reached') ? 403 : 500;
+      return sendApiError(
+        reply,
+        request,
+        statusCode,
+        statusCode === 403 ? 'QuotaExceeded' : 'InternalError',
+        err.message,
+      );
     }
-  );
+  });
 
   // 6. GET /api/v1/developer/organizations/:id/keys
   app.get<{ Params: { id: string } }>(
@@ -126,7 +147,7 @@ export async function developerPlatformRoutes(app: FastifyInstance) {
       } catch (err: any) {
         return sendApiError(reply, request, 500, 'InternalError', err.message);
       }
-    }
+    },
   );
 
   // 7. POST /api/v1/developer/organizations/:id/keys/:keyId/revoke
@@ -134,15 +155,24 @@ export async function developerPlatformRoutes(app: FastifyInstance) {
     '/api/v1/developer/organizations/:id/keys/:keyId/revoke',
     async (request, reply) => {
       try {
-        const revoked = await developerPlatformService.revokeApiKey(request.params.keyId, request.params.id);
+        const revoked = await developerPlatformService.revokeApiKey(
+          request.params.keyId,
+          request.params.id,
+        );
         if (!revoked) {
-          return sendApiError(reply, request, 404, 'NotFound', 'Key not found or does not belong to organization');
+          return sendApiError(
+            reply,
+            request,
+            404,
+            'NotFound',
+            'Key not found or does not belong to organization',
+          );
         }
         return sendSuccess(reply, request, { revoked: true, keyId: request.params.keyId });
       } catch (err: any) {
         return sendApiError(reply, request, 500, 'InternalError', err.message);
       }
-    }
+    },
   );
 
   // 8. GET /api/v1/developer/organizations/:id/usage
@@ -155,26 +185,26 @@ export async function developerPlatformRoutes(app: FastifyInstance) {
       } catch (err: any) {
         return sendApiError(reply, request, 404, 'NotFound', err.message);
       }
-    }
+    },
   );
 
   // 9. POST /api/v1/developer/organizations/:id/billing/checkout
-  app.post<{ Params: { id: string }; Body: { targetTier: 'pro' | 'enterprise'; billingCycle: 'monthly' | 'annual' } }>(
-    '/api/v1/developer/organizations/:id/billing/checkout',
-    async (request, reply) => {
-      try {
-        const req: DeveloperBillingCheckoutRequest = {
-          organizationId: request.params.id,
-          targetTier: request.body.targetTier || 'pro',
-          billingCycle: request.body.billingCycle || 'monthly',
-        };
-        const checkout = await developerPlatformService.createBillingCheckout(req);
-        return sendSuccess(reply, request, checkout, 201);
-      } catch (err: any) {
-        return sendApiError(reply, request, 500, 'InternalError', err.message);
-      }
+  app.post<{
+    Params: { id: string };
+    Body: { targetTier: 'pro' | 'enterprise'; billingCycle: 'monthly' | 'annual' };
+  }>('/api/v1/developer/organizations/:id/billing/checkout', async (request, reply) => {
+    try {
+      const req: DeveloperBillingCheckoutRequest = {
+        organizationId: request.params.id,
+        targetTier: request.body.targetTier || 'pro',
+        billingCycle: request.body.billingCycle || 'monthly',
+      };
+      const checkout = await developerPlatformService.createBillingCheckout(req);
+      return sendSuccess(reply, request, checkout, 201);
+    } catch (err: any) {
+      return sendApiError(reply, request, 500, 'InternalError', err.message);
     }
-  );
+  });
 
   // 10. GET /api/docs/json (OpenAPI 3.1 specification)
   app.get('/api/docs/json', async (request, reply) => {

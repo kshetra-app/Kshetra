@@ -55,7 +55,7 @@ async function probeUrl(name, url, options = {}) {
 
 async function runEnvironmentProbes() {
   console.log('Probing Railway Gateway endpoints...');
-  const railwayBase = 'https://kshetra-api-production-9f06.up.railway.app';
+  const railwayBase = 'https://kshetra-api-production-b802.up.railway.app';
   const railwayChecks = [
     await probeUrl('Root /', `${railwayBase}/`),
     await probeUrl('Health /health', `${railwayBase}/health`),

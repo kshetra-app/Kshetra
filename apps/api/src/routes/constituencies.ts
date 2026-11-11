@@ -42,7 +42,6 @@ function constituencyToRecord(c: ConstituencyBrief): ConstituencyRecord {
   };
 }
 
-
 // ─── AJV SCHEMAS FOR CONSTITUENCY ROUTES ───
 
 const constituencyBriefSchema = {
@@ -799,51 +798,48 @@ export async function constituencyRoutes(app: FastifyInstance) {
     },
   );
 
-const PODIUM_DIR = path.resolve(__dirname, '../../../../data/historical/podiums');
-const serverPodiumCache = new Map<string, any>();
+  const PODIUM_DIR = path.resolve(__dirname, '../../../../data/historical/podiums');
+  const serverPodiumCache = new Map<string, any>();
 
-function loadServerPodium(stateCode: string): any | null {
-  const code = stateCode.toUpperCase();
-  if (serverPodiumCache.has(code)) return serverPodiumCache.get(code);
-  const file = path.join(PODIUM_DIR, `${code.toLowerCase()}-podium.json`);
-  if (!fs.existsSync(file)) return null;
-  try {
-    const data = JSON.parse(fs.readFileSync(file, 'utf8'));
-    serverPodiumCache.set(code, data);
-    return data;
-  } catch {
-    return null;
+  function loadServerPodium(stateCode: string): any | null {
+    const code = stateCode.toUpperCase();
+    if (serverPodiumCache.has(code)) return serverPodiumCache.get(code);
+    const file = path.join(PODIUM_DIR, `${code.toLowerCase()}-podium.json`);
+    if (!fs.existsSync(file)) return null;
+    try {
+      const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+      serverPodiumCache.set(code, data);
+      return data;
+    } catch {
+      return null;
+    }
   }
-}
 
   /** 6. GET /states/:stateCode/mla */
-  app.get<{ Params: { stateCode: string } }>(
-    '/states/:stateCode/mla',
-    async (request, reply) => {
-      const { stateCode } = request.params;
-      const code = stateCode.toUpperCase();
-      const profiles = await getCanonicalMLAProfiles(code);
+  app.get<{ Params: { stateCode: string } }>('/states/:stateCode/mla', async (request, reply) => {
+    const { stateCode } = request.params;
+    const code = stateCode.toUpperCase();
+    const profiles = await getCanonicalMLAProfiles(code);
 
-      if (!profiles || profiles.length === 0) {
-        return sendApiError(
-          reply,
-          request,
-          404,
-          'Not Found',
-          `State ${stateCode} has no MLA profiles available`,
-          {
-            code: 'NOT_FOUND',
-          },
-        );
-      }
+    if (!profiles || profiles.length === 0) {
+      return sendApiError(
+        reply,
+        request,
+        404,
+        'Not Found',
+        `State ${stateCode} has no MLA profiles available`,
+        {
+          code: 'NOT_FOUND',
+        },
+      );
+    }
 
-      return {
-        state: code,
-        count: profiles.length,
-        profiles,
-      };
-    },
-  );
+    return {
+      state: code,
+      count: profiles.length,
+      profiles,
+    };
+  });
 
   /** 6b. GET /states/:stateCode/constituencies/:acNo/mla */
   app.get<{ Params: { stateCode: string; acNo: string } }>(
@@ -1026,14 +1022,9 @@ function loadServerPodium(stateCode: string): any | null {
       const { pinCode } = request.params;
       const result = await canonicalGeographyService.locateByPinCode(pinCode);
       if (!result.singleMatch && result.candidates.length === 0) {
-        return sendApiError(
-          reply,
-          request,
-          404,
-          'Not Found',
-          result.message,
-          { code: 'PIN_NOT_FOUND' },
-        );
+        return sendApiError(reply, request, 404, 'Not Found', result.message, {
+          code: 'PIN_NOT_FOUND',
+        });
       }
       return result;
     },
@@ -1058,7 +1049,10 @@ function loadServerPodium(stateCode: string): any | null {
     },
     async (request, reply) => {
       const { stateCode, acNo } = request.params;
-      const hierarchy = await canonicalGeographyService.getSubConstituencyHierarchy(stateCode, parseInt(acNo, 10));
+      const hierarchy = await canonicalGeographyService.getSubConstituencyHierarchy(
+        stateCode,
+        parseInt(acNo, 10),
+      );
       if (!hierarchy) {
         return sendApiError(
           reply,

@@ -91,6 +91,8 @@ export interface UnifiedConstituency {
   margin: number;
   /** Current verified party of sitting representative */
   currentParty: string;
+  /** Classifies the recorded post-election party change when known. */
+  currentPartyChangeType?: 'defection' | 'by-election';
   /** Current sitting representative name */
   currentMLA?: string;
   /** Year of the verified general election result data */
@@ -241,11 +243,15 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
         runnerUpName: (c as any).runnerUpName2023 || '',
         margin: c.margin2023,
         currentParty: c.currentParty ?? c.winner2023,
+        currentPartyChangeType: c.currentPartyChangeType,
+        currentMLA: c.currentMLA ?? c.winnerName2023,
         electionYear: 2023,
+        byElection: c.byElection,
+        officeholderStatus: c.byElection ? 'BY_ELECTION_SEATED' : 'INCUMBENT_ACTIVE',
         localName: c.localName,
-        dataStatus: 'CURRENT',
+        dataStatus: c.byElection ? 'BY_ELECTION_UPDATED' : 'CURRENT',
         isStale: false,
-        termStatus: 'ACTIVE',
+        termStatus: c.byElection ? 'BY_ELECTION_SEATED' : 'ACTIVE',
       }));
     case 'AP':
       return AP_CONSTITUENCIES.map((c) => ({
@@ -464,8 +470,8 @@ function tsAdapter(c: ConstituencySeed): ConstituencyBrief {
     stateCode: 'TS',
     district: c.district,
     reservationStatus: c.type,
-    currentParty: c.winner2023,
-    currentMLA: c.winnerName2023,
+    currentParty: c.currentParty ?? c.winner2023,
+    currentMLA: c.currentMLA ?? c.winnerName2023,
   };
 }
 
@@ -661,8 +667,8 @@ export function getAvailableStates(): string[] {
   ];
 }
 
-/** Get all available years for timeline slider (historical + current) */
-export function getAvailableYearsForState(stateCode: string, includeSimulations: boolean = false): number[] {
+/** Get election years represented by the configured data for a state. */
+export function getAvailableYearsForState(stateCode: string): number[] {
   switch (stateCode.toUpperCase()) {
     case 'TS': return [2014, 2018, 2023];
     case 'AP': return [2019, 2024];

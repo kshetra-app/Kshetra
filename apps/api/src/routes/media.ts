@@ -47,21 +47,20 @@ export async function mediaRoutes(app: FastifyInstance) {
         const response = await MediaService.createRepresentativeResponse(auth.userId, request.body);
         return reply.status(201).send({ success: true, response });
       } catch (err: any) {
-        return sendApiError(reply, request, 400, 'Bad Request', err.message, { code: 'INVALID_RESPONSE' });
+        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+          code: 'INVALID_RESPONSE',
+        });
       }
-    }
+    },
   );
 
   app.get<{
     Params: { issueId: string };
-  }>(
-    '/api/v1/media/representative/responses/:issueId',
-    async (request, reply) => {
-      const { issueId } = request.params;
-      const responses = await MediaService.getResponsesForIssue(issueId);
-      return reply.send({ success: true, responses, total: responses.length });
-    }
-  );
+  }>('/api/v1/media/representative/responses/:issueId', async (request, reply) => {
+    const { issueId } = request.params;
+    const responses = await MediaService.getResponsesForIssue(issueId);
+    return reply.send({ success: true, responses, total: responses.length });
+  });
 
   // ─── 2. POLITICAL NEWS, PRESENTATION & CONTEXT (JOB 038, 039, 040) ───
 
@@ -98,9 +97,11 @@ export async function mediaRoutes(app: FastifyInstance) {
         const article = await MediaService.publishNewsArticle(request.body);
         return reply.status(201).send({ success: true, article });
       } catch (err: any) {
-        return sendApiError(reply, request, 400, 'Bad Request', err.message, { code: 'INVALID_NEWS_PAYLOAD' });
+        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+          code: 'INVALID_NEWS_PAYLOAD',
+        });
       }
-    }
+    },
   );
 
   app.get<{
@@ -112,27 +113,23 @@ export async function mediaRoutes(app: FastifyInstance) {
       limit?: number;
       offset?: number;
     };
-  }>(
-    '/api/v1/media/news/feed',
-    async (request, reply) => {
-      const result = await MediaService.queryNewsFeed(request.query);
-      return reply.send({ success: true, ...result });
-    }
-  );
+  }>('/api/v1/media/news/feed', async (request, reply) => {
+    const result = await MediaService.queryNewsFeed(request.query);
+    return reply.send({ success: true, ...result });
+  });
 
   app.get<{
     Params: { articleId: string };
-  }>(
-    '/api/v1/media/news/:articleId/context',
-    async (request, reply) => {
-      const { articleId } = request.params;
-      const context = await MediaService.resolvePoliticalContext(articleId);
-      if (!context) {
-        return sendApiError(reply, request, 404, 'Not Found', 'Article not found', { code: 'ARTICLE_NOT_FOUND' });
-      }
-      return reply.send({ success: true, context });
+  }>('/api/v1/media/news/:articleId/context', async (request, reply) => {
+    const { articleId } = request.params;
+    const context = await MediaService.resolvePoliticalContext(articleId);
+    if (!context) {
+      return sendApiError(reply, request, 404, 'Not Found', 'Article not found', {
+        code: 'ARTICLE_NOT_FOUND',
+      });
     }
-  );
+    return reply.send({ success: true, context });
+  });
 
   // ─── 3. SHORTS PIPELINE, VIEWER & ANALYTICS (JOB 041, 042, 043) ───
 
@@ -167,21 +164,20 @@ export async function mediaRoutes(app: FastifyInstance) {
         const short = await MediaService.createShort(auth.userId, request.body);
         return reply.status(201).send({ success: true, short });
       } catch (err: any) {
-        return sendApiError(reply, request, 400, 'Bad Request', err.message, { code: 'INVALID_SHORT_PAYLOAD' });
+        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+          code: 'INVALID_SHORT_PAYLOAD',
+        });
       }
-    }
+    },
   );
 
   app.get<{
     Querystring: { constituencyId?: string; limit?: number };
-  }>(
-    '/api/v1/media/shorts/feed',
-    async (request, reply) => {
-      const { constituencyId, limit } = request.query;
-      const shorts = await MediaService.getShortsFeed(constituencyId, limit ? Number(limit) : 10);
-      return reply.send({ success: true, shorts, total: shorts.length });
-    }
-  );
+  }>('/api/v1/media/shorts/feed', async (request, reply) => {
+    const { constituencyId, limit } = request.query;
+    const shorts = await MediaService.getShortsFeed(constituencyId, limit ? Number(limit) : 10);
+    return reply.send({ success: true, shorts, total: shorts.length });
+  });
 
   app.post<{
     Body: ShortsAnalyticsEventRequest;
@@ -206,19 +202,16 @@ export async function mediaRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const result = await MediaService.recordShortsAnalytics(request.body);
       return reply.send({ success: result.success });
-    }
+    },
   );
 
   app.get<{
     Params: { shortId: string };
-  }>(
-    '/api/v1/media/shorts/:shortId/analytics',
-    async (request, reply) => {
-      const { shortId } = request.params;
-      const summary = await MediaService.getShortsAnalyticsSummary(shortId);
-      return reply.send({ success: true, summary });
-    }
-  );
+  }>('/api/v1/media/shorts/:shortId/analytics', async (request, reply) => {
+    const { shortId } = request.params;
+    const summary = await MediaService.getShortsAnalyticsSummary(shortId);
+    return reply.send({ success: true, summary });
+  });
 
   // ─── 4. NOTIFICATIONS & RETENTION DIGESTS (JOB 044, 045) ───
 
@@ -247,22 +240,25 @@ export async function mediaRoutes(app: FastifyInstance) {
 
       const sub = await MediaService.updateNotificationSubscription(auth.userId, request.body);
       return reply.send({ success: true, subscription: sub });
-    }
+    },
   );
 
-  app.get(
-    '/api/v1/media/notifications/subscriptions',
-    async (request, reply) => {
-      const auth = await resolveAuthenticatedUser(request, reply);
-      if (!auth) return;
+  app.get('/api/v1/media/notifications/subscriptions', async (request, reply) => {
+    const auth = await resolveAuthenticatedUser(request, reply);
+    if (!auth) return;
 
-      const subscriptions = await MediaService.getSubscriptions(auth.userId);
-      return reply.send({ success: true, subscriptions });
-    }
-  );
+    const subscriptions = await MediaService.getSubscriptions(auth.userId);
+    return reply.send({ success: true, subscriptions });
+  });
 
   app.post<{
-    Body: { constituencyId: string; topic: string; title: string; body: string; isEmergency?: boolean };
+    Body: {
+      constituencyId: string;
+      topic: string;
+      title: string;
+      body: string;
+      isEmergency?: boolean;
+    };
   }>(
     '/api/v1/media/notifications/dispatch',
     {
@@ -285,36 +281,34 @@ export async function mediaRoutes(app: FastifyInstance) {
       if (!auth) return;
 
       const { constituencyId, topic, title, body, isEmergency } = request.body;
-      const res = await MediaService.dispatchNotification(constituencyId, topic, { title, body, isEmergency });
+      const res = await MediaService.dispatchNotification(constituencyId, topic, {
+        title,
+        body,
+        isEmergency,
+      });
       return reply.send({ success: true, ...res });
-    }
+    },
   );
 
   app.get<{
     Params: { constituencyId: string };
     Querystring: { digestType?: 'weekly' | 'monthly' };
-  }>(
-    '/api/v1/media/digests/:constituencyId',
-    async (request, reply) => {
-      const { constituencyId } = request.params;
-      const digestType = request.query.digestType || 'weekly';
-      const digest = await MediaService.generateConstituencyDigest(constituencyId, digestType);
-      return reply.send({ success: true, digest });
-    }
-  );
+  }>('/api/v1/media/digests/:constituencyId', async (request, reply) => {
+    const { constituencyId } = request.params;
+    const digestType = request.query.digestType || 'weekly';
+    const digest = await MediaService.generateConstituencyDigest(constituencyId, digestType);
+    return reply.send({ success: true, digest });
+  });
 
   // ─── 5. LIVE STREAMING & BROADCAST STUDIO (JOB 051, 052, 053) ───
 
   app.get<{
     Querystring: { constituencyId?: string };
-  }>(
-    '/api/v1/media/broadcasts/live',
-    async (request, reply) => {
-      const { constituencyId } = request.query;
-      const streams = await MediaService.getLiveConsumerStreams(constituencyId);
-      return reply.send({ success: true, streams, total: streams.length });
-    }
-  );
+  }>('/api/v1/media/broadcasts/live', async (request, reply) => {
+    const { constituencyId } = request.query;
+    const streams = await MediaService.getLiveConsumerStreams(constituencyId);
+    return reply.send({ success: true, streams, total: streams.length });
+  });
 
   app.post<{
     Body: BroadcastStudioCreateRequest;
@@ -343,57 +337,59 @@ export async function mediaRoutes(app: FastifyInstance) {
         const session = await MediaService.createBroadcastSession(auth.userId, request.body);
         return reply.status(201).send({ success: true, session });
       } catch (err: any) {
-        return sendApiError(reply, request, 400, 'Bad Request', err.message, { code: 'INVALID_STUDIO_PAYLOAD' });
+        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+          code: 'INVALID_STUDIO_PAYLOAD',
+        });
       }
-    }
+    },
   );
 
   app.post<{
     Params: { sessionId: string };
-  }>(
-    '/api/v1/media/broadcasts/studio/:sessionId/start',
-    async (request, reply) => {
-      const auth = await resolveAuthenticatedUser(request, reply);
-      if (!auth) return;
+  }>('/api/v1/media/broadcasts/studio/:sessionId/start', async (request, reply) => {
+    const auth = await resolveAuthenticatedUser(request, reply);
+    if (!auth) return;
 
-      try {
-        const session = await MediaService.startBroadcast(request.params.sessionId);
-        return reply.send({ success: true, session });
-      } catch (err: any) {
-        return sendApiError(reply, request, 404, 'Not Found', err.message, { code: 'STREAM_NOT_FOUND' });
-      }
+    try {
+      const session = await MediaService.startBroadcast(request.params.sessionId);
+      return reply.send({ success: true, session });
+    } catch (err: any) {
+      return sendApiError(reply, request, 404, 'Not Found', err.message, {
+        code: 'STREAM_NOT_FOUND',
+      });
     }
-  );
+  });
 
   app.post<{
     Params: { sessionId: string };
-  }>(
-    '/api/v1/media/broadcasts/studio/:sessionId/end',
-    async (request, reply) => {
-      const auth = await resolveAuthenticatedUser(request, reply);
-      if (!auth) return;
+  }>('/api/v1/media/broadcasts/studio/:sessionId/end', async (request, reply) => {
+    const auth = await resolveAuthenticatedUser(request, reply);
+    if (!auth) return;
 
-      try {
-        const session = await MediaService.endBroadcast(request.params.sessionId);
-        return reply.send({ success: true, session });
-      } catch (err: any) {
-        return sendApiError(reply, request, 404, 'Not Found', err.message, { code: 'STREAM_NOT_FOUND' });
-      }
+    try {
+      const session = await MediaService.endBroadcast(request.params.sessionId);
+      return reply.send({ success: true, session });
+    } catch (err: any) {
+      return sendApiError(reply, request, 404, 'Not Found', err.message, {
+        code: 'STREAM_NOT_FOUND',
+      });
     }
-  );
+  });
 
   app.post<{
     Params: { sessionId: string };
     Body: { delta: number };
-  }>(
-    '/api/v1/media/broadcasts/:sessionId/viewers',
-    async (request, reply) => {
-      try {
-        const res = await MediaService.updateViewerCount(request.params.sessionId, request.body?.delta || 1);
-        return reply.send({ success: true, ...res });
-      } catch (err: any) {
-        return sendApiError(reply, request, 404, 'Not Found', err.message, { code: 'STREAM_NOT_FOUND' });
-      }
+  }>('/api/v1/media/broadcasts/:sessionId/viewers', async (request, reply) => {
+    try {
+      const res = await MediaService.updateViewerCount(
+        request.params.sessionId,
+        request.body?.delta || 1,
+      );
+      return reply.send({ success: true, ...res });
+    } catch (err: any) {
+      return sendApiError(reply, request, 404, 'Not Found', err.message, {
+        code: 'STREAM_NOT_FOUND',
+      });
     }
-  );
+  });
 }

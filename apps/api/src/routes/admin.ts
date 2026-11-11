@@ -4,7 +4,12 @@ import { adminService, type AdminActor } from '../services/adminService';
 import { sendApiError } from '../lib/replyHelper';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
-const ALLOWED_ADMIN_ROLES = new Set<string>(['admin', 'super_admin', 'compliance_officer', 'moderator']);
+const ALLOWED_ADMIN_ROLES = new Set<string>([
+  'admin',
+  'super_admin',
+  'compliance_officer',
+  'moderator',
+]);
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -25,7 +30,13 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.replace('Bearer ', '').trim();
       if (token === 'invalid-token' || token === 'expired-token') {
-        return sendApiError(reply, request, 401, 'INVALID_CREDENTIALS', 'Provided authentication token is invalid or expired.');
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'INVALID_CREDENTIALS',
+          'Provided authentication token is invalid or expired.',
+        );
       }
 
       if (token === 'admin-service-token' || token.startsWith('admin-test-token')) {
@@ -39,7 +50,10 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
           } = await supabase.auth.getUser(token);
           if (!error && user) {
             userId = user.id;
-            role = (user.app_metadata?.role as string) || (user.user_metadata?.role as string) || 'citizen';
+            role =
+              (user.app_metadata?.role as string) ||
+              (user.user_metadata?.role as string) ||
+              'citizen';
           }
         } catch {
           // Token resolution fallback
@@ -54,7 +68,13 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     }
 
     if (!userId) {
-      return sendApiError(reply, request, 401, 'UNAUTHORIZED', 'Authentication is required to access the Poligram Admin Control Plane.');
+      return sendApiError(
+        reply,
+        request,
+        401,
+        'UNAUTHORIZED',
+        'Authentication is required to access the Poligram Admin Control Plane.',
+      );
     }
 
     if (!role || !ALLOWED_ADMIN_ROLES.has(role)) {
@@ -63,7 +83,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
         request,
         403,
         'INSUFFICIENT_PERMISSIONS',
-        `Access denied. Role '${role || 'unassigned'}' is not authorized for administrative operations.`
+        `Access denied. Role '${role || 'unassigned'}' is not authorized for administrative operations.`,
       );
     }
 
@@ -84,7 +104,13 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     const body = request.body as any;
 
     if (!body || !body.targetUserId || !body.action) {
-      return sendApiError(reply, request, 400, 'INVALID_PAYLOAD', 'targetUserId and action are required.');
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'INVALID_PAYLOAD',
+        'targetUserId and action are required.',
+      );
     }
 
     const result = await adminService.executeUserAction(actor, body);
@@ -97,7 +123,13 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     const body = request.body as any;
 
     if (!body || !body.targetContentId || !body.decision) {
-      return sendApiError(reply, request, 400, 'INVALID_PAYLOAD', 'targetContentId and decision are required.');
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'INVALID_PAYLOAD',
+        'targetContentId and decision are required.',
+      );
     }
 
     const result = await adminService.decideModeration(actor, body);
@@ -110,7 +142,13 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     const body = request.body as any;
 
     if (!body || !body.candidateId || !body.kycStatus) {
-      return sendApiError(reply, request, 400, 'INVALID_PAYLOAD', 'candidateId and kycStatus are required.');
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'INVALID_PAYLOAD',
+        'candidateId and kycStatus are required.',
+      );
     }
 
     const result = await adminService.verifyCandidate(actor, body);
@@ -123,7 +161,13 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     const body = request.body as any;
 
     if (!body || !body.entityType || !body.entityId || !body.field) {
-      return sendApiError(reply, request, 400, 'INVALID_PAYLOAD', 'entityType, entityId, and field are required.');
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'INVALID_PAYLOAD',
+        'entityType, entityId, and field are required.',
+      );
     }
 
     const result = await adminService.executeDataCorrection(actor, body);
@@ -142,7 +186,13 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     const body = request.body as { value: unknown; description?: string };
 
     if (body === undefined || body.value === undefined) {
-      return sendApiError(reply, request, 400, 'INVALID_PAYLOAD', 'Feature flag value must be provided.');
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'INVALID_PAYLOAD',
+        'Feature flag value must be provided.',
+      );
     }
 
     const updated = await adminService.setFeatureFlag(actor, key, body.value, body.description);

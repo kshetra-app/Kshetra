@@ -73,14 +73,28 @@ describe('Telangana Constituencies Seed Data', () => {
     });
   });
 
-  it('should track 10 BRS→INC post-election defections', () => {
+  it('should track the 10 documented BRS→INC post-election defections separately', () => {
     const defections = TELANGANA_CONSTITUENCIES.filter(
-      (c) => c.currentParty && c.currentParty !== c.winner2023,
+      (c) => c.currentPartyChangeType === 'defection',
     );
     expect(defections.length).toBe(10);
     defections.forEach((c) => {
       expect(c.winner2023).toBe('BRS');
       expect(c.currentParty).toBe('INC');
+    });
+  });
+
+  it('keeps the Secunderabad Cantonment by-election separate from its 2023 result', () => {
+    const constituency = TELANGANA_CONSTITUENCIES.find((c) => c.acNo === 71);
+    expect(constituency).toMatchObject({
+      winner2023: 'BRS',
+      winnerName2023: 'Lasya Nanditha Sayanna',
+      winnerVotes2023: 59057,
+      runnerUp2023: 'BJP',
+      runnerUpName2023: 'Sriganesh. N',
+      margin2023: 17169,
+      currentParty: 'INC',
+      currentPartyChangeType: 'by-election',
     });
   });
 

@@ -32,7 +32,7 @@ export class TopologyCertificationService {
     hasSelfIntersection: boolean,
     isContainedInState: boolean,
     overlapsAdjacentConstituency: boolean,
-    srid: number
+    srid: number,
   ): SpatialTopologyViolation[] {
     const violations: SpatialTopologyViolation[] = [];
 
@@ -104,12 +104,14 @@ export class TopologyCertificationService {
       totalAssemblyConstituencies,
       totalParliamentaryConstituencies,
       totalDistricts,
-      validGeometriesCount: totalAssemblyConstituencies + totalParliamentaryConstituencies + totalDistricts,
+      validGeometriesCount:
+        totalAssemblyConstituencies + totalParliamentaryConstituencies + totalDistricts,
       invalidGeometriesCount: 0,
       sliverPolygonsCount: 0,
       crossBoundaryOverlapsCount: 0,
       stateContainmentViolationsCount: 0,
-      srid4326CompliantCount: totalAssemblyConstituencies + totalParliamentaryConstituencies + totalDistricts,
+      srid4326CompliantCount:
+        totalAssemblyConstituencies + totalParliamentaryConstituencies + totalDistricts,
     };
 
     const certified = failureLog.length === 0;
@@ -146,7 +148,7 @@ export class TopologyCertificationService {
   // ============================================================================
 
   public static async inspectTargetedSpatialScope(
-    query: TargetedSpatialInspectionQuery
+    query: TargetedSpatialInspectionQuery,
   ): Promise<{ inspectedScope: TargetedSpatialInspectionQuery; pass: boolean; count: number }> {
     let count = 0;
     if (query.scopeType === 'STATE') {

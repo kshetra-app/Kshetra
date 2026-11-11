@@ -28,6 +28,7 @@ import {
 } from '../services/ai';
 import { validate } from '../lib/validation';
 import { sendApiError } from '../lib/replyHelper';
+import { AIProviderUnavailableError } from '../services/aiProvider';
 import type { AIProviderType } from '@kshetra/shared';
 
 const MIN_AC_NO = 1;
@@ -181,22 +182,45 @@ export async function aiRoutes(app: FastifyInstance) {
     const budgetCheck = await AICostControlService.checkBudget(tenantId, 500);
     if (!budgetCheck.allowed) {
       reply.header('Retry-After', String(budgetCheck.resetInSeconds || 86400));
-      return sendApiError(reply, request, 429, 'Too Many Requests', budgetCheck.reason || 'AI Daily Quota Exceeded', {
-        code: 'AI_BUDGET_EXCEEDED',
-      });
+      return sendApiError(
+        reply,
+        request,
+        429,
+        'Too Many Requests',
+        budgetCheck.reason || 'AI Daily Quota Exceeded',
+        {
+          code: 'AI_BUDGET_EXCEEDED',
+        },
+      );
     }
 
     try {
       const summary = await AINewsSummaryService.summarizeNews(parsed.data);
       if (!summary.cacheHit) {
-        await AICostControlService.recordUsage(tenantId, summary.tokensUsed, summary.estimatedCostUsd);
+        await AICostControlService.recordUsage(
+          tenantId,
+          summary.tokensUsed,
+          summary.estimatedCostUsd,
+        );
       }
       return reply.status(200).send(summary);
     } catch (err: unknown) {
+      if (err instanceof AIProviderUnavailableError) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', err.message, {
+          code: 'AI_PROVIDER_UNAVAILABLE',
+        });
+      }
       request.log.error({ err }, 'AI news summarization failed');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to summarize news article', {
-        code: 'AI_SUMMARIZATION_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Failed to summarize news article',
+        {
+          code: 'AI_SUMMARIZATION_ERROR',
+        },
+      );
     }
   });
 
@@ -217,9 +241,16 @@ export async function aiRoutes(app: FastifyInstance) {
       return reply.status(200).send(result);
     } catch (err: unknown) {
       request.log.error({ err }, 'Civic issue classification failed');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to classify civic complaint', {
-        code: 'CIVIC_CLASSIFICATION_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Failed to classify civic complaint',
+        {
+          code: 'CIVIC_CLASSIFICATION_ERROR',
+        },
+      );
     }
   });
 
@@ -241,9 +272,16 @@ export async function aiRoutes(app: FastifyInstance) {
     const budgetCheck = await AICostControlService.checkBudget(tenantId, 1000);
     if (!budgetCheck.allowed) {
       reply.header('Retry-After', String(budgetCheck.resetInSeconds || 86400));
-      return sendApiError(reply, request, 429, 'Too Many Requests', budgetCheck.reason || 'AI Daily Quota Exceeded', {
-        code: 'AI_BUDGET_EXCEEDED',
-      });
+      return sendApiError(
+        reply,
+        request,
+        429,
+        'Too Many Requests',
+        budgetCheck.reason || 'AI Daily Quota Exceeded',
+        {
+          code: 'AI_BUDGET_EXCEEDED',
+        },
+      );
     }
 
     try {
@@ -256,9 +294,16 @@ export async function aiRoutes(app: FastifyInstance) {
       return reply.status(200).send(response);
     } catch (err: unknown) {
       request.log.error({ err }, 'Ask POLIGRAM query failed');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to process POLIGRAM intelligence query', {
-        code: 'ASK_POLIGRAM_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Failed to process POLIGRAM intelligence query',
+        {
+          code: 'ASK_POLIGRAM_ERROR',
+        },
+      );
     }
   };
 
@@ -279,9 +324,16 @@ export async function aiRoutes(app: FastifyInstance) {
       return reply.status(200).send(report);
     } catch (err: unknown) {
       request.log.error({ err }, 'Failed to generate AI cost report');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to generate cost report', {
-        code: 'COST_REPORT_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Failed to generate cost report',
+        {
+          code: 'COST_REPORT_ERROR',
+        },
+      );
     }
   });
 
@@ -297,9 +349,16 @@ export async function aiRoutes(app: FastifyInstance) {
       return reply.status(200).send(budget);
     } catch (err: unknown) {
       request.log.error({ err }, 'Failed to get tenant budget');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to retrieve tenant budget', {
-        code: 'TENANT_BUDGET_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Failed to retrieve tenant budget',
+        {
+          code: 'TENANT_BUDGET_ERROR',
+        },
+      );
     }
   });
 
@@ -319,9 +378,16 @@ export async function aiRoutes(app: FastifyInstance) {
       return reply.status(200).send(updated);
     } catch (err: unknown) {
       request.log.error({ err }, 'Failed to update tenant budget');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to update tenant budget', {
-        code: 'TENANT_BUDGET_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Failed to update tenant budget',
+        {
+          code: 'TENANT_BUDGET_ERROR',
+        },
+      );
     }
   });
 
@@ -336,7 +402,10 @@ export async function aiRoutes(app: FastifyInstance) {
         name: p.name,
         available: p.isAvailable(),
       })),
-      defaultModel: chain[0]?.name === 'gemini' ? (process.env.GEMINI_MODEL || 'gemini-2.0-flash') : 'gpt-4o-mini',
+      defaultModel:
+        chain[0]?.name === 'gemini'
+          ? process.env.GEMINI_MODEL || 'gemini-2.0-flash'
+          : 'gpt-4o-mini',
       offlineSafe: true,
     };
   });
@@ -362,9 +431,16 @@ export async function aiRoutes(app: FastifyInstance) {
       });
     } catch (err: unknown) {
       request.log.error({ err }, 'Failed to configure AI provider');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to configure AI provider', {
-        code: 'PROVIDER_CONFIG_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Failed to configure AI provider',
+        {
+          code: 'PROVIDER_CONFIG_ERROR',
+        },
+      );
     }
   });
 
@@ -387,9 +463,16 @@ export async function aiRoutes(app: FastifyInstance) {
     const budgetCheck = await AICostControlService.checkBudget(tenantId, 1000);
     if (!budgetCheck.allowed) {
       reply.header('Retry-After', String(budgetCheck.resetInSeconds || 86400));
-      return sendApiError(reply, request, 429, 'Too Many Requests', budgetCheck.reason || 'AI Daily Quota Exceeded', {
-        code: 'AI_BUDGET_EXCEEDED',
-      });
+      return sendApiError(
+        reply,
+        request,
+        429,
+        'Too Many Requests',
+        budgetCheck.reason || 'AI Daily Quota Exceeded',
+        {
+          code: 'AI_BUDGET_EXCEEDED',
+        },
+      );
     }
 
     try {
@@ -578,13 +661,14 @@ export async function aiRoutes(app: FastifyInstance) {
   /** GET /api/v1/ai/status — check AI status */
   app.get('/api/v1/ai/status', async () => {
     const chain = defaultAIRegistry.getActiveChain();
-    const primary = chain[0];
+    const configuredProviders = chain.filter((provider) => provider.name !== 'offline_heuristic');
+    const primary = configuredProviders[0];
     return {
-      configured: true,
-      provider: primary?.name || 'offline_heuristic',
-      model: (primary as { model?: string })?.model || 'deterministic-offline-v1',
-      activeProviders: chain.map((p) => p.name),
-      degradedOffline: primary?.name === 'offline_heuristic',
+      configured: configuredProviders.length > 0,
+      provider: primary?.name ?? null,
+      model: (primary as { model?: string } | undefined)?.model ?? null,
+      activeProviders: configuredProviders.map((provider) => provider.name),
+      degradedOffline: configuredProviders.length === 0,
     };
   });
 }

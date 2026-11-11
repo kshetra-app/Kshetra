@@ -527,7 +527,7 @@ describe('Manage & Pages Routes Comprehensive Unit Tests', () => {
       expect(JSON.parse(res.payload).code).toBe('NOT_FOUND');
     });
 
-    it('handles database insert error in production mode with 500', async () => {
+    it('keeps Page Pro order creation unavailable in production until the payment provider is implemented', async () => {
       const pageId = 'b8e974e1-2c6b-4e1b-944a-3fb927977461';
       const origEnv = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
@@ -567,8 +567,8 @@ describe('Manage & Pages Routes Comprehensive Unit Tests', () => {
             billingCycle: 'monthly',
           },
         });
-        expect(res.statusCode).toBe(500);
-        expect(JSON.parse(res.payload).code).toBe('DATABASE_ERROR');
+        expect(res.statusCode).toBe(503);
+        expect(JSON.parse(res.payload).code).toBe('PAYMENT_PROVIDER_UNAVAILABLE');
       } finally {
         process.env.NODE_ENV = origEnv;
       }

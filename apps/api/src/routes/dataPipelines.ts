@@ -11,7 +11,13 @@ export const dataPipelineRoutes: FastifyPluginAsync = async (app) => {
     const body = request.body as any;
 
     if (!body || !body.datasetName || !body.sourceUri) {
-      return sendApiError(reply, request, 400, 'INVALID_PAYLOAD', 'datasetName and sourceUri are required.');
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'INVALID_PAYLOAD',
+        'datasetName and sourceUri are required.',
+      );
     }
 
     const job = await dataIngestionService.processDataset({
@@ -32,7 +38,13 @@ export const dataPipelineRoutes: FastifyPluginAsync = async (app) => {
 
     const job = await dataIngestionService.getJobStatus(jobId);
     if (!job) {
-      return sendApiError(reply, request, 404, 'JOB_NOT_FOUND', `Data ingestion job '${jobId}' was not found.`);
+      return sendApiError(
+        reply,
+        request,
+        404,
+        'JOB_NOT_FOUND',
+        `Data ingestion job '${jobId}' was not found.`,
+      );
     }
 
     return reply.send({ success: true, data: job });
@@ -45,7 +57,13 @@ export const dataPipelineRoutes: FastifyPluginAsync = async (app) => {
     const body = request.body as any;
 
     if (!body || !body.orderNumber || !body.stateCode || !Array.isArray(body.boundaries)) {
-      return sendApiError(reply, request, 400, 'INVALID_PAYLOAD', 'orderNumber, stateCode, and boundaries array are required.');
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'INVALID_PAYLOAD',
+        'orderNumber, stateCode, and boundaries array are required.',
+      );
     }
 
     const report = await delimitationSourcePipeline.processDelimitationRevision(body);

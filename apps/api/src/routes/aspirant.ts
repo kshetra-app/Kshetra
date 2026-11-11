@@ -157,14 +157,28 @@ export async function aspirantRoutes(app: FastifyInstance) {
         return reply.status(201).send({ success: true, kyc });
       } catch (err: any) {
         if (err.message === 'STATUTORY_DECLARATION_REQUIRED') {
-          return sendApiError(reply, request, 400, 'Bad Request', 'Statutory declaration must be accepted', {
-            code: 'STATUTORY_DECLARATION_REQUIRED',
-          });
+          return sendApiError(
+            reply,
+            request,
+            400,
+            'Bad Request',
+            'Statutory declaration must be accepted',
+            {
+              code: 'STATUTORY_DECLARATION_REQUIRED',
+            },
+          );
         }
         if (err.message === 'ASPIRANT_NOT_REGISTERED') {
-          return sendApiError(reply, request, 404, 'Not Found', 'Aspirant profile must be registered first', {
-            code: 'ASPIRANT_NOT_REGISTERED',
-          });
+          return sendApiError(
+            reply,
+            request,
+            404,
+            'Not Found',
+            'Aspirant profile must be registered first',
+            {
+              code: 'ASPIRANT_NOT_REGISTERED',
+            },
+          );
         }
         return sendApiError(reply, request, 500, 'Internal Server Error', err.message, {
           code: 'DATABASE_ERROR',
@@ -176,22 +190,19 @@ export async function aspirantRoutes(app: FastifyInstance) {
   /**
    * 3. GET /api/v1/aspirant/kyc/status — Get KYC status for authenticated user (JOB 046)
    */
-  app.get(
-    '/api/v1/aspirant/kyc/status',
-    async (request, reply) => {
-      const auth = await resolveAuthenticatedUser(request, reply);
-      if (!auth) return;
+  app.get('/api/v1/aspirant/kyc/status', async (request, reply) => {
+    const auth = await resolveAuthenticatedUser(request, reply);
+    if (!auth) return;
 
-      try {
-        const records = await AspirantService.getKYCStatus(auth.userId);
-        return reply.send({ success: true, records });
-      } catch (err: any) {
-        return sendApiError(reply, request, 500, 'Internal Server Error', err.message, {
-          code: 'DATABASE_ERROR',
-        });
-      }
-    },
-  );
+    try {
+      const records = await AspirantService.getKYCStatus(auth.userId);
+      return reply.send({ success: true, records });
+    } catch (err: any) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', err.message, {
+        code: 'DATABASE_ERROR',
+      });
+    }
+  });
 
   /**
    * 4. GET /api/v1/aspirant/profile/:id — Public Aspirant Profile & Aggregated Timeline (JOB 047)
@@ -232,40 +243,34 @@ export async function aspirantRoutes(app: FastifyInstance) {
    */
   app.get<{
     Querystring: { stateCode?: string; constituencyId?: string };
-  }>(
-    '/api/v1/aspirants',
-    async (request, reply) => {
-      const { stateCode, constituencyId } = request.query;
+  }>('/api/v1/aspirants', async (request, reply) => {
+    const { stateCode, constituencyId } = request.query;
 
-      if (isSupabaseConfigured) {
-        let query = supabase.from('aspirant_profiles').select('*').eq('is_public', true);
-        if (stateCode) query = query.eq('state_code', stateCode);
-        if (constituencyId) query = query.eq('target_constituency_ac_no', constituencyId);
+    if (isSupabaseConfigured) {
+      let query = supabase.from('aspirant_profiles').select('*').eq('is_public', true);
+      if (stateCode) query = query.eq('state_code', stateCode);
+      if (constituencyId) query = query.eq('target_constituency_ac_no', constituencyId);
 
-        const { data, error } = await query.order('civic_score', { ascending: false });
-        if (error) {
-          return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
-            code: 'DATABASE_ERROR',
-          });
-        }
-        return reply.send({ success: true, aspirants: data || [] });
+      const { data, error } = await query.order('civic_score', { ascending: false });
+      if (error) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
+          code: 'DATABASE_ERROR',
+        });
       }
+      return reply.send({ success: true, aspirants: data || [] });
+    }
 
-      return reply.send({ success: true, aspirants: [] });
-    },
-  );
+    return reply.send({ success: true, aspirants: [] });
+  });
 
   /**
    * 6. GET /api/v1/aspirant/modules — List Leadership Academy Modules (JOB 050)
    */
-  app.get(
-    '/api/v1/aspirant/modules',
-    async (request, reply) => {
-      const auth = await resolveAuthenticatedUser(request, reply).catch(() => null);
-      const modules = AspirantService.listAcademyModules(auth?.userId);
-      return reply.send({ success: true, modules });
-    },
-  );
+  app.get('/api/v1/aspirant/modules', async (request, reply) => {
+    const auth = await resolveAuthenticatedUser(request, reply).catch(() => null);
+    const modules = AspirantService.listAcademyModules(auth?.userId);
+    return reply.send({ success: true, modules });
+  });
 
   /**
    * 7. GET /api/v1/aspirant/modules/:id — Get Leadership Module Detail & Quiz (JOB 050)
@@ -550,7 +555,9 @@ export async function aspirantRoutes(app: FastifyInstance) {
       const auth = await resolveAuthenticatedUser(request, reply);
       if (!auth) return;
 
-      if (!assertActingUserMatch(reply, request, auth.userId, request.body?.endorserId, 'endorserId')) {
+      if (
+        !assertActingUserMatch(reply, request, auth.userId, request.body?.endorserId, 'endorserId')
+      ) {
         return;
       }
 

@@ -15,12 +15,7 @@ export type CanonicalCivicStatus =
   | 'CLOSED';
 
 export type LegacyCivicStatus =
-  | 'open'
-  | 'acknowledged'
-  | 'in_progress'
-  | 'resolved'
-  | 'closed'
-  | 'reopened';
+  'open' | 'acknowledged' | 'in_progress' | 'resolved' | 'closed' | 'reopened';
 
 export type CivicIssueStatus = CanonicalCivicStatus | LegacyCivicStatus;
 

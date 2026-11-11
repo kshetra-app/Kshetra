@@ -82,7 +82,8 @@ export const COMPLIANCE_RETENTION_POLICY_MATRIX: RetentionPolicyRule[] = [
     ],
     retentionClass: 'permanent_statutory_public',
     retentionDurationDays: null, // Infinite
-    statutoryReference: 'Representation of the People Act 1950/1951, Delimitation Act 2002 & ECI Regulations',
+    statutoryReference:
+      'Representation of the People Act 1950/1951, Delimitation Act 2002 & ECI Regulations',
     deletionTrigger: 'NEVER (Statutory public records exempt from citizen erasure)',
     deletionMethod: 'immutable_archive',
     auditRequirements: 'Cryptographic batch provenance anchors and version snapshots preserved',
@@ -120,29 +121,36 @@ export class RetentionService {
     if (statutoryPublicTables.includes(cleanName)) {
       return {
         canErase: false,
-        reason: 'Statutory public electoral record published pursuant to Representation of the People Act 1951. Exempt from DPDP Act erasure.',
-        exemptionReference: 'DPDP Act 2023 Section 3(c)(ii) & Representation of the People Act 1951',
+        reason:
+          'Statutory public electoral record published pursuant to Representation of the People Act 1951. Exempt from DPDP Act erasure.',
+        exemptionReference:
+          'DPDP Act 2023 Section 3(c)(ii) & Representation of the People Act 1951',
       };
     }
 
     if (cleanName === 'wallet_transactions' || cleanName === 'campaign_wallets') {
       return {
         canErase: false,
-        reason: 'Financial ledger records must be retained for 7 years pursuant to Companies Act 2013 and Tax accounting mandates.',
+        reason:
+          'Financial ledger records must be retained for 7 years pursuant to Companies Act 2013 and Tax accounting mandates.',
         exemptionReference: 'Companies Act 2013 Section 128',
       };
     }
 
     return {
       canErase: true,
-      reason: 'Citizen private personal data subject to unconditional right of erasure upon verified request.',
+      reason:
+        'Citizen private personal data subject to unconditional right of erasure upon verified request.',
     };
   }
 
   /**
    * Simulates/executes the deletion cascade for a user account.
    */
-  async processAccountErasure(userId: string, customClient?: any): Promise<{
+  async processAccountErasure(
+    userId: string,
+    customClient?: any,
+  ): Promise<{
     success: boolean;
     userId: string;
     erasedEntities: string[];

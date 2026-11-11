@@ -40,7 +40,7 @@ export class UniversalAnalyticsService {
 
   static async ingestBatch(
     req: BatchAnalyticsEventsRequest,
-    clientIp?: string
+    clientIp?: string,
   ): Promise<BatchAnalyticsEventsResponse> {
     if (!req.events || !Array.isArray(req.events)) {
       return {

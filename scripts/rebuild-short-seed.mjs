@@ -4,8 +4,11 @@
  * election year is present in the TCPD public dump.
  *
  * Strategy (zero fabrication):
- *  - Preserve existing curated fields where present (name, localName, winner party code,
- *    winnerName, currentParty) matched by acNo.
+ *  - Preserve existing curated fields where present (name and localName) matched by acNo.
+ *  - Rebuild election-result fields from the election-year TCPD general-election table,
+ *    so later by-election outcomes do not replace historical general-election results.
+ *  - Preserve an existing currentParty value so later by-elections or party changes are
+ *    not erased when historical election fields are refreshed.
  *  - Fill REAL values from TCPD: district (fixes 'Sc'/'St' corruption), type, winnerVotes,
  *    margin, runnerUp (party + name), turnout, electors.
  *  - Add any MISSING constituencies entirely from TCPD.
@@ -74,7 +77,7 @@ function loadExisting() {
       const g = (k) => { const mm = body.match(new RegExp(`${k}:\\s*'([^']*)'`)); return mm ? mm[1] : undefined; };
       m.set(acNo, {
         name: g('name'), localName: g('localName'),
-        winner: g(`winner${Y}`), winnerName: g(`winnerName${Y}`), currentParty: g('currentParty'),
+        currentParty: g('currentParty'),
       });
     }
   } catch { /* none */ }
@@ -110,7 +113,7 @@ for (const [cno, cand] of byCno) {
     margin: num(w[COL.margin]),
     turnout: num(w[COL.turnout]),
     electors: num(w[COL.electors]),
-    currentParty: tcpdWinnerCode,
+    currentParty: ex.currentParty || tcpdWinnerCode,
   });
 }
 seats.sort((a, b) => a.acNo - b.acNo);

@@ -15,7 +15,7 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: 'https://kshetra-api-production-9f06.up.railway.app',
+        target: 'https://kshetra-api-production-b802.up.railway.app',
         changeOrigin: true,
         secure: true,
       },
@@ -24,6 +24,15 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
-    chunkSizeWarningLimit: 1000,
+    // MapLibre GL is an isolated, lazy-loaded map page vendor chunk (~1.06 MB minified).
+    chunkSizeWarningLimit: 1100,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('/node_modules/maplibre-gl/')) return 'maplibre-vendor';
+          if (id.includes('/node_modules/@maplibre/maplibre-gl-style-spec/')) return 'maplibre-style-spec';
+        },
+      },
+    },
   },
 });

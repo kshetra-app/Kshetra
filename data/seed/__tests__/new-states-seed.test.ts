@@ -217,6 +217,44 @@ describe('Uttar Pradesh Constituencies', () => {
     expect(spWins).toBe(111);
   });
 
+  it('keeps general-election results separate from later by-elections', () => {
+    expect(getUPConstituency(15)).toMatchObject({
+      winner2022: 'BJP',
+      winnerName2022: 'Vikram Singh',
+      winnerVotes2022: 100651,
+      runnerUp2022: 'RLD',
+      runnerUpName2022: 'Rajpal Singh Saini',
+      margin2022: 16345,
+      currentParty: 'RLD',
+    });
+    expect(getUPConstituency(34)).toMatchObject({
+      winner2022: 'SP',
+      winnerName2022: 'Mohammad Abdullah Azam Khan',
+      winnerVotes2022: 126162,
+      runnerUp2022: 'ADAL',
+      runnerUpName2022: 'Haidar Ali Khan Alias Hamza Mian',
+      margin2022: 61103,
+      currentParty: 'ADAL',
+    });
+    expect(getUPConstituency(37)).toMatchObject({
+      winner2022: 'SP',
+      winnerName2022: 'Mohammad Azam Khan',
+      winnerVotes2022: 131225,
+      runnerUp2022: 'BJP',
+      runnerUpName2022: 'Akash Saxena (Honey)',
+      margin2022: 55141,
+      currentParty: 'BJP',
+    });
+    expect(getUPConstituency(354)).toMatchObject({
+      winner2022: 'SP',
+      winnerName2022: 'Dara Singh Chauhan',
+      winnerVotes2022: 108430,
+      runnerUp2022: 'BJP',
+      runnerUpName2022: 'Vijay Kumar Rajbhar',
+      margin2022: 22216,
+    });
+  });
+
   it('should have SC and ST reserved seats', () => {
     const scSeats = UP_CONSTITUENCIES.filter((c) => c.type === 'SC').length;
     const stSeats = UP_CONSTITUENCIES.filter((c) => c.type === 'ST').length;

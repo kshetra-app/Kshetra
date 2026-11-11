@@ -88,7 +88,7 @@ describe('MH MLA Profiles', () => {
   });
 
   it('getMHMLAProfile should find Fadnavis', () => {
-    const mla = getMHMLAProfile(170);
+    const mla = getMHMLAProfile(52);
     expect(mla).toBeDefined();
     expect(mla!.name).toContain('Fadnavis');
   });

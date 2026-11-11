@@ -32,7 +32,10 @@ export class MediaService {
   private static mockShorts = new Map<string, ShortsVideoDTO>();
   private static mockShortsAnalytics = new Map<string, ShortsAnalyticsEventRequest[]>(); // shortId -> events
   private static mockNotificationSubs = new Map<string, NotificationSubscriptionDTO>(); // "userId:constituencyId:topic" -> sub
-  private static mockNotificationDispatches = new Map<string, Array<{ timestamp: string; topic: string }>>(); // userId -> dispatches
+  private static mockNotificationDispatches = new Map<
+    string,
+    Array<{ timestamp: string; topic: string }>
+  >(); // userId -> dispatches
   private static mockDigests = new Map<string, ConstituencyDigestDTO>(); // "constituencyId:digestType" -> digest
   private static mockStreams = new Map<string, BroadcastStudioSessionDTO>(); // sessionId -> stream
 
@@ -52,7 +55,7 @@ export class MediaService {
   static async createRepresentativeResponse(
     representativeId: string,
     req: RepresentativeCivicResponseCreateRequest,
-    options?: { representativeName?: string; officialDesignation?: string }
+    options?: { representativeName?: string; officialDesignation?: string },
   ): Promise<RepresentativeCivicResponseDTO> {
     if (!req.responseText || req.responseText.trim().length < 5) {
       throw new Error('INVALID_RESPONSE_TEXT: Response must be at least 5 characters');
@@ -63,7 +66,8 @@ export class MediaService {
 
     const now = new Date().toISOString();
     const id = `resp-${crypto.randomUUID()}`;
-    const designation = req.officialDesignation || options?.officialDesignation || 'Elected Representative';
+    const designation =
+      req.officialDesignation || options?.officialDesignation || 'Elected Representative';
 
     const responseDTO: RepresentativeCivicResponseDTO = {
       id,
@@ -159,7 +163,13 @@ export class MediaService {
       category: req.category || 'governance',
       stateCode: req.stateCode,
       constituencyId: req.constituencyId,
-      constituencyName: req.constituencyName || (req.constituencyId ? (req.constituencyId === 'tg-ac-61' ? 'Jubilee Hills' : `Constituency ${req.constituencyId}`) : undefined),
+      constituencyName:
+        req.constituencyName ||
+        (req.constituencyId
+          ? req.constituencyId === 'tg-ac-61'
+            ? 'Jubilee Hills'
+            : `Constituency ${req.constituencyId}`
+          : undefined),
       taggedRepresentativeId: req.taggedRepresentativeId,
       sentimentScore: req.sentimentScore ?? 0.0,
       language: req.language || 'en',
@@ -195,7 +205,9 @@ export class MediaService {
     return article;
   }
 
-  static async queryNewsFeed(filter?: NewsFeedQueryRequest): Promise<{ articles: PoliticalNewsArticleDTO[]; total: number }> {
+  static async queryNewsFeed(
+    filter?: NewsFeedQueryRequest,
+  ): Promise<{ articles: PoliticalNewsArticleDTO[]; total: number }> {
     let list = Array.from(this.mockNews.values());
 
     if (filter?.constituencyId) {
@@ -230,7 +242,8 @@ export class MediaService {
       constituency: article.constituencyId
         ? {
             id: article.constituencyId,
-            name: article.constituencyName || `${article.constituencyId.toUpperCase()} (Jubilee Hills)`,
+            name:
+              article.constituencyName || `${article.constituencyId.toUpperCase()} (Jubilee Hills)`,
             stateCode: article.stateCode || 'TG',
           }
         : undefined,
@@ -248,7 +261,10 @@ export class MediaService {
 
   // ─── 3. SHORTS PIPELINE, VIEWER & ANALYTICS (JOB 041, 042, 043) ───
 
-  static async createShort(creatorId: string, req: ShortsVideoCreateRequest): Promise<ShortsVideoDTO> {
+  static async createShort(
+    creatorId: string,
+    req: ShortsVideoCreateRequest,
+  ): Promise<ShortsVideoDTO> {
     if (!req.title || req.title.trim().length < 3) {
       throw new Error('INVALID_TITLE: Short title must be at least 3 characters');
     }
@@ -311,7 +327,10 @@ export class MediaService {
     return short;
   }
 
-  static async getShortsFeed(constituencyId?: string, limit: number = 10): Promise<ShortsVideoDTO[]> {
+  static async getShortsFeed(
+    constituencyId?: string,
+    limit: number = 10,
+  ): Promise<ShortsVideoDTO[]> {
     let list = Array.from(this.mockShorts.values());
     if (constituencyId) {
       list = list.filter((s) => s.constituencyId === constituencyId);
@@ -320,7 +339,9 @@ export class MediaService {
     return list.slice(0, limit);
   }
 
-  static async recordShortsAnalytics(event: ShortsAnalyticsEventRequest): Promise<{ success: boolean }> {
+  static async recordShortsAnalytics(
+    event: ShortsAnalyticsEventRequest,
+  ): Promise<{ success: boolean }> {
     const short = this.mockShorts.get(event.shortId);
     if (short) {
       short.viewCount += 1;
@@ -352,7 +373,8 @@ export class MediaService {
     const events = this.mockShortsAnalytics.get(shortId) || [];
     const totalViews = events.length;
     const completions = events.filter((e) => e.isCompleted).length;
-    const completionRatePercentage = totalViews > 0 ? Math.round((completions / totalViews) * 100) : 0;
+    const completionRatePercentage =
+      totalViews > 0 ? Math.round((completions / totalViews) * 100) : 0;
     const totalWatchDurationSeconds = events.reduce((sum, e) => sum + e.watchDurationSeconds, 0);
     const sharesCount = events.filter((e) => e.shared).length;
     const uniqueViewers = new Set(events.map((e) => e.userIdHash)).size;
@@ -372,7 +394,7 @@ export class MediaService {
 
   static async updateNotificationSubscription(
     userId: string,
-    req: NotificationSubscriptionRequest
+    req: NotificationSubscriptionRequest,
   ): Promise<NotificationSubscriptionDTO> {
     const key = `${userId}:${req.constituencyId}:${req.topic}`;
     const now = new Date().toISOString();
@@ -399,7 +421,7 @@ export class MediaService {
             is_active: sub.isActive,
             updated_at: now,
           },
-          { onConflict: 'user_id,constituency_id,topic' }
+          { onConflict: 'user_id,constituency_id,topic' },
         );
       } catch {}
     }
@@ -409,16 +431,18 @@ export class MediaService {
   }
 
   static async getSubscriptions(userId: string): Promise<NotificationSubscriptionDTO[]> {
-    return Array.from(this.mockNotificationSubs.values()).filter((s) => s.userId === userId && s.isActive);
+    return Array.from(this.mockNotificationSubs.values()).filter(
+      (s) => s.userId === userId && s.isActive,
+    );
   }
 
   static async dispatchNotification(
     constituencyId: string,
     topic: string,
-    payload: { title: string; body: string; isEmergency?: boolean }
+    payload: { title: string; body: string; isEmergency?: boolean },
   ): Promise<{ dispatchedCount: number; rateLimitedCount: number }> {
     const matchingSubs = Array.from(this.mockNotificationSubs.values()).filter(
-      (s) => s.constituencyId === constituencyId && s.topic === topic && s.isActive
+      (s) => s.constituencyId === constituencyId && s.topic === topic && s.isActive,
     );
 
     let dispatched = 0;
@@ -447,7 +471,7 @@ export class MediaService {
 
   static async generateConstituencyDigest(
     constituencyId: string,
-    digestType: 'weekly' | 'monthly' = 'weekly'
+    digestType: 'weekly' | 'monthly' = 'weekly',
   ): Promise<ConstituencyDigestDTO> {
     const key = `${constituencyId}:${digestType}`;
     const cached = this.mockDigests.get(key);
@@ -475,8 +499,18 @@ export class MediaService {
       periodStart,
       periodEnd,
       topIssues: [
-        { id: 'iss-1', title: 'Main Road Resurfacing and Storm Drain Repair', category: 'roads', upvoteCount: 540 },
-        { id: 'iss-2', title: 'Community Park Light Installation', category: 'infrastructure', upvoteCount: 180 },
+        {
+          id: 'iss-1',
+          title: 'Main Road Resurfacing and Storm Drain Repair',
+          category: 'roads',
+          upvoteCount: 540,
+        },
+        {
+          id: 'iss-2',
+          title: 'Community Park Light Installation',
+          category: 'infrastructure',
+          upvoteCount: 180,
+        },
       ],
       topIssuesResolved: 4,
       activeAspirantsCount: 7,
@@ -491,7 +525,12 @@ export class MediaService {
         },
       ],
       upcomingEvents: [
-        { id: 'ev-1', title: 'Constituency Townhall on Civic Budgeting', eventType: 'townhall', startTime: new Date(now.getTime() + 86400000).toISOString() },
+        {
+          id: 'ev-1',
+          title: 'Constituency Townhall on Civic Budgeting',
+          eventType: 'townhall',
+          startTime: new Date(now.getTime() + 86400000).toISOString(),
+        },
       ],
       createdAt: now.toISOString(),
     };
@@ -521,7 +560,7 @@ export class MediaService {
 
   static async createBroadcastSession(
     creatorId: string,
-    req: BroadcastStudioCreateRequest
+    req: BroadcastStudioCreateRequest,
   ): Promise<BroadcastStudioSessionDTO> {
     if (!req.title || req.title.trim().length < 3) {
       throw new Error('INVALID_STREAM_TITLE: Stream title must be at least 3 characters');
@@ -593,7 +632,10 @@ export class MediaService {
     }));
   }
 
-  static async updateViewerCount(sessionId: string, delta: number): Promise<{ currentLiveViewers: number }> {
+  static async updateViewerCount(
+    sessionId: string,
+    delta: number,
+  ): Promise<{ currentLiveViewers: number }> {
     const stream = this.mockStreams.get(sessionId);
     if (!stream) throw new Error('STREAM_NOT_FOUND');
 

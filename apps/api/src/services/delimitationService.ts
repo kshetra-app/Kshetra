@@ -234,6 +234,8 @@ export interface CuratedPinLinkage {
  * Explicit provisional locality-to-constituency linkages for audited urban reference points.
  * Case C: Governed provisional linkages with explicit scenario caveats and approximation disclosures.
  * Every entry audited under CTO Directives 123 & 124 with evidence source, spatial relationship, and limitations.
+ * Keep this directory in exact parity with the independent PIN evidence manifest; other known
+ * postal prefixes resolve only to regional information until their exact mapping is audited.
  */
 export const CURATED_PROVISIONAL_PIN_DIRECTORY: Record<string, CuratedPinLinkage> = {
   '500001': {
@@ -804,61 +806,6 @@ export const CURATED_PROVISIONAL_PIN_DIRECTORY: Record<string, CuratedPinLinkage
     knownLimitations:
       'Medchal-Malkajgiri district. Borders Kukatpally AC 46. Zero statutory split.',
     requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
-  },
-  '504208': {
-    locality: 'Mancherial / Hamaliwada / Thimmapur',
-    stateCode: 'TS',
-    stateName: 'Telangana',
-    district: 'Mancherial',
-    canonicalAcNo: 4, // Mancherial AC 4
-    evidenceSource: 'India Post Directory & Delimitation Order 2008 Schedule XXXI (Mancherial Mandal)',
-    sourceLocator: 'Schedule XXXI, Table B, Mancherial AC 4',
-    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
-    evidenceDate: '2008-08-17',
-    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
-    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
-    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
-    verificationStatus: 'PROVISIONAL_APPROXIMATION',
-    evidenceNotEstablished: 'Rural outskirts toward Bellampalli.',
-    knownLimitations: 'Predominantly Mancherial AC 4 urban municipality and mandal core.',
-    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
-  },
-  '509338': {
-    locality: 'Kodangal / Hasnabad / Ravulapally',
-    stateCode: 'TS',
-    stateName: 'Telangana',
-    district: 'Vikarabad',
-    canonicalAcNo: 72, // Kodangal AC 72
-    evidenceSource: 'India Post Directory & Delimitation Order 2008 Schedule XXXI (Kodangal Mandal)',
-    sourceLocator: 'Schedule XXXI, Table B, Kodangal AC 72',
-    referenceDocument: 'ECI Delimitation Order 2008, Schedule XXXI',
-    evidenceDate: '2008-08-17',
-    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
-    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
-    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
-    verificationStatus: 'PROVISIONAL_APPROXIMATION',
-    evidenceNotEstablished: 'Inter-mandal agricultural fringes bordering Karnataka.',
-    knownLimitations: 'Predominantly Kodangal AC 72 rural mandal core.',
-    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
-  },
-  '781001': {
-    locality: 'Guwahati GPO / Panbazar / Fancy Bazar',
-    stateCode: 'AS',
-    stateName: 'Assam',
-    district: 'Kamrup Metropolitan',
-    canonicalAcNo: 53, // Gauhati East AC 53
-    evidenceSource: 'ECI Assam Delimitation Order 2023 (Notification No. 282/AS/2023)',
-    sourceLocator: 'Schedule Table B, Gauhati East',
-    referenceDocument: 'ECI Final Delimitation Order for Assam 2023 (ECI/282/AS/2023)',
-    evidenceDate: '2023-08-11',
-    whatEvidenceEstablishes: 'POSTAL_DELIVERY_ZONE_MULTI_LOCALITY',
-    spatialRelationship: 'INTERSECTS_SINGLE_AC_PROVISIONAL',
-    matchingMethod: 'DELIMITATION_ORDER_2008_SCHEDULE_XXXI_MUNICIPAL_WARD_CONCORDANCE',
-    verificationStatus: 'PROVISIONAL_APPROXIMATION',
-    evidenceNotEstablished: 'Sub-ward ward borders adjoining Jalukbari AC 51.',
-    knownLimitations: 'Core commercial Guwahati. Boundaries redrawn under Section 8A of Representation of the People Act, 1950.',
-    requiredAction: 'RETAIN_AS_PROVISIONAL_APPROXIMATION',
-    notes: 'Assam delimitation completed on August 11, 2023 based on 2001 Census pursuant to Presidential Order.',
   },
   '520001': {
     locality: 'Vijayawada One Town / Governorpet',
@@ -2893,12 +2840,31 @@ export class DelimitationService {
 
     const mlaProfiles = constituencies.map((c: any) => {
       const acNo = c.acNo ?? 1;
-      let mlaName = c.currentMLA || c.winnerName2026 || c.winnerName2025 || c.winnerName2024 || c.winnerName2023 || c.winnerName || 'UNKNOWN';
-      let party = c.currentParty || c.winner2026 || c.winner2025 || c.winner2024 || c.winner2023 || c.winner || 'UNKNOWN';
-      let margin = c.margin2026 ?? c.margin2025 ?? c.margin2024 ?? c.margin2023 ?? c.margin ?? 12000;
-      const votes = c.winnerVotes2026 ?? c.winnerVotes2025 ?? c.winnerVotes2024 ?? c.winnerVotes2023 ?? c.winnerVotes;
-      let marginPct =
-        Math.round((margin / (votes ? votes * 1.8 : 180000)) * 1000) / 10;
+      let mlaName =
+        c.currentMLA ||
+        c.winnerName2026 ||
+        c.winnerName2025 ||
+        c.winnerName2024 ||
+        c.winnerName2023 ||
+        c.winnerName ||
+        'UNKNOWN';
+      let party =
+        c.currentParty ||
+        c.winner2026 ||
+        c.winner2025 ||
+        c.winner2024 ||
+        c.winner2023 ||
+        c.winner ||
+        'UNKNOWN';
+      let margin =
+        c.margin2026 ?? c.margin2025 ?? c.margin2024 ?? c.margin2023 ?? c.margin ?? 12000;
+      const votes =
+        c.winnerVotes2026 ??
+        c.winnerVotes2025 ??
+        c.winnerVotes2024 ??
+        c.winnerVotes2023 ??
+        c.winnerVotes;
+      let marginPct = Math.round((margin / (votes ? votes * 1.8 : 180000)) * 1000) / 10;
       let personId: string | null = null;
       let contestId: string | null = null;
 

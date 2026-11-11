@@ -77,6 +77,8 @@ describe('<AdaptiveFloatingControls /> Component Behavioral Specs', () => {
       />
     );
 
+    // Selected constituencies collapse the controls to keep the map popup unobstructed.
+    fireEvent.press(screen.getByLabelText('Expand Controls'));
     expect(screen.getByText('District')).toBeTruthy();
   });
 

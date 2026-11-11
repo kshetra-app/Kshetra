@@ -130,7 +130,7 @@ The platform backup strategy operates across four defensive layers:
 #### Procedure:
 1. **Verify Outage:**
    ```powershell
-   curl -I https://kshetra-api-production-9f06.up.railway.app/health
+   curl -I https://kshetra-api-production-b802.up.railway.app/health
    ```
 
 2. **Trigger Failover Deployment to Standby Provider (Fly.io / Render):**

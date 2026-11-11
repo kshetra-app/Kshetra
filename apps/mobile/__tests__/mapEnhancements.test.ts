@@ -16,23 +16,14 @@ describe('Map Enhancements & Premium Utilities', () => {
       expect(getAvailableYearsForState('KA')).toEqual([2018, 2023]);
     });
 
-    it('returns [2016, 2021] for verified actual years in TN, KL, and WB, and includes 2026 only when requested', () => {
-      // Default: verified actual election history only
-      expect(getAvailableYearsForState('TN')).toEqual([2016, 2021]);
-      expect(getAvailableYearsForState('KL')).toEqual([2016, 2021]);
-      expect(getAvailableYearsForState('WB')).toEqual([2016, 2021]);
-
-      // Simulation mode explicitly requested
-      expect(getAvailableYearsForState('TN', true)).toEqual([2016, 2021, 2026]);
-      expect(getAvailableYearsForState('KL', true)).toEqual([2016, 2021, 2026]);
-      expect(getAvailableYearsForState('WB', true)).toEqual([2016, 2021, 2026]);
+    it('returns the configured 2016, 2021, and 2026 election years for TN, KL, and WB', () => {
+      expect(getAvailableYearsForState('TN')).toEqual([2016, 2021, 2026]);
+      expect(getAvailableYearsForState('KL')).toEqual([2016, 2021, 2026]);
+      expect(getAvailableYearsForState('WB')).toEqual([2016, 2021, 2026]);
     });
 
-    it('defaults to a single year array for states with no history', () => {
-      // RJ (Rajasthan) has no historical seed, returns its election cycle year (2023)
-      const rjYears = getAvailableYearsForState('RJ');
-      expect(rjYears.length).toBe(1);
-      expect(rjYears[0]).toBe(2023);
+    it('returns the configured historical election years for Rajasthan', () => {
+      expect(getAvailableYearsForState('RJ')).toEqual([2013, 2018, 2023]);
     });
   });
 

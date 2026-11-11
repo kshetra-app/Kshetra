@@ -279,11 +279,7 @@ export interface GPWard {
 }
 
 export type OfficeholdingStatus =
-  | 'CURRENT_CONFIRMED'
-  | 'HISTORICAL_TERM'
-  | 'HISTORICAL_WINNER'
-  | 'UNRESOLVED'
-  | 'VACATED';
+  'CURRENT_CONFIRMED' | 'HISTORICAL_TERM' | 'HISTORICAL_WINNER' | 'UNRESOLVED' | 'VACATED';
 
 /**
  * Unified local-body office-holder (migration 023 `representatives`).

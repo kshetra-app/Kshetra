@@ -497,7 +497,7 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
           return {
             select: () => ({
               eq: () => ({
-                maybeSingle: async () => ({ data: { role: 'coordinator' }, error: null }),
+                maybeSingle: async () => ({ data: { role: 'volunteer' }, error: null }),
               }),
             }),
           } as any;
@@ -509,6 +509,22 @@ describe('Campaign Routes Unit Test Suite (Direct Route Injection)', () => {
                 maybeSingle: async () => ({
                   data: { id: 'c1', politician_id: 'pol-owner-different' },
                   error: null,
+                }),
+              }),
+            }),
+          } as any;
+        }
+        if (table === 'campaign_volunteers') {
+          return {
+            select: () => ({
+              eq: () => ({
+                eq: () => ({
+                  eq: () => ({
+                    maybeSingle: async () => ({
+                      data: { role: 'coordinator', status: 'active' },
+                      error: null,
+                    }),
+                  }),
                 }),
               }),
             }),

@@ -4,7 +4,19 @@
  */
 
 export const SUPPORTED_LANGUAGES = [
-  'en', 'te', 'hi', 'kn', 'mr', 'ta', 'ml', 'bn', 'gu', 'pa', 'or', 'as', 'ne'
+  'en',
+  'te',
+  'hi',
+  'kn',
+  'mr',
+  'ta',
+  'ml',
+  'bn',
+  'gu',
+  'pa',
+  'or',
+  'as',
+  'ne',
 ] as const;
 
 export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
@@ -743,7 +755,7 @@ export const RESERVATIONS_13_LANG = RESERVATION_13_LANG;
 export function getLocalizedTerm(
   dict: Record<string, TermLocalization>,
   key: string,
-  lang: string
+  lang: string,
 ): string {
   const entry = dict[key];
   if (!entry) return key;

@@ -41,7 +41,11 @@ import { PY_CONSTITUENCIES } from '../../../../data/seed/puducherry-constituenci
 import { JK_CONSTITUENCIES } from '../../../../data/seed/jammu-kashmir-constituencies';
 
 // All 31 States & UTs MLA Profiles
-import { TS_MLA_PROFILES, TELANGANA_MLA_PROFILES, getMLAProfile as getTSMLAProfile } from '../../../../data/seed/telangana-mla-profiles';
+import {
+  TS_MLA_PROFILES,
+  TELANGANA_MLA_PROFILES,
+  getMLAProfile as getTSMLAProfile,
+} from '../../../../data/seed/telangana-mla-profiles';
 import { AP_MLA_PROFILES } from '../../../../data/seed/andhra-pradesh-mla-profiles';
 import { KA_MLA_PROFILES } from '../../../../data/seed/karnataka-mla-profiles';
 import { MH_MLA_PROFILES } from '../../../../data/seed/maharashtra-mla-profiles';
@@ -351,10 +355,14 @@ export const canonicalGeographyService = {
     return canonicalGeoModule?.canonicalGeographyService?.getState(code) ?? null;
   },
   async getParliamentaryConstituencies(stateCode?: string) {
-    return canonicalGeoModule?.canonicalGeographyService?.getParliamentaryConstituencies(stateCode) ?? [];
+    return (
+      canonicalGeoModule?.canonicalGeographyService?.getParliamentaryConstituencies(stateCode) ?? []
+    );
   },
   async getParliamentaryConstituency(codeOrId: string) {
-    return canonicalGeoModule?.canonicalGeographyService?.getParliamentaryConstituency(codeOrId) ?? null;
+    return (
+      canonicalGeoModule?.canonicalGeographyService?.getParliamentaryConstituency(codeOrId) ?? null
+    );
   },
   async getConstituencies(stateCode: string) {
     return canonicalGeoModule?.canonicalGeographyService?.getConstituencies(stateCode) ?? [];
@@ -363,28 +371,47 @@ export const canonicalGeographyService = {
     return canonicalGeoModule?.canonicalGeographyService?.getConstituency(stateCode, acNo) ?? null;
   },
   async searchConstituencies(stateCode: string, query: string) {
-    return canonicalGeoModule?.canonicalGeographyService?.searchConstituencies(stateCode, query) ?? [];
+    return (
+      canonicalGeoModule?.canonicalGeographyService?.searchConstituencies(stateCode, query) ?? []
+    );
   },
   async getConstituencyElectionData(stateCode: string, acNo: number) {
-    return canonicalGeoModule?.canonicalGeographyService?.getConstituencyElectionData(stateCode, acNo) ?? null;
+    return (
+      canonicalGeoModule?.canonicalGeographyService?.getConstituencyElectionData(stateCode, acNo) ??
+      null
+    );
   },
   getConfirmedByElections() {
     return CONFIRMED_BY_ELECTIONS;
   },
   async getConstituencyMLA(stateCode: string, acNo: number) {
-    return (canonicalGeoModule?.canonicalGeographyService as any)?.getConstituencyMLA?.(stateCode, acNo) ?? null;
+    return (
+      (canonicalGeoModule?.canonicalGeographyService as any)?.getConstituencyMLA?.(
+        stateCode,
+        acNo,
+      ) ?? null
+    );
   },
   async getConstituencyMLAs(stateCode: string) {
-    return (canonicalGeoModule?.canonicalGeographyService as any)?.getConstituencyMLAs?.(stateCode) ?? [];
+    return (
+      (canonicalGeoModule?.canonicalGeographyService as any)?.getConstituencyMLAs?.(stateCode) ?? []
+    );
   },
   async getSubConstituencyHierarchy(stateCode: string, acNo: number) {
-    return (canonicalGeoModule?.canonicalGeographyService as any)?.getSubConstituencyHierarchy?.(stateCode, acNo) ?? null;
+    return (
+      (canonicalGeoModule?.canonicalGeographyService as any)?.getSubConstituencyHierarchy?.(
+        stateCode,
+        acNo,
+      ) ?? null
+    );
   },
   async locatePoint(params: { lat: number; lng: number }) {
     return (canonicalGeoModule?.canonicalGeographyService as any)?.locatePoint?.(params) ?? null;
   },
   async locateByPinCode(pinCode: string) {
-    return (canonicalGeoModule?.canonicalGeographyService as any)?.locateByPinCode?.(pinCode) ?? null;
+    return (
+      (canonicalGeoModule?.canonicalGeographyService as any)?.locateByPinCode?.(pinCode) ?? null
+    );
   },
 };
 
@@ -392,7 +419,14 @@ export const canonicalGeographyService = {
 function genericToBrief(stateCode: string, c: any): ConstituencyBrief {
   const code = stateCode.toUpperCase();
   let currentParty =
-    c.winner2026 ?? c.winner2025 ?? c.winner2024 ?? c.winner2023 ?? c.winner2022 ?? c.winner2021 ?? c.winner ?? '';
+    c.winner2026 ??
+    c.winner2025 ??
+    c.winner2024 ??
+    c.winner2023 ??
+    c.winner2022 ??
+    c.winner2021 ??
+    c.winner ??
+    '';
   let currentMLA =
     c.winnerName2026 ??
     c.winnerName2025 ??
@@ -684,10 +718,7 @@ export function getTSMLAProfiles() {
  * Queries PostgreSQL via canonicalGeographyService when database is configured;
  * falls back seamlessly to in-memory state seed data.
  */
-export async function getCanonicalMLAProfile(
-  stateCode: string,
-  acNo: number,
-): Promise<any | null> {
+export async function getCanonicalMLAProfile(stateCode: string, acNo: number): Promise<any | null> {
   if (canonicalGeographyService.isAvailable()) {
     try {
       const dbMLA = await (canonicalGeographyService as any).getConstituencyMLA?.(stateCode, acNo);

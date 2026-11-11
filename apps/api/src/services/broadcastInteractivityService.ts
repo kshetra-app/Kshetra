@@ -7,14 +7,14 @@
 
 import crypto from 'node:crypto';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import type { 
-  BroadcastPoll, 
-  BroadcastPollOption, 
-  BroadcastQaThread, 
-  CreatePollRequest, 
-  CastVoteRequest, 
-  SubmitQuestionRequest, 
-  ModerateQuestionRequest 
+import type {
+  BroadcastPoll,
+  BroadcastPollOption,
+  BroadcastQaThread,
+  CreatePollRequest,
+  CastVoteRequest,
+  SubmitQuestionRequest,
+  ModerateQuestionRequest,
 } from '@kshetra/shared';
 
 export class DuplicateVoteError extends Error {
@@ -117,7 +117,7 @@ export class BroadcastInteractivityService {
   /** Get active poll for a stream */
   async getActivePoll(streamId: string, voterToken?: string): Promise<BroadcastPoll | null> {
     const list = Array.from(this.inMemoryPolls.values()).filter(
-      p => p.streamId === streamId && p.status === 'ACTIVE'
+      (p) => p.streamId === streamId && p.status === 'ACTIVE',
     );
 
     const poll = list[list.length - 1] || null;
@@ -132,7 +132,7 @@ export class BroadcastInteractivityService {
 
     // Calculate percentages
     const total = poll.totalVotes;
-    const computedOptions = poll.options.map(opt => ({
+    const computedOptions = poll.options.map((opt) => ({
       ...opt,
       percentage: total > 0 ? Math.round((opt.voteCount / total) * 100) : 0,
     }));
@@ -145,7 +145,10 @@ export class BroadcastInteractivityService {
   }
 
   /** Cast an anonymous ballot (Anti-Sybil duplicate protection) */
-  async castVote(pollId: string, req: CastVoteRequest): Promise<{ success: boolean; totalVotes: number; options: BroadcastPollOption[] }> {
+  async castVote(
+    pollId: string,
+    req: CastVoteRequest,
+  ): Promise<{ success: boolean; totalVotes: number; options: BroadcastPollOption[] }> {
     const poll = this.inMemoryPolls.get(pollId);
     if (!poll) {
       throw new Error(`Poll not found: ${pollId}`);
@@ -162,7 +165,7 @@ export class BroadcastInteractivityService {
       throw new DuplicateVoteError();
     }
 
-    const option = poll.options.find(o => o.id === req.optionId);
+    const option = poll.options.find((o) => o.id === req.optionId);
     if (!option) {
       throw new Error(`Option not found: ${req.optionId}`);
     }
@@ -175,7 +178,8 @@ export class BroadcastInteractivityService {
           voter_token_hash: voterHash,
         });
 
-        if (error && error.code === '23505') { // unique violation
+        if (error && error.code === '23505') {
+          // unique violation
           throw new DuplicateVoteError();
         }
       } catch (err: any) {
@@ -189,7 +193,7 @@ export class BroadcastInteractivityService {
     poll.totalVotes += 1;
 
     const total = poll.totalVotes;
-    const optionsWithPercent = poll.options.map(opt => ({
+    const optionsWithPercent = poll.options.map((opt) => ({
       ...opt,
       percentage: total > 0 ? Math.round((opt.voteCount / total) * 100) : 0,
     }));
@@ -238,7 +242,9 @@ export class BroadcastInteractivityService {
     const phoneRegex = /(\+91|0)?[6-9][0-9]{9}/;
 
     if (emailRegex.test(text)) {
-      throw new ContentModerationError('Questions must not contain email addresses (DPDP Act 2023)');
+      throw new ContentModerationError(
+        'Questions must not contain email addresses (DPDP Act 2023)',
+      );
     }
     if (phoneRegex.test(text)) {
       throw new ContentModerationError('Questions must not contain phone numbers (DPDP Act 2023)');
@@ -284,12 +290,14 @@ export class BroadcastInteractivityService {
   /** List approved audience questions for a stream */
   async listQuestions(streamId: string, voterToken?: string): Promise<BroadcastQaThread[]> {
     let list = Array.from(this.inMemoryQuestions.values()).filter(
-      q => q.streamId === streamId && (q.status === 'APPROVED' || q.status === 'PINNED' || q.status === 'ANSWERED')
+      (q) =>
+        q.streamId === streamId &&
+        (q.status === 'APPROVED' || q.status === 'PINNED' || q.status === 'ANSWERED'),
     );
 
     if (voterToken) {
       const voterHash = this.deriveVoterHash(voterToken, streamId);
-      list = list.map(q => ({
+      list = list.map((q) => ({
         ...q,
         hasUpvoted: this.inMemoryUpvotes.has(`${q.id}:${voterHash}`),
       }));
@@ -304,7 +312,10 @@ export class BroadcastInteractivityService {
   }
 
   /** Upvote an audience question */
-  async upvoteQuestion(questionId: string, voterToken: string): Promise<{ success: boolean; upvotes: number }> {
+  async upvoteQuestion(
+    questionId: string,
+    voterToken: string,
+  ): Promise<{ success: boolean; upvotes: number }> {
     const q = this.inMemoryQuestions.get(questionId);
     if (!q) {
       throw new Error(`Question not found: ${questionId}`);
@@ -331,7 +342,10 @@ export class BroadcastInteractivityService {
   }
 
   /** Moderate a question (broadcaster / host action) */
-  async moderateQuestion(questionId: string, req: ModerateQuestionRequest): Promise<BroadcastQaThread> {
+  async moderateQuestion(
+    questionId: string,
+    req: ModerateQuestionRequest,
+  ): Promise<BroadcastQaThread> {
     const q = this.inMemoryQuestions.get(questionId);
     if (!q) {
       throw new Error(`Question not found: ${questionId}`);

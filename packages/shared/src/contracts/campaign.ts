@@ -4,18 +4,9 @@
  */
 
 export type CampaignRole =
-  | 'campaign_manager'
-  | 'content_creator'
-  | 'field_director'
-  | 'finance_officer'
-  | 'analyst';
+  'campaign_manager' | 'content_creator' | 'field_director' | 'finance_officer' | 'analyst';
 
-export type PoliticalCampaignStatus =
-  | 'draft'
-  | 'active'
-  | 'paused'
-  | 'completed'
-  | 'archived';
+export type PoliticalCampaignStatus = 'draft' | 'active' | 'paused' | 'completed' | 'archived';
 
 export interface PoliticalCampaignDTO {
   id: string;
@@ -59,19 +50,9 @@ export interface CampaignMemberDTO {
   createdAt: string;
 }
 
-export type ContentModality =
-  | 'post'
-  | 'short'
-  | 'event'
-  | 'rally'
-  | 'broadcast_announcement';
+export type ContentModality = 'post' | 'short' | 'event' | 'rally' | 'broadcast_announcement';
 
-export type ContentWorkflowStatus =
-  | 'DRAFT'
-  | 'SUBMITTED'
-  | 'APPROVED'
-  | 'PUBLISHED'
-  | 'REJECTED';
+export type ContentWorkflowStatus = 'DRAFT' | 'SUBMITTED' | 'APPROVED' | 'PUBLISHED' | 'REJECTED';
 
 export interface PoliticalCampaignContentDTO {
   id: string;
@@ -107,12 +88,7 @@ export type ElectoralWindowState = 'ROUTINE_CIVIC' | 'MCC_ACTIVE';
 export type AdPricingModel = 'cpm' | 'cpc' | 'fixed_daily_flight';
 
 export type PoliticalAdStatus =
-  | 'pending_review'
-  | 'approved'
-  | 'active'
-  | 'paused'
-  | 'completed'
-  | 'rejected';
+  'pending_review' | 'approved' | 'active' | 'paused' | 'completed' | 'rejected';
 
 export interface PoliticalAdDTO {
   id: string;
@@ -181,13 +157,7 @@ export interface PoliticalAdTransparencyItemDTO {
 }
 
 export type CommercialBusinessCategory =
-  | 'retail'
-  | 'dining'
-  | 'healthcare'
-  | 'education'
-  | 'services'
-  | 'real_estate'
-  | 'other';
+  'retail' | 'dining' | 'healthcare' | 'education' | 'services' | 'real_estate' | 'other';
 
 export interface CommercialAdAccountDTO {
   id: string;
@@ -227,10 +197,7 @@ export interface CreateCommercialAccountInput {
   stateCode: string;
 }
 
-export type AdPlacementSlot =
-  | 'feed_inline'
-  | 'shorts_interstitial'
-  | 'constituency_banner';
+export type AdPlacementSlot = 'feed_inline' | 'shorts_interstitial' | 'constituency_banner';
 
 export interface CommercialAdDTO {
   id: string;
@@ -272,10 +239,7 @@ export interface CreateCommercialAdInput {
   totalBudgetInr?: number;
 }
 
-export type ConstituencyEconomicTier =
-  | 'tier_1_metro'
-  | 'tier_2_urban'
-  | 'tier_3_rural';
+export type ConstituencyEconomicTier = 'tier_1_metro' | 'tier_2_urban' | 'tier_3_rural';
 
 export interface AdPricingConfigDTO {
   id: string;

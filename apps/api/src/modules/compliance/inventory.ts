@@ -163,7 +163,11 @@ export const COMPLIANCE_PERSONAL_DATA_INVENTORY: PersonalDataInventoryItem[] = [
     thirdPartySharing: [],
     retentionPeriod: 'verification_90_days',
     deletionMechanism: 'Automated cryptographic purge 90 days after review decision',
-    securityControls: ['Private S3 bucket', 'Time-limited signed URLs (15m)', 'Access logged in audit_log'],
+    securityControls: [
+      'Private S3 bucket',
+      'Time-limited signed URLs (15m)',
+      'Access logged in audit_log',
+    ],
     isStatutoryPublicRecord: false,
   },
 
@@ -210,7 +214,8 @@ export const COMPLIANCE_PERSONAL_DATA_INVENTORY: PersonalDataInventoryItem[] = [
     field: 'press_accreditation_number',
     category: 'identity',
     isSensitive: true,
-    purpose: 'Verification of legitimate press credentials under Press Information Bureau / State DIPR rules',
+    purpose:
+      'Verification of legitimate press credentials under Press Information Bureau / State DIPR rules',
     collectionPoint: 'Journalist Accreditation Application',
     storageLocation: 'Supabase PostgreSQL (public.journalist_profiles)',
     processingLocation: 'AWS ap-south-1 (Mumbai)',
@@ -309,7 +314,11 @@ export const COMPLIANCE_PERSONAL_DATA_INVENTORY: PersonalDataInventoryItem[] = [
     thirdPartySharing: [],
     retentionPeriod: 'usage_36_months',
     deletionMechanism: 'Revoked status immediately; hard deleted on tenant purge',
-    securityControls: ['SHA-256 one-way hashing', 'Constant-time verification', 'Raw key never stored'],
+    securityControls: [
+      'SHA-256 one-way hashing',
+      'Constant-time verification',
+      'Raw key never stored',
+    ],
     isStatutoryPublicRecord: false,
   },
 
@@ -320,7 +329,8 @@ export const COMPLIANCE_PERSONAL_DATA_INVENTORY: PersonalDataInventoryItem[] = [
     field: 'canonical_name',
     category: 'identity',
     isSensitive: false,
-    purpose: 'Statutory public electoral facts: recognized contesting candidates & sitting legislators',
+    purpose:
+      'Statutory public electoral facts: recognized contesting candidates & sitting legislators',
     collectionPoint: 'ECI Official Gazette & Form 20 Results',
     storageLocation: 'Supabase PostgreSQL (public.canonical_persons)',
     processingLocation: 'AWS ap-south-1 (Mumbai)',
@@ -337,7 +347,8 @@ export const COMPLIANCE_PERSONAL_DATA_INVENTORY: PersonalDataInventoryItem[] = [
     field: 'affidavit_url',
     category: 'civic_activity',
     isSensitive: false,
-    purpose: 'Statutory Form 26 candidate disclosures under Supreme Court ADR guidelines & RP Act 1951',
+    purpose:
+      'Statutory Form 26 candidate disclosures under Supreme Court ADR guidelines & RP Act 1951',
     collectionPoint: 'ECI Official Affidavit Portal',
     storageLocation: 'Supabase PostgreSQL (public.candidate_affidavits)',
     processingLocation: 'AWS ap-south-1 (Mumbai)',
@@ -373,8 +384,12 @@ export class InventoryService {
     statutoryPublicExemptCount: number;
     totalFieldsCount: number;
   } {
-    const erasable = COMPLIANCE_PERSONAL_DATA_INVENTORY.filter((item) => !item.isStatutoryPublicRecord);
-    const exempt = COMPLIANCE_PERSONAL_DATA_INVENTORY.filter((item) => item.isStatutoryPublicRecord);
+    const erasable = COMPLIANCE_PERSONAL_DATA_INVENTORY.filter(
+      (item) => !item.isStatutoryPublicRecord,
+    );
+    const exempt = COMPLIANCE_PERSONAL_DATA_INVENTORY.filter(
+      (item) => item.isStatutoryPublicRecord,
+    );
     return {
       citizenDataErasableCount: erasable.length,
       statutoryPublicExemptCount: exempt.length,

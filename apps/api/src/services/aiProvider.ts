@@ -19,6 +19,13 @@ export interface IAIProvider {
   generateCompletion(req: AICompletionRequest): Promise<AICompletionResponse>;
 }
 
+export class AIProviderUnavailableError extends Error {
+  constructor(message = 'No configured AI provider could complete this request.') {
+    super(message);
+    this.name = 'AIProviderUnavailableError';
+  }
+}
+
 const USD_TO_INR_RATE = 86.5;
 
 /** Tier 1: Gemini Provider (Default Google Gemini 2.0 Flash) */
@@ -69,12 +76,14 @@ export class GeminiAIProvider implements IAIProvider {
 
     const latencyMs = Date.now() - startTime;
     const content = response.choices[0]?.message?.content ?? '';
-    const promptTokens = response.usage?.prompt_tokens ?? Math.ceil(req.messages.reduce((acc, m) => acc + m.content.length, 0) / 4);
+    const promptTokens =
+      response.usage?.prompt_tokens ??
+      Math.ceil(req.messages.reduce((acc, m) => acc + m.content.length, 0) / 4);
     const completionTokens = response.usage?.completion_tokens ?? Math.ceil(content.length / 4);
     const totalTokens = promptTokens + completionTokens;
 
     // Gemini 2.0 Flash pricing: $0.10 / 1M prompt, $0.40 / 1M completion
-    const costUsd = (promptTokens * 0.0000001) + (completionTokens * 0.0000004);
+    const costUsd = promptTokens * 0.0000001 + completionTokens * 0.0000004;
     const costInr = costUsd * USD_TO_INR_RATE;
 
     return {
@@ -135,12 +144,14 @@ export class OpenAIProvider implements IAIProvider {
 
     const latencyMs = Date.now() - startTime;
     const content = response.choices[0]?.message?.content ?? '';
-    const promptTokens = response.usage?.prompt_tokens ?? Math.ceil(req.messages.reduce((acc, m) => acc + m.content.length, 0) / 4);
+    const promptTokens =
+      response.usage?.prompt_tokens ??
+      Math.ceil(req.messages.reduce((acc, m) => acc + m.content.length, 0) / 4);
     const completionTokens = response.usage?.completion_tokens ?? Math.ceil(content.length / 4);
     const totalTokens = promptTokens + completionTokens;
 
     // GPT-4o-mini pricing: $0.15 / 1M prompt, $0.60 / 1M completion
-    const costUsd = (promptTokens * 0.00000015) + (completionTokens * 0.0000006);
+    const costUsd = promptTokens * 0.00000015 + completionTokens * 0.0000006;
     const costInr = costUsd * USD_TO_INR_RATE;
 
     return {
@@ -194,9 +205,10 @@ export class CustomLLMProvider implements IAIProvider {
       'Content-Type': 'application/json',
     };
     if (this.apiKey) {
-      headers[this.headerName] = this.headerName.toLowerCase() === 'authorization' && !this.apiKey.startsWith('Bearer ')
-        ? `Bearer ${this.apiKey}`
-        : this.apiKey;
+      headers[this.headerName] =
+        this.headerName.toLowerCase() === 'authorization' && !this.apiKey.startsWith('Bearer ')
+          ? `Bearer ${this.apiKey}`
+          : this.apiKey;
     }
 
     const body = {
@@ -225,12 +237,14 @@ export class CustomLLMProvider implements IAIProvider {
 
     const latencyMs = Date.now() - startTime;
     const content = json.choices?.[0]?.message?.content ?? '';
-    const promptTokens = json.usage?.prompt_tokens ?? Math.ceil(req.messages.reduce((acc, m) => acc + m.content.length, 0) / 4);
+    const promptTokens =
+      json.usage?.prompt_tokens ??
+      Math.ceil(req.messages.reduce((acc, m) => acc + m.content.length, 0) / 4);
     const completionTokens = json.usage?.completion_tokens ?? Math.ceil(content.length / 4);
     const totalTokens = promptTokens + completionTokens;
 
     // Custom LLM nominal cost: $0.05 / 1M prompt, $0.15 / 1M completion
-    const costUsd = (promptTokens * 0.00000005) + (completionTokens * 0.00000015);
+    const costUsd = promptTokens * 0.00000005 + completionTokens * 0.00000015;
     const costInr = costUsd * USD_TO_INR_RATE;
 
     return {
@@ -246,7 +260,7 @@ export class CustomLLMProvider implements IAIProvider {
   }
 }
 
-/** Tier 4: Deterministic Offline Heuristic Provider (Guarantees Zero Startup Crash & Offline Integrity) */
+/** Tier 4: truthful offline response used when every configured provider is unavailable. */
 export class DeterministicOfflineAIProvider implements IAIProvider {
   public name: AIProviderType = 'offline_heuristic';
   public model = 'deterministic-offline-v1';
@@ -257,58 +271,19 @@ export class DeterministicOfflineAIProvider implements IAIProvider {
 
   public async generateCompletion(req: AICompletionRequest): Promise<AICompletionResponse> {
     const startTime = Date.now();
-    const userMessage = [...req.messages].reverse().find((m) => m.role === 'user')?.content || '';
-    const systemMessage = req.messages.find((m) => m.role === 'system')?.content || '';
-
-    let content = '';
-
-    // Handle JSON format requests deterministically
-    if (req.responseFormat === 'json' || systemMessage.toLowerCase().includes('json')) {
-      if (userMessage.toLowerCase().includes('summarize') || systemMessage.toLowerCase().includes('summary')) {
-        content = JSON.stringify({
-          bullets: [
-            'Official legislative notification published under public gazette records.',
-            'Constituency representatives reviewed territorial allocations and civic priorities.',
-            'Statutory implementation scheduled under standard municipal administrative guidelines.'
-          ],
-          sentiment: 'neutral',
-          entities: ['Election Commission', 'District Administration']
-        });
-      } else {
-        content = JSON.stringify({
-          status: 'success',
-          classification: 'civic_administrative',
-          confidence: 0.90,
-          provider: 'offline_heuristic'
-        });
-      }
-    } else {
-      // Deterministic structured text generation
-      const lines = userMessage
-        .split(/[.\n]/)
-        .map((s) => s.trim())
-        .filter((s) => s.length > 10);
-
-      const bullet1 = lines[0] || 'Official civic documentation processed under verified records.';
-      const bullet2 = lines[1] || 'Public administration proceedings follow statutory territorial guidelines.';
-      const bullet3 = lines[2] || 'Citizens can track updates through verified local constituency registers.';
-
-      content = `• ${bullet1}\n• ${bullet2}\n• ${bullet3}`;
-    }
-
-    const latencyMs = Math.max(1, Date.now() - startTime);
-    const promptTokens = Math.ceil((userMessage.length + systemMessage.length) / 4);
-    const completionTokens = Math.ceil(content.length / 4);
-    const totalTokens = promptTokens + completionTokens;
+    const content =
+      req.responseFormat === 'json'
+        ? ''
+        : 'AI responses are unavailable because no configured provider could complete this request.';
 
     return {
       content,
       provider: 'offline_heuristic',
       model: this.model,
-      usage: { promptTokens, completionTokens, totalTokens },
+      usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
       costUsd: 0,
       costInr: 0,
-      latencyMs,
+      latencyMs: Math.max(1, Date.now() - startTime),
       degradedOffline: true,
     };
   }
@@ -369,7 +344,8 @@ export class AIProviderRegistry {
     }
     // Guarantee offline fallback is always present at tail
     if (!chain.some((p) => p.name === 'offline_heuristic')) {
-      const offline = this.providers.get('offline_heuristic') || new DeterministicOfflineAIProvider();
+      const offline =
+        this.providers.get('offline_heuristic') || new DeterministicOfflineAIProvider();
       chain.push(offline);
     }
     return chain;

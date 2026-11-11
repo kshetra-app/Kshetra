@@ -91,29 +91,51 @@ export const complianceRoutes: FastifyPluginAsync = async (app) => {
     // Resolve user ID from auth context or header fallback
     const userId = (request as any).user?.id || (request.headers['x-user-id'] as string);
     if (!userId) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authenticated citizen session required', {
-        code: 'AUTH_REQUIRED',
-      });
+      return sendApiError(
+        reply,
+        request,
+        401,
+        'Unauthorized',
+        'Authenticated citizen session required',
+        {
+          code: 'AUTH_REQUIRED',
+        },
+      );
     }
 
     const parseResult = dataAccessRequestSchema.safeParse(request.body || {});
-    const input = parseResult.success ? parseResult.data : { format: 'json' as const, includeActivityHistory: true };
+    const input = parseResult.success
+      ? parseResult.data
+      : { format: 'json' as const, includeActivityHistory: true };
 
     try {
       const archive = await rightsService.processAccessRequest(userId, input);
       return sendComplianceSuccess(reply, request, archive, 200);
     } catch (err: any) {
       request.log.error({ err, userId }, 'Error processing data access request');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to generate data export archive');
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Failed to generate data export archive',
+      );
     }
   });
 
   app.post('/api/v1/compliance/rights/correction', async (request, reply) => {
     const userId = (request as any).user?.id || (request.headers['x-user-id'] as string);
     if (!userId) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authenticated citizen session required', {
-        code: 'AUTH_REQUIRED',
-      });
+      return sendApiError(
+        reply,
+        request,
+        401,
+        'Unauthorized',
+        'Authenticated citizen session required',
+        {
+          code: 'AUTH_REQUIRED',
+        },
+      );
     }
 
     const parseResult = dataCorrectionRequestSchema.safeParse(request.body);
@@ -133,16 +155,29 @@ export const complianceRoutes: FastifyPluginAsync = async (app) => {
       return sendComplianceSuccess(reply, request, result, 200);
     } catch (err: any) {
       request.log.error({ err, userId }, 'Error processing data correction request');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to process correction');
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Failed to process correction',
+      );
     }
   });
 
   app.post('/api/v1/compliance/rights/erasure', async (request, reply) => {
     const userId = (request as any).user?.id || (request.headers['x-user-id'] as string);
     if (!userId) {
-      return sendApiError(reply, request, 401, 'Unauthorized', 'Authenticated citizen session required', {
-        code: 'AUTH_REQUIRED',
-      });
+      return sendApiError(
+        reply,
+        request,
+        401,
+        'Unauthorized',
+        'Authenticated citizen session required',
+        {
+          code: 'AUTH_REQUIRED',
+        },
+      );
     }
 
     const parseResult = dataErasureRequestSchema.safeParse(request.body);
@@ -152,7 +187,8 @@ export const complianceRoutes: FastifyPluginAsync = async (app) => {
         request,
         400,
         'Bad Request',
-        parseResult.error.errors[0]?.message || 'Explicit confirmation phrase required for account erasure',
+        parseResult.error.errors[0]?.message ||
+          'Explicit confirmation phrase required for account erasure',
         { code: 'INVALID_CONFIRMATION' },
       );
     }
@@ -162,13 +198,20 @@ export const complianceRoutes: FastifyPluginAsync = async (app) => {
       return sendComplianceSuccess(reply, request, result, 200);
     } catch (err: any) {
       request.log.error({ err, userId }, 'Error executing account erasure');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to execute account erasure');
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Failed to execute account erasure',
+      );
     }
   });
 
   // ─── 5. GRIEVANCE REDRESSAL MECHANISM (DPO) ───
   app.post('/api/v1/compliance/grievance', async (request, reply) => {
-    const userId = (request as any).user?.id || (request.headers['x-user-id'] as string) || 'guest_citizen';
+    const userId =
+      (request as any).user?.id || (request.headers['x-user-id'] as string) || 'guest_citizen';
     const parseResult = grievanceSubmissionSchema.safeParse(request.body);
     if (!parseResult.success) {
       return sendApiError(
@@ -186,7 +229,13 @@ export const complianceRoutes: FastifyPluginAsync = async (app) => {
       return sendComplianceSuccess(reply, request, ticket, 201);
     } catch (err: any) {
       request.log.error({ err }, 'Error lodging citizen grievance');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to register grievance ticket');
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Failed to register grievance ticket',
+      );
     }
   });
 
@@ -194,9 +243,16 @@ export const complianceRoutes: FastifyPluginAsync = async (app) => {
     const { ticketId } = request.params as { ticketId: string };
     const ticket = rightsService.getGrievance(ticketId);
     if (!ticket) {
-      return sendApiError(reply, request, 404, 'Not Found', `Grievance ticket '${ticketId}' not found`, {
-        code: 'TICKET_NOT_FOUND',
-      });
+      return sendApiError(
+        reply,
+        request,
+        404,
+        'Not Found',
+        `Grievance ticket '${ticketId}' not found`,
+        {
+          code: 'TICKET_NOT_FOUND',
+        },
+      );
     }
     return sendComplianceSuccess(reply, request, ticket);
   });

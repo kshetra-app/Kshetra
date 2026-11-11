@@ -13,7 +13,7 @@ function makeDispatchParams(overrides: Partial<ObdDispatchParams> = {}): ObdDisp
     targetSegment: {
       type: 'ward',
       voterCount: 100,
-      phoneNumbers: ['9876543210'],
+      phoneNumbers: ['919876543210'],
     },
     ratePerCallINR: 1.5,
     ...overrides,
@@ -327,7 +327,7 @@ describe('Providers Comprehensive Unit Tests', () => {
       expect(result.error).toBe('OUTSIDE_TRAI_WINDOW');
     });
 
-    it('returns simulation queued warning when telecom credentials are not configured', async () => {
+    it('fails closed when telecom credentials are not configured', async () => {
       const provider = new TelecomProvider({});
       jest.spyOn(provider, 'isWithinTraiCallingWindow').mockReturnValue({
         permitted: true,
@@ -335,8 +335,9 @@ describe('Providers Comprehensive Unit Tests', () => {
       });
 
       const result = await provider.dispatchBroadcast(makeDispatchParams());
-      expect(result.success).toBe(true);
-      expect(result.warning).toContain('TELECOM_CREDENTIALS_REQUIRED');
+      expect(result.success).toBe(false);
+      expect(result.error).toMatch(/TELECOM_(CREDENTIALS_REQUIRED|PROVIDER_UNAVAILABLE)/);
+      expect(result.error).toMatch(/no call was sent/i);
     });
 
     it('parses delivery report for completed, busy, and in-progress statuses', () => {
@@ -469,8 +470,8 @@ describe('Providers Comprehensive Unit Tests', () => {
           campaignId: 'cmp_fail',
           targetSegment: {
             type: 'ward',
-            voterCount: 0,
-            phoneNumbers: [],
+            voterCount: 1,
+            phoneNumbers: ['919876543210'],
           },
         }),
       );

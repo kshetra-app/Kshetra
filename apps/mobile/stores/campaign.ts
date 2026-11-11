@@ -19,6 +19,9 @@ import type {
   OBDBroadcastJob,
 } from '../lib/walletTypes';
 import { API_BASE_URL } from '../lib/constants';
+import { IS_PRODUCTION, IS_STAGING } from '../lib/environment';
+
+const IS_LIVE_ENVIRONMENT = IS_PRODUCTION || IS_STAGING;
 
 // ─── Seed Campaigns ───
 const SEED_CAMPAIGNS: Campaign[] = [
@@ -328,7 +331,7 @@ interface CampaignState {
   volunteers: Volunteer[];
   booths: BoothStrategy[];
   canvassingRecords: CanvassingRecord[];
-  revenueData: RevenueFlowData;
+  revenueData: RevenueFlowData | null;
   pricing: CampaignServicePricing;
   wallet: CampaignWallet;
   walletTransactions: WalletTransaction[];
@@ -344,8 +347,8 @@ interface CampaignState {
   getBoothsForCampaign: (campaignId: string) => BoothStrategy[];
   getCriticalBooths: (campaignId: string) => BoothStrategy[];
   getABTestsForCampaign: (campaignId: string) => ABTest[];
-  getCampaignAnalytics: (campaignId: string) => CampaignAnalytics;
-  getRevenueFlow: () => RevenueFlowData;
+  getCampaignAnalytics: (campaignId: string) => CampaignAnalytics | null;
+  getRevenueFlow: () => RevenueFlowData | null;
 
   // Actions
   fetchPricing: () => Promise<void>;
@@ -372,24 +375,24 @@ interface CampaignState {
 }
 
 export const useCampaignStore = create<CampaignState>((set, get) => ({
-  campaigns: SEED_CAMPAIGNS,
-  ads: SEED_ADS,
-  abTests: SEED_AB_TESTS,
-  volunteers: SEED_VOLUNTEERS,
-  booths: SEED_BOOTHS,
+  campaigns: IS_LIVE_ENVIRONMENT ? [] : SEED_CAMPAIGNS,
+  ads: IS_LIVE_ENVIRONMENT ? [] : SEED_ADS,
+  abTests: IS_LIVE_ENVIRONMENT ? [] : SEED_AB_TESTS,
+  volunteers: IS_LIVE_ENVIRONMENT ? [] : SEED_VOLUNTEERS,
+  booths: IS_LIVE_ENVIRONMENT ? [] : SEED_BOOTHS,
   canvassingRecords: [],
-  revenueData: SEED_REVENUE,
+  revenueData: IS_LIVE_ENVIRONMENT ? null : SEED_REVENUE,
   pricing: DEFAULT_PRICING,
   wallet: {
-    id: 'w-pp1',
-    politicianId: 'pp1',
-    balanceINR: 5000,
-    totalRechargedINR: 10000,
-    totalSpentINR: 5000,
+    id: IS_LIVE_ENVIRONMENT ? '' : 'w-pp1',
+    politicianId: IS_LIVE_ENVIRONMENT ? '' : 'pp1',
+    balanceINR: IS_LIVE_ENVIRONMENT ? 0 : 5000,
+    totalRechargedINR: IS_LIVE_ENVIRONMENT ? 0 : 10000,
+    totalSpentINR: IS_LIVE_ENVIRONMENT ? 0 : 5000,
     currency: 'INR',
     updatedAt: new Date().toISOString(),
   },
-  walletTransactions: [
+  walletTransactions: IS_LIVE_ENVIRONMENT ? [] : [
     {
       id: 'tx-1',
       walletId: 'w-pp1',
@@ -415,7 +418,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
       createdAt: '2026-05-20T10:30:00Z',
     },
   ],
-  obdBroadcasts: [
+  obdBroadcasts: IS_LIVE_ENVIRONMENT ? [] : [
     {
       id: 'obd-demo-1',
       campaignId: 'c1',
@@ -448,6 +451,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
   getABTestsForCampaign: (campaignId) => get().abTests.filter((t) => t.campaignId === campaignId),
 
   fetchPricing: async () => {
+    if (IS_LIVE_ENVIRONMENT) return;
     try {
       const res = await fetch(`${API_BASE_URL}/api/v1/campaign/pricing`);
       if (res.ok) {
@@ -462,6 +466,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
   },
 
   fetchWallet: async () => {
+    if (IS_LIVE_ENVIRONMENT) return;
     try {
       const res = await fetch(`${API_BASE_URL}/api/v1/campaign/wallet?politicianId=pp1`);
       if (res.ok) {
@@ -472,6 +477,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
   },
 
   fetchWalletTransactions: async () => {
+    if (IS_LIVE_ENVIRONMENT) return;
     try {
       const res = await fetch(`${API_BASE_URL}/api/v1/campaign/wallet/transactions?politicianId=pp1`);
       if (res.ok) {
@@ -482,6 +488,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
   },
 
   fetchOBDBroadcasts: async () => {
+    if (IS_LIVE_ENVIRONMENT) return;
     try {
       const res = await fetch(`${API_BASE_URL}/api/v1/campaign/obd/broadcasts?politicianId=pp1`);
       if (res.ok) {
@@ -492,6 +499,9 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
   },
 
   rechargeWallet: async (amountINR: number) => {
+    if (IS_LIVE_ENVIRONMENT) {
+      return { success: false, message: 'Wallet payments are unavailable in this environment. No payment was requested and no balance was changed.' };
+    }
     try {
       const res = await fetch(`${API_BASE_URL}/api/v1/campaign/wallet/recharge/verify`, {
         method: 'POST',
@@ -543,6 +553,9 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
   },
 
   dispatchVoiceOBD: async (title, targetSegment, audioUrl) => {
+    if (IS_LIVE_ENVIRONMENT) {
+      return { success: false, message: 'Voice outreach is unavailable in this environment. No broadcast was sent and no balance was changed.' };
+    }
     const rate = get().pricing.voiceObd.finalRatePerCallINR;
     const totalCost = Math.round(targetSegment.voterCount * rate);
     const wallet = get().wallet;
@@ -670,12 +683,15 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
       }
     } catch {}
 
+    if (IS_LIVE_ENVIRONMENT) return { isKshetraUser: false };
+
     // Default: If phone starts with 9848 or 9849, treat as active demo Poligram user
     const isMockRegistered = cleaned.startsWith('9848') || cleaned.startsWith('9876');
     return { isKshetraUser: isMockRegistered, displayName: isMockRegistered ? 'Verified Poligram User' : undefined };
   },
 
   assignBoothIncharge: async (boothId, agentName, agentPhone, isKshetraUser) => {
+    if (IS_LIVE_ENVIRONMENT) return;
     set((s) => ({
       booths: s.booths.map((b) =>
         b.id === boothId || b.boothId === boothId
@@ -702,6 +718,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
   },
 
   addCadre: async (cadre) => {
+    if (IS_LIVE_ENVIRONMENT) return;
     const newCadre: Volunteer = {
       id: `v-${Date.now().toString(36)}`,
       userId: `u-${Date.now()}`,
@@ -732,6 +749,9 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
   },
 
   dispatchObdBroadcast: async (title, voterCount) => {
+    if (IS_LIVE_ENVIRONMENT) {
+      return { success: false, cost: 0, message: 'Voice outreach is unavailable in this environment. No broadcast was queued.' };
+    }
     const rate = get().pricing.voiceObd.finalRatePerCallINR;
     const cost = Math.round(voterCount * rate);
 
@@ -758,6 +778,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
   },
 
   getCampaignAnalytics: (campaignId) => {
+    if (IS_LIVE_ENVIRONMENT) return null;
     const campaign = get().getCampaign(campaignId);
     const ads = get().getAdsForCampaign(campaignId);
     const vols = get().getVolunteersForCampaign(campaignId);
@@ -785,17 +806,38 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
 
   getRevenueFlow: () => get().revenueData,
 
-  createCampaign: (campaign) => set((s) => ({ campaigns: [...s.campaigns, { id: `c-${Date.now()}`, politicianId: '', politicianName: '', name: '', description: '', type: 'outreach', status: 'draft', stateCode: '', targetConstituencies: [], targetDistricts: [], startDate: '', endDate: '', totalBudgetINR: 0, spentBudgetINR: 0, adCount: 0, volunteerCount: 0, boothsCovered: 0, totalBooths: 0, impressions: 0, reach: 0, engagements: 0, conversions: 0, sentimentScore: 0, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), ...campaign } as Campaign] })),
+  createCampaign: (campaign) => {
+    if (IS_LIVE_ENVIRONMENT) return;
+    set((s) => ({ campaigns: [...s.campaigns, { id: `c-${Date.now()}`, politicianId: '', politicianName: '', name: '', description: '', type: 'outreach', status: 'draft', stateCode: '', targetConstituencies: [], targetDistricts: [], startDate: '', endDate: '', totalBudgetINR: 0, spentBudgetINR: 0, adCount: 0, volunteerCount: 0, boothsCovered: 0, totalBooths: 0, impressions: 0, reach: 0, engagements: 0, conversions: 0, sentimentScore: 0, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), ...campaign } as Campaign] }));
+  },
 
-  updateCampaignStatus: (campaignId, status) => set((s) => ({ campaigns: s.campaigns.map((c) => c.id === campaignId ? { ...c, status, updatedAt: new Date().toISOString() } : c) })),
+  updateCampaignStatus: (campaignId, status) => {
+    if (IS_LIVE_ENVIRONMENT) return;
+    set((s) => ({ campaigns: s.campaigns.map((c) => c.id === campaignId ? { ...c, status, updatedAt: new Date().toISOString() } : c) }));
+  },
 
-  createAd: (ad) => set((s) => ({ ads: [...s.ads, { id: `ad-${Date.now()}`, campaignId: '', format: 'promoted_post', status: 'draft', name: '', headline: '', body: '', callToAction: '', mediaUrls: [], targeting: { segments: [], estimatedReach: 0, targetingType: 'demographic' }, budget: { type: 'daily', totalINR: 0, spentINR: 0, biddingStrategy: 'lowest_cost', costPerResult: 0 }, schedule: { startDate: '', endDate: '', activeDays: [], activeHours: { start: 6, end: 23 }, timezone: 'Asia/Kolkata' }, performance: { impressions: 0, reach: 0, clicks: 0, engagements: 0, shares: 0, ctr: 0, cpm: 0, cpc: 0, cpe: 0, frequency: 0, spend: 0, conversions: 0, conversionRate: 0, roi: 0, sentimentPositive: 0, sentimentNeutral: 0, sentimentNegative: 0, byDay: [], bySegment: [], byConstituency: [] }, disclosureText: '', paidForBy: '', isECICompliant: false, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), ...ad } as AdCreative] })),
+  createAd: (ad) => {
+    if (IS_LIVE_ENVIRONMENT) return;
+    set((s) => ({ ads: [...s.ads, { id: `ad-${Date.now()}`, campaignId: '', format: 'promoted_post', status: 'draft', name: '', headline: '', body: '', callToAction: '', mediaUrls: [], targeting: { segments: [], estimatedReach: 0, targetingType: 'demographic' }, budget: { type: 'daily', totalINR: 0, spentINR: 0, biddingStrategy: 'lowest_cost', costPerResult: 0 }, schedule: { startDate: '', endDate: '', activeDays: [], activeHours: { start: 6, end: 23 }, timezone: 'Asia/Kolkata' }, performance: { impressions: 0, reach: 0, clicks: 0, engagements: 0, shares: 0, ctr: 0, cpm: 0, cpc: 0, cpe: 0, frequency: 0, spend: 0, conversions: 0, conversionRate: 0, roi: 0, sentimentPositive: 0, sentimentNeutral: 0, sentimentNegative: 0, byDay: [], bySegment: [], byConstituency: [] }, disclosureText: '', paidForBy: '', isECICompliant: false, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), ...ad } as AdCreative] }));
+  },
 
-  pauseAd: (adId) => set((s) => ({ ads: s.ads.map((a) => a.id === adId ? { ...a, status: 'paused' as const } : a) })),
+  pauseAd: (adId) => {
+    if (IS_LIVE_ENVIRONMENT) return;
+    set((s) => ({ ads: s.ads.map((a) => a.id === adId ? { ...a, status: 'paused' as const } : a) }));
+  },
 
-  addVolunteer: (volunteer) => set((s) => ({ volunteers: [...s.volunteers, { id: `v-${Date.now()}`, userId: '', campaignId: '', name: '', phone: '', role: 'canvasser', status: 'active', assignedBooths: [], assignedWards: [], tasksCompleted: 0, hoursLogged: 0, rating: 0, joinedAt: new Date().toISOString(), lastActiveAt: new Date().toISOString(), ...volunteer } as Volunteer] })),
+  addVolunteer: (volunteer) => {
+    if (IS_LIVE_ENVIRONMENT) return;
+    set((s) => ({ volunteers: [...s.volunteers, { id: `v-${Date.now()}`, userId: '', campaignId: '', name: '', phone: '', role: 'canvasser', status: 'active', assignedBooths: [], assignedWards: [], tasksCompleted: 0, hoursLogged: 0, rating: 0, joinedAt: new Date().toISOString(), lastActiveAt: new Date().toISOString(), ...volunteer } as Volunteer] }));
+  },
 
-  updateBoothStatus: (boothId, status) => set((s) => ({ booths: s.booths.map((b) => b.id === boothId ? { ...b, status: status as any, updatedAt: new Date().toISOString() } : b) })),
+  updateBoothStatus: (boothId, status) => {
+    if (IS_LIVE_ENVIRONMENT) return;
+    set((s) => ({ booths: s.booths.map((b) => b.id === boothId ? { ...b, status: status as any, updatedAt: new Date().toISOString() } : b) }));
+  },
 
-  logCanvassing: (record) => set((s) => ({ canvassingRecords: [...s.canvassingRecords, { id: `cr-${Date.now()}`, campaignId: '', volunteerId: '', boothId: '', boothName: '', constituencyAcNo: 0, status: 'in_progress', householdsVisited: 0, householdsTotal: 0, supporterCount: 0, oppositionCount: 0, undecidedCount: 0, issuesRaised: [], notes: '', startTime: new Date().toISOString(), createdAt: new Date().toISOString(), ...record } as CanvassingRecord] })),
+  logCanvassing: (record) => {
+    if (IS_LIVE_ENVIRONMENT) return;
+    set((s) => ({ canvassingRecords: [...s.canvassingRecords, { id: `cr-${Date.now()}`, campaignId: '', volunteerId: '', boothId: '', boothName: '', constituencyAcNo: 0, status: 'in_progress', householdsVisited: 0, householdsTotal: 0, supporterCount: 0, oppositionCount: 0, undecidedCount: 0, issuesRaised: [], notes: '', startTime: new Date().toISOString(), createdAt: new Date().toISOString(), ...record } as CanvassingRecord] }));
+  },
 }));

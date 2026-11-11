@@ -1,11 +1,9 @@
 export const API_BASE_URL =
-  import.meta.env.VITE_API_URL || 'https://kshetra-api-production-9f06.up.railway.app';
+  import.meta.env.VITE_API_URL || 'https://kshetra-api-production-b802.up.railway.app';
 
-export const SUPABASE_URL =
-  import.meta.env.VITE_SUPABASE_URL || 'https://pbbdglklyjwhzwhwixfs.supabase.co';
+export const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
 
-export const SUPABASE_ANON_KEY =
-  import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBiYmRnbGtseWp3aHp3aHdpeGZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAzNjMwMzksImV4cCI6MjA1NTkzOTAzOX0.S1k-eJ08X-0t47hE-Uv56ZzM7hJj_97P3hT-uO8T4c';
+export const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 export const DEFAULT_STATES = [
   { code: 'TS', name: 'Telangana', acCount: 119, pcCount: 17 },

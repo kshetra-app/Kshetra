@@ -2,11 +2,16 @@ import crypto from 'node:crypto';
 import type { FastifyPluginAsync } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import { RazorpayProvider } from '../providers/razorpayProvider';
 import type { PaymentProvider } from '../providers/types';
 import { resolveAuthenticatedUser, assertActingUserMatch } from '../lib/userAuth';
 import { AspirantService } from '../services/aspirantService';
-import type { PageCreateRequest, PageEventCreateRequest, PageEventRsvpStatus } from '@kshetra/shared';
+import type {
+  PageCreateRequest,
+  PageEventCreateRequest,
+  PageEventRsvpStatus,
+} from '@kshetra/shared';
 
 export interface PageEntitlement {
   pageId: string;
@@ -413,6 +418,17 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
         'Forbidden',
         'Only the page owner or an admin may manage Page Pro subscription',
         { code: 'FORBIDDEN' },
+      );
+    }
+
+    if (isProductionLikeRuntime()) {
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Page Pro checkout is unavailable until orders are created through the verified payment provider',
+        { code: 'PAYMENT_PROVIDER_UNAVAILABLE' },
       );
     }
 
@@ -1050,7 +1066,14 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
             description: { type: 'string', maxLength: 2000 },
             eventType: {
               type: 'string',
-              enum: ['townhall', 'rally', 'volunteer_meet', 'webinar', 'press_conference', 'door_to_door'],
+              enum: [
+                'townhall',
+                'rally',
+                'volunteer_meet',
+                'webinar',
+                'press_conference',
+                'door_to_door',
+              ],
             },
             startTime: { type: 'string' },
             endTime: { type: 'string' },

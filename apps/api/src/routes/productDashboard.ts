@@ -48,6 +48,6 @@ export async function productDashboardRoutes(app: FastifyInstance) {
       } catch (err: any) {
         return sendApiError(reply, request, 500, 'InternalError', err.message);
       }
-    }
+    },
   );
 }

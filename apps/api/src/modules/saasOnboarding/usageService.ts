@@ -31,8 +31,13 @@ export class UsageService {
   } {
     const now = new Date();
     const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1, 0, 0, 0, 0));
-    const nextMonthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1, 0, 0, 0, 0));
-    const secondsRemaining = Math.max(0, Math.floor((nextMonthStart.getTime() - now.getTime()) / 1000));
+    const nextMonthStart = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1, 0, 0, 0, 0),
+    );
+    const secondsRemaining = Math.max(
+      0,
+      Math.floor((nextMonthStart.getTime() - now.getTime()) / 1000),
+    );
 
     return {
       monthStart,
@@ -44,7 +49,10 @@ export class UsageService {
   /**
    * Aggregates monthly and recent hourly usage for an authenticated tenant.
    */
-  async getUsageMetrics(tenantId: string, client: any = this.dbClient): Promise<SaasUsageSummaryResponse> {
+  async getUsageMetrics(
+    tenantId: string,
+    client: any = this.dbClient,
+  ): Promise<SaasUsageSummaryResponse> {
     const { monthStart, nextMonthStart, secondsRemaining } = this.getMonthlyTimeWindows();
 
     // 1. Fetch Tenant Context & Tier
@@ -72,10 +80,14 @@ export class UsageService {
       throw new Error(`Failed to query monthly usage ledger: ${monthlyErr.message}`);
     }
 
-    const totalUsed = (monthlyRows || []).reduce((acc: number, row: any) => acc + (row.request_count || 0), 0);
+    const totalUsed = (monthlyRows || []).reduce(
+      (acc: number, row: any) => acc + (row.request_count || 0),
+      0,
+    );
     const ceiling = rateLimits.monthlyCeiling;
     const remaining = Math.max(0, ceiling - totalUsed);
-    const percentUsed = ceiling > 0 ? Math.min(100, Math.round((totalUsed / ceiling) * 10000) / 100) : 0;
+    const percentUsed =
+      ceiling > 0 ? Math.min(100, Math.round((totalUsed / ceiling) * 10000) / 100) : 0;
 
     // 3. Query Recent Hourly Breakdown (Last 24 Hours)
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);

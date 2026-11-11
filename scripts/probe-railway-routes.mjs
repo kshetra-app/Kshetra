@@ -19,7 +19,7 @@ const routes = [
 
 async function check(p) {
   return new Promise((resolve) => {
-    https.get('https://kshetra-api-production-9f06.up.railway.app' + p, (r) => {
+    https.get('https://kshetra-api-production-b802.up.railway.app' + p, (r) => {
       let data = '';
       r.on('data', chunk => data += chunk);
       r.on('end', () => resolve({ path: p, status: r.statusCode, snippet: data.slice(0, 100) }));

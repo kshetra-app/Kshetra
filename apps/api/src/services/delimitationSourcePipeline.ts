@@ -12,7 +12,9 @@ export class DelimitationSourcePipeline {
    * Processes a Delimitation boundary submission, calculating area deltas,
    * centroid displacement vectors, voter shifts, and topological integrity.
    */
-  async processDelimitationRevision(submission: DelimitationRevisionSubmission): Promise<DelimitationImpactReport> {
+  async processDelimitationRevision(
+    submission: DelimitationRevisionSubmission,
+  ): Promise<DelimitationImpactReport> {
     const revisionId = crypto.randomUUID();
     const boundaryDeltas: DelimitationBoundaryDelta[] = [];
     let totalAreaDeltaKm2 = 0;
@@ -24,7 +26,8 @@ export class DelimitationSourcePipeline {
       // Derive area from GeoJSON coordinates or simulated spatial polygon
       const calculatedArea = this.calculatePolygonAreaKm2(b.geojsonGeometry);
       const areaDelta = Math.round((calculatedArea - prevArea) * 100) / 100;
-      const pctChange = prevArea > 0 ? Math.round(((calculatedArea - prevArea) / prevArea) * 10000) / 100 : 0;
+      const pctChange =
+        prevArea > 0 ? Math.round(((calculatedArea - prevArea) / prevArea) * 10000) / 100 : 0;
 
       // Centroid shift calculation
       const centroidShift = this.calculateCentroidShiftMeters(b.geojsonGeometry);
@@ -96,7 +99,15 @@ export class DelimitationSourcePipeline {
   private calculatePolygonAreaKm2(geojson: Record<string, unknown>): number {
     if (!geojson) return 150.0;
     // Coordinates extraction: Polygon coordinates are array of rings
-    const coords = (geojson.coordinates as number[][][]) || [[[0, 0], [0, 0.1], [0.1, 0.1], [0.1, 0], [0, 0]]];
+    const coords = (geojson.coordinates as number[][][]) || [
+      [
+        [0, 0],
+        [0, 0.1],
+        [0.1, 0.1],
+        [0.1, 0],
+        [0, 0],
+      ],
+    ];
     const ring = coords[0];
     if (!ring || ring.length < 3) return 150.0;
 
@@ -140,7 +151,7 @@ export class DelimitationSourcePipeline {
    * Helper: Topological audit checking for self-intersections, overlaps, slivers, and state containment.
    */
   private auditTopology(
-    boundaries: Array<{ constituencyId: string; geojsonGeometry: Record<string, unknown> }>
+    boundaries: Array<{ constituencyId: string; geojsonGeometry: Record<string, unknown> }>,
   ): DelimitationTopologyCheckResult {
     let selfIntersectionsCount = 0;
     let overlapsCount = 0;

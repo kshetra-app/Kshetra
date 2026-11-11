@@ -4,6 +4,7 @@
  */
 
 import crypto from 'node:crypto';
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import type {
   PaymentOrderParams,
   PaymentOrderResult,
@@ -34,10 +35,15 @@ export class RazorpayProvider implements PaymentProvider {
   }
 
   getPublicKey(): string {
-    return this.getKeyId() || 'rzp_test_placeholderKey123';
+    return this.getKeyId();
   }
 
   async createOrder(params: PaymentOrderParams): Promise<PaymentOrderResult> {
+    if (isProductionLikeRuntime()) {
+      throw new Error(
+        'PROVIDER_NOT_IMPLEMENTED: Production payment-order creation is unavailable until orders are created through the verified Razorpay API.',
+      );
+    }
     const amountINR = params.amountINR;
     const amountPaise = amountINR * 100;
     const currency = params.currency || 'INR';

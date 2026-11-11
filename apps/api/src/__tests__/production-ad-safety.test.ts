@@ -37,21 +37,30 @@ describe('deployed advertising fails closed until durable delivery exists', () =
     expect(body.total).toBe(0);
   });
 
-  it.each(['staging', 'production'])('%s political ads return 503 until storage and review are wired', async (environment) => {
-    process.env.APP_ENV = environment;
-    process.env.EXPO_PUBLIC_APP_ENV = environment;
-    const response = await app.inject({ method: 'GET', url: '/api/v1/political-ads/active' });
+  it.each(['staging', 'production'])(
+    '%s political ads return 503 until storage and review are wired',
+    async (environment) => {
+      process.env.APP_ENV = environment;
+      process.env.EXPO_PUBLIC_APP_ENV = environment;
+      const response = await app.inject({ method: 'GET', url: '/api/v1/political-ads/active' });
 
-    expect(response.statusCode).toBe(503);
-    expect(JSON.parse(response.payload).code).toBe('POLITICAL_AD_SERVICE_UNAVAILABLE');
-  });
+      expect(response.statusCode).toBe(503);
+      expect(JSON.parse(response.payload).code).toBe('POLITICAL_AD_SERVICE_UNAVAILABLE');
+    },
+  );
 
-  it.each(['staging', 'production'])('%s commercial ads return 503 while backed only by process memory', async (environment) => {
-    process.env.APP_ENV = environment;
-    process.env.EXPO_PUBLIC_APP_ENV = environment;
-    const response = await app.inject({ method: 'GET', url: '/api/v1/commercial-ads/pricing-configurations' });
+  it.each(['staging', 'production'])(
+    '%s commercial ads return 503 while backed only by process memory',
+    async (environment) => {
+      process.env.APP_ENV = environment;
+      process.env.EXPO_PUBLIC_APP_ENV = environment;
+      const response = await app.inject({
+        method: 'GET',
+        url: '/api/v1/commercial-ads/pricing-configurations',
+      });
 
-    expect(response.statusCode).toBe(503);
-    expect(JSON.parse(response.payload).code).toBe('AD_SERVICE_UNAVAILABLE');
-  });
+      expect(response.statusCode).toBe(503);
+      expect(JSON.parse(response.payload).code).toBe('AD_SERVICE_UNAVAILABLE');
+    },
+  );
 });

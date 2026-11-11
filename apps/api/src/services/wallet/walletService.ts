@@ -1,4 +1,14 @@
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import { isProductionLikeRuntime } from '../../lib/runtimeEnvironment';
+
+const isProductionRuntime = () => isProductionLikeRuntime();
+
+export class WalletUnavailableError extends Error {
+  constructor() {
+    super('Campaign wallet data is not available from verified persistent storage.');
+    this.name = 'WalletUnavailableError';
+  }
+}
 
 export interface WalletTransaction {
   id: string;
@@ -69,7 +79,31 @@ const inMemoryTransactions: WalletTransaction[] = [
  * Retrieves the politician's active campaign wallet balance.
  */
 export async function getPoliticianWallet(politicianId: string): Promise<CampaignWallet> {
-  const pId = politicianId || 'pp1';
+  const pId = isProductionRuntime() ? politicianId : politicianId || 'pp1';
+
+  if (isProductionRuntime()) {
+    if (!isSupabaseConfigured || !pId) throw new WalletUnavailableError();
+    try {
+      const { data, error } = await supabase
+        .from('campaign_wallets')
+        .select('*')
+        .eq('politician_id', pId)
+        .maybeSingle();
+      if (error || !data) throw new WalletUnavailableError();
+      return {
+        id: data.id,
+        politicianId: data.politician_id,
+        balanceINR: Number(data.balance_inr),
+        totalRechargedINR: Number(data.total_recharged_inr),
+        totalSpentINR: Number(data.total_spent_inr),
+        currency: data.currency || 'INR',
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
+      };
+    } catch {
+      throw new WalletUnavailableError();
+    }
+  }
 
   if (isSupabaseConfigured) {
     try {
@@ -114,6 +148,7 @@ export async function getPoliticianWallet(politicianId: string): Promise<Campaig
  * Creates a payment order for topping up the campaign wallet.
  */
 export async function createWalletRechargeOrder(politicianId: string, amountINR: number) {
+  if (isProductionRuntime()) throw new WalletUnavailableError();
   if (amountINR < 500) {
     throw new Error('Minimum wallet recharge is ₹500');
   }
@@ -142,6 +177,7 @@ export async function creditWallet(
   amountINR: number,
   paymentReference: string,
 ): Promise<CampaignWallet> {
+  if (isProductionRuntime()) throw new WalletUnavailableError();
   const wallet = await getPoliticianWallet(politicianId);
   const newBalance = wallet.balanceINR + amountINR;
   const newRecharged = wallet.totalRechargedINR + amountINR;
@@ -202,6 +238,7 @@ export async function deductWalletForService(
   referenceId: string,
   description: string,
 ): Promise<CampaignWallet> {
+  if (isProductionRuntime()) throw new WalletUnavailableError();
   const wallet = await getPoliticianWallet(politicianId);
 
   if (wallet.balanceINR < amountINR) {
@@ -265,7 +302,33 @@ export async function deductWalletForService(
  * Returns past wallet transaction history.
  */
 export async function getWalletTransactions(politicianId: string): Promise<WalletTransaction[]> {
-  const pId = politicianId || 'pp1';
+  const pId = isProductionRuntime() ? politicianId : politicianId || 'pp1';
+
+  if (isProductionRuntime()) {
+    if (!isSupabaseConfigured || !pId) throw new WalletUnavailableError();
+    try {
+      const { data, error } = await supabase
+        .from('wallet_transactions')
+        .select('*')
+        .eq('politician_id', pId)
+        .order('created_at', { ascending: false });
+      if (error || !data) throw new WalletUnavailableError();
+      return data.map((d) => ({
+        id: d.id,
+        walletId: d.wallet_id,
+        politicianId: d.politician_id,
+        type: d.type,
+        amountINR: Number(d.amount_inr),
+        serviceType: d.service_type,
+        referenceId: d.reference_id,
+        description: d.description,
+        balanceAfterINR: Number(d.balance_after_inr),
+        createdAt: d.created_at,
+      }));
+    } catch {
+      throw new WalletUnavailableError();
+    }
+  }
 
   if (isSupabaseConfigured) {
     try {

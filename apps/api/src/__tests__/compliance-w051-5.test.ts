@@ -53,7 +53,21 @@ describe('Milestone W051.5: Compliance, DPDP & Data Governance Readiness Suite',
       expect(json.data.total).toBe(13);
       const locales = json.data.locales.map((l: any) => l.locale);
       expect(locales).toEqual(
-        expect.arrayContaining(['en', 'hi', 'te', 'ta', 'kn', 'ml', 'mr', 'bn', 'gu', 'or', 'pa', 'as', 'ne']),
+        expect.arrayContaining([
+          'en',
+          'hi',
+          'te',
+          'ta',
+          'kn',
+          'ml',
+          'mr',
+          'bn',
+          'gu',
+          'or',
+          'pa',
+          'as',
+          'ne',
+        ]),
       );
     });
 
@@ -119,7 +133,9 @@ describe('Milestone W051.5: Compliance, DPDP & Data Governance Readiness Suite',
       const stats = inventoryService.getErasureEligibilitySummary();
       expect(stats.citizenDataErasableCount).toBeGreaterThanOrEqual(17);
       expect(stats.statutoryPublicExemptCount).toBeGreaterThanOrEqual(2);
-      expect(stats.totalFieldsCount).toBe(stats.citizenDataErasableCount + stats.statutoryPublicExemptCount);
+      expect(stats.totalFieldsCount).toBe(
+        stats.citizenDataErasableCount + stats.statutoryPublicExemptCount,
+      );
     });
   });
 
@@ -169,7 +185,9 @@ describe('Milestone W051.5: Compliance, DPDP & Data Governance Readiness Suite',
       expect(financialRule).toBeDefined();
       expect(financialRule.statutoryReference).toContain('Companies Act 2013');
 
-      const statutoryPublicRule = policies.find((p: any) => p.retentionClass === 'permanent_statutory_public');
+      const statutoryPublicRule = policies.find(
+        (p: any) => p.retentionClass === 'permanent_statutory_public',
+      );
       expect(statutoryPublicRule).toBeDefined();
       expect(statutoryPublicRule.deletionTrigger).toContain('NEVER');
     });
@@ -272,7 +290,8 @@ describe('Milestone W051.5: Compliance, DPDP & Data Governance Readiness Suite',
         headers: { 'x-user-id': testUserId },
         payload: {
           subject: 'Clarification on Constituency Feed Personalization',
-          description: 'Requesting clarification regarding how my assembly constituency feed is selected.',
+          description:
+            'Requesting clarification regarding how my assembly constituency feed is selected.',
           contactEmail: 'citizen@example.org',
           category: 'other',
         },

@@ -915,7 +915,10 @@ export async function civicRoutes(app: FastifyInstance) {
         } catch {}
       }
       if (projectsList.length === 0) {
-        projectsList = await civicService.getProjects({ constituencyId: constituency, stateCode: state });
+        projectsList = await civicService.getProjects({
+          constituencyId: constituency,
+          stateCode: state,
+        });
       }
       return {
         projects: projectsList,
@@ -1165,7 +1168,11 @@ export async function civicRoutes(app: FastifyInstance) {
         if (count !== null && count !== undefined) upvoteCount = count;
 
         if (upvoteCount >= 500) {
-          const { data: issueData } = await supabase.from('civic_issues').select('*').eq('id', id).maybeSingle();
+          const { data: issueData } = await supabase
+            .from('civic_issues')
+            .select('*')
+            .eq('id', id)
+            .maybeSingle();
           if (issueData) {
             await supabase.from('headlines').upsert({
               id: `hl_auto_${id}`,
@@ -1359,7 +1366,11 @@ export async function civicRoutes(app: FastifyInstance) {
           lat: body.latitude,
           lng: body.longitude,
         });
-        if (locateResult.constituency && body.constituencyId && locateResult.constituency.id !== body.constituencyId) {
+        if (
+          locateResult.constituency &&
+          body.constituencyId &&
+          locateResult.constituency.id !== body.constituencyId
+        ) {
           return sendApiError(
             reply,
             request,
@@ -1483,7 +1494,12 @@ export async function civicRoutes(app: FastifyInstance) {
 
       // Lifecycle State Machine validation
       try {
-        civicService.validateStatusTransition(issue.status as any, status as any, auth.role, isAuthor);
+        civicService.validateStatusTransition(
+          issue.status as any,
+          status as any,
+          auth.role,
+          isAuthor,
+        );
       } catch (err: any) {
         return sendApiError(reply, request, 400, 'Bad Request', err.message, {
           code: err.code || 'INVALID_STATUS_TRANSITION',
@@ -1806,9 +1822,16 @@ export async function civicRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const auth = await resolveAuthUser(request);
       if (!auth) {
-        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to add evidence', {
-          code: 'UNAUTHORIZED',
-        });
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to add evidence',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
       }
       if (!isSupabaseConfigured) {
         return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
@@ -1821,7 +1844,10 @@ export async function civicRoutes(app: FastifyInstance) {
         const evidence = await civicService.addEvidence(
           id,
           { mediaUrl, caption },
-          { userId: auth.userId, userName: (request.headers['x-user-name'] as string) || 'Citizen Reporter' },
+          {
+            userId: auth.userId,
+            userName: (request.headers['x-user-name'] as string) || 'Citizen Reporter',
+          },
         );
         return {
           success: true,
@@ -1935,9 +1961,16 @@ export async function civicRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const auth = await resolveAuthUser(request);
       if (!auth) {
-        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to create community group', {
-          code: 'UNAUTHORIZED',
-        });
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to create community group',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
       }
       if (!isSupabaseConfigured) {
         return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
@@ -1966,9 +1999,16 @@ export async function civicRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const auth = await resolveAuthUser(request);
       if (!auth) {
-        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to join group', {
-          code: 'UNAUTHORIZED',
-        });
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to join group',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
       }
       if (!isSupabaseConfigured) {
         return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
@@ -1978,7 +2018,12 @@ export async function civicRoutes(app: FastifyInstance) {
       const { id } = request.params;
       try {
         const result = await civicService.joinGroup(id, auth.userId);
-        return { success: true, groupId: id, memberCount: result.memberCount, message: 'Joined community group' };
+        return {
+          success: true,
+          groupId: id,
+          memberCount: result.memberCount,
+          message: 'Joined community group',
+        };
       } catch (err: any) {
         return sendApiError(reply, request, 400, 'Bad Request', err.message, {
           code: err.code || 'BAD_REQUEST',
@@ -1998,9 +2043,16 @@ export async function civicRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const auth = await resolveAuthUser(request);
       if (!auth) {
-        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to leave group', {
-          code: 'UNAUTHORIZED',
-        });
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to leave group',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
       }
       if (!isSupabaseConfigured) {
         return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
@@ -2010,7 +2062,12 @@ export async function civicRoutes(app: FastifyInstance) {
       const { id } = request.params;
       try {
         const result = await civicService.leaveGroup(id, auth.userId);
-        return { success: true, groupId: id, memberCount: result.memberCount, message: 'Left community group' };
+        return {
+          success: true,
+          groupId: id,
+          memberCount: result.memberCount,
+          message: 'Left community group',
+        };
       } catch (err: any) {
         return sendApiError(reply, request, 400, 'Bad Request', err.message, {
           code: err.code || 'BAD_REQUEST',

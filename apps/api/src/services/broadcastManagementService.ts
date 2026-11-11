@@ -1,20 +1,20 @@
 /**
  * Poligram Broadcast Management Service
- * Manages official channels, streams, ephemeral hashed stream keys, 
+ * Manages official channels, streams, ephemeral hashed stream keys,
  * multi-tier ingest credentials, health telemetry, and lifecycle state machines.
  */
 
 import crypto from 'node:crypto';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { getMediaHosts } from '../lib/mediaPipeline';
-import type { 
-  BroadcastChannel, 
-  BroadcastStream, 
-  StreamIngestCredentials, 
-  StreamTelemetrySnapshot, 
-  CreateChannelRequest, 
-  CreateStreamRequest, 
-  StreamStatus 
+import type {
+  BroadcastChannel,
+  BroadcastStream,
+  StreamIngestCredentials,
+  StreamTelemetrySnapshot,
+  CreateChannelRequest,
+  CreateStreamRequest,
+  StreamStatus,
 } from '@kshetra/shared';
 
 export class InvalidStateTransitionError extends Error {
@@ -27,7 +27,10 @@ export class InvalidStateTransitionError extends Error {
 export class BroadcastManagementService {
   private inMemoryChannels = new Map<string, BroadcastChannel>();
   private inMemoryStreams = new Map<string, BroadcastStream>();
-  private inMemoryStreamKeys = new Map<string, { keyHash: string; rawKey?: string; streamId: string; channelId: string; expiresAt: string }>();
+  private inMemoryStreamKeys = new Map<
+    string,
+    { keyHash: string; rawKey?: string; streamId: string; channelId: string; expiresAt: string }
+  >();
   private inMemoryTelemetry = new Map<string, StreamTelemetrySnapshot[]>();
 
   // In-memory daily salt for hashing (DPDP Act 2023)
@@ -58,25 +61,23 @@ export class BroadcastManagementService {
 
     if (isSupabaseConfigured) {
       try {
-        await supabase
-          .from('broadcast_channels')
-          .insert({
-            id: channel.id,
-            slug: channel.slug,
-            title: channel.title,
-            description: channel.description,
-            channel_type: channel.channelType,
-            verification_status: channel.verificationStatus,
-            person_internal_id: channel.personInternalId || null,
-            organization_internal_id: channel.organizationInternalId || null,
-            state_code: channel.stateCode || null,
-            constituency_internal_id: channel.constituencyInternalId || null,
-            avatar_url: channel.avatarUrl || null,
-            banner_url: channel.bannerUrl || null,
-            contact_email: channel.contactEmail || null,
-            created_at: channel.createdAt,
-            updated_at: channel.updatedAt,
-          });
+        await supabase.from('broadcast_channels').insert({
+          id: channel.id,
+          slug: channel.slug,
+          title: channel.title,
+          description: channel.description,
+          channel_type: channel.channelType,
+          verification_status: channel.verificationStatus,
+          person_internal_id: channel.personInternalId || null,
+          organization_internal_id: channel.organizationInternalId || null,
+          state_code: channel.stateCode || null,
+          constituency_internal_id: channel.constituencyInternalId || null,
+          avatar_url: channel.avatarUrl || null,
+          banner_url: channel.bannerUrl || null,
+          contact_email: channel.contactEmail || null,
+          created_at: channel.createdAt,
+          updated_at: channel.updatedAt,
+        });
       } catch {
         // Fallback to in-memory store when remote staging schema is air-gapped
       }
@@ -94,9 +95,11 @@ export class BroadcastManagementService {
     }
 
     if (isSupabaseConfigured) {
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        idOrSlug,
+      );
       const query = supabase.from('broadcast_channels').select('*');
-      const { data, error } = isUuid 
+      const { data, error } = isUuid
         ? await query.eq('id', idOrSlug).maybeSingle()
         : await query.eq('slug', idOrSlug.toLowerCase()).maybeSingle();
 
@@ -128,7 +131,9 @@ export class BroadcastManagementService {
   }
 
   /** Create / Schedule a broadcast stream */
-  async createStream(req: CreateStreamRequest): Promise<{ stream: BroadcastStream; credentials: StreamIngestCredentials }> {
+  async createStream(
+    req: CreateStreamRequest,
+  ): Promise<{ stream: BroadcastStream; credentials: StreamIngestCredentials }> {
     const channel = await this.getChannel(req.channelId);
     if (!channel) {
       throw new Error(`Channel not found: ${req.channelId}`);
@@ -140,12 +145,14 @@ export class BroadcastManagementService {
 
     const latencyProfile = req.latencyProfile || 'BROADCAST_HLS';
     const playbackHlsUrl = `${hosts.scheme}://${hosts.edgeHost}/live/${streamId}.m3u8`;
-    const playbackLlhlsUrl = latencyProfile === 'LOW_LATENCY_LLHLS'
-      ? `${hosts.scheme}://${hosts.edgeHost}/llhls/app/${streamId}/llhls.m3u8`
-      : undefined;
-    const playbackWebrtcUrl = latencyProfile === 'INTERACTIVE_SFU'
-      ? `wss://${hosts.livekitHost}/rtc`
-      : `${hosts.scheme}://${hosts.srsHost}:8000/rtc/v1/whep/?app=live&stream=${streamId}`;
+    const playbackLlhlsUrl =
+      latencyProfile === 'LOW_LATENCY_LLHLS'
+        ? `${hosts.scheme}://${hosts.edgeHost}/llhls/app/${streamId}/llhls.m3u8`
+        : undefined;
+    const playbackWebrtcUrl =
+      latencyProfile === 'INTERACTIVE_SFU'
+        ? `wss://${hosts.livekitHost}/rtc`
+        : `${hosts.scheme}://${hosts.srsHost}:8000/rtc/v1/whep/?app=live&stream=${streamId}`;
 
     const stream: BroadcastStream = {
       id: streamId,
@@ -343,7 +350,11 @@ export class BroadcastManagementService {
   }
 
   /** List active and scheduled streams with filtering */
-  async listStreams(filter?: { status?: StreamStatus; stateCode?: string; category?: string }): Promise<BroadcastStream[]> {
+  async listStreams(filter?: {
+    status?: StreamStatus;
+    stateCode?: string;
+    category?: string;
+  }): Promise<BroadcastStream[]> {
     let list: BroadcastStream[] = Array.from(this.inMemoryStreams.values());
 
     if (isSupabaseConfigured) {
@@ -383,15 +394,19 @@ export class BroadcastManagementService {
       }
     }
 
-    if (filter?.status) list = list.filter(s => s.status === filter.status);
-    if (filter?.stateCode) list = list.filter(s => s.stateCode === filter.stateCode?.toUpperCase());
-    if (filter?.category) list = list.filter(s => s.category === filter.category);
+    if (filter?.status) list = list.filter((s) => s.status === filter.status);
+    if (filter?.stateCode)
+      list = list.filter((s) => s.stateCode === filter.stateCode?.toUpperCase());
+    if (filter?.category) list = list.filter((s) => s.category === filter.category);
 
     return list;
   }
 
   /** Record incoming telemetry heartbeat from media gateway */
-  async recordTelemetry(streamId: string, snapshot: Omit<StreamTelemetrySnapshot, 'id' | 'streamId' | 'capturedAt'>): Promise<StreamTelemetrySnapshot> {
+  async recordTelemetry(
+    streamId: string,
+    snapshot: Omit<StreamTelemetrySnapshot, 'id' | 'streamId' | 'capturedAt'>,
+  ): Promise<StreamTelemetrySnapshot> {
     const stream = await this.getStream(streamId);
     if (!stream) {
       throw new Error(`Stream not found: ${streamId}`);

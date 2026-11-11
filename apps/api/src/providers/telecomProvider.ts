@@ -4,6 +4,7 @@
  */
 
 import { isNumberOptedOut } from '../services/outreach/obdTelecomService';
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import type {
   VoiceObdProvider,
   TraiWindowCheckResult,
@@ -72,15 +73,22 @@ export class TelecomProvider implements VoiceObdProvider {
 
     if (!this.apiKey || !this.apiToken || !this.accountSid) {
       return {
-        success: true,
-        providerRef: `sim_${Date.now().toString(36)}`,
-        warning:
-          'TELECOM_CREDENTIALS_REQUIRED: Exotel API credentials are not configured in environment. Call recorded in queued state.',
+        success: false,
+        error: isProductionLikeRuntime()
+          ? 'TELECOM_PROVIDER_UNAVAILABLE: Exotel API credentials are not configured; no call was sent.'
+          : 'TELECOM_CREDENTIALS_REQUIRED: Exotel API credentials are not configured in environment. No call was sent.',
       };
     }
 
-    const sampleRecipient = params.targetSegment.phoneNumbers?.[0] || '0000000000';
-    const isOptedOut = await isNumberOptedOut(sampleRecipient);
+    const recipient = params.targetSegment.phoneNumbers?.[0];
+    if (!recipient || !/^\+?[1-9]\d{7,14}$/.test(recipient)) {
+      return {
+        success: false,
+        error:
+          'VALID_RECIPIENT_REQUIRED: No valid recipient number was provided; no call was sent.',
+      };
+    }
+    const isOptedOut = await isNumberOptedOut(recipient);
     if (isOptedOut) {
       return {
         success: true,
@@ -91,7 +99,7 @@ export class TelecomProvider implements VoiceObdProvider {
 
     const endpoint = `https://${this.apiKey}:${this.apiToken}@${this.subdomain}.exotel.com/v1/Accounts/${this.accountSid}/Calls/connect.json`;
     const form = new URLSearchParams();
-    form.append('From', sampleRecipient);
+    form.append('From', recipient);
     form.append('CallerId', this.callerId || '');
     form.append('Url', params.audioUrl);
     form.append('CustomField', params.campaignId);

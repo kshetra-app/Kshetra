@@ -30,7 +30,7 @@ const STAGING_URL = 'https://fkpigozcqnmcvofuksar.supabase.co';
 const PROD_URL = 'https://ehfafcnimmjusyvplbah.supabase.co';
 
 const STAGING_API = 'https://kshetra-api-staging.up.railway.app';
-const PROD_API = 'https://kshetra-api-production-9f06.up.railway.app';
+const PROD_API = 'https://kshetra-api-production-b802.up.railway.app';
 
 const SENTINEL_ID = '99999999-9999-4999-8999-999999999999';
 const REPORTER_ID = 'a0000000-0000-0000-0000-000000000001';

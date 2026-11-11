@@ -1,4 +1,5 @@
 import { API_BASE_URL } from './constants';
+import { supabase } from './supabase';
 import type { AppFeatureFlags } from '@kshetra/shared';
 
 export interface HealthResponse {
@@ -28,16 +29,28 @@ export const api = {
     return data.flags || data;
   },
 
-  async updateFlags(flags: Partial<AppFeatureFlags>): Promise<{ success: boolean }> {
+  async updateFlags(flags: Partial<AppFeatureFlags>): Promise<{ status: string; flags: AppFeatureFlags; updatedAt?: string }> {
+    if (!supabase) {
+      throw new Error('Secure admin sign-in is unavailable because this web-admin build has no Supabase authentication configuration.');
+    }
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) throw new Error(`Could not read the admin sign-in session: ${sessionError.message}`);
+    if (!session?.access_token) throw new Error('Sign in with an administrator account before publishing feature flags.');
+
     const res = await fetch(`${API_BASE_URL}/api/v1/config/flags`, {
-      method: 'POST',
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
       },
-      body: JSON.stringify({ flags }),
+      body: JSON.stringify(flags),
     });
     if (!res.ok) throw new Error(`Failed to update flags: ${res.status}`);
-    return res.json();
+    const result = await res.json();
+    if (result?.status !== 'updated' || !result?.flags) {
+      throw new Error('The server did not confirm that the feature flags were updated.');
+    }
+    return result;
   },
 
   async getConstituencies(stateCode: string = 'TS') {

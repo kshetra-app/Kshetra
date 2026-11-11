@@ -37,11 +37,17 @@ export async function universalAnalyticsRoutes(app: FastifyInstance) {
         const events: UniversalAnalyticsEventDTO[] = Array.isArray(body?.events)
           ? body.events
           : body && body.eventName
-          ? [body]
-          : [];
+            ? [body]
+            : [];
 
         if (events.length === 0) {
-          return sendApiError(reply, request, 400, 'BadRequest', 'At least one valid event must be provided in events array');
+          return sendApiError(
+            reply,
+            request,
+            400,
+            'BadRequest',
+            'At least one valid event must be provided in events array',
+          );
         }
 
         const clientIp = request.ip || (request.headers['x-forwarded-for'] as string) || undefined;
@@ -52,7 +58,7 @@ export async function universalAnalyticsRoutes(app: FastifyInstance) {
       } catch (err: any) {
         return sendApiError(reply, request, 500, 'InternalError', err.message);
       }
-    }
+    },
   );
 
   // 2. GET /api/v1/analytics/events (Multi-Dimensional Query)
@@ -65,27 +71,24 @@ export async function universalAnalyticsRoutes(app: FastifyInstance) {
       to?: string;
       limit?: string;
     };
-  }>(
-    '/api/v1/analytics/events',
-    async (request, reply) => {
-      try {
-        const q = request.query;
-        const events = await universalAnalyticsService.queryEvents({
-          eventName: q.eventName,
-          userId: q.userId,
-          acId: q.acId,
-          from: q.from,
-          to: q.to,
-          limit: q.limit ? parseInt(q.limit, 10) : 100,
-        });
+  }>('/api/v1/analytics/events', async (request, reply) => {
+    try {
+      const q = request.query;
+      const events = await universalAnalyticsService.queryEvents({
+        eventName: q.eventName,
+        userId: q.userId,
+        acId: q.acId,
+        from: q.from,
+        to: q.to,
+        limit: q.limit ? parseInt(q.limit, 10) : 100,
+      });
 
-        return sendSuccess(reply, request, {
-          total: events.length,
-          events,
-        });
-      } catch (err: any) {
-        return sendApiError(reply, request, 500, 'InternalError', err.message);
-      }
+      return sendSuccess(reply, request, {
+        total: events.length,
+        events,
+      });
+    } catch (err: any) {
+      return sendApiError(reply, request, 500, 'InternalError', err.message);
     }
-  );
+  });
 }

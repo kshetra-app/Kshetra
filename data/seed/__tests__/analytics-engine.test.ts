@@ -112,9 +112,11 @@ describe('Election Analytics Engine', () => {
 
     it('should detect defections in TS', () => {
       const data = getUnifiedConstituenciesForState('TS');
-      const defected = data.filter((c: any) => c.currentParty !== c.winnerParty);
+      const defected = data.filter((c: any) => c.currentPartyChangeType === 'defection');
       // We know TS has 10 BRS→INC defections
       expect(defected.length).toBe(10);
+      expect(defected.every((c: any) => c.winnerParty === 'BRS' && c.currentParty === 'INC')).toBe(true);
+      expect(data.filter((c: any) => c.currentPartyChangeType === 'by-election')).toHaveLength(1);
     });
 
     it('should compute cross-state comparison', () => {

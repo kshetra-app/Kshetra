@@ -73,13 +73,7 @@ export interface PublicRepresentativeProfileDTO {
 // ==============================================================================
 
 export type PoligramEmbedWidgetType =
-  | 'constituency'
-  | 'delimitation'
-  | 'election'
-  | 'candidate'
-  | 'issue'
-  | 'live'
-  | 'short';
+  'constituency' | 'delimitation' | 'election' | 'candidate' | 'issue' | 'live' | 'short';
 
 export type PaninEmbedWidgetType = PoligramEmbedWidgetType;
 

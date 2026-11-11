@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, Text, StyleSheet, Pressable, RefreshControl, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import { useResponsive } from '../../lib/responsive';
 import { useTheme } from '../../lib/theme';
-import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import { useCampaignStore } from '../../stores/campaign';
+import { IS_PRODUCTION, IS_STAGING } from '../../lib/environment';
 
 import GrassrootsOverview from '../../components/campaign/GrassrootsOverview';
 import SimplifiedOutreach from '../../components/campaign/SimplifiedOutreach';
@@ -14,6 +14,8 @@ import GrassrootsBooths from '../../components/campaign/GrassrootsBooths';
 import GrassrootsWorkers from '../../components/campaign/GrassrootsWorkers';
 
 export type MainCampaignTab = 'overview' | 'outreach' | 'booths' | 'workers';
+
+const IS_LIVE_ENVIRONMENT = IS_PRODUCTION || IS_STAGING;
 
 interface TabItem {
   key: MainCampaignTab;
@@ -35,19 +37,33 @@ export default function CampaignManagerScreen() {
   const { colors } = useTheme();
 
   const [activeTab, setActiveTab] = useState<MainCampaignTab>('overview');
-  const [refreshing, setRefreshing] = useState(false);
-  const [helpVisible, setHelpVisible] = useState(false);
-
   const fetchPricing = useCampaignStore((s) => s.fetchPricing);
 
   useEffect(() => {
-    fetchPricing();
+    if (!IS_LIVE_ENVIRONMENT) fetchPricing();
   }, [fetchPricing]);
 
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    fetchPricing().finally(() => setRefreshing(false));
-  }, [fetchPricing]);
+  if (IS_LIVE_ENVIRONMENT) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <Stack.Screen
+          options={{
+            title: t('campaignManager.screenTitle', { defaultValue: 'Campaign Command Center' }),
+            headerShown: true,
+            headerStyle: { backgroundColor: colors.surface },
+            headerTintColor: colors.primary,
+            headerTitleStyle: { fontWeight: '800', fontSize: 17 },
+          }}
+        />
+        <View style={[styles.unavailableCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Ionicons name="information-circle-outline" size={30} color={colors.primary} />
+          <Text style={[styles.unavailableTitle, { color: colors.text }]}>Campaign tools are not connected to verified live data yet</Text>
+          <Text style={[styles.unavailableBody, { color: colors.textSecondary }]}>Campaign records, voter counts, budgets, ad performance, and outreach delivery are unavailable in this environment. Payment and broadcast actions are disabled; no funds will be charged and no messages will be sent.</Text>
+        </View>
+        <View style={{ height: insets.bottom }} />
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -58,15 +74,6 @@ export default function CampaignManagerScreen() {
           headerStyle: { backgroundColor: colors.surface },
           headerTintColor: colors.primary,
           headerTitleStyle: { fontWeight: '800', fontSize: 17 },
-          headerRight: () => (
-            <Pressable
-              accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
-              style={{ padding: 4 }}
-              onPress={() => setHelpVisible(true)}
-            >
-              <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
-            </Pressable>
-          ),
         }}
       />
 
@@ -136,5 +143,23 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  unavailableCard: {
+    margin: 20,
+    padding: 20,
+    borderWidth: 1,
+    borderRadius: 16,
+    alignItems: 'center',
+    gap: 12,
+  },
+  unavailableTitle: {
+    fontSize: 17,
+    fontWeight: '800',
+    textAlign: 'center',
+  },
+  unavailableBody: {
+    fontSize: 14,
+    lineHeight: 21,
+    textAlign: 'center',
   },
 });

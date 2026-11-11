@@ -18,7 +18,7 @@ export class DisasterRecoveryService {
    */
   public static async executeRollbackDrill(
     fromVersion: string = 'v1.1.0',
-    targetVersion: string = 'v1.0.0'
+    targetVersion: string = 'v1.0.0',
   ): Promise<RollbackExerciseReport> {
     const auditTrail: string[] = [
       `[T+00s] SRE alert triggered: simulated error threshold spike in version ${fromVersion}`,
@@ -69,15 +69,17 @@ export class DisasterRecoveryService {
    * Verifies PITR WAL replay, RPO < 1h, RTO < 30m, and 100% entity parity
    */
   public static async executeDisasterRecoveryDrill(
-    simulatedIncident: 'PRIMARY_REGION_TOTAL_OUTAGE' | 'CATASTROPHIC_DATA_CORRUPTION' = 'PRIMARY_REGION_TOTAL_OUTAGE'
+    simulatedIncident:
+      | 'PRIMARY_REGION_TOTAL_OUTAGE'
+      | 'CATASTROPHIC_DATA_CORRUPTION' = 'PRIMARY_REGION_TOTAL_OUTAGE',
   ): Promise<DisasterRecoveryDrillReport> {
     const drillId = `DR-PITR-${Date.now()}`;
     const startTime = new Date();
-    
+
     // Recovery timing metrics
     const rpoActualMinutes = 4.2; // WAL streaming lag is 4.2 minutes (< 60m ceiling)
     const rtoActualMinutes = 11.5; // Snapshot restore + WAL replay completed in 11.5 minutes (< 30m ceiling)
-    
+
     const endTime = new Date(startTime.getTime() + Math.round(rtoActualMinutes * 60 * 1000));
 
     const totalEntitiesPreIncident = 63045;
@@ -145,7 +147,7 @@ export class DisasterRecoveryService {
   // ============================================================================
 
   public static async restoreSingleRegionManualSnapshot(
-    params: SingleRegionSnapshotRestoreParams
+    params: SingleRegionSnapshotRestoreParams,
   ): Promise<{ status: 'SUCCESS' | 'FAILED'; restoredEntities: number; durationSeconds: number }> {
     return {
       status: 'SUCCESS',

@@ -1,5 +1,12 @@
 import Fastify from 'fastify';
-import type { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
+import type {
+  FastifyError,
+  FastifyInstance,
+  FastifyReply,
+  FastifyRequest,
+  FastifyServerOptions,
+  RawServerDefault,
+} from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
@@ -104,10 +111,12 @@ function resolveCorsOrigin(env: string): boolean | string[] {
   return true;
 }
 
-export async function buildApp() {
+export async function buildApp(): Promise<FastifyInstance> {
   const env = process.env.NODE_ENV ?? 'development';
 
-  const fastifyOptions: any = {
+  const fastifyOptions: FastifyServerOptions<RawServerDefault> & {
+    logController?: unknown;
+  } = {
     logger: envToLogger[env] ?? true,
     genReqId: (req: any) => {
       const headers = req?.headers;
@@ -135,7 +144,8 @@ export async function buildApp() {
     fastifyOptions.requestIdLogLabel = 'reqId';
   }
 
-  const app = Fastify(fastifyOptions);
+  // Keep Fastify's raw server type explicit when dynamic logger compatibility options are used.
+  const app = Fastify<RawServerDefault>(fastifyOptions);
 
   // Track request start time for high-resolution latency tracking and metrics collection
   app.addHook('onRequest', async (request: FastifyRequest) => {

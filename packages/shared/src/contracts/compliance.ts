@@ -20,10 +20,7 @@ export type PersonalDataCategory =
   | 'b2b_partner';
 
 export type LegalBasisGround =
-  | 'explicit_consent'
-  | 'legitimate_uses_section_7'
-  | 'legal_obligation'
-  | 'statutory_public_record';
+  'explicit_consent' | 'legitimate_uses_section_7' | 'legal_obligation' | 'statutory_public_record';
 
 export type RetentionPeriodClass =
   | 'ephemeral'
@@ -35,19 +32,10 @@ export type RetentionPeriodClass =
   | 'permanent_statutory_public';
 
 export type DataPrincipalRightType =
-  | 'access'
-  | 'correction'
-  | 'erasure'
-  | 'grievance'
-  | 'consent_withdrawal';
+  'access' | 'correction' | 'erasure' | 'grievance' | 'consent_withdrawal';
 
 export type RightsWorkflowStatus =
-  | 'received'
-  | 'authenticated'
-  | 'processing'
-  | 'completed'
-  | 'rejected'
-  | 'appealed';
+  'received' | 'authenticated' | 'processing' | 'completed' | 'rejected' | 'appealed';
 
 export type SupportedPrivacyLocale =
   | 'en' // English
@@ -207,7 +195,8 @@ export interface PrivacyNoticePack {
 
 export interface ThirdPartyProviderRegisterEntry {
   providerName: string;
-  serviceCategory: 'cloud_hosting' | 'database_auth' | 'payments' | 'telecom_obd' | 'analytics' | 'cdn_storage';
+  serviceCategory:
+    'cloud_hosting' | 'database_auth' | 'payments' | 'telecom_obd' | 'analytics' | 'cdn_storage';
   dataShared: string[];
   purpose: string;
   region: string;

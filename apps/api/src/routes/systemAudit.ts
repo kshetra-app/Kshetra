@@ -82,14 +82,19 @@ export const systemAuditRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.post('/api/v1/system/audit/dr/drill', async (req, reply) => {
-    const body = (req.body as { incident?: 'PRIMARY_REGION_TOTAL_OUTAGE' | 'CATASTROPHIC_DATA_CORRUPTION' }) || {};
+    const body =
+      (req.body as { incident?: 'PRIMARY_REGION_TOTAL_OUTAGE' | 'CATASTROPHIC_DATA_CORRUPTION' }) ||
+      {};
     const report = await DisasterRecoveryService.executeDisasterRecoveryDrill(body.incident);
     return reply.status(200).send(report);
   });
 
   app.post('/api/v1/system/audit/dr/rollback', async (req, reply) => {
     const body = (req.body as { fromVersion?: string; targetVersion?: string }) || {};
-    const report = await DisasterRecoveryService.executeRollbackDrill(body.fromVersion, body.targetVersion);
+    const report = await DisasterRecoveryService.executeRollbackDrill(
+      body.fromVersion,
+      body.targetVersion,
+    );
     return reply.status(200).send(report);
   });
 };

@@ -6,12 +6,8 @@
 
 import { createHash, randomBytes } from 'crypto';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { defaultAIRegistry } from './aiProvider';
-import type {
-  NewsSummaryRequest,
-  NewsSummaryRecord,
-  ChatMessage,
-} from '@kshetra/shared';
+import { AIProviderUnavailableError, defaultAIRegistry } from './aiProvider';
+import type { NewsSummaryRequest, NewsSummaryRecord, ChatMessage } from '@kshetra/shared';
 
 export interface AICostLedgerEntry {
   id: string;
@@ -54,7 +50,10 @@ export class AINewsSummaryService {
 
     // 1. Check in-memory cache first
     const cached = this.cacheStore.get(contentSha256);
-    if (cached) {
+    if (cached?.providerUsed === 'offline_heuristic') {
+      this.cacheStore.delete(contentSha256);
+    }
+    if (cached && cached.providerUsed !== 'offline_heuristic') {
       cached.hitCount += 1;
       await this.recordCostLedger({
         tenantId,
@@ -87,7 +86,7 @@ export class AINewsSummaryService {
           .eq('content_sha256', contentSha256)
           .maybeSingle();
 
-        if (!error && data) {
+        if (!error && data && data.provider_used !== 'offline_heuristic') {
           await supabase
             .from('ai_news_summary_cache')
             .update({
@@ -160,6 +159,12 @@ Respond ONLY with a valid JSON object matching this schema:
       operation: 'news_summary',
     });
 
+    if (aiRes.degradedOffline) {
+      throw new AIProviderUnavailableError(
+        'AI news summarization is unavailable because no configured provider could complete the request.',
+      );
+    }
+
     // Parse AI output with robust JSON fallback
     let summaryBullets: [string, string, string] = [
       'Official notification reported in public state proceedings.',
@@ -170,7 +175,10 @@ Respond ONLY with a valid JSON object matching this schema:
     let entities: string[] = [];
 
     try {
-      const cleaned = aiRes.content.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
+      const cleaned = aiRes.content
+        .replace(/```json?\n?/g, '')
+        .replace(/```/g, '')
+        .trim();
       const parsed = JSON.parse(cleaned) as {
         summary?: string[];
         bullets?: string[];
@@ -189,7 +197,10 @@ Respond ONLY with a valid JSON object matching this schema:
         ];
       }
 
-      if (parsed.sentiment && ['positive', 'neutral', 'negative', 'urgent'].includes(parsed.sentiment)) {
+      if (
+        parsed.sentiment &&
+        ['positive', 'neutral', 'negative', 'urgent'].includes(parsed.sentiment)
+      ) {
         sentiment = parsed.sentiment;
       }
       if (Array.isArray(parsed.entities)) {

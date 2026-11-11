@@ -121,7 +121,8 @@ describe('Milestone W051: API Customer Acquisition & Developer Portal Suite', ()
                 }),
                 select: () => ({
                   single: async () => executeUpdate(updates, [{ field: f1, op: 'eq', val: v1 }]),
-                  maybeSingle: async () => executeUpdate(updates, [{ field: f1, op: 'eq', val: v1 }]),
+                  maybeSingle: async () =>
+                    executeUpdate(updates, [{ field: f1, op: 'eq', val: v1 }]),
                 }),
               }),
             };
@@ -271,35 +272,37 @@ describe('Milestone W051: API Customer Acquisition & Developer Portal Suite', ()
   describe('Pillar 1: Self-Service Partner Signup', () => {
     it('W051-SIGNUP-01: Successfully provisions new partner tenant, application & initial test key', async () => {
       // Monkeypatch client for isolated test invocation
-      const signupSpy = jest.spyOn(onboardingService, 'signup').mockImplementationOnce(async (params) => {
-        return {
-          tenant: {
-            id: 'tenant-new-123',
-            name: params.organizationName,
-            slug: 'delhi-policy-lab',
-            tier: 'free',
-            status: 'active',
-            contactEmail: params.email,
-            createdAt: new Date().toISOString(),
-          },
-          application: {
-            id: 'app-new-123',
-            name: `${params.organizationName} Default Sandbox`,
-            environment: 'test',
-            createdAt: new Date().toISOString(),
-          },
-          apiKey: {
-            id: 'key-new-123',
-            name: 'Initial Test Key',
-            keyPrefix: 'panin_test_sk_',
-            keyHint: 'XyZ12345',
-            environment: 'test',
-            scopes: ['geo:read', 'elections:read'],
-            rawKey: 'panin_test_sk_XyZ12345AbCdEfGhIjKlMnOpQrStUvWxYz012345678',
-            notice: 'Store this secret key securely.',
-          },
-        };
-      });
+      const signupSpy = jest
+        .spyOn(onboardingService, 'signup')
+        .mockImplementationOnce(async (params) => {
+          return {
+            tenant: {
+              id: 'tenant-new-123',
+              name: params.organizationName,
+              slug: 'delhi-policy-lab',
+              tier: 'free',
+              status: 'active',
+              contactEmail: params.email,
+              createdAt: new Date().toISOString(),
+            },
+            application: {
+              id: 'app-new-123',
+              name: `${params.organizationName} Default Sandbox`,
+              environment: 'test',
+              createdAt: new Date().toISOString(),
+            },
+            apiKey: {
+              id: 'key-new-123',
+              name: 'Initial Test Key',
+              keyPrefix: 'panin_test_sk_',
+              keyHint: 'XyZ12345',
+              environment: 'test',
+              scopes: ['geo:read', 'elections:read'],
+              rawKey: 'panin_test_sk_XyZ12345AbCdEfGhIjKlMnOpQrStUvWxYz012345678',
+              notice: 'Store this secret key securely.',
+            },
+          };
+        });
 
       const res = await app.inject({
         method: 'POST',
@@ -410,12 +413,14 @@ describe('Milestone W051: API Customer Acquisition & Developer Portal Suite', ()
 
     it('W051-KEYS-04: Enforces active key limit on Free tier (max 2 keys)', async () => {
       // Mock active key count reaching ceiling
-      const listSpy = jest.spyOn(onboardingService, 'createApiKey').mockImplementationOnce(async () => {
-        const err: any = new Error("Active API key ceiling reached for tier 'free' (limit: 2).");
-        err.statusCode = 403;
-        err.code = 'KEY_LIMIT_REACHED';
-        throw err;
-      });
+      const listSpy = jest
+        .spyOn(onboardingService, 'createApiKey')
+        .mockImplementationOnce(async () => {
+          const err: any = new Error("Active API key ceiling reached for tier 'free' (limit: 2).");
+          err.statusCode = 403;
+          err.code = 'KEY_LIMIT_REACHED';
+          throw err;
+        });
 
       const res = await app.inject({
         method: 'POST',
@@ -483,18 +488,20 @@ describe('Milestone W051: API Customer Acquisition & Developer Portal Suite', ()
     });
 
     it('W051-BILL-02: Authenticated tenant can create a checkout session for Pro upgrade', async () => {
-      const checkoutSpy = jest.spyOn(billingService, 'createCheckoutSession').mockResolvedValueOnce({
-        orderId: 'order_test_98765',
-        targetTier: 'pro',
-        billingCycle: 'monthly',
-        amountINR: 4999,
-        amountPaise: 499900,
-        currency: 'INR',
-        razorpayKeyId: 'rzp_test_key_mock',
-        isSandbox: true,
-        tenantSlug: 'acme-civic',
-        notes: { targetTier: 'pro' },
-      });
+      const checkoutSpy = jest
+        .spyOn(billingService, 'createCheckoutSession')
+        .mockResolvedValueOnce({
+          orderId: 'order_test_98765',
+          targetTier: 'pro',
+          billingCycle: 'monthly',
+          amountINR: 4999,
+          amountPaise: 499900,
+          currency: 'INR',
+          razorpayKeyId: 'rzp_test_key_mock',
+          isSandbox: true,
+          tenantSlug: 'acme-civic',
+          notes: { targetTier: 'pro' },
+        });
 
       const res = await app.inject({
         method: 'POST',

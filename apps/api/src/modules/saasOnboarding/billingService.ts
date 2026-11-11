@@ -42,7 +42,8 @@ const SAAS_PLANS: SaasBillingPlan[] = [
   {
     id: 'pro',
     name: 'Professional / Media / Civic Tech',
-    tagline: 'Built for newsrooms, political analysts, campaign analytics, and active civic platforms.',
+    tagline:
+      'Built for newsrooms, political analysts, campaign analytics, and active civic platforms.',
     priceINR: 4999,
     priceUSD: 59,
     billingCycles: ['monthly', 'annual'],
@@ -65,7 +66,8 @@ const SAAS_PLANS: SaasBillingPlan[] = [
   {
     id: 'enterprise',
     name: 'Institutional / Broadcasters',
-    tagline: 'Mission-critical scale for television networks, national think tanks, and large organizations.',
+    tagline:
+      'Mission-critical scale for television networks, national think tanks, and large organizations.',
     priceINR: 49999,
     priceUSD: 599,
     billingCycles: ['monthly', 'annual'],
@@ -126,7 +128,9 @@ export class BillingService {
     }
 
     if (tenant.tier === targetTier) {
-      const err: any = new Error(`Tenant organization is already subscribed to the '${targetTier}' tier.`);
+      const err: any = new Error(
+        `Tenant organization is already subscribed to the '${targetTier}' tier.`,
+      );
       err.statusCode = 400;
       err.code = 'ALREADY_SUBSCRIBED';
       throw err;
@@ -282,7 +286,9 @@ export class BillingService {
     // 1. Verify HMAC Signature
     const isValid = this.paymentProvider.verifyWebhookSignature(rawBody, signature);
     if (!isValid) {
-      const err: any = new Error('Inbound billing webhook cryptographic signature verification failed');
+      const err: any = new Error(
+        'Inbound billing webhook cryptographic signature verification failed',
+      );
       err.statusCode = 401;
       err.code = 'INVALID_WEBHOOK_SIGNATURE';
       throw err;
@@ -300,7 +306,11 @@ export class BillingService {
     const nowIso = new Date().toISOString();
 
     // 2. Handle Subscription / Payment Transitions
-    if (event === 'payment.captured' || event === 'order.paid' || event === 'subscription.activated') {
+    if (
+      event === 'payment.captured' ||
+      event === 'order.paid' ||
+      event === 'subscription.activated'
+    ) {
       const targetTier = (notes.targetTier as SaasTenantTier) || 'pro';
       await client
         .from('saas_tenants')

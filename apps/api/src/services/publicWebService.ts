@@ -17,13 +17,72 @@ import type {
 
 export class PublicWebService {
   // Pre-cached canonical state data for sub-50ms TTFB
-  private static STATE_DATA: Record<string, { name: string; capital: string; acs: number; pcs: number; rulingParty: string; districts: number; deltaSeats: number }> = {
-    TS: { name: 'Telangana', capital: 'Hyderabad', acs: 119, pcs: 17, rulingParty: 'INC', districts: 33, deltaSeats: 2 },
-    AP: { name: 'Andhra Pradesh', capital: 'Amaravati', acs: 175, pcs: 25, rulingParty: 'TDP Alliance', districts: 26, deltaSeats: 0 },
-    KA: { name: 'Karnataka', capital: 'Bengaluru', acs: 224, pcs: 28, rulingParty: 'INC', districts: 31, deltaSeats: 1 },
-    MH: { name: 'Maharashtra', capital: 'Mumbai', acs: 288, pcs: 48, rulingParty: 'Mahayuti Alliance', districts: 36, deltaSeats: 4 },
-    UP: { name: 'Uttar Pradesh', capital: 'Lucknow', acs: 403, pcs: 80, rulingParty: 'BJP', districts: 75, deltaSeats: 11 },
-    JH: { name: 'Jharkhand', capital: 'Ranchi', acs: 81, pcs: 14, rulingParty: 'JMM Alliance', districts: 24, deltaSeats: 2 },
+  private static STATE_DATA: Record<
+    string,
+    {
+      name: string;
+      capital: string;
+      acs: number;
+      pcs: number;
+      rulingParty: string;
+      districts: number;
+      deltaSeats: number;
+    }
+  > = {
+    TS: {
+      name: 'Telangana',
+      capital: 'Hyderabad',
+      acs: 119,
+      pcs: 17,
+      rulingParty: 'INC',
+      districts: 33,
+      deltaSeats: 2,
+    },
+    AP: {
+      name: 'Andhra Pradesh',
+      capital: 'Amaravati',
+      acs: 175,
+      pcs: 25,
+      rulingParty: 'TDP Alliance',
+      districts: 26,
+      deltaSeats: 0,
+    },
+    KA: {
+      name: 'Karnataka',
+      capital: 'Bengaluru',
+      acs: 224,
+      pcs: 28,
+      rulingParty: 'INC',
+      districts: 31,
+      deltaSeats: 1,
+    },
+    MH: {
+      name: 'Maharashtra',
+      capital: 'Mumbai',
+      acs: 288,
+      pcs: 48,
+      rulingParty: 'Mahayuti Alliance',
+      districts: 36,
+      deltaSeats: 4,
+    },
+    UP: {
+      name: 'Uttar Pradesh',
+      capital: 'Lucknow',
+      acs: 403,
+      pcs: 80,
+      rulingParty: 'BJP',
+      districts: 75,
+      deltaSeats: 11,
+    },
+    JH: {
+      name: 'Jharkhand',
+      capital: 'Ranchi',
+      acs: 81,
+      pcs: 14,
+      rulingParty: 'JMM Alliance',
+      districts: 24,
+      deltaSeats: 2,
+    },
   };
 
   // --- 1. DATA AGGREGATION & TWIN JSON API (OPTION B PROVISION) ---
@@ -88,7 +147,9 @@ export class PublicWebService {
     };
   }
 
-  static async getRepresentativeProfile(repId: string): Promise<PublicRepresentativeProfileDTO | null> {
+  static async getRepresentativeProfile(
+    repId: string,
+  ): Promise<PublicRepresentativeProfileDTO | null> {
     return {
       id: repId,
       name: 'Mohammad Azharuddin',
@@ -314,7 +375,7 @@ export class PublicWebService {
     <loc>https://poligram.in/public/states/${code}</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
-  </url>`
+  </url>`,
     );
 
     return `<?xml version="1.0" encoding="UTF-8"?>

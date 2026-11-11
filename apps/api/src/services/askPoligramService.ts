@@ -116,10 +116,11 @@ ${contextText}`;
     if (!targetAcNo) {
       const lowerQuery = query.toLowerCase();
       // Try to find AC name mentioned in query
-      const match = constituencies.find((c) =>
-        lowerQuery.includes(c.name.toLowerCase()) ||
-        lowerQuery.includes(`ac ${c.acNo}`) ||
-        lowerQuery.includes(`ac #${c.acNo}`),
+      const match = constituencies.find(
+        (c) =>
+          lowerQuery.includes(c.name.toLowerCase()) ||
+          lowerQuery.includes(`ac ${c.acNo}`) ||
+          lowerQuery.includes(`ac #${c.acNo}`),
       );
       if (match) {
         targetAcNo = match.acNo;
@@ -157,7 +158,8 @@ ${contextText}`;
             ctx += `2023 Runner-up: ${raw.runnerUp2023} with margin of ${raw.margin2023.toLocaleString()} votes\n`;
 
             citations.push({
-              sourceTitle: 'Election Commission of India — Form 20 Final Result Sheet (General Election 2023)',
+              sourceTitle:
+                'Election Commission of India — Form 20 Final Result Sheet (General Election 2023)',
               documentType: 'ECI_FORM_20',
               referenceId: `ECI-FORM20-TS-2023-AC${raw.acNo}`,
               url: 'https://results.eci.gov.in',

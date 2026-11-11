@@ -187,7 +187,7 @@ const API_ENDPOINTS_SPEC = [
 ];
 
 async function main() {
-  const railwayHost = 'https://kshetra-api-production-9f06.up.railway.app';
+  const railwayHost = 'https://kshetra-api-production-b802.up.railway.app';
   console.log(`\n--- PROBING RAILWAY PRODUCTION ENDPOINTS (${railwayHost}) ---`);
 
   const matrixResults = [];

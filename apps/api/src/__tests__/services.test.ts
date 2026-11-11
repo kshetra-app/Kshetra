@@ -13,6 +13,7 @@ import {
   searchConstituencies,
 } from '../services/stateData';
 import { chatWithAI, smartSearch } from '../services/ai';
+import { DeterministicOfflineAIProvider } from '../services/aiProvider';
 
 describe('notifications service', () => {
   it('builds a message for every trigger type', () => {
@@ -112,12 +113,37 @@ describe('ai service — graceful degradation without API key', () => {
     if (originalGemini) process.env.GEMINI_API_KEY = originalGemini;
   });
 
-  it('chatWithAI explains the missing key', async () => {
+  it('chatWithAI reports that AI is unavailable without fabricating an answer', async () => {
     const res = await chatWithAI({ messages: [{ role: 'user', content: 'hi' }] });
-    expect(res).toContain('API key');
+    expect(res).toContain('unavailable');
+    expect(res).not.toContain('verified records');
   });
 
   it('smartSearch returns an empty list without a key', async () => {
     await expect(smartSearch('safest BRS seat')).resolves.toEqual([]);
+  });
+});
+
+describe('offline AI provider truthfulness', () => {
+  const provider = new DeterministicOfflineAIProvider();
+
+  it('returns an unavailable notice with no fabricated output or usage', async () => {
+    const result = await provider.generateCompletion({
+      messages: [{ role: 'user', content: 'Summarize this civic issue' }],
+      responseFormat: 'text',
+    });
+    expect(result.content).toContain('unavailable');
+    expect(result.content).not.toContain('verified records');
+    expect(result.usage).toEqual({ promptTokens: 0, completionTokens: 0, totalTokens: 0 });
+    expect(result.degradedOffline).toBe(true);
+  });
+
+  it('returns no fabricated payload for JSON requests', async () => {
+    const result = await provider.generateCompletion({
+      messages: [{ role: 'user', content: 'Classify this civic issue' }],
+      responseFormat: 'json',
+    });
+    expect(result.content).toBe('');
+    expect(result.usage.totalTokens).toBe(0);
   });
 });

@@ -4,11 +4,9 @@
  */
 
 import { ApiClient } from './client';
+import { API_BASE_URL } from '../constants';
 
-const DEFAULT_API_HOST = ['https://kshetra-api-production-9f06', 'up', 'railway', 'app'].join('.');
-
-export const CANONICAL_API_URL =
-  process.env.EXPO_PUBLIC_API_URL || DEFAULT_API_HOST;
+export const CANONICAL_API_URL = API_BASE_URL;
 
 /**
  * Singleton canonical API client instance for the mobile application.

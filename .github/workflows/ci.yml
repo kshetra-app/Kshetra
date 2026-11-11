@@ -60,6 +60,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          lfs: true
 
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -82,21 +84,28 @@ jobs:
           NODE_ENV: test
 
       - name: Test API (with coverage gate)
-        run: npm run test:coverage -w @kshetra/api
+        run: npm run test:coverage -w @kshetra/api -- --maxWorkers=2
         env:
+          NODE_OPTIONS: --max-old-space-size=4096
           SUPABASE_URL: https://test-fixture.supabase.co
           SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlc3QiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTYwMDAwMDAwMCwiZXhwIjoxOTAwMDAwMDAwfQ.dummy_signature_for_test_environment_only
 
       - name: Test seed data
-        run: npx jest --config jest.config.js --forceExit
+        run: npx jest --config jest.config.js --forceExit --maxWorkers=2
         working-directory: data/seed
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Test census data
-        run: npx jest --config jest.config.js --forceExit
+        run: npx jest --config jest.config.js --forceExit --maxWorkers=2
         working-directory: data/census
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Test mobile (node-safe lib units)
-        run: npm test -w @kshetra/mobile -- --forceExit
+        run: npm test -w @kshetra/mobile -- --forceExit --maxWorkers=2
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
 
   typecheck:
     name: Typecheck
@@ -105,6 +114,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          lfs: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -121,6 +132,8 @@ jobs:
       - name: Typecheck API
         run: npx tsc --noEmit
         working-directory: apps/api
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Typecheck shared
         run: npx tsc --noEmit

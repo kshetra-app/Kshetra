@@ -48,9 +48,14 @@ export class CoordinatesOutsideConstituencyError extends Error {
   public readonly code = 'COORDINATES_OUTSIDE_CONSTITUENCY';
   public readonly statusCode = 400;
 
-  constructor(lat: number, lng: number, expectedConstituencyId: string, resolvedConstituencyId?: string) {
+  constructor(
+    lat: number,
+    lng: number,
+    expectedConstituencyId: string,
+    resolvedConstituencyId?: string,
+  ) {
     super(
-      `Coordinates [${lat}, ${lng}] fall in ${resolvedConstituencyId || 'another territory'}, outside the declared constituency ${expectedConstituencyId}`
+      `Coordinates [${lat}, ${lng}] fall in ${resolvedConstituencyId || 'another territory'}, outside the declared constituency ${expectedConstituencyId}`,
     );
     this.name = 'CoordinatesOutsideConstituencyError';
   }
@@ -150,7 +155,8 @@ export class CivicService {
       slug: 'pm-kisan',
       category: 'agriculture',
       level: 'CENTRAL',
-      description: 'Income support of Rs 6,000 per year in three equal installments to all landholding farmers.',
+      description:
+        'Income support of Rs 6,000 per year in three equal installments to all landholding farmers.',
       eligibility: 'All landholding farmer families with cultivable land.',
       benefits: 'Rs 6,000/year directly transferred to bank account.',
       applicationUrl: 'https://pmkisan.gov.in',
@@ -211,11 +217,17 @@ export class CivicService {
     from: CivicIssueStatus,
     to: CivicIssueStatus,
     userRole: string,
-    isAuthor: boolean
+    isAuthor: boolean,
   ): void {
     if (from === to) return;
 
-    const isPrivileged = ['admin', 'moderator', 'official', 'politician', 'representative'].includes(userRole);
+    const isPrivileged = [
+      'admin',
+      'moderator',
+      'official',
+      'politician',
+      'representative',
+    ].includes(userRole);
     const fromNorm = CivicService.normalizeStatus(from);
     const toNorm = CivicService.normalizeStatus(to);
 
@@ -224,7 +236,11 @@ export class CivicService {
     // 1. Transition to REVIEW (moderation / duplicate triage)
     if (toNorm === 'REVIEW') {
       if (fromNorm !== 'REPORTED' && fromNorm !== 'DISPUTED') {
-        throw new InvalidCivicStatusTransitionError(from, to, 'Only reported or disputed issues can be placed into review');
+        throw new InvalidCivicStatusTransitionError(
+          from,
+          to,
+          'Only reported or disputed issues can be placed into review',
+        );
       }
       return;
     }
@@ -232,10 +248,18 @@ export class CivicService {
     // 2. Transition to VERIFIED / acknowledged
     if (toNorm === 'VERIFIED') {
       if (fromNorm !== 'REPORTED' && fromNorm !== 'REVIEW' && fromNorm !== 'DISPUTED') {
-        throw new InvalidCivicStatusTransitionError(from, to, 'Only reported, under review, or disputed issues can be verified/acknowledged');
+        throw new InvalidCivicStatusTransitionError(
+          from,
+          to,
+          'Only reported, under review, or disputed issues can be verified/acknowledged',
+        );
       }
       if (!isPrivileged) {
-        throw new InvalidCivicStatusTransitionError(from, to, 'Only verified officials, MLAs, or moderators can acknowledge/verify issues');
+        throw new InvalidCivicStatusTransitionError(
+          from,
+          to,
+          'Only verified officials, MLAs, or moderators can acknowledge/verify issues',
+        );
       }
       return;
     }
@@ -243,10 +267,18 @@ export class CivicService {
     // 3. Transition to ASSIGNED (department / officer routing)
     if (toNorm === 'ASSIGNED') {
       if (fromNorm !== 'VERIFIED' && fromNorm !== 'REPORTED' && fromNorm !== 'DISPUTED') {
-        throw new InvalidCivicStatusTransitionError(from, to, 'Issue must be verified or reported before assignment');
+        throw new InvalidCivicStatusTransitionError(
+          from,
+          to,
+          'Issue must be verified or reported before assignment',
+        );
       }
       if (!isPrivileged) {
-        throw new InvalidCivicStatusTransitionError(from, to, 'Only verified officials or administrators can assign civic issues');
+        throw new InvalidCivicStatusTransitionError(
+          from,
+          to,
+          'Only verified officials or administrators can assign civic issues',
+        );
       }
       return;
     }
@@ -254,10 +286,18 @@ export class CivicService {
     // 4. Transition to IN_PROGRESS
     if (toNorm === 'IN_PROGRESS') {
       if (fromNorm !== 'VERIFIED' && fromNorm !== 'ASSIGNED' && fromNorm !== 'DISPUTED') {
-        throw new InvalidCivicStatusTransitionError(from, to, 'Issue must be acknowledged, assigned, or disputed before marking in_progress');
+        throw new InvalidCivicStatusTransitionError(
+          from,
+          to,
+          'Issue must be acknowledged, assigned, or disputed before marking in_progress',
+        );
       }
       if (!isPrivileged) {
-        throw new InvalidCivicStatusTransitionError(from, to, 'Only verified officials, MLAs, or moderators can mark issues in_progress');
+        throw new InvalidCivicStatusTransitionError(
+          from,
+          to,
+          'Only verified officials, MLAs, or moderators can mark issues in_progress',
+        );
       }
       return;
     }
@@ -265,10 +305,18 @@ export class CivicService {
     // 5. Transition to RESOLVED
     if (toNorm === 'RESOLVED') {
       if (fromNorm !== 'IN_PROGRESS' && fromNorm !== 'ASSIGNED' && fromNorm !== 'VERIFIED') {
-        throw new InvalidCivicStatusTransitionError(from, to, 'Issue must be in_progress or assigned to be resolved');
+        throw new InvalidCivicStatusTransitionError(
+          from,
+          to,
+          'Issue must be in_progress or assigned to be resolved',
+        );
       }
       if (!isPrivileged) {
-        throw new InvalidCivicStatusTransitionError(from, to, 'Only verified officials or MLAs can resolve civic issues');
+        throw new InvalidCivicStatusTransitionError(
+          from,
+          to,
+          'Only verified officials or MLAs can resolve civic issues',
+        );
       }
       return;
     }
@@ -276,10 +324,18 @@ export class CivicService {
     // 6. Transition to CONFIRMED (citizen reporter confirmed fix or auto-confirmed)
     if (toNorm === 'CONFIRMED') {
       if (fromNorm !== 'RESOLVED') {
-        throw new InvalidCivicStatusTransitionError(from, to, 'Only resolved issues can be confirmed');
+        throw new InvalidCivicStatusTransitionError(
+          from,
+          to,
+          'Only resolved issues can be confirmed',
+        );
       }
       if (!isAuthor && !isPrivileged && userRole !== 'system') {
-        throw new InvalidCivicStatusTransitionError(from, to, 'Only citizen reporter or administrative system can confirm issue resolution');
+        throw new InvalidCivicStatusTransitionError(
+          from,
+          to,
+          'Only citizen reporter or administrative system can confirm issue resolution',
+        );
       }
       return;
     }
@@ -287,7 +343,11 @@ export class CivicService {
     // 7. Transition to DISPUTED / reopened
     if (toNorm === 'DISPUTED') {
       if (fromNorm !== 'RESOLVED') {
-        throw new InvalidCivicStatusTransitionError(from, to, 'Only resolved issues can be reopened or disputed');
+        throw new InvalidCivicStatusTransitionError(
+          from,
+          to,
+          'Only resolved issues can be reopened or disputed',
+        );
       }
       // Reopening/disputing can be initiated by citizen author, community disputes, or moderators
       return;
@@ -295,13 +355,20 @@ export class CivicService {
 
     // 8. Transition to CLOSED
     if (toNorm === 'CLOSED') {
-      if (isAuthor && (fromNorm === 'REPORTED' || fromNorm === 'REVIEW' || fromNorm === 'VERIFIED')) {
+      if (
+        isAuthor &&
+        (fromNorm === 'REPORTED' || fromNorm === 'REVIEW' || fromNorm === 'VERIFIED')
+      ) {
         return; // Author can close own unassigned issue
       }
       if ((fromNorm === 'CONFIRMED' || fromNorm === 'RESOLVED') && (isPrivileged || isAuthor)) {
         return; // Official/Admin or author can formalize closure after confirmation/review window
       }
-      throw new InvalidCivicStatusTransitionError(from, to, 'Cannot close issue from current state or without authority');
+      throw new InvalidCivicStatusTransitionError(
+        from,
+        to,
+        'Cannot close issue from current state or without authority',
+      );
     }
 
     throw new InvalidCivicStatusTransitionError(from, to, 'Illegal transition route');
@@ -313,7 +380,7 @@ export class CivicService {
 
   public async createIssue(
     input: CreateCivicIssueInput,
-    user: { userId: string; userName?: string }
+    user: { userId: string; userName?: string },
   ): Promise<CivicIssueDTO> {
     // 1. Strict Validation
     if (!input.title || input.title.trim().length < 5) {
@@ -335,7 +402,7 @@ export class CivicService {
           input.latitude,
           input.longitude,
           input.constituencyId,
-          locateResult.constituency.id
+          locateResult.constituency.id,
         );
       }
     }
@@ -507,7 +574,7 @@ export class CivicService {
   public async updateStatus(
     issueId: string,
     input: UpdateCivicIssueStatusInput,
-    user: { userId: string; userName?: string; role: string }
+    user: { userId: string; userName?: string; role: string },
   ): Promise<CivicIssueDTO> {
     const issue = await this.getIssue(issueId);
     if (!issue) {
@@ -520,7 +587,9 @@ export class CivicService {
     const toCanonical = CivicService.normalizeStatus(input.status);
 
     if (toCanonical === 'RESOLVED' && (!input.note || input.note.trim().length === 0)) {
-      throw new Error('INVALID_RESOLUTION: Resolution note is required when marking issue resolved');
+      throw new Error(
+        'INVALID_RESOLUTION: Resolution note is required when marking issue resolved',
+      );
     }
 
     const now = new Date().toISOString();
@@ -677,7 +746,7 @@ export class CivicService {
 
   public async toggleUpvote(
     issueId: string,
-    userId: string
+    userId: string,
   ): Promise<{ upvoted: boolean; upvoteCount: number; promotedToHeadline: boolean }> {
     const issue = await this.getIssue(issueId);
     if (!issue) {
@@ -707,7 +776,11 @@ export class CivicService {
     if (isSupabaseConfigured) {
       try {
         if (alreadyUpvoted) {
-          await supabase.from('issue_upvotes').delete().eq('issue_id', issueId).eq('user_id', userId);
+          await supabase
+            .from('issue_upvotes')
+            .delete()
+            .eq('issue_id', issueId)
+            .eq('user_id', userId);
         } else {
           await supabase.from('issue_upvotes').insert({ issue_id: issueId, user_id: userId });
         }
@@ -764,7 +837,7 @@ export class CivicService {
 
   public async toggleFollow(
     issueId: string,
-    userId: string
+    userId: string,
   ): Promise<{ following: boolean; followCount: number }> {
     const issue = await this.getIssue(issueId);
     if (!issue) {
@@ -788,7 +861,11 @@ export class CivicService {
     if (isSupabaseConfigured) {
       try {
         if (alreadyFollowing) {
-          await supabase.from('issue_follows').delete().eq('issue_id', issueId).eq('user_id', userId);
+          await supabase
+            .from('issue_follows')
+            .delete()
+            .eq('issue_id', issueId)
+            .eq('user_id', userId);
         } else {
           await supabase.from('issue_follows').insert({ issue_id: issueId, user_id: userId });
         }
@@ -812,7 +889,7 @@ export class CivicService {
   public async addComment(
     issueId: string,
     input: AddCivicCommentInput,
-    user: { userId: string; userName?: string; role: string }
+    user: { userId: string; userName?: string; role: string },
   ): Promise<IssueCommentRecord> {
     const issue = await this.getIssue(issueId);
     if (!issue) {
@@ -876,7 +953,7 @@ export class CivicService {
   public async addEvidence(
     issueId: string,
     input: AddCivicEvidenceInput,
-    user: { userId: string; userName?: string }
+    user: { userId: string; userName?: string },
   ): Promise<IssueEvidenceRecord> {
     const issue = await this.getIssue(issueId);
     if (!issue) {
@@ -928,7 +1005,7 @@ export class CivicService {
   public async disputeResolution(
     issueId: string,
     input: DisputeIssueInput,
-    userId: string
+    userId: string,
   ): Promise<{ disputeCount: number; reopened: boolean }> {
     const issue = await this.getIssue(issueId);
     if (!issue) {
@@ -937,7 +1014,9 @@ export class CivicService {
 
     const normStatus = CivicService.normalizeStatus(issue.status);
     if (normStatus !== 'RESOLVED') {
-      throw new DisputeNotAllowedError(`Cannot dispute issue in '${issue.status}' status. Only resolved issues can be disputed.`);
+      throw new DisputeNotAllowedError(
+        `Cannot dispute issue in '${issue.status}' status. Only resolved issues can be disputed.`,
+      );
     }
 
     const disputeKey = `${issueId}:${userId}`;
@@ -985,10 +1064,12 @@ export class CivicService {
 
     if (isSupabaseConfigured) {
       try {
-        await supabase.from('issue_disputes').upsert(
-          { issue_id: issueId, user_id: userId, reason: input.reason },
-          { onConflict: 'issue_id,user_id' }
-        );
+        await supabase
+          .from('issue_disputes')
+          .upsert(
+            { issue_id: issueId, user_id: userId, reason: input.reason },
+            { onConflict: 'issue_id,user_id' },
+          );
         await supabase
           .from('civic_issues')
           .update({
@@ -1036,7 +1117,7 @@ export class CivicService {
       mandal?: string;
       ward?: string;
     },
-    userId: string
+    userId: string,
   ): Promise<CommunityGroupDTO> {
     if (!input.name || input.name.trim().length < 3) {
       throw new Error('INVALID_GROUP_NAME: Group name must be at least 3 characters');
@@ -1097,7 +1178,7 @@ export class CivicService {
 
   public async listGroups(
     constituencyId: string,
-    options?: { mandal?: string; ward?: string }
+    options?: { mandal?: string; ward?: string },
   ): Promise<CommunityGroupDTO[]> {
     return Array.from(this.inMemoryGroups.values()).filter((g) => {
       if (g.constituencyId !== constituencyId || !g.isActive) return false;
@@ -1109,7 +1190,7 @@ export class CivicService {
 
   public async getMemberRole(
     groupId: string,
-    userId: string
+    userId: string,
   ): Promise<'admin' | 'moderator' | 'member' | null> {
     for (const entry of this.inMemoryGroupMemberships) {
       const [gId, uId, role] = entry.split(':');
@@ -1124,7 +1205,7 @@ export class CivicService {
     groupId: string,
     targetUserId: string,
     newRole: 'admin' | 'moderator' | 'member',
-    actingUserId: string
+    actingUserId: string,
   ): Promise<{ success: boolean; role: 'admin' | 'moderator' | 'member' }> {
     const actingRole = await this.getMemberRole(groupId, actingUserId);
     if (actingRole !== 'admin') {
@@ -1150,7 +1231,10 @@ export class CivicService {
     return { success: true, role: newRole };
   }
 
-  public async joinGroup(groupId: string, userId: string): Promise<{ success: boolean; memberCount: number }> {
+  public async joinGroup(
+    groupId: string,
+    userId: string,
+  ): Promise<{ success: boolean; memberCount: number }> {
     const group = this.inMemoryGroups.get(groupId);
     if (!group) throw new Error(`NOT_FOUND: Community group ${groupId} not found`);
 
@@ -1175,7 +1259,10 @@ export class CivicService {
     return { success: true, memberCount: group.memberCount };
   }
 
-  public async leaveGroup(groupId: string, userId: string): Promise<{ success: boolean; memberCount: number }> {
+  public async leaveGroup(
+    groupId: string,
+    userId: string,
+  ): Promise<{ success: boolean; memberCount: number }> {
     const group = this.inMemoryGroups.get(groupId);
     if (!group) throw new Error(`NOT_FOUND: Community group ${groupId} not found`);
 
@@ -1204,7 +1291,10 @@ export class CivicService {
   // JOB 035: Civic Metrics, Sentiment & Real Data Connectors
   // -------------------------------------------------------------
 
-  public async getSchemes(filters: { stateCode?: string; category?: string }): Promise<GovernmentSchemeDTO[]> {
+  public async getSchemes(filters: {
+    stateCode?: string;
+    category?: string;
+  }): Promise<GovernmentSchemeDTO[]> {
     let list = Array.from(this.inMemorySchemes.values());
     if (filters.stateCode) {
       list = list.filter((s) => !s.stateCode || s.stateCode === filters.stateCode);
@@ -1215,7 +1305,10 @@ export class CivicService {
     return list;
   }
 
-  public async getProjects(filters: { constituencyId?: string; stateCode?: string }): Promise<DevelopmentProjectDTO[]> {
+  public async getProjects(filters: {
+    constituencyId?: string;
+    stateCode?: string;
+  }): Promise<DevelopmentProjectDTO[]> {
     let list = Array.from(this.inMemoryProjects.values());
     if (filters.constituencyId) {
       list = list.filter((p) => p.constituencyId === filters.constituencyId);
@@ -1228,7 +1321,7 @@ export class CivicService {
 
   public async getSentiment(constituencyId: string): Promise<ConstituencySentimentDTO> {
     const issues = (await this.listIssues({ constituencyId })).filter(
-      (i) => i.status === 'open' || i.status === 'in_progress' || i.status === 'reopened'
+      (i) => i.status === 'open' || i.status === 'in_progress' || i.status === 'reopened',
     );
 
     // Multi-factor severity weighting
@@ -1254,7 +1347,7 @@ export class CivicService {
 
     // Positive baseline from resolved issues
     const resolvedCount = (await this.listIssues({ constituencyId })).filter(
-      (i) => i.status === 'resolved' || i.status === 'closed'
+      (i) => i.status === 'resolved' || i.status === 'closed',
     ).length;
 
     const totalActivity = issues.length + resolvedCount;
@@ -1284,7 +1377,9 @@ export class CivicService {
     sentimentScore: number;
   }> {
     const issues = await this.listIssues({ constituencyId });
-    const openIssues = issues.filter((i) => i.status === 'open' || i.status === 'in_progress' || i.status === 'reopened');
+    const openIssues = issues.filter(
+      (i) => i.status === 'open' || i.status === 'in_progress' || i.status === 'reopened',
+    );
     const resolvedIssues = issues.filter((i) => i.status === 'resolved' || i.status === 'closed');
     const projects = await this.getProjects({ constituencyId });
     const sentiment = await this.getSentiment(constituencyId);
@@ -1296,7 +1391,10 @@ export class CivicService {
     const projectFactor = Math.min(25, projects.length * 5);
     const sentimentFactor = (sentiment.score + 1.0) * 12.5; // [-1, 1] mapped to [0, 25]
 
-    const overallScore = Math.min(100, Math.round(resolutionRate + projectFactor + sentimentFactor));
+    const overallScore = Math.min(
+      100,
+      Math.round(resolutionRate + projectFactor + sentimentFactor),
+    );
 
     return {
       constituencyId,

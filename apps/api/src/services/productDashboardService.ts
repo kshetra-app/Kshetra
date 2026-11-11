@@ -9,7 +9,11 @@
 
 import { universalAnalyticsService } from './universalAnalyticsService';
 import { developerPlatformService } from './developerPlatformService';
-import { DEVELOPER_TIER_CONFIGS, type ProductDashboardMetricsDTO, type UniversalAnalyticsEventDTO } from '@kshetra/shared';
+import {
+  DEVELOPER_TIER_CONFIGS,
+  type ProductDashboardMetricsDTO,
+  type UniversalAnalyticsEventDTO,
+} from '@kshetra/shared';
 
 export class ProductDashboardService {
   private static readonly TOTAL_NATIONAL_ACS = 4123;
@@ -27,7 +31,7 @@ export class ProductDashboardService {
    * Enables strict mathematical verification in automated test suites (JOB 066 Evidence).
    */
   static reconstructMetricsFromEvents(
-    events: UniversalAnalyticsEventDTO[]
+    events: UniversalAnalyticsEventDTO[],
   ): ProductDashboardMetricsDTO {
     const now = Date.now();
     const oneDayAgo = now - 24 * 60 * 60 * 1000;
@@ -35,24 +39,28 @@ export class ProductDashboardService {
     const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
 
     // --- 1. ACTIVATION FUNNEL ---
-    const signupEvents = events.filter((e) => e.eventName === 'signup_completed' || e.eventName === 'user_registered');
-    const verifiedEvents = events.filter((e) => e.eventName === 'otp_verified' || e.eventName === 'kyc_verified');
-    const geoSelectedEvents = events.filter((e) => e.eventName === 'constituency_selected' || e.eventName === 'geography_selected');
+    const signupEvents = events.filter(
+      (e) => e.eventName === 'signup_completed' || e.eventName === 'user_registered',
+    );
+    const verifiedEvents = events.filter(
+      (e) => e.eventName === 'otp_verified' || e.eventName === 'kyc_verified',
+    );
+    const geoSelectedEvents = events.filter(
+      (e) => e.eventName === 'constituency_selected' || e.eventName === 'geography_selected',
+    );
     const firstActionEvents = events.filter(
       (e) =>
         e.eventName === 'issue_created' ||
         e.eventName === 'issue_upvoted' ||
         e.eventName === 'representative_followed' ||
-        e.eventName === 'pledge_signed'
+        e.eventName === 'pledge_signed',
     );
 
     const totalSignups = Math.max(signupEvents.length, 1);
     const verifiedUsers = verifiedEvents.length;
     const geographySelectedCount = geoSelectedEvents.length;
     const firstCivicActionCount = firstActionEvents.length;
-    const activationRatePercent = Number(
-      ((firstCivicActionCount / totalSignups) * 100).toFixed(2)
-    );
+    const activationRatePercent = Number(((firstCivicActionCount / totalSignups) * 100).toFixed(2));
 
     // --- 2. RETENTION & STICKINESS ---
     const dauUsers = new Set<string>();
@@ -77,10 +85,11 @@ export class ProductDashboardService {
     // --- 3. ENGAGEMENT ---
     const sessionIds = new Set(events.map((e) => e.sessionId));
     const totalSessions = Math.max(sessionIds.size, 1);
-    const totalCivicInteractions = firstActionEvents.length + events.filter((e) => e.eventName === 'comment_posted' || e.eventName === 'video_shared').length;
-    const avgInteractionsPerSession = Number(
-      (events.length / totalSessions).toFixed(2)
-    );
+    const totalCivicInteractions =
+      firstActionEvents.length +
+      events.filter((e) => e.eventName === 'comment_posted' || e.eventName === 'video_shared')
+        .length;
+    const avgInteractionsPerSession = Number((events.length / totalSessions).toFixed(2));
     // Estimated average session duration in seconds (based on interaction count)
     const avgSessionDurationSeconds = Math.round(avgInteractionsPerSession * 35);
 
@@ -98,7 +107,7 @@ export class ProductDashboardService {
 
     const activeConstituencies = acMap.size;
     const penetrationPercentage = Number(
-      ((activeConstituencies / this.TOTAL_NATIONAL_ACS) * 100).toFixed(2)
+      ((activeConstituencies / this.TOTAL_NATIONAL_ACS) * 100).toFixed(2),
     );
 
     const sortedAcs = Array.from(acMap.entries())
@@ -117,9 +126,7 @@ export class ProductDashboardService {
     const b2bSubscriptionMrrINR = 29_998; // 1 Pro (4,999) + 1 Enterprise (24,999)
     const adRevenueINR = 145_250; // Performance ads + festival banner sponsorships
     const totalPrepaidBalancesINR = 58_400;
-    const arpuINR = Number(
-      ((b2bSubscriptionMrrINR + adRevenueINR) / totalSignups).toFixed(2)
-    );
+    const arpuINR = Number(((b2bSubscriptionMrrINR + adRevenueINR) / totalSignups).toFixed(2));
 
     return {
       activation: {

@@ -119,7 +119,8 @@ export interface AskPoligramRequest {
 
 export interface AskPoligramCitation {
   sourceTitle: string;
-  documentType: 'ECI_FORM_20' | 'DELIMITATION_ORDER' | 'ELECTED_TENURE_REGISTER' | 'CIVIC_ISSUE_DATABASE';
+  documentType:
+    'ECI_FORM_20' | 'DELIMITATION_ORDER' | 'ELECTED_TENURE_REGISTER' | 'CIVIC_ISSUE_DATABASE';
   referenceId: string;
   url?: string;
   publicationYear?: number;

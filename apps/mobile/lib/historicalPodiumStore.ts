@@ -508,6 +508,8 @@ export function getLocalizedCandidateName(
 
   if (typeof candidateOrName === 'object' && candidateOrName.localizedNames) {
     const loc = candidateOrName.localizedNames[lang];
+    // Intentional ASCII check: NUL is only the lower bound of the tested byte range.
+    // eslint-disable-next-line no-control-regex
     if (loc && !/^[\x00-\x7F]*$/.test(loc)) {
       return loc;
     }

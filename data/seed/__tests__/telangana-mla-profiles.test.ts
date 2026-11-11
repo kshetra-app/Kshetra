@@ -8,6 +8,12 @@ import {
 } from '../telangana-mla-profiles';
 import { TELANGANA_CONSTITUENCIES } from '../telangana-constituencies';
 
+const normalizeCandidateName = (name: string) =>
+  name
+    .toLocaleLowerCase('en')
+    .replace(/^(?:dr|shri|smt|sri)\b\.?\s*/i, '')
+    .replace(/[^a-z0-9]/g, '');
+
 describe('MLA Profiles — Coverage', () => {
   it('should have exactly 119 profiles', () => {
     expect(TELANGANA_MLA_PROFILES.length).toBe(119);
@@ -29,12 +35,39 @@ describe('MLA Profiles — Coverage', () => {
 });
 
 describe('MLA Profiles — Consistency with Constituencies', () => {
-  it('every MLA name should match the constituency winner name', () => {
+  it('every profile name should match the election that seated that member', () => {
+    const mismatches: string[] = [];
+
     TELANGANA_MLA_PROFILES.forEach((profile) => {
       const constituency = TELANGANA_CONSTITUENCIES.find((c) => c.acNo === profile.acNo);
       expect(constituency).toBeDefined();
-      expect(profile.name).toBe(constituency!.winnerName2023);
+
+      if (constituency!.currentPartyChangeType === 'by-election') {
+        expect(profile.isBypoll).toBe(true);
+        expect(constituency!.byElection).toBeDefined();
+        if (
+          normalizeCandidateName(profile.name) !==
+          normalizeCandidateName(constituency!.byElection!.winnerName)
+        ) {
+          mismatches.push(
+            `AC ${profile.acNo}: profile "${profile.name}" does not match by-election winner "${constituency!.byElection!.winnerName}"`
+          );
+        }
+        return;
+      }
+
+      const electionName = profile.electionName ?? profile.name;
+      if (
+        normalizeCandidateName(electionName) !==
+        normalizeCandidateName(constituency!.winnerName2023)
+      ) {
+        mismatches.push(
+          `AC ${profile.acNo}: election name "${electionName}" does not match ECI winner "${constituency!.winnerName2023}"`
+        );
+      }
     });
+
+    expect(mismatches).toEqual([]);
   });
 
   it('every MLA current party should match constituency data', () => {
@@ -64,9 +97,9 @@ describe('MLA Profiles — Party tallies', () => {
     TELANGANA_MLA_PROFILES.forEach((p) => {
       tally[p.party] = (tally[p.party] ?? 0) + 1;
     });
-    // INC: 64 elected + 10 defections = 74
+    // INC: 64 elected + 10 defections + 1 by-election = 75
     expect(tally['INC']).toBe(75);
-    // BRS: 39 elected - 10 defections = 29
+    // BRS: 39 elected - 10 defections - 1 by-election = 28
     expect(tally['BRS']).toBe(28);
     // BJP: 8
     expect(tally['BJP']).toBe(8);

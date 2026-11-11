@@ -161,7 +161,8 @@ export class AICostControlService {
     const budget = await this.getTenantBudget(tenantId);
     const newTokens = budget.currentDayTokens + tokens;
     const newSpend = Number((budget.currentDaySpendUsd + spendUsd).toFixed(4));
-    const shouldTrip = newTokens >= budget.dailyTokenBudget || newSpend >= budget.dailySpendLimitUsd;
+    const shouldTrip =
+      newTokens >= budget.dailyTokenBudget || newSpend >= budget.dailySpendLimitUsd;
 
     budget.currentDayTokens = newTokens;
     budget.currentDaySpendUsd = newSpend;
@@ -186,7 +187,9 @@ export class AICostControlService {
   }
 
   /** Update or configure tenant budget */
-  static async configureBudget(budget: Partial<TenantAIBudget> & { tenantId: string }): Promise<TenantAIBudget> {
+  static async configureBudget(
+    budget: Partial<TenantAIBudget> & { tenantId: string },
+  ): Promise<TenantAIBudget> {
     const current = await this.getTenantBudget(budget.tenantId);
     const updated: TenantAIBudget = {
       ...current,
@@ -197,19 +200,17 @@ export class AICostControlService {
 
     if (isSupabaseConfigured) {
       try {
-        await supabase
-          .from('ai_tenant_budgets')
-          .upsert({
-            tenant_id: updated.tenantId,
-            tier: updated.tier,
-            daily_token_budget: updated.dailyTokenBudget,
-            daily_spend_limit_usd: updated.dailySpendLimitUsd,
-            current_day_tokens: updated.currentDayTokens,
-            current_day_spend_usd: updated.currentDaySpendUsd,
-            circuit_breaker_tripped: updated.circuitBreakerTripped,
-            reset_at: updated.resetAt,
-            updated_at: new Date().toISOString(),
-          });
+        await supabase.from('ai_tenant_budgets').upsert({
+          tenant_id: updated.tenantId,
+          tier: updated.tier,
+          daily_token_budget: updated.dailyTokenBudget,
+          daily_spend_limit_usd: updated.dailySpendLimitUsd,
+          current_day_tokens: updated.currentDayTokens,
+          current_day_spend_usd: updated.currentDaySpendUsd,
+          circuit_breaker_tripped: updated.circuitBreakerTripped,
+          reset_at: updated.resetAt,
+          updated_at: new Date().toISOString(),
+        });
       } catch {
         // Suppress
       }
@@ -271,8 +272,10 @@ export class AICostControlService {
     const totalCostUsd = entries.reduce((acc, e) => acc + e.costUsd, 0);
     const totalCostInr = entries.reduce((acc, e) => acc + e.costInr, 0);
 
-    const costByOperation: Record<string, { requests: number; tokens: number; costUsd: number }> = {};
-    const costByProvider: Record<string, { requests: number; tokens: number; costUsd: number }> = {};
+    const costByOperation: Record<string, { requests: number; tokens: number; costUsd: number }> =
+      {};
+    const costByProvider: Record<string, { requests: number; tokens: number; costUsd: number }> =
+      {};
 
     for (const entry of entries) {
       if (!costByOperation[entry.operationType]) {

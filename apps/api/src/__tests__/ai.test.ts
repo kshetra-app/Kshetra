@@ -1,4 +1,5 @@
 import { buildApp } from '../server';
+import { defaultAIRegistry } from '../services/aiProvider';
 
 describe('AI Routes', () => {
   let app: Awaited<ReturnType<typeof buildApp>>;
@@ -23,8 +24,20 @@ describe('AI Routes', () => {
       const body = JSON.parse(res.payload);
       expect(body).toHaveProperty('configured');
       expect(body).toHaveProperty('model');
-      expect(['openai', 'gemini']).toContain(body.provider);
       expect(typeof body.configured).toBe('boolean');
+      expect(Array.isArray(body.activeProviders)).toBe(true);
+      expect(body.activeProviders).not.toContain('offline_heuristic');
+      if (body.configured) {
+        expect(body.activeProviders.length).toBeGreaterThan(0);
+        expect(body.provider).toBe(body.activeProviders[0]);
+        expect(body.model).toBeTruthy();
+        expect(body.degradedOffline).toBe(false);
+      } else {
+        expect(body.activeProviders).toHaveLength(0);
+        expect(body.provider).toBeNull();
+        expect(body.model).toBeNull();
+        expect(body.degradedOffline).toBe(true);
+      }
     });
   });
 
@@ -56,21 +69,26 @@ describe('AI Routes', () => {
       const originalGeminiKey = process.env.GEMINI_API_KEY;
       delete process.env.OPENAI_API_KEY;
       delete process.env.GEMINI_API_KEY;
+      defaultAIRegistry.resetForTesting();
+      try {
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/ai/chat',
+          payload: {
+            messages: [{ role: 'user', content: 'Tell me about Telangana' }],
+          },
+        });
 
-      const res = await app.inject({
-        method: 'POST',
-        url: '/api/v1/ai/chat',
-        payload: {
-          messages: [{ role: 'user', content: 'Tell me about Telangana' }],
-        },
-      });
-
-      expect(res.statusCode).toBe(200);
-      const body = JSON.parse(res.payload);
-      expect(body.response).toContain('API key');
-
-      if (originalKey) process.env.OPENAI_API_KEY = originalKey;
-      if (originalGeminiKey) process.env.GEMINI_API_KEY = originalGeminiKey;
+        expect(res.statusCode).toBe(200);
+        const body = JSON.parse(res.payload);
+        expect(body.response).toContain('AI responses are unavailable');
+      } finally {
+        if (originalKey === undefined) delete process.env.OPENAI_API_KEY;
+        else process.env.OPENAI_API_KEY = originalKey;
+        if (originalGeminiKey === undefined) delete process.env.GEMINI_API_KEY;
+        else process.env.GEMINI_API_KEY = originalGeminiKey;
+        defaultAIRegistry.resetForTesting();
+      }
     });
   });
 

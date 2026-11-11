@@ -47,7 +47,11 @@ export class OnboardingService {
    * Generates a unique tenant slug, appending a short random hex suffix if collision occurs.
    */
   private async resolveUniqueSlug(baseSlug: string, client: any): Promise<string> {
-    const { data } = await client.from('saas_tenants').select('id').eq('slug', baseSlug).maybeSingle();
+    const { data } = await client
+      .from('saas_tenants')
+      .select('id')
+      .eq('slug', baseSlug)
+      .maybeSingle();
     if (!data) {
       return baseSlug;
     }
@@ -89,7 +93,9 @@ export class OnboardingService {
       .single();
 
     if (tenantError || !tenant) {
-      throw new Error(`Failed to create tenant organization: ${tenantError?.message || 'Unknown database error'}`);
+      throw new Error(
+        `Failed to create tenant organization: ${tenantError?.message || 'Unknown database error'}`,
+      );
     }
 
     // 2. Create Default Sandbox Application
@@ -104,7 +110,9 @@ export class OnboardingService {
       .single();
 
     if (appError || !application) {
-      throw new Error(`Failed to provision default application: ${appError?.message || 'Unknown database error'}`);
+      throw new Error(
+        `Failed to provision default application: ${appError?.message || 'Unknown database error'}`,
+      );
     }
 
     // 3. Generate Initial Cryptographic Test API Key
@@ -127,7 +135,9 @@ export class OnboardingService {
       .single();
 
     if (keyError || !apiKeyRecord) {
-      throw new Error(`Failed to provision initial API key: ${keyError?.message || 'Unknown database error'}`);
+      throw new Error(
+        `Failed to provision initial API key: ${keyError?.message || 'Unknown database error'}`,
+      );
     }
 
     return {
@@ -154,7 +164,8 @@ export class OnboardingService {
         environment: 'test',
         scopes: apiKeyRecord.scopes,
         rawKey: keyData.rawKey,
-        notice: 'Store this secret key securely. For security reasons, this raw key cannot be retrieved again.',
+        notice:
+          'Store this secret key securely. For security reasons, this raw key cannot be retrieved again.',
       },
     };
   }
@@ -166,7 +177,9 @@ export class OnboardingService {
   async listApiKeys(tenantId: string, client: any = this.dbClient): Promise<SaasApiKeyListItem[]> {
     const { data: keys, error } = await client
       .from('saas_api_keys')
-      .select('id, name, key_prefix, key_hint, scopes, status, application_id, last_used_at, created_at')
+      .select(
+        'id, name, key_prefix, key_hint, scopes, status, application_id, last_used_at, created_at',
+      )
       .eq('tenant_id', tenantId)
       .order('created_at', { ascending: false });
 
@@ -326,7 +339,8 @@ export class OnboardingService {
       scopes: newKeyRecord.scopes,
       rawKey: keyData.rawKey,
       createdAt: newKeyRecord.created_at,
-      notice: 'Store this secret key securely. For security reasons, this raw key cannot be retrieved again.',
+      notice:
+        'Store this secret key securely. For security reasons, this raw key cannot be retrieved again.',
     };
   }
 
@@ -351,7 +365,9 @@ export class OnboardingService {
     }
 
     if (!data) {
-      const err: any = new Error('API key not found or does not belong to the authenticated tenant.');
+      const err: any = new Error(
+        'API key not found or does not belong to the authenticated tenant.',
+      );
       err.statusCode = 404;
       err.code = 'KEY_NOT_FOUND';
       throw err;
