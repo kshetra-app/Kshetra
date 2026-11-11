@@ -38,7 +38,7 @@ jobs:
       - name: Audit Repository & Evidence Integrity (Part 34)
         run: node scripts/check-repo-evidence-integrity.mjs
 
-      - name: "Regression Test: Evidence Integrity & Dirty-Tree Rejection"
+      - name: 'Regression Test: Evidence Integrity & Dirty-Tree Rejection'
         run: node tests/repo-evidence-integrity.test.mjs
 
       - name: Declared API Contract Drift Check (Part 34E)
@@ -84,7 +84,7 @@ jobs:
           NODE_ENV: test
 
       - name: Test API (with coverage gate)
-        run: npm run test:coverage -w @kshetra/api -- --maxWorkers=2
+        run: npm run test:coverage -w @kshetra/api -- --maxWorkers=1
         env:
           NODE_OPTIONS: --max-old-space-size=4096
           SUPABASE_URL: https://test-fixture.supabase.co
