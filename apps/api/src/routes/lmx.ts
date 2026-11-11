@@ -38,7 +38,10 @@ const createLiveEventBodySchema = {
       stream_id: { type: 'string', minLength: 1, maxLength: 128 },
       reporter_id: { type: 'string', minLength: 1, maxLength: 128 },
       reporter_name: { type: 'string', minLength: 1, maxLength: 100 },
-      accreditation_tier: { type: 'string', enum: ['citizen', 'stringer', 'accredited', 'senior', 'editor', 'organization'] },
+      accreditation_tier: {
+        type: 'string',
+        enum: ['citizen', 'stringer', 'accredited', 'senior', 'editor', 'organization'],
+      },
       credibility_score: { type: 'number', minimum: 0, maximum: 100 },
       gps_lat: { anyOf: [{ type: 'number', minimum: -90, maximum: 90 }, { type: 'null' }] },
       gps_lng: { anyOf: [{ type: 'number', minimum: -180, maximum: 180 }, { type: 'null' }] },
@@ -47,7 +50,10 @@ const createLiveEventBodySchema = {
       mandal_name: { type: 'null' },
       constituency_ac_no: { anyOf: [{ type: 'integer', minimum: 1 }, { type: 'null' }] },
       locality: { anyOf: [{ type: 'string', maxLength: 200 }, { type: 'null' }] },
-      issue_category: { type: 'string', enum: ['emergency', 'traffic', 'weather', 'civic', 'breaking_news', 'general'] },
+      issue_category: {
+        type: 'string',
+        enum: ['emergency', 'traffic', 'weather', 'civic', 'breaking_news', 'general'],
+      },
       tags: { type: 'array', items: { type: 'string', maxLength: 80 }, maxItems: 20 },
       language: { type: 'string', minLength: 2, maxLength: 10 },
       media_ingest_url: { anyOf: [{ type: 'string', maxLength: 1000 }, { type: 'null' }] },
@@ -58,11 +64,16 @@ const createLiveEventBodySchema = {
       affiliation_id: { anyOf: [{ type: 'string', format: 'uuid' }, { type: 'null' }] },
       active_brand_kit_id: { anyOf: [{ type: 'string', format: 'uuid' }, { type: 'null' }] },
       exclusivity_flag: { type: 'boolean' },
-      visibility_mode: { type: 'string', enum: ['public', 'exclusive_partner', 'confidential_direct'] },
+      visibility_mode: {
+        type: 'string',
+        enum: ['public', 'exclusive_partner', 'confidential_direct'],
+      },
       alert_departments: { type: 'array', items: { type: 'string', maxLength: 80 }, maxItems: 20 },
       buffer_state: { type: 'string', enum: ['buffering', 'cleared', 'held', 'cut', 'bypassed'] },
       buffer_seconds: { type: 'integer', minimum: 0, maximum: 600 },
-      human_decision: { anyOf: [{ type: 'string', enum: ['allow', 'mute', 'cut', 'escalate'] }, { type: 'null' }] },
+      human_decision: {
+        anyOf: [{ type: 'string', enum: ['allow', 'mute', 'cut', 'escalate'] }, { type: 'null' }],
+      },
       status: { type: 'string', enum: ['preparing', 'live', 'ended', 'archived', 'removed'] },
       viewer_count: { type: 'integer', minimum: 0 },
       peak_viewers: { type: 'integer', minimum: 0 },
@@ -299,11 +310,7 @@ export async function lmxRoutes(app: FastifyInstance) {
       }
 
       // Accept explicit x-user-id header only in non-production environments
-      if (
-        !userId &&
-        !isProductionRuntime() &&
-        typeof request.headers['x-user-id'] === 'string'
-      ) {
+      if (!userId && !isProductionRuntime() && typeof request.headers['x-user-id'] === 'string') {
         userId = request.headers['x-user-id'];
       }
 
@@ -321,7 +328,8 @@ export async function lmxRoutes(app: FastifyInstance) {
       }
 
       // 2. Query user's real profile from Supabase user_profiles table
-      let profile: { role?: string; verification_status?: string; display_name?: string } | null = null;
+      let profile: { role?: string; verification_status?: string; display_name?: string } | null =
+        null;
       try {
         const { data, error: profileErr } = await supabase
           .from('user_profiles')
@@ -395,17 +403,28 @@ export async function lmxRoutes(app: FastifyInstance) {
         );
       }
 
-      const pipeline = selectPipeline({
-        streamId: body.stream_id,
-        issueCategory: body.issue_category || 'general',
-        alertDepartments: body.alert_departments || [],
-        visibilityMode: body.visibility_mode || 'public',
-      }, hosts);
+      const pipeline = selectPipeline(
+        {
+          streamId: body.stream_id,
+          issueCategory: body.issue_category || 'general',
+          alertDepartments: body.alert_departments || [],
+          visibilityMode: body.visibility_mode || 'public',
+        },
+        hosts,
+      );
       const safeBody = { ...body };
       for (const field of [
-        'media_ingest_url', 'media_playback_hls', 'media_playback_webrtc',
-        'credibility_score', 'buffer_state', 'buffer_seconds', 'human_decision',
-        'status', 'priority_score', 'viewer_count', 'peak_viewers',
+        'media_ingest_url',
+        'media_playback_hls',
+        'media_playback_webrtc',
+        'credibility_score',
+        'buffer_state',
+        'buffer_seconds',
+        'human_decision',
+        'status',
+        'priority_score',
+        'viewer_count',
+        'peak_viewers',
       ]) {
         delete safeBody[field];
       }

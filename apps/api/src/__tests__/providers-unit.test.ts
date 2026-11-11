@@ -425,9 +425,9 @@ describe('Providers Comprehensive Unit Tests', () => {
         permitted: true,
         currentISTHour: 11,
       });
-      jest.spyOn(obdTelecomService, 'isNumberOptedOut').mockRejectedValue(
-        new Error('OPTOUT_LEDGER_UNAVAILABLE'),
-      );
+      jest
+        .spyOn(obdTelecomService, 'isNumberOptedOut')
+        .mockRejectedValue(new Error('OPTOUT_LEDGER_UNAVAILABLE'));
 
       const result = await provider.dispatchBroadcast(
         makeDispatchParams({

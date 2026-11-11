@@ -2,7 +2,10 @@ describe('Leadership Academy production persistence', () => {
   const originalAppEnv = process.env.APP_ENV;
   const rpc = jest.fn();
   const calls: Array<{ table: string; operation: string; args: any[] }> = [];
-  const moduleRow = { id: '10000000-0000-4000-8000-000000000001', title: 'How Indian Elections Work' };
+  const moduleRow = {
+    id: '10000000-0000-4000-8000-000000000001',
+    title: 'How Indian Elections Work',
+  };
   const aspirantProfileRow = {
     id: '20000000-0000-4000-8000-000000000001',
     user_id: 'user-1',
@@ -23,17 +26,67 @@ describe('Leadership Academy production persistence', () => {
     is_public: true,
   };
   const challengeRows = [
-    { id: 'challenge-ts', title: 'Local service day', description: 'Join a local service day.', category: 'community', points: 10, target_count: 1, state_code: 'TS', is_active: true, starts_at: '2024-01-01T00:00:00.000Z', ends_at: null },
-    { id: 'challenge-ap', title: 'Regional listening', description: 'Listen to local residents.', category: 'civic', points: 5, target_count: 2, state_code: 'AP', is_active: true, starts_at: '2024-01-01T00:00:00.000Z', ends_at: null },
-    { id: 'challenge-national', title: 'Public records guide', description: 'Read a public records guide.', category: 'awareness', points: 2, target_count: 1, state_code: null, is_active: true, starts_at: '2024-01-01T00:00:00.000Z', ends_at: null },
+    {
+      id: 'challenge-ts',
+      title: 'Local service day',
+      description: 'Join a local service day.',
+      category: 'community',
+      points: 10,
+      target_count: 1,
+      state_code: 'TS',
+      is_active: true,
+      starts_at: '2024-01-01T00:00:00.000Z',
+      ends_at: null,
+    },
+    {
+      id: 'challenge-ap',
+      title: 'Regional listening',
+      description: 'Listen to local residents.',
+      category: 'civic',
+      points: 5,
+      target_count: 2,
+      state_code: 'AP',
+      is_active: true,
+      starts_at: '2024-01-01T00:00:00.000Z',
+      ends_at: null,
+    },
+    {
+      id: 'challenge-national',
+      title: 'Public records guide',
+      description: 'Read a public records guide.',
+      category: 'awareness',
+      points: 2,
+      target_count: 1,
+      state_code: null,
+      is_active: true,
+      starts_at: '2024-01-01T00:00:00.000Z',
+      ends_at: null,
+    },
   ];
   const serviceResult = (table: string) => {
     if (table === 'leadership_modules') return { data: [moduleRow], error: null };
-    if (table === 'module_progress') return { data: [{ module_id: moduleRow.id, completed: true, quiz_score: 100 }], error: null };
+    if (table === 'module_progress')
+      return { data: [{ module_id: moduleRow.id, completed: true, quiz_score: 100 }], error: null };
     if (table === 'module_quiz_attempts') return { data: { score_percentage: 100 }, error: null };
-    if (table === 'civic_badges') return { data: [{ badge_type: 'election_scholar', earned_at: '2026-11-08T00:00:00.000Z' }], error: null };
+    if (table === 'civic_badges')
+      return {
+        data: [{ badge_type: 'election_scholar', earned_at: '2026-11-08T00:00:00.000Z' }],
+        error: null,
+      };
     if (table === 'community_challenges') return { data: challengeRows, error: null };
-    if (table === 'challenge_participation') return { data: [{ challenge_id: 'challenge-ts', progress: 1, completed: true, completed_at: '2026-11-07T00:00:00.000Z', evidence_url: 'https://example.test/evidence' }], error: null };
+    if (table === 'challenge_participation')
+      return {
+        data: [
+          {
+            challenge_id: 'challenge-ts',
+            progress: 1,
+            completed: true,
+            completed_at: '2026-11-07T00:00:00.000Z',
+            evidence_url: 'https://example.test/evidence',
+          },
+        ],
+        error: null,
+      };
     return { data: null, error: null };
   };
   let service: any;
@@ -45,21 +98,44 @@ describe('Leadership Academy production persistence', () => {
       supabase: {
         from: (table: string) => {
           const query: any = {
-            select: (...args: any[]) => { calls.push({ table, operation: 'select', args }); return query; },
-            eq: (...args: any[]) => { calls.push({ table, operation: 'eq', args }); return query; },
-            in: (...args: any[]) => { calls.push({ table, operation: 'in', args }); return query; },
-            lte: (...args: any[]) => { calls.push({ table, operation: 'lte', args }); return query; },
-            order: (...args: any[]) => { calls.push({ table, operation: 'order', args }); return query; },
-            limit: (...args: any[]) => { calls.push({ table, operation: 'limit', args }); return query; },
-            maybeSingle: async () => table === 'leadership_modules'
-              ? { data: moduleRow, error: null }
-              : table === 'module_quiz_attempts'
-                ? { data: { score_percentage: 100 }, error: null }
-                : table === 'aspirant_profiles'
-                  ? { data: aspirantProfileRow, error: null }
-                : { data: null, error: null },
-            upsert: async (...args: any[]) => { calls.push({ table, operation: 'upsert', args }); return { error: null }; },
-            then: (resolve: any, reject: any) => Promise.resolve(serviceResult(table)).then(resolve, reject),
+            select: (...args: any[]) => {
+              calls.push({ table, operation: 'select', args });
+              return query;
+            },
+            eq: (...args: any[]) => {
+              calls.push({ table, operation: 'eq', args });
+              return query;
+            },
+            in: (...args: any[]) => {
+              calls.push({ table, operation: 'in', args });
+              return query;
+            },
+            lte: (...args: any[]) => {
+              calls.push({ table, operation: 'lte', args });
+              return query;
+            },
+            order: (...args: any[]) => {
+              calls.push({ table, operation: 'order', args });
+              return query;
+            },
+            limit: (...args: any[]) => {
+              calls.push({ table, operation: 'limit', args });
+              return query;
+            },
+            maybeSingle: async () =>
+              table === 'leadership_modules'
+                ? { data: moduleRow, error: null }
+                : table === 'module_quiz_attempts'
+                  ? { data: { score_percentage: 100 }, error: null }
+                  : table === 'aspirant_profiles'
+                    ? { data: aspirantProfileRow, error: null }
+                    : { data: null, error: null },
+            upsert: async (...args: any[]) => {
+              calls.push({ table, operation: 'upsert', args });
+              return { error: null };
+            },
+            then: (resolve: any, reject: any) =>
+              Promise.resolve(serviceResult(table)).then(resolve, reject),
           };
           return query;
         },
@@ -98,7 +174,9 @@ describe('Leadership Academy production persistence', () => {
   it('persists progress using the database UUID behind the stable module key', async () => {
     await service.startModule('user-1', 'mod-1');
 
-    const write = calls.find((call) => call.table === 'module_progress' && call.operation === 'upsert');
+    const write = calls.find(
+      (call) => call.table === 'module_progress' && call.operation === 'upsert',
+    );
     expect(write?.args[0]).toMatchObject({ user_id: 'user-1', module_id: moduleRow.id });
   });
 
@@ -130,14 +208,19 @@ describe('Leadership Academy production persistence', () => {
   it('lists national and matching-state challenges with persisted participation', async () => {
     const result = await service.listAcademyChallenges('user-1');
 
-    expect(result.challenges.map((challenge: any) => challenge.id)).toEqual(['challenge-ts', 'challenge-national']);
-    expect(result.participation).toEqual([{
-      challengeId: 'challenge-ts',
-      progress: 1,
-      completed: true,
-      completedAt: '2026-11-07T00:00:00.000Z',
-      evidenceUrl: 'https://example.test/evidence',
-    }]);
+    expect(result.challenges.map((challenge: any) => challenge.id)).toEqual([
+      'challenge-ts',
+      'challenge-national',
+    ]);
+    expect(result.participation).toEqual([
+      {
+        challengeId: 'challenge-ts',
+        progress: 1,
+        completed: true,
+        completedAt: '2026-11-07T00:00:00.000Z',
+        evidenceUrl: 'https://example.test/evidence',
+      },
+    ]);
   });
 
   it('keeps module and challenge catalogs available to anonymous readers', async () => {
@@ -147,11 +230,16 @@ describe('Leadership Academy production persistence', () => {
     await app.register(aspirantRoutes);
 
     const modulesResponse = await app.inject({ method: 'GET', url: '/api/v1/aspirant/modules' });
-    const challengesResponse = await app.inject({ method: 'GET', url: '/api/v1/aspirant/challenges' });
+    const challengesResponse = await app.inject({
+      method: 'GET',
+      url: '/api/v1/aspirant/challenges',
+    });
 
     expect(modulesResponse.statusCode).toBe(200);
     expect(challengesResponse.statusCode).toBe(200);
-    expect(JSON.parse(challengesResponse.body).challenges.map((challenge: any) => challenge.id)).toEqual(['challenge-national']);
+    expect(
+      JSON.parse(challengesResponse.body).challenges.map((challenge: any) => challenge.id),
+    ).toEqual(['challenge-national']);
     await app.close();
   });
 
@@ -164,12 +252,15 @@ describe('Leadership Academy production persistence', () => {
       ],
     });
     expect(result.scorePercentage).toBe(100);
-    expect(rpc).toHaveBeenCalledWith('record_academy_quiz_result', expect.objectContaining({
-      p_user_id: 'user-1',
-      p_module_id: moduleRow.id,
-      p_score_percentage: 100,
-      p_passed: true,
-    }));
+    expect(rpc).toHaveBeenCalledWith(
+      'record_academy_quiz_result',
+      expect.objectContaining({
+        p_user_id: 'user-1',
+        p_module_id: moduleRow.id,
+        p_score_percentage: 100,
+        p_passed: true,
+      }),
+    );
 
     rpc.mockResolvedValueOnce({ data: null, error: { message: 'database unavailable' } });
     await expect(service.submitQuiz('user-1', 'mod-1', { answers: [] })).rejects.toMatchObject({

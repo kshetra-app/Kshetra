@@ -15,7 +15,13 @@ export interface AICostLedgerEntry {
   usageBasis: 'provider_reported' | 'estimated' | 'not_applicable';
   costUsd: number | null;
   costInr: number | null;
-  costBasis: 'provider_rate_card' | 'cache_hit' | 'offline_demo' | 'unavailable' | 'legacy_unverified' | 'none';
+  costBasis:
+    | 'provider_rate_card'
+    | 'cache_hit'
+    | 'offline_demo'
+    | 'unavailable'
+    | 'legacy_unverified'
+    | 'none';
   costRateCardVersion?: string | null;
   costRateCardSource?: string | null;
   latencyMs: number;
@@ -46,7 +52,9 @@ export class AICostLedgerService {
     const now = new Date().toISOString();
 
     if (productionRuntime && (!isSupabaseConfigured || !isUsingServiceRole)) {
-      throw new AICostLedgerUnavailableError('A service-role database connection is required for production AI cost records.');
+      throw new AICostLedgerUnavailableError(
+        'A service-role database connection is required for production AI cost records.',
+      );
     }
 
     if (useDurableDatabase) {
@@ -86,7 +94,9 @@ export class AICostLedgerService {
     entry: Omit<AICostLedgerEntry, 'id' | 'createdAt'> & { budgetCostUsd: number | null },
   ): Promise<void> {
     if (!isProductionLikeRuntime() || !isSupabaseConfigured || !isUsingServiceRole) {
-      throw new AICostLedgerUnavailableError('Atomic AI usage accounting requires the production service-role database connection.');
+      throw new AICostLedgerUnavailableError(
+        'Atomic AI usage accounting requires the production service-role database connection.',
+      );
     }
 
     const { data, error } = await supabase.rpc('record_ai_usage_and_ledger', {
@@ -110,7 +120,9 @@ export class AICostLedgerService {
     });
 
     if (error || data !== true) {
-      throw new AICostLedgerUnavailableError('Could not atomically persist AI usage and its cost ledger entry.');
+      throw new AICostLedgerUnavailableError(
+        'Could not atomically persist AI usage and its cost ledger entry.',
+      );
     }
   }
 

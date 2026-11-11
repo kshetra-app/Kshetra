@@ -65,7 +65,7 @@ export class AdminService {
     targetEntityType: string,
     targetEntityId: string,
     beforeState: Record<string, unknown> | null,
-    afterState: Record<string, unknown>
+    afterState: Record<string, unknown>,
   ): Promise<AdminAuditEntry> {
     const entry: AdminAuditEntry = {
       id: crypto.randomUUID(),
@@ -129,10 +129,15 @@ export class AdminService {
       'user',
       request.targetUserId,
       beforeState,
-      afterState
+      afterState,
     );
 
-    return { success: true, action: request.action, targetUserId: request.targetUserId, auditId: audit.id };
+    return {
+      success: true,
+      action: request.action,
+      targetUserId: request.targetUserId,
+      auditId: audit.id,
+    };
   }
 
   /**
@@ -156,10 +161,15 @@ export class AdminService {
       request.targetContentType,
       request.targetContentId,
       beforeState,
-      afterState
+      afterState,
     );
 
-    return { success: true, decision: request.decision, contentId: request.targetContentId, auditId: audit.id };
+    return {
+      success: true,
+      decision: request.decision,
+      contentId: request.targetContentId,
+      auditId: audit.id,
+    };
   }
 
   /**
@@ -183,10 +193,15 @@ export class AdminService {
       'candidate',
       request.candidateId,
       beforeState,
-      afterState
+      afterState,
     );
 
-    return { success: true, kycStatus: request.kycStatus, candidateId: request.candidateId, auditId: audit.id };
+    return {
+      success: true,
+      kycStatus: request.kycStatus,
+      candidateId: request.candidateId,
+      auditId: audit.id,
+    };
   }
 
   /**
@@ -209,7 +224,7 @@ export class AdminService {
       request.entityType,
       request.entityId,
       beforeState,
-      afterState
+      afterState,
     );
 
     return {
@@ -229,7 +244,12 @@ export class AdminService {
     return Array.from(memoryFeatureFlags.values());
   }
 
-  async setFeatureFlag(actor: AdminActor, key: string, value: unknown, description?: string): Promise<AdminFeatureFlag> {
+  async setFeatureFlag(
+    actor: AdminActor,
+    key: string,
+    value: unknown,
+    description?: string,
+  ): Promise<AdminFeatureFlag> {
     const beforeState = memoryFeatureFlags.get(key) ? { ...memoryFeatureFlags.get(key)! } : null;
     const entry: AdminFeatureFlag = {
       flagKey: key,
@@ -248,7 +268,7 @@ export class AdminService {
       'feature_flag',
       key,
       beforeState as unknown as Record<string, unknown>,
-      entry as unknown as Record<string, unknown>
+      entry as unknown as Record<string, unknown>,
     );
 
     return entry;
@@ -257,7 +277,9 @@ export class AdminService {
   /**
    * 9. Audit Domain: Query immutable audit ledger with optional filters.
    */
-  async queryAuditLogs(filter: AdminAuditQueryFilter = {}): Promise<{ total: number; entries: AdminAuditEntry[] }> {
+  async queryAuditLogs(
+    filter: AdminAuditQueryFilter = {},
+  ): Promise<{ total: number; entries: AdminAuditEntry[] }> {
     let result = [...memoryAuditLedger];
 
     if (filter.actorId) {

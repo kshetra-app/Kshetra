@@ -63,11 +63,7 @@ export async function resolveAdminActor(
     }
   }
 
-  if (
-    !isProductionLikeRuntime() &&
-    !userId &&
-    typeof request.headers['x-user-id'] === 'string'
-  ) {
+  if (!isProductionLikeRuntime() && !userId && typeof request.headers['x-user-id'] === 'string') {
     userId = request.headers['x-user-id'];
     role = (request.headers['x-user-role'] as string) || 'citizen';
   }
@@ -97,8 +93,7 @@ export async function resolveAdminActor(
   return {
     id: userId,
     role: role as AdminRole,
-    ipAddress:
-      (request.headers['x-forwarded-for'] as string) || request.ip || '127.0.0.1',
+    ipAddress: (request.headers['x-forwarded-for'] as string) || request.ip || '127.0.0.1',
     userAgent: request.headers['user-agent'],
   };
 }

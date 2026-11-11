@@ -23,16 +23,33 @@ function sendSuccess<T>(reply: FastifyReply, request: FastifyRequest, data: T, s
   return reply.status(statusCode).send(envelope);
 }
 
-function sendUnavailable(reply: FastifyReply, request: FastifyRequest, error: unknown, html = false) {
+function sendUnavailable(
+  reply: FastifyReply,
+  request: FastifyRequest,
+  error: unknown,
+  html = false,
+) {
   if (!(error instanceof PublicWebDataUnavailableError)) throw error;
   request.log.warn({ code: error.code }, 'Public web data is unavailable');
   if (html) {
-    return reply.status(503).type('text/html').send('<!doctype html><html lang="en"><head><title>Data unavailable</title></head><body><main><h1>Data temporarily unavailable</h1><p>Public data cannot be loaded right now. Please try again later.</p></main></body></html>');
+    return reply
+      .status(503)
+      .type('text/html')
+      .send(
+        '<!doctype html><html lang="en"><head><title>Data unavailable</title></head><body><main><h1>Data temporarily unavailable</h1><p>Public data cannot be loaded right now. Please try again later.</p></main></body></html>',
+      );
   }
   reply.type('application/json');
-  return sendApiError(reply, request, 503, 'Service Unavailable', 'Public data cannot be loaded right now.', {
-    code: error.code,
-  });
+  return sendApiError(
+    reply,
+    request,
+    503,
+    'Service Unavailable',
+    'Public data cannot be loaded right now.',
+    {
+      code: error.code,
+    },
+  );
 }
 
 export async function publicWebRoutes(app: FastifyInstance) {
@@ -53,22 +70,20 @@ export async function publicWebRoutes(app: FastifyInstance) {
       } catch (error) {
         return sendUnavailable(reply, request, error, true);
       }
-    }
+    },
   );
 
   // B. GET /public/constituency/:acId (SSR HTML)
-  app.get<{ Params: { acId: string } }>(
-    '/public/constituency/:acId',
-    async (request, reply) => {
-      try {
-        const profile = await publicWebService.getConstituencyProfile(request.params.acId);
-        if (!profile) return reply.status(404).type('text/html').send('<h1>Constituency not found</h1>');
-        return reply.type('text/html').send(publicWebService.renderConstituencyHtml(profile));
-      } catch (error) {
-        return sendUnavailable(reply, request, error, true);
-      }
+  app.get<{ Params: { acId: string } }>('/public/constituency/:acId', async (request, reply) => {
+    try {
+      const profile = await publicWebService.getConstituencyProfile(request.params.acId);
+      if (!profile)
+        return reply.status(404).type('text/html').send('<h1>Constituency not found</h1>');
+      return reply.type('text/html').send(publicWebService.renderConstituencyHtml(profile));
+    } catch (error) {
+      return sendUnavailable(reply, request, error, true);
     }
-  );
+  });
 
   // C. GET /public/districts/:districtId (SSR HTML)
   app.get<{ Params: { districtId: string } }>(
@@ -76,12 +91,13 @@ export async function publicWebRoutes(app: FastifyInstance) {
     async (request, reply) => {
       try {
         const district = await publicWebService.getDistrictProfile(request.params.districtId);
-        if (!district) return reply.status(404).type('text/html').send('<h1>District not found</h1>');
+        if (!district)
+          return reply.status(404).type('text/html').send('<h1>District not found</h1>');
         return reply.type('text/html').send(publicWebService.renderDistrictHtml(district));
       } catch (error) {
         return sendUnavailable(reply, request, error, true);
       }
-    }
+    },
   );
 
   // D. GET /public/representatives/:repId (SSR HTML)
@@ -90,12 +106,13 @@ export async function publicWebRoutes(app: FastifyInstance) {
     async (request, reply) => {
       try {
         const rep = await publicWebService.getRepresentativeProfile(request.params.repId);
-        if (!rep) return reply.status(404).type('text/html').send('<h1>Representative not found</h1>');
+        if (!rep)
+          return reply.status(404).type('text/html').send('<h1>Representative not found</h1>');
         return reply.type('text/html').send(publicWebService.renderRepresentativeHtml(rep));
       } catch (error) {
         return sendUnavailable(reply, request, error, true);
       }
-    }
+    },
   );
 
   // E. GET /public/elections/:electionId (SSR HTML)
@@ -104,26 +121,24 @@ export async function publicWebRoutes(app: FastifyInstance) {
     async (request, reply) => {
       try {
         const election = await publicWebService.getElectionProfile(request.params.electionId);
-        if (!election) return reply.status(404).type('text/html').send('<h1>Election not found</h1>');
+        if (!election)
+          return reply.status(404).type('text/html').send('<h1>Election not found</h1>');
         return reply.type('text/html').send(publicWebService.renderElectionHtml(election));
       } catch (error) {
         return sendUnavailable(reply, request, error, true);
       }
-    }
+    },
   );
 
   // F. GET /public/delimitation/:acId (SSR HTML)
-  app.get<{ Params: { acId: string } }>(
-    '/public/delimitation/:acId',
-    async (request, reply) => {
-      try {
-        await publicWebService.getDelimitationDiff(request.params.acId);
-        return reply.status(404).type('text/html').send('<h1>Delimitation data not found</h1>');
-      } catch (error) {
-        return sendUnavailable(reply, request, error, true);
-      }
+  app.get<{ Params: { acId: string } }>('/public/delimitation/:acId', async (request, reply) => {
+    try {
+      await publicWebService.getDelimitationDiff(request.params.acId);
+      return reply.status(404).type('text/html').send('<h1>Delimitation data not found</h1>');
+    } catch (error) {
+      return sendUnavailable(reply, request, error, true);
     }
-  );
+  });
 
   // ==============================================================================
   // 2. TWIN HEADLESS JSON APIS (DEC-189 OPTION B PROVISION)
@@ -140,7 +155,7 @@ export async function publicWebRoutes(app: FastifyInstance) {
       } catch (error) {
         return sendUnavailable(reply, request, error);
       }
-    }
+    },
   );
 
   // B. GET /api/v1/public/constituency/:acId
@@ -149,12 +164,13 @@ export async function publicWebRoutes(app: FastifyInstance) {
     async (request, reply) => {
       try {
         const profile = await publicWebService.getConstituencyProfile(request.params.acId);
-        if (!profile) return sendApiError(reply, request, 404, 'NotFound', 'Constituency not found');
+        if (!profile)
+          return sendApiError(reply, request, 404, 'NotFound', 'Constituency not found');
         return sendSuccess(reply, request, profile);
       } catch (error) {
         return sendUnavailable(reply, request, error);
       }
-    }
+    },
   );
 
   // C. GET /api/v1/public/districts/:districtId
@@ -168,7 +184,7 @@ export async function publicWebRoutes(app: FastifyInstance) {
       } catch (error) {
         return sendUnavailable(reply, request, error);
       }
-    }
+    },
   );
 
   // D. GET /api/v1/public/representatives/:repId
@@ -182,7 +198,7 @@ export async function publicWebRoutes(app: FastifyInstance) {
       } catch (error) {
         return sendUnavailable(reply, request, error);
       }
-    }
+    },
   );
 
   // E. GET /api/v1/public/elections/:electionId
@@ -196,7 +212,7 @@ export async function publicWebRoutes(app: FastifyInstance) {
       } catch (error) {
         return sendUnavailable(reply, request, error);
       }
-    }
+    },
   );
 
   // F. GET /api/v1/public/delimitation/:acId
@@ -205,11 +221,13 @@ export async function publicWebRoutes(app: FastifyInstance) {
     async (request, reply) => {
       try {
         const diff = await publicWebService.getDelimitationDiff(request.params.acId);
-        return diff ? sendSuccess(reply, request, diff) : sendApiError(reply, request, 404, 'NotFound', 'Delimitation data not found');
+        return diff
+          ? sendSuccess(reply, request, diff)
+          : sendApiError(reply, request, 404, 'NotFound', 'Delimitation data not found');
       } catch (error) {
         return sendUnavailable(reply, request, error);
       }
-    }
+    },
   );
 
   // ==============================================================================
@@ -226,7 +244,9 @@ export async function publicWebRoutes(app: FastifyInstance) {
 
   app.get('/sitemap-geography.xml', async (request, reply) => {
     try {
-      return reply.type('application/xml').send(await publicWebService.generateGeographySitemapXml());
+      return reply
+        .type('application/xml')
+        .send(await publicWebService.generateGeographySitemapXml());
     } catch (error) {
       return sendUnavailable(reply, request, error);
     }

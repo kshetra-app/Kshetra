@@ -50,7 +50,10 @@ export class CampaignService {
   /**
    * JOB 054: Create a new Political Campaign workspace
    */
-  async createCampaign(input: CreatePoliticalCampaignInput, createdBy?: string): Promise<PoliticalCampaignDTO> {
+  async createCampaign(
+    input: CreatePoliticalCampaignInput,
+    createdBy?: string,
+  ): Promise<PoliticalCampaignDTO> {
     if (!input.title || input.title.trim().length === 0) {
       throw new Error('Campaign title is required');
     }
@@ -164,7 +167,10 @@ export class CampaignService {
   /**
    * List campaigns by constituency or organization
    */
-  async listCampaigns(filter?: { targetConstituencyId?: string; status?: string }): Promise<PoliticalCampaignDTO[]> {
+  async listCampaigns(filter?: {
+    targetConstituencyId?: string;
+    status?: string;
+  }): Promise<PoliticalCampaignDTO[]> {
     let results = Array.from(MEMORY_CAMPAIGNS.values());
     if (filter?.targetConstituencyId) {
       const match = filter.targetConstituencyId.toUpperCase();
@@ -226,7 +232,11 @@ export class CampaignService {
   /**
    * Verify member permission within campaign
    */
-  async verifyMemberPermission(campaignId: string, userId: string, requiredPermission: string): Promise<boolean> {
+  async verifyMemberPermission(
+    campaignId: string,
+    userId: string,
+    requiredPermission: string,
+  ): Promise<boolean> {
     const members = await this.getMembers(campaignId);
     const member = members.find((m) => m.userId === userId && m.status === 'active');
     if (!member) return false;
@@ -237,16 +247,25 @@ export class CampaignService {
   /**
    * JOB 055: Campaign Geographic Intelligence Aggregator
    */
-  async getGeographicIntelligence(campaignId: string, requestingUserId?: string): Promise<CampaignIntelligenceReport> {
+  async getGeographicIntelligence(
+    campaignId: string,
+    requestingUserId?: string,
+  ): Promise<CampaignIntelligenceReport> {
     const campaign = await this.getCampaignById(campaignId);
     if (!campaign) {
       throw new Error(`Campaign ${campaignId} not found`);
     }
 
     if (requestingUserId) {
-      const isAuthorized = await this.verifyMemberPermission(campaignId, requestingUserId, 'view_intelligence');
+      const isAuthorized = await this.verifyMemberPermission(
+        campaignId,
+        requestingUserId,
+        'view_intelligence',
+      );
       if (!isAuthorized) {
-        throw new Error(`User ${requestingUserId} is not authorized to view geographic intelligence for campaign ${campaignId}`);
+        throw new Error(
+          `User ${requestingUserId} is not authorized to view geographic intelligence for campaign ${campaignId}`,
+        );
       }
     }
 
@@ -255,9 +274,16 @@ export class CampaignService {
     // Fetch real civic issues for target AC from civic service
     const issues = await civicService.listIssues({ constituencyId: acId });
     const totalIssues = issues.length;
-    const resolvedIssues = issues.filter((i) => i.status === 'resolved' || i.status === 'closed' || i.status === 'CONFIRMED' || i.status === 'CLOSED').length;
+    const resolvedIssues = issues.filter(
+      (i) =>
+        i.status === 'resolved' ||
+        i.status === 'closed' ||
+        i.status === 'CONFIRMED' ||
+        i.status === 'CLOSED',
+    ).length;
     const pendingIssues = totalIssues - resolvedIssues;
-    const resolutionRatePercent = totalIssues > 0 ? Math.round((resolvedIssues / totalIssues) * 100) : 100;
+    const resolutionRatePercent =
+      totalIssues > 0 ? Math.round((resolvedIssues / totalIssues) * 100) : 100;
 
     const issuesByCategory: Record<string, number> = {};
     for (const issue of issues) {
@@ -267,7 +293,10 @@ export class CampaignService {
     // Derive real constituency sentiment and CDI score
     const sentiment = await civicService.getSentiment(acId);
     const cdi = await civicService.getConstituencyDevelopmentIndex(acId);
-    const totalPosts = sentiment.totalPosts > 0 ? sentiment.totalPosts : (sentiment.positiveCount + sentiment.negativeCount + sentiment.neutralCount) || 1;
+    const totalPosts =
+      sentiment.totalPosts > 0
+        ? sentiment.totalPosts
+        : sentiment.positiveCount + sentiment.negativeCount + sentiment.neutralCount || 1;
     const posPct = Math.round((sentiment.positiveCount / totalPosts) * 100);
     const negPct = Math.round((sentiment.negativeCount / totalPosts) * 100);
     const neuPct = Math.max(0, 100 - posPct - negPct);
@@ -353,7 +382,10 @@ export class CampaignService {
   /**
    * Submit content for review
    */
-  async submitContentForReview(contentId: string, userId: string): Promise<PoliticalCampaignContentDTO> {
+  async submitContentForReview(
+    contentId: string,
+    userId: string,
+  ): Promise<PoliticalCampaignContentDTO> {
     const item = MEMORY_CONTENT.get(contentId);
     if (!item) {
       throw new Error(`Content item ${contentId} not found`);
@@ -387,7 +419,9 @@ export class CampaignService {
     }
 
     if (item.workflowStatus !== 'SUBMITTED') {
-      throw new Error(`Cannot review content in status ${item.workflowStatus}. Must be SUBMITTED first.`);
+      throw new Error(
+        `Cannot review content in status ${item.workflowStatus}. Must be SUBMITTED first.`,
+      );
     }
 
     item.workflowStatus = decision;
@@ -409,7 +443,9 @@ export class CampaignService {
     }
 
     if (item.workflowStatus !== 'APPROVED') {
-      throw new Error(`Cannot publish content in status ${item.workflowStatus}. Content must be APPROVED before publishing.`);
+      throw new Error(
+        `Cannot publish content in status ${item.workflowStatus}. Content must be APPROVED before publishing.`,
+      );
     }
 
     item.workflowStatus = 'PUBLISHED';
@@ -439,7 +475,14 @@ export class CampaignService {
   private getRolePermissions(role: CampaignRole): string[] {
     switch (role) {
       case 'campaign_manager':
-        return ['manage_team', 'approve_content', 'publish_content', 'manage_budget', 'view_intelligence', 'create_ads'];
+        return [
+          'manage_team',
+          'approve_content',
+          'publish_content',
+          'manage_budget',
+          'view_intelligence',
+          'create_ads',
+        ];
       case 'content_creator':
         return ['create_content', 'edit_own_content', 'submit_content'];
       case 'field_director':

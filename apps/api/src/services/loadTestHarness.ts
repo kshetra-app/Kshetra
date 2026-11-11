@@ -19,16 +19,16 @@ export class LoadTestHarness {
     method: 'GET' | 'POST',
     concurrencyRps: number,
     durationSeconds: number,
-    baseLatencyMs: number
+    baseLatencyMs: number,
   ): Promise<ApiEndpointLoadBenchmark> {
     const totalRequests = concurrencyRps * durationSeconds;
-    
+
     // Simulate slight latency distribution under concurrency
     const jitter = Math.random() * 5.0;
     const p50Ms = Math.round((baseLatencyMs + jitter * 0.5) * 10) / 10;
     const p95Ms = Math.round((baseLatencyMs * 2.2 + jitter * 1.5) * 10) / 10;
     const p99Ms = Math.round((baseLatencyMs * 3.4 + jitter * 2.0) * 10) / 10;
-    const maxMs = Math.round((p99Ms * 1.4) * 10) / 10;
+    const maxMs = Math.round(p99Ms * 1.4 * 10) / 10;
 
     // Simulate rate-limiting behavior if traffic exceeds 1,200 RPS
     const rateLimited429Requests = concurrencyRps > 1000 ? Math.floor(totalRequests * 0.05) : 0;
@@ -60,7 +60,7 @@ export class LoadTestHarness {
    */
   public static async runConcurrencySuite(
     peakConcurrentRps: number = 1000,
-    durationSeconds: number = 10
+    durationSeconds: number = 10,
   ): Promise<ApiLoadTestReport> {
     const endpointConfigs = [
       { endpoint: '/api/v1/feed?page=1&limit=20', method: 'GET' as const, baseLatency: 12.5 },
@@ -76,7 +76,7 @@ export class LoadTestHarness {
         conf.method,
         peakConcurrentRps,
         durationSeconds,
-        conf.baseLatency
+        conf.baseLatency,
       );
       benchmarks.push(res);
     }
@@ -84,13 +84,19 @@ export class LoadTestHarness {
     const failures: string[] = [];
     for (const b of benchmarks) {
       if (b.latency.p50Ms > 50.0) {
-        failures.push(`Endpoint [${b.endpoint}] P50 latency (${b.latency.p50Ms}ms) exceeded 50ms ceiling`);
+        failures.push(
+          `Endpoint [${b.endpoint}] P50 latency (${b.latency.p50Ms}ms) exceeded 50ms ceiling`,
+        );
       }
       if (b.latency.p95Ms > 150.0) {
-        failures.push(`Endpoint [${b.endpoint}] P95 latency (${b.latency.p95Ms}ms) exceeded 150ms ceiling`);
+        failures.push(
+          `Endpoint [${b.endpoint}] P95 latency (${b.latency.p95Ms}ms) exceeded 150ms ceiling`,
+        );
       }
       if (b.latency.p99Ms > 300.0) {
-        failures.push(`Endpoint [${b.endpoint}] P99 latency (${b.latency.p99Ms}ms) exceeded 300ms ceiling`);
+        failures.push(
+          `Endpoint [${b.endpoint}] P99 latency (${b.latency.p99Ms}ms) exceeded 300ms ceiling`,
+        );
       }
       if (b.error5xxRequests > 0) {
         failures.push(`Endpoint [${b.endpoint}] observed ${b.error5xxRequests} HTTP 5xx errors`);
@@ -113,13 +119,13 @@ export class LoadTestHarness {
 
   public static async runSequentialLatencySmokeTest(
     endpoint: string,
-    iterations: number = 20
+    iterations: number = 20,
   ): Promise<SequentialLatencyBenchmark> {
     const timings: number[] = [];
     for (let i = 0; i < iterations; i++) {
       const start = Date.now();
       // Simulated immediate internal dispatch
-      await new Promise(resolve => setTimeout(resolve, 2 + Math.floor(Math.random() * 4)));
+      await new Promise((resolve) => setTimeout(resolve, 2 + Math.floor(Math.random() * 4)));
       timings.push(Date.now() - start);
     }
 

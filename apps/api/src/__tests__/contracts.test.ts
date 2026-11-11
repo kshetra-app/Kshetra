@@ -35,9 +35,16 @@ describe('W008 API Contract Standardization & Schema Envelopes', () => {
   beforeEach(() => {
     let queriedId = 'mock-page-1';
     jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
-      const result = () => table === 'state_budget_summaries'
-        ? { data: { state_code: 'TS', fiscal_year: '2025-26', data: { totalBudget: 1000 } }, error: null }
-        : { data: { id: queriedId, handle: queriedId, is_pro: false, subscription_tier: 'free' }, error: null };
+      const result = () =>
+        table === 'state_budget_summaries'
+          ? {
+              data: { state_code: 'TS', fiscal_year: '2025-26', data: { totalBudget: 1000 } },
+              error: null,
+            }
+          : {
+              data: { id: queriedId, handle: queriedId, is_pro: false, subscription_tier: 'free' },
+              error: null,
+            };
       const chainable: any = {
         eq: (_col: string, val: any) => {
           queriedId = val;

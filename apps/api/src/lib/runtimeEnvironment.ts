@@ -6,8 +6,9 @@ import { isProductionLikeEnvironment } from '@kshetra/shared';
  * setting cannot re-enable local identity shortcuts or mock data at runtime.
  */
 export function isProductionLikeRuntime(): boolean {
-  return [process.env.EXPO_PUBLIC_APP_ENV, process.env.APP_ENV, process.env.NODE_ENV]
-    .some((candidate) => candidate !== undefined && isProductionLikeEnvironment(candidate));
+  return [process.env.EXPO_PUBLIC_APP_ENV, process.env.APP_ENV, process.env.NODE_ENV].some(
+    (candidate) => candidate !== undefined && isProductionLikeEnvironment(candidate),
+  );
 }
 
 /** A test flag must never override a staging or production deployment marker. */

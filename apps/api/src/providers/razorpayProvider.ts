@@ -298,13 +298,16 @@ export class RazorpayProvider implements PaymentProvider {
           valid: false,
           orderId: input.orderId,
           paymentId: input.paymentId,
-          reason: payment.order_id !== input.orderId
-            ? 'ORDER_MISMATCH'
-            : input.expectedAmountPaise !== undefined && payment.amount !== input.expectedAmountPaise
-              ? 'AMOUNT_MISMATCH'
-              : typeof payment.currency === 'string' && payment.currency.toUpperCase() !== expectedCurrency
-                ? 'CURRENCY_MISMATCH'
-                : 'PAYMENT_DETAILS_MISMATCH',
+          reason:
+            payment.order_id !== input.orderId
+              ? 'ORDER_MISMATCH'
+              : input.expectedAmountPaise !== undefined &&
+                  payment.amount !== input.expectedAmountPaise
+                ? 'AMOUNT_MISMATCH'
+                : typeof payment.currency === 'string' &&
+                    payment.currency.toUpperCase() !== expectedCurrency
+                  ? 'CURRENCY_MISMATCH'
+                  : 'PAYMENT_DETAILS_MISMATCH',
         };
       }
 

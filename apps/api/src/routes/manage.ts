@@ -64,7 +64,14 @@ export const manageRoutes: FastifyPluginAsync = async (app) => {
    */
   app.get('/manage', async (request, reply) => {
     if (isProductionRuntime) {
-      return sendApiError(reply, request, 503, 'Service Unavailable', 'The legacy page manager is not connected to the current authenticated admin client', { code: 'ADMIN_CLIENT_UNAVAILABLE' });
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'The legacy page manager is not connected to the current authenticated admin client',
+        { code: 'ADMIN_CLIENT_UNAVAILABLE' },
+      );
     }
     const authHeader = request.headers.authorization;
     const userIdHeader = request.headers['x-user-id'];

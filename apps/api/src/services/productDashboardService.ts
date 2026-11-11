@@ -10,7 +10,9 @@ import { isSupabaseAvailable, isUsingServiceRole, supabase } from '../lib/supaba
 
 export class ProductDashboardDataUnavailableError extends Error {
   constructor() {
-    super('Durable product analytics are unavailable. Apply the dashboard migration and verify the database connection.');
+    super(
+      'Durable product analytics are unavailable. Apply the dashboard migration and verify the database connection.',
+    );
     this.name = 'ProductDashboardDataUnavailableError';
   }
 }
@@ -64,15 +66,16 @@ export class ProductDashboardService {
       return Number.isFinite(timestamp) && timestamp <= now && timestamp >= now - 30 * day;
     });
     const actor = (event: UniversalAnalyticsEventDTO) => event.userId || event.anonymousId;
-    const distinctActors = (rows: UniversalAnalyticsEventDTO[]) =>
-      new Set(rows.map(actor)).size;
+    const distinctActors = (rows: UniversalAnalyticsEventDTO[]) => new Set(rows.map(actor)).size;
 
     const signupUsers = new Set(
       events.filter((event) => SIGNUP_EVENTS.has(event.eventName)).map(actor),
     );
     const activatedUsers = new Set(
       events
-        .filter((event) => FIRST_ACTION_EVENTS.has(event.eventName) && signupUsers.has(actor(event)))
+        .filter(
+          (event) => FIRST_ACTION_EVENTS.has(event.eventName) && signupUsers.has(actor(event)),
+        )
         .map(actor),
     );
     const totalSignups = signupUsers.size;
@@ -127,9 +130,7 @@ export class ProductDashboardService {
         geographySelectedCount,
         firstCivicActionCount: activatedUsers.size,
         activationRatePercent:
-          totalSignups > 0
-            ? Number(((activatedUsers.size / totalSignups) * 100).toFixed(2))
-            : null,
+          totalSignups > 0 ? Number(((activatedUsers.size / totalSignups) * 100).toFixed(2)) : null,
       },
       retention: {
         dau,
@@ -154,9 +155,7 @@ export class ProductDashboardService {
         totalSessions: sessionIds.size,
         avgSessionDurationSeconds: null,
         avgInteractionsPerSession:
-          sessionIds.size > 0
-            ? Number((recentEvents.length / sessionIds.size).toFixed(2))
-            : null,
+          sessionIds.size > 0 ? Number((recentEvents.length / sessionIds.size).toFixed(2)) : null,
         totalCivicInteractions: recentEvents.filter((event) =>
           CIVIC_INTERACTION_EVENTS.has(event.eventName),
         ).length,

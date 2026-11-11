@@ -38,11 +38,16 @@ function configuredRateCard(): ConfiguredRateCard | null {
   try {
     const parsed = JSON.parse(raw) as Partial<ConfiguredRateCard>;
     if (
-      typeof parsed.version !== 'string' || !parsed.version.trim() ||
-      typeof parsed.effectiveAt !== 'string' || !parsed.effectiveAt.trim() ||
-      typeof parsed.source !== 'string' || !parsed.source.trim() ||
-      !parsed.rates || typeof parsed.rates !== 'object'
-    ) return null;
+      typeof parsed.version !== 'string' ||
+      !parsed.version.trim() ||
+      typeof parsed.effectiveAt !== 'string' ||
+      !parsed.effectiveAt.trim() ||
+      typeof parsed.source !== 'string' ||
+      !parsed.source.trim() ||
+      !parsed.rates ||
+      typeof parsed.rates !== 'object'
+    )
+      return null;
     return parsed as ConfiguredRateCard;
   } catch {
     return null;
@@ -51,7 +56,11 @@ function configuredRateCard(): ConfiguredRateCard | null {
 
 function modelRate(provider: AIProviderType, model: string): ModelRate | null {
   const rate = configuredRateCard()?.rates[`${provider}:${model}`];
-  if (!rate || !Number.isFinite(rate.promptUsdPerMillionTokens) || !Number.isFinite(rate.completionUsdPerMillionTokens)) {
+  if (
+    !rate ||
+    !Number.isFinite(rate.promptUsdPerMillionTokens) ||
+    !Number.isFinite(rate.completionUsdPerMillionTokens)
+  ) {
     return null;
   }
   if (rate.promptUsdPerMillionTokens < 0 || rate.completionUsdPerMillionTokens < 0) return null;
@@ -69,20 +78,29 @@ function reportedOrEstimatedUsage(
   messages: AICompletionRequest['messages'],
   content: string,
 ) {
-  const reported = Number.isFinite(reportedPromptTokens) && Number.isFinite(reportedCompletionTokens);
+  const reported =
+    Number.isFinite(reportedPromptTokens) && Number.isFinite(reportedCompletionTokens);
   const promptTokens = reported
     ? Number(reportedPromptTokens)
     : Math.ceil(messages.reduce((acc, message) => acc + message.content.length, 0) / 4);
-  const completionTokens = reported ? Number(reportedCompletionTokens) : Math.ceil(content.length / 4);
+  const completionTokens = reported
+    ? Number(reportedCompletionTokens)
+    : Math.ceil(content.length / 4);
   return {
     promptTokens,
     completionTokens,
     totalTokens: promptTokens + completionTokens,
-    usageBasis: reported ? 'provider_reported' as const : 'estimated' as const,
+    usageBasis: reported ? ('provider_reported' as const) : ('estimated' as const),
   };
 }
 
-function configuredCosts(provider: AIProviderType, model: string, promptTokens: number, completionTokens: number, usageBasis: 'provider_reported' | 'estimated') {
+function configuredCosts(
+  provider: AIProviderType,
+  model: string,
+  promptTokens: number,
+  completionTokens: number,
+  usageBasis: 'provider_reported' | 'estimated',
+) {
   const card = configuredRateCard();
   const rate = modelRate(provider, model);
   if (!card || !rate || usageBasis !== 'provider_reported') {
@@ -95,9 +113,13 @@ function configuredCosts(provider: AIProviderType, model: string, promptTokens: 
     };
   }
 
-  const costUsd = Number((
-    (promptTokens * rate.promptUsdPerMillionTokens + completionTokens * rate.completionUsdPerMillionTokens) / 1_000_000
-  ).toFixed(6));
+  const costUsd = Number(
+    (
+      (promptTokens * rate.promptUsdPerMillionTokens +
+        completionTokens * rate.completionUsdPerMillionTokens) /
+      1_000_000
+    ).toFixed(6),
+  );
   const fxRate = Number(process.env.AI_USD_TO_INR_RATE);
   const costInr = hasConfiguredUsdInrRate() ? Number((costUsd * fxRate).toFixed(4)) : null;
   const fxSource = process.env.AI_USD_TO_INR_RATE_SOURCE?.trim();
@@ -106,7 +128,8 @@ function configuredCosts(provider: AIProviderType, model: string, promptTokens: 
     costInr,
     costBasis: 'provider_rate_card' as const,
     costRateCardVersion: card.version,
-    costRateCardSource: costInr === null ? card.source : `${card.source}; INR conversion: ${fxSource}`,
+    costRateCardSource:
+      costInr === null ? card.source : `${card.source}; INR conversion: ${fxSource}`,
   };
 }
 
@@ -114,7 +137,10 @@ export class AIProviderUnavailableError extends Error {
   readonly code = 'AI_PROVIDER_UNAVAILABLE';
   readonly attemptedProviders: string[];
 
-  constructor(message = 'No configured AI provider is available for this runtime.', attemptedProviders: string[] = []) {
+  constructor(
+    message = 'No configured AI provider is available for this runtime.',
+    attemptedProviders: string[] = [],
+  ) {
     super(message);
     this.name = 'AIProviderUnavailableError';
     this.attemptedProviders = attemptedProviders;
@@ -151,7 +177,9 @@ export class GeminiAIProvider implements IAIProvider {
 
   public async generateCompletion(req: AICompletionRequest): Promise<AICompletionResponse> {
     if (!this.client || !modelRate(this.name, this.model)) {
-      throw new AIProviderUnavailableError('Gemini requires credentials and a sourced rate-card entry for the selected model.');
+      throw new AIProviderUnavailableError(
+        'Gemini requires credentials and a sourced rate-card entry for the selected model.',
+      );
     }
 
     const startTime = Date.now();
@@ -175,13 +203,23 @@ export class GeminiAIProvider implements IAIProvider {
       req.messages,
       content,
     );
-    const costs = configuredCosts(this.name, this.model, usage.promptTokens, usage.completionTokens, usage.usageBasis);
+    const costs = configuredCosts(
+      this.name,
+      this.model,
+      usage.promptTokens,
+      usage.completionTokens,
+      usage.usageBasis,
+    );
 
     return {
       content,
       provider: 'gemini',
       model: this.model,
-      usage: { promptTokens: usage.promptTokens, completionTokens: usage.completionTokens, totalTokens: usage.totalTokens },
+      usage: {
+        promptTokens: usage.promptTokens,
+        completionTokens: usage.completionTokens,
+        totalTokens: usage.totalTokens,
+      },
       usageBasis: usage.usageBasis,
       ...costs,
       latencyMs,
@@ -217,7 +255,9 @@ export class OpenAIProvider implements IAIProvider {
 
   public async generateCompletion(req: AICompletionRequest): Promise<AICompletionResponse> {
     if (!this.client || !modelRate(this.name, this.model)) {
-      throw new AIProviderUnavailableError('OpenAI requires credentials and a sourced rate-card entry for the selected model.');
+      throw new AIProviderUnavailableError(
+        'OpenAI requires credentials and a sourced rate-card entry for the selected model.',
+      );
     }
 
     const startTime = Date.now();
@@ -241,13 +281,23 @@ export class OpenAIProvider implements IAIProvider {
       req.messages,
       content,
     );
-    const costs = configuredCosts(this.name, this.model, usage.promptTokens, usage.completionTokens, usage.usageBasis);
+    const costs = configuredCosts(
+      this.name,
+      this.model,
+      usage.promptTokens,
+      usage.completionTokens,
+      usage.usageBasis,
+    );
 
     return {
       content,
       provider: 'openai',
       model: this.model,
-      usage: { promptTokens: usage.promptTokens, completionTokens: usage.completionTokens, totalTokens: usage.totalTokens },
+      usage: {
+        promptTokens: usage.promptTokens,
+        completionTokens: usage.completionTokens,
+        totalTokens: usage.totalTokens,
+      },
       usageBasis: usage.usageBasis,
       ...costs,
       latencyMs,
@@ -282,7 +332,9 @@ export class CustomLLMProvider implements IAIProvider {
 
   public async generateCompletion(req: AICompletionRequest): Promise<AICompletionResponse> {
     if (!this.baseUrl || !modelRate(this.name, this.model)) {
-      throw new AIProviderUnavailableError('Custom LLM requires a base URL and a sourced rate-card entry for the selected model.');
+      throw new AIProviderUnavailableError(
+        'Custom LLM requires a base URL and a sourced rate-card entry for the selected model.',
+      );
     }
 
     const startTime = Date.now();
@@ -294,9 +346,10 @@ export class CustomLLMProvider implements IAIProvider {
       'Content-Type': 'application/json',
     };
     if (this.apiKey) {
-      headers[this.headerName] = this.headerName.toLowerCase() === 'authorization' && !this.apiKey.startsWith('Bearer ')
-        ? `Bearer ${this.apiKey}`
-        : this.apiKey;
+      headers[this.headerName] =
+        this.headerName.toLowerCase() === 'authorization' && !this.apiKey.startsWith('Bearer ')
+          ? `Bearer ${this.apiKey}`
+          : this.apiKey;
     }
 
     const body = {
@@ -331,13 +384,23 @@ export class CustomLLMProvider implements IAIProvider {
       req.messages,
       content,
     );
-    const costs = configuredCosts(this.name, this.model, usage.promptTokens, usage.completionTokens, usage.usageBasis);
+    const costs = configuredCosts(
+      this.name,
+      this.model,
+      usage.promptTokens,
+      usage.completionTokens,
+      usage.usageBasis,
+    );
 
     return {
       content,
       provider: 'custom',
       model: this.model,
-      usage: { promptTokens: usage.promptTokens, completionTokens: usage.completionTokens, totalTokens: usage.totalTokens },
+      usage: {
+        promptTokens: usage.promptTokens,
+        completionTokens: usage.completionTokens,
+        totalTokens: usage.totalTokens,
+      },
       usageBasis: usage.usageBasis,
       ...costs,
       latencyMs,
@@ -357,7 +420,9 @@ export class DeterministicOfflineAIProvider implements IAIProvider {
 
   public async generateCompletion(req: AICompletionRequest): Promise<AICompletionResponse> {
     if (isProductionLikeRuntime()) {
-      throw new AIProviderUnavailableError('The deterministic AI demo provider is disabled in deployed runtimes.');
+      throw new AIProviderUnavailableError(
+        'The deterministic AI demo provider is disabled in deployed runtimes.',
+      );
     }
 
     const startTime = Date.now();
@@ -368,22 +433,25 @@ export class DeterministicOfflineAIProvider implements IAIProvider {
 
     // Handle JSON format requests deterministically
     if (req.responseFormat === 'json' || systemMessage.toLowerCase().includes('json')) {
-      if (userMessage.toLowerCase().includes('summarize') || systemMessage.toLowerCase().includes('summary')) {
+      if (
+        userMessage.toLowerCase().includes('summarize') ||
+        systemMessage.toLowerCase().includes('summary')
+      ) {
         content = JSON.stringify({
           bullets: [
             'Official legislative notification published under public gazette records.',
             'Constituency representatives reviewed territorial allocations and civic priorities.',
-            'Statutory implementation scheduled under standard municipal administrative guidelines.'
+            'Statutory implementation scheduled under standard municipal administrative guidelines.',
           ],
           sentiment: 'neutral',
-          entities: ['Election Commission', 'District Administration']
+          entities: ['Election Commission', 'District Administration'],
         });
       } else {
         content = JSON.stringify({
           status: 'success',
           classification: 'civic_administrative',
-          confidence: 0.90,
-          provider: 'offline_heuristic'
+          confidence: 0.9,
+          provider: 'offline_heuristic',
         });
       }
     } else {
@@ -394,8 +462,10 @@ export class DeterministicOfflineAIProvider implements IAIProvider {
         .filter((s) => s.length > 10);
 
       const bullet1 = lines[0] || 'Official civic documentation processed under verified records.';
-      const bullet2 = lines[1] || 'Public administration proceedings follow statutory territorial guidelines.';
-      const bullet3 = lines[2] || 'Citizens can track updates through verified local constituency registers.';
+      const bullet2 =
+        lines[1] || 'Public administration proceedings follow statutory territorial guidelines.';
+      const bullet3 =
+        lines[2] || 'Citizens can track updates through verified local constituency registers.';
 
       content = `• ${bullet1}\n• ${bullet2}\n• ${bullet3}`;
     }
@@ -477,7 +547,8 @@ export class AIProviderRegistry {
     }
     // Keep deterministic demo output available only in development and isolated tests.
     if (!isProductionLikeRuntime() && !chain.some((p) => p.name === 'offline_heuristic')) {
-      const offline = this.providers.get('offline_heuristic') || new DeterministicOfflineAIProvider();
+      const offline =
+        this.providers.get('offline_heuristic') || new DeterministicOfflineAIProvider();
       chain.push(offline);
     }
     return chain;

@@ -66,7 +66,8 @@ export class TelecomProvider implements VoiceObdProvider {
     if (params.targetSegment.voterCount !== 1 || recipients.length !== 1) {
       return {
         success: false,
-        error: 'SINGLE_RECIPIENT_REQUIRED: This provider operation can dispatch exactly one explicit recipient.',
+        error:
+          'SINGLE_RECIPIENT_REQUIRED: This provider operation can dispatch exactly one explicit recipient.',
       };
     }
 
@@ -74,7 +75,8 @@ export class TelecomProvider implements VoiceObdProvider {
     if (!/^\+?\d{10,15}$/.test(sampleRecipient)) {
       return {
         success: false,
-        error: 'INVALID_RECIPIENT: Provide one valid phone number in international or local digits format.',
+        error:
+          'INVALID_RECIPIENT: Provide one valid phone number in international or local digits format.',
       };
     }
 

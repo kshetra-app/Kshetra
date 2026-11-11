@@ -83,7 +83,8 @@ export function buildConstituencyContext(acNo?: number, stateCode = 'TS'): strin
       if (mla.age) ctx += `, Age: ${mla.age}`;
     }
 
-    ctx += '\nDemographics: No provenance-backed constituency demographic records are connected to this context.';
+    ctx +=
+      '\nDemographics: No provenance-backed constituency demographic records are connected to this context.';
 
     // Political timeline events for this AC
     const timeline = getConstituencyTimeline(c.acNo);
@@ -104,7 +105,8 @@ export function buildConstituencyContext(acNo?: number, stateCode = 'TS'): strin
   let ctx = `\n\n=== CONSTITUENCY CONTEXT: AC #${c.acNo} ${c.name} (${code}) ===`;
   ctx += `\nDistrict: ${c.district || 'Unassigned'} | Reservation: ${c.reservationStatus}`;
   ctx += `\nCurrent MLA: ${c.currentMLA || 'Not Recorded'} (${c.currentParty || 'Unspecified'})`;
-  ctx += '\nDemographics: No provenance-backed constituency demographic records are connected to this context.';
+  ctx +=
+    '\nDemographics: No provenance-backed constituency demographic records are connected to this context.';
 
   const elecData = getConstituencyElectionData(code, acNo);
   if (elecData?.recentElection) {
@@ -130,14 +132,16 @@ export function buildConstituencyContext(acNo?: number, stateCode = 'TS'): strin
 
 /** Build election history context */
 function buildHistoryContext(): string {
-  return getTSElectionHistory().map((e) => {
-    const topParties = e.partyResults
-      .sort((a, b) => b.seatsWon - a.seatsWon)
-      .slice(0, 4)
-      .map((p) => `${p.party}: ${p.seatsWon} seats`)
-      .join(', ');
-    return `${e.year}: ${topParties} | Turnout: ${e.turnout}%`;
-  }).join('\n');
+  return getTSElectionHistory()
+    .map((e) => {
+      const topParties = e.partyResults
+        .sort((a, b) => b.seatsWon - a.seatsWon)
+        .slice(0, 4)
+        .map((p) => `${p.party}: ${p.seatsWon} seats`)
+        .join(', ');
+      return `${e.year}: ${topParties} | Turnout: ${e.turnout}%`;
+    })
+    .join('\n');
 }
 
 export interface ChatMessage {
@@ -156,11 +160,15 @@ export interface AIChatOptions {
 }
 
 /** Build provider-independent system context for a chat request. */
-export function buildAIContextualPrompt(options: Pick<AIChatOptions, 'constituencyAcNo' | 'stateCode'>): string {
+export function buildAIContextualPrompt(
+  options: Pick<AIChatOptions, 'constituencyAcNo' | 'stateCode'>,
+): string {
   return (
     SYSTEM_PROMPT +
     buildConstituencyContext(options.constituencyAcNo, options.stateCode) +
-    (options.stateCode?.toUpperCase() === 'TS' ? '\n\nElection History:\n' + buildHistoryContext() : '')
+    (options.stateCode?.toUpperCase() === 'TS'
+      ? '\n\nElection History:\n' + buildHistoryContext()
+      : '')
   );
 }
 
@@ -273,7 +281,10 @@ export async function smartSearch(
       operation: 'smart_search',
     });
 
-    const cleaned = response.content.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
+    const cleaned = response.content
+      .replace(/```json?\n?/g, '')
+      .replace(/```/g, '')
+      .trim();
     const parsed = JSON.parse(cleaned);
     if (Array.isArray(parsed) && parsed.length > 0) {
       return parsed;
@@ -285,11 +296,12 @@ export async function smartSearch(
   // Offline deterministic fallback
   const qLower = query.toLowerCase();
   const matches = constituencies
-    .filter((c) =>
-      c.name.toLowerCase().includes(qLower) ||
-      c.district?.toLowerCase().includes(qLower) ||
-      c.currentMLA?.toLowerCase().includes(qLower) ||
-      c.currentParty?.toLowerCase().includes(qLower),
+    .filter(
+      (c) =>
+        c.name.toLowerCase().includes(qLower) ||
+        c.district?.toLowerCase().includes(qLower) ||
+        c.currentMLA?.toLowerCase().includes(qLower) ||
+        c.currentParty?.toLowerCase().includes(qLower),
     )
     .slice(0, 5)
     .map((c) => ({

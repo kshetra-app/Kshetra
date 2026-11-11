@@ -3,7 +3,13 @@ import { AICostControlService } from '../services/aiCostControlService';
 import { defaultAIRegistry } from '../services/aiProvider';
 
 describe('Ask POLIGRAM source disclosure', () => {
-  const envKeys = ['APP_ENV', 'EXPO_PUBLIC_APP_ENV', 'GEMINI_API_KEY', 'OPENAI_API_KEY', 'AI_PROVIDER_RATE_CARD_JSON'];
+  const envKeys = [
+    'APP_ENV',
+    'EXPO_PUBLIC_APP_ENV',
+    'GEMINI_API_KEY',
+    'OPENAI_API_KEY',
+    'AI_PROVIDER_RATE_CARD_JSON',
+  ];
   const originalEnv = Object.fromEntries(envKeys.map((key) => [key, process.env[key]]));
 
   beforeEach(() => {
@@ -34,7 +40,9 @@ describe('Ask POLIGRAM source disclosure', () => {
     });
 
     expect(response.groundingStatus).toBe('reference_data_unverified');
-    expect(response.groundedContextSummary).toContain('per-record source and date verification is not attached');
+    expect(response.groundedContextSummary).toContain(
+      'per-record source and date verification is not attached',
+    );
     expect(response.citations).toEqual([]);
   });
 

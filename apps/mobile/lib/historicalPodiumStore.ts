@@ -37,6 +37,10 @@ export interface HistoricalPodiumContest {
   secondRunnerUp: CandidatePodiumDetail | null;
 }
 
+function containsNonAsciiCharacters(value: string): boolean {
+  return Array.from(value).some((character) => character.codePointAt(0)! > 0x7f);
+}
+
 import { API_BASE_URL } from './constants';
 import { stripHonorifics, getCanonicalCandidateName } from './candidatePhotos';
 
@@ -607,7 +611,7 @@ export function getLocalizedCandidateName(
 
   if (typeof candidateOrName === 'object' && candidateOrName.localizedNames) {
     const loc = candidateOrName.localizedNames[lang];
-    if (loc && !/^[\x00-\x7F]*$/.test(loc)) {
+    if (loc && containsNonAsciiCharacters(loc)) {
       return loc;
     }
   }

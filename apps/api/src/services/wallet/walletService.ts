@@ -1,7 +1,9 @@
 import { isProductionLikeRuntime } from '../../lib/runtimeEnvironment';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 
-function isProductionRuntime(): boolean { return isProductionLikeRuntime(); }
+function isProductionRuntime(): boolean {
+  return isProductionLikeRuntime();
+}
 
 function mapWalletRow(data: any): CampaignWallet {
   return {
@@ -114,7 +116,9 @@ export async function getPoliticianWallet(politicianId: string): Promise<Campaig
           .single();
 
         if (createError || !created) {
-          throw new Error(`WALLET_INITIALIZATION_FAILED: ${createError?.message || 'No wallet row returned'}`);
+          throw new Error(
+            `WALLET_INITIALIZATION_FAILED: ${createError?.message || 'No wallet row returned'}`,
+          );
         }
         return mapWalletRow(created);
       }

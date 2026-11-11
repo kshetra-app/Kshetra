@@ -36,24 +36,72 @@ export const LANG_TO_SCRIPT: Record<string, string> = {
 
 // ── Deterministic Latin to Devanagari Base Syllables ──────────────────────────
 const CONSONANT_MAP: Record<string, string> = {
-  k: 'क', kh: 'ख', g: 'ग', gh: 'घ', ng: 'ङ',
-  ch: 'च', chh: 'छ', j: 'ज', jh: 'झ', ny: 'ञ',
-  t: 'ट', th: 'ठ', d: 'ड', dh: 'ढ', n: 'ण',
-  ta: 'त', tha: 'थ', da: 'द', dha: 'ध', na: 'न',
-  p: 'प', ph: 'फ', f: 'फ़', b: 'ब', bh: 'भ', m: 'म',
-  y: 'य', r: 'र', l: 'ल', v: 'व', w: 'व',
-  sh: 'श', shh: 'ष', s: 'स', h: 'ह',
-  ksh: 'क्ष', tr: 'त्र', gy: 'ज्ञ',
+  k: 'क',
+  kh: 'ख',
+  g: 'ग',
+  gh: 'घ',
+  ng: 'ङ',
+  ch: 'च',
+  chh: 'छ',
+  j: 'ज',
+  jh: 'झ',
+  ny: 'ञ',
+  t: 'ट',
+  th: 'ठ',
+  d: 'ड',
+  dh: 'ढ',
+  n: 'ण',
+  ta: 'त',
+  tha: 'थ',
+  da: 'द',
+  dha: 'ध',
+  na: 'न',
+  p: 'प',
+  ph: 'फ',
+  f: 'फ़',
+  b: 'ब',
+  bh: 'भ',
+  m: 'म',
+  y: 'य',
+  r: 'र',
+  l: 'ल',
+  v: 'व',
+  w: 'व',
+  sh: 'श',
+  shh: 'ष',
+  s: 'स',
+  h: 'ह',
+  ksh: 'क्ष',
+  tr: 'त्र',
+  gy: 'ज्ञ',
 };
 
 const VOWEL_MATRA_MAP: Record<string, string> = {
-  aa: 'ा', a: '', i: 'ि', ee: 'ी', u: 'ु', oo: 'ू',
-  e: 'े', ai: 'ै', o: 'ो', au: 'ौ', an: 'ं', ah: 'ः',
+  aa: 'ा',
+  a: '',
+  i: 'ि',
+  ee: 'ी',
+  u: 'ु',
+  oo: 'ू',
+  e: 'े',
+  ai: 'ै',
+  o: 'ो',
+  au: 'ौ',
+  an: 'ं',
+  ah: 'ः',
 };
 
 const INDEPENDENT_VOWELS: Record<string, string> = {
-  a: 'अ', aa: 'आ', i: 'इ', ee: 'ई', u: 'उ', oo: 'ऊ',
-  e: 'ए', ai: 'ऐ', o: 'ओ', au: 'औ',
+  a: 'अ',
+  aa: 'आ',
+  i: 'इ',
+  ee: 'ई',
+  u: 'उ',
+  oo: 'ऊ',
+  e: 'ए',
+  ai: 'ऐ',
+  o: 'ओ',
+  au: 'औ',
 };
 
 /** Convert a string from one Indic script to another using Unicode relative offset */
@@ -146,7 +194,7 @@ export function latinToDevanagari(englishWord: string): string {
 /** Transliterate text from any language/script to all 13 supported languages */
 export function transliterateToAll13(
   sourceText: string,
-  sourceLang: string = 'en'
+  sourceLang: string = 'en',
 ): Record<string, string> {
   const result: Record<string, string> = {};
   if (!sourceText) return result;

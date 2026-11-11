@@ -30,10 +30,7 @@ const budgetSchema = {
         stateCode: { type: 'string' },
         message: { type: 'string' },
         budget: {
-          anyOf: [
-            { type: 'object', additionalProperties: true },
-            { type: 'null' },
-          ],
+          anyOf: [{ type: 'object', additionalProperties: true }, { type: 'null' }],
         },
       },
       required: ['stateCode', 'message'],
@@ -639,7 +636,20 @@ const createGroupSchema = {
     properties: {
       name: { type: 'string', minLength: 3, maxLength: 100 },
       constituencyId: { type: 'string', minLength: 1 },
-      category: { type: 'string', enum: ['sanitation', 'roads', 'water', 'electricity', 'education', 'environment', 'public_safety', 'healthcare', 'general'] },
+      category: {
+        type: 'string',
+        enum: [
+          'sanitation',
+          'roads',
+          'water',
+          'electricity',
+          'education',
+          'environment',
+          'public_safety',
+          'healthcare',
+          'general',
+        ],
+      },
       description: { type: 'string', maxLength: 500 },
       mandal: { type: 'string', maxLength: 100 },
       ward: { type: 'string', maxLength: 100 },
@@ -762,9 +772,16 @@ export async function civicRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { stateCode } = request.params;
       if (!isSupabaseConfigured) {
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'State budget data is unavailable because storage is not configured.', {
-          code: 'DATABASE_UNAVAILABLE',
-        });
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'State budget data is unavailable because storage is not configured.',
+          {
+            code: 'DATABASE_UNAVAILABLE',
+          },
+        );
       }
 
       try {
@@ -777,22 +794,44 @@ export async function civicRoutes(app: FastifyInstance) {
           .maybeSingle();
 
         if (error) {
-          request.log.error({ err: error.message, stateCode }, 'Failed to load state budget summary');
-          return sendApiError(reply, request, 503, 'Service Unavailable', 'State budget data could not be loaded from storage.', {
-            code: 'DATABASE_ERROR',
-          });
+          request.log.error(
+            { err: error.message, stateCode },
+            'Failed to load state budget summary',
+          );
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'State budget data could not be loaded from storage.',
+            {
+              code: 'DATABASE_ERROR',
+            },
+          );
         }
 
         return {
           stateCode,
-          message: data ? 'Budget summary loaded from stored records.' : 'No state budget record is available yet.',
+          message: data
+            ? 'Budget summary loaded from stored records.'
+            : 'No state budget record is available yet.',
           budget: data ?? null,
         };
       } catch (error: any) {
-        request.log.error({ err: error?.message, stateCode }, 'Exception loading state budget summary');
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'State budget data could not be loaded from storage.', {
-          code: 'DATABASE_ERROR',
-        });
+        request.log.error(
+          { err: error?.message, stateCode },
+          'Exception loading state budget summary',
+        );
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'State budget data could not be loaded from storage.',
+          {
+            code: 'DATABASE_ERROR',
+          },
+        );
       }
     },
   );
@@ -1031,7 +1070,10 @@ export async function civicRoutes(app: FastifyInstance) {
         }
       }
       if (!isProductionRuntime() && projectsList.length === 0) {
-        projectsList = await civicService.getProjects({ constituencyId: constituency, stateCode: state });
+        projectsList = await civicService.getProjects({
+          constituencyId: constituency,
+          stateCode: state,
+        });
       }
       return {
         projects: projectsList,
@@ -1291,7 +1333,11 @@ export async function civicRoutes(app: FastifyInstance) {
         if (count !== null && count !== undefined) upvoteCount = count;
 
         if (upvoteCount >= 500) {
-          const { data: issueData } = await supabase.from('civic_issues').select('*').eq('id', id).maybeSingle();
+          const { data: issueData } = await supabase
+            .from('civic_issues')
+            .select('*')
+            .eq('id', id)
+            .maybeSingle();
           if (issueData) {
             await supabase.from('headlines').upsert({
               id: `hl_auto_${id}`,
@@ -1485,7 +1531,11 @@ export async function civicRoutes(app: FastifyInstance) {
           lat: body.latitude,
           lng: body.longitude,
         });
-        if (locateResult.constituency && body.constituencyId && locateResult.constituency.id !== body.constituencyId) {
+        if (
+          locateResult.constituency &&
+          body.constituencyId &&
+          locateResult.constituency.id !== body.constituencyId
+        ) {
           return sendApiError(
             reply,
             request,
@@ -1609,7 +1659,12 @@ export async function civicRoutes(app: FastifyInstance) {
 
       // Lifecycle State Machine validation
       try {
-        civicService.validateStatusTransition(issue.status as any, status as any, auth.role, isAuthor);
+        civicService.validateStatusTransition(
+          issue.status as any,
+          status as any,
+          auth.role,
+          isAuthor,
+        );
       } catch (err: any) {
         return sendApiError(reply, request, 400, 'Bad Request', err.message, {
           code: err.code || 'INVALID_STATUS_TRANSITION',
@@ -1892,23 +1947,52 @@ export async function civicRoutes(app: FastifyInstance) {
           if (error) {
             if (isProductionRuntime()) {
               request.log.error({ err: error.message }, 'Failed to load civic issues');
-              return sendApiError(reply, request, 503, 'Service Unavailable', 'Civic issue data is currently unavailable', { code: 'DATABASE_ERROR' });
+              return sendApiError(
+                reply,
+                request,
+                503,
+                'Service Unavailable',
+                'Civic issue data is currently unavailable',
+                { code: 'DATABASE_ERROR' },
+              );
             }
-            request.log.warn({ err: error.message }, 'Civic issue query failed; using isolated nonproduction store');
+            request.log.warn(
+              { err: error.message },
+              'Civic issue query failed; using isolated nonproduction store',
+            );
           } else {
             return { issues: data ?? [], total: data?.length ?? 0 };
           }
         } catch (error: any) {
           if (isProductionRuntime()) {
             request.log.error({ err: error?.message }, 'Exception loading civic issues');
-            return sendApiError(reply, request, 503, 'Service Unavailable', 'Civic issue data is currently unavailable', { code: 'DATABASE_ERROR' });
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Civic issue data is currently unavailable',
+              { code: 'DATABASE_ERROR' },
+            );
           }
         }
       }
       if (isProductionRuntime()) {
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Civic issue storage is not configured', { code: 'DATABASE_UNAVAILABLE' });
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Civic issue storage is not configured',
+          { code: 'DATABASE_UNAVAILABLE' },
+        );
       }
-      const issuesList = await civicService.listIssues({ constituencyId, stateCode, category, status });
+      const issuesList = await civicService.listIssues({
+        constituencyId,
+        stateCode,
+        category,
+        status,
+      });
       return { issues: issuesList, total: issuesList.length };
     },
   );
@@ -1945,9 +2029,16 @@ export async function civicRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const auth = await resolveAuthUser(request);
       if (!auth) {
-        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to add evidence', {
-          code: 'UNAUTHORIZED',
-        });
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to add evidence',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
       }
       if (!isSupabaseConfigured) {
         return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
@@ -1960,7 +2051,10 @@ export async function civicRoutes(app: FastifyInstance) {
         const evidence = await civicService.addEvidence(
           id,
           { mediaUrl, caption },
-          { userId: auth.userId, userName: (request.headers['x-user-name'] as string) || 'Citizen Reporter' },
+          {
+            userId: auth.userId,
+            userName: (request.headers['x-user-name'] as string) || 'Citizen Reporter',
+          },
         );
         return {
           success: true,
@@ -2057,7 +2151,14 @@ export async function civicRoutes(app: FastifyInstance) {
       const { constituencyId } = request.query;
       if (!isSupabaseConfigured) {
         if (isProductionRuntime()) {
-          return sendApiError(reply, request, 503, 'Service Unavailable', 'Community group storage is not configured', { code: 'DATABASE_UNAVAILABLE' });
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Community group storage is not configured',
+            { code: 'DATABASE_UNAVAILABLE' },
+          );
         }
         const groupsList = await civicService.listGroups(constituencyId, request.query);
         return { groups: groupsList, total: groupsList.length };
@@ -2075,9 +2176,19 @@ export async function civicRoutes(app: FastifyInstance) {
         if (error) {
           if (isProductionRuntime()) {
             request.log.error({ err: error.message }, 'Failed to load community groups');
-            return sendApiError(reply, request, 503, 'Service Unavailable', 'Community group data is currently unavailable', { code: 'DATABASE_ERROR' });
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Community group data is currently unavailable',
+              { code: 'DATABASE_ERROR' },
+            );
           }
-          request.log.warn({ err: error.message }, 'Community group query failed; using isolated nonproduction store');
+          request.log.warn(
+            { err: error.message },
+            'Community group query failed; using isolated nonproduction store',
+          );
           const groupsList = await civicService.listGroups(constituencyId, request.query);
           return { groups: groupsList, total: groupsList.length };
         }
@@ -2086,7 +2197,14 @@ export async function civicRoutes(app: FastifyInstance) {
       } catch (error: any) {
         if (isProductionRuntime()) {
           request.log.error({ err: error?.message }, 'Exception loading community groups');
-          return sendApiError(reply, request, 503, 'Service Unavailable', 'Community group data is currently unavailable', { code: 'DATABASE_ERROR' });
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Community group data is currently unavailable',
+            { code: 'DATABASE_ERROR' },
+          );
         }
         const groupsList = await civicService.listGroups(constituencyId, request.query);
         return { groups: groupsList, total: groupsList.length };
@@ -2096,7 +2214,14 @@ export async function civicRoutes(app: FastifyInstance) {
 
   /** 27. POST /api/v1/civic/groups — create community working group */
   app.post<{
-    Body: { name: string; constituencyId: string; category: string; description?: string; mandal?: string; ward?: string };
+    Body: {
+      name: string;
+      constituencyId: string;
+      category: string;
+      description?: string;
+      mandal?: string;
+      ward?: string;
+    };
   }>(
     '/api/v1/civic/groups',
     {
@@ -2105,9 +2230,16 @@ export async function civicRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const auth = await resolveAuthUser(request);
       if (!auth) {
-        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to create community group', {
-          code: 'UNAUTHORIZED',
-        });
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to create community group',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
       }
       if (!isSupabaseConfigured) {
         return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
@@ -2118,10 +2250,22 @@ export async function civicRoutes(app: FastifyInstance) {
         const group = await civicService.createGroup(request.body, auth.userId);
         return { success: true, group };
       } catch (err: any) {
-        const statusCode = Number(err.statusCode) || (err.code === 'COMMUNITY_GROUP_SLUG_CONFLICT' ? 409 : 400);
-        return sendApiError(reply, request, statusCode, statusCode === 503 ? 'Service Unavailable' : statusCode === 409 ? 'Conflict' : 'Bad Request', err.message, {
-          code: err.code || 'BAD_REQUEST',
-        });
+        const statusCode =
+          Number(err.statusCode) || (err.code === 'COMMUNITY_GROUP_SLUG_CONFLICT' ? 409 : 400);
+        return sendApiError(
+          reply,
+          request,
+          statusCode,
+          statusCode === 503
+            ? 'Service Unavailable'
+            : statusCode === 409
+              ? 'Conflict'
+              : 'Bad Request',
+          err.message,
+          {
+            code: err.code || 'BAD_REQUEST',
+          },
+        );
       }
     },
   );
@@ -2137,9 +2281,16 @@ export async function civicRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const auth = await resolveAuthUser(request);
       if (!auth) {
-        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to join group', {
-          code: 'UNAUTHORIZED',
-        });
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to join group',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
       }
       if (!isSupabaseConfigured) {
         return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
@@ -2149,12 +2300,30 @@ export async function civicRoutes(app: FastifyInstance) {
       const { id } = request.params;
       try {
         const result = await civicService.joinGroup(id, auth.userId);
-        return { success: true, groupId: id, memberCount: result.memberCount, message: 'Joined community group' };
+        return {
+          success: true,
+          groupId: id,
+          memberCount: result.memberCount,
+          message: 'Joined community group',
+        };
       } catch (err: any) {
         const statusCode = Number(err.statusCode) || 400;
-        return sendApiError(reply, request, statusCode, statusCode === 503 ? 'Service Unavailable' : statusCode === 409 ? 'Conflict' : statusCode === 404 ? 'Not Found' : 'Bad Request', err.message, {
-          code: err.code || 'BAD_REQUEST',
-        });
+        return sendApiError(
+          reply,
+          request,
+          statusCode,
+          statusCode === 503
+            ? 'Service Unavailable'
+            : statusCode === 409
+              ? 'Conflict'
+              : statusCode === 404
+                ? 'Not Found'
+                : 'Bad Request',
+          err.message,
+          {
+            code: err.code || 'BAD_REQUEST',
+          },
+        );
       }
     },
   );
@@ -2170,9 +2339,16 @@ export async function civicRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const auth = await resolveAuthUser(request);
       if (!auth) {
-        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required to leave group', {
-          code: 'UNAUTHORIZED',
-        });
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Authentication required to leave group',
+          {
+            code: 'UNAUTHORIZED',
+          },
+        );
       }
       if (!isSupabaseConfigured) {
         return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable', {
@@ -2182,12 +2358,30 @@ export async function civicRoutes(app: FastifyInstance) {
       const { id } = request.params;
       try {
         const result = await civicService.leaveGroup(id, auth.userId);
-        return { success: true, groupId: id, memberCount: result.memberCount, message: 'Left community group' };
+        return {
+          success: true,
+          groupId: id,
+          memberCount: result.memberCount,
+          message: 'Left community group',
+        };
       } catch (err: any) {
         const statusCode = Number(err.statusCode) || 400;
-        return sendApiError(reply, request, statusCode, statusCode === 503 ? 'Service Unavailable' : statusCode === 409 ? 'Conflict' : statusCode === 404 ? 'Not Found' : 'Bad Request', err.message, {
-          code: err.code || 'BAD_REQUEST',
-        });
+        return sendApiError(
+          reply,
+          request,
+          statusCode,
+          statusCode === 503
+            ? 'Service Unavailable'
+            : statusCode === 409
+              ? 'Conflict'
+              : statusCode === 404
+                ? 'Not Found'
+                : 'Bad Request',
+          err.message,
+          {
+            code: err.code || 'BAD_REQUEST',
+          },
+        );
       }
     },
   );

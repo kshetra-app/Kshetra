@@ -3,24 +3,24 @@ import { STATES } from '@kshetra/shared';
 import { getConstituencies, getConstituencyElectionData } from '../services/stateData';
 import { sendApiError } from '../lib/replyHelper';
 import { renderStudioHtml } from '../modules/broadcast/studioHtml';
-import { 
-  broadcastManagementService, 
-  InvalidStateTransitionError 
+import {
+  broadcastManagementService,
+  InvalidStateTransitionError,
 } from '../services/broadcastManagementService';
-import { 
-  broadcastInteractivityService, 
-  DuplicateVoteError, 
-  PollClosedError, 
-  ContentModerationError 
+import {
+  broadcastInteractivityService,
+  DuplicateVoteError,
+  PollClosedError,
+  ContentModerationError,
 } from '../services/broadcastInteractivityService';
-import type { 
-  CreateChannelRequest, 
-  CreateStreamRequest, 
-  StreamStatus, 
-  CreatePollRequest, 
-  CastVoteRequest, 
-  SubmitQuestionRequest, 
-  ModerateQuestionRequest 
+import type {
+  CreateChannelRequest,
+  CreateStreamRequest,
+  StreamStatus,
+  CreatePollRequest,
+  CastVoteRequest,
+  SubmitQuestionRequest,
+  ModerateQuestionRequest,
 } from '@kshetra/shared';
 
 interface BroadcastConstituency {
@@ -90,9 +90,9 @@ const createChannelBodySchema = {
       slug: { type: 'string', minLength: 3, maxLength: 64, pattern: '^[a-z0-9-]+$' },
       title: { type: 'string', minLength: 2, maxLength: 120 },
       description: { type: 'string', maxLength: 1000 },
-      channelType: { 
-        type: 'string', 
-        enum: ['CANDIDATE', 'POLITICAL_PARTY', 'ELECTION_AUTHORITY', 'MEDIA_OUTLET', 'CIVIC_BODY'] 
+      channelType: {
+        type: 'string',
+        enum: ['CANDIDATE', 'POLITICAL_PARTY', 'ELECTION_AUTHORITY', 'MEDIA_OUTLET', 'CIVIC_BODY'],
       },
       personInternalId: { type: 'string', format: 'uuid' },
       organizationInternalId: { type: 'string', format: 'uuid' },
@@ -113,13 +113,25 @@ const createStreamBodySchema = {
       channelId: { type: 'string', format: 'uuid' },
       title: { type: 'string', minLength: 3, maxLength: 200 },
       description: { type: 'string', maxLength: 2000 },
-      category: { 
-        type: 'string', 
-        enum: ['TOWN_HALL', 'SPEECH', 'MANIFESTO_RELEASE', 'PRESS_CONFERENCE', 'DEBATE', 'ELECTION_UPDATE', 'EMERGENCY_CIVIC', 'GENERAL'] 
+      category: {
+        type: 'string',
+        enum: [
+          'TOWN_HALL',
+          'SPEECH',
+          'MANIFESTO_RELEASE',
+          'PRESS_CONFERENCE',
+          'DEBATE',
+          'ELECTION_UPDATE',
+          'EMERGENCY_CIVIC',
+          'GENERAL',
+        ],
       },
       language: { type: 'string', maxLength: 10 },
       visibility: { type: 'string', enum: ['PUBLIC', 'UNLISTED', 'RESTRICTED'] },
-      latencyProfile: { type: 'string', enum: ['BROADCAST_HLS', 'LOW_LATENCY_LLHLS', 'INTERACTIVE_SFU'] },
+      latencyProfile: {
+        type: 'string',
+        enum: ['BROADCAST_HLS', 'LOW_LATENCY_LLHLS', 'INTERACTIVE_SFU'],
+      },
       scheduledStartTime: { type: 'string', format: 'date-time' },
       stateCode: { type: 'string', pattern: '^[A-Z]{2}$' },
       constituencyInternalId: { type: 'string', format: 'uuid' },
@@ -139,7 +151,10 @@ const updateStreamStatusSchema = {
     type: 'object',
     required: ['status'],
     properties: {
-      status: { type: 'string', enum: ['SCHEDULED', 'PROVISIONED', 'LIVE', 'PAUSED', 'ENDED', 'ARCHIVED'] },
+      status: {
+        type: 'string',
+        enum: ['SCHEDULED', 'PROVISIONED', 'LIVE', 'PAUSED', 'ENDED', 'ARCHIVED'],
+      },
     },
   },
 };
@@ -270,7 +285,9 @@ export async function broadcastRoutes(app: FastifyInstance) {
         const channel = await broadcastManagementService.createChannel(request.body);
         return reply.status(201).send({ channel });
       } catch (err: any) {
-        return sendApiError(reply, request, 400, 'Bad Request', err.message, { code: 'CHANNEL_CREATION_FAILED' });
+        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+          code: 'CHANNEL_CREATION_FAILED',
+        });
       }
     },
   );
@@ -281,7 +298,9 @@ export async function broadcastRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const channel = await broadcastManagementService.getChannel(request.params.idOrSlug);
       if (!channel) {
-        return sendApiError(reply, request, 404, 'Not Found', 'Broadcast channel not found', { code: 'CHANNEL_NOT_FOUND' });
+        return sendApiError(reply, request, 404, 'Not Found', 'Broadcast channel not found', {
+          code: 'CHANNEL_NOT_FOUND',
+        });
       }
       return { channel };
     },
@@ -296,7 +315,9 @@ export async function broadcastRoutes(app: FastifyInstance) {
         const result = await broadcastManagementService.createStream(request.body);
         return reply.status(201).send(result);
       } catch (err: any) {
-        return sendApiError(reply, request, 400, 'Bad Request', err.message, { code: 'STREAM_CREATION_FAILED' });
+        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+          code: 'STREAM_CREATION_FAILED',
+        });
       }
     },
   );
@@ -316,16 +337,15 @@ export async function broadcastRoutes(app: FastifyInstance) {
   );
 
   /** 8. GET /api/v1/broadcast/streams/:id — get stream details and playback URLs */
-  app.get<{ Params: { id: string } }>(
-    '/api/v1/broadcast/streams/:id',
-    async (request, reply) => {
-      const stream = await broadcastManagementService.getStream(request.params.id);
-      if (!stream) {
-        return sendApiError(reply, request, 404, 'Not Found', 'Stream not found', { code: 'STREAM_NOT_FOUND' });
-      }
-      return { stream };
-    },
-  );
+  app.get<{ Params: { id: string } }>('/api/v1/broadcast/streams/:id', async (request, reply) => {
+    const stream = await broadcastManagementService.getStream(request.params.id);
+    if (!stream) {
+      return sendApiError(reply, request, 404, 'Not Found', 'Stream not found', {
+        code: 'STREAM_NOT_FOUND',
+      });
+    }
+    return { stream };
+  });
 
   /** 9. POST /api/v1/broadcast/streams/:id/status — update stream state machine */
   app.post<{ Params: { id: string }; Body: { status: StreamStatus } }>(
@@ -335,14 +355,18 @@ export async function broadcastRoutes(app: FastifyInstance) {
       try {
         const stream = await broadcastManagementService.updateStreamStatus(
           request.params.id,
-          request.body.status
+          request.body.status,
         );
         return { stream };
       } catch (err: any) {
         if (err instanceof InvalidStateTransitionError) {
-          return sendApiError(reply, request, 400, 'Bad Request', err.message, { code: 'INVALID_STATE_TRANSITION' });
+          return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+            code: 'INVALID_STATE_TRANSITION',
+          });
         }
-        return sendApiError(reply, request, 500, 'Internal Server Error', err.message, { code: 'UPDATE_FAILED' });
+        return sendApiError(reply, request, 500, 'Internal Server Error', err.message, {
+          code: 'UPDATE_FAILED',
+        });
       }
     },
   );
@@ -354,11 +378,13 @@ export async function broadcastRoutes(app: FastifyInstance) {
       try {
         const snapshot = await broadcastManagementService.recordTelemetry(
           request.params.id,
-          request.body as any
+          request.body as any,
         );
         return reply.status(201).send({ snapshot });
       } catch (err: any) {
-        return sendApiError(reply, request, 400, 'Bad Request', err.message, { code: 'TELEMETRY_RECORD_FAILED' });
+        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+          code: 'TELEMETRY_RECORD_FAILED',
+        });
       }
     },
   );
@@ -372,10 +398,15 @@ export async function broadcastRoutes(app: FastifyInstance) {
     '/api/v1/broadcast/streams/:id/polls',
     async (request, reply) => {
       try {
-        const poll = await broadcastInteractivityService.createPoll(request.params.id, request.body);
+        const poll = await broadcastInteractivityService.createPoll(
+          request.params.id,
+          request.body,
+        );
         return reply.status(201).send({ poll });
       } catch (err: any) {
-        return sendApiError(reply, request, 400, 'Bad Request', err.message, { code: 'POLL_CREATION_FAILED' });
+        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+          code: 'POLL_CREATION_FAILED',
+        });
       }
     },
   );
@@ -386,7 +417,7 @@ export async function broadcastRoutes(app: FastifyInstance) {
     async (request) => {
       const poll = await broadcastInteractivityService.getActivePoll(
         request.params.id,
-        request.query.voterToken
+        request.query.voterToken,
       );
       return { poll };
     },
@@ -399,17 +430,23 @@ export async function broadcastRoutes(app: FastifyInstance) {
       try {
         const result = await broadcastInteractivityService.castVote(
           request.params.pollId,
-          request.body
+          request.body,
         );
         return reply.send(result);
       } catch (err: any) {
         if (err instanceof DuplicateVoteError) {
-          return sendApiError(reply, request, 409, 'Conflict', err.message, { code: 'DUPLICATE_VOTE_PROHIBITED' });
+          return sendApiError(reply, request, 409, 'Conflict', err.message, {
+            code: 'DUPLICATE_VOTE_PROHIBITED',
+          });
         }
         if (err instanceof PollClosedError) {
-          return sendApiError(reply, request, 400, 'Bad Request', err.message, { code: 'POLL_CLOSED' });
+          return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+            code: 'POLL_CLOSED',
+          });
         }
-        return sendApiError(reply, request, 400, 'Bad Request', err.message, { code: 'VOTE_FAILED' });
+        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+          code: 'VOTE_FAILED',
+        });
       }
     },
   );
@@ -422,7 +459,9 @@ export async function broadcastRoutes(app: FastifyInstance) {
         const poll = await broadcastInteractivityService.closePoll(request.params.pollId);
         return reply.send({ poll });
       } catch (err: any) {
-        return sendApiError(reply, request, 400, 'Bad Request', err.message, { code: 'CLOSE_POLL_FAILED' });
+        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+          code: 'CLOSE_POLL_FAILED',
+        });
       }
     },
   );
@@ -434,14 +473,18 @@ export async function broadcastRoutes(app: FastifyInstance) {
       try {
         const question = await broadcastInteractivityService.submitQuestion(
           request.params.id,
-          request.body
+          request.body,
         );
         return reply.status(201).send({ question });
       } catch (err: any) {
         if (err instanceof ContentModerationError) {
-          return sendApiError(reply, request, 422, 'Unprocessable Entity', err.message, { code: 'CONTENT_MODERATION_FAILED' });
+          return sendApiError(reply, request, 422, 'Unprocessable Entity', err.message, {
+            code: 'CONTENT_MODERATION_FAILED',
+          });
         }
-        return sendApiError(reply, request, 400, 'Bad Request', err.message, { code: 'QUESTION_SUBMISSION_FAILED' });
+        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+          code: 'QUESTION_SUBMISSION_FAILED',
+        });
       }
     },
   );
@@ -452,7 +495,7 @@ export async function broadcastRoutes(app: FastifyInstance) {
     async (request) => {
       const questions = await broadcastInteractivityService.listQuestions(
         request.params.id,
-        request.query.voterToken
+        request.query.voterToken,
       );
       return { questions, count: questions.length };
     },
@@ -465,11 +508,13 @@ export async function broadcastRoutes(app: FastifyInstance) {
       try {
         const result = await broadcastInteractivityService.upvoteQuestion(
           request.params.qId,
-          request.body.voterToken
+          request.body.voterToken,
         );
         return reply.send(result);
       } catch (err: any) {
-        return sendApiError(reply, request, 400, 'Bad Request', err.message, { code: 'UPVOTE_FAILED' });
+        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+          code: 'UPVOTE_FAILED',
+        });
       }
     },
   );
@@ -481,11 +526,13 @@ export async function broadcastRoutes(app: FastifyInstance) {
       try {
         const question = await broadcastInteractivityService.moderateQuestion(
           request.params.qId,
-          request.body
+          request.body,
         );
         return reply.send({ question });
       } catch (err: any) {
-        return sendApiError(reply, request, 400, 'Bad Request', err.message, { code: 'MODERATION_FAILED' });
+        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
+          code: 'MODERATION_FAILED',
+        });
       }
     },
   );

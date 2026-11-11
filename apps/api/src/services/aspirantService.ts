@@ -43,9 +43,15 @@ function publicAcademyModule(module: AcademyModuleData): PublicAcademyModuleData
   };
 }
 
-function isProductionRuntime(): boolean { return isProductionLikeRuntime(); }
+function isProductionRuntime(): boolean {
+  return isProductionLikeRuntime();
+}
 
-function academyError(message: string, code: string, statusCode = 503): Error & { code: string; statusCode: number } {
+function academyError(
+  message: string,
+  code: string,
+  statusCode = 503,
+): Error & { code: string; statusCode: number } {
   return Object.assign(new Error(message), { code, statusCode });
 }
 
@@ -53,7 +59,8 @@ export const ACADEMY_CURRICULUM: Record<string, AcademyModuleData> = {
   'mod-1': {
     id: 'mod-1',
     title: 'How Indian Elections Work',
-    description: 'Understand the complete election process — from nominations to counting day. Learn about ECI, EVMs, VVPATs, and electoral rolls.',
+    description:
+      'Understand the complete election process — from nominations to counting day. Learn about ECI, EVMs, VVPATs, and electoral rolls.',
     category: 'electoral_process',
     contentType: 'article',
     durationMinutes: 15,
@@ -63,10 +70,12 @@ export const ACADEMY_CURRICULUM: Record<string, AcademyModuleData> = {
     quiz: [
       {
         id: 'q1-1',
-        question: 'Under which Article of the Constitution is the Election Commission of India established?',
+        question:
+          'Under which Article of the Constitution is the Election Commission of India established?',
         options: ['Article 324', 'Article 356', 'Article 370', 'Article 280'],
         correctIndex: 0,
-        explanation: 'Article 324 vests the superintendence, direction and control of elections in the Election Commission.',
+        explanation:
+          'Article 324 vests the superintendence, direction and control of elections in the Election Commission.',
       },
       {
         id: 'q1-2',
@@ -78,14 +87,16 @@ export const ACADEMY_CURRICULUM: Record<string, AcademyModuleData> = {
           'Voter Validated Physical Assessment Tool',
         ],
         correctIndex: 0,
-        explanation: 'VVPAT stands for Voter Verified Paper Audit Trail, providing a physical paper slip verifying the vote cast on the EVM.',
+        explanation:
+          'VVPAT stands for Voter Verified Paper Audit Trail, providing a physical paper slip verifying the vote cast on the EVM.',
       },
     ],
   },
   'mod-2': {
     id: 'mod-2',
     title: 'Filing Your Nomination',
-    description: 'Step-by-step guide to filing nomination papers, required documents, security deposits, affidavits, and common rejection reasons.',
+    description:
+      'Step-by-step guide to filing nomination papers, required documents, security deposits, affidavits, and common rejection reasons.',
     category: 'electoral_process',
     contentType: 'article',
     durationMinutes: 20,
@@ -95,24 +106,29 @@ export const ACADEMY_CURRICULUM: Record<string, AcademyModuleData> = {
     quiz: [
       {
         id: 'q2-1',
-        question: 'Which affidavit form is mandatory for candidates to declare assets, liabilities, and criminal antecedents?',
+        question:
+          'Which affidavit form is mandatory for candidates to declare assets, liabilities, and criminal antecedents?',
         options: ['Form 26', 'Form 7', 'Form 16', 'Form 20'],
         correctIndex: 0,
-        explanation: 'Form 26 is the statutory affidavit mandated by the Supreme Court of India and ECI rules.',
+        explanation:
+          'Form 26 is the statutory affidavit mandated by the Supreme Court of India and ECI rules.',
       },
       {
         id: 'q2-2',
-        question: 'What is the security deposit for an Assembly election candidate in general category?',
+        question:
+          'What is the security deposit for an Assembly election candidate in general category?',
         options: ['₹10,000', '₹25,000', '₹50,000', '₹5,000'],
         correctIndex: 0,
-        explanation: 'Under Section 34 of RPA 1951, the security deposit for an Assembly constituency is ₹10,000 (₹5,000 for SC/ST).',
+        explanation:
+          'Under Section 34 of RPA 1951, the security deposit for an Assembly constituency is ₹10,000 (₹5,000 for SC/ST).',
       },
     ],
   },
   'mod-3': {
     id: 'mod-3',
     title: 'Understanding Election Symbols',
-    description: 'How party symbols work, reserved vs free symbols, how independents get symbols, and the legal framework.',
+    description:
+      'How party symbols work, reserved vs free symbols, how independents get symbols, and the legal framework.',
     category: 'electoral_process',
     contentType: 'quiz',
     durationMinutes: 10,
@@ -130,28 +146,42 @@ export const ACADEMY_CURRICULUM: Record<string, AcademyModuleData> = {
           'The Conduct of Elections Rules, 1961',
         ],
         correctIndex: 0,
-        explanation: 'The Election Symbols (Reservation and Allotment) Order, 1968 governs the reservation and allotment of symbols.',
+        explanation:
+          'The Election Symbols (Reservation and Allotment) Order, 1968 governs the reservation and allotment of symbols.',
       },
       {
         id: 'q3-2',
         question: 'An independent candidate is normally allotted what category of symbol?',
-        options: ['A reserved symbol', 'A free symbol', 'A permanent party emblem', 'The state emblem'],
+        options: [
+          'A reserved symbol',
+          'A free symbol',
+          'A permanent party emblem',
+          'The state emblem',
+        ],
         correctIndex: 1,
-        explanation: 'Independents choose from the ECI common pool of free symbols specified for each election.',
+        explanation:
+          'Independents choose from the ECI common pool of free symbols specified for each election.',
       },
       {
         id: 'q3-3',
         question: 'Who adjudicates symbol disputes when a recognized political party splits?',
-        options: ['The Supreme Court', 'The Election Commission of India', 'Parliamentary Committee', 'The Law Commission'],
+        options: [
+          'The Supreme Court',
+          'The Election Commission of India',
+          'Parliamentary Committee',
+          'The Law Commission',
+        ],
         correctIndex: 1,
-        explanation: 'Under Paragraph 15 of the Symbols Order 1968, the Election Commission of India decides symbol disputes.',
+        explanation:
+          'Under Paragraph 15 of the Symbols Order 1968, the Election Commission of India decides symbol disputes.',
       },
     ],
   },
   'mod-4': {
     id: 'mod-4',
     title: 'Building a Grassroots Campaign',
-    description: 'Learn how to build a winning ground-level campaign — booth-level strategy, volunteer networks, and door-to-door canvassing.',
+    description:
+      'Learn how to build a winning ground-level campaign — booth-level strategy, volunteer networks, and door-to-door canvassing.',
     category: 'campaign_strategy',
     contentType: 'case_study',
     durationMinutes: 25,
@@ -161,10 +191,12 @@ export const ACADEMY_CURRICULUM: Record<string, AcademyModuleData> = {
     quiz: [
       {
         id: 'q4-1',
-        question: 'Approximately how many voters typically fall under a single polling booth in an Indian constituency?',
+        question:
+          'Approximately how many voters typically fall under a single polling booth in an Indian constituency?',
         options: ['1,000 to 1,500', '5,000 to 10,000', '100 to 300', '15,000 to 20,000'],
         correctIndex: 0,
-        explanation: 'An average Indian polling station is designed for roughly 1,000 to 1,500 electors.',
+        explanation:
+          'An average Indian polling station is designed for roughly 1,000 to 1,500 electors.',
       },
     ],
   },
@@ -178,7 +210,10 @@ export class AspirantService {
   private static mockPageFollowers = new Set<string>(); // "pageId:userId"
   private static mockPageEvents = new Map<string, PageEventDTO[]>();
   private static mockEventRsvps = new Map<string, PageEventRsvpStatus>(); // "eventId:userId"
-  private static mockModuleProgress = new Map<string, { completed: boolean; quizScore?: number; startedAt: string }>(); // "userId:moduleId"
+  private static mockModuleProgress = new Map<
+    string,
+    { completed: boolean; quizScore?: number; startedAt: string }
+  >(); // "userId:moduleId"
   private static mockBadges = new Map<string, Array<{ badgeType: string; earnedAt: string }>>(); // "userId"
 
   static resetMockState() {
@@ -201,8 +236,10 @@ export class AspirantService {
       bio: row.bio || undefined,
       avatarUrl: row.avatar_url || row.avatarUrl || undefined,
       stateCode: row.state_code || row.stateCode,
-      targetConstituencyAcNo: row.target_constituency_ac_no ?? row.targetConstituencyAcNo ?? undefined,
-      targetConstituencyName: row.target_constituency_name ?? row.targetConstituencyName ?? undefined,
+      targetConstituencyAcNo:
+        row.target_constituency_ac_no ?? row.targetConstituencyAcNo ?? undefined,
+      targetConstituencyName:
+        row.target_constituency_name ?? row.targetConstituencyName ?? undefined,
       targetElectionYear: row.target_election_year ?? row.targetElectionYear ?? undefined,
       partyAffiliation: row.party_affiliation ?? row.partyAffiliation ?? undefined,
       isIndependent: row.is_independent ?? row.isIndependent ?? true,
@@ -232,10 +269,7 @@ export class AspirantService {
 
   // ─── 1. ASPIRANT REGISTRATION (JOB 046) ───
 
-  static async registerAspirant(
-    userId: string,
-    req: AspirantRegistrationRequest,
-  ): Promise<any> {
+  static async registerAspirant(userId: string, req: AspirantRegistrationRequest): Promise<any> {
     if (!req.displayName || req.displayName.trim().length < 2) {
       throw new Error('DISPLAY_NAME_REQUIRED');
     }
@@ -373,22 +407,28 @@ export class AspirantService {
       aspirantId = profile.id;
 
       // Tier 2 promotion for statutory affidavits / voter id
-      const tier = (req.documentType === 'election_affidavit' || req.documentType === 'voter_id') ? 'tier2' : 'tier1';
+      const tier =
+        req.documentType === 'election_affidavit' || req.documentType === 'voter_id'
+          ? 'tier2'
+          : 'tier1';
       const status = 'pending';
 
       const { data, error } = await supabase
         .from('aspirant_verifications')
-        .upsert({
-          aspirant_id: aspirantId,
-          user_id: userId,
-          document_type: req.documentType,
-          document_hash: req.documentHash,
-          document_url: req.documentUrl || null,
-          verification_tier: tier,
-          verification_status: status,
-          statutory_declaration_accepted: true,
-          updated_at: now,
-        }, { onConflict: 'aspirant_id,document_type' })
+        .upsert(
+          {
+            aspirant_id: aspirantId,
+            user_id: userId,
+            document_type: req.documentType,
+            document_hash: req.documentHash,
+            document_url: req.documentUrl || null,
+            verification_tier: tier,
+            verification_status: status,
+            statutory_declaration_accepted: true,
+            updated_at: now,
+          },
+          { onConflict: 'aspirant_id,document_type' },
+        )
         .select('*')
         .single();
 
@@ -421,7 +461,10 @@ export class AspirantService {
     if (!profile) throw new Error('ASPIRANT_NOT_REGISTERED');
     const targetAspirantId = String(profile.id);
 
-    const tier = (req.documentType === 'election_affidavit' || req.documentType === 'voter_id') ? 'tier2' : 'tier1';
+    const tier =
+      req.documentType === 'election_affidavit' || req.documentType === 'voter_id'
+        ? 'tier2'
+        : 'tier1';
     const status = 'pending';
 
     const kycRecord: AspirantKYCRecordDTO = {
@@ -435,7 +478,7 @@ export class AspirantService {
     };
 
     const existing = this.mockVerifications.get(targetAspirantId) || [];
-    const filtered = existing.filter(k => k.documentType !== req.documentType);
+    const filtered = existing.filter((k) => k.documentType !== req.documentType);
     filtered.push(kycRecord);
     this.mockVerifications.set(targetAspirantId, filtered);
 
@@ -451,7 +494,7 @@ export class AspirantService {
         .select('*')
         .eq('user_id', userId);
 
-      return (data || []).map(d => ({
+      return (data || []).map((d) => ({
         id: d.id,
         aspirantId: d.aspirant_id,
         documentType: d.document_type,
@@ -475,7 +518,9 @@ export class AspirantService {
     let profile: any = null;
 
     if (isSupabaseConfigured) {
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrHandle);
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        idOrHandle,
+      );
       const query = supabase.from('aspirant_profiles').select('*');
       const { data } = isUuid
         ? await query.eq('id', idOrHandle).maybeSingle()
@@ -491,7 +536,7 @@ export class AspirantService {
         .eq('user_id', profile.user_id);
       if (badgesError) throw academyError(badgesError.message, 'DATABASE_ERROR');
 
-      const badges = (badgesData || []).map(b => ({
+      const badges = (badgesData || []).map((b) => ({
         badgeType: b.badge_type,
         earnedAt: b.earned_at,
       }));
@@ -678,7 +723,9 @@ export class AspirantService {
 
   static async getPage(idOrHandle: string, currentUserId?: string): Promise<PageDTO | null> {
     if (isSupabaseConfigured) {
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrHandle);
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        idOrHandle,
+      );
       const query = supabase.from('pages').select('*');
       const { data } = isUuid
         ? await query.eq('id', idOrHandle).maybeSingle()
@@ -726,25 +773,31 @@ export class AspirantService {
     }
     if (!page) return null;
 
-    const isFollowing = currentUserId ? this.mockPageFollowers.has(`${page.id}:${currentUserId}`) : false;
+    const isFollowing = currentUserId
+      ? this.mockPageFollowers.has(`${page.id}:${currentUserId}`)
+      : false;
     return { ...page, isFollowing };
   }
 
-  static async toggleFollowPage(pageId: string, userId: string, follow: boolean): Promise<{ pageId: string; isFollowing: boolean; followerCount: number }> {
+  static async toggleFollowPage(
+    pageId: string,
+    userId: string,
+    follow: boolean,
+  ): Promise<{ pageId: string; isFollowing: boolean; followerCount: number }> {
     if (isSupabaseConfigured) {
       if (follow) {
         await supabase
           .from('page_followers')
           .upsert({ page_id: pageId, user_id: userId }, { onConflict: 'page_id,user_id' });
       } else {
-        await supabase
-          .from('page_followers')
-          .delete()
-          .eq('page_id', pageId)
-          .eq('user_id', userId);
+        await supabase.from('page_followers').delete().eq('page_id', pageId).eq('user_id', userId);
       }
 
-      const { data: pg } = await supabase.from('pages').select('follower_count').eq('id', pageId).single();
+      const { data: pg } = await supabase
+        .from('pages')
+        .select('follower_count')
+        .eq('id', pageId)
+        .single();
       return {
         pageId,
         isFollowing: follow,
@@ -773,7 +826,11 @@ export class AspirantService {
     };
   }
 
-  static async createPageEvent(pageId: string, userId: string, req: PageEventCreateRequest): Promise<PageEventDTO> {
+  static async createPageEvent(
+    pageId: string,
+    userId: string,
+    req: PageEventCreateRequest,
+  ): Promise<PageEventDTO> {
     if (!req.title || req.title.trim().length < 3) throw new Error('EVENT_TITLE_REQUIRED');
     if (!req.startTime) throw new Error('START_TIME_REQUIRED');
 
@@ -861,7 +918,7 @@ export class AspirantService {
         .order('start_time', { ascending: false });
 
       const events = data || [];
-      return events.map(e => ({
+      return events.map((e) => ({
         id: e.id,
         pageId: e.page_id,
         title: e.title,
@@ -883,19 +940,27 @@ export class AspirantService {
     }
 
     const events = this.mockPageEvents.get(pageId) || [];
-    return events.map(e => ({
+    return events.map((e) => ({
       ...e,
       userRsvp: currentUserId ? this.mockEventRsvps.get(`${e.id}:${currentUserId}`) : undefined,
     }));
   }
 
-  static async rsvpPageEvent(eventId: string, userId: string, status: PageEventRsvpStatus): Promise<{ eventId: string; userId: string; status: PageEventRsvpStatus; rsvpCount: number }> {
+  static async rsvpPageEvent(
+    eventId: string,
+    userId: string,
+    status: PageEventRsvpStatus,
+  ): Promise<{ eventId: string; userId: string; status: PageEventRsvpStatus; rsvpCount: number }> {
     if (isSupabaseConfigured) {
       await supabase
         .from('page_event_rsvps')
         .upsert({ event_id: eventId, user_id: userId, status }, { onConflict: 'event_id,user_id' });
 
-      const { data: ev } = await supabase.from('page_events').select('rsvp_count').eq('id', eventId).single();
+      const { data: ev } = await supabase
+        .from('page_events')
+        .select('rsvp_count')
+        .eq('id', eventId)
+        .single();
       return { eventId, userId, status, rsvpCount: ev?.rsvp_count || 0 };
     }
 
@@ -909,14 +974,19 @@ export class AspirantService {
   private static shouldUseDatabaseAcademy(): boolean {
     if (!isSupabaseConfigured || (isProductionRuntime() && !isUsingServiceRole)) {
       if (isProductionRuntime()) {
-        throw academyError('Durable Leadership Academy storage is unavailable', 'DATABASE_UNAVAILABLE');
+        throw academyError(
+          'Durable Leadership Academy storage is unavailable',
+          'DATABASE_UNAVAILABLE',
+        );
       }
       return false;
     }
     return true;
   }
 
-  private static async getDatabaseModule(moduleId: string): Promise<{ id: string; title: string } | null> {
+  private static async getDatabaseModule(
+    moduleId: string,
+  ): Promise<{ id: string; title: string } | null> {
     const definition = ACADEMY_CURRICULUM[moduleId];
     if (!definition) return null;
     const { data, error } = await supabase
@@ -928,7 +998,9 @@ export class AspirantService {
     return data;
   }
 
-  static async listAcademyBadges(userId: string): Promise<Array<{ badgeType: string; earnedAt: string }>> {
+  static async listAcademyBadges(
+    userId: string,
+  ): Promise<Array<{ badgeType: string; earnedAt: string }>> {
     if (!this.shouldUseDatabaseAcademy()) {
       return this.mockBadges.get(userId) ?? [];
     }
@@ -942,7 +1014,10 @@ export class AspirantService {
     return (data ?? []).map((row: any) => ({ badgeType: row.badge_type, earnedAt: row.earned_at }));
   }
 
-  static async listAcademyChallenges(userId?: string, requestedStateCode?: string): Promise<{
+  static async listAcademyChallenges(
+    userId?: string,
+    requestedStateCode?: string,
+  ): Promise<{
     challenges: Array<Record<string, unknown>>;
     participation: Array<Record<string, unknown>>;
   }> {
@@ -963,15 +1038,18 @@ export class AspirantService {
     const now = new Date().toISOString();
     const { data: rows, error } = await supabase
       .from('community_challenges')
-      .select('id,title,description,category,points,target_count,state_code,is_active,starts_at,ends_at')
+      .select(
+        'id,title,description,category,points,target_count,state_code,is_active,starts_at,ends_at',
+      )
       .eq('is_active', true)
       .lte('starts_at', now)
       .order('starts_at', { ascending: false });
     if (error) throw academyError(error.message, 'DATABASE_ERROR');
 
-    const activeRows = (rows ?? []).filter((row: any) =>
-      (!row.ends_at || new Date(row.ends_at).getTime() >= Date.now())
-      && (!row.state_code || row.state_code === stateCode),
+    const activeRows = (rows ?? []).filter(
+      (row: any) =>
+        (!row.ends_at || new Date(row.ends_at).getTime() >= Date.now()) &&
+        (!row.state_code || row.state_code === stateCode),
     );
     const challenges = activeRows.map((row: any) => ({
       id: row.id,
@@ -1009,7 +1087,11 @@ export class AspirantService {
     if (!this.shouldUseDatabaseAcademy()) {
       return Object.values(ACADEMY_CURRICULUM).map((module) => {
         const progress = userId ? this.mockModuleProgress.get(`${userId}:${module.id}`) : undefined;
-        return publicAcademyModule({ ...module, completed: progress?.completed ?? false, quizScore: progress?.quizScore });
+        return publicAcademyModule({
+          ...module,
+          completed: progress?.completed ?? false,
+          quizScore: progress?.quizScore,
+        });
       });
     }
 
@@ -1023,7 +1105,10 @@ export class AspirantService {
     const matchingRows = (rows ?? []).filter((row: any) => titles.includes(row.title));
     const matchingTitles = matchingRows.map((row: any) => row.title);
     if (new Set(matchingTitles).size !== matchingTitles.length) {
-      throw academyError('Leadership module titles are ambiguous in the database', 'DATABASE_ERROR');
+      throw academyError(
+        'Leadership module titles are ambiguous in the database',
+        'DATABASE_ERROR',
+      );
     }
     const modulesByTitle = new Map((rows ?? []).map((row: any) => [row.title, row]));
     const databaseIds = Array.from(modulesByTitle.values()).map((row: any) => row.id);
@@ -1043,11 +1128,18 @@ export class AspirantService {
       .map((module) => {
         const row = modulesByTitle.get(module.title) as any;
         const progress = progressById.get(row.id);
-        return publicAcademyModule({ ...module, completed: progress?.completed ?? false, quizScore: progress?.quiz_score ?? undefined });
+        return publicAcademyModule({
+          ...module,
+          completed: progress?.completed ?? false,
+          quizScore: progress?.quiz_score ?? undefined,
+        });
       });
   }
 
-  static async getAcademyModule(moduleId: string, userId?: string): Promise<PublicAcademyModuleData | null> {
+  static async getAcademyModule(
+    moduleId: string,
+    userId?: string,
+  ): Promise<PublicAcademyModuleData | null> {
     const mod = ACADEMY_CURRICULUM[moduleId];
     if (!mod) return null;
 
@@ -1062,7 +1154,11 @@ export class AspirantService {
           .eq('module_id', row.id)
           .maybeSingle();
         if (error) throw academyError(error.message, 'DATABASE_ERROR');
-        return publicAcademyModule({ ...mod, completed: progress?.completed ?? false, quizScore: progress?.quiz_score ?? undefined });
+        return publicAcademyModule({
+          ...mod,
+          completed: progress?.completed ?? false,
+          quizScore: progress?.quiz_score ?? undefined,
+        });
       }
       return publicAcademyModule({ ...mod, completed: false, quizScore: undefined });
     }
@@ -1084,9 +1180,13 @@ export class AspirantService {
     });
   }
 
-  static async startModule(userId: string, moduleId: string): Promise<{ moduleId: string; started: true }> {
+  static async startModule(
+    userId: string,
+    moduleId: string,
+  ): Promise<{ moduleId: string; started: true }> {
     if (!this.shouldUseDatabaseAcademy()) {
-      if (!ACADEMY_CURRICULUM[moduleId]) throw academyError('Module not found', 'MODULE_NOT_FOUND', 404);
+      if (!ACADEMY_CURRICULUM[moduleId])
+        throw academyError('Module not found', 'MODULE_NOT_FOUND', 404);
       const startedAt = new Date().toISOString();
       const previous = this.mockModuleProgress.get(`${userId}:${moduleId}`);
       this.mockModuleProgress.set(`${userId}:${moduleId}`, {
@@ -1099,11 +1199,14 @@ export class AspirantService {
 
     const module = await this.getDatabaseModule(moduleId);
     if (!module) throw academyError('Module not found', 'MODULE_NOT_FOUND', 404);
-    const { error } = await supabase.from('module_progress').upsert({
-      user_id: userId,
-      module_id: module.id,
-      started_at: new Date().toISOString(),
-    }, { onConflict: 'user_id,module_id' });
+    const { error } = await supabase.from('module_progress').upsert(
+      {
+        user_id: userId,
+        module_id: module.id,
+        started_at: new Date().toISOString(),
+      },
+      { onConflict: 'user_id,module_id' },
+    );
     if (error) throw academyError(error.message, 'DATABASE_ERROR');
     return { moduleId, started: true };
   }
@@ -1143,21 +1246,29 @@ export class AspirantService {
         .limit(1)
         .maybeSingle();
       if (attemptError) throw academyError(attemptError.message, 'DATABASE_ERROR');
-      if (!attempt) throw academyError('Submit the quiz before completing this module', 'QUIZ_REQUIRED', 409);
+      if (!attempt)
+        throw academyError('Submit the quiz before completing this module', 'QUIZ_REQUIRED', 409);
       quizScore = Number(attempt.score_percentage);
       if (suppliedQuizScore !== undefined && suppliedQuizScore !== quizScore) {
-        throw academyError('Quiz score must match the latest server-graded attempt', 'QUIZ_SCORE_MISMATCH', 409);
+        throw academyError(
+          'Quiz score must match the latest server-graded attempt',
+          'QUIZ_SCORE_MISMATCH',
+          409,
+        );
       }
     }
 
     const completedAt = new Date().toISOString();
-    const { error } = await supabase.from('module_progress').upsert({
-      user_id: userId,
-      module_id: module.id,
-      completed: true,
-      quiz_score: quizScore ?? null,
-      completed_at: completedAt,
-    }, { onConflict: 'user_id,module_id' });
+    const { error } = await supabase.from('module_progress').upsert(
+      {
+        user_id: userId,
+        module_id: module.id,
+        completed: true,
+        quiz_score: quizScore ?? null,
+        completed_at: completedAt,
+      },
+      { onConflict: 'user_id,module_id' },
+    );
     if (error) throw academyError(error.message, 'DATABASE_ERROR');
     return { moduleId, completedAt, quizScore };
   }
@@ -1208,7 +1319,8 @@ export class AspirantService {
 
     const persistentDatabase = this.shouldUseDatabaseAcademy();
     const databaseModule = persistentDatabase ? await this.getDatabaseModule(moduleId) : null;
-    if (persistentDatabase && !databaseModule) throw academyError('Module not found', 'MODULE_NOT_FOUND', 404);
+    if (persistentDatabase && !databaseModule)
+      throw academyError('Module not found', 'MODULE_NOT_FOUND', 404);
 
     if (persistentDatabase) {
       const { error } = await supabase.rpc('record_academy_quiz_result', {
@@ -1233,7 +1345,7 @@ export class AspirantService {
 
     if (badgeAwarded && !persistentDatabase) {
       const userBadges = this.mockBadges.get(userId) || [];
-      if (!userBadges.some(b => b.badgeType === badgeAwarded)) {
+      if (!userBadges.some((b) => b.badgeType === badgeAwarded)) {
         userBadges.push({ badgeType: badgeAwarded, earnedAt: now });
         this.mockBadges.set(userId, userBadges);
       }

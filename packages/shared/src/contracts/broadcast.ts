@@ -3,18 +3,11 @@
  * Standard: DPDP Act 2023 Compliant (Zero Voter PII), Multi-Tier Streaming
  */
 
-export type ChannelType = 
-  | 'CANDIDATE' 
-  | 'POLITICAL_PARTY' 
-  | 'ELECTION_AUTHORITY' 
-  | 'MEDIA_OUTLET' 
-  | 'CIVIC_BODY';
+export type ChannelType =
+  'CANDIDATE' | 'POLITICAL_PARTY' | 'ELECTION_AUTHORITY' | 'MEDIA_OUTLET' | 'CIVIC_BODY';
 
-export type ChannelVerificationStatus = 
-  | 'UNVERIFIED' 
-  | 'VERIFIED_OFFICIAL' 
-  | 'VERIFIED_MEDIA' 
-  | 'SUSPENDED';
+export type ChannelVerificationStatus =
+  'UNVERIFIED' | 'VERIFIED_OFFICIAL' | 'VERIFIED_MEDIA' | 'SUSPENDED';
 
 export interface BroadcastChannel {
   id: string;
@@ -34,23 +27,17 @@ export interface BroadcastChannel {
   updatedAt: string;
 }
 
-export type StreamCategory = 
-  | 'TOWN_HALL' 
-  | 'SPEECH' 
-  | 'MANIFESTO_RELEASE' 
-  | 'PRESS_CONFERENCE' 
-  | 'DEBATE' 
-  | 'ELECTION_UPDATE' 
-  | 'EMERGENCY_CIVIC' 
+export type StreamCategory =
+  | 'TOWN_HALL'
+  | 'SPEECH'
+  | 'MANIFESTO_RELEASE'
+  | 'PRESS_CONFERENCE'
+  | 'DEBATE'
+  | 'ELECTION_UPDATE'
+  | 'EMERGENCY_CIVIC'
   | 'GENERAL';
 
-export type StreamStatus = 
-  | 'SCHEDULED' 
-  | 'PROVISIONED' 
-  | 'LIVE' 
-  | 'PAUSED' 
-  | 'ENDED' 
-  | 'ARCHIVED';
+export type StreamStatus = 'SCHEDULED' | 'PROVISIONED' | 'LIVE' | 'PAUSED' | 'ENDED' | 'ARCHIVED';
 
 export type StreamVisibility = 'PUBLIC' | 'UNLISTED' | 'RESTRICTED';
 

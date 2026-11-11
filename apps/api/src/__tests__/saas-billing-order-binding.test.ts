@@ -22,11 +22,13 @@ function billingOrder(overrides: Record<string, unknown> = {}) {
   };
 }
 
-function makeClient(options: {
-  tenant?: Record<string, unknown> | null;
-  order?: Record<string, unknown> | null;
-  rpcResult?: Record<string, unknown>;
-} = {}) {
+function makeClient(
+  options: {
+    tenant?: Record<string, unknown> | null;
+    order?: Record<string, unknown> | null;
+    rpcResult?: Record<string, unknown>;
+  } = {},
+) {
   const order = options.order === null ? null : options.order || billingOrder();
   const rpc = jest.fn().mockResolvedValue({
     data: options.rpcResult || {
@@ -50,7 +52,7 @@ function makeClient(options: {
           }),
         })),
         maybeSingle: jest.fn().mockResolvedValue({
-          data: table === 'saas_billing_orders' ? order : options.tenant ?? null,
+          data: table === 'saas_billing_orders' ? order : (options.tenant ?? null),
           error: null,
         }),
         single: jest.fn().mockResolvedValue({ data: options.tenant ?? null, error: null }),
@@ -111,13 +113,17 @@ describe('SaaS billing order binding', () => {
     };
     const service = new BillingService(provider as any);
 
-    const result = await service.verifyPayment(tenantId, {
-      orderId,
-      paymentId,
-      signature: 'verified-signature',
-      targetTier: 'enterprise',
-      billingCycle: 'annual',
-    } as any, client);
+    const result = await service.verifyPayment(
+      tenantId,
+      {
+        orderId,
+        paymentId,
+        signature: 'verified-signature',
+        targetTier: 'enterprise',
+        billingCycle: 'annual',
+      } as any,
+      client,
+    );
 
     expect(provider.verifyPaymentSignature).toHaveBeenCalledWith({
       orderId,
@@ -142,11 +148,17 @@ describe('SaaS billing order binding', () => {
     };
     const service = new BillingService(provider as any);
 
-    await expect(service.verifyPayment(tenantId, {
-      orderId,
-      paymentId,
-      signature: 'signature',
-    }, client)).rejects.toMatchObject({
+    await expect(
+      service.verifyPayment(
+        tenantId,
+        {
+          orderId,
+          paymentId,
+          signature: 'signature',
+        },
+        client,
+      ),
+    ).rejects.toMatchObject({
       statusCode: 404,
       code: 'BILLING_ORDER_NOT_FOUND',
     });
@@ -230,7 +242,18 @@ describe('SaaS billing order binding', () => {
       'valid-webhook-signature',
       {
         event: 'payment.captured',
-        payload: { payment: { entity: { id: paymentId, order_id: orderId, amount: 499900, currency: 'INR', status: 'captured', captured: true } } },
+        payload: {
+          payment: {
+            entity: {
+              id: paymentId,
+              order_id: orderId,
+              amount: 499900,
+              currency: 'INR',
+              status: 'captured',
+              captured: true,
+            },
+          },
+        },
       },
       client,
     );

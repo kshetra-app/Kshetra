@@ -8,7 +8,9 @@ import { isProductionLikeRuntime } from '../../lib/runtimeEnvironment';
 
 import type { SignificantDataFiduciaryAssessment } from '@kshetra/shared';
 
-function isProductionRuntime(): boolean { return isProductionLikeRuntime(); }
+function isProductionRuntime(): boolean {
+  return isProductionLikeRuntime();
+}
 
 export class SdfService {
   /**

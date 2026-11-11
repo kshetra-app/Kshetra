@@ -80,9 +80,12 @@ export async function feedRoutes(app: FastifyInstance) {
       const normalizedPollOptions = pollOptions?.map((option) => option.trim());
       if (
         type === 'poll' &&
-        (!normalizedPollOptions || normalizedPollOptions.length < 2 || normalizedPollOptions.length > 5 ||
+        (!normalizedPollOptions ||
+          normalizedPollOptions.length < 2 ||
+          normalizedPollOptions.length > 5 ||
           normalizedPollOptions.some((option) => !option || option.length > 200) ||
-          new Set(normalizedPollOptions.map((option) => option.toLocaleLowerCase())).size !== normalizedPollOptions.length)
+          new Set(normalizedPollOptions.map((option) => option.toLocaleLowerCase())).size !==
+            normalizedPollOptions.length)
       ) {
         return sendApiError(
           reply,
@@ -107,19 +110,25 @@ export async function feedRoutes(app: FastifyInstance) {
         );
       }
 
-      const normalizedHashtags = [...new Set((hashtags ?? [])
-        .map((tag) => tag.replace(/^#/, '').toLowerCase().trim())
-        .filter(Boolean))].sort();
-      const requestHash = createHash('sha256').update(JSON.stringify({
-        content,
-        type,
-        stateCode,
-        constituencyId: constituencyId ?? null,
-        parentId: parentId ?? null,
-        language,
-        hashtags: normalizedHashtags,
-        pollOptions: normalizedPollOptions ?? null,
-      })).digest('hex');
+      const normalizedHashtags = [
+        ...new Set(
+          (hashtags ?? []).map((tag) => tag.replace(/^#/, '').toLowerCase().trim()).filter(Boolean),
+        ),
+      ].sort();
+      const requestHash = createHash('sha256')
+        .update(
+          JSON.stringify({
+            content,
+            type,
+            stateCode,
+            constituencyId: constituencyId ?? null,
+            parentId: parentId ?? null,
+            language,
+            hashtags: normalizedHashtags,
+            pollOptions: normalizedPollOptions ?? null,
+          }),
+        )
+        .digest('hex');
 
       try {
         const lookupExistingPost = async () => {
@@ -134,27 +143,36 @@ export async function feedRoutes(app: FastifyInstance) {
           if (!existing) return { kind: 'missing' as const };
           if (existing.request_hash !== requestHash) return { kind: 'conflict' as const };
 
-          let existingPoll: {
-            id: string;
-            question: string;
-            totalVotes: number;
-            isClosed: boolean;
-            options: { id: string; label: string; voteCount: number; sortOrder: number }[];
-          } | undefined;
+          let existingPoll:
+            | {
+                id: string;
+                question: string;
+                totalVotes: number;
+                isClosed: boolean;
+                options: { id: string; label: string; voteCount: number; sortOrder: number }[];
+              }
+            | undefined;
           if (existing.type === 'poll') {
             const { data: poll, error: pollErr } = await supabase
               .from('polls')
               .select('id, question, total_votes, is_closed')
               .eq('post_id', existing.id)
               .maybeSingle();
-            if (pollErr || !poll) return { kind: 'pending' as const, message: pollErr?.message || 'Persisted poll is not visible yet' };
+            if (pollErr || !poll)
+              return {
+                kind: 'pending' as const,
+                message: pollErr?.message || 'Persisted poll is not visible yet',
+              };
             const { data: options, error: optionsErr } = await supabase
               .from('poll_options')
               .select('id, label, vote_count, sort_order')
               .eq('poll_id', poll.id)
               .order('sort_order', { ascending: true });
             if (optionsErr || !options || options.length < 2) {
-              return { kind: 'pending' as const, message: optionsErr?.message || 'Persisted poll options are not visible yet' };
+              return {
+                kind: 'pending' as const,
+                message: optionsErr?.message || 'Persisted poll options are not visible yet',
+              };
             }
             existingPoll = {
               id: poll.id,
@@ -175,21 +193,47 @@ export async function feedRoutes(app: FastifyInstance) {
         const sendReplay = (result: Awaited<ReturnType<typeof lookupExistingPost>>) => {
           if (result.kind === 'missing') return null;
           if (result.kind === 'conflict') {
-            return sendApiError(reply, request, 409, 'Conflict', 'This post retry token was already used for different content.', {
-              code: 'IDEMPOTENCY_KEY_REUSE',
-            });
+            return sendApiError(
+              reply,
+              request,
+              409,
+              'Conflict',
+              'This post retry token was already used for different content.',
+              {
+                code: 'IDEMPOTENCY_KEY_REUSE',
+              },
+            );
           }
           if (result.kind === 'error') {
-            return sendApiError(reply, request, 503, 'Service Unavailable', 'Could not safely reconcile this post retry.', {
-              code: 'POST_RECONCILIATION_UNAVAILABLE',
-            });
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Could not safely reconcile this post retry.',
+              {
+                code: 'POST_RECONCILIATION_UNAVAILABLE',
+              },
+            );
           }
           if (result.kind === 'pending') {
-            return sendApiError(reply, request, 503, 'Service Unavailable', 'The original post is still finishing persistence. Retry this same request shortly.', {
-              code: 'POST_RECONCILIATION_PENDING',
-            });
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'The original post is still finishing persistence. Retry this same request shortly.',
+              {
+                code: 'POST_RECONCILIATION_PENDING',
+              },
+            );
           }
-          return reply.send({ success: true, id: result.post.id, post: result.post, poll: result.poll });
+          return reply.send({
+            success: true,
+            id: result.post.id,
+            post: result.post,
+            poll: result.poll,
+          });
         };
 
         if (clientToken) {
@@ -230,13 +274,15 @@ export async function feedRoutes(app: FastifyInstance) {
           );
         }
 
-        let persistedPoll: {
-          id: string;
-          question: string;
-          totalVotes: number;
-          isClosed: boolean;
-          options: { id: string; label: string; voteCount: number; sortOrder: number }[];
-        } | undefined;
+        let persistedPoll:
+          | {
+              id: string;
+              question: string;
+              totalVotes: number;
+              isClosed: boolean;
+              options: { id: string; label: string; voteCount: number; sortOrder: number }[];
+            }
+          | undefined;
 
         // Create polls and options from the validated request. Remove the parent post
         // if either child write fails so a partially-created poll is not reported.
@@ -252,10 +298,21 @@ export async function feedRoutes(app: FastifyInstance) {
 
           if (pollErr || !poll) {
             const { error: cleanupError } = await supabase.from('posts').delete().eq('id', post.id);
-            if (cleanupError) app.log.error({ err: cleanupError.message, postId: post.id }, 'Failed to roll back post after poll creation error');
-            return sendApiError(reply, request, 500, 'Internal Server Error', pollErr?.message || 'Failed to create poll', {
-              code: 'DATABASE_ERROR',
-            });
+            if (cleanupError)
+              app.log.error(
+                { err: cleanupError.message, postId: post.id },
+                'Failed to roll back post after poll creation error',
+              );
+            return sendApiError(
+              reply,
+              request,
+              500,
+              'Internal Server Error',
+              pollErr?.message || 'Failed to create poll',
+              {
+                code: 'DATABASE_ERROR',
+              },
+            );
           }
 
           const optionRows = normalizedPollOptions!.map((label, idx) => ({
@@ -270,10 +327,21 @@ export async function feedRoutes(app: FastifyInstance) {
 
           if (optionsErr || !options || options.length !== optionRows.length) {
             const { error: cleanupError } = await supabase.from('posts').delete().eq('id', post.id);
-            if (cleanupError) app.log.error({ err: cleanupError.message, postId: post.id }, 'Failed to roll back post after poll options error');
-            return sendApiError(reply, request, 500, 'Internal Server Error', optionsErr?.message || 'Failed to create poll options', {
-              code: 'DATABASE_ERROR',
-            });
+            if (cleanupError)
+              app.log.error(
+                { err: cleanupError.message, postId: post.id },
+                'Failed to roll back post after poll options error',
+              );
+            return sendApiError(
+              reply,
+              request,
+              500,
+              'Internal Server Error',
+              optionsErr?.message || 'Failed to create poll options',
+              {
+                code: 'DATABASE_ERROR',
+              },
+            );
           }
 
           persistedPoll = {
@@ -835,16 +903,34 @@ export async function feedRoutes(app: FastifyInstance) {
             .maybeSingle();
 
           if (existingErr) {
-            return sendApiError(reply, request, 503, 'Service Unavailable', 'Comment retry protection is not available. Apply the feed comment idempotency migration before enabling this client.', {
-              code: 'COMMENT_IDEMPOTENCY_UNAVAILABLE',
-            });
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Comment retry protection is not available. Apply the feed comment idempotency migration before enabling this client.',
+              {
+                code: 'COMMENT_IDEMPOTENCY_UNAVAILABLE',
+              },
+            );
           }
 
           if (existing) {
-            if (existing.post_id !== postId || existing.content !== content || existing.language !== language) {
-              return sendApiError(reply, request, 409, 'Conflict', 'This comment retry token was already used for a different comment.', {
-                code: 'IDEMPOTENCY_KEY_REUSE',
-              });
+            if (
+              existing.post_id !== postId ||
+              existing.content !== content ||
+              existing.language !== language
+            ) {
+              return sendApiError(
+                reply,
+                request,
+                409,
+                'Conflict',
+                'This comment retry token was already used for a different comment.',
+                {
+                  code: 'IDEMPOTENCY_KEY_REUSE',
+                },
+              );
             }
             return reply.send({ success: true, id: existing.id, postId, comment: existing });
           }
@@ -873,10 +959,21 @@ export async function feedRoutes(app: FastifyInstance) {
               .eq('client_token', clientToken)
               .maybeSingle();
             if (!existingErr && existing) {
-              if (existing.post_id !== postId || existing.content !== content || existing.language !== language) {
-                return sendApiError(reply, request, 409, 'Conflict', 'This comment retry token was already used for a different comment.', {
-                  code: 'IDEMPOTENCY_KEY_REUSE',
-                });
+              if (
+                existing.post_id !== postId ||
+                existing.content !== content ||
+                existing.language !== language
+              ) {
+                return sendApiError(
+                  reply,
+                  request,
+                  409,
+                  'Conflict',
+                  'This comment retry token was already used for a different comment.',
+                  {
+                    code: 'IDEMPOTENCY_KEY_REUSE',
+                  },
+                );
               }
               return reply.send({ success: true, id: existing.id, postId, comment: existing });
             }

@@ -479,7 +479,11 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
         method: 'POST',
         url: '/api/v1/dm/conversations',
         headers: { 'x-user-id': 'usr-1' },
-        payload: { recipientId: 'usr-2', initialMessage: 'Hello there', clientToken: 'dm-unit-test-token' },
+        payload: {
+          recipientId: 'usr-2',
+          initialMessage: 'Hello there',
+          clientToken: 'dm-unit-test-token',
+        },
       });
 
       expect(res.statusCode).toBe(201);
@@ -745,7 +749,12 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
             select: () => ({
               eq: () => ({
                 maybeSingle: async () => ({
-                  data: { id: 'conv-1', participant_one: 'usr-1', participant_two: 'usr-2', status: 'pending' },
+                  data: {
+                    id: 'conv-1',
+                    participant_one: 'usr-1',
+                    participant_two: 'usr-2',
+                    status: 'pending',
+                  },
                   error: null,
                 }),
               }),
@@ -772,12 +781,16 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
           return {
-            select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role: 'citizen' }, error: null }) }) }),
+            select: () => ({
+              eq: () => ({ maybeSingle: async () => ({ data: { role: 'citizen' }, error: null }) }),
+            }),
           } as any;
         }
         if (table === 'conversations') {
           return {
-            select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: null, error: null }) }) }),
+            select: () => ({
+              eq: () => ({ maybeSingle: async () => ({ data: null, error: null }) }),
+            }),
           } as any;
         }
         return {} as any;
@@ -1315,7 +1328,12 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
             select: () => ({
               eq: () => ({
                 maybeSingle: async () => ({
-                  data: { id: 'c-dec-fail', participant_one: 'usr-1', participant_two: 'usr-2', status: 'pending' },
+                  data: {
+                    id: 'c-dec-fail',
+                    participant_one: 'usr-1',
+                    participant_two: 'usr-2',
+                    status: 'pending',
+                  },
                   error: null,
                 }),
               }),

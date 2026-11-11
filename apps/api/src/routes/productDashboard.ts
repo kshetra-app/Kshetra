@@ -45,7 +45,13 @@ export async function productDashboardRoutes(app: FastifyInstance) {
           { code: 'DASHBOARD_DATA_UNAVAILABLE' },
         );
       }
-      return sendApiError(reply, request, 500, 'InternalError', 'Dashboard metrics could not be loaded.');
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'InternalError',
+        'Dashboard metrics could not be loaded.',
+      );
     }
   });
 
@@ -54,7 +60,13 @@ export async function productDashboardRoutes(app: FastifyInstance) {
     '/api/v1/dashboard/reconstruct',
     async (request, reply) => {
       if (isProductionLikeRuntime()) {
-        return sendApiError(reply, request, 404, 'NotFound', 'This diagnostic endpoint is unavailable.');
+        return sendApiError(
+          reply,
+          request,
+          404,
+          'NotFound',
+          'This diagnostic endpoint is unavailable.',
+        );
       }
 
       const actor = await resolveAdminActor(request, reply);
@@ -66,16 +78,31 @@ export async function productDashboardRoutes(app: FastifyInstance) {
           return sendApiError(reply, request, 400, 'BadRequest', 'An events array is required.');
         }
         if (events.length > 10000) {
-          return sendApiError(reply, request, 413, 'PayloadTooLarge', 'At most 10,000 events may be reconstructed.');
+          return sendApiError(
+            reply,
+            request,
+            413,
+            'PayloadTooLarge',
+            'At most 10,000 events may be reconstructed.',
+          );
         }
-        if (events.some((event) =>
-          !event ||
-          typeof event.eventName !== 'string' ||
-          typeof event.anonymousId !== 'string' ||
-          typeof event.sessionId !== 'string' ||
-          typeof event.timestamp !== 'string'
-        )) {
-          return sendApiError(reply, request, 400, 'BadRequest', 'Each event must include eventName, anonymousId, sessionId, and timestamp.');
+        if (
+          events.some(
+            (event) =>
+              !event ||
+              typeof event.eventName !== 'string' ||
+              typeof event.anonymousId !== 'string' ||
+              typeof event.sessionId !== 'string' ||
+              typeof event.timestamp !== 'string',
+          )
+        ) {
+          return sendApiError(
+            reply,
+            request,
+            400,
+            'BadRequest',
+            'Each event must include eventName, anonymousId, sessionId, and timestamp.',
+          );
         }
         const reconstructed = productDashboardService.reconstructMetricsFromEvents(events);
         return sendSuccess(reply, request, {
@@ -85,8 +112,14 @@ export async function productDashboardRoutes(app: FastifyInstance) {
           verified: false,
         });
       } catch (err: any) {
-        return sendApiError(reply, request, 500, 'InternalError', 'Diagnostic reconstruction failed.');
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'InternalError',
+          'Diagnostic reconstruction failed.',
+        );
       }
-    }
+    },
   );
 }

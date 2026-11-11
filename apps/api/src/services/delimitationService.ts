@@ -2838,12 +2838,31 @@ export class DelimitationService {
 
     const mlaProfiles = constituencies.map((c: any) => {
       const acNo = c.acNo ?? 1;
-      let mlaName = c.currentMLA || c.winnerName2026 || c.winnerName2025 || c.winnerName2024 || c.winnerName2023 || c.winnerName || 'UNKNOWN';
-      let party = c.currentParty || c.winner2026 || c.winner2025 || c.winner2024 || c.winner2023 || c.winner || 'UNKNOWN';
-      let margin = c.margin2026 ?? c.margin2025 ?? c.margin2024 ?? c.margin2023 ?? c.margin ?? 12000;
-      const votes = c.winnerVotes2026 ?? c.winnerVotes2025 ?? c.winnerVotes2024 ?? c.winnerVotes2023 ?? c.winnerVotes;
-      let marginPct =
-        Math.round((margin / (votes ? votes * 1.8 : 180000)) * 1000) / 10;
+      let mlaName =
+        c.currentMLA ||
+        c.winnerName2026 ||
+        c.winnerName2025 ||
+        c.winnerName2024 ||
+        c.winnerName2023 ||
+        c.winnerName ||
+        'UNKNOWN';
+      let party =
+        c.currentParty ||
+        c.winner2026 ||
+        c.winner2025 ||
+        c.winner2024 ||
+        c.winner2023 ||
+        c.winner ||
+        'UNKNOWN';
+      let margin =
+        c.margin2026 ?? c.margin2025 ?? c.margin2024 ?? c.margin2023 ?? c.margin ?? 12000;
+      const votes =
+        c.winnerVotes2026 ??
+        c.winnerVotes2025 ??
+        c.winnerVotes2024 ??
+        c.winnerVotes2023 ??
+        c.winnerVotes;
+      let marginPct = Math.round((margin / (votes ? votes * 1.8 : 180000)) * 1000) / 10;
       let personId: string | null = null;
       let contestId: string | null = null;
 

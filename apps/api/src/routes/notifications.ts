@@ -184,7 +184,14 @@ export async function notificationRoutes(app: FastifyInstance) {
       const userId = auth.userId;
 
       if (isProductionRuntime) {
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Push token storage is not connected', { code: 'NOTIFICATION_STORAGE_UNAVAILABLE' });
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Push token storage is not connected',
+          { code: 'NOTIFICATION_STORAGE_UNAVAILABLE' },
+        );
       }
 
       const { token, platform, deviceName } = request.body;
@@ -214,7 +221,14 @@ export async function notificationRoutes(app: FastifyInstance) {
     },
     async (request, reply) => {
       if (isProductionRuntime) {
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Push delivery provider is not connected', { code: 'NOTIFICATION_PROVIDER_UNAVAILABLE' });
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Push delivery provider is not connected',
+          { code: 'NOTIFICATION_PROVIDER_UNAVAILABLE' },
+        );
       }
       const apiKey = request.headers['x-api-key'] as string;
       if (!apiKey) {
@@ -248,7 +262,14 @@ export async function notificationRoutes(app: FastifyInstance) {
       if (isProductionRuntime) {
         const auth = await resolveAuthenticatedUser(request, reply);
         if (!auth) return;
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Notification preference storage is not connected', { code: 'NOTIFICATION_STORAGE_UNAVAILABLE' });
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Notification preference storage is not connected',
+          { code: 'NOTIFICATION_STORAGE_UNAVAILABLE' },
+        );
       }
       const userId = request.headers['x-user-id'] as string;
       if (!userId) {
@@ -281,7 +302,14 @@ export async function notificationRoutes(app: FastifyInstance) {
       if (isProductionRuntime) {
         const auth = await resolveAuthenticatedUser(request, reply);
         if (!auth) return;
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Notification preference storage is not connected', { code: 'NOTIFICATION_STORAGE_UNAVAILABLE' });
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Notification preference storage is not connected',
+          { code: 'NOTIFICATION_STORAGE_UNAVAILABLE' },
+        );
       }
       const userId = request.headers['x-user-id'] as string;
       if (!userId) {

@@ -42,18 +42,30 @@ export async function universalAnalyticsRoutes(app: FastifyInstance) {
         const events: UniversalAnalyticsEventDTO[] = Array.isArray(body?.events)
           ? body.events
           : body && body.eventName
-          ? [body]
-          : [];
+            ? [body]
+            : [];
 
         if (events.length === 0) {
-          return sendApiError(reply, request, 400, 'BadRequest', 'At least one valid event must be provided in events array');
+          return sendApiError(
+            reply,
+            request,
+            400,
+            'BadRequest',
+            'At least one valid event must be provided in events array',
+          );
         }
 
         let authenticatedUserId: string | null = null;
         const authorization = request.headers.authorization;
         if (authorization !== undefined) {
           if (!authorization.startsWith('Bearer ')) {
-            return sendApiError(reply, request, 401, 'Unauthorized', 'A valid bearer token is required.');
+            return sendApiError(
+              reply,
+              request,
+              401,
+              'Unauthorized',
+              'A valid bearer token is required.',
+            );
           }
           if (!isSupabaseAvailable()) {
             return sendApiError(
@@ -68,11 +80,23 @@ export async function universalAnalyticsRoutes(app: FastifyInstance) {
           try {
             const { data, error } = await supabase.auth.getUser(authorization.slice(7).trim());
             if (error || !data.user) {
-              return sendApiError(reply, request, 401, 'Unauthorized', 'The bearer token is invalid or expired.');
+              return sendApiError(
+                reply,
+                request,
+                401,
+                'Unauthorized',
+                'The bearer token is invalid or expired.',
+              );
             }
             authenticatedUserId = data.user.id;
           } catch {
-            return sendApiError(reply, request, 401, 'Unauthorized', 'The bearer token could not be validated.');
+            return sendApiError(
+              reply,
+              request,
+              401,
+              'Unauthorized',
+              'The bearer token could not be validated.',
+            );
           }
         }
 
@@ -98,7 +122,7 @@ export async function universalAnalyticsRoutes(app: FastifyInstance) {
         }
         return sendApiError(reply, request, 500, 'InternalError', err.message);
       }
-    }
+    },
   );
 
   // 2. GET /api/v1/analytics/events (Multi-Dimensional Query)
@@ -111,40 +135,43 @@ export async function universalAnalyticsRoutes(app: FastifyInstance) {
       to?: string;
       limit?: string;
     };
-  }>(
-    '/api/v1/analytics/events',
-    async (request, reply) => {
-      const actor = await resolveAdminActor(request, reply);
-      if (!actor) return;
+  }>('/api/v1/analytics/events', async (request, reply) => {
+    const actor = await resolveAdminActor(request, reply);
+    if (!actor) return;
 
-      try {
-        const q = request.query;
-        const events = await universalAnalyticsService.queryEvents({
-          eventName: q.eventName,
-          userId: q.userId,
-          acId: q.acId,
-          from: q.from,
-          to: q.to,
-          limit: q.limit ? parseInt(q.limit, 10) : 100,
-        });
+    try {
+      const q = request.query;
+      const events = await universalAnalyticsService.queryEvents({
+        eventName: q.eventName,
+        userId: q.userId,
+        acId: q.acId,
+        from: q.from,
+        to: q.to,
+        limit: q.limit ? parseInt(q.limit, 10) : 100,
+      });
 
-        return sendSuccess(reply, request, {
-          total: events.length,
-          events,
-        });
-      } catch (err: any) {
-        if (err instanceof AnalyticsStorageUnavailableError) {
-          return sendApiError(
-            reply,
-            request,
-            503,
-            'ServiceUnavailable',
-            'Durable analytics storage is unavailable.',
-            { code: 'ANALYTICS_STORAGE_UNAVAILABLE' },
-          );
-        }
-        return sendApiError(reply, request, 500, 'InternalError', 'Analytics events could not be queried.');
+      return sendSuccess(reply, request, {
+        total: events.length,
+        events,
+      });
+    } catch (err: any) {
+      if (err instanceof AnalyticsStorageUnavailableError) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'ServiceUnavailable',
+          'Durable analytics storage is unavailable.',
+          { code: 'ANALYTICS_STORAGE_UNAVAILABLE' },
+        );
       }
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'InternalError',
+        'Analytics events could not be queried.',
+      );
     }
-  );
+  });
 }

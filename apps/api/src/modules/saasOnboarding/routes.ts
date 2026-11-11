@@ -82,7 +82,12 @@ export const saasOnboardingRoutes: FastifyPluginAsync = async (app) => {
     } catch (err: any) {
       request.log.error({ err }, 'Error during partner self-service signup');
       const statusCode = err.statusCode || 500;
-      const errorText = statusCode === 400 ? 'Bad Request' : statusCode === 403 ? 'Forbidden' : 'Internal Server Error';
+      const errorText =
+        statusCode === 400
+          ? 'Bad Request'
+          : statusCode === 403
+            ? 'Forbidden'
+            : 'Internal Server Error';
       return sendApiError(
         reply,
         request,
@@ -106,7 +111,13 @@ export const saasOnboardingRoutes: FastifyPluginAsync = async (app) => {
       return sendSaasSuccess(reply, request, keys);
     } catch (err: any) {
       request.log.error({ err, tenantId: auth.tenantId }, 'Error listing tenant API keys');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to retrieve API keys');
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Failed to retrieve API keys',
+      );
     }
   });
 
@@ -138,7 +149,14 @@ export const saasOnboardingRoutes: FastifyPluginAsync = async (app) => {
     } catch (err: any) {
       request.log.error({ err, tenantId: auth.tenantId }, 'Error generating tenant API key');
       const statusCode = err.statusCode || 500;
-      const errorText = statusCode === 403 ? 'Forbidden' : statusCode === 404 ? 'Not Found' : statusCode === 400 ? 'Bad Request' : 'Internal Server Error';
+      const errorText =
+        statusCode === 403
+          ? 'Forbidden'
+          : statusCode === 404
+            ? 'Not Found'
+            : statusCode === 400
+              ? 'Bad Request'
+              : 'Internal Server Error';
       return sendApiError(
         reply,
         request,
@@ -156,7 +174,13 @@ export const saasOnboardingRoutes: FastifyPluginAsync = async (app) => {
 
     const parseResult = apiKeyIdParamSchema.safeParse(request.params);
     if (!parseResult.success) {
-      return sendApiError(reply, request, 400, 'Bad Request', 'Invalid API key ID parameter format');
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'Bad Request',
+        'Invalid API key ID parameter format',
+      );
     }
 
     try {
@@ -165,7 +189,12 @@ export const saasOnboardingRoutes: FastifyPluginAsync = async (app) => {
     } catch (err: any) {
       request.log.error({ err, tenantId: auth.tenantId }, 'Error revoking API key');
       const statusCode = err.statusCode || 500;
-      const errorText = statusCode === 403 ? 'Forbidden' : statusCode === 404 ? 'Not Found' : 'Internal Server Error';
+      const errorText =
+        statusCode === 403
+          ? 'Forbidden'
+          : statusCode === 404
+            ? 'Not Found'
+            : 'Internal Server Error';
       return sendApiError(
         reply,
         request,
@@ -201,7 +230,10 @@ export const saasOnboardingRoutes: FastifyPluginAsync = async (app) => {
     }
 
     try {
-      const checkoutResult = await billingService.createCheckoutSession(auth.tenantId, parseResult.data);
+      const checkoutResult = await billingService.createCheckoutSession(
+        auth.tenantId,
+        parseResult.data,
+      );
       return sendSaasSuccess(reply, request, checkoutResult);
     } catch (err: any) {
       request.log.error({ err, tenantId: auth.tenantId }, 'Error creating billing checkout order');
@@ -245,48 +277,52 @@ export const saasOnboardingRoutes: FastifyPluginAsync = async (app) => {
     }
   });
 
-  app.post('/api/vsaas/v1/billing/webhook', {
-    preParsing: async (request, _reply, payload) => {
-      const chunks: Buffer[] = [];
-      for await (const chunk of payload) {
-        chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
-      }
-      const rawBody = Buffer.concat(chunks);
-      (request as FastifyRequest & { rawBody?: Buffer }).rawBody = rawBody;
-      return Readable.from([rawBody]);
+  app.post(
+    '/api/vsaas/v1/billing/webhook',
+    {
+      preParsing: async (request, _reply, payload) => {
+        const chunks: Buffer[] = [];
+        for await (const chunk of payload) {
+          chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+        }
+        const rawBody = Buffer.concat(chunks);
+        (request as FastifyRequest & { rawBody?: Buffer }).rawBody = rawBody;
+        return Readable.from([rawBody]);
+      },
     },
-  }, async (request, reply) => {
-    const signature =
-      (request.headers['x-razorpay-signature'] as string) ||
-      (request.headers['stripe-signature'] as string) ||
-      '';
+    async (request, reply) => {
+      const signature =
+        (request.headers['x-razorpay-signature'] as string) ||
+        (request.headers['stripe-signature'] as string) ||
+        '';
 
-    const rawBody = (request as FastifyRequest & { rawBody?: Buffer }).rawBody;
-    if (!rawBody) {
-      return sendApiError(
-        reply,
-        request,
-        400,
-        'Bad Request',
-        'Raw payment webhook payload is unavailable for signature verification.',
-        { code: 'WEBHOOK_RAW_BODY_MISSING' },
-      );
-    }
+      const rawBody = (request as FastifyRequest & { rawBody?: Buffer }).rawBody;
+      if (!rawBody) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'Raw payment webhook payload is unavailable for signature verification.',
+          { code: 'WEBHOOK_RAW_BODY_MISSING' },
+        );
+      }
 
-    try {
-      const result = await billingService.processInboundWebhook(rawBody, signature, request.body);
-      return reply.status(200).send({ received: true, ...result });
-    } catch (err: any) {
-      request.log.warn({ err }, 'Inbound billing webhook verification failed');
-      return sendApiError(
-        reply,
-        request,
-        err.statusCode || 400,
-        err.code || 'WEBHOOK_VERIFICATION_FAILED',
-        err.message || 'Invalid webhook signature',
-      );
-    }
-  });
+      try {
+        const result = await billingService.processInboundWebhook(rawBody, signature, request.body);
+        return reply.status(200).send({ received: true, ...result });
+      } catch (err: any) {
+        request.log.warn({ err }, 'Inbound billing webhook verification failed');
+        return sendApiError(
+          reply,
+          request,
+          err.statusCode || 400,
+          err.code || 'WEBHOOK_VERIFICATION_FAILED',
+          err.message || 'Invalid webhook signature',
+        );
+      }
+    },
+  );
 
   // ============================================================================
   // 4. USAGE & QUOTA TELEMETRY
@@ -300,7 +336,13 @@ export const saasOnboardingRoutes: FastifyPluginAsync = async (app) => {
       return sendSaasSuccess(reply, request, usage);
     } catch (err: any) {
       request.log.error({ err, tenantId: auth.tenantId }, 'Error fetching tenant usage metrics');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to retrieve usage metrics');
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Failed to retrieve usage metrics',
+      );
     }
   });
 
@@ -319,7 +361,13 @@ export const saasOnboardingRoutes: FastifyPluginAsync = async (app) => {
       reply.header('Content-Type', 'text/yaml; charset=utf-8');
       return reply.send(content);
     }
-    return sendApiError(reply, _request, 404, 'Not Found', 'OpenAPI YAML specification file not found');
+    return sendApiError(
+      reply,
+      _request,
+      404,
+      'Not Found',
+      'OpenAPI YAML specification file not found',
+    );
   });
 
   app.get('/api/vsaas/v1/openapi.json', async (_request, reply) => {
@@ -330,7 +378,13 @@ export const saasOnboardingRoutes: FastifyPluginAsync = async (app) => {
         const parsed = YAML.parse(content);
         return reply.status(200).send(parsed);
       } catch (err) {
-        return sendApiError(reply, _request, 500, 'Parse Error', 'Failed to parse OpenAPI specification to JSON');
+        return sendApiError(
+          reply,
+          _request,
+          500,
+          'Parse Error',
+          'Failed to parse OpenAPI specification to JSON',
+        );
       }
     }
     return sendApiError(reply, _request, 404, 'Not Found', 'OpenAPI specification file not found');

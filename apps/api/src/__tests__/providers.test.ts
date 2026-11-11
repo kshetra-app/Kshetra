@@ -567,7 +567,10 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
         latestCreatedOrder = null;
         razorpayFetchSpy = jest.spyOn(global, 'fetch').mockImplementation(async (input, init) => {
           if (init?.method === 'POST') {
-            const requestBody = JSON.parse(String(init.body || '{}')) as { amount: number; currency: string };
+            const requestBody = JSON.parse(String(init.body || '{}')) as {
+              amount: number;
+              currency: string;
+            };
             latestCreatedOrder = {
               id: `order_razorpay_security_${++orderSequence}`,
               amount: requestBody.amount,

@@ -5,7 +5,13 @@ import {
 } from '../services/aiProvider';
 
 describe('AI provider runtime safety', () => {
-  const keys = ['APP_ENV', 'EXPO_PUBLIC_APP_ENV', 'GEMINI_API_KEY', 'OPENAI_API_KEY', 'CUSTOM_LLM_BASE_URL'];
+  const keys = [
+    'APP_ENV',
+    'EXPO_PUBLIC_APP_ENV',
+    'GEMINI_API_KEY',
+    'OPENAI_API_KEY',
+    'CUSTOM_LLM_BASE_URL',
+  ];
   const original = Object.fromEntries(keys.map((key) => [key, process.env[key]]));
 
   afterEach(() => {
@@ -32,7 +38,9 @@ describe('AI provider runtime safety', () => {
       registry.generateWithFallback({ messages: [{ role: 'user', content: 'What happened?' }] }),
     ).rejects.toMatchObject({ code: 'AI_PROVIDER_UNAVAILABLE' });
     await expect(
-      offlineProvider.generateCompletion({ messages: [{ role: 'user', content: 'What happened?' }] }),
+      offlineProvider.generateCompletion({
+        messages: [{ role: 'user', content: 'What happened?' }],
+      }),
     ).rejects.toBeInstanceOf(AIProviderUnavailableError);
   });
 
@@ -45,6 +53,8 @@ describe('AI provider runtime safety', () => {
 
     const registry = new AIProviderRegistry();
 
-    expect(registry.getActiveChain().map((provider) => provider.name)).toEqual(['offline_heuristic']);
+    expect(registry.getActiveChain().map((provider) => provider.name)).toEqual([
+      'offline_heuristic',
+    ]);
   });
 });

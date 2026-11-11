@@ -70,11 +70,21 @@ export function getMediaHosts(): MediaHosts {
 /** True only when the production publish and playback hosts are explicitly configured. */
 export function isMediaPipelineConfigured(hosts: MediaHosts = getMediaHosts()): boolean {
   if (hosts.mode !== 'self_hosted') return false;
-  const configuredHosts = [hosts.ingestHost, hosts.srsHost, hosts.omeHost, hosts.livekitHost, hosts.edgeHost];
+  const configuredHosts = [
+    hosts.ingestHost,
+    hosts.srsHost,
+    hosts.omeHost,
+    hosts.livekitHost,
+    hosts.edgeHost,
+  ];
   return configuredHosts.every((host) => {
     const normalized = host.trim().toLowerCase();
-    return normalized.length > 0 && !normalized.endsWith('.example') &&
-      normalized !== 'localhost' && normalized !== '127.0.0.1';
+    return (
+      normalized.length > 0 &&
+      !normalized.endsWith('.example') &&
+      normalized !== 'localhost' &&
+      normalized !== '127.0.0.1'
+    );
   });
 }
 

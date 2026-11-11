@@ -26,34 +26,42 @@ describe('Civic community groups production persistence', () => {
 
   it('creates a durable group through the atomic database function', async () => {
     rpc.mockResolvedValue({
-      data: [{
-        id: 'group-1',
-        name: 'Road Safety',
-        slug: 'road-safety-ts-ac-1',
-        constituency_id: 'TS-AC-1',
-        category: 'roads',
-        created_by: 'user-1',
-        member_count: 1,
-        is_active: true,
-        created_at: '2026-11-08T00:00:00.000Z',
-        updated_at: '2026-11-08T00:00:00.000Z',
-      }],
+      data: [
+        {
+          id: 'group-1',
+          name: 'Road Safety',
+          slug: 'road-safety-ts-ac-1',
+          constituency_id: 'TS-AC-1',
+          category: 'roads',
+          created_by: 'user-1',
+          member_count: 1,
+          is_active: true,
+          created_at: '2026-11-08T00:00:00.000Z',
+          updated_at: '2026-11-08T00:00:00.000Z',
+        },
+      ],
       error: null,
     });
 
-    const group = await service.createGroup({
-      name: 'Road Safety',
-      constituencyId: 'TS-AC-1',
-      category: 'roads',
-      mandal: 'North',
-    }, 'user-1');
+    const group = await service.createGroup(
+      {
+        name: 'Road Safety',
+        constituencyId: 'TS-AC-1',
+        category: 'roads',
+        mandal: 'North',
+      },
+      'user-1',
+    );
 
-    expect(rpc).toHaveBeenCalledWith('create_civic_community_group', expect.objectContaining({
-      p_name: 'Road Safety',
-      p_constituency_id: 'TS-AC-1',
-      p_mandal: 'North',
-      p_created_by: 'user-1',
-    }));
+    expect(rpc).toHaveBeenCalledWith(
+      'create_civic_community_group',
+      expect.objectContaining({
+        p_name: 'Road Safety',
+        p_constituency_id: 'TS-AC-1',
+        p_mandal: 'North',
+        p_created_by: 'user-1',
+      }),
+    );
     expect(group.memberCount).toBe(1);
     expect(group.createdBy).toBe('user-1');
   });
@@ -74,11 +82,16 @@ describe('Civic community groups production persistence', () => {
   it('reports a duplicate group slug as a conflict', async () => {
     rpc.mockResolvedValue({ data: null, error: { code: '23505', message: 'duplicate key value' } });
 
-    await expect(service.createGroup({
-      name: 'Road Safety',
-      constituencyId: 'TS-AC-1',
-      category: 'roads',
-    }, 'user-1')).rejects.toMatchObject({
+    await expect(
+      service.createGroup(
+        {
+          name: 'Road Safety',
+          constituencyId: 'TS-AC-1',
+          category: 'roads',
+        },
+        'user-1',
+      ),
+    ).rejects.toMatchObject({
       code: 'COMMUNITY_GROUP_SLUG_CONFLICT',
       statusCode: 409,
     });

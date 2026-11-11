@@ -41,11 +41,14 @@ describe('AI execution accounting', () => {
       degradedOffline: false,
     };
 
-    defaultAIRegistry.registerProvider({
-      name: 'openai',
-      isAvailable: () => true,
-      generateCompletion: async () => response,
-    }, 0);
+    defaultAIRegistry.registerProvider(
+      {
+        name: 'openai',
+        isAvailable: () => true,
+        generateCompletion: async () => response,
+      },
+      0,
+    );
 
     const result = await executeAICompletion({
       messages: [{ role: 'user', content: 'Test AI cost accounting.' }],
@@ -54,7 +57,9 @@ describe('AI execution accounting', () => {
     });
 
     expect(result.costUsd).toBeNull();
-    expect(await AICostControlService.checkBudget('accounting_test')).toMatchObject({ allowed: false });
+    expect(await AICostControlService.checkBudget('accounting_test')).toMatchObject({
+      allowed: false,
+    });
     const report = await AICostControlService.generateCostReport('accounting_test', 'day');
     expect(report.totalCostUsd).toBeNull();
     expect(report.costProvenance).toBe('partial');
@@ -65,16 +70,21 @@ describe('AI execution accounting', () => {
     delete process.env.EXPO_PUBLIC_APP_ENV;
     setSupabaseConfiguredForTesting(false);
     const generateCompletion = jest.fn();
-    defaultAIRegistry.registerProvider({
-      name: 'openai',
-      isAvailable: () => true,
-      generateCompletion,
-    }, 0);
+    defaultAIRegistry.registerProvider(
+      {
+        name: 'openai',
+        isAvailable: () => true,
+        generateCompletion,
+      },
+      0,
+    );
 
-    await expect(executeAICompletion({
-      messages: [{ role: 'user', content: 'This must fail before provider execution.' }],
-      tenantId: 'default_tenant',
-    })).rejects.toMatchObject({ code: 'AI_BUDGET_UNAVAILABLE' });
+    await expect(
+      executeAICompletion({
+        messages: [{ role: 'user', content: 'This must fail before provider execution.' }],
+        tenantId: 'default_tenant',
+      }),
+    ).rejects.toMatchObject({ code: 'AI_BUDGET_UNAVAILABLE' });
 
     expect(generateCompletion).not.toHaveBeenCalled();
   });
@@ -100,16 +110,24 @@ describe('AI execution accounting', () => {
       degradedOffline: false,
     };
 
-    defaultAIRegistry.registerProvider({
-      name: 'gemini',
-      isAvailable: () => true,
-      generateCompletion: async () => { throw new Error('provider timeout'); },
-    }, 0);
-    defaultAIRegistry.registerProvider({
-      name: 'openai',
-      isAvailable: () => true,
-      generateCompletion: async () => response,
-    }, 1);
+    defaultAIRegistry.registerProvider(
+      {
+        name: 'gemini',
+        isAvailable: () => true,
+        generateCompletion: async () => {
+          throw new Error('provider timeout');
+        },
+      },
+      0,
+    );
+    defaultAIRegistry.registerProvider(
+      {
+        name: 'openai',
+        isAvailable: () => true,
+        generateCompletion: async () => response,
+      },
+      1,
+    );
 
     const result = await executeAICompletion({
       messages: [{ role: 'user', content: 'Verify failover accounting.' }],
@@ -119,6 +137,8 @@ describe('AI execution accounting', () => {
     expect(result.content).toBe(response.content);
     expect(result.costUsd).toBeNull();
     expect(result.costBasis).toBe('unavailable');
-    expect(await AICostControlService.checkBudget('fallback_accounting_test')).toMatchObject({ allowed: false });
+    expect(await AICostControlService.checkBudget('fallback_accounting_test')).toMatchObject({
+      allowed: false,
+    });
   });
 });

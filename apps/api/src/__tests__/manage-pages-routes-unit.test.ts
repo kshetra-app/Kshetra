@@ -36,7 +36,10 @@ describe('Manage & Pages Routes Comprehensive Unit Tests', () => {
     process.env.RAZORPAY_KEY_ID = 'rzp_test_pages_suite_key';
     process.env.RAZORPAY_KEY_SECRET = 'pages_suite_test_secret';
     jest.spyOn(global, 'fetch').mockImplementation(async (_input, init) => {
-      const requestBody = JSON.parse(String(init?.body || '{}')) as { amount: number; currency: string };
+      const requestBody = JSON.parse(String(init?.body || '{}')) as {
+        amount: number;
+        currency: string;
+      };
       return {
         ok: true,
         status: 200,
@@ -944,9 +947,10 @@ describe('Manage & Pages Routes Comprehensive Unit Tests', () => {
               }),
             } as any;
           }
-          const data = table === 'pages'
-            ? { id: pageId, owner_id: 'user-owner-1', role: 'politician' }
-            : { role: 'politician' };
+          const data =
+            table === 'pages'
+              ? { id: pageId, owner_id: 'user-owner-1', role: 'politician' }
+              : { role: 'politician' };
           return {
             select: () => ({
               eq: () => ({ maybeSingle: async () => ({ data, error: null }) }),

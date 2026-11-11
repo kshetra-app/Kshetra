@@ -27,7 +27,13 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     const body = request.body as any;
 
     if (!body || !body.targetUserId || !body.action) {
-      return sendApiError(reply, request, 400, 'INVALID_PAYLOAD', 'targetUserId and action are required.');
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'INVALID_PAYLOAD',
+        'targetUserId and action are required.',
+      );
     }
 
     const result = await adminService.executeUserAction(actor, body);
@@ -40,7 +46,13 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     const body = request.body as any;
 
     if (!body || !body.targetContentId || !body.decision) {
-      return sendApiError(reply, request, 400, 'INVALID_PAYLOAD', 'targetContentId and decision are required.');
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'INVALID_PAYLOAD',
+        'targetContentId and decision are required.',
+      );
     }
 
     const result = await adminService.decideModeration(actor, body);
@@ -53,7 +65,13 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     const body = request.body as any;
 
     if (!body || !body.candidateId || !body.kycStatus) {
-      return sendApiError(reply, request, 400, 'INVALID_PAYLOAD', 'candidateId and kycStatus are required.');
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'INVALID_PAYLOAD',
+        'candidateId and kycStatus are required.',
+      );
     }
 
     const result = await adminService.verifyCandidate(actor, body);
@@ -66,7 +84,13 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     const body = request.body as any;
 
     if (!body || !body.entityType || !body.entityId || !body.field) {
-      return sendApiError(reply, request, 400, 'INVALID_PAYLOAD', 'entityType, entityId, and field are required.');
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'INVALID_PAYLOAD',
+        'entityType, entityId, and field are required.',
+      );
     }
 
     const result = await adminService.executeDataCorrection(actor, body);
@@ -85,7 +109,13 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     const body = request.body as { value: unknown; description?: string };
 
     if (body === undefined || body.value === undefined) {
-      return sendApiError(reply, request, 400, 'INVALID_PAYLOAD', 'Feature flag value must be provided.');
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'INVALID_PAYLOAD',
+        'Feature flag value must be provided.',
+      );
     }
 
     const updated = await adminService.setFeatureFlag(actor, key, body.value, body.description);

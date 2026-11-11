@@ -14,7 +14,9 @@ const isTestRuntime = () => isIsolatedTestRuntime();
 export class AIBudgetUnavailableError extends Error {
   readonly code = 'AI_BUDGET_UNAVAILABLE';
 
-  constructor(message = 'A durable AI budget and verified cost basis are required in deployed runtimes.') {
+  constructor(
+    message = 'A durable AI budget and verified cost basis are required in deployed runtimes.',
+  ) {
     super(message);
     this.name = 'AIBudgetUnavailableError';
   }
@@ -34,7 +36,9 @@ export class AICostControlService {
     const now = new Date();
     const productionRuntime = isProductionLikeRuntime();
     if (productionRuntime && (!isSupabaseConfigured || !isUsingServiceRole)) {
-      throw new AIBudgetUnavailableError('A service-role database connection is required for production AI budgets.');
+      throw new AIBudgetUnavailableError(
+        'A service-role database connection is required for production AI budgets.',
+      );
     }
 
     let budget = productionRuntime ? undefined : this.budgetStore.get(tenantId);
@@ -47,7 +51,8 @@ export class AICostControlService {
           .maybeSingle();
 
         if (error) {
-          if (productionRuntime) throw new AIBudgetUnavailableError('Could not read the durable AI tenant budget.');
+          if (productionRuntime)
+            throw new AIBudgetUnavailableError('Could not read the durable AI tenant budget.');
         } else if (data) {
           budget = {
             tenantId: data.tenant_id,
@@ -55,7 +60,8 @@ export class AICostControlService {
             dailyTokenBudget: data.daily_token_budget,
             dailySpendLimitUsd: Number(data.daily_spend_limit_usd),
             currentDayTokens: data.current_day_tokens,
-            currentDaySpendUsd: data.current_day_spend_usd == null ? null : Number(data.current_day_spend_usd),
+            currentDaySpendUsd:
+              data.current_day_spend_usd == null ? null : Number(data.current_day_spend_usd),
             circuitBreakerTripped: data.circuit_breaker_tripped,
             resetAt: data.reset_at,
           };
@@ -63,7 +69,8 @@ export class AICostControlService {
       }
 
       if (!budget) {
-        if (productionRuntime) throw new AIBudgetUnavailableError('No durable AI budget is configured for this tenant.');
+        if (productionRuntime)
+          throw new AIBudgetUnavailableError('No durable AI budget is configured for this tenant.');
         budget = {
           tenantId,
           tier: 'free',
@@ -104,7 +111,8 @@ export class AICostControlService {
           .select('tenant_id')
           .maybeSingle();
         if (error || !data) {
-          if (productionRuntime) throw new AIBudgetUnavailableError('Could not persist the AI budget reset.');
+          if (productionRuntime)
+            throw new AIBudgetUnavailableError('Could not persist the AI budget reset.');
         }
       }
     }
@@ -131,7 +139,9 @@ export class AICostControlService {
     }
 
     if (budget.currentDaySpendUsd === null) {
-      throw new AIBudgetUnavailableError('Current-day AI spend is unknown; AI usage remains blocked until the budget is safely reset.');
+      throw new AIBudgetUnavailableError(
+        'Current-day AI spend is unknown; AI usage remains blocked until the budget is safely reset.',
+      );
     }
 
     if (budget.currentDayTokens + estimatedTokens > budget.dailyTokenBudget) {
@@ -178,21 +188,37 @@ export class AICostControlService {
   }
 
   /** Record token usage and expenditure against tenant budget */
-  static async recordUsage(tenantId: string, tokens: number, spendUsd: number | null): Promise<void> {
-    if (!Number.isSafeInteger(tokens) || tokens < 0 || (spendUsd !== null && (!Number.isFinite(spendUsd) || spendUsd < 0))) {
-      throw new TypeError('AI usage must contain a non-negative integer token count and a non-negative known cost or null.');
+  static async recordUsage(
+    tenantId: string,
+    tokens: number,
+    spendUsd: number | null,
+  ): Promise<void> {
+    if (
+      !Number.isSafeInteger(tokens) ||
+      tokens < 0 ||
+      (spendUsd !== null && (!Number.isFinite(spendUsd) || spendUsd < 0))
+    ) {
+      throw new TypeError(
+        'AI usage must contain a non-negative integer token count and a non-negative known cost or null.',
+      );
     }
 
     if (isProductionLikeRuntime()) {
-      throw new AIBudgetUnavailableError('Production AI usage must be recorded together with its ledger row by the atomic accounting path.');
+      throw new AIBudgetUnavailableError(
+        'Production AI usage must be recorded together with its ledger row by the atomic accounting path.',
+      );
     }
 
     const budget = await this.getTenantBudget(tenantId);
     const newTokens = budget.currentDayTokens + tokens;
-    const newSpend = spendUsd === null || budget.currentDaySpendUsd === null
-      ? null
-      : Number((budget.currentDaySpendUsd + spendUsd).toFixed(4));
-    const shouldTrip = newSpend === null || newTokens >= budget.dailyTokenBudget || newSpend >= budget.dailySpendLimitUsd;
+    const newSpend =
+      spendUsd === null || budget.currentDaySpendUsd === null
+        ? null
+        : Number((budget.currentDaySpendUsd + spendUsd).toFixed(4));
+    const shouldTrip =
+      newSpend === null ||
+      newTokens >= budget.dailyTokenBudget ||
+      newSpend >= budget.dailySpendLimitUsd;
 
     budget.currentDayTokens = newTokens;
     budget.currentDaySpendUsd = newSpend;
@@ -218,7 +244,9 @@ export class AICostControlService {
   }
 
   /** Update or configure tenant budget */
-  static async configureBudget(budget: Partial<TenantAIBudget> & { tenantId: string }): Promise<TenantAIBudget> {
+  static async configureBudget(
+    budget: Partial<TenantAIBudget> & { tenantId: string },
+  ): Promise<TenantAIBudget> {
     const current = await this.getTenantBudget(budget.tenantId);
     const updated: TenantAIBudget = {
       ...current,
@@ -247,7 +275,9 @@ export class AICostControlService {
         throw new AIBudgetUnavailableError('Could not persist the tenant AI budget.');
       }
     } else if (isProductionLikeRuntime()) {
-      throw new AIBudgetUnavailableError('Supabase is required to configure production AI budgets.');
+      throw new AIBudgetUnavailableError(
+        'Supabase is required to configure production AI budgets.',
+      );
     }
 
     return updated;
@@ -260,10 +290,14 @@ export class AICostControlService {
   ): Promise<AICostReport> {
     const budget = await this.getTenantBudget(tenantId);
     const productionRuntime = isProductionLikeRuntime();
-    let entries: AICostLedgerEntry[] = productionRuntime ? [] : AICostLedgerService.getLedgerEntries(tenantId);
+    let entries: AICostLedgerEntry[] = productionRuntime
+      ? []
+      : AICostLedgerService.getLedgerEntries(tenantId);
 
     if (productionRuntime && (!isSupabaseConfigured || !isUsingServiceRole)) {
-      throw new AIBudgetUnavailableError('A service-role database connection is required for production cost reports.');
+      throw new AIBudgetUnavailableError(
+        'A service-role database connection is required for production cost reports.',
+      );
     }
 
     if (productionRuntime || (entries.length === 0 && isSupabaseConfigured && !isTestRuntime())) {
@@ -282,7 +316,8 @@ export class AICostControlService {
         }
 
         const { data, error } = await query;
-        if (error && productionRuntime) throw new AIBudgetUnavailableError('Could not read the durable AI cost ledger.');
+        if (error && productionRuntime)
+          throw new AIBudgetUnavailableError('Could not read the durable AI cost ledger.');
         if (data && data.length > 0) {
           entries = data.map((d) => ({
             id: d.id,
@@ -306,14 +341,20 @@ export class AICostControlService {
           }));
         }
       } catch (error) {
-        if (productionRuntime) throw error instanceof AIBudgetUnavailableError
-          ? error
-          : new AIBudgetUnavailableError('Could not read the durable AI cost ledger.');
+        if (productionRuntime)
+          throw error instanceof AIBudgetUnavailableError
+            ? error
+            : new AIBudgetUnavailableError('Could not read the durable AI cost ledger.');
       }
     }
 
     const now = Date.now();
-    const periodMs = period === 'day' ? 24 * 60 * 60 * 1000 : period === 'week' ? 7 * 24 * 60 * 60 * 1000 : 30 * 24 * 60 * 60 * 1000;
+    const periodMs =
+      period === 'day'
+        ? 24 * 60 * 60 * 1000
+        : period === 'week'
+          ? 7 * 24 * 60 * 60 * 1000
+          : 30 * 24 * 60 * 60 * 1000;
     entries = entries.filter((entry) => now - new Date(entry.createdAt).getTime() <= periodMs);
 
     const totalRequests = entries.length;
@@ -326,8 +367,14 @@ export class AICostControlService {
       ? entries.reduce((acc, entry) => acc + Number(entry.costInr), 0)
       : null;
 
-    const costByOperation: Record<string, { requests: number; tokens: number; costUsd: number | null }> = {};
-    const costByProvider: Record<string, { requests: number; tokens: number; costUsd: number | null }> = {};
+    const costByOperation: Record<
+      string,
+      { requests: number; tokens: number; costUsd: number | null }
+    > = {};
+    const costByProvider: Record<
+      string,
+      { requests: number; tokens: number; costUsd: number | null }
+    > = {};
 
     for (const entry of entries) {
       if (!costByOperation[entry.operationType]) {
@@ -336,9 +383,10 @@ export class AICostControlService {
       costByOperation[entry.operationType].requests += 1;
       costByOperation[entry.operationType].tokens += entry.totalTokens;
       const operationCost = costByOperation[entry.operationType].costUsd;
-      costByOperation[entry.operationType].costUsd = operationCost === null || entry.costUsd === null
-        ? null
-        : Number((operationCost + entry.costUsd).toFixed(6));
+      costByOperation[entry.operationType].costUsd =
+        operationCost === null || entry.costUsd === null
+          ? null
+          : Number((operationCost + entry.costUsd).toFixed(6));
 
       if (!costByProvider[entry.provider]) {
         costByProvider[entry.provider] = { requests: 0, tokens: 0, costUsd: 0 };
@@ -346,9 +394,10 @@ export class AICostControlService {
       costByProvider[entry.provider].requests += 1;
       costByProvider[entry.provider].tokens += entry.totalTokens;
       const providerCost = costByProvider[entry.provider].costUsd;
-      costByProvider[entry.provider].costUsd = providerCost === null || entry.costUsd === null
-        ? null
-        : Number((providerCost + entry.costUsd).toFixed(6));
+      costByProvider[entry.provider].costUsd =
+        providerCost === null || entry.costUsd === null
+          ? null
+          : Number((providerCost + entry.costUsd).toFixed(6));
     }
 
     const cacheHitRatio = totalRequests > 0 ? Number((cacheHits / totalRequests).toFixed(4)) : 0;
@@ -362,16 +411,29 @@ export class AICostControlService {
       totalTokens,
       totalCostUsd: totalCostUsd === null ? null : Number(totalCostUsd.toFixed(6)),
       totalCostInr: totalCostInr === null ? null : Number(totalCostInr.toFixed(4)),
-      costProvenance: totalRequests === 0
-        ? 'unavailable'
-        : entries.every((entry) =>
-          (entry.costBasis === 'provider_rate_card' && entry.usageBasis === 'provider_reported') ||
-          (entry.costBasis === 'cache_hit' && entry.usageBasis === 'not_applicable'),
-        )
-          ? 'complete'
-          : 'partial',
-      costRateCardVersions: [...new Set(entries.flatMap((entry) => entry.costRateCardVersion ? [entry.costRateCardVersion] : []))],
-      costSources: [...new Set(entries.flatMap((entry) => entry.costRateCardSource ? [entry.costRateCardSource] : []))],
+      costProvenance:
+        totalRequests === 0
+          ? 'unavailable'
+          : entries.every(
+                (entry) =>
+                  (entry.costBasis === 'provider_rate_card' &&
+                    entry.usageBasis === 'provider_reported') ||
+                  (entry.costBasis === 'cache_hit' && entry.usageBasis === 'not_applicable'),
+              )
+            ? 'complete'
+            : 'partial',
+      costRateCardVersions: [
+        ...new Set(
+          entries.flatMap((entry) =>
+            entry.costRateCardVersion ? [entry.costRateCardVersion] : [],
+          ),
+        ),
+      ],
+      costSources: [
+        ...new Set(
+          entries.flatMap((entry) => (entry.costRateCardSource ? [entry.costRateCardSource] : [])),
+        ),
+      ],
       costByOperation,
       costByProvider,
       circuitBreakerTripped: budget.circuitBreakerTripped,

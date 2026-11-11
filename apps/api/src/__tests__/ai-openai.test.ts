@@ -35,8 +35,15 @@ function mockReply(content: unknown) {
 
 describe('ai service — OpenAI-configured path (mocked client)', () => {
   const original = Object.fromEntries(
-    ['APP_ENV', 'EXPO_PUBLIC_APP_ENV', 'OPENAI_API_KEY', 'GEMINI_API_KEY', 'OPENAI_MODEL', 'GEMINI_MODEL', 'AI_PROVIDER_RATE_CARD_JSON']
-      .map((key) => [key, process.env[key]]),
+    [
+      'APP_ENV',
+      'EXPO_PUBLIC_APP_ENV',
+      'OPENAI_API_KEY',
+      'GEMINI_API_KEY',
+      'OPENAI_MODEL',
+      'GEMINI_MODEL',
+      'AI_PROVIDER_RATE_CARD_JSON',
+    ].map((key) => [key, process.env[key]]),
   );
 
   beforeAll(() => {
@@ -52,7 +59,10 @@ describe('ai service — OpenAI-configured path (mocked client)', () => {
       source: 'unit-test fixture',
       rates: {
         'openai:gpt-4o-mini': { promptUsdPerMillionTokens: 1, completionUsdPerMillionTokens: 1 },
-        'gemini:gemini-flash-lite-latest': { promptUsdPerMillionTokens: 1, completionUsdPerMillionTokens: 1 },
+        'gemini:gemini-flash-lite-latest': {
+          promptUsdPerMillionTokens: 1,
+          completionUsdPerMillionTokens: 1,
+        },
       },
     });
   });
@@ -96,14 +106,20 @@ describe('ai service — OpenAI-configured path (mocked client)', () => {
 
   it('does not pass unprovenanced demographic figures into constituency AI context', () => {
     const context = buildConstituencyContext(1, 'TS');
-    expect(context).toContain('No provenance-backed constituency demographic records are connected');
+    expect(context).toContain(
+      'No provenance-backed constituency demographic records are connected',
+    );
     expect(context).not.toContain('Population:');
     expect(context).not.toContain('Turnout 2023:');
   });
 
   it('does not attach Telangana statewide history to another state context', () => {
-    expect(buildAIContextualPrompt({ stateCode: 'AP', constituencyAcNo: 1 })).not.toContain('Election History:');
-    expect(buildAIContextualPrompt({ stateCode: 'TS', constituencyAcNo: 1 })).toContain('Election History:');
+    expect(buildAIContextualPrompt({ stateCode: 'AP', constituencyAcNo: 1 })).not.toContain(
+      'Election History:',
+    );
+    expect(buildAIContextualPrompt({ stateCode: 'TS', constituencyAcNo: 1 })).toContain(
+      'Election History:',
+    );
   });
 
   it('builds rich context across all Telangana constituencies (all branches)', async () => {
@@ -160,8 +176,15 @@ describe('ai service — OpenAI-configured path (mocked client)', () => {
 
 describe('ai service — Gemini-configured path (mocked client)', () => {
   const original = Object.fromEntries(
-    ['APP_ENV', 'EXPO_PUBLIC_APP_ENV', 'OPENAI_API_KEY', 'GEMINI_API_KEY', 'OPENAI_MODEL', 'GEMINI_MODEL', 'AI_PROVIDER_RATE_CARD_JSON']
-      .map((key) => [key, process.env[key]]),
+    [
+      'APP_ENV',
+      'EXPO_PUBLIC_APP_ENV',
+      'OPENAI_API_KEY',
+      'GEMINI_API_KEY',
+      'OPENAI_MODEL',
+      'GEMINI_MODEL',
+      'AI_PROVIDER_RATE_CARD_JSON',
+    ].map((key) => [key, process.env[key]]),
   );
 
   beforeAll(() => {
@@ -177,7 +200,10 @@ describe('ai service — Gemini-configured path (mocked client)', () => {
       source: 'unit-test fixture',
       rates: {
         'openai:gpt-4o-mini': { promptUsdPerMillionTokens: 1, completionUsdPerMillionTokens: 1 },
-        'gemini:gemini-flash-lite-latest': { promptUsdPerMillionTokens: 1, completionUsdPerMillionTokens: 1 },
+        'gemini:gemini-flash-lite-latest': {
+          promptUsdPerMillionTokens: 1,
+          completionUsdPerMillionTokens: 1,
+        },
       },
     });
   });

@@ -7,7 +7,11 @@ import { PaymentProviderError, RazorpayProvider } from '../providers/razorpayPro
 import type { PaymentOrderResult, PaymentProvider } from '../providers/types';
 import { resolveAuthenticatedUser, assertActingUserMatch } from '../lib/userAuth';
 import { AspirantService } from '../services/aspirantService';
-import type { PageCreateRequest, PageEventCreateRequest, PageEventRsvpStatus } from '@kshetra/shared';
+import type {
+  PageCreateRequest,
+  PageEventCreateRequest,
+  PageEventRsvpStatus,
+} from '@kshetra/shared';
 
 function isProductionRuntime(): boolean {
   return isProductionLikeRuntime();
@@ -446,13 +450,14 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
     } catch (error) {
       const providerError = error instanceof PaymentProviderError ? error : null;
       const statusCode = providerError?.statusCode ?? 500;
-      const statusText = statusCode === 503
-        ? 'Service Unavailable'
-        : statusCode === 502
-          ? 'Bad Gateway'
-          : statusCode === 400
-            ? 'Bad Request'
-            : 'Internal Server Error';
+      const statusText =
+        statusCode === 503
+          ? 'Service Unavailable'
+          : statusCode === 502
+            ? 'Bad Gateway'
+            : statusCode === 400
+              ? 'Bad Request'
+              : 'Internal Server Error';
       return sendApiError(
         reply,
         request,
@@ -578,8 +583,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
     // DEF-B5-PAY-01: A valid cryptographic razorpay_signature is mandatory.
     // Under unit/test environment, sandboxBypass is permitted only if explicitly requested.
     const testBypassRequested = body.sandboxBypass === true;
-    const isTestSandboxBypass =
-      isIsolatedTestRuntime() && testBypassRequested;
+    const isTestSandboxBypass = isIsolatedTestRuntime() && testBypassRequested;
     if (testBypassRequested && !isTestSandboxBypass) {
       return sendApiError(
         reply,
@@ -828,11 +832,12 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       } catch (error) {
         const providerError = error instanceof PaymentProviderError ? error : null;
         const statusCode = providerError?.statusCode ?? 500;
-        const statusText = statusCode === 503
-          ? 'Service Unavailable'
-          : statusCode === 502
-            ? 'Bad Gateway'
-            : 'Internal Server Error';
+        const statusText =
+          statusCode === 503
+            ? 'Service Unavailable'
+            : statusCode === 502
+              ? 'Bad Gateway'
+              : 'Internal Server Error';
         return sendApiError(
           reply,
           request,
@@ -875,7 +880,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       if (rpcError) {
         if (!isProductionRuntime()) {
           const expiryDate = new Date();
-        if (trustedBillingCycle === 'annual') {
+          if (trustedBillingCycle === 'annual') {
             expiryDate.setFullYear(expiryDate.getFullYear() + 1);
           } else {
             expiryDate.setDate(expiryDate.getDate() + 30);
@@ -1131,7 +1136,14 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
             description: { type: 'string', maxLength: 2000 },
             eventType: {
               type: 'string',
-              enum: ['townhall', 'rally', 'volunteer_meet', 'webinar', 'press_conference', 'door_to_door'],
+              enum: [
+                'townhall',
+                'rally',
+                'volunteer_meet',
+                'webinar',
+                'press_conference',
+                'door_to_door',
+              ],
             },
             startTime: { type: 'string' },
             endTime: { type: 'string' },

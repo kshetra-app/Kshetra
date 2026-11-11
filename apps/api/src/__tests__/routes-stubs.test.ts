@@ -20,11 +20,13 @@ describe('Public route contracts', () => {
   beforeEach(() => {
     // Mock network database calls to fail immediately or return valid mock response
     // so fallback handlers respond instantly without 30s TCP connection timeouts.
-    jest.spyOn(supabase, 'from').mockImplementation(((_table: string) => {
+    jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
       const okResult = { data: { id: 'mock-id-1', status: 'submitted' }, error: null };
       let queryResult: any = okResult;
       const chainable: any = {
         eq: () => chainable,
+        gte: () => chainable,
+        lte: () => chainable,
         or: () => chainable,
         order: () => chainable,
         limit: () => chainable,
@@ -32,7 +34,8 @@ describe('Public route contracts', () => {
           queryResult = { data: [], error: null };
           return chainable;
         },
-        maybeSingle: async () => okResult,
+        maybeSingle: async () =>
+          table === 'politician_portal_profiles' ? { data: null, error: null } : okResult,
         single: async () => okResult,
         then: (resolve: any) => resolve(queryResult),
       };

@@ -14,11 +14,7 @@ import {
   getMLAProfile,
   getTSElectionHistory,
 } from './stateData';
-import type {
-  AskPoligramRequest,
-  AskPoligramResponse,
-  ChatMessage,
-} from '@kshetra/shared';
+import type { AskPoligramRequest, AskPoligramResponse, ChatMessage } from '@kshetra/shared';
 
 const ADVERSARIAL_INJECTION_PATTERNS = [
   /\b(ignore|bypass|override)\s+(all\s+)?.*?(instructions|rules|directives|prompts)\b/i,
@@ -131,10 +127,11 @@ ${contextText}`;
     if (!targetAcNo) {
       const lowerQuery = query.toLowerCase();
       // Try to find AC name mentioned in query
-      const match = constituencies.find((c) =>
-        lowerQuery.includes(c.name.toLowerCase()) ||
-        lowerQuery.includes(`ac ${c.acNo}`) ||
-        lowerQuery.includes(`ac #${c.acNo}`),
+      const match = constituencies.find(
+        (c) =>
+          lowerQuery.includes(c.name.toLowerCase()) ||
+          lowerQuery.includes(`ac ${c.acNo}`) ||
+          lowerQuery.includes(`ac #${c.acNo}`),
       );
       if (match) {
         targetAcNo = match.acNo;

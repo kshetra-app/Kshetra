@@ -40,7 +40,8 @@ const SAAS_PLANS: SaasBillingPlan[] = [
   {
     id: 'pro',
     name: 'Professional / Media / Civic Tech',
-    tagline: 'Built for newsrooms, political analysts, campaign analytics, and active civic platforms.',
+    tagline:
+      'Built for newsrooms, political analysts, campaign analytics, and active civic platforms.',
     priceINR: 4999,
     priceUSD: 59,
     billingCycles: ['monthly', 'annual'],
@@ -63,7 +64,8 @@ const SAAS_PLANS: SaasBillingPlan[] = [
   {
     id: 'enterprise',
     name: 'Institutional / Broadcasters',
-    tagline: 'Mission-critical scale for television networks, national think tanks, and large organizations.',
+    tagline:
+      'Mission-critical scale for television networks, national think tanks, and large organizations.',
     priceINR: 49999,
     priceUSD: 599,
     billingCycles: ['monthly', 'annual'],
@@ -131,7 +133,9 @@ export class BillingService {
     }
 
     if (tenant.tier === targetTier) {
-      const err: any = new Error(`Tenant organization is already subscribed to the '${targetTier}' tier.`);
+      const err: any = new Error(
+        `Tenant organization is already subscribed to the '${targetTier}' tier.`,
+      );
       err.statusCode = 400;
       err.code = 'ALREADY_SUBSCRIBED';
       throw err;
@@ -148,7 +152,9 @@ export class BillingService {
     const expectedAmountPaise = Math.round(amountINR * 100);
     const { data: pendingOrder, error: pendingOrderError } = await client
       .from('saas_billing_orders')
-      .select('provider_order_id, target_tier, billing_cycle, amount_paise, currency, provider_key_id')
+      .select(
+        'provider_order_id, target_tier, billing_cycle, amount_paise, currency, provider_key_id',
+      )
       .eq('tenant_id', tenant.id)
       .eq('status', 'created')
       .maybeSingle();
@@ -167,7 +173,9 @@ export class BillingService {
         String(pendingOrder.currency).toUpperCase() !== 'INR' ||
         pendingOrder.provider_key_id !== configuredKeyId
       ) {
-        const err: any = new Error('A different checkout order is already pending for this tenant. Complete or resolve it before starting another plan checkout.');
+        const err: any = new Error(
+          'A different checkout order is already pending for this tenant. Complete or resolve it before starting another plan checkout.',
+        );
         err.statusCode = 409;
         err.code = 'PENDING_CHECKOUT_EXISTS';
         throw err;
@@ -206,21 +214,26 @@ export class BillingService {
       orderResult.amountPaise !== expectedAmountPaise ||
       orderResult.currency.toUpperCase() !== 'INR'
     ) {
-      const err: any = new Error('Payment provider order did not match the configured SaaS plan price.');
+      const err: any = new Error(
+        'Payment provider order did not match the configured SaaS plan price.',
+      );
       err.statusCode = 502;
       err.code = 'PAYMENT_ORDER_MISMATCH';
       throw err;
     }
 
-    const { data: persistedOrder, error: persistError } = await client.rpc('create_saas_billing_order', {
-      p_provider_order_id: orderResult.orderId,
-      p_provider_key_id: orderResult.key,
-      p_tenant_id: tenant.id,
-      p_target_tier: targetTier,
-      p_billing_cycle: billingCycle,
-      p_amount_paise: expectedAmountPaise,
-      p_currency: 'INR',
-    });
+    const { data: persistedOrder, error: persistError } = await client.rpc(
+      'create_saas_billing_order',
+      {
+        p_provider_order_id: orderResult.orderId,
+        p_provider_key_id: orderResult.key,
+        p_tenant_id: tenant.id,
+        p_target_tier: targetTier,
+        p_billing_cycle: billingCycle,
+        p_amount_paise: expectedAmountPaise,
+        p_currency: 'INR',
+      },
+    );
     if (persistError) {
       const err: any = new Error('Could not persist the trusted SaaS checkout order.');
       err.statusCode = 503;
@@ -230,7 +243,8 @@ export class BillingService {
     if (!persistedOrder?.success) {
       const code = persistedOrder?.code || 'BILLING_ORDER_PERSISTENCE_FAILED';
       const err: any = new Error(`Could not create SaaS billing order: ${code}`);
-      err.statusCode = code === 'ALREADY_SUBSCRIBED' ? 400 : code === 'TENANT_NOT_FOUND' ? 404 : 409;
+      err.statusCode =
+        code === 'ALREADY_SUBSCRIBED' ? 400 : code === 'TENANT_NOT_FOUND' ? 404 : 409;
       err.code = code;
       throw err;
     }
@@ -265,7 +279,9 @@ export class BillingService {
 
     const { data: order, error: orderError } = await client
       .from('saas_billing_orders')
-      .select('provider_order_id, tenant_id, target_tier, billing_cycle, amount_paise, currency, status, provider_payment_id, provider_key_id')
+      .select(
+        'provider_order_id, tenant_id, target_tier, billing_cycle, amount_paise, currency, status, provider_payment_id, provider_key_id',
+      )
       .eq('provider_order_id', orderId)
       .eq('tenant_id', tenantId)
       .maybeSingle();
@@ -284,7 +300,9 @@ export class BillingService {
     }
 
     if (order.provider_key_id !== this.paymentProvider.getPublicKey()) {
-      const err: any = new Error('Stored billing order belongs to a different payment provider account configuration.');
+      const err: any = new Error(
+        'Stored billing order belongs to a different payment provider account configuration.',
+      );
       err.statusCode = 503;
       err.code = 'BILLING_PROVIDER_ACCOUNT_MISMATCH';
       throw err;
@@ -292,7 +310,11 @@ export class BillingService {
 
     const expectedAmountPaise = Number(order.amount_paise);
     const expectedCurrency = String(order.currency || '').toUpperCase();
-    if (!Number.isSafeInteger(expectedAmountPaise) || expectedAmountPaise <= 0 || !/^[A-Z]{3}$/.test(expectedCurrency)) {
+    if (
+      !Number.isSafeInteger(expectedAmountPaise) ||
+      expectedAmountPaise <= 0 ||
+      !/^[A-Z]{3}$/.test(expectedCurrency)
+    ) {
       const err: any = new Error('Stored SaaS billing order has invalid amount or currency data.');
       err.statusCode = 500;
       err.code = 'BILLING_ORDER_DATA_INVALID';
@@ -308,7 +330,9 @@ export class BillingService {
     });
 
     if (!verification.valid) {
-      const err: any = new Error('Payment could not be confirmed for the stored SaaS billing order.');
+      const err: any = new Error(
+        'Payment could not be confirmed for the stored SaaS billing order.',
+      );
       err.statusCode = 400;
       err.code = verification.reason || 'INVALID_PAYMENT';
       throw err;
@@ -331,11 +355,12 @@ export class BillingService {
     if (!activation?.success) {
       const code = activation?.code || 'BILLING_ACTIVATION_FAILED';
       const err: any = new Error(`SaaS plan activation was rejected: ${code}`);
-      err.statusCode = code === 'TENANT_NOT_FOUND' || code === 'ORDER_NOT_FOUND'
-        ? 404
-        : code === 'ORDER_TENANT_MISMATCH' || code === 'TENANT_NOT_ACTIVE'
-          ? 403
-          : 409;
+      err.statusCode =
+        code === 'TENANT_NOT_FOUND' || code === 'ORDER_NOT_FOUND'
+          ? 404
+          : code === 'ORDER_TENANT_MISMATCH' || code === 'TENANT_NOT_ACTIVE'
+            ? 403
+            : 409;
       err.code = code;
       throw err;
     }
@@ -365,7 +390,9 @@ export class BillingService {
     // 1. Verify HMAC Signature
     const isValid = this.paymentProvider.verifyWebhookSignature(rawBody, signature);
     if (!isValid) {
-      const err: any = new Error('Inbound billing webhook cryptographic signature verification failed');
+      const err: any = new Error(
+        'Inbound billing webhook cryptographic signature verification failed',
+      );
       err.statusCode = 401;
       err.code = 'INVALID_WEBHOOK_SIGNATURE';
       throw err;
@@ -389,7 +416,9 @@ export class BillingService {
       .eq('provider_order_id', orderId)
       .maybeSingle();
     if (orderError) {
-      const err: any = new Error('Could not read the trusted SaaS billing order for webhook processing.');
+      const err: any = new Error(
+        'Could not read the trusted SaaS billing order for webhook processing.',
+      );
       err.statusCode = 503;
       err.code = 'BILLING_ORDER_LOOKUP_FAILED';
       throw err;

@@ -17,8 +17,13 @@ describe('AI Routes', () => {
   describe('GET /api/v1/ai/status', () => {
     it('reports the configured provider chain without inventing a provider when none is configured', async () => {
       const original = Object.fromEntries(
-        ['APP_ENV', 'EXPO_PUBLIC_APP_ENV', 'GEMINI_API_KEY', 'OPENAI_API_KEY', 'AI_PROVIDER_RATE_CARD_JSON']
-          .map((key) => [key, process.env[key]]),
+        [
+          'APP_ENV',
+          'EXPO_PUBLIC_APP_ENV',
+          'GEMINI_API_KEY',
+          'OPENAI_API_KEY',
+          'AI_PROVIDER_RATE_CARD_JSON',
+        ].map((key) => [key, process.env[key]]),
       );
       process.env.APP_ENV = 'development';
       delete process.env.EXPO_PUBLIC_APP_ENV;
@@ -108,7 +113,13 @@ describe('AI Routes', () => {
     });
 
     it('should return graceful message when no API key', async () => {
-      const keys = ['APP_ENV', 'EXPO_PUBLIC_APP_ENV', 'OPENAI_API_KEY', 'GEMINI_API_KEY', 'AI_PROVIDER_RATE_CARD_JSON'];
+      const keys = [
+        'APP_ENV',
+        'EXPO_PUBLIC_APP_ENV',
+        'OPENAI_API_KEY',
+        'GEMINI_API_KEY',
+        'AI_PROVIDER_RATE_CARD_JSON',
+      ];
       const original = Object.fromEntries(keys.map((key) => [key, process.env[key]]));
       process.env.APP_ENV = 'development';
       delete process.env.EXPO_PUBLIC_APP_ENV;

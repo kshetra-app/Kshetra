@@ -27,9 +27,9 @@ describe('ad telemetry view-token security', () => {
     const parts = decoded.split(':');
     parts[3] = `${parts[3][0] === '0' ? '1' : '0'}${parts[3].slice(1)}`;
 
-    expect(adService.verifyViewToken(Buffer.from(parts.join(':')).toString('base64url')).valid).toBe(
-      false,
-    );
+    expect(
+      adService.verifyViewToken(Buffer.from(parts.join(':')).toString('base64url')).valid,
+    ).toBe(false);
   });
 
   it('does not issue or accept tokens when the secret is missing or too short', () => {

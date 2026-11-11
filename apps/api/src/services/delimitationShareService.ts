@@ -8,10 +8,7 @@
  */
 
 import crypto from 'node:crypto';
-import type {
-  CreateShareCardRequest,
-  ShareCardSnapshotDTO,
-} from '@kshetra/shared';
+import type { CreateShareCardRequest, ShareCardSnapshotDTO } from '@kshetra/shared';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 // In-memory fallback snapshot store when database is in isolated test mode
@@ -26,7 +23,8 @@ inMemoryShareCache.set('share_ts_004_504208', {
   acNo: 4,
   impactType: 'NO_CHANGE',
   headline: 'Mancherial AC 4: Personal Delimitation Assessment',
-  summary: 'Boundaries remain statutory under Delimitation Order 2008. Rebalancing frozen until post-2026 census data publication.',
+  summary:
+    'Boundaries remain statutory under Delimitation Order 2008. Rebalancing frozen until post-2026 census data publication.',
   ogImageUrl: 'https://poligram.in/og/delimitation/TS-4.png',
   canonicalShareUrl: 'https://poligram.in/share/delimitation/share_ts_004_504208',
   createdAt: '2026-10-29T12:00:00.000Z',
@@ -40,7 +38,8 @@ inMemoryShareCache.set('share_ts_072_509338', {
   acNo: 72,
   impactType: 'NO_CHANGE',
   headline: 'Kodangal AC 72: Personal Delimitation Assessment',
-  summary: 'Rural Assembly Constituency Kodangal boundaries are preserved under current constitutional regime. No immediate territory shift.',
+  summary:
+    'Rural Assembly Constituency Kodangal boundaries are preserved under current constitutional regime. No immediate territory shift.',
   ogImageUrl: 'https://poligram.in/og/delimitation/TS-72.png',
   canonicalShareUrl: 'https://poligram.in/share/delimitation/share_ts_072_509338',
   createdAt: '2026-10-29T12:00:00.000Z',
@@ -78,11 +77,21 @@ export class DelimitationShareService {
     const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/;
     const phoneRegex = /(?:\+91|0)?[6-9][0-9]{9}/;
 
-    const rawHeadline = params.headline || `${constituencyName} (AC #${acNo}): Personal Delimitation Assessment`;
-    const rawSummary = params.summary || `Personal delimitation assessment for PIN ${pinCode} in ${constituencyName}, ${stateCode}. Boundaries assessed under Articles 82 & 170.`;
+    const rawHeadline =
+      params.headline || `${constituencyName} (AC #${acNo}): Personal Delimitation Assessment`;
+    const rawSummary =
+      params.summary ||
+      `Personal delimitation assessment for PIN ${pinCode} in ${constituencyName}, ${stateCode}. Boundaries assessed under Articles 82 & 170.`;
 
-    if (emailRegex.test(rawHeadline) || emailRegex.test(rawSummary) || phoneRegex.test(rawHeadline) || phoneRegex.test(rawSummary)) {
-      throw new Error('DPDP_VIOLATION: Share card content must not contain personal voter identifiers.');
+    if (
+      emailRegex.test(rawHeadline) ||
+      emailRegex.test(rawSummary) ||
+      phoneRegex.test(rawHeadline) ||
+      phoneRegex.test(rawSummary)
+    ) {
+      throw new Error(
+        'DPDP_VIOLATION: Share card content must not contain personal voter identifiers.',
+      );
     }
 
     const shareId = `share_${stateCode.toLowerCase()}_${acNo}_${pinCode}_${crypto.randomBytes(3).toString('hex')}`;

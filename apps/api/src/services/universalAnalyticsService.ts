@@ -77,11 +77,12 @@ export class UniversalAnalyticsService {
     const now = new Date().toISOString();
     // Set ANALYTICS_IP_HASH_SECRET per deployment to enable keyed IP pseudonymization.
     const configuredHashSecret = process.env.ANALYTICS_IP_HASH_SECRET?.trim();
-    const ipHashSecret = configuredHashSecret ||
-      (!isProductionLikeRuntime() ? 'local-development-only' : '');
-    const ipHash = clientIp && ipHashSecret
-      ? createHmac('sha256', ipHashSecret).update(clientIp).digest('hex')
-      : undefined;
+    const ipHashSecret =
+      configuredHashSecret || (!isProductionLikeRuntime() ? 'local-development-only' : '');
+    const ipHash =
+      clientIp && ipHashSecret
+        ? createHmac('sha256', ipHashSecret).update(clientIp).digest('hex')
+        : undefined;
 
     for (let i = 0; i < req.events.length; i++) {
       const e = req.events[i];
@@ -203,16 +204,16 @@ export class UniversalAnalyticsService {
     if (isSupabaseAvailable()) {
       let query = supabase
         .from('universal_analytics_events')
-        .select('id, event_name, user_id, anonymous_id, session_id, timestamp, screen, geography, entity, metadata, app_version');
+        .select(
+          'id, event_name, user_id, anonymous_id, session_id, timestamp, screen, geography, entity, metadata, app_version',
+        );
       if (filter.eventName) query = query.eq('event_name', filter.eventName);
       if (filter.userId) query = query.eq('user_id', filter.userId);
       if (filter.acId) query = query.filter('geography->>acId', 'eq', filter.acId);
       if (filter.from) query = query.gte('timestamp', filter.from);
       if (filter.to) query = query.lte('timestamp', filter.to);
 
-      const { data, error } = await query
-        .order('timestamp', { ascending: false })
-        .limit(limit);
+      const { data, error } = await query.order('timestamp', { ascending: false }).limit(limit);
       if (error) throw new AnalyticsStorageUnavailableError();
 
       return (data || []).map((row: any) => ({

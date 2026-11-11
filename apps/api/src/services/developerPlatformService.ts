@@ -58,9 +58,16 @@ export class DeveloperPlatformService {
 
   // --- 1. ORGANIZATION MANAGEMENT ---
 
-  static async createOrganization(req: CreateDeveloperOrgRequest): Promise<DeveloperOrganizationDTO> {
+  static async createOrganization(
+    req: CreateDeveloperOrgRequest,
+  ): Promise<DeveloperOrganizationDTO> {
     const orgId = `org_${Date.now()}_${randomBytes(4).toString('hex')}`;
-    const slug = req.slug || req.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const slug =
+      req.slug ||
+      req.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '');
     const tier: DeveloperOrgTier = req.tier || 'free';
     const now = new Date().toISOString();
 
@@ -157,7 +164,7 @@ export class DeveloperPlatformService {
 
   static async addOrganizationMember(
     orgId: string,
-    req: AddDeveloperOrgMemberRequest
+    req: AddDeveloperOrgMemberRequest,
   ): Promise<DeveloperOrgMemberDTO> {
     const now = new Date().toISOString();
     const memberDto: DeveloperOrgMemberDTO = {
@@ -195,7 +202,9 @@ export class DeveloperPlatformService {
 
   // --- 2. CRYPTOGRAPHIC API KEY LIFECYCLE ---
 
-  static async createApiKey(req: CreateDeveloperApiKeyRequest): Promise<CreateDeveloperApiKeyResponse> {
+  static async createApiKey(
+    req: CreateDeveloperApiKeyRequest,
+  ): Promise<CreateDeveloperApiKeyResponse> {
     const org = await this.getOrganization(req.organizationId);
     if (!org) {
       throw new Error(`Organization '${req.organizationId}' not found.`);
@@ -206,7 +215,7 @@ export class DeveloperPlatformService {
     const activeCount = existingKeys.filter((k) => k.status === 'active').length;
     if (activeCount >= tierLimits.maxKeys) {
       throw new Error(
-        `Tier key limit reached for '${org.tier}' (${activeCount}/${tierLimits.maxKeys}). Upgrade organization tier to create more keys.`
+        `Tier key limit reached for '${org.tier}' (${activeCount}/${tierLimits.maxKeys}). Upgrade organization tier to create more keys.`,
       );
     }
 
@@ -310,9 +319,12 @@ export class DeveloperPlatformService {
     return true;
   }
 
-  static async verifyApiKey(
-    rawKey: string
-  ): Promise<{ valid: boolean; key?: DeveloperApiKeyDTO; org?: DeveloperOrganizationDTO; error?: string }> {
+  static async verifyApiKey(rawKey: string): Promise<{
+    valid: boolean;
+    key?: DeveloperApiKeyDTO;
+    org?: DeveloperOrganizationDTO;
+    error?: string;
+  }> {
     if (!rawKey || (!rawKey.startsWith('pk_live_') && !rawKey.startsWith('pk_test_'))) {
       return { valid: false, error: 'INVALID_API_KEY_FORMAT' };
     }
@@ -395,7 +407,7 @@ export class DeveloperPlatformService {
   }): Promise<void> {
     const now = new Date();
     const hourBucket = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(
-      now.getUTCDate()
+      now.getUTCDate(),
     ).padStart(2, '0')}-${String(now.getUTCHours()).padStart(2, '0')}`;
 
     this.mockUsageLedger.push({
@@ -454,12 +466,14 @@ export class DeveloperPlatformService {
       bucketMap.set(r.hourBucket, b);
     }
 
-    const trends: DeveloperUsageBucketDTO[] = Array.from(bucketMap.entries()).map(([hourBucket, data]) => ({
-      hourBucket,
-      requestCount: data.requests,
-      errorCount: data.errors,
-      avgLatencyMs: Math.round(data.totalLatency / (data.requests || 1)),
-    }));
+    const trends: DeveloperUsageBucketDTO[] = Array.from(bucketMap.entries()).map(
+      ([hourBucket, data]) => ({
+        hourBucket,
+        requestCount: data.requests,
+        errorCount: data.errors,
+        avgLatencyMs: Math.round(data.totalLatency / (data.requests || 1)),
+      }),
+    );
 
     return {
       organizationId: orgId,
@@ -479,7 +493,7 @@ export class DeveloperPlatformService {
   // --- 4. BILLING CHECKOUT ---
 
   static async createBillingCheckout(
-    req: DeveloperBillingCheckoutRequest
+    req: DeveloperBillingCheckoutRequest,
   ): Promise<DeveloperBillingCheckoutResponse> {
     const org = await this.getOrganization(req.organizationId);
     if (!org) {

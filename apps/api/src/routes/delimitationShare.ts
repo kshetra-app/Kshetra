@@ -64,7 +64,13 @@ export async function delimitationShareRoutes(app: FastifyInstance) {
       const { shareId } = request.params;
       const snapshot = await delimitationShareService.getShareCard(shareId);
       if (!snapshot) {
-        return sendApiError(reply, request, 404, 'Not Found', `Share card '${shareId}' was not found.`);
+        return sendApiError(
+          reply,
+          request,
+          404,
+          'Not Found',
+          `Share card '${shareId}' was not found.`,
+        );
       }
       return sendSuccess(reply, request, snapshot);
     },
@@ -80,7 +86,9 @@ export async function delimitationShareRoutes(app: FastifyInstance) {
         return reply
           .status(404)
           .type('text/html')
-          .send('<!DOCTYPE html><html><body><h1>404 - Share Card Not Found</h1><p>The requested delimitation share card does not exist.</p></body></html>');
+          .send(
+            '<!DOCTYPE html><html><body><h1>404 - Share Card Not Found</h1><p>The requested delimitation share card does not exist.</p></body></html>',
+          );
       }
       const html = delimitationShareService.renderSSRHtml(snapshot);
       return reply.type('text/html').send(html);

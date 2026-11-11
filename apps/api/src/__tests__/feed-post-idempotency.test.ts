@@ -21,16 +21,20 @@ describe('Feed post idempotency', () => {
     setSupabaseConfiguredForTesting(true);
   });
 
-  const requestHash = createHash('sha256').update(JSON.stringify({
-    content: 'A durable post',
-    type: 'discussion',
-    stateCode: 'TS',
-    constituencyId: null,
-    parentId: null,
-    language: 'en',
-    hashtags: [],
-    pollOptions: null,
-  })).digest('hex');
+  const requestHash = createHash('sha256')
+    .update(
+      JSON.stringify({
+        content: 'A durable post',
+        type: 'discussion',
+        stateCode: 'TS',
+        constituencyId: null,
+        parentId: null,
+        language: 'en',
+        hashtags: [],
+        pollOptions: null,
+      }),
+    )
+    .digest('hex');
 
   it('returns the original post after a retry with the same token and payload', async () => {
     const existing = {

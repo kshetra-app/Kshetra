@@ -10,11 +10,7 @@ import { AIProviderUnavailableError } from './aiProvider';
 import { AICostLedgerService, type AICostLedgerEntry } from './aiCostLedgerService';
 import { executeAICompletion } from './aiExecutionService';
 import { isIsolatedTestRuntime, isProductionLikeRuntime } from '../lib/runtimeEnvironment';
-import type {
-  NewsSummaryRequest,
-  NewsSummaryRecord,
-  ChatMessage,
-} from '@kshetra/shared';
+import type { NewsSummaryRequest, NewsSummaryRecord, ChatMessage } from '@kshetra/shared';
 
 export class AINewsSummaryService {
   // In-memory fallback stores for deterministic offline/test execution
@@ -115,7 +111,8 @@ export class AINewsSummaryService {
             keyEntities: data.key_entities || [],
             providerUsed: data.provider_used,
             tokensUsed: data.tokens_used,
-            estimatedCostUsd: data.estimated_cost_usd == null ? null : Number(data.estimated_cost_usd),
+            estimatedCostUsd:
+              data.estimated_cost_usd == null ? null : Number(data.estimated_cost_usd),
             costBasis: data.cost_basis || 'legacy_unverified',
             costRateCardVersion: data.cost_rate_card_version,
             usageBasis: data.usage_basis || 'legacy_unverified',
@@ -169,7 +166,10 @@ Respond ONLY with a valid JSON object matching this schema:
     let entities: string[] = [];
 
     try {
-      const cleaned = aiRes.content.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
+      const cleaned = aiRes.content
+        .replace(/```json?\n?/g, '')
+        .replace(/```/g, '')
+        .trim();
       const parsed = JSON.parse(cleaned) as {
         summary?: string[];
         bullets?: string[];
@@ -182,7 +182,9 @@ Respond ONLY with a valid JSON object matching this schema:
         summaryBullets = [String(b[0]), String(b[1]), String(b[2])];
       } else if (Array.isArray(b) && b.length > 0) {
         if (isProductionLikeRuntime()) {
-          throw new AIProviderUnavailableError('The AI provider returned an incomplete news summary.');
+          throw new AIProviderUnavailableError(
+            'The AI provider returned an incomplete news summary.',
+          );
         }
         summaryBullets = [
           String(b[0] || summaryBullets[0]),
@@ -191,7 +193,10 @@ Respond ONLY with a valid JSON object matching this schema:
         ];
       }
 
-      if (parsed.sentiment && ['positive', 'neutral', 'negative', 'urgent'].includes(parsed.sentiment)) {
+      if (
+        parsed.sentiment &&
+        ['positive', 'neutral', 'negative', 'urgent'].includes(parsed.sentiment)
+      ) {
         sentiment = parsed.sentiment;
       }
       if (Array.isArray(parsed.entities)) {

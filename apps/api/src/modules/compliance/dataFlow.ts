@@ -11,7 +11,12 @@ export const COMPLIANCE_DATA_FLOW_MAP: DataFlowBoundary[] = [
   {
     sourceSystem: 'Mobile Client (Android / iOS) & Web App',
     targetSystem: 'Poligram API Gateway (Fastify on Railway)',
-    dataTransferred: ['Auth credentials', 'Profile inputs', 'Constituency preferences', 'Device headers'],
+    dataTransferred: [
+      'Auth credentials',
+      'Profile inputs',
+      'Constituency preferences',
+      'Device headers',
+    ],
     purpose: 'API request dispatch, session negotiation, and civic interaction submission',
     recipientCategory: 'First-party application layer',
     transportSecurity: 'TLS 1.3 with HSTS (Strict-Transport-Security: max-age=63072000)',
@@ -37,7 +42,12 @@ export const COMPLIANCE_DATA_FLOW_MAP: DataFlowBoundary[] = [
   {
     sourceSystem: 'Poligram API Gateway',
     targetSystem: 'Supabase S3 Storage (AWS ap-south-1 Mumbai)',
-    dataTransferred: ['User avatars', 'Aspirant documents', 'Verification KYC proofs', 'Broadcast audio'],
+    dataTransferred: [
+      'User avatars',
+      'Aspirant documents',
+      'Verification KYC proofs',
+      'Broadcast audio',
+    ],
     purpose: 'Unstructured binary asset storage with time-limited signed URLs',
     recipientCategory: 'Object Storage Subprocessor',
     transportSecurity: 'HTTPS TLS 1.3 with 15-minute expiring presigned upload/download URLs',
@@ -51,7 +61,8 @@ export const COMPLIANCE_DATA_FLOW_MAP: DataFlowBoundary[] = [
     sourceSystem: 'Poligram API Gateway & Web Checkout',
     targetSystem: 'Razorpay Payment Gateway (India)',
     dataTransferred: ['Order amounts (paise)', 'Currency', 'Customer phone/email', 'Tenant slug'],
-    purpose: 'Processing credit card, UPI, and NetBanking transactions for subscriptions and wallet top-ups',
+    purpose:
+      'Processing credit card, UPI, and NetBanking transactions for subscriptions and wallet top-ups',
     recipientCategory: 'PCI-DSS Level 1 Payment Aggregator',
     transportSecurity: 'TLS 1.3 with HMAC SHA-256 webhook signature verification',
     storageEncryption: 'PCI-DSS Level 1 compliant tokenized card storage',
@@ -85,7 +96,8 @@ export const COMPLIANCE_SUBPROCESSOR_REGISTER: ThirdPartyProviderRegisterEntry[]
     dpaInPlace: true,
     subprocessorAuditDate: '2026-09-15',
     securityCertifications: ['SOC 2 Type II', 'ISO/IEC 27001', 'HIPAA compliant'],
-    exitStrategy: 'Standard pg_dump and daily automated S3 cryptographic backups for multi-cloud export',
+    exitStrategy:
+      'Standard pg_dump and daily automated S3 cryptographic backups for multi-cloud export',
   },
   {
     providerName: 'Railway Cloud',
@@ -107,7 +119,8 @@ export const COMPLIANCE_SUBPROCESSOR_REGISTER: ThirdPartyProviderRegisterEntry[]
     dpaInPlace: true,
     subprocessorAuditDate: '2026-09-01',
     securityCertifications: ['PCI-DSS Level 1', 'ISO/IEC 27001'],
-    exitStrategy: 'Dual-adapter PaymentProvider pattern allowing instant switch to Cashfree or Stripe',
+    exitStrategy:
+      'Dual-adapter PaymentProvider pattern allowing instant switch to Cashfree or Stripe',
   },
   {
     providerName: 'Exotel Techcom Private Limited',
@@ -145,9 +158,17 @@ export class DataFlowService {
     violatingProviders: string[];
   } {
     const primaryStorage = COMPLIANCE_DATA_FLOW_MAP.filter(
-      (b) => b.targetSystem.includes('Supabase') || b.targetSystem.includes('Razorpay') || b.targetSystem.includes('Exotel'),
+      (b) =>
+        b.targetSystem.includes('Supabase') ||
+        b.targetSystem.includes('Razorpay') ||
+        b.targetSystem.includes('Exotel'),
     );
-    const nonIndia = primaryStorage.filter((b) => b.crossBorderTransfer || b.transferDestinationCountry !== 'India' && !b.transferDestinationCountry?.includes('India'));
+    const nonIndia = primaryStorage.filter(
+      (b) =>
+        b.crossBorderTransfer ||
+        (b.transferDestinationCountry !== 'India' &&
+          !b.transferDestinationCountry?.includes('India')),
+    );
     return {
       sovereignIndiaHosted: nonIndia.length === 0,
       violatingProviders: nonIndia.map((b) => b.targetSystem),

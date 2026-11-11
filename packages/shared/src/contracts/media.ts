@@ -30,13 +30,7 @@ export interface RepresentativeCivicResponseDTO {
 // ─── 2. POLITICAL NEWS, PRESENTATION & CONTEXT (JOB 038, 039, 040) ───
 
 export type NewsCategory =
-  | 'elections'
-  | 'governance'
-  | 'policy'
-  | 'infrastructure'
-  | 'judiciary'
-  | 'welfare'
-  | 'general';
+  'elections' | 'governance' | 'policy' | 'infrastructure' | 'judiciary' | 'welfare' | 'general';
 
 export interface PoliticalNewsArticleDTO {
   id: string;
@@ -154,10 +148,7 @@ export interface ShortsAnalyticsSummaryDTO {
 // ─── 4. NOTIFICATIONS & RETENTION DIGESTS (JOB 044, 045) ───
 
 export type NotificationTopic =
-  | 'civic_alerts'
-  | 'breaking_news'
-  | 'live_townhalls'
-  | 'weekly_digest';
+  'civic_alerts' | 'breaking_news' | 'live_townhalls' | 'weekly_digest';
 
 export interface NotificationSubscriptionRequest {
   constituencyId: string;
@@ -189,7 +180,11 @@ export interface ConstituencyDigestDTO {
   activeAspirantsCount?: number;
   civicParticipationIndex?: number;
   breakingNews: Array<{ id: string; title: string; sourceName: string; publishedAt: string }>;
-  representativeResponses: Array<{ issueId: string; responseText: string; representativeName: string }>;
+  representativeResponses: Array<{
+    issueId: string;
+    responseText: string;
+    representativeName: string;
+  }>;
   upcomingEvents: Array<{ id: string; title: string; eventType: string; startTime: string }>;
   summaryReport?: string;
   createdAt: string;

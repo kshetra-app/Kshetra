@@ -170,10 +170,7 @@ export async function contributorRoutes(app: FastifyInstance) {
           return;
         }
         resolvedUserId = auth.userId;
-      } else if (
-        !isProductionRuntime &&
-        (request.headers['x-user-id'] as string)
-      ) {
+      } else if (!isProductionRuntime && (request.headers['x-user-id'] as string)) {
         resolvedUserId = request.headers['x-user-id'] as string;
       } else {
         resolvedUserId = 'anonymous';

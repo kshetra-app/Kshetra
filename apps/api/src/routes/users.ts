@@ -15,36 +15,57 @@ export async function userRoutes(app: FastifyInstance) {
    * Return the signed-in user's own follow graph. This list can expose sensitive
    * political interests, so it is never addressable by a caller-supplied user ID.
    */
-  app.get(
-    '/api/v1/users/me/following',
-    async (request, reply) => {
-      const auth = await resolveAuthenticatedUser(request, reply);
-      if (!auth) return;
+  app.get('/api/v1/users/me/following', async (request, reply) => {
+    const auth = await resolveAuthenticatedUser(request, reply);
+    if (!auth) return;
 
-      if (!isSupabaseConfigured) {
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database service is not configured', {
+    if (!isSupabaseConfigured) {
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Database service is not configured',
+        {
           code: 'SERVICE_UNAVAILABLE',
-        });
-      }
+        },
+      );
+    }
 
-      try {
-        const { data, error } = await supabase
-          .from('user_follows')
-          .select('followed_id')
-          .eq('follower_id', auth.userId);
-        if (error) {
-          return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error loading follows', {
+    try {
+      const { data, error } = await supabase
+        .from('user_follows')
+        .select('followed_id')
+        .eq('follower_id', auth.userId);
+      if (error) {
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Database error loading follows',
+          {
             code: 'DATABASE_ERROR',
-          });
-        }
-        return reply.send({ success: true, followedUserIds: (data ?? []).map((row) => row.followed_id) });
-      } catch {
-        return sendApiError(reply, request, 500, 'Internal Server Error', 'Database error loading follows', {
-          code: 'DATABASE_ERROR',
-        });
+          },
+        );
       }
-    },
-  );
+      return reply.send({
+        success: true,
+        followedUserIds: (data ?? []).map((row) => row.followed_id),
+      });
+    } catch {
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Database error loading follows',
+        {
+          code: 'DATABASE_ERROR',
+        },
+      );
+    }
+  });
 
   /**
    * 1. POST /api/v1/users/:id/follow
@@ -81,9 +102,16 @@ export async function userRoutes(app: FastifyInstance) {
       const followerId = auth.userId;
       const { id: targetUserId } = request.params;
       if (targetUserId === followerId) {
-        return sendApiError(reply, request, 400, 'Bad Request', 'You cannot follow your own account', {
-          code: 'SELF_FOLLOW_NOT_ALLOWED',
-        });
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'You cannot follow your own account',
+          {
+            code: 'SELF_FOLLOW_NOT_ALLOWED',
+          },
+        );
       }
       const now = new Date().toISOString();
 

@@ -106,23 +106,20 @@ export async function aspirantRoutes(app: FastifyInstance) {
     },
   );
 
-  app.get(
-    '/api/v1/aspirant/me',
-    async (request, reply) => {
-      const auth = await resolveAuthenticatedUser(request, reply);
-      if (!auth) return;
+  app.get('/api/v1/aspirant/me', async (request, reply) => {
+    const auth = await resolveAuthenticatedUser(request, reply);
+    if (!auth) return;
 
-      try {
-        const profile = await AspirantService.getMyProfile(auth.userId);
-        return reply.send({ success: true, profile });
-      } catch (err: any) {
-        const statusCode = Number(err.statusCode) || 503;
-        return sendApiError(reply, request, statusCode, 'Service Unavailable', err.message, {
-          code: err.code || 'DATABASE_ERROR',
-        });
-      }
-    },
-  );
+    try {
+      const profile = await AspirantService.getMyProfile(auth.userId);
+      return reply.send({ success: true, profile });
+    } catch (err: any) {
+      const statusCode = Number(err.statusCode) || 503;
+      return sendApiError(reply, request, statusCode, 'Service Unavailable', err.message, {
+        code: err.code || 'DATABASE_ERROR',
+      });
+    }
+  });
 
   /**
    * 2. POST /api/v1/aspirant/kyc/submit — Submit KYC verification document (JOB 046 - DEC-177 Decision 1)
@@ -176,14 +173,28 @@ export async function aspirantRoutes(app: FastifyInstance) {
         return reply.status(201).send({ success: true, kyc });
       } catch (err: any) {
         if (err.message === 'STATUTORY_DECLARATION_REQUIRED') {
-          return sendApiError(reply, request, 400, 'Bad Request', 'Statutory declaration must be accepted', {
-            code: 'STATUTORY_DECLARATION_REQUIRED',
-          });
+          return sendApiError(
+            reply,
+            request,
+            400,
+            'Bad Request',
+            'Statutory declaration must be accepted',
+            {
+              code: 'STATUTORY_DECLARATION_REQUIRED',
+            },
+          );
         }
         if (err.message === 'ASPIRANT_NOT_REGISTERED') {
-          return sendApiError(reply, request, 404, 'Not Found', 'Aspirant profile must be registered first', {
-            code: 'ASPIRANT_NOT_REGISTERED',
-          });
+          return sendApiError(
+            reply,
+            request,
+            404,
+            'Not Found',
+            'Aspirant profile must be registered first',
+            {
+              code: 'ASPIRANT_NOT_REGISTERED',
+            },
+          );
         }
         return sendApiError(reply, request, 500, 'Internal Server Error', err.message, {
           code: 'DATABASE_ERROR',
@@ -195,22 +206,19 @@ export async function aspirantRoutes(app: FastifyInstance) {
   /**
    * 3. GET /api/v1/aspirant/kyc/status — Get KYC status for authenticated user (JOB 046)
    */
-  app.get(
-    '/api/v1/aspirant/kyc/status',
-    async (request, reply) => {
-      const auth = await resolveAuthenticatedUser(request, reply);
-      if (!auth) return;
+  app.get('/api/v1/aspirant/kyc/status', async (request, reply) => {
+    const auth = await resolveAuthenticatedUser(request, reply);
+    if (!auth) return;
 
-      try {
-        const records = await AspirantService.getKYCStatus(auth.userId);
-        return reply.send({ success: true, records });
-      } catch (err: any) {
-        return sendApiError(reply, request, 500, 'Internal Server Error', err.message, {
-          code: 'DATABASE_ERROR',
-        });
-      }
-    },
-  );
+    try {
+      const records = await AspirantService.getKYCStatus(auth.userId);
+      return reply.send({ success: true, records });
+    } catch (err: any) {
+      return sendApiError(reply, request, 500, 'Internal Server Error', err.message, {
+        code: 'DATABASE_ERROR',
+      });
+    }
+  });
 
   /**
    * 4. GET /api/v1/aspirant/profile/:id — Public Aspirant Profile & Aggregated Timeline (JOB 047)
@@ -251,50 +259,51 @@ export async function aspirantRoutes(app: FastifyInstance) {
    */
   app.get<{
     Querystring: { stateCode?: string; constituencyId?: string };
-  }>(
-    '/api/v1/aspirants',
-    async (request, reply) => {
-      const { stateCode, constituencyId } = request.query;
+  }>('/api/v1/aspirants', async (request, reply) => {
+    const { stateCode, constituencyId } = request.query;
 
-      if (isSupabaseConfigured) {
-        let query = supabase.from('aspirant_profiles').select('*').eq('is_public', true);
-        if (stateCode) query = query.eq('state_code', stateCode);
-        if (constituencyId) query = query.eq('target_constituency_ac_no', constituencyId);
+    if (isSupabaseConfigured) {
+      let query = supabase.from('aspirant_profiles').select('*').eq('is_public', true);
+      if (stateCode) query = query.eq('state_code', stateCode);
+      if (constituencyId) query = query.eq('target_constituency_ac_no', constituencyId);
 
-        const { data, error } = await query.order('civic_score', { ascending: false });
-        if (error) {
-          return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
-            code: 'DATABASE_ERROR',
-          });
-        }
-        return reply.send({ success: true, aspirants: data || [] });
+      const { data, error } = await query.order('civic_score', { ascending: false });
+      if (error) {
+        return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
+          code: 'DATABASE_ERROR',
+        });
       }
+      return reply.send({ success: true, aspirants: data || [] });
+    }
 
-      return reply.send({ success: true, aspirants: [] });
-    },
-  );
+    return reply.send({ success: true, aspirants: [] });
+  });
 
   /**
    * 6. GET /api/v1/aspirant/modules — List Leadership Academy Modules (JOB 050)
    */
-  app.get(
-    '/api/v1/aspirant/modules',
-    async (request, reply) => {
-      const auth = request.headers.authorization
-        ? await resolveAuthenticatedUser(request, reply)
-        : null;
-      if (reply.sent) return;
-      try {
-        const modules = await AspirantService.listAcademyModules(auth?.userId);
-        return reply.send({ success: true, modules });
-      } catch (err: any) {
-        const statusCode = Number(err.statusCode) || 503;
-        return sendApiError(reply, request, statusCode, statusCode === 404 ? 'Not Found' : 'Service Unavailable', err.message, {
+  app.get('/api/v1/aspirant/modules', async (request, reply) => {
+    const auth = request.headers.authorization
+      ? await resolveAuthenticatedUser(request, reply)
+      : null;
+    if (reply.sent) return;
+    try {
+      const modules = await AspirantService.listAcademyModules(auth?.userId);
+      return reply.send({ success: true, modules });
+    } catch (err: any) {
+      const statusCode = Number(err.statusCode) || 503;
+      return sendApiError(
+        reply,
+        request,
+        statusCode,
+        statusCode === 404 ? 'Not Found' : 'Service Unavailable',
+        err.message,
+        {
           code: err.code || 'ACADEMY_UNAVAILABLE',
-        });
-      }
-    },
-  );
+        },
+      );
+    }
+  });
 
   app.get<{ Querystring: { stateCode?: string } }>(
     '/api/v1/aspirant/challenges',
@@ -312,7 +321,10 @@ export async function aspirantRoutes(app: FastifyInstance) {
         : null;
       if (reply.sent) return;
       try {
-        const result = await AspirantService.listAcademyChallenges(auth?.userId, request.query.stateCode);
+        const result = await AspirantService.listAcademyChallenges(
+          auth?.userId,
+          request.query.stateCode,
+        );
         return reply.send({ success: true, ...result });
       } catch (err: any) {
         const statusCode = Number(err.statusCode) || 503;
@@ -323,23 +335,20 @@ export async function aspirantRoutes(app: FastifyInstance) {
     },
   );
 
-  app.get(
-    '/api/v1/aspirant/badges',
-    async (request, reply) => {
-      const auth = await resolveAuthenticatedUser(request, reply);
-      if (!auth) return;
+  app.get('/api/v1/aspirant/badges', async (request, reply) => {
+    const auth = await resolveAuthenticatedUser(request, reply);
+    if (!auth) return;
 
-      try {
-        const badges = await AspirantService.listAcademyBadges(auth.userId);
-        return reply.send({ success: true, badges });
-      } catch (err: any) {
-        const statusCode = Number(err.statusCode) || 503;
-        return sendApiError(reply, request, statusCode, 'Service Unavailable', err.message, {
-          code: err.code || 'ACADEMY_UNAVAILABLE',
-        });
-      }
-    },
-  );
+    try {
+      const badges = await AspirantService.listAcademyBadges(auth.userId);
+      return reply.send({ success: true, badges });
+    } catch (err: any) {
+      const statusCode = Number(err.statusCode) || 503;
+      return sendApiError(reply, request, statusCode, 'Service Unavailable', err.message, {
+        code: err.code || 'ACADEMY_UNAVAILABLE',
+      });
+    }
+  });
 
   /**
    * 7. GET /api/v1/aspirant/modules/:id — Get Leadership Module Detail & Quiz (JOB 050)
@@ -368,9 +377,16 @@ export async function aspirantRoutes(app: FastifyInstance) {
         mod = await AspirantService.getAcademyModule(id, auth?.userId);
       } catch (err: any) {
         const statusCode = Number(err.statusCode) || 503;
-        return sendApiError(reply, request, statusCode, statusCode === 404 ? 'Not Found' : 'Service Unavailable', err.message, {
-          code: err.code || 'ACADEMY_UNAVAILABLE',
-        });
+        return sendApiError(
+          reply,
+          request,
+          statusCode,
+          statusCode === 404 ? 'Not Found' : 'Service Unavailable',
+          err.message,
+          {
+            code: err.code || 'ACADEMY_UNAVAILABLE',
+          },
+        );
       }
 
       if (!mod) {
@@ -444,9 +460,20 @@ export async function aspirantRoutes(app: FastifyInstance) {
           });
         }
         const statusCode = Number(err.statusCode) || 503;
-        return sendApiError(reply, request, statusCode, statusCode === 404 ? 'Not Found' : statusCode === 409 ? 'Conflict' : 'Service Unavailable', err.message, {
-          code: err.code || 'DATABASE_ERROR',
-        });
+        return sendApiError(
+          reply,
+          request,
+          statusCode,
+          statusCode === 404
+            ? 'Not Found'
+            : statusCode === 409
+              ? 'Conflict'
+              : 'Service Unavailable',
+          err.message,
+          {
+            code: err.code || 'DATABASE_ERROR',
+          },
+        );
       }
     },
   );
@@ -483,12 +510,24 @@ export async function aspirantRoutes(app: FastifyInstance) {
       const { id: moduleId } = request.params;
       try {
         const result = await AspirantService.startModule(auth.userId, moduleId);
-        return reply.send({ success: true, moduleId, userId: auth.userId, started: result.started });
+        return reply.send({
+          success: true,
+          moduleId,
+          userId: auth.userId,
+          started: result.started,
+        });
       } catch (err: any) {
         const statusCode = Number(err.statusCode) || 503;
-        return sendApiError(reply, request, statusCode, statusCode === 404 ? 'Not Found' : 'Service Unavailable', err.message, {
-          code: err.code || 'DATABASE_ERROR',
-        });
+        return sendApiError(
+          reply,
+          request,
+          statusCode,
+          statusCode === 404 ? 'Not Found' : 'Service Unavailable',
+          err.message,
+          {
+            code: err.code || 'DATABASE_ERROR',
+          },
+        );
       }
     },
   );
@@ -529,12 +568,29 @@ export async function aspirantRoutes(app: FastifyInstance) {
       const { quizScore } = request.body || {};
       try {
         const result = await AspirantService.completeModule(auth.userId, moduleId, quizScore);
-        return reply.send({ success: true, moduleId, userId: auth.userId, completedAt: result.completedAt, quizScore: result.quizScore ?? null });
+        return reply.send({
+          success: true,
+          moduleId,
+          userId: auth.userId,
+          completedAt: result.completedAt,
+          quizScore: result.quizScore ?? null,
+        });
       } catch (err: any) {
         const statusCode = Number(err.statusCode) || 503;
-        return sendApiError(reply, request, statusCode, statusCode === 404 ? 'Not Found' : statusCode === 409 ? 'Conflict' : 'Service Unavailable', err.message, {
-          code: err.code || 'DATABASE_ERROR',
-        });
+        return sendApiError(
+          reply,
+          request,
+          statusCode,
+          statusCode === 404
+            ? 'Not Found'
+            : statusCode === 409
+              ? 'Conflict'
+              : 'Service Unavailable',
+          err.message,
+          {
+            code: err.code || 'DATABASE_ERROR',
+          },
+        );
       }
     },
   );
@@ -572,7 +628,14 @@ export async function aspirantRoutes(app: FastifyInstance) {
       const now = new Date().toISOString();
 
       if (!isSupabaseConfigured) {
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Challenge storage is unavailable', { code: 'DATABASE_UNAVAILABLE' });
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Challenge storage is unavailable',
+          { code: 'DATABASE_UNAVAILABLE' },
+        );
       }
 
       const { data: challenge, error: challengeError } = await supabase
@@ -582,14 +645,32 @@ export async function aspirantRoutes(app: FastifyInstance) {
         .eq('is_active', true)
         .maybeSingle();
       if (challengeError) {
-        request.log.error({ err: challengeError.message }, 'Failed to validate community challenge');
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Challenge data is unavailable', { code: 'DATABASE_ERROR' });
+        request.log.error(
+          { err: challengeError.message },
+          'Failed to validate community challenge',
+        );
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Challenge data is unavailable',
+          { code: 'DATABASE_ERROR' },
+        );
       }
-      if (!challenge) return sendApiError(reply, request, 404, 'Not Found', 'Active challenge not found', { code: 'CHALLENGE_NOT_FOUND' });
+      if (!challenge)
+        return sendApiError(reply, request, 404, 'Not Found', 'Active challenge not found', {
+          code: 'CHALLENGE_NOT_FOUND',
+        });
 
       const nowMs = Date.now();
-      if (new Date(challenge.starts_at).getTime() > nowMs || (challenge.ends_at && new Date(challenge.ends_at).getTime() < nowMs)) {
-        return sendApiError(reply, request, 404, 'Not Found', 'Active challenge not found', { code: 'CHALLENGE_NOT_FOUND' });
+      if (
+        new Date(challenge.starts_at).getTime() > nowMs ||
+        (challenge.ends_at && new Date(challenge.ends_at).getTime() < nowMs)
+      ) {
+        return sendApiError(reply, request, 404, 'Not Found', 'Active challenge not found', {
+          code: 'CHALLENGE_NOT_FOUND',
+        });
       }
       if (challenge.state_code) {
         const { data: aspirant, error: aspirantError } = await supabase
@@ -599,19 +680,41 @@ export async function aspirantRoutes(app: FastifyInstance) {
           .maybeSingle();
         if (aspirantError) {
           request.log.error({ err: aspirantError.message }, 'Failed to validate challenge region');
-          return sendApiError(reply, request, 503, 'Service Unavailable', 'Challenge eligibility could not be verified', { code: 'DATABASE_ERROR' });
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Challenge eligibility could not be verified',
+            { code: 'DATABASE_ERROR' },
+          );
         }
         if (aspirant?.state_code !== challenge.state_code) {
-          return sendApiError(reply, request, 404, 'Not Found', 'Active challenge not found', { code: 'CHALLENGE_NOT_FOUND' });
+          return sendApiError(reply, request, 404, 'Not Found', 'Active challenge not found', {
+            code: 'CHALLENGE_NOT_FOUND',
+          });
         }
       }
 
       const { error: participationError } = await supabase
         .from('challenge_participation')
-        .upsert({ user_id: auth.userId, challenge_id: challengeId }, { onConflict: 'user_id,challenge_id', ignoreDuplicates: true });
+        .upsert(
+          { user_id: auth.userId, challenge_id: challengeId },
+          { onConflict: 'user_id,challenge_id', ignoreDuplicates: true },
+        );
       if (participationError) {
-        request.log.error({ err: participationError.message }, 'Failed to persist challenge participation');
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Challenge participation could not be saved', { code: 'DATABASE_ERROR' });
+        request.log.error(
+          { err: participationError.message },
+          'Failed to persist challenge participation',
+        );
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Challenge participation could not be saved',
+          { code: 'DATABASE_ERROR' },
+        );
       }
 
       return reply.send({
@@ -651,7 +754,9 @@ export async function aspirantRoutes(app: FastifyInstance) {
       const auth = await resolveAuthenticatedUser(request, reply);
       if (!auth) return;
 
-      if (!assertActingUserMatch(reply, request, auth.userId, request.body?.endorserId, 'endorserId')) {
+      if (
+        !assertActingUserMatch(reply, request, auth.userId, request.body?.endorserId, 'endorserId')
+      ) {
         return;
       }
 
@@ -660,21 +765,41 @@ export async function aspirantRoutes(app: FastifyInstance) {
       const now = new Date().toISOString();
 
       if (!isSupabaseConfigured) {
-        return sendApiError(reply, request, 503, 'Service Unavailable', 'Endorsement storage is unavailable', { code: 'DATABASE_UNAVAILABLE' });
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Endorsement storage is unavailable',
+          { code: 'DATABASE_UNAVAILABLE' },
+        );
       }
 
-      const { error: endorsementError } = await supabase.from('community_endorsements').upsert({
+      const { error: endorsementError } = await supabase.from('community_endorsements').upsert(
+        {
           endorser_id: auth.userId,
           aspirant_id: aspirantId,
           message: message ?? null,
           created_at: now,
-        }, { onConflict: 'endorser_id,aspirant_id', ignoreDuplicates: true });
+        },
+        { onConflict: 'endorser_id,aspirant_id', ignoreDuplicates: true },
+      );
       if (endorsementError) {
         const isMissingProfile = endorsementError.code === '23503';
-        request.log.error({ err: endorsementError.message }, 'Failed to persist aspirant endorsement');
-        return sendApiError(reply, request, isMissingProfile ? 404 : 503, isMissingProfile ? 'Not Found' : 'Service Unavailable', 'Endorsement could not be saved', {
-          code: isMissingProfile ? 'ASPIRANT_NOT_FOUND' : 'DATABASE_ERROR',
-        });
+        request.log.error(
+          { err: endorsementError.message },
+          'Failed to persist aspirant endorsement',
+        );
+        return sendApiError(
+          reply,
+          request,
+          isMissingProfile ? 404 : 503,
+          isMissingProfile ? 'Not Found' : 'Service Unavailable',
+          'Endorsement could not be saved',
+          {
+            code: isMissingProfile ? 'ASPIRANT_NOT_FOUND' : 'DATABASE_ERROR',
+          },
+        );
       }
 
       return reply.send({

@@ -54,19 +54,30 @@ function sendAIServiceError(
   fallbackMessage: string,
 ) {
   const budgetExceeded = error instanceof AIBudgetLimitError;
-  const unavailable = error instanceof AIProviderUnavailableError ||
+  const unavailable =
+    error instanceof AIProviderUnavailableError ||
     error instanceof AIBudgetUnavailableError ||
     error instanceof AICostLedgerUnavailableError;
-  const code = budgetExceeded || unavailable
-    ? (error as Error & { code?: string }).code || 'AI_SERVICE_UNAVAILABLE'
-    : 'AI_PROVIDER_ERROR';
-  if (error instanceof AIBudgetLimitError) reply.header('Retry-After', String(error.resetInSeconds));
+  const code =
+    budgetExceeded || unavailable
+      ? (error as Error & { code?: string }).code || 'AI_SERVICE_UNAVAILABLE'
+      : 'AI_PROVIDER_ERROR';
+  if (error instanceof AIBudgetLimitError)
+    reply.header('Retry-After', String(error.resetInSeconds));
   return sendApiError(
     reply,
     request,
     budgetExceeded ? 429 : unavailable ? 503 : 500,
-    budgetExceeded ? 'Too Many Requests' : unavailable ? 'Service Unavailable' : 'Internal Server Error',
-    error instanceof AIBudgetLimitError ? error.message : unavailable ? 'AI processing or durable usage accounting is currently unavailable.' : fallbackMessage,
+    budgetExceeded
+      ? 'Too Many Requests'
+      : unavailable
+        ? 'Service Unavailable'
+        : 'Internal Server Error',
+    error instanceof AIBudgetLimitError
+      ? error.message
+      : unavailable
+        ? 'AI processing or durable usage accounting is currently unavailable.'
+        : fallbackMessage,
     { code },
   );
 }
@@ -75,9 +86,16 @@ async function requireAIAdmin(request: FastifyRequest, reply: FastifyReply): Pro
   const actor = await resolveAuthenticatedUser(request, reply);
   if (!actor) return false;
   if (!['admin', 'super_admin', 'data_engineer'].includes(actor.role)) {
-    sendApiError(reply, request, 403, 'Forbidden', 'Administrator access is required for AI budget and provider controls.', {
-      code: 'FORBIDDEN',
-    });
+    sendApiError(
+      reply,
+      request,
+      403,
+      'Forbidden',
+      'Administrator access is required for AI budget and provider controls.',
+      {
+        code: 'FORBIDDEN',
+      },
+    );
     return false;
   }
   return true;
@@ -95,7 +113,10 @@ const chatBodySchema = z.object({
     )
     .min(1, 'messages array is required and must not be empty')
     .max(MAX_MESSAGES_COUNT)
-    .refine((messages) => messages.some((message) => message.role === 'user'), 'At least one user message is required'),
+    .refine(
+      (messages) => messages.some((message) => message.role === 'user'),
+      'At least one user message is required',
+    ),
   constituencyAcNo: z.number().int().min(MIN_AC_NO).max(MAX_AC_NO).optional(),
   stateCode: z.string().trim().length(2).optional(),
   tenantId: z.string().trim().min(1).optional(),
@@ -245,7 +266,10 @@ export async function aiRoutes(app: FastifyInstance) {
     }
 
     try {
-      const result = await AICivicClassifier.classify({ ...parsed.data, tenantId: 'default_tenant' });
+      const result = await AICivicClassifier.classify({
+        ...parsed.data,
+        tenantId: 'default_tenant',
+      });
       return reply.status(200).send(result);
     } catch (err: unknown) {
       request.log.error({ err }, 'Civic issue classification failed');
@@ -270,7 +294,12 @@ export async function aiRoutes(app: FastifyInstance) {
       return reply.status(200).send(response);
     } catch (err: unknown) {
       request.log.error({ err }, 'Ask POLIGRAM query failed');
-      return sendAIServiceError(reply, request, err, 'Failed to process POLIGRAM intelligence query');
+      return sendAIServiceError(
+        reply,
+        request,
+        err,
+        'Failed to process POLIGRAM intelligence query',
+      );
     }
   };
 
@@ -285,7 +314,9 @@ export async function aiRoutes(app: FastifyInstance) {
     if (!(await requireAIAdmin(request, reply))) return;
     const parsed = validate(costReportQuerySchema, request.query);
     if (!parsed.ok) {
-      return sendApiError(reply, request, 400, 'Bad Request', parsed.error, { code: 'FST_ERR_VALIDATION' });
+      return sendApiError(reply, request, 400, 'Bad Request', parsed.error, {
+        code: 'FST_ERR_VALIDATION',
+      });
     }
     const tenantId = parsed.data.tenantId || 'default_tenant';
     const period = parsed.data.period || 'day';
@@ -306,7 +337,9 @@ export async function aiRoutes(app: FastifyInstance) {
     if (!(await requireAIAdmin(request, reply))) return;
     const parsed = validate(costReportQuerySchema, request.query);
     if (!parsed.ok) {
-      return sendApiError(reply, request, 400, 'Bad Request', parsed.error, { code: 'FST_ERR_VALIDATION' });
+      return sendApiError(reply, request, 400, 'Bad Request', parsed.error, {
+        code: 'FST_ERR_VALIDATION',
+      });
     }
     const tenantId = parsed.data.tenantId || 'default_tenant';
 
@@ -347,15 +380,16 @@ export async function aiRoutes(app: FastifyInstance) {
   app.get('/api/v1/ai/providers', async () => {
     const chain = defaultAIRegistry.getActiveChain();
     const primaryProvider = chain[0]?.name;
-    const defaultModel = primaryProvider === 'gemini'
-      ? process.env.GEMINI_MODEL || 'gemini-2.0-flash'
-      : primaryProvider === 'openai'
-        ? process.env.OPENAI_MODEL || 'gpt-4o-mini'
-        : primaryProvider === 'custom'
-          ? process.env.CUSTOM_LLM_MODEL || null
-          : primaryProvider === 'offline_heuristic'
-            ? 'deterministic-offline-v1'
-            : null;
+    const defaultModel =
+      primaryProvider === 'gemini'
+        ? process.env.GEMINI_MODEL || 'gemini-2.0-flash'
+        : primaryProvider === 'openai'
+          ? process.env.OPENAI_MODEL || 'gpt-4o-mini'
+          : primaryProvider === 'custom'
+            ? process.env.CUSTOM_LLM_MODEL || null
+            : primaryProvider === 'offline_heuristic'
+              ? 'deterministic-offline-v1'
+              : null;
     return {
       activeChain: chain.map((p) => ({
         name: p.name,
@@ -381,9 +415,16 @@ export async function aiRoutes(app: FastifyInstance) {
 
     if (!(await requireAIAdmin(request, reply))) return;
     if (isProductionLikeRuntime()) {
-      return sendApiError(reply, request, 409, 'Conflict', 'Production AI providers must be configured through the deployment environment and rate-card release process.', {
-        code: 'RUNTIME_PROVIDER_CONFIGURATION_DISABLED',
-      });
+      return sendApiError(
+        reply,
+        request,
+        409,
+        'Conflict',
+        'Production AI providers must be configured through the deployment environment and rate-card release process.',
+        {
+          code: 'RUNTIME_PROVIDER_CONFIGURATION_DISABLED',
+        },
+      );
     }
 
     try {
@@ -395,9 +436,16 @@ export async function aiRoutes(app: FastifyInstance) {
       });
     } catch (err: unknown) {
       request.log.error({ err }, 'Failed to configure AI provider');
-      return sendApiError(reply, request, 500, 'Internal Server Error', 'Failed to configure AI provider', {
-        code: 'PROVIDER_CONFIG_ERROR',
-      });
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Failed to configure AI provider',
+        {
+          code: 'PROVIDER_CONFIG_ERROR',
+        },
+      );
     }
   });
 
@@ -465,7 +513,12 @@ export async function aiRoutes(app: FastifyInstance) {
         tenantId: 'default_tenant',
         userId: actor?.userId,
       });
-      return { acNo: num, stateCode, analysis, groundingStatus: 'reference_data_unverified' as const };
+      return {
+        acNo: num,
+        stateCode,
+        analysis,
+        groundingStatus: 'reference_data_unverified' as const,
+      };
     } catch (err: unknown) {
       request.log.error({ err, acNo: num, stateCode }, 'AI constituency analysis failed');
       return sendAIServiceError(reply, request, err, 'Failed to analyze constituency');

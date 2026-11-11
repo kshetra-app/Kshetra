@@ -2,7 +2,9 @@ import { isProductionLikeRuntime } from '../../lib/runtimeEnvironment';
 import crypto from 'node:crypto';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 
-function isProductionRuntime(): boolean { return isProductionLikeRuntime(); }
+function isProductionRuntime(): boolean {
+  return isProductionLikeRuntime();
+}
 
 export interface OBDBroadcastInput {
   campaignId: string;
@@ -208,7 +210,9 @@ export async function dispatchOBDBroadcast(input: OBDBroadcastInput): Promise<{
   // batch queue, durable reservation, or delivery reconciliation. The API route also
   // blocks it in production; keep this service boundary protected against future callers.
   if (isProductionRuntime()) {
-    throw new Error('VOICE_DISPATCH_UNAVAILABLE: Production dispatch requires recipient batching, durable consent, and atomic settlement.');
+    throw new Error(
+      'VOICE_DISPATCH_UNAVAILABLE: Production dispatch requires recipient batching, durable consent, and atomic settlement.',
+    );
   }
 
   const traiCheck = isWithinTraiWindow();

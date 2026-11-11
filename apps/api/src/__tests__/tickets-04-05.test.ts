@@ -34,7 +34,10 @@ describe('Tickets 0.4 & 0.5: Web Page Manager & Grievance Policy Routes', () => 
     process.env.RAZORPAY_KEY_ID = 'rzp_test_ticket_suite_key';
     process.env.RAZORPAY_KEY_SECRET = 'ticket_suite_test_secret';
     jest.spyOn(global, 'fetch').mockImplementation(async (_input, init) => {
-      const requestBody = JSON.parse(String(init?.body || '{}')) as { amount: number; currency: string };
+      const requestBody = JSON.parse(String(init?.body || '{}')) as {
+        amount: number;
+        currency: string;
+      };
       return {
         ok: true,
         status: 200,

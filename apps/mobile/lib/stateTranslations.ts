@@ -466,6 +466,10 @@ export const STATE_TRANSLATIONS: Record<string, Record<string, string>> = {
   },
 };
 
+function containsNonAsciiCharacters(value: string): boolean {
+  return Array.from(value).some((character) => character.codePointAt(0)! > 0x7f);
+}
+
 export const DISTRICT_TRANSLATIONS: Record<string, Record<string, string>> = {
   // Telangana Districts
   'Adilabad': { te: 'ఆదిలాబాద్', hi: 'आदिलाबाद', kn: 'ಆದಿಲಾಬಾದ್', mr: 'आदिलाबाद' },
@@ -713,7 +717,7 @@ export function getLocalizedConstituencyName(
   } catch {}
 
   // 4. If localNameCandidate exists and is in native script, prefer it over English
-  if (localNameCandidate && !/^[\x00-\x7F]*$/.test(localNameCandidate)) {
+  if (localNameCandidate && containsNonAsciiCharacters(localNameCandidate)) {
     return localNameCandidate;
   }
 
