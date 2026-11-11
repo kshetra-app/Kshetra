@@ -24,6 +24,7 @@ import {
   getPanchayatsForMandal,
   getBoothsForPanchayat,
   getBoothsForConstituency,
+  hasCurrentBoothVoterCount,
   type MandalWithOverlap,
   type GramPanchayat,
 } from '../../lib/hierarchyData';
@@ -238,12 +239,30 @@ export default function HierarchyScreen() {
                   <Text style={[styles.cardTitle, { color: colors.text }]}>{b.nameEn}</Text>
                   {b.nameTe ? <Text style={[styles.cardSub, { color: colors.textSecondary }]}>{b.nameTe}</Text> : null}
                 </View>
-                <View style={[styles.tag, { backgroundColor: (b.isUrban ? colors.warning : colors.success) + '22' }]}>
-                  <Text style={[styles.tagText, { color: b.isUrban ? colors.warning : colors.success }]}>{b.isUrban ? t('hierarchy.urban') : t('hierarchy.rural')}</Text>
-                </View>
+                {b.historical ? (
+                  <View style={[styles.tag, { backgroundColor: colors.textMuted + '22' }]}>
+                    <Text style={[styles.tagText, { color: colors.textMuted }]}>
+                      {t('mapExtended.boothHistorical', { year: b.sourceYear ?? '—' })}
+                    </Text>
+                  </View>
+                ) : (
+                  <View style={[styles.tag, { backgroundColor: (b.isUrban ? colors.warning : colors.success) + '22' }]}>
+                    <Text style={[styles.tagText, { color: b.isUrban ? colors.warning : colors.success }]}>
+                      {b.isUrban ? t('hierarchy.urban') : t('hierarchy.rural')}
+                    </Text>
+                  </View>
+                )}
               </View>
               <View style={styles.boothStats}>
-                <Text style={[styles.boothStat, { color: colors.text }]}>{b.totalVoters.toLocaleString('en-IN')} {t('hierarchy.voters')}</Text>
+                {hasCurrentBoothVoterCount(b) ? (
+                  <Text style={[styles.boothStat, { color: colors.text }]}>
+                    {b.totalVoters.toLocaleString('en-IN')} {t('hierarchy.voters')}
+                  </Text>
+                ) : (
+                  <Text style={[styles.boothStatMuted, { color: colors.textMuted }]}>
+                    {t('hierarchy.registeredVoters')}: —
+                  </Text>
+                )}
                 {b.maleVoters != null ? <Text style={[styles.boothStatMuted, { color: colors.textMuted }]}>M {b.maleVoters.toLocaleString('en-IN')}</Text> : null}
                 {b.femaleVoters != null ? <Text style={[styles.boothStatMuted, { color: colors.textMuted }]}>F {b.femaleVoters.toLocaleString('en-IN')}</Text> : null}
                 {b.location ? <Text style={[styles.boothStatMuted, { color: colors.textMuted }]}>{b.location.latitude.toFixed(3)}, {b.location.longitude.toFixed(3)}</Text> : null}

@@ -307,6 +307,11 @@ export function getBoothsForConstituency(stateCode: string, acNo: number): Polli
   return get2017Booths(stateCode, acNo);
 }
 
+/** Historical booth location records do not establish a current voter count. */
+export function hasCurrentBoothVoterCount(booth: PollingBooth): boolean {
+  return booth.historical !== true && Number.isFinite(booth.totalVoters) && booth.totalVoters > 0;
+}
+
 /** Whether a constituency has ANY booth data to plot (official pilot or 2017 historical). */
 export function hasBoothData(stateCode: string, acNo: number): boolean {
   const b = getResolvedBundle(stateCode, acNo);

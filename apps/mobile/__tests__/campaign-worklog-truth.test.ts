@@ -39,6 +39,23 @@ describe('campaign work-log metric truthfulness', () => {
     rating: 4.9,
   };
 
+  it('does not initialize production with seeded campaigns, ad delivery, finance, or outreach data', () => {
+    const { store } = loadProductionStore();
+    const state = store.getState();
+
+    expect(state.campaigns).toEqual([]);
+    expect(state.ads).toEqual([]);
+    expect(state.abTests).toEqual([]);
+    expect(state.volunteers).toEqual([]);
+    expect(state.booths).toEqual([]);
+    expect(state.revenueData).toBeNull();
+    expect(state.campaignsAvailable).toBe(false);
+    expect(state.adsAvailable).toBe(false);
+    expect(state.walletAvailable).toBe(false);
+    expect(state.pricingAvailable).toBe(false);
+    expect(state.obdBroadcastsAvailable).toBe(false);
+  });
+
   it('withholds legacy counters unless the API confirms work-log metrics are available', async () => {
     const { store, request } = loadProductionStore();
     request.mockResolvedValue({ data: { volunteers: [volunteerRow] } });
