@@ -14,6 +14,9 @@
 import { supabase, isSupabaseConfigured } from './supabase';
 import { useCivicStore } from '../stores/civic';
 import { useFeedStore } from '../stores/feed';
+import { usePromiseStore } from '../stores/promises';
+import { useActiveStateStore } from '../stores/activeState';
+import * as dataService from './supabaseDataService';
 import {
   notifyCivicIssueNearYou,
   notifyCivicIssueStatusChange,
@@ -25,6 +28,8 @@ import {
 type RealtimeChannel = ReturnType<typeof supabase.channel>;
 
 const channels: Map<string, RealtimeChannel> = new Map();
+const refreshTimers = new Map<string, ReturnType<typeof setTimeout>>();
+const REALTIME_REFRESH_DEBOUNCE_MS = 150;
 
 /**
  * Subscribe to civic issue changes for a constituency.
@@ -35,22 +40,31 @@ export function subscribeToCivicIssues(constituencyId?: string): () => void {
   const channelName = `civic-issues-${constituencyId ?? 'all'}`;
   if (channels.has(channelName)) return () => unsubscribe(channelName);
 
-  let filter = 'public:civic_issues';
-  if (constituencyId) {
-    filter = `public:civic_issues:constituency_id=eq.${constituencyId}`;
-  }
+  const changeFilter = (event: 'INSERT' | 'UPDATE' | 'DELETE') => ({
+    event,
+    schema: 'public',
+    table: 'civic_issues',
+    ...(constituencyId && event !== 'DELETE'
+      ? { filter: `constituency_id=eq.${constituencyId}` }
+      : {}),
+  });
 
   const channel = supabase
     .channel(channelName)
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'civic_issues' }, (payload) => {
+    .on('postgres_changes', changeFilter('INSERT'), (payload) => {
       const issue = payload.new as any;
       notifyCivicIssueNearYou(issue.title ?? 'New issue', issue.constituency_name ?? 'your area');
+      scheduleRefresh(`civic-${constituencyId ?? 'all'}`, () => refreshCivicIssues(constituencyId));
     })
-    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'civic_issues' }, (payload) => {
+    .on('postgres_changes', changeFilter('UPDATE'), (payload) => {
       const issue = payload.new as any;
       if (payload.old && (payload.old as any).status !== issue.status) {
         notifyCivicIssueStatusChange(issue.title ?? 'Issue', issue.status ?? 'updated');
       }
+      scheduleRefresh(`civic-${constituencyId ?? 'all'}`, () => refreshCivicIssues(constituencyId));
+    })
+    .on('postgres_changes', changeFilter('DELETE'), () => {
+      scheduleRefresh(`civic-${constituencyId ?? 'all'}`, () => refreshCivicIssues(constituencyId));
     })
     .subscribe();
 
@@ -103,20 +117,51 @@ export function subscribeToPromises(): () => void {
 
   const channel = supabase
     .channel(channelName)
-    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'election_promises' }, (payload) => {
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'election_promises' }, (payload) => {
       const promise = payload.new as any;
-      if (payload.old && (payload.old as any).status !== promise.status) {
+      if (payload.eventType === 'UPDATE' && payload.old && (payload.old as any).status !== promise.status) {
         notifyPromiseStatusChange(
           promise.title ?? 'Promise',
           promise.status ?? 'updated',
           promise.party ?? '',
         );
       }
+      schedulePromiseRefresh();
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'promise_updates' }, () => {
+      schedulePromiseRefresh();
     })
     .subscribe();
 
   channels.set(channelName, channel);
   return () => unsubscribe(channelName);
+}
+
+function schedulePromiseRefresh(): void {
+  scheduleRefresh('promises', async () => {
+    const stateCode = useActiveStateStore.getState().stateCode;
+    const promises = await dataService.fetchPromisesForState(stateCode);
+    if (promises !== null) usePromiseStore.getState().hydrateFromServer(promises);
+  });
+}
+
+async function refreshCivicIssues(constituencyId?: string): Promise<void> {
+  if (!constituencyId) return;
+  const stateCode = useActiveStateStore.getState().stateCode;
+  const issues = await dataService.fetchIssuesForConstituency(constituencyId, stateCode);
+  if (issues !== null) useCivicStore.getState().hydrateFromServer(issues);
+}
+
+function scheduleRefresh(key: string, refresh: () => Promise<void>): void {
+  const existing = refreshTimers.get(key);
+  if (existing) clearTimeout(existing);
+  const timer = setTimeout(() => {
+    refreshTimers.delete(key);
+    void refresh().catch((err) => {
+      console.warn('[Realtime] Failed to refresh changed records:', err);
+    });
+  }, REALTIME_REFRESH_DEBOUNCE_MS);
+  refreshTimers.set(key, timer);
 }
 
 /**
