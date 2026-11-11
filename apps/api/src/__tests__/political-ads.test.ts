@@ -1,5 +1,6 @@
 import { buildApp } from '../server';
 import type { FastifyInstance } from 'fastify';
+import { supabase } from '../lib/supabase';
 
 describe('Political advertising production contract', () => {
   let app: FastifyInstance;
@@ -30,15 +31,27 @@ describe('Political advertising production contract', () => {
     expect(body.total).toBe(0);
   });
 
-  it('returns 503 in production until durable compliance and delivery systems are connected', async () => {
+  it('returns storage unavailable in production when the durable public library cannot be read', async () => {
     const originalNodeEnv = process.env.NODE_ENV;
+    const query: any = {
+      select: () => query,
+      in: () => query,
+      order: () => query,
+      range: async () => ({
+        data: null,
+        error: new Error('test database unavailable'),
+        count: null,
+      }),
+    };
+    const fromSpy = jest.spyOn(supabase, 'from').mockReturnValue(query);
     process.env.NODE_ENV = 'production';
     try {
       const res = await app.inject({ method: 'GET', url: '/api/v1/political-ads/library' });
 
       expect(res.statusCode).toBe(503);
-      expect(JSON.parse(res.payload).code).toBe('POLITICAL_AD_SERVICE_UNAVAILABLE');
+      expect(JSON.parse(res.payload).code).toBe('POLITICAL_AD_STORAGE_UNAVAILABLE');
     } finally {
+      fromSpy.mockRestore();
       if (originalNodeEnv === undefined) delete process.env.NODE_ENV;
       else process.env.NODE_ENV = originalNodeEnv;
     }
