@@ -77,6 +77,55 @@ export interface CanonicalConstituencyRecord {
   currentMLA?: string | null;
 }
 
+interface HierarchyBoothRow {
+  id: string;
+  internal_id: string | null;
+  booth_number: number;
+  booth_name: string;
+  polling_station_name: string | null;
+  total_voters: number | null;
+  panchayat_id: string | null;
+  ulb_ward_internal_id: string | null;
+  gp_ward_internal_id: string | null;
+}
+
+interface HierarchyULBWardRow {
+  id: string;
+  internal_id: string | null;
+  ulb_id: string;
+  ward_no: number;
+  name: string | null;
+  reservation: string;
+}
+
+interface HierarchyULBRow {
+  id: string;
+  internal_id: string | null;
+  name: string;
+  local_name: string | null;
+  type: string;
+  lgd_code: number | null;
+  total_wards: number | null;
+}
+
+interface HierarchyGPWardRow {
+  id: string;
+  internal_id: string | null;
+  panchayat_id: string;
+  ward_no: number;
+  name: string | null;
+  reservation: string;
+}
+
+interface HierarchyGPRow {
+  id: string;
+  internal_id: string | null;
+  name: string;
+  local_name: string | null;
+  mandal_id: string;
+  lgd_code: number | null;
+}
+
 // ─── DYNAMIC BY-ELECTION SCHEDULE REGISTRY ───
 
 export interface ByElectionScheduleItem {
@@ -490,7 +539,7 @@ export class CanonicalGeographyService {
     const { data, error } = await supabase
       .from('constituencies')
       .select(
-        'id, ac_no, name, state_code, district, reservation_status, current_party, current_mla',
+        'id, internal_id, ac_no, name, state_code, district, reservation_status, current_party, current_mla',
       )
       .eq('state_code', code)
       .eq('ac_no', acNo)
@@ -511,6 +560,7 @@ export class CanonicalGeographyService {
 
     return {
       id: data.id || `${code}-AC-${data.ac_no}`,
+      ...(typeof data.internal_id === 'string' ? { internalId: data.internal_id } : {}),
       name: data.name,
       acNo: data.ac_no,
       stateCode: data.state_code || code,
@@ -773,17 +823,23 @@ export class CanonicalGeographyService {
 
     // 1. Resolve Assembly Constituency
     let brief = await this.getConstituency(code, acNo);
-    if (!brief) {
-      brief = getStateConstituency(code, acNo);
+    if (!brief && isProductionLikeRuntime()) {
+      if (!this.isAvailable()) {
+        throw new Error('Canonical geography datastore is not configured');
+      }
+      throw new Error('Canonical constituency record could not be resolved');
     }
+    if (!brief) brief = getStateConstituency(code, acNo);
     if (!brief) return null;
-    if (isProductionLikeRuntime() && !this.isAvailable()) {
-      throw new Error('Canonical geography datastore is not configured');
-    }
 
-    let ulbs: any[] = [];
-    let gps: any[] = [];
-    let booths: any[] = [];
+    if (isProductionLikeRuntime() && !brief.internalId) {
+      throw new Error('Canonical constituency internal ID is unavailable');
+    }
+    const constituencyInternalId = brief.internalId ?? brief.id;
+
+    let ulbs: SubConstituencyHierarchyDTO['urbanLocalBodies'] = [];
+    let gps: SubConstituencyHierarchyDTO['gramPanchayats'] = [];
+    let booths: SubConstituencyHierarchyDTO['pollingBooths'] = [];
 
     if (this.isAvailable()) {
       try {
@@ -796,13 +852,15 @@ export class CanonicalGeographyService {
           )
           .eq('constituency_id', brief.id);
         if (boothRes.error) throw boothRes.error;
-        const boothRows = Array.isArray(boothRes.data) ? boothRes.data : [];
-        booths = boothRows.map((b: any) => ({
+        const boothRows = (
+          Array.isArray(boothRes.data) ? boothRes.data : []
+        ) as HierarchyBoothRow[];
+        booths = boothRows.map((b) => ({
           id: b.id,
           internalId: b.internal_id || b.id,
           boothNumber: b.booth_number,
           boothName: b.booth_name,
-          pollingStationName: b.polling_station_name,
+          pollingStationName: b.polling_station_name ?? null,
           totalVoters:
             typeof b.total_voters === 'number' &&
             Number.isFinite(b.total_voters) &&
@@ -814,9 +872,9 @@ export class CanonicalGeographyService {
             : b.panchayat_id
               ? 'gram_panchayat'
               : 'unassigned',
-          panchayatId: b.panchayat_id,
-          ulbWardId: b.ulb_ward_internal_id,
-          gpWardId: b.gp_ward_internal_id,
+          panchayatId: b.panchayat_id ?? null,
+          ulbWardId: b.ulb_ward_internal_id ?? null,
+          gpWardId: b.gp_ward_internal_id ?? null,
         }));
 
         const ulbWardRes = await supabase
@@ -824,26 +882,28 @@ export class CanonicalGeographyService {
           .select('id, internal_id, ulb_id, ward_no, name, reservation')
           .eq('constituency_id', brief.id);
         if (ulbWardRes.error) throw ulbWardRes.error;
-        const ulbWardRows = Array.isArray(ulbWardRes.data) ? ulbWardRes.data : [];
-        const ulbIds = [...new Set(ulbWardRows.map((ward: any) => ward.ulb_id).filter(Boolean))];
+        const ulbWardRows = (
+          Array.isArray(ulbWardRes.data) ? ulbWardRes.data : []
+        ) as HierarchyULBWardRow[];
+        const ulbIds = [...new Set(ulbWardRows.map((ward) => ward.ulb_id))];
         if (ulbIds.length > 0) {
           const ulbRes = await supabase
             .from('urban_local_bodies')
             .select('id, internal_id, name, local_name, type, lgd_code, total_wards')
             .in('id', ulbIds);
           if (ulbRes.error) throw ulbRes.error;
-          const ulbRows = Array.isArray(ulbRes.data) ? ulbRes.data : [];
-          ulbs = ulbRows.map((ulb: any) => ({
+          const ulbRows = (Array.isArray(ulbRes.data) ? ulbRes.data : []) as HierarchyULBRow[];
+          ulbs = ulbRows.map((ulb) => ({
             id: ulb.id,
             internalId: ulb.internal_id || ulb.id,
             name: ulb.name,
-            localName: ulb.local_name,
+            ...(ulb.local_name ? { localName: ulb.local_name } : {}),
             type: ulb.type,
             lgdCode: ulb.lgd_code,
             totalWards: ulb.total_wards,
             wards: ulbWardRows
-              .filter((ward: any) => ward.ulb_id === ulb.id)
-              .map((ward: any) => ({
+              .filter((ward) => ward.ulb_id === ulb.id)
+              .map((ward) => ({
                 id: ward.id,
                 internalId: ward.internal_id || ward.id,
                 wardNo: ward.ward_no,
@@ -854,23 +914,29 @@ export class CanonicalGeographyService {
         }
 
         const gpWardIds = [
-          ...new Set(boothRows.map((booth: any) => booth.gp_ward_internal_id).filter(Boolean)),
+          ...new Set(
+            boothRows
+              .map((booth) => booth.gp_ward_internal_id)
+              .filter((id): id is string => typeof id === 'string' && id.length > 0),
+          ),
         ];
-        const gpWardRows: any[] = [];
+        let boothLinkedGpWardRows: HierarchyGPWardRow[] = [];
         if (gpWardIds.length > 0) {
           const gpWardRes = await supabase
             .from('gp_wards')
             .select('id, internal_id, panchayat_id, ward_no, name, reservation')
             .in('internal_id', gpWardIds);
           if (gpWardRes.error) throw gpWardRes.error;
-          if (Array.isArray(gpWardRes.data)) gpWardRows.push(...gpWardRes.data);
+          if (Array.isArray(gpWardRes.data)) {
+            boothLinkedGpWardRows = gpWardRes.data as HierarchyGPWardRow[];
+          }
         }
 
         const panchayatIds = [
           ...new Set(
             [
-              ...boothRows.map((booth: any) => booth.panchayat_id),
-              ...gpWardRows.map((ward: any) => ward.panchayat_id),
+              ...boothRows.map((booth) => booth.panchayat_id),
+              ...boothLinkedGpWardRows.map((ward) => ward.panchayat_id),
             ].filter(Boolean),
           ),
         ];
@@ -880,17 +946,34 @@ export class CanonicalGeographyService {
             .select('id, internal_id, name, local_name, mandal_id, lgd_code')
             .in('id', panchayatIds);
           if (gpRes.error) throw gpRes.error;
-          const gpRows = Array.isArray(gpRes.data) ? gpRes.data : [];
-          gps = gpRows.map((gp: any) => ({
+          const gpRows = (Array.isArray(gpRes.data) ? gpRes.data : []) as HierarchyGPRow[];
+          const gpIds = [...new Set(gpRows.map((gp) => gp.id))];
+          const allGpWardRows: HierarchyGPWardRow[] = [...boothLinkedGpWardRows];
+          if (gpIds.length > 0) {
+            const gpWardRes = await supabase
+              .from('gp_wards')
+              .select('id, internal_id, panchayat_id, ward_no, name, reservation')
+              .in('panchayat_id', gpIds);
+            if (gpWardRes.error) throw gpWardRes.error;
+            if (Array.isArray(gpWardRes.data)) {
+              const rowsById = new Map<string, HierarchyGPWardRow>();
+              const completeGpWardRows = gpWardRes.data as HierarchyGPWardRow[];
+              for (const ward of [...boothLinkedGpWardRows, ...completeGpWardRows]) {
+                rowsById.set(ward.id, ward);
+              }
+              allGpWardRows.splice(0, allGpWardRows.length, ...rowsById.values());
+            }
+          }
+          gps = gpRows.map((gp) => ({
             id: gp.id,
             internalId: gp.internal_id || gp.id,
             name: gp.name,
-            localName: gp.local_name,
+            ...(gp.local_name ? { localName: gp.local_name } : {}),
             mandalId: gp.mandal_id,
             lgdCode: gp.lgd_code,
-            wards: gpWardRows
-              .filter((ward: any) => ward.panchayat_id === gp.id)
-              .map((ward: any) => ({
+            wards: allGpWardRows
+              .filter((ward) => ward.panchayat_id === gp.id)
+              .map((ward) => ({
                 id: ward.id,
                 internalId: ward.internal_id || ward.id,
                 wardNo: ward.ward_no,
@@ -987,7 +1070,7 @@ export class CanonicalGeographyService {
     return {
       constituency: {
         id: brief.id,
-        internalId: brief.id,
+        internalId: constituencyInternalId,
         acNo: brief.acNo,
         name: brief.name,
         stateCode: brief.stateCode,

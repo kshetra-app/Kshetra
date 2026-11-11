@@ -1,4 +1,5 @@
-import { ApiValidationError } from '../lib/api/errors';
+import { ApiValidationError, createApiErrorFromResponse } from '../lib/api/errors';
+import type { ApiClient } from '../lib/api/client';
 import {
   ConstituenciesEndpoint,
   validateConstituencyHierarchy,
@@ -33,6 +34,16 @@ const payload = {
 };
 
 describe('constituency hierarchy API', () => {
+  it('retains the API error code so missing data is distinct from a missing endpoint', () => {
+    const error = createApiErrorFromResponse(404, {
+      error: 'Not Found',
+      message: 'Hierarchy is not available',
+      code: 'HIERARCHY_NOT_FOUND',
+    });
+
+    expect(error.data).toEqual(expect.objectContaining({ code: 'HIERARCHY_NOT_FOUND' }));
+  });
+
   it('preserves persisted booth records while treating zero voter counts as unavailable', () => {
     const result = validateConstituencyHierarchy(payload);
 
@@ -60,8 +71,8 @@ describe('constituency hierarchy API', () => {
   });
 
   it('requests the public constituency-scoped hierarchy route', async () => {
-    const client = { get: jest.fn().mockResolvedValue({ data: payload }) };
-    const endpoint = new ConstituenciesEndpoint(client as any);
+    const client = { get: jest.fn().mockResolvedValue({ data: payload }) } as unknown as ApiClient;
+    const endpoint = new ConstituenciesEndpoint(client);
 
     await endpoint.getHierarchy('ts', 1);
 

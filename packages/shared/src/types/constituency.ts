@@ -113,6 +113,8 @@ export type ReservationStatus = 'GEN' | 'SC' | 'ST';
 
 export interface ConstituencyBrief {
   id: string;
+  /** Stable canonical ID when supplied by the canonical database. */
+  internalId?: string;
   name: string;
   acNo: number;
   stateCode: string;

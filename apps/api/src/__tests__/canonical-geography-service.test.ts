@@ -183,6 +183,7 @@ describe('Canonical Geography Service & Decoupled State Data Adapter', () => {
       const mockRows = [
         {
           id: 'TN-AC-35',
+          internal_id: 'TN-AC-35-INTERNAL',
           ac_no: 35,
           name: 'Madurantakam',
           state_code: 'TN',
@@ -220,6 +221,7 @@ describe('Canonical Geography Service & Decoupled State Data Adapter', () => {
       const single = await canonicalGeographyService.getConstituency('TN', 35);
       expect(single?.currentParty).toBe('TVK');
       expect(single?.currentMLA).toBe('K. Maragatham Kumaravel');
+      expect(single?.internalId).toBe('TN-AC-35-INTERNAL');
     });
 
     it('queries parliamentary constituencies from Supabase', async () => {
@@ -265,6 +267,7 @@ describe('Canonical Geography Service & Decoupled State Data Adapter', () => {
       setSupabaseConfiguredForTesting(true);
       jest.spyOn(canonicalGeographyService, 'getConstituency').mockResolvedValue({
         id: 'TS-AC-1',
+        internalId: 'TS-AC-1-INTERNAL',
         acNo: 1,
         name: 'Sirpur',
         stateCode: 'TS',
@@ -318,22 +321,25 @@ describe('Canonical Geography Service & Decoupled State Data Adapter', () => {
           },
         ],
       };
-      const queryCalls: Record<string, { eq: jest.Mock; in: jest.Mock }> = {};
+      const queryCalls: Record<string, Array<{ eq: jest.Mock; in: jest.Mock }>> = {};
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         const eq = jest.fn().mockResolvedValue({ data: rowsByTable[table] ?? [], error: null });
         const inFilter = jest
           .fn()
           .mockResolvedValue({ data: rowsByTable[table] ?? [], error: null });
-        queryCalls[table] = { eq, in: inFilter };
+        queryCalls[table] ??= [];
+        queryCalls[table].push({ eq, in: inFilter });
         return { select: jest.fn(() => ({ eq, in: inFilter })) } as any;
       }) as any);
 
       const hierarchy = await canonicalGeographyService.getSubConstituencyHierarchy('TS', 1);
 
       expect(hierarchy?.pollingBooths.map((booth) => booth.totalVoters)).toEqual([null, 950]);
-      expect(queryCalls.polling_booths.eq).toHaveBeenCalledWith('constituency_id', 'TS-AC-1');
-      expect(queryCalls.gp_wards.in).toHaveBeenCalledWith('internal_id', ['gpw-internal-1']);
-      expect(queryCalls.gram_panchayats.in).toHaveBeenCalledWith('id', ['TS-GP-501']);
+      expect(hierarchy?.constituency.internalId).toBe('TS-AC-1-INTERNAL');
+      expect(queryCalls.polling_booths[0].eq).toHaveBeenCalledWith('constituency_id', 'TS-AC-1');
+      expect(queryCalls.gp_wards[0].in).toHaveBeenCalledWith('internal_id', ['gpw-internal-1']);
+      expect(queryCalls.gram_panchayats[0].in).toHaveBeenCalledWith('id', ['TS-GP-501']);
+      expect(queryCalls.gp_wards[1].in).toHaveBeenCalledWith('panchayat_id', ['TS-GP-501']);
       expect(hierarchy?.gramPanchayats[0].wards).toEqual([
         expect.objectContaining({ id: 'gpw-1', wardNo: 1, name: 'Ward 1' }),
       ]);
@@ -345,6 +351,7 @@ describe('Canonical Geography Service & Decoupled State Data Adapter', () => {
       setSupabaseConfiguredForTesting(true);
       jest.spyOn(canonicalGeographyService, 'getConstituency').mockResolvedValue({
         id: 'TS-AC-1',
+        internalId: 'TS-AC-1-INTERNAL',
         acNo: 1,
         name: 'Sirpur',
         stateCode: 'TS',
@@ -380,6 +387,46 @@ describe('Canonical Geography Service & Decoupled State Data Adapter', () => {
         await expect(
           canonicalGeographyService.getSubConstituencyHierarchy('TS', 1),
         ).rejects.toThrow('Canonical geography datastore is not configured');
+      } finally {
+        if (previousAppEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = previousAppEnv;
+      }
+    });
+
+    it('does not use a local seed constituency as live hierarchy data', async () => {
+      const previousAppEnv = process.env.APP_ENV;
+      process.env.APP_ENV = 'production';
+      setSupabaseConfiguredForTesting(true);
+      jest.spyOn(canonicalGeographyService, 'getConstituency').mockResolvedValue(null);
+
+      try {
+        await expect(
+          canonicalGeographyService.getSubConstituencyHierarchy('TS', 1),
+        ).rejects.toThrow('Canonical constituency record could not be resolved');
+      } finally {
+        if (previousAppEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = previousAppEnv;
+      }
+    });
+
+    it('does not label the public constituency ID as a canonical internal ID', async () => {
+      const previousAppEnv = process.env.APP_ENV;
+      process.env.APP_ENV = 'production';
+      setSupabaseConfiguredForTesting(true);
+      jest.spyOn(canonicalGeographyService, 'getConstituency').mockResolvedValue({
+        id: 'TS-AC-1',
+        acNo: 1,
+        name: 'Sirpur',
+        stateCode: 'TS',
+        district: 'Kumuram Bheem Asifabad',
+        reservationStatus: 'ST',
+        currentParty: '',
+        currentMLA: '',
+      });
+      try {
+        await expect(
+          canonicalGeographyService.getSubConstituencyHierarchy('TS', 1),
+        ).rejects.toThrow('Canonical constituency internal ID is unavailable');
       } finally {
         if (previousAppEnv === undefined) delete process.env.APP_ENV;
         else process.env.APP_ENV = previousAppEnv;

@@ -7,28 +7,14 @@
  *
  * Source seeds: data/seed/{telangana,andhra-pradesh}-hierarchy.ts
  */
-import {
-  TELANGANA_HIERARCHY_CONFIG,
-  TELANGANA_DISTRICTS,
-  TELANGANA_MANDALS,
-  TELANGANA_PANCHAYATS,
-  TELANGANA_BOOTHS,
-  TELANGANA_MANDAL_AC_MAP,
-  type StateHierarchyConfig,
-  type District,
-  type Mandal,
-  type GramPanchayat,
-  type PollingBooth,
-  type MandalConstituencyOverlap,
+import type {
+  StateHierarchyConfig,
+  District,
+  Mandal,
+  GramPanchayat,
+  PollingBooth,
+  MandalConstituencyOverlap,
 } from '../../../data/seed/telangana-hierarchy';
-import {
-  ANDHRA_PRADESH_HIERARCHY_CONFIG,
-  ANDHRA_PRADESH_DISTRICTS,
-  ANDHRA_PRADESH_MANDALS,
-  ANDHRA_PRADESH_GRAM_PANCHAYATS,
-  ANDHRA_PRADESH_POLLING_BOOTHS,
-  ANDHRA_PRADESH_MANDAL_OVERLAPS,
-} from '../../../data/seed/andhra-pradesh-hierarchy';
 import { STATES } from '@kshetra/shared';
 
 export type {
@@ -49,24 +35,35 @@ interface StateHierarchyBundle {
   overlaps: MandalConstituencyOverlap[];
 }
 
-const BUNDLES: Record<string, StateHierarchyBundle> = {
-  TS: {
-    config: TELANGANA_HIERARCHY_CONFIG,
-    districts: TELANGANA_DISTRICTS,
-    mandals: TELANGANA_MANDALS,
-    panchayats: TELANGANA_PANCHAYATS,
-    booths: TELANGANA_BOOTHS,
-    overlaps: TELANGANA_MANDAL_AC_MAP,
-  },
-  AP: {
-    config: ANDHRA_PRADESH_HIERARCHY_CONFIG,
-    districts: ANDHRA_PRADESH_DISTRICTS,
-    mandals: ANDHRA_PRADESH_MANDALS,
-    panchayats: ANDHRA_PRADESH_GRAM_PANCHAYATS,
-    booths: ANDHRA_PRADESH_POLLING_BOOTHS,
-    overlaps: ANDHRA_PRADESH_MANDAL_OVERLAPS,
-  },
-};
+let BUNDLES: Record<string, StateHierarchyBundle> | null = null;
+
+function getSeedBundles(): Record<string, StateHierarchyBundle> {
+  if (BUNDLES) return BUNDLES;
+  // Keep pilot seed records out of the live screen's startup path. This layer
+  // is only read by development/demo hierarchy screens.
+  const telangana = require('../../../data/seed/telangana-hierarchy') as typeof import('../../../data/seed/telangana-hierarchy');
+  const andhra = require('../../../data/seed/andhra-pradesh-hierarchy') as typeof import('../../../data/seed/andhra-pradesh-hierarchy');
+
+  BUNDLES = {
+    TS: {
+      config: telangana.TELANGANA_HIERARCHY_CONFIG,
+      districts: telangana.TELANGANA_DISTRICTS,
+      mandals: telangana.TELANGANA_MANDALS,
+      panchayats: telangana.TELANGANA_PANCHAYATS,
+      booths: telangana.TELANGANA_BOOTHS,
+      overlaps: telangana.TELANGANA_MANDAL_AC_MAP,
+    },
+    AP: {
+      config: andhra.ANDHRA_PRADESH_HIERARCHY_CONFIG,
+      districts: andhra.ANDHRA_PRADESH_DISTRICTS,
+      mandals: andhra.ANDHRA_PRADESH_MANDALS,
+      panchayats: andhra.ANDHRA_PRADESH_GRAM_PANCHAYATS,
+      booths: andhra.ANDHRA_PRADESH_POLLING_BOOTHS,
+      overlaps: andhra.ANDHRA_PRADESH_MANDAL_OVERLAPS,
+    },
+  };
+  return BUNDLES;
+}
 
 /**
  * Data-availability status for a constituency's hierarchy.
@@ -85,7 +82,7 @@ function extractAcNoFromId(id: string): number | null {
 }
 
 const bundle = (stateCode: string): StateHierarchyBundle | null =>
-  BUNDLES[stateCode?.toUpperCase()] ?? null;
+  getSeedBundles()[stateCode?.toUpperCase()] ?? null;
 
 const constituencyId = (stateCode: string, acNo: number) =>
   `${stateCode.toUpperCase()}-AC-${acNo}`;
@@ -100,7 +97,6 @@ let booths2017Cache: Record<string, Record<string, Raw2017Booth[]>> | null = nul
 
 function get2017BoothSeed(): Record<string, Record<string, Raw2017Booth[]>> {
   if (booths2017Cache !== null) return booths2017Cache;
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const loaded = require('../../../data/seed/booth-locations-2017.json') as Record<
     string,
     Record<string, Raw2017Booth[]>
@@ -254,7 +250,7 @@ export function getHierarchyConfig(stateCode: string): StateHierarchyConfig | nu
 
 /** States that currently have any pilot hierarchy data. */
 export function getHierarchyStates(): string[] {
-  return Object.keys(BUNDLES);
+  return Object.keys(getSeedBundles());
 }
 
 /** Whether a specific constituency has drill-down hierarchy data available. */
