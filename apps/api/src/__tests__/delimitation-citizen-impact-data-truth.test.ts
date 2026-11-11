@@ -17,8 +17,9 @@
  * 10. All pre-existing Directive 122 protections remain intact: no modulo selection, no silent TS fallback, no synthetic ACs.
  */
 
-import { buildApp } from '../server';
+import Fastify from 'fastify';
 import type { FastifyInstance } from 'fastify';
+import { delimitationRoutes } from '../routes/delimitation';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
@@ -40,7 +41,9 @@ describe('CTO Directive 123 — Residual Electoral Data-Truth & Provisional Look
   let app: FastifyInstance;
 
   beforeAll(async () => {
-    app = await buildApp();
+    app = Fastify({ logger: false });
+    await app.register(delimitationRoutes);
+    await app.ready();
   });
 
   afterAll(async () => {
