@@ -12,7 +12,7 @@ import { usePushNotifications } from '../lib/usePushNotifications';
 import { useNetworkStore } from '../lib/networkStatus';
 import OfflineBanner from '../components/OfflineBanner';
 import { useContributorVerificationStore } from '../stores/contributorVerification';
-import { bootstrapSupabase } from '../lib/supabaseBootstrap';
+import { bootstrapSupabase, refreshSupabaseDataOnForeground } from '../lib/supabaseBootstrap';
 import { recordSession, endSession } from '../lib/supabaseDataService';
 import { startupProfiler } from '../lib/startupProfiler';
 import '../i18n';
@@ -30,6 +30,18 @@ export default function RootLayout() {
 
   useEffect(() => {
     let stopNetwork: (() => void) | undefined;
+    const stopConnectivityRefresh = useNetworkStore.subscribe((state, previousState) => {
+      const onlineNow = state.isConnected && state.isInternetReachable !== false;
+      const wasOnline = previousState.isConnected && previousState.isInternetReachable !== false;
+      if (onlineNow && !wasOnline) {
+        void refreshSupabaseDataOnForeground();
+      }
+    });
+    const appStateSubscription = AppState.addEventListener('change', (nextAppState) => {
+      if (nextAppState === 'active') {
+        void refreshSupabaseDataOnForeground();
+      }
+    });
     try {
       stopNetwork = startNetworkMonitoring();
     } catch {}
@@ -63,6 +75,8 @@ export default function RootLayout() {
       });
 
     return () => {
+      stopConnectivityRefresh();
+      appStateSubscription.remove();
       if (typeof stopNetwork === 'function') {
         try { stopNetwork(); } catch {}
       }

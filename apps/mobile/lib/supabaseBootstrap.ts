@@ -30,6 +30,9 @@ import * as dataService from './supabaseDataService';
 
 let bootstrapped = false;
 let realtimeCleanup: (() => void) | null = null;
+let foregroundRefreshInFlight: Promise<void> | null = null;
+let lastForegroundRefreshAt = 0;
+const FOREGROUND_REFRESH_THROTTLE_MS = 15_000;
 
 /**
  * Main bootstrap — call after auth.initialize() resolves.
@@ -56,15 +59,7 @@ export async function bootstrapSupabase(): Promise<void> {
     }
 
     // 2. Load fresh public data from server into stores (Feed, Civic Issues)
-    await hydrateStoresFromServer();
-
-    // 3. Hydrate Live Media Exchange store
-    try {
-      const { useLiveExchangeStore } = require('../stores/liveExchange');
-      await useLiveExchangeStore.getState().hydrate();
-    } catch (e) {
-      console.warn('[Bootstrap] LMX hydrate error:', e);
-    }
+    await refreshServerSnapshot(true);
 
     // 4. Flush offline queue if authenticated and online
     if (user && isOnline()) {
@@ -82,6 +77,49 @@ export async function bootstrapSupabase(): Promise<void> {
     addBreadcrumb('bootstrap', 'completed');
   } catch (err) {
     captureException(err as Error, { phase: 'bootstrap' });
+  }
+}
+
+/**
+ * Refresh server-backed stores after the app returns to the foreground.
+ * This catches up changes made while the app was backgrounded, even for tables
+ * that do not have a mobile realtime subscription.
+ */
+export async function refreshSupabaseDataOnForeground(): Promise<void> {
+  await refreshServerSnapshot(false);
+}
+
+async function refreshServerSnapshot(force: boolean): Promise<void> {
+  if (!isSupabaseConfigured || !isOnline()) return;
+
+  if (foregroundRefreshInFlight) {
+    await foregroundRefreshInFlight;
+    return;
+  }
+
+  const now = Date.now();
+  if (!force && now - lastForegroundRefreshAt < FOREGROUND_REFRESH_THROTTLE_MS) return;
+
+  const refresh = (async () => {
+    await hydrateStoresFromServer();
+    try {
+      const { useLiveExchangeStore } = require('../stores/liveExchange');
+      await useLiveExchangeStore.getState().hydrate();
+    } catch (err) {
+      captureException(err as Error, { phase: 'live_exchange_refresh' });
+    }
+  })();
+
+  foregroundRefreshInFlight = refresh;
+  try {
+    await refresh;
+    lastForegroundRefreshAt = Date.now();
+    addBreadcrumb('bootstrap', 'foreground_data_refreshed');
+  } catch (err) {
+    lastForegroundRefreshAt = 0;
+    captureException(err as Error, { phase: 'foreground_data_refresh' });
+  } finally {
+    if (foregroundRefreshInFlight === refresh) foregroundRefreshInFlight = null;
   }
 }
 
@@ -218,7 +256,6 @@ function startRealtimeSubscriptions(): void {
  */
 export async function onContextChange(): Promise<void> {
   if (!isSupabaseConfigured) return;
-  if (!useAuthStore.getState().user) return;
 
   // Tear down old subscriptions
   if (realtimeCleanup) {
@@ -226,8 +263,8 @@ export async function onContextChange(): Promise<void> {
     realtimeCleanup = null;
   }
 
-  // Re-hydrate and re-subscribe
-  await hydrateStoresFromServer();
+  // Re-hydrate and re-subscribe. Public records also need refreshing for guests.
+  await refreshServerSnapshot(true);
   startRealtimeSubscriptions();
   addBreadcrumb('bootstrap', 'context_changed');
 }
