@@ -70,6 +70,84 @@ describe('W009-B4 Mobile Strangler / Mutation Consolidation', () => {
     };
   }
 
+  describe('Politician Portal database-backed reads', () => {
+    it('lists public profiles through the canonical public GET client', async () => {
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        return createMockResponse(200, { politicians: [], total: 0 }, { 'x-request-id': reqId });
+      });
+
+      const response = await apiClient.politician.listProfiles({ state: 'TS', tier: 'mla' });
+      expect(response).toEqual({ items: [], total: 0 });
+      const [url, init] = mockFetch.mock.calls[0];
+      expect(new URL(String(url)).pathname).toBe('/api/v1/politician/profiles');
+      expect(new URL(String(url)).searchParams.get('state')).toBe('TS');
+      expect(new URL(String(url)).searchParams.get('tier')).toBe('mla');
+      expect(init.method).toBe('GET');
+      expect((init.headers as Record<string, string>).Authorization).toBeUndefined();
+    });
+
+    it('lists public events through the canonical public GET client', async () => {
+      mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        return createMockResponse(200, { events: [], total: 0 }, { 'x-request-id': reqId });
+      });
+
+      const response = await apiClient.politician.listEvents({ state: 'TS', upcoming: true });
+      expect(response).toEqual({ items: [], total: 0 });
+      const [url, init] = mockFetch.mock.calls[0];
+      expect(new URL(String(url)).pathname).toBe('/api/v1/politician/events');
+      expect(new URL(String(url)).searchParams.get('upcoming')).toBe('true');
+      expect(init.method).toBe('GET');
+    });
+
+    it('lists published manifestos and active surveys through public GET routes', async () => {
+      mockFetch.mockImplementation(async (url: string, init: RequestInit) => {
+        const reqId = (init.headers as Record<string, string>)['x-request-id'];
+        const key = url.includes('/manifestos') ? 'manifestos' : 'surveys';
+        return createMockResponse(200, { [key]: [], total: 0 }, { 'x-request-id': reqId });
+      });
+
+      expect(await apiClient.politician.listManifestos({ state: 'TS' })).toEqual({ items: [], total: 0 });
+      expect(await apiClient.politician.listSurveys({ state: 'TS', status: 'active' })).toEqual({ items: [], total: 0 });
+      expect(new URL(String(mockFetch.mock.calls[0][0])).pathname).toBe('/api/v1/politician/manifestos');
+      expect(new URL(String(mockFetch.mock.calls[1][0])).pathname).toBe('/api/v1/politician/surveys');
+    });
+
+    it('keeps successful portal sections available when one database read fails', async () => {
+      const previous = usePoliticianPortalStore.getState();
+      const profileRequest = jest.spyOn(apiClient.politician, 'listProfiles').mockResolvedValue({ items: [], total: 0 });
+      const eventRequest = jest.spyOn(apiClient.politician, 'listEvents').mockRejectedValue(new Error('events unavailable'));
+      const manifestoRequest = jest.spyOn(apiClient.politician, 'listManifestos').mockResolvedValue({ items: [], total: 0 });
+      const surveyRequest = jest.spyOn(apiClient.politician, 'listSurveys').mockResolvedValue({ items: [], total: 0 });
+
+      try {
+        const loaded = await previous.loadPortal();
+        const state = usePoliticianPortalStore.getState();
+        expect(loaded).toBe(false);
+        expect(state.portalLoadStatus).toBe('partial');
+        expect(state.portalLoadErrors).toEqual(['events']);
+        expect(state.politicians).toEqual([]);
+        expect(state.events).toBe(previous.events);
+        expect(state.manifestos).toEqual([]);
+        expect(state.surveys).toEqual([]);
+      } finally {
+        profileRequest.mockRestore();
+        eventRequest.mockRestore();
+        manifestoRequest.mockRestore();
+        surveyRequest.mockRestore();
+        usePoliticianPortalStore.setState({
+          politicians: previous.politicians,
+          events: previous.events,
+          manifestos: previous.manifestos,
+          surveys: previous.surveys,
+          portalLoadStatus: previous.portalLoadStatus,
+          portalLoadErrors: previous.portalLoadErrors,
+        });
+      }
+    });
+  });
+
   describe('1. Canonical API Dispatching (11 Authorized Operations)', () => {
     it('1. Upvote issue dispatches to POST /api/v1/civic/issues/:id/upvote', async () => {
       mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
@@ -312,7 +390,7 @@ describe('W009-B4 Mobile Strangler / Mutation Consolidation', () => {
       expect(currentBill?.publicOpinion.support).toBe(initialSupport);
     });
 
-    it('politicianPortalStore.rsvpEvent rolls back rsvpCount when API fails', async () => {
+    it('politicianPortalStore.rsvpEvent does not invent an optimistic count when API fails', async () => {
       mockFetch.mockImplementation(async (_url: string, init: RequestInit) => {
         const reqId = (init.headers as Record<string, string>)['x-request-id'];
         return createMockResponse(500, { error: 'Server Error' }, { 'x-request-id': reqId });

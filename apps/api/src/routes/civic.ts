@@ -727,12 +727,17 @@ async function resolveAuthUser(request: any): Promise<{ userId: string; role: st
       } = await supabase.auth.getUser(token);
       if (!error && user) {
         userId = user.id;
-        const { data: profile, error: profileError } = await supabase
-          .from('user_profiles')
-          .select('role')
-          .eq('user_id', user.id)
-          .maybeSingle();
-        if (!profileError && profile?.role) role = profile.role;
+        try {
+          const { data: profile, error: profileError } = await supabase
+            .from('user_profiles')
+            .select('role')
+            .eq('user_id', user.id)
+            .maybeSingle();
+          if (!profileError && profile?.role) role = profile.role;
+        } catch {
+          // Profile lookup failure must not grant elevated access.
+          role = 'citizen';
+        }
       }
     }
   }

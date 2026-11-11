@@ -2,6 +2,15 @@ import Fastify, { FastifyInstance } from 'fastify';
 import { civicRoutes } from '../routes/civic';
 import { supabase, setSupabaseConfiguredForTesting } from '../lib/supabase';
 
+const mockProductionAuth = (userId: string) => {
+  setSupabaseConfiguredForTesting(true);
+  jest.spyOn(supabase.auth, 'getUser').mockResolvedValueOnce({
+    data: { user: { id: userId } as any },
+    error: null,
+  });
+  return { authorization: `Bearer test-user-${userId}` };
+};
+
 describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
   let app: FastifyInstance;
 
@@ -35,7 +44,25 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
   });
 
   describe('1. State Budget Summary (/api/v1/civic/budget/:stateCode)', () => {
-    it('returns budget placeholder envelope for valid 2-letter uppercase state code', async () => {
+    it('returns the stored budget record or explicit unknown when none is available', async () => {
+      setSupabaseConfiguredForTesting(true);
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        if (table === 'state_budget_summaries') {
+          return {
+            select: () => ({
+              eq: () => ({
+                order: () => ({
+                  limit: () => ({
+                    maybeSingle: async () => ({ data: null, error: null }),
+                  }),
+                }),
+              }),
+            }),
+          } as any;
+        }
+        return {} as any;
+      }) as any);
+
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/civic/budget/TS',
@@ -44,7 +71,8 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
       expect(body.stateCode).toBe('TS');
-      expect(body.message).toContain('Budget endpoint');
+      expect(body.message).toBe('No state budget record is available yet.');
+      expect(body.budget).toBeNull();
     });
 
     it('rejects invalid state code format with 400', async () => {
@@ -167,7 +195,7 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
         const res = await app.inject({
           method: 'POST',
           url: '/api/v1/civic/bills/bill-001/opinion',
-          headers: { 'x-user-id': 'user-1' },
+          headers: mockProductionAuth('user-1'),
           payload: { support: true },
         });
 
@@ -214,7 +242,7 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
         const res = await app.inject({
           method: 'POST',
           url: '/api/v1/civic/bills/bill-001/opinion',
-          headers: { 'x-user-id': 'user-1' },
+          headers: mockProductionAuth('user-1'),
           payload: { support: false },
         });
 
@@ -250,7 +278,7 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
         const res = await app.inject({
           method: 'POST',
           url: '/api/v1/civic/bills/nonexistent-bill/opinion',
-          headers: { 'x-user-id': 'user-1' },
+          headers: mockProductionAuth('user-1'),
           payload: { support: true },
         });
 
@@ -286,7 +314,7 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
         const res = await app.inject({
           method: 'POST',
           url: '/api/v1/civic/bills/bill-err/opinion',
-          headers: { 'x-user-id': 'user-1' },
+          headers: mockProductionAuth('user-1'),
           payload: { support: true },
         });
 
@@ -325,7 +353,7 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
         const res = await app.inject({
           method: 'POST',
           url: '/api/v1/civic/bills/bill-update-err/opinion',
-          headers: { 'x-user-id': 'user-1' },
+          headers: mockProductionAuth('user-1'),
           payload: { support: true },
         });
 
@@ -533,7 +561,7 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
         const res = await app.inject({
           method: 'POST',
           url: '/api/v1/civic/rti',
-          headers: { 'x-user-id': 'user-1' },
+          headers: mockProductionAuth('user-1'),
           payload: {
             subject: 'Road maintenance expenditure',
             department: 'Public Works',
@@ -579,7 +607,7 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
         const res = await app.inject({
           method: 'POST',
           url: '/api/v1/civic/rti',
-          headers: { 'x-user-id': 'user-1' },
+          headers: mockProductionAuth('user-1'),
           payload: { subject: 'Road funds' },
         });
 
@@ -673,7 +701,7 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
         const res = await app.inject({
           method: 'POST',
           url: '/api/v1/civic/rti/rti-101/upvote',
-          headers: { 'x-user-id': 'user-1' },
+          headers: mockProductionAuth('user-1'),
         });
 
         expect(res.statusCode).toBe(200);
@@ -707,7 +735,7 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
         const res = await app.inject({
           method: 'POST',
           url: '/api/v1/civic/rti/nonexistent-rti/upvote',
-          headers: { 'x-user-id': 'user-1' },
+          headers: mockProductionAuth('user-1'),
         });
 
         expect(res.statusCode).toBe(404);
@@ -739,7 +767,7 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
         const res = await app.inject({
           method: 'POST',
           url: '/api/v1/civic/rti/rti-fetch-err/upvote',
-          headers: { 'x-user-id': 'user-1' },
+          headers: mockProductionAuth('user-1'),
         });
 
         expect(res.statusCode).toBe(500);
@@ -774,7 +802,7 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
         const res = await app.inject({
           method: 'POST',
           url: '/api/v1/civic/rti/rti-upd-err/upvote',
-          headers: { 'x-user-id': 'user-1' },
+          headers: mockProductionAuth('user-1'),
         });
 
         expect(res.statusCode).toBe(500);

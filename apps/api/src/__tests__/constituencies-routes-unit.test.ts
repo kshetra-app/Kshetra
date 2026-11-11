@@ -354,12 +354,16 @@ describe('Constituencies Routes Unit Tests (Exhaustive Branch Coverage)', () => 
       expect(Array.isArray(json.profiles)).toBe(true);
     });
 
-    it('returns 404 when state is not TS', async () => {
+    it('returns the available MLA profiles for a supported non-TS state', async () => {
       const res = await app.inject({
         method: 'GET',
         url: '/states/UP/mla',
       });
-      expect(res.statusCode).toBe(404);
+      expect(res.statusCode).toBe(200);
+      const json = JSON.parse(res.payload);
+      expect(json.state).toBe('UP');
+      expect(json.count).toBeGreaterThan(0);
+      expect(Array.isArray(json.profiles)).toBe(true);
     });
   });
 

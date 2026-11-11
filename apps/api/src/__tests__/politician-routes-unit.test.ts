@@ -2,6 +2,25 @@ import Fastify, { FastifyInstance } from 'fastify';
 import { politicianRoutes } from '../routes/politician';
 import { supabase, setSupabaseConfiguredForTesting } from '../lib/supabase';
 
+const mockProductionAuth = (userId: string) => {
+  setSupabaseConfiguredForTesting(true);
+  jest.spyOn(supabase.auth, 'getUser').mockResolvedValueOnce({
+    data: { user: { id: userId } as any },
+    error: null,
+  });
+  return { authorization: `Bearer test-user-${userId}` };
+};
+
+function mockListQuery(result: { data: unknown; error: unknown }) {
+  const query: any = {};
+  for (const method of ['select', 'eq', 'neq', 'gte', 'gt', 'lte', 'lt', 'order']) {
+    query[method] = jest.fn(() => query);
+  }
+  query.limit = jest.fn().mockResolvedValue(result);
+  query.maybeSingle = jest.fn().mockResolvedValue(result);
+  return query;
+}
+
 describe('Politician Routes Unit Tests (Direct Route Injection)', () => {
   let app: FastifyInstance;
 
@@ -21,23 +40,79 @@ describe('Politician Routes Unit Tests (Direct Route Injection)', () => {
   });
 
   // 1. GET /api/v1/politician/profiles
-  it('GET /api/v1/politician/profiles returns 200 with empty list and filters', async () => {
+  it('GET /api/v1/politician/profiles returns mapped public database records and omits unsupported metrics', async () => {
+    const query = mockListQuery({
+      data: [
+        {
+          id: 'profile-1',
+          user_id: 'private-user-id',
+          display_name: 'Asha Rao',
+          tier: 'mla',
+          party: 'Civic Party',
+          state_code: 'TS',
+          district_name: 'Hyderabad',
+          bio: 'Public service profile',
+          social_links: [{ platform: 'website', url: 'https://example.test' }],
+          is_verified: true,
+          is_active: true,
+          endorsement_count: 3,
+          follower_count: 9000,
+          response_rate: 95,
+        },
+      ],
+      error: null,
+    });
+    jest.spyOn(supabase, 'from').mockReturnValue(query as any);
+
     const res = await app.inject({
       method: 'GET',
-      url: '/api/v1/politician/profiles?state=TG&tier=state&party=INC',
+      url: '/api/v1/politician/profiles?state=TS&tier=mla&party=Civic%20Party',
     });
 
     expect(res.statusCode).toBe(200);
     const body = JSON.parse(res.payload);
-    expect(body.politicians).toEqual([]);
-    expect(body.total).toBe(0);
-    expect(body.filters.state).toBe('TG');
-    expect(body.filters.tier).toBe('state');
-    expect(body.filters.party).toBe('INC');
+    expect(body.politicians).toHaveLength(1);
+    expect(body.politicians[0]).toMatchObject({
+      id: 'profile-1',
+      displayName: 'Asha Rao',
+      tier: 'mla',
+      stateCode: 'TS',
+      endorsementCount: 3,
+      followerCount: null,
+      responseRate: null,
+    });
+    expect(body.politicians[0].userId).toBeUndefined();
+    expect(body.total).toBe(1);
+    expect(body.filters.state).toBe('TS');
+    expect(body.filters.tier).toBe('mla');
+    expect(body.filters.party).toBe('Civic Party');
+    expect(query.eq).toHaveBeenCalledWith('is_active', true);
+    expect(query.eq).toHaveBeenCalledWith('state_code', 'TS');
+  });
+
+  it('GET /api/v1/politician/profiles reports unavailable when the database is not configured', async () => {
+    setSupabaseConfiguredForTesting(false);
+    const res = await app.inject({ method: 'GET', url: '/api/v1/politician/profiles' });
+    expect(res.statusCode).toBe(503);
+    expect(JSON.parse(res.payload).code).toBe('PORTAL_DATA_UNAVAILABLE');
+  });
+
+  it('GET /api/v1/politician/profiles reports missing production tables instead of an empty success', async () => {
+    const query = mockListQuery({
+      data: null,
+      error: { code: 'PGRST205', message: 'table missing' },
+    });
+    jest.spyOn(supabase, 'from').mockReturnValue(query as any);
+    const res = await app.inject({ method: 'GET', url: '/api/v1/politician/profiles' });
+    expect(res.statusCode).toBe(503);
+    expect(JSON.parse(res.payload).code).toBe('PORTAL_DATA_UNAVAILABLE');
+    expect(res.payload).not.toContain('table missing');
   });
 
   // 2. GET /api/v1/politician/profiles/:id
   it('GET /api/v1/politician/profiles/:id returns 404 NOT_FOUND', async () => {
+    const query = mockListQuery({ data: null, error: null });
+    jest.spyOn(supabase, 'from').mockReturnValue(query as any);
     const res = await app.inject({
       method: 'GET',
       url: '/api/v1/politician/profiles/pol-123',
@@ -50,17 +125,51 @@ describe('Politician Routes Unit Tests (Direct Route Injection)', () => {
   });
 
   // 3. GET /api/v1/politician/events
-  it('GET /api/v1/politician/events returns 200 with events list and filters', async () => {
+  it('GET /api/v1/politician/events returns public database records and RSVP counts', async () => {
+    const query = mockListQuery({
+      data: [
+        {
+          id: 'event-1',
+          politician_id: 'profile-1',
+          type: 'rally',
+          status: 'planned',
+          title: 'Public town meeting',
+          description: '',
+          venue: 'City Hall',
+          address: '',
+          state_code: 'TS',
+          start_time: '2026-12-01T10:00:00.000Z',
+          end_time: '2026-12-01T12:00:00.000Z',
+          is_public: true,
+          rsvp_count: 4,
+          media_urls: [],
+          created_at: '2026-11-01T00:00:00.000Z',
+          updated_at: '2026-11-01T00:00:00.000Z',
+          politician: { display_name: 'Asha Rao', party: 'Civic Party' },
+        },
+      ],
+      error: null,
+    });
+    jest.spyOn(supabase, 'from').mockReturnValue(query as any);
+
     const res = await app.inject({
       method: 'GET',
-      url: '/api/v1/politician/events?state=TG&type=rally&upcoming=true',
+      url: '/api/v1/politician/events?state=TS&type=rally&upcoming=true',
     });
 
     expect(res.statusCode).toBe(200);
     const body = JSON.parse(res.payload);
-    expect(body.events).toEqual([]);
-    expect(body.total).toBe(0);
-    expect(body.filters.state).toBe('TG');
+    expect(body.events).toHaveLength(1);
+    expect(body.events[0]).toMatchObject({
+      id: 'event-1',
+      politicianName: 'Asha Rao',
+      rsvpCount: 4,
+      isPublic: true,
+    });
+    expect(body.total).toBe(1);
+    expect(body.filters.state).toBe('TS');
+    expect(query.eq).toHaveBeenCalledWith('is_public', true);
+    expect(query.gte).toHaveBeenCalledWith('start_time', expect.any(String));
   });
 
   // 4. POST /api/v1/politician/events/:id/rsvp
@@ -118,7 +227,7 @@ describe('Politician Routes Unit Tests (Direct Route Injection)', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/politician/events/evt-1/rsvp',
-        headers: { 'x-user-id': 'usr-1' },
+        headers: mockProductionAuth('usr-1'),
       });
 
       expect(res.statusCode).toBe(500);
@@ -129,7 +238,7 @@ describe('Politician Routes Unit Tests (Direct Route Injection)', () => {
     }
   });
 
-  it('POST /api/v1/politician/events/:id/rsvp returns mock success on DB error in test environment', async () => {
+  it('POST /api/v1/politician/events/:id/rsvp reports database errors in test environment', async () => {
     jest.spyOn(supabase, 'from').mockReturnValue({
       upsert: jest.fn().mockResolvedValue({ error: { message: 'Temporary DB error' } }),
     } as any);
@@ -140,14 +249,46 @@ describe('Politician Routes Unit Tests (Direct Route Injection)', () => {
       headers: { 'x-user-id': 'usr-1' },
     });
 
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(500);
     const body = JSON.parse(res.payload);
-    expect(body.success).toBe(true);
-    expect(body.message).toBe('RSVP recorded');
+    expect(body.success).toBeUndefined();
+    expect(body.code).toBe('DATABASE_ERROR');
   });
 
   // 5. GET /api/v1/politician/manifestos
-  it('GET /api/v1/politician/manifestos returns 200 with manifestos list', async () => {
+  it('GET /api/v1/politician/manifestos returns published database records without unsupported counts', async () => {
+    const query = mockListQuery({
+      data: [
+        {
+          id: 'manifesto-1',
+          politician_id: 'profile-1',
+          title: 'Public priorities',
+          preamble: 'The plan',
+          status: 'published',
+          items: [
+            {
+              id: 'item-1',
+              category: 'education',
+              title: 'Classrooms',
+              description: 'Repairs',
+              timeline: 'One year',
+              priority: 'high',
+              supportVotes: 82,
+              opposeVotes: 3,
+            },
+          ],
+          target_election: null,
+          state_code: 'TS',
+          constituency_ac_no: 12,
+          published_at: '2026-10-01T00:00:00.000Z',
+          created_at: '2026-09-20T00:00:00.000Z',
+          updated_at: '2026-10-01T00:00:00.000Z',
+          politician: { display_name: 'Asha Rao', party: 'Civic Party' },
+        },
+      ],
+      error: null,
+    });
+    jest.spyOn(supabase, 'from').mockReturnValue(query as any);
     const res = await app.inject({
       method: 'GET',
       url: '/api/v1/politician/manifestos?politicianId=p-1&state=TG',
@@ -155,8 +296,12 @@ describe('Politician Routes Unit Tests (Direct Route Injection)', () => {
 
     expect(res.statusCode).toBe(200);
     const body = JSON.parse(res.payload);
-    expect(body.manifestos).toEqual([]);
+    expect(body.manifestos).toHaveLength(1);
+    expect(body.manifestos[0].views).toBeNull();
+    expect(body.manifestos[0].items[0].supportVotes).toBeNull();
+    expect(body.manifestos[0].items[0].opposeVotes).toBeNull();
     expect(body.filters.politicianId).toBe('p-1');
+    expect(query.eq).toHaveBeenCalledWith('status', 'published');
   });
 
   // 6. POST /api/v1/politician/manifestos/:manifestoId/items/:itemId/vote
@@ -174,7 +319,36 @@ describe('Politician Routes Unit Tests (Direct Route Injection)', () => {
   });
 
   // 7. GET /api/v1/politician/surveys
-  it('GET /api/v1/politician/surveys returns 200 with surveys list', async () => {
+  it('GET /api/v1/politician/surveys returns active database surveys with persisted response counts', async () => {
+    const query = mockListQuery({
+      data: [
+        {
+          id: 'survey-1',
+          politician_id: 'profile-1',
+          title: 'Local priorities',
+          description: 'Select a priority',
+          status: 'active',
+          target_scope: 'state',
+          target_state_code: 'TS',
+          questions: [
+            {
+              id: 'q1',
+              type: 'single_choice',
+              text: 'Which priority?',
+              options: ['Water'],
+              isRequired: true,
+              order: 0,
+            },
+          ],
+          response_count: 11,
+          start_date: '2026-01-01',
+          end_date: '2026-12-31',
+          created_at: '2026-01-01T00:00:00.000Z',
+        },
+      ],
+      error: null,
+    });
+    jest.spyOn(supabase, 'from').mockReturnValue(query as any);
     const res = await app.inject({
       method: 'GET',
       url: '/api/v1/politician/surveys?state=TG&status=active',
@@ -182,8 +356,11 @@ describe('Politician Routes Unit Tests (Direct Route Injection)', () => {
 
     expect(res.statusCode).toBe(200);
     const body = JSON.parse(res.payload);
-    expect(body.surveys).toEqual([]);
+    expect(body.surveys).toHaveLength(1);
+    expect(body.surveys[0].responseCount).toBe(11);
+    expect(body.surveys[0].results).toBeUndefined();
     expect(body.filters.status).toBe('active');
+    expect(query.eq).toHaveBeenCalledWith('status', 'active');
   });
 
   // 8. POST /api/v1/politician/surveys/:id/respond
@@ -244,7 +421,7 @@ describe('Politician Routes Unit Tests (Direct Route Injection)', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/politician/surveys/srv-1/respond',
-        headers: { 'x-user-id': 'usr-1' },
+        headers: mockProductionAuth('usr-1'),
         payload: { answers: { q1: 'yes' } },
       });
 
@@ -256,7 +433,7 @@ describe('Politician Routes Unit Tests (Direct Route Injection)', () => {
     }
   });
 
-  it('POST /api/v1/politician/surveys/:id/respond returns mock success on DB error in test environment', async () => {
+  it('POST /api/v1/politician/surveys/:id/respond reports database errors in test environment', async () => {
     jest.spyOn(supabase, 'from').mockReturnValue({
       upsert: jest.fn().mockResolvedValue({ error: { message: 'Temporary error' } }),
     } as any);
@@ -268,10 +445,10 @@ describe('Politician Routes Unit Tests (Direct Route Injection)', () => {
       payload: { answers: { q1: 'yes' } },
     });
 
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(500);
     const body = JSON.parse(res.payload);
-    expect(body.success).toBe(true);
-    expect(body.message).toBe('Response submitted');
+    expect(body.success).toBeUndefined();
+    expect(body.code).toBe('DATABASE_ERROR');
   });
 
   // 9. POST /api/v1/politician/grievances

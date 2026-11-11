@@ -13,6 +13,36 @@ interface PoliticianPortalCardProps {
 export default function PoliticianPortalCard({ politician, onPress, compact }: PoliticianPortalCardProps) {
   const { t } = useTranslation();
   const tierConfig = POLITICIAN_TIER_CONFIG[politician.tier];
+  const metrics = [
+    politician.followerCount !== null && {
+      key: 'followers',
+      icon: 'people',
+      color: '#3B82F6',
+      value: politician.followerCount > 1000 ? `${Math.round(politician.followerCount / 1000)}K` : politician.followerCount,
+      label: t('common.followers'),
+    },
+    politician.responseRate !== null && {
+      key: 'responseRate',
+      icon: 'chatbubbles',
+      color: '#10B981',
+      value: `${politician.responseRate.toFixed(0)}%`,
+      label: t('politicianPortal.responseRate'),
+    },
+    politician.issuesResponded !== null && {
+      key: 'issuesResponded',
+      icon: 'warning',
+      color: '#F59E0B',
+      value: politician.issuesResponded,
+      label: t('politicianPortal.issuesHandled'),
+    },
+    politician.endorsementCount !== null && {
+      key: 'endorsements',
+      icon: 'thumbs-up',
+      color: '#8B5CF6',
+      value: politician.endorsementCount,
+      label: t('civicScoreCard.endorsements'),
+    },
+  ].filter(Boolean) as Array<{ key: string; icon: string; color: string; value: string | number; label: string }>;
 
   if (compact) {
     return (
@@ -51,35 +81,25 @@ export default function PoliticianPortalCard({ politician, onPress, compact }: P
 
       <Text style={styles.bio} numberOfLines={2}>{politician.bio}</Text>
 
-      {/* Key Metrics */}
-      <View style={styles.metricsRow}>
-        <View style={styles.metric}>
-          <Ionicons name="people" size={16} color="#3B82F6" />
-          <Text style={styles.metricValue}>{politician.followerCount > 1000 ? `${Math.round(politician.followerCount / 1000)}K` : politician.followerCount}</Text>
-          <Text style={styles.metricLabel}>{t('common.followers')}</Text>
+      {metrics.length > 0 && (
+        <View style={styles.metricsRow}>
+          {metrics.map((metric) => (
+            <View key={metric.key} style={styles.metric}>
+              <Ionicons name={metric.icon as any} size={16} color={metric.color} />
+              <Text style={styles.metricValue}>{metric.value}</Text>
+              <Text style={styles.metricLabel}>{metric.label}</Text>
+            </View>
+          ))}
         </View>
-        <View style={styles.metric}>
-          <Ionicons name="chatbubbles" size={16} color="#10B981" />
-          <Text style={styles.metricValue}>{politician.responseRate.toFixed(0)}%</Text>
-          <Text style={styles.metricLabel}>{t('politicianPortal.responseRate')}</Text>
-        </View>
-        <View style={styles.metric}>
-          <Ionicons name="warning" size={16} color="#F59E0B" />
-          <Text style={styles.metricValue}>{politician.issuesResponded}</Text>
-          <Text style={styles.metricLabel}>{t('politicianPortal.issuesHandled')}</Text>
-        </View>
-        <View style={styles.metric}>
-          <Ionicons name="thumbs-up" size={16} color="#8B5CF6" />
-          <Text style={styles.metricValue}>{politician.endorsementCount}</Text>
-          <Text style={styles.metricLabel}>{t('civicScoreCard.endorsements')}</Text>
-        </View>
-      </View>
+      )}
 
       {/* Response Time */}
-      <View style={styles.responseRow}>
-        <Ionicons name="time" size={14} color="#6B7280" />
-        <Text style={styles.responseText}>{t('politicianPortal.avgResponseTime', { hours: politician.avgResponseTimeHours.toFixed(1) })}</Text>
-      </View>
+      {politician.avgResponseTimeHours !== null && (
+        <View style={styles.responseRow}>
+          <Ionicons name="time" size={14} color="#6B7280" />
+          <Text style={styles.responseText}>{t('politicianPortal.avgResponseTime', { hours: politician.avgResponseTimeHours.toFixed(1) })}</Text>
+        </View>
+      )}
     </Pressable>
   );
 }
