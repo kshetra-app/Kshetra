@@ -107,4 +107,46 @@ describe('selectPipeline (demo)', () => {
     const b = selectPipeline(sig({ streamId: 'KX-same' }), { ...HOSTS, mode: 'demo' });
     expect(a.playbackHls).toBe(b.playbackHls);
   });
+
+  it.each(['staging', 'production'])(
+    'does not return demo playback for a %s build',
+    (environment) => {
+      const originalAppEnv = process.env.EXPO_PUBLIC_APP_ENV;
+      const originalRuntimeEnv = process.env.APP_ENV;
+
+      process.env.EXPO_PUBLIC_APP_ENV = environment;
+      process.env.APP_ENV = environment;
+
+      try {
+        jest.isolateModules(() => {
+          const { selectPipeline: selectLivePipeline } = require('../lib/mediaPipeline');
+          const p = selectLivePipeline(sig({ streamId: 'KX-live-demo' }), {
+            ...HOSTS,
+            mode: 'demo',
+          });
+
+          expect(p.ingestUrl).toBeNull();
+          expect(p.playbackHls).toBeNull();
+          expect(p.playbackWebrtc).toBeNull();
+          expect(p.reason).toContain('live media unavailable');
+
+          const configuredPipeline = selectLivePipeline(
+            sig({ streamId: 'KX-live-configured' }),
+            { ...HOSTS, mode: 'self_hosted' },
+          );
+          expect(configuredPipeline.ingestUrl).toBe(
+            'rtmp://ingest.test:1935/live/KX-live-configured',
+          );
+          expect(configuredPipeline.playbackHls).toBe(
+            'https://edge.test/live/KX-live-configured.m3u8',
+          );
+        });
+      } finally {
+        if (originalAppEnv === undefined) delete process.env.EXPO_PUBLIC_APP_ENV;
+        else process.env.EXPO_PUBLIC_APP_ENV = originalAppEnv;
+        if (originalRuntimeEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = originalRuntimeEnv;
+      }
+    },
+  );
 });

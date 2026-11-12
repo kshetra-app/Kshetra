@@ -46,7 +46,7 @@ export interface MediaPipeline {
   tier: MediaTier;
   /** Human-readable why (audit / UI / debugging). */
   reason: string;
-  ingestUrl: string;
+  ingestUrl: string | null;
   playbackHls: string | null;
   playbackWebrtc: string | null;
 }
@@ -146,6 +146,18 @@ export function selectPipeline(signals: PipelineSignals, hosts: MediaHosts = get
   const { tier, reason } = selectTier(signals);
   const { streamId } = signals;
   const { scheme, srsHost, omeHost, livekitHost, edgeHost, mode } = hosts;
+
+  // Demo playback is useful for local walkthroughs, but a deployed app must
+  // never attach a public test stream or placeholder media host to a live event.
+  if (IS_LIVE_ENVIRONMENT && !isMediaPipelineConfigured(hosts)) {
+    return {
+      tier,
+      reason: `${reason} (live media unavailable; configure the self-hosted media plane)`,
+      ingestUrl: null,
+      playbackHls: null,
+      playbackWebrtc: null,
+    };
+  }
 
   // Interactive is always LiveKit regardless of mode (no HLS by default).
   if (tier === 'interactive') {
