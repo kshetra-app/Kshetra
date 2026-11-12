@@ -1218,7 +1218,6 @@ const mr = {
     "state": "राज्य",
     "party": "पक्ष",
     "terms": "कार्यकाळ",
-    "attendance": "उपस्थिती",
     "questions": "प्रश्न",
     "debates": "चर्चा",
     "allianceStrength": "Alliance Strength at Centre",

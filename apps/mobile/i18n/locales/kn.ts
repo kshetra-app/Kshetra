@@ -1218,7 +1218,6 @@ const kn = {
     "state": "ರಾಜ್ಯ",
     "party": "ಪಕ್ಷ",
     "terms": "ಅವಧಿಗಳು",
-    "attendance": "ಹಾಜರಾತಿ",
     "questions": "ಪ್ರಶ್ನೆಗಳು",
     "debates": "ಚರ್ಚೆಗಳು",
     "allianceStrength": "Alliance Strength at Centre",

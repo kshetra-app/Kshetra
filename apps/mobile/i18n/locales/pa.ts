@@ -1218,7 +1218,6 @@ const pa = {
     "state": "State",
     "party": "Party",
     "terms": "Terms",
-    "attendance": "ਹਾਜ਼ਰੀ",
     "questions": "Questions",
     "debates": "ਬਹਿਸਾਂ ਵਿੱਚ ਹਿੱਸਾ",
     "allianceStrength": "Alliance Strength at Centre",

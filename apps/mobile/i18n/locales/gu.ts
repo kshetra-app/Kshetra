@@ -1218,7 +1218,6 @@ const gu = {
     "state": "State",
     "party": "Party",
     "terms": "Terms",
-    "attendance": "હાજરી",
     "questions": "Questions",
     "debates": "ચર્ચાઓ",
     "allianceStrength": "Alliance Strength at Centre",

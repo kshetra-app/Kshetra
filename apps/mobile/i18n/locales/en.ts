@@ -1218,7 +1218,6 @@ const en =  {
     "state": "State",
     "party": "Party",
     "terms": "Terms",
-    "attendance": "Attendance",
     "questions": "Questions",
     "debates": "Debates",
     "allianceStrength": "Alliance Strength at Centre",

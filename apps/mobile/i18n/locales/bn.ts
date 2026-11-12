@@ -1218,7 +1218,6 @@ const bn = {
     "state": "State",
     "party": "Party",
     "terms": "Terms",
-    "attendance": "উপস্থিতি",
     "questions": "Questions",
     "debates": "বিতর্কে অংশগ্রহণ",
     "allianceStrength": "Alliance Strength at Centre",

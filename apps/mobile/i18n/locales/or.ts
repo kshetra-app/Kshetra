@@ -1218,7 +1218,6 @@ const or = {
     "state": "State",
     "party": "Party",
     "terms": "Terms",
-    "attendance": "ଉପସ୍ଥିତି",
     "questions": "Questions",
     "debates": "ବିତର୍କରେ ଅଂଶଗ୍ରହଣ",
     "allianceStrength": "Alliance Strength at Centre",

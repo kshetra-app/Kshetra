@@ -1218,7 +1218,6 @@ const hi = {
     "state": "राज्य",
     "party": "पार्टी",
     "terms": "कार्यकाल",
-    "attendance": "उपस्थिति",
     "questions": "प्रश्न",
     "debates": "बहस में भागीदारी",
     "allianceStrength": "केंद्र में गठबंधनों की ताकत",

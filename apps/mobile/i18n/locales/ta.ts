@@ -1218,7 +1218,6 @@ const ta = {
     "state": "State",
     "party": "Party",
     "terms": "Terms",
-    "attendance": "வருகைப்பதிவு",
     "questions": "Questions",
     "debates": "விவாதங்கள்",
     "allianceStrength": "Alliance Strength at Centre",

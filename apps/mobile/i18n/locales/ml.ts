@@ -1218,7 +1218,6 @@ const ml = {
     "state": "State",
     "party": "Party",
     "terms": "Terms",
-    "attendance": "ഹാജർനില",
     "questions": "Questions",
     "debates": "ചർച്ചകൾ",
     "allianceStrength": "Alliance Strength at Centre",

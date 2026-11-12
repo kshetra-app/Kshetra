@@ -1218,7 +1218,6 @@ const te = {
     "state": "రాష్ట్రం",
     "party": "పార్టీ",
     "terms": "పదవీ కాలాలు",
-    "attendance": "హాజరు",
     "questions": "ప్రశ్నలు",
     "debates": "పాల్గొన్న చర్చలు",
     "allianceStrength": "కేంద్రంలో కూటముల బలం",

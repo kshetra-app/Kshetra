@@ -1218,7 +1218,6 @@ const ne = {
     "state": "State",
     "party": "Party",
     "terms": "Terms",
-    "attendance": "उपस्थिति",
     "questions": "Questions",
     "debates": "बहसमा सहभागिता",
     "allianceStrength": "Alliance Strength at Centre",
