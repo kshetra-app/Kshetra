@@ -14,16 +14,26 @@ import type { ApiClient } from '../client';
 import { ApiValidationError } from '../errors';
 
 export interface UploadShortRequestDTO {
+  /** Existing persisted ID used only to safely replay a queued legacy upload. */
+  id?: string;
   title: string;
   videoUrl: string;
   thumbnailUrl?: string;
   description?: string;
   stateCode: string;
+  stateName?: string;
   constituencyId?: string;
+  districtName?: string;
   durationSeconds?: number;
-  duration?: number;
-  channelName?: string;
-  uploadedBy?: string;
+  hashtags?: string[];
+  gradientColors?: string[];
+  stateAccent?: string;
+}
+
+export interface UploadShortResponseDTO {
+  success: boolean;
+  id: string;
+  short?: Record<string, unknown>;
 }
 
 export interface ShortCommentDTO {
@@ -46,13 +56,18 @@ export class ShortsEndpoint {
   /**
    * 1. Upload short
    */
-  async uploadShort(payload: UploadShortRequestDTO): Promise<{ success: boolean; id: string; short?: any }> {
-    if (!payload?.title || !payload?.videoUrl || !payload?.stateCode) {
+  async uploadShort(payload: UploadShortRequestDTO): Promise<UploadShortResponseDTO> {
+    if (
+      !payload?.title?.trim() ||
+      payload.title.trim().length > 200 ||
+      !payload?.videoUrl?.trim() ||
+      !payload?.stateCode?.trim()
+    ) {
       throw new ApiValidationError('Invalid upload short: title, videoUrl, and stateCode are required');
     }
-    const res = await this.client.post<{ success: boolean; id: string; short?: any }>(
+    const res = await this.client.post<UploadShortResponseDTO>(
       '/api/v1/shorts',
-      payload,
+      { ...payload, title: payload.title.trim(), videoUrl: payload.videoUrl.trim() },
       { authPolicy: 'authenticated' },
     );
     return res.data;

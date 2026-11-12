@@ -118,14 +118,12 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
       }
 
       const uploaderId = user?.id || kycRecord?.userId || 'user-id';
-      const channelName = kycRecord?.fullLegalName || 'Verified Contributor';
       const constituencyId = `${stateCode}-AC-${myHome.acNo}`;
 
       const res = await uploadShort({
         title,
         videoUrl,
-        channelName,
-        uploadedBy: uploaderId,
+        description,
         stateCode,
         stateName,
         constituencyId,
@@ -153,7 +151,7 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
         id: res.id,
         title,
         description,
-        channelName,
+        channelName: res.channelName || 'Verified contributor',
         channelVerified: true,
         stateCode,
         stateName,
@@ -164,7 +162,7 @@ export default function UploadShortModal({ visible, onClose }: UploadShortModalP
         videoUrl,
         gradientColors: ['#0F2027', '#203A43'],
         stateAccent: '#4F8EF7',
-        uploadedBy: uploaderId,
+        uploadedBy: res.uploadedBy || uploaderId,
       });
 
       Alert.alert(t('uploadShort.alertSuccessTitle'), t('uploadShort.alertSuccessMessage'), [

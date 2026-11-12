@@ -191,4 +191,168 @@ describe('Political short comments production contract', () => {
     });
     expect(contentModeration.checkContentModeration).toHaveBeenCalledWith('A clear comment');
   });
+
+  it('writes a verified creator short once using the canonical database columns and authenticated owner', async () => {
+    jest.spyOn(supabase.auth, 'getUser').mockResolvedValue({
+      data: { user: { id: USER_ID } },
+      error: null,
+    } as never);
+
+    const verificationQuery = {
+      eq: jest.fn().mockReturnThis(),
+      maybeSingle: jest.fn().mockResolvedValue({ data: { status: 'verified' }, error: null }),
+    };
+    const profileQuery = {
+      eq: jest.fn().mockReturnThis(),
+      maybeSingle: jest.fn().mockResolvedValue({
+        data: { display_name: 'Public Creator' },
+        error: null,
+      }),
+    };
+    const savedShort = {
+      id: SHORT_ID,
+      title: 'A real civic update',
+      video_url: 'https://www.youtube.com/embed/abcdefghijk',
+      channel_name: 'Public Creator',
+      channel_verified: true,
+      state_code: 'TS',
+      uploaded_by: USER_ID,
+    };
+    const single = jest.fn().mockResolvedValue({ data: savedShort, error: null });
+    const selectSaved = jest.fn().mockReturnValue({ single });
+    let insertedValues: Record<string, unknown> | undefined;
+    const insert = jest.fn((values: Record<string, unknown>) => {
+      insertedValues = values;
+      return { select: selectSaved };
+    });
+
+    jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+      if (table === 'creator_kyc_records') return { select: () => verificationQuery } as never;
+      if (table === 'user_profiles') return { select: () => profileQuery } as never;
+      if (table === 'political_shorts') return { insert } as never;
+      return {} as never;
+    }) as never);
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/v1/shorts',
+      headers: { authorization: 'Bearer verified-test-token' },
+      payload: {
+        title: '  A real civic update  ',
+        videoUrl: 'https://www.youtube.com/embed/abcdefghijk',
+        description: 'Persisted description',
+        stateCode: 'ts',
+        stateName: 'Telangana',
+        constituencyId: 'TS-AC-67',
+        districtName: 'Hyderabad',
+        durationSeconds: 45,
+        hashtags: ['CivicUpdate'],
+        gradientColors: ['#0F2027', '#203A43'],
+        stateAccent: '#4F8EF7',
+        authorId: '00000000-0000-4000-8000-000000000001',
+        uploadedBy: '00000000-0000-4000-8000-000000000001',
+        channelName: 'Private legal name supplied by client',
+      },
+    });
+
+    expect(response.statusCode).toBe(201);
+    expect(insert).toHaveBeenCalledTimes(1);
+    expect(insertedValues).toEqual({
+      title: 'A real civic update',
+      video_url: 'https://www.youtube.com/embed/abcdefghijk',
+      thumbnail_url: null,
+      description: 'Persisted description',
+      channel_name: 'Public Creator',
+      channel_verified: true,
+      state_code: 'TS',
+      state_name: 'Telangana',
+      constituency_id: 'TS-AC-67',
+      district_name: 'Hyderabad',
+      duration: 45,
+      hashtags: ['CivicUpdate'],
+      gradient_colors: ['#0F2027', '#203A43'],
+      state_accent: '#4F8EF7',
+      uploaded_by: USER_ID,
+    });
+    expect(insertedValues).not.toHaveProperty('author_id');
+    expect(insertedValues).not.toHaveProperty('duration_seconds');
+    expect(JSON.parse(response.payload)).toMatchObject({
+      success: true,
+      id: SHORT_ID,
+      short: { channel_name: 'Public Creator', uploaded_by: USER_ID },
+    });
+  });
+
+  it('rejects short uploads until creator verification is confirmed server-side', async () => {
+    jest.spyOn(supabase.auth, 'getUser').mockResolvedValue({
+      data: { user: { id: USER_ID } },
+      error: null,
+    } as never);
+    const verificationQuery = {
+      eq: jest.fn().mockReturnThis(),
+      maybeSingle: jest.fn().mockResolvedValue({ data: { status: 'pending' }, error: null }),
+    };
+    const insert = jest.fn();
+    jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+      if (table === 'creator_kyc_records') return { select: () => verificationQuery } as never;
+      if (table === 'political_shorts') return { insert } as never;
+      return {} as never;
+    }) as never);
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/v1/shorts',
+      headers: { authorization: 'Bearer verified-test-token' },
+      payload: {
+        title: 'Unverified submission',
+        videoUrl: 'https://www.youtube.com/embed/abcdefghijk',
+        stateCode: 'TS',
+      },
+    });
+
+    expect(response.statusCode).toBe(403);
+    expect(JSON.parse(response.payload).code).toBe('CREATOR_VERIFICATION_REQUIRED');
+    expect(insert).not.toHaveBeenCalled();
+  });
+
+  it('returns an owned persisted short when a legacy queued upload is replayed', async () => {
+    jest.spyOn(supabase.auth, 'getUser').mockResolvedValue({
+      data: { user: { id: USER_ID } },
+      error: null,
+    } as never);
+    const existingQuery = {
+      eq: jest.fn().mockReturnThis(),
+      maybeSingle: jest.fn().mockResolvedValue({
+        data: { id: SHORT_ID, uploaded_by: USER_ID, title: 'Already persisted' },
+        error: null,
+      }),
+    };
+    const insert = jest.fn();
+    jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+      if (table === 'political_shorts') {
+        return { select: () => existingQuery, insert } as never;
+      }
+      return {} as never;
+    }) as never);
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/v1/shorts',
+      headers: { authorization: 'Bearer verified-test-token' },
+      payload: {
+        id: SHORT_ID,
+        title: 'Already persisted',
+        videoUrl: 'https://www.youtube.com/embed/abcdefghijk',
+        stateCode: 'TS',
+      },
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.payload)).toMatchObject({
+      success: true,
+      id: SHORT_ID,
+      alreadyPersisted: true,
+    });
+    expect(insert).not.toHaveBeenCalled();
+  });
 });

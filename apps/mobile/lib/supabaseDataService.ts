@@ -478,10 +478,11 @@ export async function toggleFavorite(
 // ─── Political Shorts ────────────────────────────────────────────────
 
 export async function uploadShort(short: {
+  id?: string;
   title: string;
   videoUrl: string;
-  channelName: string;
-  uploadedBy: string;
+  description?: string;
+  thumbnailUrl?: string;
   stateCode: string;
   stateName?: string;
   constituencyId?: string;
@@ -490,21 +491,28 @@ export async function uploadShort(short: {
   hashtags?: string[];
   gradientColors?: string[];
   stateAccent?: string;
-}): Promise<{ id: string | null; success: boolean }> {
+}): Promise<{ id: string | null; success: boolean; channelName?: string; uploadedBy?: string }> {
   if (!guard()) return { id: null, success: false };
   try {
     addBreadcrumb('shorts', 'upload', { title: short.title });
     const res = await apiClient.shorts.uploadShort({
+      id: isValidUuid(short.id) ? short.id : undefined,
       title: short.title,
       videoUrl: short.videoUrl,
-      channelName: short.channelName,
-      uploadedBy: short.uploadedBy,
+      thumbnailUrl: short.thumbnailUrl,
+      description: short.description,
       stateCode: short.stateCode,
+      stateName: short.stateName,
       constituencyId: short.constituencyId,
-      duration: short.duration,
+      districtName: short.districtName,
       durationSeconds: short.duration,
+      hashtags: short.hashtags,
+      gradientColors: short.gradientColors,
+      stateAccent: short.stateAccent,
     });
-    return { id: res.id ?? null, success: res.success };
+    const channelName = typeof res.short?.channel_name === 'string' ? res.short.channel_name : undefined;
+    const uploadedBy = typeof res.short?.uploaded_by === 'string' ? res.short.uploaded_by : undefined;
+    return { id: res.id ?? null, success: res.success, channelName, uploadedBy };
   } catch (err) {
     captureException(err as Error, { op: 'upload_short' });
     return { id: null, success: false };

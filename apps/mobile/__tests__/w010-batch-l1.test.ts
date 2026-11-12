@@ -79,12 +79,10 @@ describe('W010 BATCH L1 — DEF-001 & DEF-007 VERIFICATION', () => {
       expect(isValidUuid(undefined)).toBe(false);
     });
 
-    it('uploadShort rejects non-UUID uploadedBy with { id: null, success: false }', async () => {
+    it('uploadShort reports an unavailable backend without inventing a persisted short ID', async () => {
       const res = await uploadShort({
         title: 'Test Short',
         videoUrl: 'https://youtube.com/embed/test',
-        channelName: 'Test Channel',
-        uploadedBy: 'invalid-user-id',
         stateCode: 'TS',
         duration: 30,
       });

@@ -3,7 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { mmkvStorage } from '../lib/storage';
 import POLITICAL_SHORTS from '../data/politicalShortsData';
 import type { PoliticalShort } from '../data/politicalShortsData';
-import { fetchShorts, incrementShortView, uploadShort, approveShort as approveShortApi, flagShort as flagShortApi } from '../lib/supabaseDataService';
+import { fetchShorts, incrementShortView, approveShort as approveShortApi, flagShort as flagShortApi } from '../lib/supabaseDataService';
 import { enqueue } from '../lib/offlineSync';
 import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 
@@ -29,16 +29,7 @@ interface PoliticalShortsState {
 
   // Actions
   addShort: (
-    short: Omit<
-      PoliticalShort,
-      | 'id'
-      | 'viewCount'
-      | 'likeCount'
-      | 'commentCount'
-      | 'createdAt'
-      | 'visibilityLevel'
-      | 'uploadedBy'
-    > & { uploadedBy: string; id?: string }
+    short: Omit<PoliticalShort, 'viewCount' | 'likeCount' | 'commentCount' | 'createdAt' | 'visibilityLevel'>
   ) => Promise<void>;
   
   approveShort: (shortId: string, userId: string, userConstituencyId: string) => Promise<void>;
@@ -56,10 +47,8 @@ export const usePoliticalShortsStore = create<PoliticalShortsState>()(
       flaggedShorts: {},
 
       addShort: async (newShortData) => {
-        const clientToken = newShortData.id || `short_client_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
         const newShort: PoliticalShort = {
           ...newShortData,
-          id: clientToken,
           viewCount: 0,
           likeCount: 0,
           commentCount: 0,
@@ -68,43 +57,8 @@ export const usePoliticalShortsStore = create<PoliticalShortsState>()(
         };
 
         set((state) => ({
-          shorts: [newShort, ...state.shorts],
+          shorts: [newShort, ...state.shorts.filter((short) => short.id !== newShort.id)],
         }));
-
-        try {
-          const res = await uploadShort({
-            title: newShortData.title,
-            videoUrl: newShortData.videoUrl,
-            channelName: newShortData.channelName,
-            uploadedBy: newShortData.uploadedBy,
-            stateCode: newShortData.stateCode,
-            stateName: newShortData.stateName,
-            constituencyId: newShortData.constituencyId,
-            districtName: newShortData.districtName,
-            duration: newShortData.duration,
-            hashtags: newShortData.hashtags,
-            gradientColors: newShortData.gradientColors,
-            stateAccent: newShortData.stateAccent,
-          });
-
-          if (res.success && res.id) {
-            set((state) => ({
-              shorts: state.shorts.map((s) =>
-                s.id === clientToken ? { ...s, id: res.id! } : s
-              ),
-            }));
-          } else {
-            enqueue('upload_short', {
-              ...newShortData,
-              id: clientToken,
-            });
-          }
-        } catch {
-          enqueue('upload_short', {
-            ...newShortData,
-            id: clientToken,
-          });
-        }
       },
 
       approveShort: async (shortId, userId, userConstituencyId) => {

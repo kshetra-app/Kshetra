@@ -4,6 +4,7 @@ describe('Political shorts data freshness and production truth', () => {
 
   let persistedValue: string | null;
   let fetchShorts: jest.Mock;
+  let uploadShort: jest.Mock;
   let usePoliticalShortsStore: any;
 
   const setEnvironment = (environment: 'production' | 'test') => {
@@ -25,12 +26,13 @@ describe('Political shorts data freshness and production truth', () => {
       removeItem: jest.fn(async () => undefined),
     };
     fetchShorts = jest.fn();
+    uploadShort = jest.fn();
 
     jest.doMock('../lib/storage', () => ({ mmkvStorage: storage }));
     jest.doMock('../lib/supabaseDataService', () => ({
       fetchShorts,
       incrementShortView: jest.fn(),
-      uploadShort: jest.fn(),
+      uploadShort,
       approveShort: jest.fn(),
       flagShort: jest.fn(),
     }));
@@ -88,6 +90,38 @@ describe('Political shorts data freshness and production truth', () => {
     await store.getState().hydrateShorts('TS');
 
     expect(store.getState().shorts).toEqual([{ id: 'cached-server-short' }]);
+  });
+
+  it('adds a server-confirmed short to the cache without submitting it a second time', async () => {
+    const store = loadStore();
+    const uploadedShort = {
+      id: '5bfe8c93-4df2-4cf1-9ed4-1cf58f64c095',
+      title: 'A real submitted short',
+      description: 'Persisted before entering the local cache.',
+      channelName: 'Verified creator',
+      channelVerified: true,
+      stateCode: 'TS',
+      stateName: 'Telangana',
+      constituencyId: 'TS-AC-67',
+      districtName: 'Hyderabad',
+      hashtags: ['CivicUpdate'],
+      duration: 45,
+      videoUrl: 'https://www.youtube.com/embed/abcdefghijk',
+      uploadedBy: '7bd6b9b1-aed6-43e8-aac4-a7bf6d2662cb',
+      gradientColors: ['#0F2027', '#203A43'] as [string, string],
+      stateAccent: '#4F8EF7',
+    };
+
+    await store.getState().addShort(uploadedShort);
+
+    expect(uploadShort).not.toHaveBeenCalled();
+    expect(store.getState().shorts[0]).toMatchObject({
+      id: uploadedShort.id,
+      title: uploadedShort.title,
+      viewCount: 0,
+      likeCount: 0,
+      commentCount: 0,
+    });
   });
 
   it('keeps bundled examples available only in the isolated test/development path', () => {

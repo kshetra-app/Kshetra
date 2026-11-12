@@ -450,14 +450,19 @@ export async function shortsRoutes(app: FastifyInstance) {
    */
   app.post<{
     Body: {
+      id?: string;
       title: string;
       videoUrl: string;
       thumbnailUrl?: string;
       description?: string;
       stateCode: string;
+      stateName?: string;
       constituencyId?: string;
-      authorId?: string;
+      districtName?: string;
       durationSeconds?: number;
+      hashtags?: string[];
+      gradientColors?: string[];
+      stateAccent?: string;
     };
   }>(
     '/api/v1/shorts',
@@ -467,14 +472,27 @@ export async function shortsRoutes(app: FastifyInstance) {
           type: 'object',
           required: ['title', 'videoUrl', 'stateCode'],
           properties: {
-            title: { type: 'string', minLength: 1, maxLength: 300 },
+            id: { type: 'string', pattern: SHORT_ID_PATTERN.source },
+            title: { type: 'string', minLength: 1, maxLength: 200 },
             videoUrl: { type: 'string', minLength: 1 },
             thumbnailUrl: { type: 'string' },
-            description: { type: 'string' },
+            description: { type: 'string', maxLength: 5000 },
             stateCode: { type: 'string', minLength: 2, maxLength: 2 },
+            stateName: { type: 'string', maxLength: 100 },
             constituencyId: { type: 'string' },
-            authorId: { type: 'string' },
-            durationSeconds: { type: 'number' },
+            districtName: { type: 'string', maxLength: 100 },
+            durationSeconds: { type: 'integer', minimum: 0, maximum: 3600 },
+            hashtags: {
+              type: 'array',
+              maxItems: 20,
+              items: { type: 'string', minLength: 1, maxLength: 80 },
+            },
+            gradientColors: {
+              type: 'array',
+              maxItems: 2,
+              items: { type: 'string', pattern: '^#[0-9A-Fa-f]{6}$' },
+            },
+            stateAccent: { type: 'string', pattern: '^#[0-9A-Fa-f]{6}$' },
           },
         },
       },
@@ -482,10 +500,6 @@ export async function shortsRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const auth = await resolveAuthenticatedUser(request, reply);
       if (!auth) return;
-
-      if (!assertActingUserMatch(reply, request, auth.userId, request.body?.authorId, 'authorId')) {
-        return;
-      }
 
       if (!isSupabaseConfigured) {
         return sendApiError(
@@ -502,17 +516,120 @@ export async function shortsRoutes(app: FastifyInstance) {
 
       const body = request.body;
       try {
+        if (body.id) {
+          const { data: existing, error: existingError } = await supabase
+            .from('political_shorts')
+            .select('*')
+            .eq('id', body.id)
+            .maybeSingle();
+
+          if (existingError) {
+            app.log.error(
+              { err: existingError.message, shortId: body.id, userId: auth.userId },
+              'Failed to check an idempotent short upload',
+            );
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'The short upload could not be confirmed. Please retry.',
+              { code: 'UPLOAD_CONFIRMATION_UNAVAILABLE' },
+            );
+          }
+          if (existing) {
+            if (existing.uploaded_by !== auth.userId) {
+              return sendApiError(reply, request, 404, 'Not Found', 'Short not found', {
+                code: 'SHORT_NOT_FOUND',
+              });
+            }
+            return reply.send({
+              success: true,
+              id: existing.id,
+              short: existing,
+              alreadyPersisted: true,
+            });
+          }
+        }
+
+        const title = body.title.trim();
+        const videoUrl = body.videoUrl.trim();
+        const stateCode = body.stateCode.trim().toUpperCase();
+        if (!title || !videoUrl) {
+          return sendApiError(
+            reply,
+            request,
+            400,
+            'Bad Request',
+            'Title and video URL are required',
+            {
+              code: 'INVALID_SHORT_CONTENT',
+            },
+          );
+        }
+
+        const { data: verification, error: verificationError } = await supabase
+          .from('creator_kyc_records')
+          .select('status')
+          .eq('user_id', auth.userId)
+          .maybeSingle();
+
+        if (verificationError) {
+          app.log.error(
+            { err: verificationError.message, userId: auth.userId },
+            'Failed to verify short uploader eligibility',
+          );
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Creator verification could not be checked. Please try again.',
+            { code: 'VERIFICATION_UNAVAILABLE' },
+          );
+        }
+        if (verification?.status !== 'verified') {
+          return sendApiError(
+            reply,
+            request,
+            403,
+            'Forbidden',
+            'Verified creator status is required to upload a short.',
+            { code: 'CREATOR_VERIFICATION_REQUIRED' },
+          );
+        }
+
+        const { data: profile, error: profileError } = await supabase
+          .from('user_profiles')
+          .select('display_name')
+          .eq('user_id', auth.userId)
+          .maybeSingle();
+        if (profileError) {
+          app.log.warn(
+            { err: profileError.message, userId: auth.userId },
+            'Could not resolve short channel display name',
+          );
+        }
+
         const { data, error } = await supabase
           .from('political_shorts')
           .insert({
-            title: body.title,
-            video_url: body.videoUrl,
+            ...(body.id ? { id: body.id } : {}),
+            title,
+            video_url: videoUrl,
             thumbnail_url: body.thumbnailUrl || null,
-            description: body.description || null,
-            state_code: body.stateCode,
+            description: body.description?.trim() || null,
+            channel_name: profile?.display_name?.trim() || 'Verified contributor',
+            channel_verified: true,
+            state_code: stateCode,
+            state_name: body.stateName?.trim() || null,
             constituency_id: body.constituencyId || null,
-            author_id: auth.userId,
-            duration_seconds: body.durationSeconds || 0,
+            district_name: body.districtName?.trim() || null,
+            duration: body.durationSeconds ?? 0,
+            hashtags: body.hashtags ?? [],
+            gradient_colors: body.gradientColors ?? [],
+            state_accent: body.stateAccent || null,
+            uploaded_by: auth.userId,
           })
           .select('*')
           .single();
