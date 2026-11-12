@@ -16,7 +16,7 @@ import { useUserProfileStore } from '../../stores/userProfile';
 import { useAuthStore } from '../../stores/auth';
 import { useTheme } from '../../lib/theme';
 import { useFeedStore } from '../../stores/feed';
-import { API_BASE_URL } from '../../lib/constants';
+import { apiClient } from '../../lib/api';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import i18n from '../../i18n';
 
@@ -53,7 +53,6 @@ export default function GeneralModerationQueueScreen() {
   const router = useRouter();
   const { colors } = useTheme();
   const userProfile = useUserProfileStore((s) => s.profile);
-  const authSession = useAuthStore((s) => s.session);
   const authUser = useAuthStore((s) => s.user);
   const deletePostLocally = useFeedStore((s) => s.deletePost);
 
@@ -66,26 +65,18 @@ export default function GeneralModerationQueueScreen() {
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
   const [helpVisible, setHelpVisible] = useState(false);
 
-  const getAuthHeaders = () => {
-    const headers: Record<string, string> = {};
-    if (authSession?.access_token) {
-      headers['Authorization'] = `Bearer ${authSession.access_token}`;
-    }
-    const currentId = authUser?.id || userProfile?.id;
-    if (currentId) {
-      headers['x-user-id'] = currentId;
-    }
-    return headers;
-  };
-
   const loadQueue = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/v1/moderation/queue`, {
-        headers: getAuthHeaders(),
+      const res = await apiClient.request<{
+        success: boolean;
+        data?: { queue?: ReportItem[] };
+      }>('/api/v1/moderation/queue', {
+        method: 'GET',
+        authPolicy: 'authenticated',
       });
-      const data = await res.json();
-      if (data && data.data?.queue) {
-        setReports(data.data.queue);
+      const queue = res.data.data?.queue;
+      if (res.data.success && Array.isArray(queue)) {
+        setReports(queue);
       }
     } catch (err) {
       console.warn('Failed to load moderation queue', err);
@@ -106,24 +97,29 @@ export default function GeneralModerationQueueScreen() {
   const handleAction = async (report: ReportItem, actionType: 'delete_content' | 'warn' | 'dismiss' | 'escalate') => {
     setActionInProgress(report.id);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/v1/moderation/action`, {
+      const moderatorId = authUser?.id || userProfile?.id;
+      if (!moderatorId) {
+        throw new Error('Please sign in again before applying a moderation action.');
+      }
+
+      const res = await apiClient.request<{
+        success: boolean;
+        error?: string;
+      }>('/api/v1/moderation/action', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...getAuthHeaders(),
-        },
-        body: JSON.stringify({
-          moderatorId: authUser?.id || userProfile?.id || 'mod-admin',
+        authPolicy: 'authenticated',
+        body: {
+          moderatorId,
           reportId: report.id,
           targetUserId: report.reported_user_id || undefined,
           targetPostId: report.post_id || undefined,
           targetCommentId: report.comment_id || undefined,
           actionType,
           reason: `Moderator action: ${actionType} on report ${report.id}`,
-        }),
+        },
       });
 
-      const result = await res.json();
+      const result = res.data;
       if (result.success) {
         if (actionType === 'delete_content' && report.post_id) {
           deletePostLocally(report.post_id);
@@ -400,3 +396,4 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
 });
+
