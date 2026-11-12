@@ -16,13 +16,14 @@ import {
   Alert,
   Linking,
   Share,
+  type ViewToken,
   useWindowDimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 import type { PoliticalShort } from '../data/politicalShortsData';
-import { formatCount, formatDuration } from '../data/politicalShortsData';
+import { formatCount } from '../data/politicalShortsData';
 import { usePoliticalShortsStore } from '../stores/politicalShorts';
 import { useMyConstituencyStore } from '../stores/myConstituency';
 import { useActiveStateStore } from '../stores/activeState';
@@ -30,7 +31,8 @@ import { useContributorVerificationStore } from '../stores/contributorVerificati
 import { useAuthStore } from '../stores/auth';
 import { useUserProfileStore } from '../stores/userProfile';
 import { gateContentAction, logContentAction } from '../lib/contentAccountability';
-import { addShortComment } from '../lib/supabaseDataService';
+import { addShortComment, fetchShortComments } from '../lib/supabaseDataService';
+import type { ShortCommentDTO } from '../lib/api/endpoints/shorts';
 
 interface ShortsPlayerModalProps {
   visible: boolean;
@@ -45,7 +47,6 @@ export default function ShortsPlayerModal({
   initialIndex,
   onClose,
 }: ShortsPlayerModalProps) {
-  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
@@ -66,7 +67,7 @@ export default function ShortsPlayerModal({
   const userApprovals = usePoliticalShortsStore((s) => s.userApprovals);
   const flaggedShorts = usePoliticalShortsStore((s) => s.flaggedShorts);
 
-  const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
+  const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
     if (viewableItems.length > 0) {
       const newIndex = viewableItems[0].index ?? 0;
       setCurrentIndex(newIndex);
@@ -89,7 +90,6 @@ export default function ShortsPlayerModal({
           isActive={isActive}
           screenWidth={screenWidth}
           screenHeight={screenHeight}
-          userId={userId}
           authorName={authorName}
           userConstituencyId={userConstituencyId}
           isApproved={isApproved}
@@ -155,7 +155,6 @@ interface ShortPageItemProps {
   isActive: boolean;
   screenWidth: number;
   screenHeight: number;
-  userId: string;
   authorName: string;
   userConstituencyId: string | undefined;
   isApproved: boolean;
@@ -171,7 +170,6 @@ function ShortPageItem({
   isActive,
   screenWidth,
   screenHeight,
-  userId,
   authorName,
   userConstituencyId,
   isApproved,
@@ -195,11 +193,58 @@ function ShortPageItem({
 
   // Curation comments list state
   const [commentText, setCommentText] = useState('');
-  const [comments, setComments] = useState([
-    { id: '1', author: 'Ramesh G.', text: 'Very detailed report on this issue.', likes: 12, time: '2h ago' },
-    { id: '2', author: 'Sowmya K.', text: 'The constituency needs immediate action on this.', likes: 8, time: '5h ago' },
-    { id: '3', author: 'Anil Reddy', text: 'This was discussed in the assembly too.', likes: 4, time: '1d ago' },
-  ]);
+  const [comments, setComments] = useState<ShortCommentDTO[]>([]);
+  const [commentsTotal, setCommentsTotal] = useState<number | null>(null);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [commentsLoadingMore, setCommentsLoadingMore] = useState(false);
+  const [commentsError, setCommentsError] = useState(false);
+  const [commentsLoadMoreError, setCommentsLoadMoreError] = useState(false);
+  const [commentsOffset, setCommentsOffset] = useState(0);
+  const [commentSubmitting, setCommentSubmitting] = useState(false);
+
+  const refreshComments = useCallback(async () => {
+    setCommentsLoading(true);
+    setCommentsLoadingMore(false);
+    setCommentsError(false);
+    setCommentsLoadMoreError(false);
+    setComments([]);
+    setCommentsTotal(null);
+    setCommentsOffset(0);
+    const result = await fetchShortComments(item.id, { offset: 0, limit: 50 });
+    if (result) {
+      setComments(result.comments);
+      setCommentsTotal(result.total);
+      setCommentsOffset(result.comments.length);
+    } else {
+      setCommentsError(true);
+      setCommentsTotal(null);
+    }
+    setCommentsLoading(false);
+  }, [item.id]);
+
+  const loadMoreComments = useCallback(async () => {
+    if (commentsLoading || commentsLoadingMore || commentsTotal === null || commentsOffset >= commentsTotal) {
+      return;
+    }
+    setCommentsLoadingMore(true);
+    setCommentsLoadMoreError(false);
+    const result = await fetchShortComments(item.id, { offset: commentsOffset, limit: 50 });
+    if (result) {
+      setComments((current) => {
+        const knownIds = new Set(current.map((comment) => comment.id));
+        return [...current, ...result.comments.filter((comment) => !knownIds.has(comment.id))];
+      });
+      setCommentsTotal(result.total);
+      setCommentsOffset((offset) => offset + result.comments.length);
+    } else {
+      setCommentsLoadMoreError(true);
+    }
+    setCommentsLoadingMore(false);
+  }, [commentsLoading, commentsLoadingMore, commentsOffset, commentsTotal, item.id]);
+
+  useEffect(() => {
+    if (commentsVisible) void refreshComments();
+  }, [commentsVisible, refreshComments]);
 
   // Curation eligibility check
   const matchesCurationTarget = useMemo(() => {
@@ -251,7 +296,9 @@ function ShortPageItem({
   const handleFlagAction = useCallback(() => {
     onFlag();
     setShowCurationPrompt(false);
-    Platform.OS !== 'web' ? Alert.alert(t('shortsPlayer.alertReportedTitle'), t('shortsPlayer.alertReportedMessage')) : null;
+    if (Platform.OS !== 'web') {
+      Alert.alert(t('shortsPlayer.alertReportedTitle'), t('shortsPlayer.alertReportedMessage'));
+    }
   }, [onFlag]);
 
   const handleSkipCuration = useCallback(() => {
@@ -263,59 +310,50 @@ function ShortPageItem({
       await Share.share({
         message: `${item.title}\n${item.videoUrl}\n\n— via Poligram Shorts`,
       });
-    } catch (_) {}
+    } catch {}
   }, [item.title, item.videoUrl]);
 
-  const handlePostComment = useCallback(() => {
-    if (!commentText.trim()) return;
+  const handlePostComment = useCallback(async () => {
+    const commentBody = commentText.trim();
+    if (!commentBody || commentSubmitting) return;
     if (!gateContentAction('create_comment')) return;
 
-    const newCommentId = Date.now().toString();
-    const commentBody = commentText.trim();
-    const tempCommentId = `c-user-${Date.now()}`;
-    const newComment = {
+    const tempCommentId = `pending-${Date.now()}`;
+    const pendingComment: ShortCommentDTO = {
       id: tempCommentId,
-      author: authorName || 'Citizen',
+      authorName: authorName || 'Citizen',
       text: commentBody,
-      likes: 0,
-      time: 'Just now',
+      createdAt: new Date().toISOString(),
     };
+    setComments((prev) => [pendingComment, ...prev]);
+    setCommentSubmitting(true);
 
-    setComments((prev) => [newComment, ...prev]);
-
-    // Persist to real backend with moderation check
-    addShortComment(item.id, userId, authorName || 'Citizen', commentBody).catch((err) => {
-      console.warn('[Shorts] Failed to persist comment to database:', err);
-      // Remove optimistic comment
-      setComments((prev) => prev.filter((c) => c.id !== tempCommentId));
-      if (err?.message && err.message.includes('community guidelines')) {
-        Alert.alert('Content Moderation', err.message);
-      } else {
-        Alert.alert('Comment Failed', 'Could not post your comment. Please try again.');
+    try {
+      const savedComment = await addShortComment(item.id, commentBody);
+      setComments((prev) => prev.map((comment) => comment.id === tempCommentId ? savedComment : comment));
+      setCommentsTotal((total) => total === null ? null : total + 1);
+      setCommentText('');
+      try {
+        logContentAction('create_comment', {
+          type: 'political_short_comment',
+          id: item.id,
+          body: commentBody,
+          screenName: 'shorts_player',
+        });
+      } catch (error) {
+        console.warn('[Shorts] Saved comment could not be recorded in the local accountability log:', error);
       }
-    });
-
-    logContentAction('create_comment', {
-      type: 'political_short_comment',
-      id: item.id,
-      body: commentBody,
-      screenName: 'shorts_player',
-    });
-    setCommentText('');
-  }, [commentText, item.id, userId, authorName]);
-
-  // Formatted labels
-  const visibilityBadgeLabel = useMemo(() => {
-    if (item.visibilityLevel === 'constituency') return 'Constituency Phase';
-    if (item.visibilityLevel === 'state') return 'State Phase';
-    return 'National Vetted';
-  }, [item.visibilityLevel]);
-
-  const visibilityBadgeColor = useMemo(() => {
-    if (item.visibilityLevel === 'constituency') return '#F59E0B'; // Orange
-    if (item.visibilityLevel === 'state') return '#4F8EF7'; // Blue
-    return '#10B981'; // Green
-  }, [item.visibilityLevel]);
+    } catch (err) {
+      console.warn('[Shorts] Failed to persist comment to database:', err);
+      setComments((prev) => prev.filter((c) => c.id !== tempCommentId));
+      Alert.alert(
+        'Comment not posted',
+        err instanceof Error ? err.message : 'Could not save your comment. Please try again.',
+      );
+    } finally {
+      setCommentSubmitting(false);
+    }
+  }, [commentText, commentSubmitting, item.id, authorName]);
 
   const videoId = item.videoUrl.split('/').pop() || '';
 
@@ -347,7 +385,7 @@ function onYouTubeIframeAPIReady(){
 </script>
 </body></html>`, [videoId]);
 
-  const handleWebViewMessage = useCallback((event: any) => {
+  const handleWebViewMessage = useCallback((event: { nativeEvent: { data: string } }) => {
     try {
       const data = JSON.parse(event.nativeEvent.data);
       if (data.type === 'error') { setVideoError(true); setWebViewLoading(false); }
@@ -445,7 +483,9 @@ function onYouTubeIframeAPIReady(){
         {/* Comments Button */}
         <Pressable style={styles.sidebarBtn} onPress={() => setCommentsVisible(true)}>
           <Ionicons name="chatbubble-outline" size={26} color="#FFFFFF" />
-          <Text style={styles.sidebarCount}>{formatCount(item.commentCount + (comments.length - 3))}</Text>
+          <Text style={styles.sidebarCount}>
+            {commentsTotal === null ? t('shortsPlayer.comments') : formatCount(commentsTotal)}
+          </Text>
         </Pressable>
 
         {/* Share Button */}
@@ -548,7 +588,7 @@ function onYouTubeIframeAPIReady(){
         </View>
       )}
 
-      {/* Mock Comments Modal Bottom Sheet */}
+      {/* Persisted comments modal */}
       <Modal
         visible={commentsVisible}
         animationType="slide"
@@ -561,7 +601,9 @@ function onYouTubeIframeAPIReady(){
         >
           <View style={styles.commentsSheet}>
             <View style={styles.commentsHeader}>
-              <Text style={styles.commentsTitle}>{t('shortsPlayer.comments')} ({comments.length})</Text>
+              <Text style={styles.commentsTitle}>
+                {t('shortsPlayer.comments')}{commentsTotal === null ? '' : ` (${formatCount(commentsTotal)})`}
+              </Text>
               <Pressable onPress={() => setCommentsVisible(false)} hitSlop={12}>
                 <Ionicons name="close" size={24} color="#FFFFFF" />
               </Pressable>
@@ -574,16 +616,43 @@ function onYouTubeIframeAPIReady(){
               renderItem={({ item: c }) => (
                 <View style={styles.commentItem}>
                   <View style={styles.commentMeta}>
-                    <Text style={styles.commentAuthor}>{c.author}</Text>
-                    <Text style={styles.commentTime}>{c.time}</Text>
+                    <Text style={styles.commentAuthor}>{c.authorName}</Text>
+                    <Text style={styles.commentTime}>{new Date(c.createdAt).toLocaleString()}</Text>
                   </View>
                   <Text style={styles.commentText}>{c.text}</Text>
-                  <View style={styles.commentLikeRow}>
-                    <Ionicons name="heart-outline" size={12} color="#9CA3AF" />
-                    <Text style={styles.commentLikeCount}>{c.likes}</Text>
-                  </View>
                 </View>
               )}
+              ListEmptyComponent={
+                commentsLoading ? (
+                  <ActivityIndicator color="#FFFFFF" style={{ marginTop: 28 }} />
+                ) : commentsError ? (
+                  <View style={styles.commentsEmpty}>
+                    <Text style={styles.commentText}>Comments could not be loaded.</Text>
+                    <Pressable onPress={() => void refreshComments()}>
+                      <Text style={styles.commentsRetry}>{t('shortsPlayer.retry')}</Text>
+                    </Pressable>
+                  </View>
+                ) : (
+                  <Text style={styles.commentsEmpty}>{t('feed.noComments', { defaultValue: 'No comments yet.' })}</Text>
+                )
+              }
+              ListFooterComponent={
+                commentsLoadMoreError || commentsLoadingMore || (commentsTotal !== null && commentsOffset < commentsTotal) ? (
+                  <Pressable
+                    style={styles.commentsLoadMore}
+                    onPress={() => void loadMoreComments()}
+                    disabled={commentsLoading || commentsLoadingMore}
+                  >
+                    {commentsLoadingMore ? (
+                      <ActivityIndicator color="#FFFFFF" />
+                    ) : (
+                      <Text style={styles.commentsRetry}>
+                        {commentsLoadMoreError ? t('shortsPlayer.retry') : t('common.more')}
+                      </Text>
+                    )}
+                  </Pressable>
+                ) : null
+              }
               contentContainerStyle={{ paddingBottom: 20 }}
             />
 
@@ -595,9 +664,10 @@ function onYouTubeIframeAPIReady(){
                 placeholderTextColor="#6B7280"
                 value={commentText}
                 onChangeText={setCommentText}
+                maxLength={500}
               />
-              <Pressable style={styles.commentPostBtn} onPress={handlePostComment}>
-                <Ionicons name="send" size={16} color="#FFFFFF" />
+              <Pressable style={styles.commentPostBtn} onPress={() => void handlePostComment()} disabled={commentSubmitting}>
+                {commentSubmitting ? <ActivityIndicator size="small" color="#FFFFFF" /> : <Ionicons name="send" size={16} color="#FFFFFF" />}
               </Pressable>
             </View>
           </View>
@@ -911,15 +981,23 @@ const styles = StyleSheet.create({
     color: '#E5E7EB',
     lineHeight: 18,
   },
-  commentLikeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    marginTop: 2,
+  commentsEmpty: {
+    marginTop: 28,
+    paddingHorizontal: 16,
+    textAlign: 'center',
+    fontSize: 13,
+    color: '#9CA3AF',
   },
-  commentLikeCount: {
-    fontSize: 11,
-    color: '#6B7280',
+  commentsRetry: {
+    marginTop: 10,
+    textAlign: 'center',
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#4F8EF7',
+  },
+  commentsLoadMore: {
+    alignItems: 'center',
+    paddingVertical: 16,
   },
   commentInputRow: {
     flexDirection: 'row',

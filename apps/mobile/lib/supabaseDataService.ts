@@ -17,6 +17,7 @@ import { API_BASE_URL } from './constants';
 import { telemetry } from './telemetry';
 import { apiClient } from './api';
 import { ApiNetworkError, ApiServerError, ApiTimeoutError } from './api/errors';
+import type { ShortCommentDTO, ShortCommentsResponseDTO } from './api/endpoints/shorts';
 import type { ChallengeParticipation, CivicBadge, CommunityChallenge } from './aspirantTypes';
 import type { Poll } from './feedTypes';
 
@@ -1302,37 +1303,40 @@ export async function incrementShortView(shortId: string): Promise<boolean> {
   }
 }
 
-export async function addShortComment(
+export async function fetchShortComments(
   shortId: string,
-  userId: string,
-  userName: string,
-  text: string,
-): Promise<{ id: string | null; success: boolean }> {
-  // Moderate content before insertion
-  const modCheck = await checkContentModeration(text);
-  if (modCheck.flagged) {
-    throw new Error(`This content could not be posted — it violates community guidelines (${modCheck.reason || 'moderation policy'}).`);
+  options?: { offset?: number; limit?: number },
+): Promise<ShortCommentsResponseDTO | null> {
+  if (!isValidUuid(shortId)) return null;
+  try {
+    addBreadcrumb('shorts', 'list_comments', { shortId });
+    return await apiClient.shorts.listComments(shortId, options);
+  } catch (err) {
+    captureException(err instanceof Error ? err : new Error(String(err)), {
+      op: 'list_short_comments',
+      shortId,
+    });
+    return null;
   }
-  if (!isValidUuid(shortId) || !isValidUuid(userId)) {
-    return { id: null, success: false };
-  }
+}
+
+export async function addShortComment(shortId: string, text: string): Promise<ShortCommentDTO> {
+  if (!isValidUuid(shortId)) throw new Error('A valid published short is required to comment.');
+  if (!text?.trim() || text.trim().length > 500) throw new Error('Comments must be between 1 and 500 characters.');
+
   try {
     addBreadcrumb('shorts', 'add_comment', { shortId });
-    const res = await fetch(`${API_BASE_URL}/api/v1/shorts/${shortId}/comments`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-user-id': userId,
-        ...telemetry.getTracingHeaders(),
-      },
-      body: JSON.stringify({ userId, userName, content: text }),
-    });
-    if (!res.ok) return { id: null, success: false };
-    const data = await res.json();
-    return { id: data.commentId || null, success: true };
+    const response = await apiClient.shorts.addComment(shortId, text);
+    if (!response.success || !response.comment) {
+      throw new Error('The server did not confirm that the comment was saved.');
+    }
+    return response.comment;
   } catch (err) {
-    captureException(err as Error, { op: 'add_short_comment', shortId });
-    return { id: null, success: false };
+    captureException(err instanceof Error ? err : new Error(String(err)), {
+      op: 'add_short_comment',
+      shortId,
+    });
+    throw err;
   }
 }
 
