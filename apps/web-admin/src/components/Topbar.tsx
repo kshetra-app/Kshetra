@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { api, type HealthResponse } from '../lib/api';
 import { supabase } from '../lib/supabase';
-import { Activity, RefreshCw, Shield, Globe, Terminal } from 'lucide-react';
+import { RefreshCw, Globe } from 'lucide-react';
 
 export function Topbar() {
   const [health, setHealth] = useState<HealthResponse | null>(null);
@@ -15,8 +15,8 @@ export function Topbar() {
     try {
       const data = await api.getHealth();
       setHealth(data);
-    } catch (err: any) {
-      setError(err.message || 'API Unreachable');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'API Unreachable');
     } finally {
       setLoading(false);
     }
@@ -25,13 +25,17 @@ export function Topbar() {
   useEffect(() => {
     checkHealth();
     const interval = setInterval(checkHealth, 30000);
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setAccountEmail(session?.user.email ?? '');
-    });
-    void supabase.auth.getSession().then(({ data }) => setAccountEmail(data.session?.user.email ?? ''));
+    let unsubscribe: (() => void) | undefined;
+    if (supabase) {
+      const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+        setAccountEmail(session?.user.email ?? '');
+      });
+      unsubscribe = () => listener.subscription.unsubscribe();
+      void supabase.auth.getSession().then(({ data }) => setAccountEmail(data.session?.user.email ?? ''));
+    }
     return () => {
       clearInterval(interval);
-      listener.subscription.unsubscribe();
+      unsubscribe?.();
     };
   }, []);
 
@@ -80,7 +84,7 @@ export function Topbar() {
             <div className="text-xs font-bold text-slate-200 leading-tight">{accountEmail || 'Signed-in account'}</div>
             <div className="text-[10px] text-slate-400 font-mono">Administrator access checked by API</div>
           </div>
-          <button onClick={() => void supabase.auth.signOut()} className="px-2.5 py-1.5 rounded-lg bg-slate-800 text-xs text-slate-300 hover:text-white">Sign out</button>
+          <button onClick={() => { if (supabase) void supabase.auth.signOut(); }} disabled={!supabase} className="px-2.5 py-1.5 rounded-lg bg-slate-800 text-xs text-slate-300 hover:text-white disabled:opacity-50">Sign out</button>
         </div>
       </div>
     </header>

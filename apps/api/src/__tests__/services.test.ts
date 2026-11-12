@@ -13,6 +13,7 @@ import {
   searchConstituencies,
 } from '../services/stateData';
 import { chatWithAI, smartSearch } from '../services/ai';
+import { DeterministicOfflineAIProvider } from '../services/aiProvider';
 
 describe('notifications service', () => {
   it('builds a message for every trigger type', () => {
@@ -100,7 +101,7 @@ describe('stateData service', () => {
   });
 });
 
-describe('ai service — deterministic offline fallback without a provider key', () => {
+describe('AI service reports unavailable when no provider key is configured', () => {
   const original = process.env.OPENAI_API_KEY;
   const originalGemini = process.env.GEMINI_API_KEY;
   beforeAll(() => {
@@ -112,12 +113,38 @@ describe('ai service — deterministic offline fallback without a provider key',
     if (originalGemini) process.env.GEMINI_API_KEY = originalGemini;
   });
 
-  it('chatWithAI uses the local deterministic fallback when no provider key is configured', async () => {
+  it('chatWithAI returns an unavailable notice when no provider key is configured', async () => {
     const res = await chatWithAI({ messages: [{ role: 'user', content: 'hi' }] });
-    expect(res.trim().length).toBeGreaterThan(0);
+    expect(res).toContain('unavailable');
   });
 
   it('smartSearch returns an empty list without a key', async () => {
     await expect(smartSearch('safest BRS seat')).resolves.toEqual([]);
+  });
+});
+
+describe('offline AI provider truthfulness', () => {
+  const provider = new DeterministicOfflineAIProvider();
+
+  it('returns an unavailable notice with no fabricated output or usage', async () => {
+    const result = await provider.generateCompletion({
+      messages: [{ role: 'user', content: 'Summarize this civic issue' }],
+      responseFormat: 'text',
+    });
+    expect(result.content).toContain('unavailable');
+    expect(result.content).not.toContain('verified records');
+    expect(result.usage).toEqual({ promptTokens: 0, completionTokens: 0, totalTokens: 0 });
+    expect(result.usageBasis).toBe('not_applicable');
+    expect(result.costBasis).toBe('unavailable');
+    expect(result.degradedOffline).toBe(true);
+  });
+
+  it('returns no fabricated payload for JSON requests', async () => {
+    const result = await provider.generateCompletion({
+      messages: [{ role: 'user', content: 'Classify this civic issue' }],
+      responseFormat: 'json',
+    });
+    expect(result.content).toBe('');
+    expect(result.usage.totalTokens).toBe(0);
   });
 });

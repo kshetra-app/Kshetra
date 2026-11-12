@@ -1,5 +1,5 @@
 import type { ConstituencyBrief } from '@kshetra/shared';
-import type { UnifiedConstituency } from '../lib/stateDataAdapter';
+import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '../lib/stateDataAdapter';
 import {
   mergeCanonicalConstituencies,
   validateConstituencyDirectoryResponse,
@@ -40,6 +40,26 @@ const databaseRecord: ConstituencyBrief = {
 };
 
 describe('constituency directory production truth', () => {
+  it('preserves verified post-election officeholder metadata for Uttar Pradesh by-elections', () => {
+    const seats = getUnifiedConstituenciesForState('UP');
+    const khatauli = seats.find((seat) => seat.acNo === 15);
+    const suar = seats.find((seat) => seat.acNo === 34);
+    const rampur = seats.find((seat) => seat.acNo === 37);
+
+    expect(khatauli).toMatchObject({
+      winnerParty: 'BJP',
+      currentParty: 'RLD',
+      currentMLA: 'Madan Bhaiya',
+      currentPartyChangeType: 'by-election',
+      byElection: { year: 2022, month: 'December', winnerParty: 'RLD' },
+      officeholderStatus: 'BY_ELECTION_SEATED',
+      dataStatus: 'BY_ELECTION_UPDATED',
+      termStatus: 'BY_ELECTION_SEATED',
+    });
+    expect(suar).toMatchObject({ currentParty: 'ADAL', currentMLA: 'Shafeek Ahmed Ansari', dataStatus: 'BY_ELECTION_UPDATED' });
+    expect(rampur).toMatchObject({ currentParty: 'BJP', currentMLA: 'Akash Saxena', dataStatus: 'BY_ELECTION_UPDATED' });
+  });
+
   it('uses canonical officeholder fields while removing bundled election assertions', () => {
     const [record] = mergeCanonicalConstituencies([seededGeography], [databaseRecord]);
 

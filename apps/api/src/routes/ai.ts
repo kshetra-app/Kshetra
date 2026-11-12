@@ -251,6 +251,11 @@ export async function aiRoutes(app: FastifyInstance) {
       });
       return reply.status(200).send(summary);
     } catch (err: unknown) {
+      if (err instanceof AIProviderUnavailableError) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', err.message, {
+          code: 'AI_PROVIDER_UNAVAILABLE',
+        });
+      }
       request.log.error({ err }, 'AI news summarization failed');
       return sendAIServiceError(reply, request, err, 'Failed to summarize news article');
     }
@@ -390,9 +395,7 @@ export async function aiRoutes(app: FastifyInstance) {
           ? process.env.OPENAI_MODEL || 'gpt-4o-mini'
           : primaryProvider === 'custom'
             ? process.env.CUSTOM_LLM_MODEL || null
-            : primaryProvider === 'offline_heuristic'
-              ? 'deterministic-offline-v1'
-              : null;
+            : null;
     return {
       activeChain: chain.map((p) => ({
         name: p.name,
@@ -616,13 +619,15 @@ export async function aiRoutes(app: FastifyInstance) {
   /** GET /api/v1/ai/status — check AI status */
   app.get('/api/v1/ai/status', async () => {
     const chain = defaultAIRegistry.getActiveChain();
-    const primary = chain[0];
+    const configuredProviders = chain.filter((provider) => provider.name !== 'offline_heuristic');
+    const primary = configuredProviders[0];
+    const offlineFallbackActive = !primary && chain.some((p) => p.name === 'offline_heuristic');
     return {
       configured: chain.some((provider) => provider.name !== 'offline_heuristic'),
       provider: primary?.name || null,
       model: (primary as { model?: string } | undefined)?.model || null,
       activeProviders: chain.map((p) => p.name),
-      degradedOffline: primary?.name === 'offline_heuristic',
+      degradedOffline: offlineFallbackActive,
       offlineFallbackEnabled: !isProductionLikeRuntime(),
     };
   });

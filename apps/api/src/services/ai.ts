@@ -58,7 +58,7 @@ export function buildConstituencyContext(acNo?: number, stateCode = 'TS'): strin
     const c = getRawConstituency('TS', acNo);
     if (!c) return '';
 
-    let ctx = `\n\n=== CONSTITUENCY CONTEXT: AC #${c.acNo} ${c.name} (TS) ===`;
+    let ctx = `\n\n=== BUNDLED REFERENCE DATA (source/date metadata may be incomplete): AC #${c.acNo} ${c.name} (TS) ===`;
     ctx += `\nDistrict: ${c.district} | Type: ${c.type}`;
     ctx += `\n2023 Winner: ${c.winnerName2023} (${c.winner2023}) — ${c.winnerVotes2023.toLocaleString()} votes`;
     ctx += `\nRunner-up: ${c.runnerUp2023} | Margin: ${c.margin2023.toLocaleString()} votes`;
@@ -102,7 +102,7 @@ export function buildConstituencyContext(acNo?: number, stateCode = 'TS'): strin
   const c = getConstituency(code, acNo);
   if (!c) return '';
 
-  let ctx = `\n\n=== CONSTITUENCY CONTEXT: AC #${c.acNo} ${c.name} (${code}) ===`;
+  let ctx = `\n\n=== BUNDLED REFERENCE DATA (source/date metadata may be incomplete): AC #${c.acNo} ${c.name} (${code}) ===`;
   ctx += `\nDistrict: ${c.district || 'Unassigned'} | Reservation: ${c.reservationStatus}`;
   ctx += `\nCurrent MLA: ${c.currentMLA || 'Not Recorded'} (${c.currentParty || 'Unspecified'})`;
   ctx +=

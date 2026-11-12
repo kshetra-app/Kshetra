@@ -29,14 +29,18 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
   let app: FastifyInstance;
   const originalSecret = process.env.RAZORPAY_KEY_SECRET;
   const originalKey = process.env.RAZORPAY_KEY_ID;
+  const originalSupabaseConfigured = isSupabaseConfigured;
 
   beforeAll(async () => {
+    // These provider tests exercise the in-memory order registry. The CI Supabase
+    // URL is only a credential-shape fixture and must never receive test requests.
+    setSupabaseConfiguredForTesting(false);
     app = await buildApp();
   });
 
   afterAll(async () => {
     resetPagesTestResolvers();
-    setSupabaseConfiguredForTesting(false);
+    setSupabaseConfiguredForTesting(originalSupabaseConfigured);
     process.env.RAZORPAY_KEY_SECRET = originalSecret;
     process.env.RAZORPAY_KEY_ID = originalKey;
     await app.close();

@@ -1,6 +1,6 @@
 import Fastify, { type FastifyInstance } from 'fastify';
 import { politicalAdsRoutes } from '../routes/politicalAds';
-import { supabase } from '../lib/supabase';
+import { publicSupabase } from '../lib/supabase';
 
 type QueryResult = {
   data: Array<Record<string, unknown>> | null;
@@ -22,6 +22,7 @@ describe('political ad public reads use persisted, public records in production'
   const originalEnv = {
     nodeEnv: process.env.NODE_ENV,
     appEnv: process.env.APP_ENV,
+    publicLibraryEnabled: process.env.POLITICAL_AD_PUBLIC_LIBRARY_ENABLED,
   };
 
   beforeAll(async () => {
@@ -37,6 +38,7 @@ describe('political ad public reads use persisted, public records in production'
   beforeEach(() => {
     process.env.NODE_ENV = 'test';
     process.env.APP_ENV = 'production';
+    process.env.POLITICAL_AD_PUBLIC_LIBRARY_ENABLED = 'true';
   });
 
   afterEach(() => {
@@ -45,6 +47,11 @@ describe('political ad public reads use persisted, public records in production'
     else process.env.NODE_ENV = originalEnv.nodeEnv;
     if (originalEnv.appEnv === undefined) delete process.env.APP_ENV;
     else process.env.APP_ENV = originalEnv.appEnv;
+    if (originalEnv.publicLibraryEnabled === undefined) {
+      delete process.env.POLITICAL_AD_PUBLIC_LIBRARY_ENABLED;
+    } else {
+      process.env.POLITICAL_AD_PUBLIC_LIBRARY_ENABLED = originalEnv.publicLibraryEnabled;
+    }
   });
 
   const pageId = '9d87a7f4-44f2-4d04-9072-e64b01cf41a7';
@@ -64,7 +71,7 @@ describe('political ad public reads use persisted, public records in production'
 
   it('returns actual active and ended library rows with server-side pagination and filters', async () => {
     const query = createQuery({ data: [persistedAd], error: null, count: 1 });
-    const fromSpy = jest.spyOn(supabase, 'from').mockReturnValue(query);
+    const fromSpy = jest.spyOn(publicSupabase, 'from').mockReturnValue(query);
 
     const response = await app.inject({
       method: 'GET',
@@ -88,7 +95,7 @@ describe('political ad public reads use persisted, public records in production'
 
   it('returns only active records from the serving-list endpoint and applies constituency scope', async () => {
     const query = createQuery({ data: [persistedAd], error: null, count: 1 });
-    jest.spyOn(supabase, 'from').mockReturnValue(query);
+    jest.spyOn(publicSupabase, 'from').mockReturnValue(query);
 
     const response = await app.inject({
       method: 'GET',
@@ -105,7 +112,7 @@ describe('political ad public reads use persisted, public records in production'
 
   it('uses exact matching for UUID page searches instead of applying text matching to a UUID column', async () => {
     const query = createQuery({ data: [persistedAd], error: null, count: 1 });
-    jest.spyOn(supabase, 'from').mockReturnValue(query);
+    jest.spyOn(publicSupabase, 'from').mockReturnValue(query);
 
     const response = await app.inject({
       method: 'GET',
@@ -123,7 +130,7 @@ describe('political ad public reads use persisted, public records in production'
       error: new Error('private connection detail'),
       count: null,
     });
-    jest.spyOn(supabase, 'from').mockReturnValue(query);
+    jest.spyOn(publicSupabase, 'from').mockReturnValue(query);
 
     const response = await app.inject({ method: 'GET', url: '/api/v1/political-ads/library' });
     const payload = JSON.parse(response.payload);
@@ -139,7 +146,7 @@ describe('political ad public reads use persisted, public records in production'
       error: null,
       count: 1,
     });
-    jest.spyOn(supabase, 'from').mockReturnValue(query);
+    jest.spyOn(publicSupabase, 'from').mockReturnValue(query);
 
     const response = await app.inject({ method: 'GET', url: '/political-ads/library/view' });
 
@@ -153,7 +160,7 @@ describe('political ad public reads use persisted, public records in production'
 
   it('supports bounded pagination in the HTML library', async () => {
     const query = createQuery({ data: [persistedAd], error: null, count: 21 });
-    jest.spyOn(supabase, 'from').mockReturnValue(query);
+    jest.spyOn(publicSupabase, 'from').mockReturnValue(query);
 
     const response = await app.inject({
       method: 'GET',

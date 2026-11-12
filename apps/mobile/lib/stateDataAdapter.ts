@@ -93,6 +93,8 @@ export interface UnifiedConstituency {
   margin: number | null;
   /** Current verified party of sitting representative */
   currentParty: string;
+  /** Classifies the recorded post-election party change when known. */
+  currentPartyChangeType?: 'defection' | 'by-election';
   /** Current sitting representative name */
   currentMLA?: string;
   /** Year of the verified general election result data */
@@ -258,6 +260,11 @@ function getSeedUnifiedConstituenciesForState(stateCode: string): UnifiedConstit
           runnerUpName: c.runnerUpName2023 ?? '',
           margin: c.margin2023,
           currentParty: isVacant ? '' : c.currentParty ?? c.winner2023,
+          currentPartyChangeType: byElection
+            ? 'by-election'
+            : c.currentParty && c.currentParty !== c.winner2023
+              ? 'defection'
+              : undefined,
           currentMLA: isVacant ? undefined : c.currentMemberName ?? c.winnerName2023,
           electionYear: 2023,
           byElection,
@@ -432,6 +439,19 @@ function getSeedUnifiedConstituenciesForState(stateCode: string): UnifiedConstit
       });
     case 'UP':
       return UP_CONSTITUENCIES.map((c) => ({
+        ...(c.byElection
+          ? {
+              byElection: c.byElection,
+              currentPartyChangeType: 'by-election' as const,
+              officeholderStatus: 'BY_ELECTION_SEATED' as const,
+              dataStatus: 'BY_ELECTION_UPDATED' as const,
+              termStatus: 'BY_ELECTION_SEATED',
+            }
+          : {
+              officeholderStatus: 'INCUMBENT_ACTIVE' as const,
+              dataStatus: 'CURRENT' as const,
+              termStatus: 'ACTIVE',
+            }),
         acNo: c.acNo,
         name: c.name,
         district: c.district,
@@ -443,11 +463,10 @@ function getSeedUnifiedConstituenciesForState(stateCode: string): UnifiedConstit
         runnerUp: c.runnerUp2022,
         margin: c.margin2022,
         currentParty: c.currentParty ?? c.winner2022,
+        currentMLA: c.currentMemberName ?? c.winnerName2022,
         electionYear: 2022,
         localName: (c as any).localName || (c as any).local_name || (c as any).nameHi,
-        dataStatus: 'CURRENT',
         isStale: false,
-        termStatus: 'ACTIVE',
       }));
 
     // ─── Auto-generated states (generic adapter) ───────────────────

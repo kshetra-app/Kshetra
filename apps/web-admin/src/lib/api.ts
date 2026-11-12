@@ -4,9 +4,13 @@ import type {
   DelimitationProjectionsDTO,
   ProductDashboardMetricsDTO,
 } from '@kshetra/shared';
+import { DEFAULT_FEATURE_FLAGS } from '@kshetra/shared';
 import { supabase } from './supabase';
 
 async function authenticatedHeaders(): Promise<Record<string, string>> {
+  if (!supabase) {
+    throw new Error('Secure admin authentication is not configured for this web-admin environment.');
+  }
   const { data, error } = await supabase.auth.getSession();
   if (error) throw new Error('Unable to read the current admin session.');
   const token = data.session?.access_token;
@@ -23,8 +27,27 @@ export interface HealthResponse {
 }
 
 export interface FlagResponse {
+  status: string;
   flags: AppFeatureFlags;
   updatedAt?: string;
+}
+
+function parseFlags(payload: unknown): AppFeatureFlags {
+  const candidate = payload && typeof payload === 'object' && 'flags' in payload
+    ? (payload as { flags?: unknown }).flags
+    : payload;
+  if (!candidate || typeof candidate !== 'object' || Array.isArray(candidate)) {
+    throw new Error('The feature flag API returned an incomplete response.');
+  }
+  const flags = candidate as Record<string, unknown>;
+  const validated: AppFeatureFlags = { ...DEFAULT_FEATURE_FLAGS };
+  for (const key of Object.keys(DEFAULT_FEATURE_FLAGS) as Array<keyof AppFeatureFlags>) {
+    if (typeof flags[key] !== 'boolean') {
+      throw new Error(`The feature flag API returned an invalid value for ${key}.`);
+    }
+    validated[key] = flags[key];
+  }
+  return validated;
 }
 
 export const api = {
@@ -37,8 +60,7 @@ export const api = {
   async getFlags(): Promise<AppFeatureFlags> {
     const res = await fetch(`${API_BASE_URL}/api/v1/config/flags`);
     if (!res.ok) throw new Error(`Failed to fetch flags: ${res.status}`);
-    const data = await res.json();
-    return data.flags || data;
+    return parseFlags(await res.json());
   },
 
   async getProductDashboardMetrics(): Promise<ProductDashboardMetricsDTO> {
@@ -61,7 +83,7 @@ export const api = {
     return payload as ProductDashboardMetricsDTO;
   },
 
-  async updateFlags(flags: Partial<AppFeatureFlags>): Promise<{ success: boolean }> {
+  async updateFlags(flags: Partial<AppFeatureFlags>): Promise<FlagResponse> {
     const headers = await authenticatedHeaders();
     const res = await fetch(`${API_BASE_URL}/api/v1/config/flags`, {
       method: 'PATCH',
@@ -69,7 +91,18 @@ export const api = {
       body: JSON.stringify(flags),
     });
     if (!res.ok) throw new Error(`Failed to update flags: ${res.status}`);
-    return { success: true };
+    const payload: unknown = await res.json();
+    if (!payload || typeof payload !== 'object' || !('status' in payload) || payload.status !== 'updated') {
+      throw new Error('The API did not confirm that the feature flag update was saved.');
+    }
+    const parsedFlags = parseFlags(payload);
+    return {
+      status: 'updated',
+      flags: parsedFlags,
+      ...('updatedAt' in payload && typeof payload.updatedAt === 'string'
+        ? { updatedAt: payload.updatedAt }
+        : {}),
+    };
   },
 
   async getConstituencies(stateCode: string = 'TS') {
@@ -144,6 +177,9 @@ export const api = {
     reason: string;
   }) {
     const headers = await authenticatedHeaders();
+    if (!supabase) {
+      throw new Error('Secure admin authentication is not configured for this web-admin environment.');
+    }
     const { data } = await supabase.auth.getSession();
     const moderatorId = data.session?.user.id;
     if (!moderatorId) throw new Error('Sign in with an authorized account to perform this action.');

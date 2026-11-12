@@ -425,6 +425,17 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       );
     }
 
+    if (isProductionLikeRuntime()) {
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Page Pro checkout is unavailable until orders are created through the verified payment provider',
+        { code: 'PAYMENT_PROVIDER_UNAVAILABLE' },
+      );
+    }
+
     const billingCycle = request.body?.billingCycle === 'annual' ? 'annual' : 'monthly';
     const amount = billingCycle === 'annual' ? 499900 : 49900; // ₹4,999 or ₹499 in paise
     if (request.body?.amount !== undefined && request.body.amount !== amount) {

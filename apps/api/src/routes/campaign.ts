@@ -781,8 +781,8 @@ const SEED_VOLUNTEERS = [
   },
 ];
 
-let inMemoryBooths = [...SEED_BOOTHS];
-let inMemoryVolunteers = [...SEED_VOLUNTEERS];
+let inMemoryBooths = isProductionRuntime() ? [] : [...SEED_BOOTHS];
+let inMemoryVolunteers = isProductionRuntime() ? [] : [...SEED_VOLUNTEERS];
 
 const SEED_CAMPAIGNS = [
   {
@@ -805,7 +805,7 @@ const SEED_CAMPAIGNS = [
   },
 ];
 
-let inMemoryCampaigns = [...SEED_CAMPAIGNS];
+let inMemoryCampaigns = isProductionRuntime() ? [] : [...SEED_CAMPAIGNS];
 
 interface PendingRechargeOrder {
   orderId: string;
@@ -1003,6 +1003,16 @@ export async function campaignRoutes(app: FastifyInstance) {
    * Admin-only endpoint to update service pricing on the fly.
    */
   app.patch('/api/v1/campaign/pricing', { schema: pricingPatchSchema }, async (request, reply) => {
+    if (isProductionRuntime()) {
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Campaign pricing updates are disabled until persistent configuration and audit logging are connected',
+        { code: 'CAMPAIGN_PRICING_UNAVAILABLE' },
+      );
+    }
     const auth = await resolveAuthUser(request);
     if (!auth) {
       return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', {
@@ -1148,24 +1158,60 @@ export async function campaignRoutes(app: FastifyInstance) {
 
       if (isSupabaseConfigured) {
         try {
-          const { data } = await supabase
+          const { data, error } = await supabase
             .from('user_profiles')
             .select('user_id, display_name, avatar_url, role')
             .eq('phone', cleaned)
             .maybeSingle();
 
-          if (data) {
+          if (isProductionRuntime() && error) {
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'User directory lookup failed',
+              { code: 'DATABASE_ERROR' },
+            );
+          }
+
+          if (data || isProductionRuntime()) {
             return {
-              isKshetraUser: true,
-              userId: data.user_id,
-              displayName: data.display_name,
-              avatarUrl: data.avatar_url,
-              role: data.role,
+              isKshetraUser: Boolean(data),
+              ...(data
+                ? {
+                    userId: data.user_id,
+                    displayName: data.display_name,
+                    avatarUrl: data.avatar_url,
+                    role: data.role,
+                  }
+                : {}),
             };
           }
         } catch {
+          if (isProductionRuntime()) {
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'User directory lookup failed',
+              { code: 'DATABASE_ERROR' },
+            );
+          }
           // fall back to mock check
         }
+      }
+
+      if (isProductionRuntime()) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'User directory lookup is unavailable',
+          { code: 'DATABASE_UNAVAILABLE' },
+        );
       }
 
       // Check in-memory volunteers/cadre
@@ -1956,6 +2002,16 @@ export async function campaignRoutes(app: FastifyInstance) {
           );
         }
       } catch (err: any) {
+        if (isProductionRuntime() && err?.message?.includes('PROVIDER_NOT_IMPLEMENTED')) {
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Payment provider order creation is not connected; no charge was initiated',
+            { code: 'PAYMENT_PROVIDER_UNAVAILABLE' },
+          );
+        }
         return sendApiError(
           reply,
           request,
@@ -2804,6 +2860,17 @@ export async function campaignRoutes(app: FastifyInstance) {
         razorpay_signature?: string;
       };
 
+      if (isProductionRuntime() && !isSupabaseConfigured) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Durable wallet storage is unavailable; payment verification is disabled',
+          { code: 'WALLET_UNAVAILABLE' },
+        );
+      }
+
       if (!body.amountINR || !body.paymentReference) {
         return sendApiError(
           reply,
@@ -3227,6 +3294,16 @@ export async function campaignRoutes(app: FastifyInstance) {
     '/api/v1/campaign/obd/dispatch',
     { schema: obdDispatchSchema },
     async (request, reply) => {
+      if (isProductionRuntime()) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Voice outreach is disabled until wallet debits, audience targeting, provider delivery, and delivery reporting are fully verified',
+          { code: 'VOICE_OUTREACH_UNAVAILABLE' },
+        );
+      }
       const body = request.body as {
         campaignId?: string;
         politicianId?: string;

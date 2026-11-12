@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import { useResponsive } from '../../lib/responsive';
 import { useTheme } from '../../lib/theme';
-import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import { useCampaignStore } from '../../stores/campaign';
+import { IS_PRODUCTION, IS_STAGING } from '../../lib/environment';
 
 import GrassrootsOverview from '../../components/campaign/GrassrootsOverview';
 import SimplifiedOutreach from '../../components/campaign/SimplifiedOutreach';
@@ -16,6 +16,8 @@ import CampaignAds from '../../components/campaign/CampaignAds';
 import CreateCampaignModal from '../../components/campaign/CreateCampaignModal';
 
 export type MainCampaignTab = 'overview' | 'outreach' | 'booths' | 'workers' | 'ads';
+
+const IS_LIVE_ENVIRONMENT = IS_PRODUCTION || IS_STAGING;
 
 interface TabItem {
   key: MainCampaignTab;
@@ -172,5 +174,23 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  unavailableCard: {
+    margin: 20,
+    padding: 20,
+    borderWidth: 1,
+    borderRadius: 16,
+    alignItems: 'center',
+    gap: 12,
+  },
+  unavailableTitle: {
+    fontSize: 17,
+    fontWeight: '800',
+    textAlign: 'center',
+  },
+  unavailableBody: {
+    fontSize: 14,
+    lineHeight: 21,
+    textAlign: 'center',
   },
 });

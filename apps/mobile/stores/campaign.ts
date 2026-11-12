@@ -534,7 +534,7 @@ interface CampaignState {
   getBoothsForCampaign: (campaignId: string) => BoothStrategy[];
   getCriticalBooths: (campaignId: string) => BoothStrategy[];
   getABTestsForCampaign: (campaignId: string) => ABTest[];
-  getCampaignAnalytics: (campaignId: string) => CampaignAnalytics;
+  getCampaignAnalytics: (campaignId: string) => CampaignAnalytics | null;
   getRevenueFlow: () => RevenueFlowData | null;
 
   // Actions
@@ -1189,6 +1189,8 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
       }
     }
 
+    if (IS_LIVE_ENVIRONMENT) return { isKshetraUser: false };
+
     // Default: If phone starts with 9848 or 9849, treat as active demo Poligram user
     const isMockRegistered = cleaned.startsWith('9848') || cleaned.startsWith('9876');
     return { isKshetraUser: isMockRegistered, displayName: isMockRegistered ? 'Verified Poligram User' : undefined };
@@ -1374,6 +1376,10 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
 
   getCampaignAnalytics: (campaignId) => {
     const campaign = get().getCampaign(campaignId);
+    // Live analytics may be derived from persisted API records, but never from
+    // demo state. If the selected campaign was not loaded from the API, keep
+    // the whole report unavailable instead of returning seed or empty metrics.
+    if (IS_LIVE_ENVIRONMENT && !campaign) return null;
     const ads = get().getAdsForCampaign(campaignId);
     const vols = get().getVolunteersForCampaign(campaignId);
     const booths = get().getBoothsForCampaign(campaignId);

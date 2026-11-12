@@ -60,10 +60,12 @@ describe('Environment Configuration & Resolution', () => {
     expect(prodConfig.isProduction).toBe(true);
     expect(prodConfig.isStaging).toBe(false);
     expect(prodConfig.environment).toBe('production');
+    expect(prodConfig.apiBaseUrl).toBe('https://kshetra-api-production-b802.up.railway.app');
 
     const stageConfig = getEnvironmentConfig('staging');
     expect(stageConfig.isStaging).toBe(true);
     expect(stageConfig.isProduction).toBe(false);
+    expect(stageConfig.apiBaseUrl).toBe('https://kshetra-api-staging.up.railway.app');
 
     const devConfig = getEnvironmentConfig('development');
     expect(devConfig.isDevelopment).toBe(true);

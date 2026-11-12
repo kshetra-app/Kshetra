@@ -85,9 +85,12 @@ export async function executeAICompletion(
     throw error;
   }
 
-  // The local deterministic fallback has no provider charge. A real provider
-  // response with missing usage/cost stays unknown and closes future spend use.
-  const budgetCost = response.costUsd ?? (response.costBasis === 'offline_demo' ? 0 : null);
+  // No provider was called for an unavailable fallback, so it adds no billable
+  // usage. Real provider responses with missing cost remain unknown.
+  const budgetCost =
+    response.usageBasis === 'not_applicable'
+      ? 0
+      : (response.costUsd ?? (response.costBasis === 'offline_demo' ? 0 : null));
   await recordUsageAndLedger(
     {
       tenantId,

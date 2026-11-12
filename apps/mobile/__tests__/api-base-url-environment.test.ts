@@ -9,7 +9,7 @@ describe('mobile API host environment resolution', () => {
 
   it('uses production for production builds when no explicit API host is supplied', () => {
     expect(resolveApiBaseUrl(undefined, 'production')).toBe(
-      'https://kshetra-api-production-9f06.up.railway.app',
+      'https://kshetra-api-production-b802.up.railway.app',
     );
   });
 

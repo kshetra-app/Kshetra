@@ -601,7 +601,7 @@ describe('W016-C3-R10: Mobile Canonical Spatial Consumer', () => {
     });
 
     test('Rule 5: Network timeout / connection failure -> DOES NOT invoke legacy fallback, returns OFFLINE with provenance NONE', async () => {
-      mockFetch.mockRejectedValueOnce(new TypeError('Network request failed'));
+      mockFetch.mockRejectedValue(new TypeError('Network request failed'));
 
       const legacyFallbackSpy = jest.fn().mockReturnValue(mockLegacyAc);
 

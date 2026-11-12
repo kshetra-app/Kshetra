@@ -49,7 +49,7 @@ export const ENVIRONMENT_CONFIGS: Record<Environment, EnvironmentConfig> = {
     isProduction: true,
     isStaging: false,
     isDevelopment: false,
-    apiBaseUrl: 'https://kshetra-api-production-9f06.up.railway.app',
+    apiBaseUrl: 'https://kshetra-api-production-b802.up.railway.app',
     supabaseUrl: 'https://ehfafcnimmjusyvplbah.supabase.co',
     allowedOrigins: [
       'https://poligram.in',

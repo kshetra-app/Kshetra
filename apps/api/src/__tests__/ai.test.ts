@@ -43,8 +43,10 @@ describe('AI Routes', () => {
         expect(body).toHaveProperty('configured');
         expect(body).toHaveProperty('model');
         expect(body.configured).toBe(false);
-        expect(body.provider).toBe('offline_heuristic');
-        expect(body.model).toBe('deterministic-offline-v1');
+        expect(body.provider).toBeNull();
+        expect(body.model).toBeNull();
+        expect(body.activeProviders).toContain('offline_heuristic');
+        expect(body.degradedOffline).toBe(true);
         expect(typeof body.configured).toBe('boolean');
       } finally {
         for (const [key, value] of Object.entries(original)) {

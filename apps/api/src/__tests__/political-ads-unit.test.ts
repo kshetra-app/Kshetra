@@ -1,6 +1,6 @@
 import Fastify, { type FastifyInstance } from 'fastify';
 import { politicalAdsRoutes } from '../routes/politicalAds';
-import { supabase } from '../lib/supabase';
+import { publicSupabase } from '../lib/supabase';
 
 describe('Political advertising routes', () => {
   let app: FastifyInstance;
@@ -99,6 +99,7 @@ describe('Political advertising routes', () => {
 
   it('fails closed without exposing details when persisted public ad storage is unavailable', async () => {
     const originalNodeEnv = process.env.NODE_ENV;
+    const originalPublicLibraryEnabled = process.env.POLITICAL_AD_PUBLIC_LIBRARY_ENABLED;
     const query: any = {
       select: () => query,
       in: () => query,
@@ -110,8 +111,9 @@ describe('Political advertising routes', () => {
         count: null,
       }),
     };
-    const fromSpy = jest.spyOn(supabase, 'from').mockReturnValue(query);
+    const fromSpy = jest.spyOn(publicSupabase, 'from').mockReturnValue(query);
     process.env.NODE_ENV = 'production';
+    process.env.POLITICAL_AD_PUBLIC_LIBRARY_ENABLED = 'true';
     try {
       const res = await app.inject({ method: 'GET', url: '/api/v1/political-ads/active' });
 
@@ -121,6 +123,11 @@ describe('Political advertising routes', () => {
       fromSpy.mockRestore();
       if (originalNodeEnv === undefined) delete process.env.NODE_ENV;
       else process.env.NODE_ENV = originalNodeEnv;
+      if (originalPublicLibraryEnabled === undefined) {
+        delete process.env.POLITICAL_AD_PUBLIC_LIBRARY_ENABLED;
+      } else {
+        process.env.POLITICAL_AD_PUBLIC_LIBRARY_ENABLED = originalPublicLibraryEnabled;
+      }
     }
   });
 });

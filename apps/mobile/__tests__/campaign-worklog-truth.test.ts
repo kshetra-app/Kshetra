@@ -117,7 +117,7 @@ describe('campaign work-log metric truthfulness', () => {
     const state = store.getState();
     expect(state.volunteers[0].hoursLogged).toBeNull();
     expect(state.volunteers[1].hoursLogged).toBe(1.5);
-    expect(state.getCampaignAnalytics('campaign-1').volunteerMetrics?.totalHours).toBeNull();
+    expect(state.getCampaignAnalytics('campaign-1')!.volunteerMetrics?.totalHours).toBeNull();
   });
 
   it('keeps zero hours distinct from unavailable hours when the roster is empty', () => {
@@ -129,9 +129,9 @@ describe('campaign work-log metric truthfulness', () => {
       volunteerWorkLogsAvailable: false,
     });
 
-    expect(store.getState().getCampaignAnalytics('campaign-1').volunteerMetrics?.totalHours).toBeNull();
+    expect(store.getState().getCampaignAnalytics('campaign-1')!.volunteerMetrics?.totalHours).toBeNull();
 
     store.setState({ volunteerWorkLogsAvailable: true });
-    expect(store.getState().getCampaignAnalytics('campaign-1').volunteerMetrics?.totalHours).toBe(0);
+    expect(store.getState().getCampaignAnalytics('campaign-1')!.volunteerMetrics?.totalHours).toBe(0);
   });
 });

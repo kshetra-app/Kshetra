@@ -1,4 +1,4 @@
-import { isValidSupabaseKey } from '../lib/supabase';
+import { isPublicSupabaseAnonKey, isValidSupabaseKey } from '../lib/supabase';
 
 describe('Supabase Authentication Key Validation (DEF-009)', () => {
   const legacyJwt =
@@ -36,5 +36,16 @@ describe('Supabase Authentication Key Validation (DEF-009)', () => {
     expect(isValidSupabaseKey(invalidKey, 'anon')).toBe(false);
     expect(isValidSupabaseKey('', 'service')).toBe(false);
     expect(isValidSupabaseKey('   ', 'service')).toBe(false);
+  });
+
+  test('public reads reject service-role keys even when supplied as the anon key', () => {
+    const anonJwt = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${Buffer.from(
+      JSON.stringify({ role: 'anon' }),
+    ).toString('base64url')}.signature`;
+
+    expect(isPublicSupabaseAnonKey(anonJwt)).toBe(true);
+    expect(isPublicSupabaseAnonKey(legacyJwt)).toBe(false);
+    expect(isPublicSupabaseAnonKey(modernSecretKey)).toBe(false);
+    expect(isPublicSupabaseAnonKey(modernPublishableKey)).toBe(true);
   });
 });

@@ -103,3 +103,20 @@ export function SystemHealth() {
     </div>
   );
 }
+
+type ProbeState = 'pending' | 'ok' | 'error';
+type EndpointDefinition = { name: string; path: string };
+type EndpointProbe = EndpointDefinition & {
+  state: ProbeState;
+  statusCode: number | null;
+  latencyMs: number | null;
+  connected: boolean | null;
+};
+
+const ENDPOINTS: EndpointDefinition[] = [
+  { name: 'Core health', path: '/api/health' },
+  { name: 'Database readiness', path: '/api/health/db' },
+  { name: 'Feature configuration', path: '/api/v1/config/flags' },
+  { name: 'Telangana constituencies', path: '/api/v1/states/TS/constituencies' },
+  { name: 'Delimitation scenarios', path: '/api/v1/delimitation/scenarios/TS' },
+];

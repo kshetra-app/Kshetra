@@ -9,6 +9,12 @@ import {
 } from '../telangana-mla-profiles';
 import { TELANGANA_CONSTITUENCIES } from '../telangana-constituencies';
 
+const normalizeCandidateName = (name: string) =>
+  name
+    .toLocaleLowerCase('en')
+    .replace(/^(?:dr|shri|smt|sri)\b\.?\s*/i, '')
+    .replace(/[^a-z0-9]/g, '');
+
 describe('MLA Profiles — Coverage', () => {
   it('should have exactly 119 profiles', () => {
     expect(TELANGANA_MLA_PROFILES.length).toBe(119);
@@ -31,11 +37,10 @@ describe('MLA Profiles — Coverage', () => {
 
 describe('MLA Profiles — Consistency with Constituencies', () => {
   it('every MLA profile should link to a known constituency', () => {
-    TELANGANA_MLA_PROFILES.forEach((profile) => {
-      const constituency = TELANGANA_CONSTITUENCIES.find((c) => c.acNo === profile.acNo);
-      expect(constituency).toBeDefined();
-      expect(profile.name).toBeTruthy();
-    });
+    const mismatches = TELANGANA_MLA_PROFILES.filter(
+      (profile) => !TELANGANA_CONSTITUENCIES.some((c) => c.acNo === profile.acNo),
+    ).map((profile) => ({ acNo: profile.acNo, name: profile.name }));
+    expect(mismatches).toEqual([]);
   });
 
   it('every current MLA profile party should match the sitting constituency data', () => {

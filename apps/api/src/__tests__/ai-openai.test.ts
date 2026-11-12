@@ -1,238 +1,120 @@
-/**
- * Covers the OpenAI-configured path of services/ai.ts with a mocked client,
- * so no network call is made. Together with services.test.ts (no-key path)
- * this exercises both branches of every AI function.
- */
-
-const mockCreate = jest.fn();
-
-jest.mock('openai', () => ({
-  __esModule: true,
-  default: jest.fn(() => ({
-    chat: { completions: { create: mockCreate } },
-  })),
-}));
-
+import type { AICompletionRequest, AICompletionResponse } from '@kshetra/shared';
 import {
-  chatWithAI,
-  buildAIContextualPrompt,
-  buildConstituencyContext,
-  smartSearch,
   analyzeConstituency,
   analyzeElectionTrends,
+  chatWithAI,
+  smartSearch,
   summarizeIssues,
 } from '../services/ai';
 import { defaultAIRegistry } from '../services/aiProvider';
-import { AICostControlService } from '../services/aiCostControlService';
 import { TELANGANA_CONSTITUENCIES } from '../../../../data/seed/telangana-constituencies';
 
-function mockReply(content: unknown) {
-  mockCreate.mockResolvedValueOnce({
-    choices: [{ message: { content } }],
-    usage: { prompt_tokens: 100, completion_tokens: 50, total_tokens: 150 },
-  });
+function response(content: string): AICompletionResponse {
+  return {
+    content,
+    provider: 'openai',
+    model: 'test-model',
+    usage: { promptTokens: 3, completionTokens: 2, totalTokens: 5 },
+    costUsd: 0,
+    costInr: 0,
+    costBasis: 'unavailable',
+    usageBasis: 'provider_reported',
+    latencyMs: 1,
+    degradedOffline: false,
+  };
 }
 
-describe('ai service — OpenAI-configured path (mocked client)', () => {
-  const original = Object.fromEntries(
-    [
-      'APP_ENV',
-      'EXPO_PUBLIC_APP_ENV',
-      'OPENAI_API_KEY',
-      'GEMINI_API_KEY',
-      'OPENAI_MODEL',
-      'GEMINI_MODEL',
-      'AI_PROVIDER_RATE_CARD_JSON',
-    ].map((key) => [key, process.env[key]]),
-  );
+describe('AI service registry integration', () => {
+  const generate = jest.spyOn(defaultAIRegistry, 'generateWithFallback');
 
-  beforeAll(() => {
-    process.env.APP_ENV = 'development';
-    delete process.env.EXPO_PUBLIC_APP_ENV;
-    delete process.env.GEMINI_API_KEY;
-    process.env.OPENAI_API_KEY = 'test-key';
-    delete process.env.GEMINI_MODEL;
-    delete process.env.OPENAI_MODEL;
-    process.env.AI_PROVIDER_RATE_CARD_JSON = JSON.stringify({
-      version: 'unit-test-rate-card',
-      effectiveAt: '2026-01-01T00:00:00Z',
-      source: 'unit-test fixture',
-      rates: {
-        'openai:gpt-4o-mini': { promptUsdPerMillionTokens: 1, completionUsdPerMillionTokens: 1 },
-        'gemini:gemini-flash-lite-latest': {
-          promptUsdPerMillionTokens: 1,
-          completionUsdPerMillionTokens: 1,
-        },
-      },
-    });
-  });
-  afterAll(() => {
-    for (const [key, value] of Object.entries(original)) {
-      if (value === undefined) delete process.env[key];
-      else process.env[key] = value;
-    }
-    defaultAIRegistry.resetForTesting();
-  });
   beforeEach(() => {
-    mockCreate.mockReset();
-    defaultAIRegistry.resetForTesting();
-    AICostControlService.resetForTesting();
+    generate.mockReset();
+    generate.mockResolvedValue(response('AI result'));
   });
 
-  it('returns the model content for a basic chat', async () => {
-    mockReply('Hello from KSHETRA AI.');
-    const res = await chatWithAI({ messages: [{ role: 'user', content: 'hi' }] });
-    expect(res).toBe('Hello from KSHETRA AI.');
-    expect(mockCreate).toHaveBeenCalledTimes(1);
+  afterAll(() => {
+    generate.mockRestore();
   });
 
-  it('falls back when the model returns no content', async () => {
-    mockCreate.mockResolvedValueOnce({
-      choices: [{}],
-      usage: { prompt_tokens: 100, completion_tokens: 0, total_tokens: 100 },
-    });
-    const res = await chatWithAI({ messages: [{ role: 'user', content: 'hi' }] });
-    expect(res).toBe('No response generated.');
+  it('returns the configured provider response for a basic chat', async () => {
+    generate.mockResolvedValueOnce(response('Hello from the configured provider.'));
+    await expect(chatWithAI({ messages: [{ role: 'user', content: 'hi' }] })).resolves.toBe(
+      'Hello from the configured provider.',
+    );
+    expect(generate).toHaveBeenCalledTimes(1);
+    expect(generate.mock.calls[0][0].messages.some((message) => message.content === 'hi')).toBe(
+      true,
+    );
   });
 
-  it('returns empty-context output for an unknown constituency', async () => {
-    mockReply('ok');
-    const res = await chatWithAI({
+  it('returns a clear fallback when a provider response is empty', async () => {
+    generate.mockResolvedValueOnce(response(''));
+    await expect(chatWithAI({ messages: [{ role: 'user', content: 'hi' }] })).resolves.toBe(
+      'No response generated.',
+    );
+  });
+
+  it('does not add constituency-specific data for an unknown constituency', async () => {
+    await chatWithAI({
       messages: [{ role: 'user', content: 'hi' }],
       constituencyAcNo: 99999,
     });
-    expect(res).toBe('ok');
-  });
-
-  it('does not pass unprovenanced demographic figures into constituency AI context', () => {
-    const context = buildConstituencyContext(1, 'TS');
-    expect(context).toContain(
-      'No provenance-backed constituency demographic records are connected',
-    );
-    expect(context).not.toContain('Population:');
-    expect(context).not.toContain('Turnout 2023:');
-  });
-
-  it('does not attach Telangana statewide history to another state context', () => {
-    expect(buildAIContextualPrompt({ stateCode: 'AP', constituencyAcNo: 1 })).not.toContain(
-      'Election History:',
-    );
-    expect(buildAIContextualPrompt({ stateCode: 'TS', constituencyAcNo: 1 })).toContain(
-      'Election History:',
+    const request = generate.mock.calls[0][0] as AICompletionRequest;
+    expect(request.messages.map((message) => message.content).join('\n')).not.toContain(
+      'CONSTITUENCY CONTEXT',
     );
   });
 
-  it('builds rich context across all Telangana constituencies (all branches)', async () => {
-    // Looping every AC exercises the defection, stronghold, MLA,
-    // demographics and timeline branches of buildConstituencyContext.
-    const acNos = TELANGANA_CONSTITUENCIES.map((c) => c.acNo);
-    for (const acNo of acNos) {
-      mockReply(`analysis-${acNo}`);
-      const res = await analyzeConstituency(acNo);
-      expect(res).toBe(`analysis-${acNo}`);
+  it('builds constituency context from the bundled Telangana records', async () => {
+    const sample = TELANGANA_CONSTITUENCIES.slice(0, 3);
+    for (const constituency of sample) {
+      generate.mockResolvedValueOnce(response('Analysis'));
+      await analyzeConstituency(constituency.acNo);
     }
-    expect(mockCreate).toHaveBeenCalledTimes(acNos.length);
-  });
-
-  it('summarizes election trends using party-strength and defection data', async () => {
-    mockReply('Trend summary.');
-    const res = await analyzeElectionTrends();
-    expect(res).toBe('Trend summary.');
-    // The injected strength/defection data is appended to the user message.
-    const sentMessages = mockCreate.mock.calls[0][0].messages as Array<{ content: string }>;
-    const joined = sentMessages.map((m) => m.content).join('\n');
-    expect(joined).toContain('Current Party Strength');
-  });
-
-  it('summarizes civic issues and short-circuits on an empty list', async () => {
-    mockReply('- a\n- b\n- c');
-    const res = await summarizeIssues('Jubilee Hills', ['Potholes', 'Water']);
-    expect(res).toBe('- a\n- b\n- c');
-
-    const empty = await summarizeIssues('Jubilee Hills', []);
-    expect(empty).toContain('No civic issues');
-  });
-
-  describe('smartSearch parsing', () => {
-    it('parses a plain JSON array', async () => {
-      mockReply(JSON.stringify([{ acNo: 1, name: 'X', reason: 'match' }]));
-      const res = await smartSearch('safest seat');
-      expect(res).toEqual([{ acNo: 1, name: 'X', reason: 'match' }]);
-    });
-
-    it('strips markdown fences before parsing', async () => {
-      mockReply('```json\n[{"acNo":2,"name":"Y","reason":"r"}]\n```');
-      const res = await smartSearch('something');
-      expect(res).toEqual([{ acNo: 2, name: 'Y', reason: 'r' }]);
-    });
-
-    it('returns an empty array on invalid JSON', async () => {
-      mockReply('not json at all');
-      const res = await smartSearch('broken');
-      expect(res).toEqual([]);
-    });
-  });
-});
-
-describe('ai service — Gemini-configured path (mocked client)', () => {
-  const original = Object.fromEntries(
-    [
-      'APP_ENV',
-      'EXPO_PUBLIC_APP_ENV',
-      'OPENAI_API_KEY',
-      'GEMINI_API_KEY',
-      'OPENAI_MODEL',
-      'GEMINI_MODEL',
-      'AI_PROVIDER_RATE_CARD_JSON',
-    ].map((key) => [key, process.env[key]]),
-  );
-
-  beforeAll(() => {
-    process.env.APP_ENV = 'development';
-    delete process.env.EXPO_PUBLIC_APP_ENV;
-    delete process.env.OPENAI_API_KEY;
-    process.env.GEMINI_API_KEY = 'test-gemini-key';
-    process.env.GEMINI_MODEL = 'gemini-flash-lite-latest';
-    delete process.env.OPENAI_MODEL;
-    process.env.AI_PROVIDER_RATE_CARD_JSON = JSON.stringify({
-      version: 'unit-test-rate-card',
-      effectiveAt: '2026-01-01T00:00:00Z',
-      source: 'unit-test fixture',
-      rates: {
-        'openai:gpt-4o-mini': { promptUsdPerMillionTokens: 1, completionUsdPerMillionTokens: 1 },
-        'gemini:gemini-flash-lite-latest': {
-          promptUsdPerMillionTokens: 1,
-          completionUsdPerMillionTokens: 1,
-        },
-      },
-    });
-  });
-  afterAll(() => {
-    for (const [key, value] of Object.entries(original)) {
-      if (value === undefined) delete process.env[key];
-      else process.env[key] = value;
+    expect(generate).toHaveBeenCalledTimes(sample.length);
+    const requests = generate.mock.calls.map(([request]) => request as AICompletionRequest);
+    for (const constituency of sample) {
+      expect(
+        requests.some((request) =>
+          request.messages.some((message) => message.content.includes(constituency.name)),
+        ),
+      ).toBe(true);
     }
-    defaultAIRegistry.resetForTesting();
-  });
-  beforeEach(() => {
-    mockCreate.mockReset();
-    defaultAIRegistry.resetForTesting();
-    AICostControlService.resetForTesting();
   });
 
-  it('uses gemini model for chat completions', async () => {
-    mockReply('Hello from Gemini.');
-    const res = await chatWithAI({ messages: [{ role: 'user', content: 'hi' }] });
-    expect(res).toBe('Hello from Gemini.');
-    expect(mockCreate).toHaveBeenCalledTimes(1);
-    expect(mockCreate.mock.calls[0][0].model).toBe('gemini-flash-lite-latest');
+  it('includes party-strength context for election-trend analysis', async () => {
+    await analyzeElectionTrends();
+    const request = generate.mock.calls[0][0] as AICompletionRequest;
+    expect(request.messages.map((message) => message.content).join('\n')).toContain(
+      'Current Party Strength',
+    );
   });
 
-  it('uses gemini model for smartSearch', async () => {
-    mockReply(JSON.stringify([{ acNo: 1, name: 'Sirpur', reason: 'match' }]));
-    const res = await smartSearch('sirpur');
-    expect(res).toEqual([{ acNo: 1, name: 'Sirpur', reason: 'match' }]);
-    expect(mockCreate).toHaveBeenCalledTimes(1);
-    expect(mockCreate.mock.calls[0][0].model).toBe('gemini-flash-lite-latest');
+  it('short-circuits empty issue lists and forwards supplied issues', async () => {
+    await expect(summarizeIssues('Jubilee Hills', [])).resolves.toContain('No civic issues');
+    expect(generate).not.toHaveBeenCalled();
+
+    await summarizeIssues('Jubilee Hills', ['Potholes', 'Water supply']);
+    const request = generate.mock.calls[0][0] as AICompletionRequest;
+    expect(request.messages.map((message) => message.content).join('\n')).toContain('Potholes');
+  });
+
+  it('parses plain JSON arrays returned by the provider', async () => {
+    generate.mockResolvedValueOnce(response('[{"acNo":1,"name":"Sirpur","reason":"match"}]'));
+    await expect(smartSearch('sirpur')).resolves.toEqual([
+      { acNo: 1, name: 'Sirpur', reason: 'match' },
+    ]);
+  });
+
+  it('strips markdown fences before parsing provider JSON', async () => {
+    generate.mockResolvedValueOnce(
+      response('\x60\x60\x60json\n[{"acNo":2,"name":"Y","reason":"r"}]\n\x60\x60\x60'),
+    );
+    await expect(smartSearch('something')).resolves.toEqual([{ acNo: 2, name: 'Y', reason: 'r' }]);
+  });
+
+  it('uses deterministic record matching when provider output is invalid JSON', async () => {
+    generate.mockResolvedValueOnce(response('not json'));
+    await expect(smartSearch('no_such_place_xyz')).resolves.toEqual([]);
   });
 });

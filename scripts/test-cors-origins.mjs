@@ -14,7 +14,7 @@ async function testLiveRailway() {
   const results = [];
   for (const origin of testOrigins) {
     const res = await new Promise((resolve) => {
-      const req = https.request('https://kshetra-api-production-9f06.up.railway.app/api/health', {
+      const req = https.request('https://kshetra-api-production-b802.up.railway.app/api/health', {
         method: 'OPTIONS',
         headers: {
           'Origin': origin,

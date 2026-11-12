@@ -7,7 +7,12 @@ import { isIsolatedTestRuntime, isProductionLikeRuntime } from '../lib/runtimeEn
  */
 
 import type { FastifyPluginAsync } from 'fastify';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import {
+  publicSupabase,
+  isPublicSupabaseConfigured,
+  supabase,
+  isSupabaseConfigured,
+} from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
 import { adService } from '../services/adService';
 import type {
@@ -60,11 +65,11 @@ async function listPersistedPublicAds(options: PublicAdListOptions): Promise<{
   ads: PublicPoliticalAd[];
   total: number;
 }> {
-  if (!isSupabaseConfigured) {
+  if (!isPublicSupabaseConfigured) {
     throw new Error('POLITICAL_AD_STORAGE_UNAVAILABLE');
   }
 
-  let query = supabase
+  let query = publicSupabase
     .from('political_ads')
     .select(PUBLIC_POLITICAL_AD_COLUMNS, { count: 'exact' })
     .in('status', options.status ? [options.status] : ['active', 'ended']);
@@ -283,16 +288,20 @@ const publicLibraryViewQuerySchema = {
 
 export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
   // Mutations, review decisions, ad delivery, and analytics still use
-  // process-memory services. Only the two public library reads below use the
-  // durable legacy table and its public active/ended RLS policy.
+  // process-memory services. The public legacy-table read is off by default;
+  // enable it only after the environment's RLS policy and schema are verified.
   const isProductionRuntime = () => isProductionLikeRuntime();
   app.addHook('preHandler', async (request, reply) => {
     const pathname = request.url.split('?')[0];
-    const durablePublicRead =
+    const publicReadPath =
       request.method === 'GET' &&
       (pathname === '/api/v1/political-ads/active' ||
         pathname === '/api/v1/political-ads/library' ||
         pathname === '/political-ads/library/view');
+    const durablePublicRead =
+      publicReadPath &&
+      process.env.POLITICAL_AD_PUBLIC_LIBRARY_ENABLED?.trim().toLowerCase() === 'true' &&
+      isPublicSupabaseConfigured;
 
     if (isProductionRuntime() && !durablePublicRead) {
       return sendApiError(

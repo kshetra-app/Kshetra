@@ -234,6 +234,8 @@ export interface CuratedPinLinkage {
  * Explicit provisional locality-to-constituency linkages for audited urban reference points.
  * Case C: Governed provisional linkages with explicit scenario caveats and approximation disclosures.
  * Every entry audited under CTO Directives 123 & 124 with evidence source, spatial relationship, and limitations.
+ * Keep this directory in exact parity with the independent PIN evidence manifest; other known
+ * postal prefixes resolve only to regional information until their exact mapping is audited.
  */
 export const CURATED_PROVISIONAL_PIN_DIRECTORY: Record<string, CuratedPinLinkage> = {
   '500001': {

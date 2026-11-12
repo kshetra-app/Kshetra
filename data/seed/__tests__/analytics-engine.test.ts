@@ -118,10 +118,23 @@ describe('Election Analytics Engine', () => {
     it('should detect defections in TS', () => {
       const data = getUnifiedConstituenciesForState('TS');
       const defected = data.filter((c: any) =>
-        !c.byElection && c.currentParty !== c.winnerParty,
+        c.currentPartyChangeType === 'defection',
       );
-      // We know TS has 10 BRS→INC defections
+      // Ten BRS winners changed affiliation; one seat is now vacant, so nine
+      // recorded defectors remain the current member of their constituency.
       expect(defected.length).toBe(10);
+      expect(defected.every((c: any) => c.winnerParty === 'BRS')).toBe(true);
+      expect(defected.filter((c: any) => c.currentParty === 'INC')).toHaveLength(9);
+      expect(defected.find((c: any) => c.acNo === 60)).toMatchObject({
+        currentParty: '',
+        officeholderStatus: 'VACANT',
+      });
+      expect(
+        data
+          .filter((c: any) => c.currentPartyChangeType === 'by-election')
+          .map((c: any) => c.acNo)
+          .sort((a: number, b: number) => a - b),
+      ).toEqual([61, 71]);
     });
 
     it('should compute cross-state comparison', () => {

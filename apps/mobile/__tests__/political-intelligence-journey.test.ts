@@ -436,10 +436,10 @@ describe('CTO Directive 083 — Political Intelligence Vertical Slice', () => {
           electionType: 'GENERAL' as const,
           winner: 'INC',
           winnerName: 'Anumula Revanth Reddy',
-          winnerVotes: 108547,
+          winnerVotes: 107429,
           runnerUp: 'BRS',
-          margin: 57814,
-          marginPercent: 53.3,
+          margin: 32532,
+          marginPercent: 16.67,
         },
         elections: [
           {
@@ -447,10 +447,10 @@ describe('CTO Directive 083 — Political Intelligence Vertical Slice', () => {
             electionType: 'GENERAL' as const,
             winner: 'INC',
             winnerName: 'Anumula Revanth Reddy',
-            winnerVotes: 108547,
+            winnerVotes: 107429,
             runnerUp: 'BRS',
-            margin: 57814,
-            marginPercent: 53.3,
+            margin: 32532,
+            marginPercent: 16.67,
           },
           {
             electionYear: 2018,

@@ -2,7 +2,7 @@
   "evidenceMetadata": {
     "mandate": "DEF-012 Locale Closure: 100% semantic parity & bidirectional token integrity across all 13 official languages",
     "verifiedBy": "SEMANTIC_TOKEN_INTEGRITY_VALIDATOR",
-    "timestamp": "2026-11-12T00:02:21.648Z"
+    "timestamp": "2026-11-12T03:02:14.369Z"
   },
   "canonicalKeyCount": 2620,
   "keysWithTokensCount": 150,

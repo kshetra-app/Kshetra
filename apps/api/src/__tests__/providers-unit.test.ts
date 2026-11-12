@@ -13,7 +13,7 @@ function makeDispatchParams(overrides: Partial<ObdDispatchParams> = {}): ObdDisp
     targetSegment: {
       type: 'ward',
       voterCount: 100,
-      phoneNumbers: ['9876543210'],
+      phoneNumbers: ['919876543210'],
     },
     ratePerCallINR: 1.5,
     ...overrides,

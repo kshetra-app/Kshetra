@@ -7,6 +7,11 @@ export function AdminAuthGate({ children }: { children: React.ReactNode }) {
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
+    if (!supabase) {
+      setChecking(false);
+      return;
+    }
+
     let active = true;
     const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       if (active) {
@@ -19,6 +24,11 @@ export function AdminAuthGate({ children }: { children: React.ReactNode }) {
         setSession(error ? null : data.session);
         setChecking(false);
       }
+    }).catch(() => {
+      if (active) {
+        setSession(null);
+        setChecking(false);
+      }
     });
     return () => {
       active = false;
@@ -28,6 +38,9 @@ export function AdminAuthGate({ children }: { children: React.ReactNode }) {
 
   if (checking) {
     return <div className="min-h-screen bg-[#0b1020] grid place-items-center text-slate-300">Checking admin session…</div>;
+  }
+  if (!supabase) {
+    return <div role="alert" className="min-h-screen bg-[#0b1020] grid place-items-center px-4 text-center text-amber-200">Secure administrator sign-in is not configured for this environment.</div>;
   }
   if (!session) return <SignIn />;
   return <>{children}</>;
@@ -41,11 +54,20 @@ function SignIn() {
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
+    if (!supabase) {
+      setError('Secure administrator sign-in is not configured for this environment.');
+      return;
+    }
     setSubmitting(true);
     setError(null);
-    const { error: signInError } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
-    if (signInError) setError(signInError.message);
-    setSubmitting(false);
+    try {
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      if (signInError) setError(signInError.message);
+    } catch {
+      setError('Administrator sign-in could not be completed. Check the connection and try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

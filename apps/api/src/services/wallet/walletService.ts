@@ -1,6 +1,13 @@
 import { isProductionLikeRuntime } from '../../lib/runtimeEnvironment';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 
+export class WalletUnavailableError extends Error {
+  constructor() {
+    super('Campaign wallet data is not available from verified persistent storage.');
+    this.name = 'WalletUnavailableError';
+  }
+}
+
 function isProductionRuntime(): boolean {
   return isProductionLikeRuntime();
 }

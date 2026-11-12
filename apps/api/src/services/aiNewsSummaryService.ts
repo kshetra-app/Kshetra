@@ -36,7 +36,10 @@ export class AINewsSummaryService {
 
     // 1. Check in-memory cache first
     const cached = this.cacheStore.get(contentSha256);
-    if (cached) {
+    if (cached?.providerUsed === 'offline_heuristic') {
+      this.cacheStore.delete(contentSha256);
+    }
+    if (cached && cached.providerUsed !== 'offline_heuristic') {
       cached.hitCount += 1;
       await AICostLedgerService.recordCostLedger({
         tenantId,
@@ -73,7 +76,7 @@ export class AINewsSummaryService {
           .eq('content_sha256', contentSha256)
           .maybeSingle();
 
-        if (!error && data) {
+        if (!error && data && data.provider_used !== 'offline_heuristic') {
           await supabase
             .from('ai_news_summary_cache')
             .update({

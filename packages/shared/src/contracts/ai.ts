@@ -46,7 +46,7 @@ export interface AICompletionResponse {
   costBasis: 'provider_rate_card' | 'offline_demo' | 'unavailable';
   costRateCardVersion?: string | null;
   costRateCardSource?: string | null;
-  usageBasis: 'provider_reported' | 'estimated';
+  usageBasis: 'provider_reported' | 'estimated' | 'not_applicable';
   latencyMs: number;
   degradedOffline: boolean;
 }
@@ -72,7 +72,7 @@ export interface NewsSummaryRecord {
   estimatedCostUsd: number | null;
   costBasis: 'provider_rate_card' | 'offline_demo' | 'unavailable' | 'legacy_unverified';
   costRateCardVersion?: string | null;
-  usageBasis: 'provider_reported' | 'estimated' | 'legacy_unverified';
+  usageBasis: 'provider_reported' | 'estimated' | 'not_applicable' | 'legacy_unverified';
   hitCount: number;
   cacheHit: boolean;
   latencyMs: number;

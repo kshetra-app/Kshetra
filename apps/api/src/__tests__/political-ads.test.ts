@@ -1,6 +1,6 @@
 import { buildApp } from '../server';
 import type { FastifyInstance } from 'fastify';
-import { supabase } from '../lib/supabase';
+import { publicSupabase } from '../lib/supabase';
 
 describe('Political advertising production contract', () => {
   let app: FastifyInstance;
@@ -33,6 +33,7 @@ describe('Political advertising production contract', () => {
 
   it('returns storage unavailable in production when the durable public library cannot be read', async () => {
     const originalNodeEnv = process.env.NODE_ENV;
+    const originalPublicLibraryEnabled = process.env.POLITICAL_AD_PUBLIC_LIBRARY_ENABLED;
     const query: any = {
       select: () => query,
       in: () => query,
@@ -43,8 +44,9 @@ describe('Political advertising production contract', () => {
         count: null,
       }),
     };
-    const fromSpy = jest.spyOn(supabase, 'from').mockReturnValue(query);
+    const fromSpy = jest.spyOn(publicSupabase, 'from').mockReturnValue(query);
     process.env.NODE_ENV = 'production';
+    process.env.POLITICAL_AD_PUBLIC_LIBRARY_ENABLED = 'true';
     try {
       const res = await app.inject({ method: 'GET', url: '/api/v1/political-ads/library' });
 
@@ -54,6 +56,11 @@ describe('Political advertising production contract', () => {
       fromSpy.mockRestore();
       if (originalNodeEnv === undefined) delete process.env.NODE_ENV;
       else process.env.NODE_ENV = originalNodeEnv;
+      if (originalPublicLibraryEnabled === undefined) {
+        delete process.env.POLITICAL_AD_PUBLIC_LIBRARY_ENABLED;
+      } else {
+        process.env.POLITICAL_AD_PUBLIC_LIBRARY_ENABLED = originalPublicLibraryEnabled;
+      }
     }
   });
 

@@ -409,10 +409,10 @@ export class CustomLLMProvider implements IAIProvider {
   }
 }
 
-/** Tier 4: Deterministic Offline Heuristic Provider (Guarantees Zero Startup Crash & Offline Integrity) */
+/** Tier 4: explicit unavailable response used when no configured provider can generate content. */
 export class DeterministicOfflineAIProvider implements IAIProvider {
   public name: AIProviderType = 'offline_heuristic';
-  public model = 'deterministic-offline-v1';
+  public model = 'unavailable';
 
   public isAvailable(): boolean {
     return !isProductionLikeRuntime();
@@ -426,67 +426,25 @@ export class DeterministicOfflineAIProvider implements IAIProvider {
     }
 
     const startTime = Date.now();
-    const userMessage = [...req.messages].reverse().find((m) => m.role === 'user')?.content || '';
-    const systemMessage = req.messages.find((m) => m.role === 'system')?.content || '';
-
-    let content = '';
-
-    // Handle JSON format requests deterministically
-    if (req.responseFormat === 'json' || systemMessage.toLowerCase().includes('json')) {
-      if (
-        userMessage.toLowerCase().includes('summarize') ||
-        systemMessage.toLowerCase().includes('summary')
-      ) {
-        content = JSON.stringify({
-          bullets: [
-            'Official legislative notification published under public gazette records.',
-            'Constituency representatives reviewed territorial allocations and civic priorities.',
-            'Statutory implementation scheduled under standard municipal administrative guidelines.',
-          ],
-          sentiment: 'neutral',
-          entities: ['Election Commission', 'District Administration'],
-        });
-      } else {
-        content = JSON.stringify({
-          status: 'success',
-          classification: 'civic_administrative',
-          confidence: 0.9,
-          provider: 'offline_heuristic',
-        });
-      }
-    } else {
-      // Deterministic structured text generation
-      const lines = userMessage
-        .split(/[.\n]/)
-        .map((s) => s.trim())
-        .filter((s) => s.length > 10);
-
-      const bullet1 = lines[0] || 'Official civic documentation processed under verified records.';
-      const bullet2 =
-        lines[1] || 'Public administration proceedings follow statutory territorial guidelines.';
-      const bullet3 =
-        lines[2] || 'Citizens can track updates through verified local constituency registers.';
-
-      content = `• ${bullet1}\n• ${bullet2}\n• ${bullet3}`;
-    }
-
-    const latencyMs = Math.max(1, Date.now() - startTime);
-    const promptTokens = Math.ceil((userMessage.length + systemMessage.length) / 4);
-    const completionTokens = Math.ceil(content.length / 4);
-    const totalTokens = promptTokens + completionTokens;
+    const wantsStructuredOutput =
+      req.responseFormat === 'json' ||
+      req.messages.some((message) => message.role === 'system' && /json/i.test(message.content));
+    const content = wantsStructuredOutput
+      ? ''
+      : 'AI generation is unavailable because no AI provider is configured.';
 
     return {
       content,
       provider: 'offline_heuristic',
       model: this.model,
-      usage: { promptTokens, completionTokens, totalTokens },
+      usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
       costUsd: null,
       costInr: null,
-      costBasis: 'offline_demo',
+      costBasis: 'unavailable',
       costRateCardVersion: null,
       costRateCardSource: null,
-      usageBasis: 'estimated',
-      latencyMs,
+      usageBasis: 'not_applicable',
+      latencyMs: Math.max(1, Date.now() - startTime),
       degradedOffline: true,
     };
   }
@@ -545,7 +503,7 @@ export class AIProviderRegistry {
         chain.push(p);
       }
     }
-    // Keep deterministic demo output available only in development and isolated tests.
+    // Keep the explicit unavailable response available only in development and isolated tests.
     if (!isProductionLikeRuntime() && !chain.some((p) => p.name === 'offline_heuristic')) {
       const offline =
         this.providers.get('offline_heuristic') || new DeterministicOfflineAIProvider();

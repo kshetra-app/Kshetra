@@ -4,6 +4,7 @@
  */
 
 import crypto from 'node:crypto';
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import type {
   PaymentOrderParams,
   PaymentOrderResult,
