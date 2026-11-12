@@ -5,12 +5,12 @@ import {
 } from '../../../data/seed/mp-profiles';
 
 describe('parliament roster snapshot truth', () => {
-  it('reports the compiled snapshot date and actual profile coverage', () => {
+  it('reports actual bundled profile coverage without duplicate profile IDs', () => {
     const lokSabhaProfiles = ALL_MP_PROFILES.filter((profile) => profile.house === 'lok_sabha');
     const rajyaSabhaProfiles = ALL_MP_PROFILES.filter((profile) => profile.house === 'rajya_sabha');
+    const profileIds = ALL_MP_PROFILES.map((profile) => profile.id);
 
-    expect(MP_PROFILES_SNAPSHOT.generatedAt).toBe('2026-06-21');
-    expect(MP_PROFILES_SNAPSHOT.latestRowVerificationDate).toBe('2026-11-02');
+    expect(new Set(profileIds).size).toBe(profileIds.length);
     expect(lokSabhaProfiles).toHaveLength(543);
     expect(rajyaSabhaProfiles).toHaveLength(243);
     expect(rajyaSabhaProfiles.length).toBeLessThan(MP_PROFILES_SNAPSHOT.rajyaSabhaSeatCount);

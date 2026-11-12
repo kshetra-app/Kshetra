@@ -224,8 +224,8 @@ export default function ParliamentScreen() {
           <Text style={[styles.headerTitle, { color: colors.text }]}>{t('parliament.screenTitle')}</Text>
           <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
             {isNational
-              ? `Bundled snapshot · compiled ${MP_PROFILES_SNAPSHOT.generatedAt}`
-              : `${stateSummary?.stateName || selectedScope} Parliamentary Delegation · Snapshot ${MP_PROFILES_SNAPSHOT.generatedAt}`}
+              ? 'Bundled roster · not live-updated'
+              : `${stateSummary?.stateName || selectedScope} Parliamentary Delegation · bundled roster`}
           </Text>
         </View>
         <Pressable
