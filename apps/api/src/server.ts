@@ -187,7 +187,7 @@ export async function buildApp(): Promise<FastifyInstance> {
       request.method === 'GET' &&
       reply.statusCode === 200
     ) {
-      reply.header('Cache-Control', 'public, max-age=300, s-maxage=300');
+      reply.header('Cache-Control', 'public, max-age=60, s-maxage=60');
     }
     return payload;
   });
