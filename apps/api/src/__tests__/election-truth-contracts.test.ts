@@ -25,7 +25,7 @@ describe('Election Truth Service & Contract Behavior (CTO Directive 087)', () =>
       expect(data).not.toBeNull();
       expect(data!.recentElection.electionYear).toBe(2023);
       expect(data!.recentElection.winner).toBe('BRS');
-      expect(data!.recentElection.winnerName).toBe('Kalvakuntla Chandrashekhar Rao');
+      expect(data!.recentElection.winnerName).toBe('Kalvakuntla Chandrashekar Rao');
       expect(data!.recentElection.runnerUp).toBe('BJP');
       expect(data!.recentElection.winnerVotes).toBe(111684);
       expect(data!.recentElection.margin).toBe(45031);
