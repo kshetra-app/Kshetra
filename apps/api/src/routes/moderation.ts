@@ -674,7 +674,7 @@ export async function moderationRoutes(app: FastifyInstance) {
           const { data, error } = await supabase
             .from('reports')
             .select(
-              '*, post:posts(id, content, author_name:author_id), comment:comments(id, content), reported_user:user_profiles!reported_user_id(user_id, display_name, avatar_url, role)',
+              '*, post:posts(id, content, author_name:author_id), comment:comments(id, content)',
             )
             .eq('status', 'pending')
             .order('created_at', { ascending: false })
@@ -717,10 +717,44 @@ export async function moderationRoutes(app: FastifyInstance) {
           }
 
           if (data && data.length > 0) {
+            const reportedUserIds = [
+              ...new Set(
+                data
+                  .map((report) => report.reported_user_id)
+                  .filter(
+                    (userId): userId is string => typeof userId === 'string' && userId.length > 0,
+                  ),
+              ),
+            ];
+            let reportedUsersById = new Map<string, Record<string, unknown>>();
+
+            if (reportedUserIds.length > 0) {
+              const { data: profiles, error: profileError } = await supabase
+                .from('user_profiles')
+                .select('user_id, display_name, avatar_url, role')
+                .in('user_id', reportedUserIds);
+
+              if (profileError) {
+                app.log.warn(
+                  { err: profileError.message, count: reportedUserIds.length },
+                  'Could not load reported user profile details',
+                );
+              } else {
+                reportedUsersById = new Map(
+                  (profiles ?? []).map((profile) => [profile.user_id, profile]),
+                );
+              }
+            }
+
             return reply.send({
               success: true,
               data: {
-                queue: data,
+                queue: data.map((report) => ({
+                  ...report,
+                  reported_user: report.reported_user_id
+                    ? (reportedUsersById.get(report.reported_user_id) ?? null)
+                    : null,
+                })),
                 totalPending: data.length,
               },
             });
@@ -1177,7 +1211,7 @@ export async function moderationRoutes(app: FastifyInstance) {
     Body: {
       reporterId?: string;
       contentId: string;
-      contentType: string;
+      contentType: 'post' | 'comment' | 'user';
       reason: string;
       description?: string;
     };
@@ -1188,34 +1222,38 @@ export async function moderationRoutes(app: FastifyInstance) {
         body: {
           type: 'object',
           required: ['contentId', 'contentType', 'reason'],
+          additionalProperties: false,
           properties: {
             reporterId: { type: 'string' },
             contentId: { type: 'string', minLength: 1 },
-            contentType: { type: 'string', minLength: 1 },
-            reason: { type: 'string', minLength: 1 },
-            description: { type: 'string' },
+            contentType: { type: 'string', enum: ['post', 'comment', 'user'] },
+            reason: {
+              type: 'string',
+              enum: [
+                'spam',
+                'harassment',
+                'misinformation',
+                'hate_speech',
+                'violence',
+                'impersonation',
+                'other',
+              ],
+            },
+            description: { type: 'string', maxLength: 500 },
           },
         },
       },
     },
     async (request, reply) => {
-      let reporterId: string;
-
-      if (request.headers.authorization || request.body.reporterId) {
-        const auth = await resolveAuthenticatedUser(request, reply);
-        if (!auth) return;
-        if (
-          !assertActingUserMatch(reply, request, auth.userId, request.body.reporterId, 'reporterId')
-        ) {
-          return;
-        }
-        reporterId = auth.userId;
-      } else {
-        reporterId = 'anonymous';
+      const auth = await resolveAuthenticatedUser(request, reply);
+      if (!auth) return;
+      if (
+        !assertActingUserMatch(reply, request, auth.userId, request.body.reporterId, 'reporterId')
+      ) {
+        return;
       }
 
       const { contentId, contentType, reason, description } = request.body;
-      const reportId = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
 
       if (!isSupabaseConfigured) {
         return sendApiError(
@@ -1231,20 +1269,26 @@ export async function moderationRoutes(app: FastifyInstance) {
       }
 
       try {
-        const { error } = await supabase.from('reports').insert({
-          id: reportId,
-          reporter_id: reporterId,
+        const targetColumns = {
           post_id: contentType === 'post' ? contentId : null,
           comment_id: contentType === 'comment' ? contentId : null,
-          reason,
-          description: description || null,
-          status: 'pending',
-          created_at: new Date().toISOString(),
-        });
+          reported_user_id: contentType === 'user' ? contentId : null,
+        };
+        const { data, error } = await supabase
+          .from('reports')
+          .insert({
+            reporter_id: auth.userId,
+            ...targetColumns,
+            reason,
+            description: description || null,
+            status: 'pending',
+          })
+          .select('id')
+          .single();
 
-        if (error) {
+        if (error || !data?.id) {
           app.log.error(
-            { err: error.message, reportId, reporterId },
+            { err: error?.message ?? 'Report insert returned no row', reporterId: auth.userId },
             'Failed to persist report to DB',
           );
           return sendApiError(
@@ -1258,9 +1302,19 @@ export async function moderationRoutes(app: FastifyInstance) {
             },
           );
         }
+
+        return reply.status(201).send({
+          success: true,
+          data: {
+            reportId: data.id,
+            contentId,
+            contentType,
+            status: 'pending',
+          },
+        });
       } catch (err: any) {
         app.log.error(
-          { err: err?.message, reportId, reporterId },
+          { err: err?.message, reporterId: auth.userId },
           'Exception persisting report to DB',
         );
         return sendApiError(
@@ -1274,16 +1328,7 @@ export async function moderationRoutes(app: FastifyInstance) {
           },
         );
       }
-
-      return reply.status(201).send({
-        success: true,
-        data: {
-          reportId,
-          contentId,
-          contentType,
-          status: 'pending',
-        },
-      });
     },
   );
 }
+

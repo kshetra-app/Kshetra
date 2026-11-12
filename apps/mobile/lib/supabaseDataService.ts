@@ -970,30 +970,24 @@ export async function fetchPostsByAuthor(authorId: string, limit = 30): Promise<
 }
 
 export async function submitContentReport(report: {
-  reporterId: string;
-  targetType: 'post' | 'comment';
+  targetType: 'post' | 'comment' | 'user';
   targetId: string;
   reason: string;
   description?: string;
 }): Promise<boolean> {
   try {
     addBreadcrumb('moderation', 'submit_report', { targetId: report.targetId });
-    const res = await fetch(`${API_BASE_URL}/api/v1/moderation/report`, {
+    const res = await apiClient.request('/api/v1/moderation/report', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-user-id': report.reporterId,
-        ...telemetry.getTracingHeaders(),
-      },
-      body: JSON.stringify({
-        reporterId: report.reporterId,
+      body: {
         contentId: report.targetId,
         contentType: report.targetType,
         reason: report.reason,
         description: report.description,
-      }),
+      },
+      authPolicy: 'authenticated',
     });
-    return res.ok;
+    return res.statusCode >= 200 && res.statusCode < 300;
   } catch (err) {
     captureException(err as Error, { op: 'submit_content_report' });
     return false;
@@ -2065,5 +2059,6 @@ export async function searchUsersForDM(
 
   return results.slice(0, limit);
 }
+
 
 

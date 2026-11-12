@@ -56,18 +56,23 @@ export default function ReportSheet({
     setSubmitting(true);
 
     try {
-      const userId = useAuthStore.getState().user?.id || 'demo-reporter';
-      if (targetType === 'post' || targetType === 'comment') {
-        const success = await submitContentReport({
-          reporterId: userId,
-          targetType,
-          targetId,
-          reason,
-          description: description.trim() || undefined,
-        });
-        if (!success) {
-          throw new Error('Failed to submit report');
-        }
+      const userId = useAuthStore.getState().user?.id;
+      if (!userId) {
+        Alert.alert(
+          t('reportSheet.errorTitle', { defaultValue: 'Could not submit report' }),
+          t('auth.loginRequired', { defaultValue: 'Please sign in to submit a report.' }),
+        );
+        return;
+      }
+
+      const success = await submitContentReport({
+        targetType,
+        targetId,
+        reason,
+        description: description.trim() || undefined,
+      });
+      if (!success) {
+        throw new Error('Failed to submit report');
       }
 
       logContentAction('submit_report', { type: targetType, id: targetId, body: reason, screenName: 'report' });
@@ -282,3 +287,4 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
