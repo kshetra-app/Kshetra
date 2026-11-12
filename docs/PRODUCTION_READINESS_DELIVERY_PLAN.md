@@ -226,6 +226,11 @@ These are targeted safeguards, not proof that every production flow is complete.
 - Live district and reservation breakdowns label counts as database records, and development reference mode retains seat wording. Historical election/timeline helpers were inspected and already return no bundled values in live mode.
 - The focused regression suite passed 6/6, mobile TypeScript checking passed, and the touched files passed Prettier. Targeted ESLint reported no errors and one remaining warning for the existing `any` route cast. This is a UI truthfulness correction, not a claim that a full production data source or complete state coverage is available.
 
+### Follow-up completed in this pass — moderation audit-log reads
+
+- The admin moderation audit-log endpoint now reads actual `audit_log` rows with an exact total, newest-first ordering, optional entity-type filtering, and bounded page size/offset. Missing storage or query failures return `503 DATABASE_UNAVAILABLE` instead of a fabricated successful empty list.
+- The route-level audit-log tests passed 3/3, including the missing-total case; the related moderation route/report suites passed 45/45; API TypeScript checking passed. The route does not itself create audit entries for moderation decisions yet, so an empty database result is still possible and durable, transactional action logging remains a separate gap.
+
 ### Follow-up completed in this pass — demographic and map context
 
 - The production demographics gate is centralized in `getDemographicsForState`, the adapter used by constituency profile, comparison, and choropleth enrichment. Missing production values stay `null` for map rendering and are explained in the profile and comparison UI. Reservation status remains visible because it comes from constituency geography, not the withheld demographic table.

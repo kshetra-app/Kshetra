@@ -8,7 +8,6 @@ import {
   canPerformAction,
   ACTION_CONFIG,
   REPUTATION_RULES,
-  type ModerationAction,
   type ModerationActionPayload,
   type UserRole,
 } from '../services/moderation';
@@ -187,6 +186,8 @@ const auditLogSchema = {
           properties: {
             entries: { type: 'array' },
             total: { type: 'number' },
+            limit: { type: 'integer' },
+            offset: { type: 'integer' },
             message: { type: 'string' },
           },
           required: ['entries', 'total'],
@@ -856,15 +857,76 @@ export async function moderationRoutes(app: FastifyInstance) {
         });
       }
 
-      // In production: fetch from audit_log with pagination
-      return reply.send({
-        success: true,
-        data: {
-          entries: [],
-          total: 0,
-          message: 'Audit log will be populated when Supabase is connected',
-        },
-      });
+      if (!isSupabaseConfigured) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Moderation audit history is unavailable because database storage is not configured',
+          { code: 'DATABASE_UNAVAILABLE' },
+        );
+      }
+
+      const limit = request.query.limit ?? 50;
+      const offset = request.query.offset ?? 0;
+
+      try {
+        let query = supabase.from('audit_log').select('*', { count: 'exact' });
+
+        if (request.query.entityType) {
+          query = query.eq('entity_type', request.query.entityType);
+        }
+
+        const { data, error, count } = await query
+          .order('created_at', { ascending: false })
+          .range(offset, offset + limit - 1);
+        if (error) {
+          app.log.error({ err: error.message }, 'Failed to retrieve moderation audit history');
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Moderation audit history is temporarily unavailable',
+            { code: 'DATABASE_UNAVAILABLE' },
+          );
+        }
+        if (!Array.isArray(data) || count === null) {
+          app.log.error('Database did not return complete moderation audit history metadata');
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Moderation audit history is temporarily unavailable',
+            { code: 'DATABASE_UNAVAILABLE' },
+          );
+        }
+
+        return reply.send({
+          success: true,
+          data: {
+            entries: data,
+            total: count,
+            limit,
+            offset,
+          },
+        });
+      } catch (err: unknown) {
+        app.log.error(
+          { err: err instanceof Error ? err.message : String(err) },
+          'Exception retrieving moderation audit history',
+        );
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Moderation audit history is temporarily unavailable',
+          { code: 'DATABASE_UNAVAILABLE' },
+        );
+      }
     },
   );
 
