@@ -78,6 +78,8 @@ const EMPTY_FEED: NewsFeed = {
   items: [],
 };
 
+let newsRefreshSequence = 0;
+
 async function loadFeed(lang: NewsLanguageCode | null): Promise<NewsFeed> {
   // 1. Hosted backend (server path, if deployed).
   const backend = await fetchBackendFeed(lang);
@@ -150,19 +152,20 @@ export const useNewsStore = create<NewsState>()(
       isBookmarked: (id) => get().bookmarks.includes(id),
 
       refresh: async () => {
+        const requestSequence = ++newsRefreshSequence;
         set({ loading: true });
         const lang = get().language;
         try {
           const feed = await loadFeed(lang);
-          // Ignore a stale response if the user switched language mid-flight.
-          if (get().language !== lang) return;
+          // Ignore out-of-order responses and any result for a previous language.
+          if (requestSequence !== newsRefreshSequence || get().language !== lang) return;
           set({
             items: feed.items,
             generatedAt: feed.generatedAt,
             refreshIntervalMin: feed.refreshIntervalMin,
           });
         } finally {
-          set({ loading: false });
+          if (requestSequence === newsRefreshSequence) set({ loading: false });
         }
       },
     }),
