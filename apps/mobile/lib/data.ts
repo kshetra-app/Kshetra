@@ -55,6 +55,7 @@ export type { HistoricalResult } from '../../../data/seed/telangana-historical-r
 // ── MP Profiles (Parliament) ───────────────────────────────────────
 export {
   ALL_MP_PROFILES,
+  MP_PROFILES_SNAPSHOT,
   NATIONAL_PARTY_STRENGTH,
   STATE_PARLIAMENTARY_SUMMARIES,
   getMPsByState,

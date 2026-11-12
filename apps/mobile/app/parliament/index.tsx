@@ -21,6 +21,7 @@ import { getPartyColor } from '../../lib/constants';
 import { useResponsive } from '../../lib/responsive';
 import {
   ALL_MP_PROFILES,
+  MP_PROFILES_SNAPSHOT,
   STATE_PARLIAMENTARY_SUMMARIES,
   getMPsByState,
   getAllianceStrength,
@@ -115,6 +116,14 @@ export default function ParliamentScreen() {
 
   const lokSabhaMPs = useMemo(() => scopeMPs.filter((m) => m.house === 'lok_sabha'), [scopeMPs]);
   const rajyaSabhaMPs = useMemo(() => scopeMPs.filter((m) => m.house === 'rajya_sabha'), [scopeMPs]);
+  const lokSabhaProfileCount = useMemo(
+    () => ALL_MP_PROFILES.filter((mp) => mp.house === 'lok_sabha').length,
+    [],
+  );
+  const rajyaSabhaProfileCount = useMemo(
+    () => ALL_MP_PROFILES.filter((mp) => mp.house === 'rajya_sabha').length,
+    [],
+  );
 
   // All 54 parties in Parliament with both LS and RS counts
   const allPartiesStrength = useMemo(() => {
@@ -214,7 +223,9 @@ export default function ParliamentScreen() {
         <View style={{ flex: 1 }}>
           <Text style={[styles.headerTitle, { color: colors.text }]}>{t('parliament.screenTitle')}</Text>
           <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
-            {isNational ? '18th Lok Sabha (543) & Rajya Sabha (142)' : `${stateSummary?.stateName || selectedScope} Parliamentary Delegation`}
+            {isNational
+              ? `Bundled snapshot · compiled ${MP_PROFILES_SNAPSHOT.generatedAt}`
+              : `${stateSummary?.stateName || selectedScope} Parliamentary Delegation · Snapshot ${MP_PROFILES_SNAPSHOT.generatedAt}`}
           </Text>
         </View>
         <Pressable
@@ -476,7 +487,7 @@ export default function ParliamentScreen() {
           <>
             <View style={styles.sectionHeaderRow}>
               <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                {isNational ? t('parliament.lokSabhaMPsCount', { count: filteredLokSabhaMPs.length, total: 543, defaultValue: `18th Lok Sabha MPs (${filteredLokSabhaMPs.length} of 543)` }) : t('parliament.stateLokSabhaCount', { state: stateSummary?.stateName || selectedScope, count: filteredLokSabhaMPs.length, defaultValue: `Lok Sabha MPs — ${stateSummary?.stateName || selectedScope} (${filteredLokSabhaMPs.length})` })}
+                {isNational ? t('parliament.lokSabhaMPsCount', { count: filteredLokSabhaMPs.length, total: lokSabhaProfileCount, defaultValue: `Lok Sabha profiles (${filteredLokSabhaMPs.length} of ${lokSabhaProfileCount})` }) : t('parliament.stateLokSabhaCount', { state: stateSummary?.stateName || selectedScope, count: filteredLokSabhaMPs.length, defaultValue: `Lok Sabha profiles — ${stateSummary?.stateName || selectedScope} (${filteredLokSabhaMPs.length})` })}
               </Text>
             </View>
 
@@ -504,7 +515,7 @@ export default function ParliamentScreen() {
           <>
             <View style={styles.sectionHeaderRow}>
               <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                {isNational ? t('parliament.rajyaSabhaMPsCount', { count: filteredRajyaSabhaMPs.length, total: 142, defaultValue: `Rajya Sabha MPs (${filteredRajyaSabhaMPs.length} of 142)` }) : t('parliament.stateRajyaSabhaCount', { state: stateSummary?.stateName || selectedScope, count: filteredRajyaSabhaMPs.length, defaultValue: `Rajya Sabha MPs — ${stateSummary?.stateName || selectedScope} (${filteredRajyaSabhaMPs.length})` })}
+                {isNational ? t('parliament.rajyaSabhaMPsCount', { count: filteredRajyaSabhaMPs.length, total: rajyaSabhaProfileCount, defaultValue: `Rajya Sabha profiles (${filteredRajyaSabhaMPs.length} of ${rajyaSabhaProfileCount}; ${MP_PROFILES_SNAPSHOT.rajyaSabhaSeatCount} seats total)` }) : t('parliament.stateRajyaSabhaCount', { state: stateSummary?.stateName || selectedScope, count: filteredRajyaSabhaMPs.length, defaultValue: `Rajya Sabha profiles — ${stateSummary?.stateName || selectedScope} (${filteredRajyaSabhaMPs.length})`})}
               </Text>
             </View>
 
