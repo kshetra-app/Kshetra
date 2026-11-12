@@ -11,7 +11,6 @@ import type {
   CampaignStatus,
   AdFormat,
   AdStatus,
-  VoterSegment,
   CampaignServicePricing,
 } from '../lib/campaignTypes';
 import type {
@@ -22,6 +21,38 @@ import type {
 import { API_BASE_URL } from '../lib/constants';
 import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 import { apiClient } from '../lib/api';
+
+type CampaignRequestKey =
+  | 'workspace'
+  | 'campaigns'
+  | 'ads'
+  | 'booths'
+  | 'volunteers'
+  | 'pricing'
+  | 'wallet'
+  | 'walletTransactions'
+  | 'obdBroadcasts';
+
+const latestRequestByResource: Record<CampaignRequestKey, number> = {
+  workspace: 0,
+  campaigns: 0,
+  ads: 0,
+  booths: 0,
+  volunteers: 0,
+  pricing: 0,
+  wallet: 0,
+  walletTransactions: 0,
+  obdBroadcasts: 0,
+};
+
+function beginRequest(resource: CampaignRequestKey): number {
+  latestRequestByResource[resource] += 1;
+  return latestRequestByResource[resource];
+}
+
+function isLatestRequest(resource: CampaignRequestKey, requestId: number): boolean {
+  return latestRequestByResource[resource] === requestId;
+}
 
 // ─── Seed Campaigns ───
 const SEED_CAMPAIGNS: Campaign[] = [
@@ -668,6 +699,11 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
   fetchCampaigns: async () => {
     if (!IS_LIVE_ENVIRONMENT) return get().campaigns;
 
+    const requestId = beginRequest('campaigns');
+    beginRequest('ads');
+    beginRequest('booths');
+    beginRequest('volunteers');
+
     set({
       campaigns: [], campaignsLoading: true, campaignsAvailable: false, campaignsError: null,
       ads: [], adsLoading: false, adsAvailable: false, adsError: null,
@@ -686,6 +722,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
         .filter((campaign): campaign is Campaign => campaign !== null)
         .sort((left, right) => right.createdAt.localeCompare(left.createdAt));
       const hasInvalidRows = mapped.length !== rows.length;
+      if (!isLatestRequest('campaigns', requestId)) return get().campaigns;
       set({
         campaigns: mapped,
         campaignsAvailable: !hasInvalidRows,
@@ -693,23 +730,26 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
       });
       return mapped;
     } catch {
+      if (!isLatestRequest('campaigns', requestId)) return get().campaigns;
       set({
         campaigns: [], campaignsAvailable: false, campaignsError: 'Campaign data could not be loaded.',
         ads: [], adsLoading: false, adsAvailable: false, adsError: 'Campaign data could not be loaded.',
       });
       return [];
     } finally {
-      set({ campaignsLoading: false });
+      if (isLatestRequest('campaigns', requestId)) set({ campaignsLoading: false });
     }
   },
 
   fetchAds: async (campaignId) => {
     if (!IS_LIVE_ENVIRONMENT) return;
     if (!campaignId) {
+      beginRequest('ads');
       set({ ads: [], adsLoading: false, adsAvailable: true, adsError: null });
       return;
     }
 
+    const requestId = beginRequest('ads');
     set({ ads: [], adsLoading: true, adsAvailable: false, adsError: null });
     try {
       const { data } = await apiClient.request<{ ads?: unknown[] }>(
@@ -719,28 +759,32 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
       if (!Array.isArray(data.ads)) throw new Error('Invalid campaign ad response');
       const rows = data.ads;
       const mapped = rows.map(mapAdRow).filter((ad): ad is AdCreative => ad !== null);
-      if (get().selectedCampaignId !== campaignId) return;
+      if (!isLatestRequest('ads', requestId) || get().selectedCampaignId !== campaignId) return;
       set({
         ads: mapped,
         adsAvailable: mapped.length === rows.length,
         adsError: mapped.length === rows.length ? null : 'Some ad drafts could not be displayed.',
       });
     } catch {
-      if (get().selectedCampaignId === campaignId) {
+      if (isLatestRequest('ads', requestId) && get().selectedCampaignId === campaignId) {
         set({ ads: [], adsAvailable: false, adsError: 'Campaign ad drafts could not be loaded.' });
       }
     } finally {
-      if (get().selectedCampaignId === campaignId) set({ adsLoading: false });
+      if (isLatestRequest('ads', requestId) && get().selectedCampaignId === campaignId) {
+        set({ adsLoading: false });
+      }
     }
   },
 
   fetchBooths: async (campaignId) => {
     if (!IS_LIVE_ENVIRONMENT) return;
     if (!campaignId) {
+      beginRequest('booths');
       set({ booths: [], boothsLoading: false, boothsAvailable: true, boothsError: null });
       return;
     }
 
+    const requestId = beginRequest('booths');
     set({ booths: [], boothsLoading: true, boothsAvailable: false, boothsError: null });
     try {
       const { data } = await apiClient.request<{ booths?: unknown[] }>(
@@ -751,24 +795,27 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
       const rows = data.booths;
       const mapped = rows.map(mapBoothRow).filter((booth): booth is BoothStrategy => booth !== null);
       const hasInvalidRows = mapped.length !== rows.length;
-      if (get().selectedCampaignId !== campaignId) return;
+      if (!isLatestRequest('booths', requestId) || get().selectedCampaignId !== campaignId) return;
       set({
         booths: mapped,
         boothsAvailable: !hasInvalidRows,
         boothsError: hasInvalidRows ? 'Some booth records could not be displayed.' : null,
       });
     } catch {
-      if (get().selectedCampaignId === campaignId) {
+      if (isLatestRequest('booths', requestId) && get().selectedCampaignId === campaignId) {
         set({ booths: [], boothsAvailable: false, boothsError: 'Booth data could not be loaded.' });
       }
     } finally {
-      if (get().selectedCampaignId === campaignId) set({ boothsLoading: false });
+      if (isLatestRequest('booths', requestId) && get().selectedCampaignId === campaignId) {
+        set({ boothsLoading: false });
+      }
     }
   },
 
   fetchVolunteers: async (campaignId) => {
     if (!IS_LIVE_ENVIRONMENT) return;
     if (!campaignId) {
+      beginRequest('volunteers');
       set({
         volunteers: [],
         volunteersLoading: false,
@@ -779,6 +826,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
       return;
     }
 
+    const requestId = beginRequest('volunteers');
     set({
       volunteers: [],
       volunteersLoading: true,
@@ -809,7 +857,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
         hoursLogged: workLogMetricsAvailable ? volunteer.hoursLogged : null,
         rating: volunteerRatingsAvailable ? volunteer.rating : null,
       }));
-      if (get().selectedCampaignId !== campaignId) return;
+      if (!isLatestRequest('volunteers', requestId) || get().selectedCampaignId !== campaignId) return;
       set({
         volunteers: trustedVolunteers,
         volunteersAvailable: !hasInvalidRows,
@@ -817,7 +865,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
         volunteerWorkLogsAvailable: workLogMetricsAvailable,
       });
     } catch {
-      if (get().selectedCampaignId === campaignId) {
+      if (isLatestRequest('volunteers', requestId) && get().selectedCampaignId === campaignId) {
         set({
           volunteers: [],
           volunteersAvailable: false,
@@ -826,7 +874,9 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
         });
       }
     } finally {
-      if (get().selectedCampaignId === campaignId) set({ volunteersLoading: false });
+      if (isLatestRequest('volunteers', requestId) && get().selectedCampaignId === campaignId) {
+        set({ volunteersLoading: false });
+      }
     }
   },
 
@@ -836,6 +886,13 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
       return;
     }
 
+    const requestId = beginRequest('workspace');
+    // A workspace refresh replaces the active snapshot. Ignore any older detail
+    // requests while the new campaign list and its corresponding details load.
+    beginRequest('ads');
+    beginRequest('booths');
+    beginRequest('volunteers');
+
     const [, , , , campaigns] = await Promise.all([
       get().fetchPricing(),
       get().fetchWallet(),
@@ -843,6 +900,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
       get().fetchOBDBroadcasts(),
       get().fetchCampaigns(),
     ]);
+    if (!isLatestRequest('workspace', requestId)) return;
     if (!get().campaignsAvailable) {
       const message = get().campaignsError || 'Campaign data could not be loaded.';
       set({
@@ -894,6 +952,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
   },
 
   fetchPricing: async () => {
+    const requestId = beginRequest('pricing');
     if (IS_LIVE_ENVIRONMENT) set({ pricingAvailable: false });
     try {
       const { data: json } = await apiClient.request<{ pricing?: CampaignServicePricing }>(
@@ -901,60 +960,75 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
         { authPolicy: 'public' },
       );
       if (json.pricing) {
+        if (!isLatestRequest('pricing', requestId)) return;
         set({ pricing: json.pricing, pricingAvailable: true });
         return;
       }
     } catch {
       // A production client must not present cached demo pricing as a live quote.
     }
-    if (IS_LIVE_ENVIRONMENT) set({ pricingAvailable: false });
+    if (IS_LIVE_ENVIRONMENT && isLatestRequest('pricing', requestId)) {
+      set({ pricingAvailable: false });
+    }
   },
 
   fetchWallet: async () => {
+    const requestId = beginRequest('wallet');
     if (IS_LIVE_ENVIRONMENT) set({ walletAvailable: false });
     try {
       const { data: json } = await apiClient.request<{ wallet?: CampaignWallet }>('/api/v1/campaign/wallet');
       if (json.wallet) {
+        if (!isLatestRequest('wallet', requestId)) return;
         set({ wallet: json.wallet, walletAvailable: true });
         return;
       }
     } catch {
       // No wallet is displayed as current unless the API returns it successfully.
     }
-    if (IS_LIVE_ENVIRONMENT) set({ walletAvailable: false });
+    if (IS_LIVE_ENVIRONMENT && isLatestRequest('wallet', requestId)) {
+      set({ walletAvailable: false });
+    }
   },
 
   fetchWalletTransactions: async () => {
-    if (IS_LIVE_ENVIRONMENT) set({ walletTransactionsAvailable: false, walletTransactionsLoading: true, walletTransactionsError: null });
+    const requestId = beginRequest('walletTransactions');
+    if (IS_LIVE_ENVIRONMENT) {
+      set({ walletTransactionsAvailable: false, walletTransactionsLoading: true, walletTransactionsError: null });
+    }
     try {
       const { data: json } = await apiClient.request<{ transactions?: WalletTransaction[] }>(
         '/api/v1/campaign/wallet/transactions',
       );
       if (!Array.isArray(json.transactions)) throw new Error('Invalid wallet transaction response');
+      if (!isLatestRequest('walletTransactions', requestId)) return;
       set({ walletTransactions: json.transactions, walletTransactionsAvailable: true, walletTransactionsError: null });
     } catch {
-      if (IS_LIVE_ENVIRONMENT) {
+      if (IS_LIVE_ENVIRONMENT && isLatestRequest('walletTransactions', requestId)) {
         set({ walletTransactions: [], walletTransactionsAvailable: false, walletTransactionsError: 'Transaction history is unavailable.' });
       }
     } finally {
-      if (IS_LIVE_ENVIRONMENT) set({ walletTransactionsLoading: false });
+      if (isLatestRequest('walletTransactions', requestId)) set({ walletTransactionsLoading: false });
     }
   },
 
   fetchOBDBroadcasts: async () => {
-    if (IS_LIVE_ENVIRONMENT) set({ obdBroadcastsAvailable: false, obdBroadcastsLoading: true, obdBroadcastsError: null });
+    const requestId = beginRequest('obdBroadcasts');
+    if (IS_LIVE_ENVIRONMENT) {
+      set({ obdBroadcastsAvailable: false, obdBroadcastsLoading: true, obdBroadcastsError: null });
+    }
     try {
       const { data: json } = await apiClient.request<{ broadcasts?: OBDBroadcastJob[] }>(
         '/api/v1/campaign/obd/broadcasts',
       );
       if (!Array.isArray(json.broadcasts)) throw new Error('Invalid broadcast response');
+      if (!isLatestRequest('obdBroadcasts', requestId)) return;
       set({ obdBroadcasts: json.broadcasts, obdBroadcastsAvailable: true, obdBroadcastsError: null });
     } catch {
-      if (IS_LIVE_ENVIRONMENT) {
+      if (IS_LIVE_ENVIRONMENT && isLatestRequest('obdBroadcasts', requestId)) {
         set({ obdBroadcasts: [], obdBroadcastsAvailable: false, obdBroadcastsError: 'Broadcast history is unavailable.' });
       }
     } finally {
-      if (IS_LIVE_ENVIRONMENT) set({ obdBroadcastsLoading: false });
+      if (isLatestRequest('obdBroadcasts', requestId)) set({ obdBroadcastsLoading: false });
     }
   },
 
