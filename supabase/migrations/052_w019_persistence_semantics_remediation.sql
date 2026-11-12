@@ -1,9 +1,9 @@
 -- =============================================================================
 -- Migration 052: W019 Persistence Semantics Remediation
 -- =============================================================================
--- Target: panIN-staging (fkpigozcqnmcvofuksar) / Local Docker (supabase_db_Kshetra)
--- Production remains strictly AIR-GAPPED (ehfafcnimmjusyvplbah).
--- Mode: Append-only, non-destructive schema and benchmark data reconciliation.
+-- Target: local, staging or production Supabase databases through a reviewed
+-- migration workflow. This file does not deploy itself to any hosted project.
+-- Mode: nullable rejection semantics plus a bounded, source-backed 2023 seed.
 --
 -- Objective:
 -- 1. Support UNKNOWN semantics for total_rejected_votes via nullable INTEGER NULL.
@@ -14,11 +14,8 @@
 --      total_votes_polled = total_valid_votes + total_rejected_votes
 --    OTHERWISE conservation is UNRESOLVED / UNKNOWN (does not fail check, but not PASS).
 -- 3. Update fn_validate_contest_totals and fn_refresh_contest_metrics to honor NULL.
--- 4. Apply reconciled authoritative Form 20 / ECI Detailed benchmark fixtures:
---    - Gajwel AC-040: Eatala Rajender = 66,653; victory margin = 45,031;
---      total_valid_votes = 227,702; total_votes_polled = 232,417; total_rejected_votes = NULL.
---    - Kodangal AC-065: Bantu Ramesh = 3,988; NOTA = 2,002; total_valid_votes = 195,163;
---      total_rejected_votes = 124 (statutory Form 20 postal); total_votes_polled = 195,287.
+-- 4. Register the ECI source evidence and exact, complete candidate-level
+--    results for Kodangal AC 72 and Gajwel AC 42 (candidate rows are in 053).
 -- =============================================================================
 
 -- 1. Schema modification: public.election_contests.total_rejected_votes NULLABLE
@@ -33,6 +30,23 @@ COMMENT ON COLUMN public.election_contests.total_rejected_votes IS
 ALTER TABLE public.election_contests DROP CONSTRAINT IF EXISTS election_contests_total_rejected_votes_check;
 ALTER TABLE public.election_contests ADD CONSTRAINT election_contests_total_rejected_votes_check
   CHECK (total_rejected_votes IS NULL OR total_rejected_votes >= 0);
+
+-- Preserve the EVM/general and postal split for NOTA where the source publishes it.
+ALTER TABLE public.ballot_choices
+  ADD COLUMN IF NOT EXISTS evm_votes INTEGER CHECK (evm_votes IS NULL OR evm_votes >= 0),
+  ADD COLUMN IF NOT EXISTS postal_votes INTEGER CHECK (postal_votes IS NULL OR postal_votes >= 0);
+
+ALTER TABLE public.ballot_choices
+  DROP CONSTRAINT IF EXISTS chk_ballot_choice_votes_split;
+ALTER TABLE public.ballot_choices
+  ADD CONSTRAINT chk_ballot_choice_votes_split CHECK (
+    (evm_votes IS NULL AND postal_votes IS NULL)
+    OR (
+      evm_votes IS NOT NULL
+      AND postal_votes IS NOT NULL
+      AND votes_received = evm_votes + postal_votes
+    )
+  );
 
 -- 3. Check constraint: check_contest_votes_conservation
 -- If total_rejected_votes IS NULL, conservation is UNRESOLVED and condition succeeds.
@@ -202,82 +216,221 @@ BEGIN
 END;
 $$;
 
--- 6. Apply authoritative statutory benchmarks for Kodangal and Gajwel
-DO $$
-DECLARE
-  v_kodangal_contest_id UUID := '01900000-0000-0000-0000-000000000003'::uuid;
-  v_gajwel_contest_id UUID := '01900000-0000-0000-0000-000000000004'::uuid;
-  v_cand_bramesh UUID := '01900000-0000-0000-0000-000000000023'::uuid;
-  v_cand_eatala UUID := '01900000-0000-0000-0000-000000000025'::uuid;
-  v_cand_kodangal_pool UUID := '01900000-0000-0000-0000-000000000027'::uuid;
-  v_cand_gajwel_pool UUID := '01900000-0000-0000-0000-000000000028'::uuid;
-BEGIN
-  -- A. Kodangal Candidacies Update:
-  -- Bantu Ramesh Kumar (BJP): 3,988 votes (Form 20 / Gazette: EVM 3,928, Postal 60)
-  UPDATE public.candidacies
-  SET votes_received = 3988, evm_votes = 3928, postal_votes = 60, vote_share = 2.04
-  WHERE id = v_cand_bramesh;
+-- 6. Register the ECI source documents, the 2023 event and two fully sourced
+--    constituency contests. This is a bounded two-seat dataset, not a claim
+--    that all 119 Assembly constituencies have been loaded here.
+INSERT INTO public.datasets (id, name, domain, description, source_id, license)
+VALUES (
+  'telangana_2023_eci_election_results',
+  'Telangana 2023 Assembly Election Results (selected constituencies)',
+  'election',
+  'Official Election Commission of India detailed results and constituency summary records for Kodangal AC 72 and Gajwel AC 42.',
+  'eci',
+  'Government Open Data'
+)
+ON CONFLICT (id) DO NOTHING;
 
-  -- Kodangal Independent Pool: 6,847 votes (EVM 6,800, Postal 47)
-  UPDATE public.candidacies
-  SET votes_received = 6847, evm_votes = 6800, postal_votes = 47, vote_share = 3.51
-  WHERE id = v_cand_kodangal_pool;
+INSERT INTO public.dataset_versions (
+  id, dataset_id, version_tag, effective_from, effective_to, record_count,
+  default_status, metadata
+)
+VALUES (
+  'telangana_2023_eci_election_results_v1',
+  'telangana_2023_eci_election_results',
+  '2023_selected_acs_42_72',
+  '2023-11-30',
+  '2023-12-03',
+  61,
+  'UNKNOWN',
+  jsonb_build_object(
+    'scope', jsonb_build_array('TS-AC-072', 'TS-AC-042'),
+    'record_count_definition', '57 candidate results, 2 NOTA results, and 2 contest summaries',
+    'source_artifacts', jsonb_build_array(
+      jsonb_build_object(
+        'name', 'Detailed_Results.pdf',
+        'url', 'https://www.eci.gov.in/eci-backend/public/all_files/full-statistical-reports/telangana/2023/Detailed_Results.pdf',
+        'sha256', '359995af88c95cb93dd8a95c734a13bfa0d64ff78860a3f8df1c502e70937790'
+      ),
+      jsonb_build_object(
+        'name', 'Constituency_Data_Summery_Report.pdf',
+        'url', 'https://www.eci.gov.in/eci-backend/public/all_files/full-statistical-reports/telangana/2023/Constituency_Data_Summery_Report.pdf',
+        'sha256', '2eba61dacb2e0a9f0518d32ad2aa35c80ff19597e80ea313631cc75cfa06835f'
+      ),
+      jsonb_build_object(
+        'name', 'List_Of_Political_Parties_Participated.pdf',
+        'url', 'https://www.eci.gov.in/eci-backend/public/all_files/full-statistical-reports/telangana/2023/List_Of_Political_Parties_Participated.pdf',
+        'sha256', 'e22db9a5845cdf025a667473516ad2d0503cb1dbd822b5fc806b56abbb8be3d7'
+      )
+    ),
+    'notes', 'The ECI Detailed Results report lists candidate and NOTA EVM/general and postal votes. The constituency summary provides electors, total voters, valid votes, rejected ballot count and turnout. ECI statutory Form 20 records remain authoritative where a discrepancy arises.'
+  )
+)
+ON CONFLICT (id) DO NOTHING;
 
-  -- Kodangal NOTA: 2,002 votes
-  UPDATE public.ballot_choices
-  SET votes_received = 2002, vote_share = 1.03
-  WHERE contest_id = v_kodangal_contest_id AND choice_type = 'NOTA';
+INSERT INTO public.evidence_records (
+  id, dataset_version_id, artifact_name, artifact_sha256,
+  verification_authority, verified_by, verification_notes
+)
+VALUES
+  (
+    '01900000-0000-0000-0000-000000000010'::uuid,
+    'telangana_2023_eci_election_results_v1',
+    'Detailed_Results.pdf',
+    '359995af88c95cb93dd8a95c734a13bfa0d64ff78860a3f8df1c502e70937790',
+    'Election Commission of India',
+    'migration_052_source_reconciliation',
+    'Candidate names, party codes, order, EVM/general votes, postal votes, totals and NOTA entries for Kodangal AC 72 and Gajwel AC 42 were checked against the published detailed results report.'
+  ),
+  (
+    '01900000-0000-0000-0000-000000000011'::uuid,
+    'telangana_2023_eci_election_results_v1',
+    'Constituency_Data_Summery_Report.pdf',
+    '2eba61dacb2e0a9f0518d32ad2aa35c80ff19597e80ea313631cc75cfa06835f',
+    'Election Commission of India',
+    'migration_052_source_reconciliation',
+    'Elector, total-voter, valid-vote, rejected-ballot and turnout values for AC 72 and AC 42 were checked against the published constituency summary report.'
+  ),
+  (
+    '01900000-0000-0000-0000-000000000012'::uuid,
+    'telangana_2023_eci_election_results_v1',
+    'List_Of_Political_Parties_Participated.pdf',
+    'e22db9a5845cdf025a667473516ad2d0503cb1dbd822b5fc806b56abbb8be3d7',
+    'Election Commission of India',
+    'migration_052_source_reconciliation',
+    'Political party names and abbreviations used for these candidacies were checked against the published Telangana 2023 participating-parties list.'
+  )
+ON CONFLICT (id) DO NOTHING;
 
-  -- Kodangal Contest Update:
-  -- total_valid_votes = 195,163 (193,161 candidates + 2,002 NOTA)
-  -- total_rejected_votes = 124 (Form 20 independent postal rejected ballots)
-  -- total_votes_polled = 195,287 (195,163 valid + 124 rejected postal)
-  UPDATE public.election_contests
-  SET
-    total_electors = 240490,
-    total_valid_votes = 195163,
-    total_rejected_votes = 124,
-    total_votes_polled = 195287,
-    total_nota_votes = 2002,
-    turnout_percentage = 81.20,
-    victory_margin = 32532
-  WHERE id = v_kodangal_contest_id;
+UPDATE public.dataset_versions
+SET verification_evidence_id = '01900000-0000-0000-0000-000000000010'::uuid,
+    default_status = 'OFFICIAL'
+WHERE id = 'telangana_2023_eci_election_results_v1';
 
-  -- B. Gajwel Candidacies Update:
-  -- Eatala Rajender (BJP): 66,653 votes (ECI Detailed Results: EVM 65,961, Postal 692)
-  UPDATE public.candidacies
-  SET votes_received = 66653, evm_votes = 65961, postal_votes = 692, vote_share = 29.27
-  WHERE id = v_cand_eatala;
+INSERT INTO public.provenance_records (
+  id, dataset_version_id, source_record_id, status, transformation_type,
+  transform_version, operator, metadata
+)
+VALUES (
+  '01900000-0000-0000-0000-000000000001'::uuid,
+  'telangana_2023_eci_election_results_v1',
+  'eci-telangana-2023-ac-42-ac-72',
+  'UNKNOWN',
+  'official_result_transcription',
+  '1.0.0',
+  'migration_052_source_reconciliation',
+  jsonb_build_object('source', 'Election Commission of India', 'scope', jsonb_build_array('TS-AC-072', 'TS-AC-042'))
+)
+ON CONFLICT (id) DO NOTHING;
 
-  -- Gajwel Independent Pool: 15,965 votes (13 candidates pool: EVM 15,900, Postal 65)
-  UPDATE public.candidacies
-  SET votes_received = 15965, evm_votes = 15900, postal_votes = 65, vote_share = 7.01
-  WHERE id = v_cand_gajwel_pool;
+UPDATE public.provenance_records
+SET status = 'OFFICIAL',
+    verification_evidence_id = '01900000-0000-0000-0000-000000000010'::uuid,
+    verified_by = 'migration_052_source_reconciliation'
+WHERE id = '01900000-0000-0000-0000-000000000001'::uuid;
 
-  -- Gajwel NOTA: 832 votes
-  UPDATE public.ballot_choices
-  SET votes_received = 832, vote_share = 0.37
-  WHERE contest_id = v_gajwel_contest_id AND choice_type = 'NOTA';
+INSERT INTO public.election_events (
+  id, election_code, state_code, election_type, election_year, title,
+  notification_date, polling_date, counting_date, status,
+  total_constituencies, total_electors, total_votes_polled, turnout_percentage,
+  data_status, provenance_id, metadata
+)
+VALUES (
+  '01900000-0000-0000-0000-000000000002'::uuid,
+  'TS-ASM-2023',
+  'TS',
+  'assembly',
+  2023,
+  'Telangana Legislative Assembly Election 2023',
+  NULL,
+  '2023-11-30',
+  '2023-12-03',
+  'completed',
+  119,
+  NULL,
+  NULL,
+  NULL,
+  'OFFICIAL',
+  '01900000-0000-0000-0000-000000000001'::uuid,
+  jsonb_build_object('source', 'Election Commission of India', 'loaded_contest_count', 2, 'event_aggregate_status', 'not_loaded_for_all_constituencies')
+)
+ON CONFLICT (id) DO UPDATE SET
+  election_code = EXCLUDED.election_code,
+  state_code = EXCLUDED.state_code,
+  election_type = EXCLUDED.election_type,
+  election_year = EXCLUDED.election_year,
+  title = EXCLUDED.title,
+  polling_date = EXCLUDED.polling_date,
+  counting_date = EXCLUDED.counting_date,
+  status = EXCLUDED.status,
+  total_constituencies = EXCLUDED.total_constituencies,
+  total_electors = NULL,
+  total_votes_polled = NULL,
+  turnout_percentage = NULL,
+  data_status = EXCLUDED.data_status,
+  provenance_id = EXCLUDED.provenance_id,
+  metadata = EXCLUDED.metadata,
+  updated_at = now();
 
-  -- Gajwel Contest Update:
-  -- total_valid_votes = 227,702 (226,870 candidates + 832 NOTA)
-  -- total_rejected_votes = NULL (UNKNOWN: anti-derivation rule strictly enforced)
-  -- total_votes_polled = 232,417 (ECI turnout)
-  -- victory_margin = 45,031 (111,684 - 66,653)
-  UPDATE public.election_contests
-  SET
-    total_electors = 267882,
-    total_valid_votes = 227702,
-    total_rejected_votes = NULL,
-    total_votes_polled = 232417,
-    total_nota_votes = 832,
-    turnout_percentage = 86.76,
-    victory_margin = 45031
-  WHERE id = v_gajwel_contest_id;
-
-  -- Refresh contest metrics
-  PERFORM public.fn_refresh_contest_metrics(v_kodangal_contest_id);
-  PERFORM public.fn_refresh_contest_metrics(v_gajwel_contest_id);
-
-  RAISE NOTICE 'SUCCESS: Migration 052 applied authoritative persistence semantics.';
-END $$;
+INSERT INTO public.election_contests (
+  id, election_id, contest_code, constituency_id, constituency_name,
+  reservation_status, status, total_electors, total_votes_polled,
+  total_valid_votes, total_rejected_votes, total_nota_votes,
+  turnout_percentage, victory_margin, data_status, provenance_id, metadata
+)
+VALUES
+  (
+    '01900000-0000-0000-0000-000000000003'::uuid,
+    '01900000-0000-0000-0000-000000000002'::uuid,
+    'TS-ASM-2023-AC-072-KODANGAL',
+    'TS-AC-72',
+    'Kodangal',
+    'GEN',
+    'completed',
+    236789,
+    195187,
+    195163,
+    24,
+    2002,
+    82.43,
+    32532,
+    'OFFICIAL',
+    '01900000-0000-0000-0000-000000000001'::uuid,
+    jsonb_build_object('eci_ac_number', 72, 'total_valid_definition', 'valid candidate votes plus NOTA', 'rejected_ballot_count_source', 'Constituency_Data_Summery_Report.pdf')
+  ),
+  (
+    '01900000-0000-0000-0000-000000000004'::uuid,
+    '01900000-0000-0000-0000-000000000002'::uuid,
+    'TS-ASM-2023-AC-042-GAJWEL',
+    'TS-AC-42',
+    'Gajwel',
+    'GEN',
+    'completed',
+    274726,
+    232456,
+    232417,
+    39,
+    832,
+    84.61,
+    45031,
+    'OFFICIAL',
+    '01900000-0000-0000-0000-000000000001'::uuid,
+    jsonb_build_object('eci_ac_number', 42, 'total_valid_definition', 'valid candidate votes plus NOTA', 'rejected_ballot_count_source', 'Constituency_Data_Summery_Report.pdf')
+  )
+ON CONFLICT (id) DO UPDATE SET
+  election_id = EXCLUDED.election_id,
+  contest_code = EXCLUDED.contest_code,
+  constituency_id = EXCLUDED.constituency_id,
+  constituency_name = EXCLUDED.constituency_name,
+  reservation_status = EXCLUDED.reservation_status,
+  status = EXCLUDED.status,
+  total_electors = EXCLUDED.total_electors,
+  total_votes_polled = EXCLUDED.total_votes_polled,
+  total_valid_votes = EXCLUDED.total_valid_votes,
+  total_rejected_votes = EXCLUDED.total_rejected_votes,
+  total_nota_votes = EXCLUDED.total_nota_votes,
+  turnout_percentage = EXCLUDED.turnout_percentage,
+  victory_margin = EXCLUDED.victory_margin,
+  data_status = EXCLUDED.data_status,
+  provenance_id = EXCLUDED.provenance_id,
+  metadata = EXCLUDED.metadata,
+  updated_at = now();

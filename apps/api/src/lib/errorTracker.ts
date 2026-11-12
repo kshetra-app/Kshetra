@@ -1,3 +1,4 @@
+import { isProductionLikeRuntime } from './runtimeEnvironment';
 /**
  * Operational Error Tracker & Classification Engine (JOB W004-R1 / Amendment v1.4)
  *
@@ -147,7 +148,7 @@ class ErrorTracker {
         this.sentryClient.init({
           dsn,
           environment: process.env.NODE_ENV || 'development',
-          tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.2 : 1.0,
+          tracesSampleRate: isProductionLikeRuntime() ? 0.2 : 1.0,
         });
         this.isSentryInitialized = true;
       } catch {

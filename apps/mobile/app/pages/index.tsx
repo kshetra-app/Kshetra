@@ -8,11 +8,13 @@ import {
   RefreshControl,
   Share,
   Modal,
+  ActivityIndicator,
 } from 'react-native';
 import { getUnifiedConstituenciesForState } from '../../lib/stateDataAdapter';
 import { useActiveStateStore } from '../../stores/activeState';
 import StateSwitcher from '../../components/StateSwitcher';
 import type { AspirantProfile } from '../../lib/aspirantTypes';
+import { isAspirantMetricAvailable } from '../../lib/aspirantTypes';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -33,6 +35,7 @@ type PageTab = 'aspirants' | 'politicians' | 'my_page';
 
 export default function PagesScreen() {
   const { t } = useTranslation();
+  const unavailableLabel = t('constituency.dataUnavailable', { defaultValue: 'Unavailable' });
   const { colors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -55,7 +58,7 @@ export default function PagesScreen() {
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const stateRepresentatives = useMemo(() => {
     const list = getUnifiedConstituenciesForState(stateCode === 'IN' ? 'AP' : stateCode);
-    return list.slice(0, 35);
+    return list.filter((c) => c.officeholderStatus !== 'VACANT').slice(0, 35);
   }, [stateCode]);
 
   const authUser = useAuthStore((s) => s.user);
@@ -63,12 +66,16 @@ export default function PagesScreen() {
 
   // Aspirant store
   const aspirantProfile = useAspirantStore((s) => s.profile);
+  const aspirantProfileStatus = useAspirantStore((s) => s.profileStatus);
   const publicAspirants = useAspirantStore((s) => s.publicAspirants);
   const getCivicScore = useAspirantStore((s) => s.getCivicScore);
   const badges = useAspirantStore((s) => s.badges);
   const endorseAspirant = useAspirantStore((s) => s.endorseAspirant);
   const endorsedIds = useAspirantStore((s) => s.endorsedIds);
   const hydrateAspirants = useAspirantStore((s) => s.hydrateAspirants);
+  const hydrateAspirantProfile = useAspirantStore((s) => s.hydrateAspirantProfile);
+  const hydrateAcademyBadges = useAspirantStore((s) => s.hydrateAcademyBadges);
+  const academyBadgesStatus = useAspirantStore((s) => s.academyBadgesStatus);
 
   const loadPoliticians = useCallback(async () => {
     setLoadingPoliticians(true);
@@ -79,8 +86,10 @@ export default function PagesScreen() {
 
   useEffect(() => {
     hydrateAspirants();
+    hydrateAspirantProfile();
+    hydrateAcademyBadges();
     loadPoliticians();
-  }, [hydrateAspirants, loadPoliticians]);
+  }, [hydrateAspirants, hydrateAspirantProfile, hydrateAcademyBadges, loadPoliticians, authUser?.id]);
 
   useEffect(() => {
     if (tab === 'my_page' || tab === 'aspirants' || tab === 'politicians') {
@@ -90,9 +99,9 @@ export default function PagesScreen() {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await Promise.all([hydrateAspirants(), loadPoliticians()]);
+    await Promise.all([hydrateAspirants(), hydrateAspirantProfile(), hydrateAcademyBadges(), loadPoliticians()]);
     setRefreshing(false);
-  }, [hydrateAspirants, loadPoliticians]);
+  }, [hydrateAspirants, hydrateAspirantProfile, hydrateAcademyBadges, loadPoliticians]);
 
   const isEmailVerified = authUser ? Boolean(authUser.email_confirmed_at) : false;
   const userCanCreate = canCreatePage(userProfile?.role, isEmailVerified);
@@ -267,7 +276,11 @@ export default function PagesScreen() {
                     </View>
                     <View style={[styles.scoreBadge, { backgroundColor: '#F0FDF4' }]}>
                       <Ionicons name="trophy" size={12} color="#16A34A" />
-                      <Text style={styles.scoreText}>{asp.civicScore} {t('pages.pts', { defaultValue: 'pts' })}</Text>
+                      <Text style={styles.scoreText}>
+                        {isAspirantMetricAvailable(asp, 'civicScore')
+                          ? `${asp.civicScore} ${t('pages.pts', { defaultValue: 'pts' })}`
+                          : unavailableLabel}
+                      </Text>
                     </View>
                   </View>
 
@@ -279,19 +292,27 @@ export default function PagesScreen() {
 
                   <View style={styles.aspirantStatsRow}>
                     <View style={styles.statItem}>
-                      <Text style={[styles.statValue, { color: colors.text }]}>{asp.issuesReported}</Text>
+                      <Text style={[styles.statValue, { color: colors.text }]}>
+                        {isAspirantMetricAvailable(asp, 'issuesReported') ? asp.issuesReported : unavailableLabel}
+                      </Text>
                       <Text style={[styles.statLabel, { color: colors.textMuted }]}>
                         {t('pages.issues', { defaultValue: 'Issues' })}
                       </Text>
                     </View>
                     <View style={styles.statItem}>
-                      <Text style={[styles.statValue, { color: colors.text }]}>{asp.communityEndorsements}</Text>
+                      <Text style={[styles.statValue, { color: colors.text }]}>
+                        {isAspirantMetricAvailable(asp, 'communityEndorsements')
+                          ? asp.communityEndorsements
+                          : unavailableLabel}
+                      </Text>
                       <Text style={[styles.statLabel, { color: colors.textMuted }]}>
                         {t('pages.endorsements', { defaultValue: 'Endorsements' })}
                       </Text>
                     </View>
                     <View style={styles.statItem}>
-                      <Text style={[styles.statValue, { color: colors.text }]}>{asp.modulesCompleted}</Text>
+                      <Text style={[styles.statValue, { color: colors.text }]}>
+                        {isAspirantMetricAvailable(asp, 'modulesCompleted') ? asp.modulesCompleted : unavailableLabel}
+                      </Text>
                       <Text style={[styles.statLabel, { color: colors.textMuted }]}>
                         {t('pages.modules', { defaultValue: 'Modules' })}
                       </Text>
@@ -461,13 +482,30 @@ export default function PagesScreen() {
         {/* ─── TAB 3: MY PAGE ─── */}
         {activeTab === 'my_page' && (
           <View style={styles.tabContent}>
-            {aspirantProfile || userCanCreate ? (
+            {aspirantProfileStatus === 'loading' ? (
+              <View style={[styles.createPromptCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <ActivityIndicator color={colors.primary} />
+                <Text style={[styles.promptDesc, { color: colors.textSecondary }]}>{t('common.loading')}</Text>
+              </View>
+            ) : aspirantProfileStatus === 'error' ? (
+              <View style={[styles.createPromptCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <Ionicons name="cloud-offline-outline" size={40} color={colors.textMuted} />
+                <Text style={[styles.promptDesc, { color: colors.textSecondary }]}>
+                  {t('pages.aspirantProfileUnavailable', { defaultValue: 'Your aspirant profile could not be loaded.' })}
+                </Text>
+                <Pressable style={[styles.btnActionPrimary, { backgroundColor: colors.primary }]} onPress={() => void hydrateAspirantProfile()}>
+                  <Text style={styles.btnActionPrimaryText}>{t('common.retry')}</Text>
+                </Pressable>
+              </View>
+            ) : aspirantProfile || userCanCreate ? (
               <>
                 {aspirantProfile ? (
                   <>
                     {civicScore ? (
                       <CivicScoreCard score={civicScore} displayName={aspirantProfile.displayName} />
-                    ) : null}
+                    ) : (
+                      <Text style={{ color: colors.textMuted, marginBottom: 12 }}>{unavailableLabel}</Text>
+                    )}
                     <View style={[styles.profileMetaCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                       <Ionicons name="rocket" size={20} color="#002B7F" />
                       <View style={{ flex: 1, marginLeft: 12 }}>
@@ -496,7 +534,17 @@ export default function PagesScreen() {
                       <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />
                     </Pressable>
 
-                    <CivicBadgeGrid earned={badges} />
+                    {academyBadgesStatus === 'loading' ? (
+                      <ActivityIndicator color={colors.primary} />
+                    ) : academyBadgesStatus === 'error' ? (
+                      <Pressable onPress={() => void hydrateAcademyBadges()}>
+                        <Text style={[styles.promptDesc, { color: colors.textSecondary }]}>
+                          {t('pages.badgesUnavailable', { defaultValue: 'Badges could not be loaded. Tap to retry.' })}
+                        </Text>
+                      </Pressable>
+                    ) : (
+                      <CivicBadgeGrid earned={badges} />
+                    )}
 
                     {/* Next Steps Card (FIX-14) */}
                     <View style={[styles.nextStepsCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>

@@ -226,17 +226,39 @@ export interface SpatialTopologySummary {
   crossBoundaryOverlapsCount: number; // Must be 0
   stateContainmentViolationsCount: number; // Must be 0
   srid4326CompliantCount: number;
+  geometryTypeViolationsCount: number;
+  invalidSridCount: number;
+  assemblyBoundaryCoveragePercent: number;
+  missingAssemblyBoundaries: number;
+  pcBoundaryCoveragePercent: number;
+  missingPcBoundaries: number;
+  districtBoundaryCoveragePercent: number;
+  missingDistrictBoundaries: number;
+  statePolygonsAvailable: boolean;
+  sourceProvenanceViolationsCount: number;
+  stateCoverageGapCount: number;
+  checksComplete: boolean;
+  uncertifiedReasons: string[];
 }
 
 export interface SpatialTopologyViolation {
-  entityType: 'AC' | 'PC' | 'DISTRICT';
+  entityType: 'STATE' | 'AC' | 'PC' | 'DISTRICT';
   entityId: string;
   name: string;
-  violationType: 'INVALID_GEOMETRY' | 'SLIVER' | 'OVERLAP' | 'CONTAINMENT_BREACH' | 'INVALID_SRID';
+  violationType:
+    | 'INVALID_GEOMETRY'
+    | 'SLIVER'
+    | 'OVERLAP'
+    | 'CONTAINMENT_BREACH'
+    | 'INVALID_SRID'
+    | 'MISSING_GEOMETRY'
+    | 'SOURCE_PROVENANCE_MISSING'
+    | 'COVERAGE_GAP';
   details: string;
 }
 
 export interface SpatialTopologyAuditReport {
+  auditId: string;
   timestamp: string;
   summary: SpatialTopologySummary;
   certified: boolean;

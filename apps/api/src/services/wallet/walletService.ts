@@ -1,13 +1,28 @@
-import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { isProductionLikeRuntime } from '../../lib/runtimeEnvironment';
-
-const isProductionRuntime = () => isProductionLikeRuntime();
+import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 
 export class WalletUnavailableError extends Error {
   constructor() {
     super('Campaign wallet data is not available from verified persistent storage.');
     this.name = 'WalletUnavailableError';
   }
+}
+
+function isProductionRuntime(): boolean {
+  return isProductionLikeRuntime();
+}
+
+function mapWalletRow(data: any): CampaignWallet {
+  return {
+    id: data.id,
+    politicianId: data.politician_id,
+    balanceINR: Number(data.balance_inr),
+    totalRechargedINR: Number(data.total_recharged_inr),
+    totalSpentINR: Number(data.total_spent_inr),
+    currency: data.currency || 'INR',
+    createdAt: data.created_at,
+    updatedAt: data.updated_at,
+  };
 }
 
 export interface WalletTransaction {
@@ -79,30 +94,12 @@ const inMemoryTransactions: WalletTransaction[] = [
  * Retrieves the politician's active campaign wallet balance.
  */
 export async function getPoliticianWallet(politicianId: string): Promise<CampaignWallet> {
-  const pId = isProductionRuntime() ? politicianId : politicianId || 'pp1';
+  const production = isProductionRuntime();
+  const pId = politicianId?.trim() || (production ? '' : 'pp1');
+  if (!pId) throw new Error('WALLET_PRINCIPAL_REQUIRED');
 
-  if (isProductionRuntime()) {
-    if (!isSupabaseConfigured || !pId) throw new WalletUnavailableError();
-    try {
-      const { data, error } = await supabase
-        .from('campaign_wallets')
-        .select('*')
-        .eq('politician_id', pId)
-        .maybeSingle();
-      if (error || !data) throw new WalletUnavailableError();
-      return {
-        id: data.id,
-        politicianId: data.politician_id,
-        balanceINR: Number(data.balance_inr),
-        totalRechargedINR: Number(data.total_recharged_inr),
-        totalSpentINR: Number(data.total_spent_inr),
-        currency: data.currency || 'INR',
-        createdAt: data.created_at,
-        updatedAt: data.updated_at,
-      };
-    } catch {
-      throw new WalletUnavailableError();
-    }
+  if (production && !isSupabaseConfigured) {
+    throw new Error('WALLET_DATABASE_UNAVAILABLE');
   }
 
   if (isSupabaseConfigured) {
@@ -113,20 +110,31 @@ export async function getPoliticianWallet(politicianId: string): Promise<Campaig
         .eq('politician_id', pId)
         .maybeSingle();
 
-      if (!error && data) {
-        return {
-          id: data.id,
-          politicianId: data.politician_id,
-          balanceINR: Number(data.balance_inr),
-          totalRechargedINR: Number(data.total_recharged_inr),
-          totalSpentINR: Number(data.total_spent_inr),
-          currency: data.currency || 'INR',
-          createdAt: data.created_at,
-          updatedAt: data.updated_at,
-        };
+      if (error) {
+        if (production) throw new Error(`WALLET_DATABASE_ERROR: ${error.message}`);
+      } else if (data) {
+        return mapWalletRow(data);
+      } else if (production) {
+        // A missing wallet is a zero-balance wallet only after that state is persisted.
+        const { data: created, error: createError } = await supabase
+          .from('campaign_wallets')
+          .insert({ politician_id: pId })
+          .select('*')
+          .single();
+
+        if (createError || !created) {
+          throw new Error(
+            `WALLET_INITIALIZATION_FAILED: ${createError?.message || 'No wallet row returned'}`,
+          );
+        }
+        return mapWalletRow(created);
       }
-    } catch {}
+    } catch (error) {
+      if (production) throw error;
+    }
   }
+
+  if (production) throw new Error('WALLET_DATABASE_UNAVAILABLE');
 
   if (!inMemoryWallets[pId]) {
     inMemoryWallets[pId] = {
@@ -148,7 +156,9 @@ export async function getPoliticianWallet(politicianId: string): Promise<Campaig
  * Creates a payment order for topping up the campaign wallet.
  */
 export async function createWalletRechargeOrder(politicianId: string, amountINR: number) {
-  if (isProductionRuntime()) throw new WalletUnavailableError();
+  if (isProductionRuntime()) {
+    throw new Error('PRODUCTION_RECHARGE_ORDERS_REQUIRE_THE_DURABLE_PROVIDER_ORDER_ROUTE');
+  }
   if (amountINR < 500) {
     throw new Error('Minimum wallet recharge is ₹500');
   }
@@ -177,7 +187,10 @@ export async function creditWallet(
   amountINR: number,
   paymentReference: string,
 ): Promise<CampaignWallet> {
-  if (isProductionRuntime()) throw new WalletUnavailableError();
+  if (isProductionRuntime()) {
+    throw new Error('PRODUCTION_RECHARGES_REQUIRE_ATOMIC_PROVIDER_VERIFICATION');
+  }
+
   const wallet = await getPoliticianWallet(politicianId);
   const newBalance = wallet.balanceINR + amountINR;
   const newRecharged = wallet.totalRechargedINR + amountINR;
@@ -238,7 +251,10 @@ export async function deductWalletForService(
   referenceId: string,
   description: string,
 ): Promise<CampaignWallet> {
-  if (isProductionRuntime()) throw new WalletUnavailableError();
+  if (isProductionRuntime()) {
+    throw new Error('PRODUCTION_WALLET_DEBITS_REQUIRE_AN_ATOMIC_PERSISTED_LEDGER_OPERATION');
+  }
+
   const wallet = await getPoliticianWallet(politicianId);
 
   if (wallet.balanceINR < amountINR) {
@@ -302,32 +318,11 @@ export async function deductWalletForService(
  * Returns past wallet transaction history.
  */
 export async function getWalletTransactions(politicianId: string): Promise<WalletTransaction[]> {
-  const pId = isProductionRuntime() ? politicianId : politicianId || 'pp1';
-
-  if (isProductionRuntime()) {
-    if (!isSupabaseConfigured || !pId) throw new WalletUnavailableError();
-    try {
-      const { data, error } = await supabase
-        .from('wallet_transactions')
-        .select('*')
-        .eq('politician_id', pId)
-        .order('created_at', { ascending: false });
-      if (error || !data) throw new WalletUnavailableError();
-      return data.map((d) => ({
-        id: d.id,
-        walletId: d.wallet_id,
-        politicianId: d.politician_id,
-        type: d.type,
-        amountINR: Number(d.amount_inr),
-        serviceType: d.service_type,
-        referenceId: d.reference_id,
-        description: d.description,
-        balanceAfterINR: Number(d.balance_after_inr),
-        createdAt: d.created_at,
-      }));
-    } catch {
-      throw new WalletUnavailableError();
-    }
+  const production = isProductionRuntime();
+  const pId = politicianId?.trim() || (production ? '' : 'pp1');
+  if (!pId) throw new Error('WALLET_PRINCIPAL_REQUIRED');
+  if (production && !isSupabaseConfigured) {
+    throw new Error('WALLET_DATABASE_UNAVAILABLE');
   }
 
   if (isSupabaseConfigured) {
@@ -338,7 +333,9 @@ export async function getWalletTransactions(politicianId: string): Promise<Walle
         .eq('politician_id', pId)
         .order('created_at', { ascending: false });
 
-      if (!error && data && data.length > 0) {
+      if (error) {
+        if (production) throw new Error(`WALLET_DATABASE_ERROR: ${error.message}`);
+      } else if (data) {
         return data.map((d) => ({
           id: d.id,
           walletId: d.wallet_id,
@@ -352,8 +349,12 @@ export async function getWalletTransactions(politicianId: string): Promise<Walle
           createdAt: d.created_at,
         }));
       }
-    } catch {}
+    } catch (error) {
+      if (production) throw error;
+    }
   }
+
+  if (production) throw new Error('WALLET_DATABASE_UNAVAILABLE');
 
   return inMemoryTransactions.filter((tx) => tx.politicianId === pId || !pId);
 }

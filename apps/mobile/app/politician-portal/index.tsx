@@ -1,6 +1,6 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl } from 'react-native';
+import { ActivityIndicator, View, Text, StyleSheet, ScrollView, Pressable, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,6 +10,7 @@ import EventCard from '../../components/EventCard';
 import ManifestoCard from '../../components/ManifestoCard';
 import { useTheme } from '../../lib/theme';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
+import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
 
 type Tab = 'politicians' | 'events' | 'manifestos' | 'surveys';
 
@@ -33,6 +34,13 @@ export default function PoliticianPortalScreen() {
   const manifestos = usePoliticianPortalStore((s) => s.manifestos);
   const surveys = usePoliticianPortalStore((s) => s.surveys);
   const rsvpEvent = usePoliticianPortalStore((s) => s.rsvpEvent);
+  const loadPortal = usePoliticianPortalStore((s) => s.loadPortal);
+  const portalLoadStatus = usePoliticianPortalStore((s) => s.portalLoadStatus);
+  const portalLoadErrors = usePoliticianPortalStore((s) => s.portalLoadErrors);
+
+  useEffect(() => {
+    if (IS_LIVE_ENVIRONMENT) void loadPortal();
+  }, [loadPortal]);
 
   const upcomingEvents = useMemo(() => {
     return events
@@ -40,10 +48,20 @@ export default function PoliticianPortalScreen() {
       .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
   }, [events]);
 
-  const onRefresh = useCallback(() => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 1000);
-  }, []);
+    await loadPortal();
+    setRefreshing(false);
+  }, [loadPortal]);
+
+  const selectedTabHasData =
+    (activeTab === 'politicians' && politicians.length > 0) ||
+    (activeTab === 'events' && events.length > 0) ||
+    (activeTab === 'manifestos' && manifestos.length > 0) ||
+    (activeTab === 'surveys' && surveys.length > 0);
+
+  const showLiveLoadState = IS_LIVE_ENVIRONMENT && !selectedTabHasData;
+  const selectedTabFailed = portalLoadErrors.includes(activeTab);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -84,12 +102,29 @@ export default function PoliticianPortalScreen() {
       </ScrollView>
 
       <ScrollView style={styles.content} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}>
+        {IS_LIVE_ENVIRONMENT && (portalLoadStatus === 'idle' || portalLoadStatus === 'loading') && (
+          <View style={styles.emptyState}>
+            <ActivityIndicator color={colors.primary} />
+            <Text style={[styles.emptyText, { color: colors.textMuted }]}>{t('common.loading')}</Text>
+          </View>
+        )}
+
+        {IS_LIVE_ENVIRONMENT && (portalLoadStatus === 'error' || portalLoadStatus === 'partial') && showLiveLoadState && selectedTabFailed && (
+          <View style={styles.emptyState}>
+            <Text style={[styles.emptyText, { color: colors.textMuted }]}>{t('common.error')}</Text>
+            <Pressable style={[styles.retryButton, { backgroundColor: colors.primary }]} onPress={() => void loadPortal()}>
+              <Text style={styles.retryLabel}>{t('common.retry')}</Text>
+            </Pressable>
+          </View>
+        )}
+
         {activeTab === 'politicians' && (
           <>
             <Text style={styles.sectionTitle}>{t('politicianPortal.registeredPoliticians')}</Text>
             {politicians.map((p) => (
               <PoliticianPortalCard key={p.id} politician={p} />
             ))}
+            {IS_LIVE_ENVIRONMENT && (portalLoadStatus === 'loaded' || portalLoadStatus === 'partial') && !selectedTabFailed && politicians.length === 0 && <Text style={[styles.emptyText, { color: colors.textMuted }]}>{t('common.noResults')}</Text>}
           </>
         )}
 
@@ -107,6 +142,7 @@ export default function PoliticianPortalScreen() {
             {events.map((e) => (
               <EventCard key={e.id} event={e} />
             ))}
+            {IS_LIVE_ENVIRONMENT && (portalLoadStatus === 'loaded' || portalLoadStatus === 'partial') && !selectedTabFailed && events.length === 0 && <Text style={[styles.emptyText, { color: colors.textMuted }]}>{t('common.noResults')}</Text>}
           </>
         )}
 
@@ -116,6 +152,7 @@ export default function PoliticianPortalScreen() {
             {manifestos.map((m) => (
               <ManifestoCard key={m.id} manifesto={m} />
             ))}
+            {IS_LIVE_ENVIRONMENT && (portalLoadStatus === 'loaded' || portalLoadStatus === 'partial') && !selectedTabFailed && manifestos.length === 0 && <Text style={[styles.emptyText, { color: colors.textMuted }]}>{t('common.noResults')}</Text>}
           </>
         )}
 
@@ -125,7 +162,7 @@ export default function PoliticianPortalScreen() {
             {surveys.map((s) => (
               <View key={s.id} style={styles.surveyCard}>
                 <Text style={styles.surveyQuestion}>{s.title}</Text>
-                <Text style={styles.surveyMeta}>{s.description} · {t('politicianPortal.responsesCount', { count: s.responseCount })}</Text>
+                <Text style={styles.surveyMeta}>{s.description}{s.responseCount !== null ? ` · ${t('politicianPortal.responsesCount', { count: s.responseCount })}` : ''}</Text>
                 {s.questions.slice(0, 3).map((q) => (
                   <View key={q.id} style={styles.optionRow}>
                     <Text style={styles.optionLabel} numberOfLines={1}>{q.text}</Text>
@@ -139,6 +176,7 @@ export default function PoliticianPortalScreen() {
                 )}
               </View>
             ))}
+            {IS_LIVE_ENVIRONMENT && (portalLoadStatus === 'loaded' || portalLoadStatus === 'partial') && !selectedTabFailed && surveys.length === 0 && <Text style={[styles.emptyText, { color: colors.textMuted }]}>{t('common.noResults')}</Text>}
           </>
         )}
 
@@ -176,4 +214,8 @@ const styles = StyleSheet.create({
   typePill: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 },
   typeText: { fontSize: 9, fontWeight: '700' },
   resultsLabel: { fontSize: 11, fontWeight: '600', marginTop: 8 },
+  emptyState: { alignItems: 'center', justifyContent: 'center', gap: 10, paddingVertical: 36, paddingHorizontal: 24 },
+  emptyText: { textAlign: 'center', fontSize: 13, paddingVertical: 12 },
+  retryButton: { paddingHorizontal: 16, paddingVertical: 9, borderRadius: 8 },
+  retryLabel: { color: '#FFFFFF', fontSize: 12, fontWeight: '700' },
 });

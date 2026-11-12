@@ -1,5 +1,6 @@
 import { getHistoricalPodiumForConstituency, getLatestPodiumForConstituency } from './historicalPodiumStore';
 import { getHistoricalResults } from './seedDataLoader';
+import { IS_LIVE_ENVIRONMENT } from './environment';
 /**
  * State Data Dispatcher — Unified routing for all state-specific data
  *
@@ -233,15 +234,22 @@ export function getMLAProfileForState(
   stateCode: string,
   acNo: number,
 ): MLAProfile | undefined {
+  // Bundled candidate/profile records are not current-officeholder evidence in live builds.
+  if (IS_LIVE_ENVIRONMENT) return undefined;
+
   const rawProfile = getRawMLAProfile(stateCode, acNo);
   const constituency = getUnifiedConstituenciesForState(stateCode).find(c => c.acNo === acNo);
 
+  // A vacant seat must not fall back to the former member's profile.
+  if (constituency?.officeholderStatus === 'VACANT') return undefined;
+  const currentMemberName = constituency?.currentMLA || constituency?.winnerName;
+
   // If no raw profile exists in state files, synthesize a verified minimal profile from constituency seed
   if (!rawProfile) {
-    if (!constituency || !constituency.winnerName) return undefined;
+    if (!constituency || !currentMemberName) return undefined;
     return {
       acNo,
-      name: constituency.winnerName,
+      name: currentMemberName,
       party: constituency.currentParty || constituency.winnerParty,
       gender: 'M',
       terms: 1,
@@ -254,14 +262,14 @@ export function getMLAProfileForState(
   if (!constituency) return rawProfile;
 
   // If names match verified constituency winner, return raw profile
-  if (namesMatch(rawProfile.name, constituency.winnerName)) return rawProfile;
+  if (currentMemberName && namesMatch(rawProfile.name, currentMemberName)) return rawProfile;
 
   // If raw profile name does not match verified sitting winner
   // (e.g. raw profile represents a candidate from a future simulated projection or different contest),
   // return a verified officeholder representation rather than leaking simulated attributes.
   return {
     acNo,
-    name: constituency.winnerName,
+    name: currentMemberName || constituency.winnerName,
     party: constituency.currentParty || constituency.winnerParty,
     gender: 'M',
     terms: 1,
@@ -338,6 +346,12 @@ export function getDemographicsForState(
   stateCode: string,
   acNo: number,
 ): ConstituencyDemographics | undefined {
+  // This dispatcher only reads bundled reference datasets. They do not carry
+  // per-value source, year, and constituency-scope metadata, so they cannot be
+  // presented as production constituency facts. Keep them available for local
+  // development while production waits for the provenance-backed API path.
+  if (IS_LIVE_ENVIRONMENT) return undefined;
+
   switch (stateCode) {
     case 'TS': return getTSDemo(acNo);
     case 'AP': return getAPConstituencyDemographics(acNo);
@@ -410,6 +424,10 @@ export function getHistoryForState(
   stateCode: string,
   acNo: number,
 ): ConstituencyHistoryEntry[] {
+  // Historical results are withheld from live seed paths until they are loaded
+  // through the canonical elections API.
+  if (IS_LIVE_ENVIRONMENT) return [];
+
   // 1. First priority: Pre-indexed, offline-verified podium store (1999–2024)
   const podiumList = getHistoricalPodiumForConstituency(stateCode, acNo);
   if (podiumList && podiumList.length > 0) {
@@ -570,6 +588,9 @@ export function isStrongholdForState(
   acNo: number,
   currentParty: string,
 ): boolean {
+  // This helper compares bundled history; it is not a production evidence source.
+  if (IS_LIVE_ENVIRONMENT) return false;
+
   switch (stateCode) {
     case 'TS':
       return isTSStronghold(acNo, currentParty);
@@ -633,6 +654,9 @@ function adaptElectionHistory(entries: any[]): ElectionHistoryEntry[] {
 export function getElectionHistoryForState(
   stateCode: string,
 ): ElectionHistoryEntry[] {
+  // Historical party totals are served only when backed by the elections API.
+  if (IS_LIVE_ENVIRONMENT) return [];
+
   switch (stateCode) {
     case 'TS': return TELANGANA_ELECTION_HISTORY;
     case 'AP': return AP_ELECTION_HISTORY;
@@ -731,6 +755,9 @@ export function getTimelineForState(
   stateCode: string,
   acNo: number,
 ): PoliticalLedgerEntry[] {
+  // Bundled political event records do not have production provenance metadata.
+  if (IS_LIVE_ENVIRONMENT) return [];
+
   switch (stateCode) {
     case 'TS': return getTSTimeline(acNo);
     case 'AP': return getAPConstituencyTimeline(acNo);
@@ -769,6 +796,8 @@ export function getTimelineForState(
 
 /** Whether a state has full data (MLA profiles, demographics, history, trivia) */
 export function hasFullDataForState(stateCode: string): boolean {
+  if (IS_LIVE_ENVIRONMENT) return false;
+
   return [
     'TS', 'AP', 'KA', 'MH', 'TN', 'KL', 'WB', 'UP',
     'RJ', 'GJ', 'JH', 'OD', 'DL', 'PB', 'HR', 'CG',

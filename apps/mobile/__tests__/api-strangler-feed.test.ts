@@ -16,6 +16,7 @@ describe('Track 3: Mobile API Strangler - Feed & Social Mutations', () => {
   let mockPost: jest.SpyInstance;
   let mockPatch: jest.SpyInstance;
   let mockDelete: jest.SpyInstance;
+  let mockGet: jest.SpyInstance;
 
   beforeEach(() => {
     mockPost = jest.spyOn(apiClient, 'post').mockImplementation((path: string, payload?: any) => {
@@ -56,12 +57,22 @@ describe('Track 3: Mobile API Strangler - Feed & Social Mutations', () => {
         requestId: 'req-test-123',
       } as any);
     });
+
+    mockGet = jest.spyOn(apiClient, 'get').mockImplementation((path: string) => {
+      const data = path === '/api/v1/aspirant/challenges'
+        ? { success: true, challenges: [], participation: [] }
+        : path === '/api/v1/aspirant/me'
+          ? { success: true, profile: null }
+          : { success: true, badges: [] };
+      return Promise.resolve({ data, status: 200, headers: {}, requestId: 'req-test-123' } as any);
+    });
   });
 
   afterEach(() => {
     mockPost.mockRestore();
     mockPatch.mockRestore();
     mockDelete.mockRestore();
+    mockGet.mockRestore();
   });
 
   describe('Feed & Social Mutations', () => {
@@ -197,8 +208,6 @@ describe('Track 3: Mobile API Strangler - Feed & Social Mutations', () => {
       const res = await dataService.uploadShort({
         title: 'Rally video',
         videoUrl: 'https://cdn.example.com/video.mp4',
-        channelName: 'Channel 1',
-        uploadedBy: 'usr-1',
         stateCode: 'TS',
         duration: 30,
       });
@@ -225,10 +234,11 @@ describe('Track 3: Mobile API Strangler - Feed & Social Mutations', () => {
         displayName: 'Aspirant John',
         stateCode: 'TS',
         targetConstituencyName: 'TS_1',
+        targetElectionYear: 2028,
       });
       expect(mockPost).toHaveBeenCalledWith(
         '/api/v1/aspirant/register',
-        expect.objectContaining({ displayName: 'Aspirant John' }),
+        expect.objectContaining({ displayName: 'Aspirant John', targetElectionYear: 2028 }),
         expect.objectContaining({ authPolicy: 'authenticated' }),
       );
       expect(res.success).toBe(true);
@@ -238,10 +248,42 @@ describe('Track 3: Mobile API Strangler - Feed & Social Mutations', () => {
       const res = await dataService.startModule('usr-1', 'mod-1');
       expect(mockPost).toHaveBeenCalledWith(
         '/api/v1/aspirant/modules/mod-1/start',
-        {},
+        { userId: 'usr-1' },
         expect.objectContaining({ authPolicy: 'authenticated' }),
       );
       expect(res).toBe(true);
+    });
+
+    it('fetches active challenges through the aspirant API', async () => {
+      await expect(dataService.fetchAcademyChallenges()).resolves.toEqual({ challenges: [], participation: [] });
+      expect(mockGet).toHaveBeenCalledWith(
+        '/api/v1/aspirant/challenges',
+        expect.objectContaining({ authPolicy: 'public' }),
+      );
+    });
+
+    it('routes the legacy challenge listing helper through the API with its state filter', async () => {
+      await expect(dataService.fetchChallenges('TS')).resolves.toEqual([]);
+      expect(mockGet).toHaveBeenCalledWith(
+        '/api/v1/aspirant/challenges',
+        expect.objectContaining({ authPolicy: 'public', query: { stateCode: 'TS' } }),
+      );
+    });
+
+    it('fetches earned badges through the authenticated aspirant API', async () => {
+      await expect(dataService.fetchAcademyBadges()).resolves.toEqual([]);
+      expect(mockGet).toHaveBeenCalledWith(
+        '/api/v1/aspirant/badges',
+        expect.objectContaining({ authPolicy: 'authenticated' }),
+      );
+    });
+
+    it('fetches the signed-in aspirant profile through the authenticated API', async () => {
+      await expect(dataService.fetchMyAspirantProfile()).resolves.toEqual({ success: true, profile: null });
+      expect(mockGet).toHaveBeenCalledWith(
+        '/api/v1/aspirant/me',
+        expect.objectContaining({ authPolicy: 'authenticated' }),
+      );
     });
   });
 });

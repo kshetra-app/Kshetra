@@ -16,13 +16,13 @@ describe('Map Enhancements & Premium Utilities', () => {
       expect(getAvailableYearsForState('KA')).toEqual([2018, 2023]);
     });
 
-    it('returns the configured 2016, 2021, and 2026 election years for TN, KL, and WB', () => {
+    it('returns historical and current election years for TN, KL, and WB', () => {
       expect(getAvailableYearsForState('TN')).toEqual([2016, 2021, 2026]);
       expect(getAvailableYearsForState('KL')).toEqual([2016, 2021, 2026]);
       expect(getAvailableYearsForState('WB')).toEqual([2016, 2021, 2026]);
     });
 
-    it('returns the configured historical election years for Rajasthan', () => {
+    it('returns Rajasthan historical and current election years', () => {
       expect(getAvailableYearsForState('RJ')).toEqual([2013, 2018, 2023]);
     });
   });
@@ -43,10 +43,13 @@ describe('Map Enhancements & Premium Utilities', () => {
 
     it('maps extrusion height expressions correctly', () => {
       const popExpr = getExtrusionHeightExpression('population');
-      expect(popExpr).toEqual(['+', 6000, ['*', ['coalesce', ['get', 'POPULATION'], 100000], 0.08]]);
+      expect(popExpr).toEqual(['+', 6000, ['*', ['coalesce', ['get', 'POPULATION'], 0], 0.08]]);
 
       const marginExpr = getExtrusionHeightExpression('margin');
-      expect(marginExpr).toEqual(['+', 6000, ['*', ['coalesce', ['get', 'MARGIN'], 5000], 0.5]]);
+      expect(marginExpr).toEqual(['+', 6000, ['*', ['coalesce', ['get', 'MARGIN'], 0], 0.5]]);
+
+      expect(getExtrusionHeightExpression('turnout')).toEqual(['+', 6000, ['*', ['coalesce', ['get', 'TURNOUT'], 0], 200]]);
+      expect(getExtrusionHeightExpression('literacy')).toEqual(['+', 6000, ['*', ['coalesce', ['get', 'LITERACY'], 0], 200]]);
 
       const defaultExpr = getExtrusionHeightExpression('party');
       expect(defaultExpr).toEqual(['+', 8000, ['*', ['coalesce', ['get', 'MARGIN'], 8000], 0.35]]);
@@ -73,6 +76,23 @@ describe('Map Enhancements & Premium Utilities', () => {
       // Verify current year properties are added
       expect(enriched.features[0].properties).toHaveProperty('WINNER_PARTY_2023');
       expect(enriched.features[0].properties).toHaveProperty('WINNER_NAME_2023');
+    });
+
+    it('does not invent a current election year or independent winner for unmatched features', () => {
+      const unmatched: GeoJSON.FeatureCollection = {
+        ...dummyFeatureCollection,
+        features: [{
+          ...dummyFeatureCollection.features[0],
+          properties: { AC_NO: 99999, AC_NAME: 'Unknown AC' },
+        }],
+      };
+
+      const enriched = enrichGeoJSONForState(unmatched, 'RJ');
+      const properties = enriched.features[0].properties;
+
+      expect(properties?.WINNER_PARTY).toBe('');
+      expect(properties?.WINNER_PARTY_2024).toBeUndefined();
+      expect(properties?.WINNER_PARTY_2023).toBeUndefined();
     });
   });
 });

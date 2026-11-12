@@ -1,9 +1,11 @@
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import type { FastifyPluginAsync } from 'fastify';
 import { DEFAULT_FEATURE_FLAGS } from '@kshetra/shared';
 import { sendApiError } from '../lib/replyHelper';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 const ALLOWED_MANAGE_ROLES = new Set(['admin', 'moderator', 'politician', 'party', 'aspirant']);
+const isProductionRuntime = isProductionLikeRuntime();
 
 export const manageRoutes: FastifyPluginAsync = async (app) => {
   /**
@@ -30,13 +32,14 @@ export const manageRoutes: FastifyPluginAsync = async (app) => {
       }
     }
 
-    if (!userId && (request.headers['x-user-id'] as string)) {
+    if (!isProductionRuntime && !userId && (request.headers['x-user-id'] as string)) {
       userId = request.headers['x-user-id'] as string;
     }
 
     if (!userId) return null;
 
     if (!isSupabaseConfigured) {
+      if (isProductionRuntime) return null;
       role = (request.headers['x-user-role'] as string) || 'politician';
       return { userId, role };
     }
@@ -60,6 +63,16 @@ export const manageRoutes: FastifyPluginAsync = async (app) => {
    * Restricted to authorized page managers, politicians, and compliance administrators.
    */
   app.get('/manage', async (request, reply) => {
+    if (isProductionRuntime) {
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'The legacy page manager is not connected to the current authenticated admin client',
+        { code: 'ADMIN_CLIENT_UNAVAILABLE' },
+      );
+    }
     const authHeader = request.headers.authorization;
     const userIdHeader = request.headers['x-user-id'];
     const roleHeader = request.headers['x-user-role'];

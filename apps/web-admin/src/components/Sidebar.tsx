@@ -14,7 +14,6 @@ import {
   GitMerge,
   Activity,
   ChevronRight,
-  ExternalLink,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -22,7 +21,7 @@ const NAV_ITEMS = [
     category: 'Overview & Control',
     items: [
       { to: '/', label: 'Executive Dashboard', icon: LayoutDashboard },
-      { to: '/feature-flags', label: 'Feature Flags & Switches', icon: ToggleLeft, badge: 'Live Sync' },
+      { to: '/feature-flags', label: 'Feature Flags & Switches', icon: ToggleLeft },
       { to: '/system-health', label: 'System Health & Latency', icon: Activity },
     ],
   },
@@ -30,8 +29,8 @@ const NAV_ITEMS = [
     category: 'Trust & Safety',
     items: [
       { to: '/moderation', label: 'Moderation Queue', icon: ShieldAlert },
-      { to: '/political-ads', label: 'Political Ads & MCMC Review', icon: ShieldCheck, badge: 'Compliance' },
-      { to: '/representative-edits', label: 'Politician Edits Review', icon: GitPullRequest, badge: 'Community' },
+      { to: '/political-ads', label: 'Political Ads Review', icon: ShieldCheck },
+      { to: '/representative-edits', label: 'Politician Edits Review', icon: GitPullRequest },
       { to: '/verifications', label: 'KYC & Aspirant Vetting', icon: BadgeCheck },
     ],
   },
@@ -45,9 +44,9 @@ const NAV_ITEMS = [
     ],
   },
   {
-    category: 'Utilities & Ingestion',
+    category: 'Utilities & Data',
     items: [
-      { to: '/bulk-import', label: 'Bulk CSV / Excel Ingestion', icon: UploadCloud },
+      { to: '/bulk-import', label: 'Dataset Preview (Local Only)', icon: UploadCloud },
     ],
   },
 ];
@@ -96,11 +95,6 @@ export function Sidebar() {
                     <Icon className="w-4 h-4 shrink-0 opacity-80" />
                     <span className="truncate">{item.label}</span>
                   </div>
-                  {item.badge && (
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700/60">
-                      {item.badge}
-                    </span>
-                  )}
                 </NavLink>
               );
             })}
@@ -108,20 +102,11 @@ export function Sidebar() {
         ))}
       </nav>
 
-      {/* Footer System Info */}
       <div className="p-4 border-t border-slate-800/80 bg-[#0a0e1c] flex items-center justify-between text-xs text-slate-400">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="font-mono text-[11px] text-slate-300">Railway Live API</span>
-        </div>
-        <a
-          href="https://railway.com/project/2a0fc52a-b365-4f1d-881a-081276738288"
-          target="_blank"
-          rel="noreferrer"
-          className="text-slate-400 hover:text-blue-400 transition"
-        >
-          <ExternalLink className="w-3.5 h-3.5" />
-        </a>
+        <span className="font-mono text-[11px] text-slate-300">API status is checked on diagnostics</span>
+        <NavLink to="/system-health" className="text-slate-400 hover:text-blue-400 transition" aria-label="Open API diagnostics">
+          <Activity className="w-3.5 h-3.5" />
+        </NavLink>
       </div>
     </aside>
   );

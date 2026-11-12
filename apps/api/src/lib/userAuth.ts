@@ -1,3 +1,4 @@
+import { isIsolatedTestRuntime, isProductionLikeRuntime } from './runtimeEnvironment';
 /**
  * User Authentication & Authorization Resolver for API Routes
  * Enforces verified user identity, disallows production x-user-id header spoofing,
@@ -28,7 +29,12 @@ export const VALID_ROLES = new Set([
   'contributor',
   'volunteer',
   'coordinator',
+  'super_admin',
+  'data_engineer',
+  'compliance_officer',
 ]);
+
+const isProductionRuntime = isProductionLikeRuntime();
 
 /**
  * Extracts the authoritative role for a user.
@@ -48,7 +54,7 @@ export function extractAuthoritativeRole(user: any): string {
  */
 export function setTestTokenValidator(validator: TestTokenValidator | null): void {
   if (validator !== null) {
-    if (process.env.NODE_ENV !== 'test' || process.env.TEST_HARNESS_ACTIVE !== 'true') {
+    if (!isIsolatedTestRuntime() || process.env.TEST_HARNESS_ACTIVE !== 'true') {
       throw new Error(
         'SECURITY VIOLATION: Test token validator can only be registered when NODE_ENV === "test" and TEST_HARNESS_ACTIVE === "true".',
       );
@@ -69,7 +75,7 @@ export async function resolveAuthenticatedUser(
 
   if (!authHeader) {
     // In non-production test/development environments, resolve authenticated identity if x-user-id is explicitly passed
-    if (process.env.NODE_ENV !== 'production' && request.headers['x-user-id']) {
+    if (!isProductionRuntime && request.headers['x-user-id']) {
       const userId = String(request.headers['x-user-id']).trim();
       const testRole =
         (request.headers['x-test-role'] as string) ||
@@ -121,7 +127,7 @@ export async function resolveAuthenticatedUser(
   // 1. Isolated test token validator (strictly active only when registered in isolated test harness)
   if (
     customTestTokenValidator &&
-    process.env.NODE_ENV === 'test' &&
+    isIsolatedTestRuntime() &&
     process.env.TEST_HARNESS_ACTIVE === 'true'
   ) {
     try {

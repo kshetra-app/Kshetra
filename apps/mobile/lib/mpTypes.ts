@@ -35,8 +35,6 @@ export interface MPProfile {
   /** Whether this MP is a minister */
   isMinister?: boolean;
   ministerialPortfolio?: string;
-  /** Attendance percentage in parliament sessions */
-  attendancePercent?: number;
   /** Number of questions asked */
   questionsAsked?: number;
   /** Number of debates participated in */

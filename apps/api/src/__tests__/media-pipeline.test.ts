@@ -270,5 +270,44 @@ describe('Media Pipeline Router (mediaPipeline.ts)', () => {
         'https://srs.test.com:8000/rtc/v1/whep/?app=live&stream=broadcast-stream-202',
       );
     });
+
+    it.each(['staging', 'production'])(
+      'never returns public demo streams in %s, even when demo mode is configured',
+      (environment) => {
+        process.env.APP_ENV = environment;
+        process.env.EXPO_PUBLIC_APP_ENV = environment;
+
+        const pipeline = selectPipeline(
+          {
+            streamId: 'configured-demo-stream',
+            issueCategory: 'general',
+            alertDepartments: [],
+            visibilityMode: 'public',
+          },
+          demoHosts,
+        );
+
+        expect(pipeline.ingestUrl).toBeNull();
+        expect(pipeline.playbackHls).toBeNull();
+        expect(pipeline.playbackWebrtc).toBeNull();
+        expect(pipeline.reason).toContain('live media unavailable');
+
+        const configuredPipeline = selectPipeline(
+          {
+            streamId: 'configured-live-stream',
+            issueCategory: 'general',
+            alertDepartments: [],
+            visibilityMode: 'public',
+          },
+          selfHostedHosts,
+        );
+        expect(configuredPipeline.ingestUrl).toBe(
+          'rtmp://ingest.test.com:1935/live/configured-live-stream',
+        );
+        expect(configuredPipeline.playbackHls).toBe(
+          'https://edge.test.com/live/configured-live-stream.m3u8',
+        );
+      },
+    );
   });
 });

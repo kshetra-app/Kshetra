@@ -47,7 +47,8 @@ export interface CandidateAffidavit {
 
   // Criminal
   criminalCases: number;
-  seriousCriminalCases: number;
+  /** Null when the source does not classify declared cases by seriousness. */
+  seriousCriminalCases: number | null;
   caseDetails?: CriminalCaseDetail[];
 
   // Personal
@@ -187,7 +188,7 @@ export function detectRedFlags(
   const flags: AffidavitRedFlag[] = [];
 
   // Serious criminal cases
-  if (affidavit.seriousCriminalCases > 0) {
+  if (affidavit.seriousCriminalCases != null && affidavit.seriousCriminalCases > 0) {
     flags.push({
       type: 'serious_criminal_cases',
       severity: 'critical',

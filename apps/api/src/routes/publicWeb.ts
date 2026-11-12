@@ -10,7 +10,7 @@
 
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { ApiSuccessEnvelope } from '@kshetra/shared';
-import { publicWebService } from '../services/publicWebService';
+import { PublicWebDataUnavailableError, publicWebService } from '../services/publicWebService';
 import { sendApiError } from '../lib/replyHelper';
 
 function sendSuccess<T>(reply: FastifyReply, request: FastifyRequest, data: T, statusCode = 200) {
@@ -23,6 +23,35 @@ function sendSuccess<T>(reply: FastifyReply, request: FastifyRequest, data: T, s
   return reply.status(statusCode).send(envelope);
 }
 
+function sendUnavailable(
+  reply: FastifyReply,
+  request: FastifyRequest,
+  error: unknown,
+  html = false,
+) {
+  if (!(error instanceof PublicWebDataUnavailableError)) throw error;
+  request.log.warn({ code: error.code }, 'Public web data is unavailable');
+  if (html) {
+    return reply
+      .status(503)
+      .type('text/html')
+      .send(
+        '<!doctype html><html lang="en"><head><title>Data unavailable</title></head><body><main><h1>Data temporarily unavailable</h1><p>Public data cannot be loaded right now. Please try again later.</p></main></body></html>',
+      );
+  }
+  reply.type('application/json');
+  return sendApiError(
+    reply,
+    request,
+    503,
+    'Service Unavailable',
+    'Public data cannot be loaded right now.',
+    {
+      code: error.code,
+    },
+  );
+}
+
 export async function publicWebRoutes(app: FastifyInstance) {
   // ==============================================================================
   // 1. CANONICAL SSR HTML PAGES (DEC-189 OPTION A)
@@ -32,38 +61,42 @@ export async function publicWebRoutes(app: FastifyInstance) {
   app.get<{ Params: { stateCode: string } }>(
     '/public/states/:stateCode',
     async (request, reply) => {
-      const state = await publicWebService.getStateOverview(request.params.stateCode);
-      if (!state) {
-        return reply
-          .status(404)
-          .type('text/html')
-          .send(
-            `<h1>State not found</h1><p>State '${request.params.stateCode}' is not registered.</p>`,
-          );
+      try {
+        const state = await publicWebService.getStateOverview(request.params.stateCode);
+        if (!state) {
+          return reply.status(404).type('text/html').send('<h1>State not found</h1>');
+        }
+        return reply.type('text/html').send(publicWebService.renderStateHtml(state));
+      } catch (error) {
+        return sendUnavailable(reply, request, error, true);
       }
-      return reply.type('text/html').send(publicWebService.renderStateHtml(state));
     },
   );
 
   // B. GET /public/constituency/:acId (SSR HTML)
   app.get<{ Params: { acId: string } }>('/public/constituency/:acId', async (request, reply) => {
-    const profile = await publicWebService.getConstituencyProfile(request.params.acId);
-    if (!profile) {
-      return reply.status(404).type('text/html').send(`<h1>Constituency not found</h1>`);
+    try {
+      const profile = await publicWebService.getConstituencyProfile(request.params.acId);
+      if (!profile)
+        return reply.status(404).type('text/html').send('<h1>Constituency not found</h1>');
+      return reply.type('text/html').send(publicWebService.renderConstituencyHtml(profile));
+    } catch (error) {
+      return sendUnavailable(reply, request, error, true);
     }
-    return reply.type('text/html').send(publicWebService.renderConstituencyHtml(profile));
   });
 
   // C. GET /public/districts/:districtId (SSR HTML)
   app.get<{ Params: { districtId: string } }>(
     '/public/districts/:districtId',
     async (request, reply) => {
-      const district = await publicWebService.getDistrictProfile(request.params.districtId);
-      return reply
-        .type('text/html')
-        .send(
-          `<!DOCTYPE html><html><head><title>District: ${district.name}</title></head><body style="background:#0f172a;color:#fff;padding:2rem;"><h1>District: ${district.name}</h1><p>Total Constituencies: ${district.totalConstituencies}</p></body></html>`,
-        );
+      try {
+        const district = await publicWebService.getDistrictProfile(request.params.districtId);
+        if (!district)
+          return reply.status(404).type('text/html').send('<h1>District not found</h1>');
+        return reply.type('text/html').send(publicWebService.renderDistrictHtml(district));
+      } catch (error) {
+        return sendUnavailable(reply, request, error, true);
+      }
     },
   );
 
@@ -71,13 +104,14 @@ export async function publicWebRoutes(app: FastifyInstance) {
   app.get<{ Params: { repId: string } }>(
     '/public/representatives/:repId',
     async (request, reply) => {
-      const rep = await publicWebService.getRepresentativeProfile(request.params.repId);
-      if (!rep) return reply.status(404).send('Representative not found');
-      return reply
-        .type('text/html')
-        .send(
-          `<!DOCTYPE html><html><head><title>${rep.name} MLA Profile</title></head><body style="background:#0f172a;color:#fff;padding:2rem;"><h1>${rep.name}</h1><p>Party: ${rep.party}</p><p>Attendance: ${rep.attendancePercentage}%</p></body></html>`,
-        );
+      try {
+        const rep = await publicWebService.getRepresentativeProfile(request.params.repId);
+        if (!rep)
+          return reply.status(404).type('text/html').send('<h1>Representative not found</h1>');
+        return reply.type('text/html').send(publicWebService.renderRepresentativeHtml(rep));
+      } catch (error) {
+        return sendUnavailable(reply, request, error, true);
+      }
     },
   );
 
@@ -85,23 +119,25 @@ export async function publicWebRoutes(app: FastifyInstance) {
   app.get<{ Params: { electionId: string } }>(
     '/public/elections/:electionId',
     async (request, reply) => {
-      const elec = await publicWebService.getElectionProfile(request.params.electionId);
-      return reply
-        .type('text/html')
-        .send(
-          `<!DOCTYPE html><html><head><title>${elec.title}</title></head><body style="background:#0f172a;color:#fff;padding:2rem;"><h1>${elec.title}</h1><p>Turnout: ${elec.turnoutPercentage}%</p></body></html>`,
-        );
+      try {
+        const election = await publicWebService.getElectionProfile(request.params.electionId);
+        if (!election)
+          return reply.status(404).type('text/html').send('<h1>Election not found</h1>');
+        return reply.type('text/html').send(publicWebService.renderElectionHtml(election));
+      } catch (error) {
+        return sendUnavailable(reply, request, error, true);
+      }
     },
   );
 
   // F. GET /public/delimitation/:acId (SSR HTML)
   app.get<{ Params: { acId: string } }>('/public/delimitation/:acId', async (request, reply) => {
-    const del = await publicWebService.getDelimitationDiff(request.params.acId);
-    return reply
-      .type('text/html')
-      .send(
-        `<!DOCTYPE html><html><head><title>Delimitation 2026: ${del.constituencyName}</title></head><body style="background:#0f172a;color:#fff;padding:2rem;"><h1>2026 Delimitation Scenario: ${del.constituencyName}</h1><p>Shift: ${del.boundaryShiftPercent}%</p><p>Result: ${del.seatsDelta}</p></body></html>`,
-      );
+    try {
+      await publicWebService.getDelimitationDiff(request.params.acId);
+      return reply.status(404).type('text/html').send('<h1>Delimitation data not found</h1>');
+    } catch (error) {
+      return sendUnavailable(reply, request, error, true);
+    }
   });
 
   // ==============================================================================
@@ -112,9 +148,13 @@ export async function publicWebRoutes(app: FastifyInstance) {
   app.get<{ Params: { stateCode: string } }>(
     '/api/v1/public/states/:stateCode',
     async (request, reply) => {
-      const state = await publicWebService.getStateOverview(request.params.stateCode);
-      if (!state) return sendApiError(reply, request, 404, 'NotFound', 'State not found');
-      return sendSuccess(reply, request, state);
+      try {
+        const state = await publicWebService.getStateOverview(request.params.stateCode);
+        if (!state) return sendApiError(reply, request, 404, 'NotFound', 'State not found');
+        return sendSuccess(reply, request, state);
+      } catch (error) {
+        return sendUnavailable(reply, request, error);
+      }
     },
   );
 
@@ -122,9 +162,14 @@ export async function publicWebRoutes(app: FastifyInstance) {
   app.get<{ Params: { acId: string } }>(
     '/api/v1/public/constituency/:acId',
     async (request, reply) => {
-      const profile = await publicWebService.getConstituencyProfile(request.params.acId);
-      if (!profile) return sendApiError(reply, request, 404, 'NotFound', 'Constituency not found');
-      return sendSuccess(reply, request, profile);
+      try {
+        const profile = await publicWebService.getConstituencyProfile(request.params.acId);
+        if (!profile)
+          return sendApiError(reply, request, 404, 'NotFound', 'Constituency not found');
+        return sendSuccess(reply, request, profile);
+      } catch (error) {
+        return sendUnavailable(reply, request, error);
+      }
     },
   );
 
@@ -132,8 +177,13 @@ export async function publicWebRoutes(app: FastifyInstance) {
   app.get<{ Params: { districtId: string } }>(
     '/api/v1/public/districts/:districtId',
     async (request, reply) => {
-      const district = await publicWebService.getDistrictProfile(request.params.districtId);
-      return sendSuccess(reply, request, district);
+      try {
+        const district = await publicWebService.getDistrictProfile(request.params.districtId);
+        if (!district) return sendApiError(reply, request, 404, 'NotFound', 'District not found');
+        return sendSuccess(reply, request, district);
+      } catch (error) {
+        return sendUnavailable(reply, request, error);
+      }
     },
   );
 
@@ -141,9 +191,13 @@ export async function publicWebRoutes(app: FastifyInstance) {
   app.get<{ Params: { repId: string } }>(
     '/api/v1/public/representatives/:repId',
     async (request, reply) => {
-      const rep = await publicWebService.getRepresentativeProfile(request.params.repId);
-      if (!rep) return sendApiError(reply, request, 404, 'NotFound', 'Representative not found');
-      return sendSuccess(reply, request, rep);
+      try {
+        const rep = await publicWebService.getRepresentativeProfile(request.params.repId);
+        if (!rep) return sendApiError(reply, request, 404, 'NotFound', 'Representative not found');
+        return sendSuccess(reply, request, rep);
+      } catch (error) {
+        return sendUnavailable(reply, request, error);
+      }
     },
   );
 
@@ -151,8 +205,13 @@ export async function publicWebRoutes(app: FastifyInstance) {
   app.get<{ Params: { electionId: string } }>(
     '/api/v1/public/elections/:electionId',
     async (request, reply) => {
-      const elec = await publicWebService.getElectionProfile(request.params.electionId);
-      return sendSuccess(reply, request, elec);
+      try {
+        const election = await publicWebService.getElectionProfile(request.params.electionId);
+        if (!election) return sendApiError(reply, request, 404, 'NotFound', 'Election not found');
+        return sendSuccess(reply, request, election);
+      } catch (error) {
+        return sendUnavailable(reply, request, error);
+      }
     },
   );
 
@@ -160,8 +219,14 @@ export async function publicWebRoutes(app: FastifyInstance) {
   app.get<{ Params: { acId: string } }>(
     '/api/v1/public/delimitation/:acId',
     async (request, reply) => {
-      const del = await publicWebService.getDelimitationDiff(request.params.acId);
-      return sendSuccess(reply, request, del);
+      try {
+        const diff = await publicWebService.getDelimitationDiff(request.params.acId);
+        return diff
+          ? sendSuccess(reply, request, diff)
+          : sendApiError(reply, request, 404, 'NotFound', 'Delimitation data not found');
+      } catch (error) {
+        return sendUnavailable(reply, request, error);
+      }
     },
   );
 
@@ -170,10 +235,20 @@ export async function publicWebRoutes(app: FastifyInstance) {
   // ==============================================================================
 
   app.get('/sitemap.xml', async (request, reply) => {
-    return reply.type('application/xml').send(publicWebService.generateSitemapXml());
+    try {
+      return reply.type('application/xml').send(await publicWebService.generateSitemapXml());
+    } catch (error) {
+      return sendUnavailable(reply, request, error);
+    }
   });
 
   app.get('/sitemap-geography.xml', async (request, reply) => {
-    return reply.type('application/xml').send(publicWebService.generateGeographySitemapXml());
+    try {
+      return reply
+        .type('application/xml')
+        .send(await publicWebService.generateGeographySitemapXml());
+    } catch (error) {
+      return sendUnavailable(reply, request, error);
+    }
   });
 }

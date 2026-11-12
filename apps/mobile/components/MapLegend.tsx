@@ -13,14 +13,36 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { getPartyColor } from '../lib/constants';
 import { PARTY_CONFIG, STATES } from '@kshetra/shared';
-import { getUnifiedConstituenciesForState } from '../lib/stateDataAdapter';
+import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '../lib/stateDataAdapter';
 import type { MapColorMode } from './MapColorToggle';
 import { useTheme } from '../lib/theme';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 /** Build party legend dynamically from state or national seed data, sorted by seat count / states ruled */
-export function buildPartyLegend(stateCode: string): { party: string; label: string; seats: number }[] {
+export function buildPartyLegend(
+  stateCode: string,
+  records?: UnifiedConstituency[],
+  liveMode = false,
+): { party: string; label: string; seats: number }[] {
+  if (liveMode) {
+    if (stateCode.toUpperCase() === 'IN' || !records) return [];
+
+    const counts = new Map<string, number>();
+    for (const record of records) {
+      const party = record.currentParty.trim();
+      if (party) counts.set(party, (counts.get(party) ?? 0) + 1);
+    }
+
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .map(([party, seats]) => ({
+        party,
+        label: (PARTY_CONFIG as Record<string, { name: string }>)[party]?.name ?? party,
+        seats,
+      }));
+  }
+
   if (stateCode.toUpperCase() === 'IN') {
     const counts = new Map<string, number>();
     for (const state of Object.values(STATES)) {
@@ -60,7 +82,7 @@ export function buildPartyLegend(stateCode: string): { party: string; label: str
 
   const counts = new Map<string, number>();
   for (const c of constituencies) {
-    const p = c.currentParty || c.winnerParty;
+    const p = c.officeholderStatus === 'VACANT' ? 'VACANT' : c.currentParty || c.winnerParty;
     if (p) {
       counts.set(p, (counts.get(p) ?? 0) + 1);
     }
@@ -71,7 +93,7 @@ export function buildPartyLegend(stateCode: string): { party: string; label: str
     .sort((a, b) => b[1] - a[1])
     .map(([party, seats]) => ({
       party,
-      label: (PARTY_CONFIG as Record<string, { name: string }>)[party]?.name ?? party,
+      label: party === 'VACANT' ? 'Vacant seat' : (PARTY_CONFIG as Record<string, { name: string }>)[party]?.name ?? party,
       seats,
     }));
 }
@@ -129,6 +151,8 @@ const SWING_LEGEND = [
 interface MapLegendProps {
   colorMode?: MapColorMode;
   stateCode?: string;
+  records?: UnifiedConstituency[];
+  liveMode?: boolean;
   initialX?: number;
   initialTop?: number;
 }
@@ -136,13 +160,18 @@ interface MapLegendProps {
 export default function MapLegend({
   colorMode = 'party',
   stateCode = 'TS',
+  records,
+  liveMode = false,
   initialX = 16,
   initialTop = 160,
 }: MapLegendProps) {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const [expanded, setExpanded] = useState(false);
-  const partyLegend = useMemo(() => buildPartyLegend(stateCode), [stateCode]);
+  const partyLegend = useMemo(
+    () => buildPartyLegend(stateCode, records, liveMode),
+    [stateCode, records, liveMode],
+  );
 
   // Floating Draggable Pan State
   const pan = useRef(new Animated.ValueXY({ x: initialX, y: initialTop })).current;
@@ -303,7 +332,7 @@ export default function MapLegend({
               <Text style={[styles.partyName, { color: colors.textSecondary }]} numberOfLines={1}>
                 {item.label}
               </Text>
-              {item.seats > 0 && (
+              {!liveMode && item.seats > 0 && (
                 <Text style={[styles.partySeats, { color: colors.gold || '#FCD34D' }]}>
                   {item.seats}
                 </Text>
@@ -311,6 +340,13 @@ export default function MapLegend({
             </View>
           );
         })}
+        {partyLegend.length === 0 && (
+          <Text style={[styles.partyName, { color: colors.textSecondary }]}>
+            {liveMode
+              ? t('constituencyDirectory.partyRecordsUnavailable', { defaultValue: 'Current party records are unavailable for this view.' })
+              : t('constituencyDirectory.noPartyRecords', { defaultValue: 'No party records are available.' })}
+          </Text>
+        )}
       </>
     );
   };

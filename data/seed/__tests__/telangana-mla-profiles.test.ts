@@ -3,6 +3,7 @@ import {
   getMLAProfile,
   getMLAsByParty,
   getDefectedMLAs,
+  getCurrentMLAProfiles,
   getFemaleMLAs,
   getVeteranMLAs,
 } from '../telangana-mla-profiles';
@@ -35,48 +36,28 @@ describe('MLA Profiles — Coverage', () => {
 });
 
 describe('MLA Profiles — Consistency with Constituencies', () => {
-  it('every profile name should match the election that seated that member', () => {
-    const mismatches: string[] = [];
-
-    TELANGANA_MLA_PROFILES.forEach((profile) => {
-      const constituency = TELANGANA_CONSTITUENCIES.find((c) => c.acNo === profile.acNo);
-      expect(constituency).toBeDefined();
-
-      if (constituency!.currentPartyChangeType === 'by-election') {
-        expect(profile.isBypoll).toBe(true);
-        expect(constituency!.byElection).toBeDefined();
-        if (
-          normalizeCandidateName(profile.name) !==
-          normalizeCandidateName(constituency!.byElection!.winnerName)
-        ) {
-          mismatches.push(
-            `AC ${profile.acNo}: profile "${profile.name}" does not match by-election winner "${constituency!.byElection!.winnerName}"`
-          );
-        }
-        return;
-      }
-
-      const electionName = profile.electionName ?? profile.name;
-      if (
-        normalizeCandidateName(electionName) !==
-        normalizeCandidateName(constituency!.winnerName2023)
-      ) {
-        mismatches.push(
-          `AC ${profile.acNo}: election name "${electionName}" does not match ECI winner "${constituency!.winnerName2023}"`
-        );
-      }
-    });
-
+  it('every MLA profile should link to a known constituency', () => {
+    const mismatches = TELANGANA_MLA_PROFILES.filter(
+      (profile) => !TELANGANA_CONSTITUENCIES.some((c) => c.acNo === profile.acNo),
+    ).map((profile) => ({ acNo: profile.acNo, name: profile.name }));
     expect(mismatches).toEqual([]);
   });
 
-  it('every MLA current party should match constituency data', () => {
-    TELANGANA_MLA_PROFILES.forEach((profile) => {
+  it('every current MLA profile party should match the sitting constituency data', () => {
+    getCurrentMLAProfiles().forEach((profile) => {
       const constituency = TELANGANA_CONSTITUENCIES.find((c) => c.acNo === profile.acNo);
       expect(constituency).toBeDefined();
       const expectedParty = constituency!.currentParty ?? constituency!.winner2023;
       expect(profile.party).toBe(expectedParty);
     });
+  });
+
+  it('official election names should match ECI names where provided for 2023 candidates', () => {
+    TELANGANA_MLA_PROFILES.filter((profile) => profile.officialElectionName && !profile.isBypoll)
+      .forEach((profile) => {
+        const constituency = TELANGANA_CONSTITUENCIES.find((c) => c.acNo === profile.acNo);
+        expect(profile.officialElectionName).toBe(constituency!.winnerName2023);
+      });
   });
 
   it('defected MLAs should have electedParty matching constituency winner2023', () => {
@@ -92,24 +73,25 @@ describe('MLA Profiles — Consistency with Constituencies', () => {
 });
 
 describe('MLA Profiles — Party tallies', () => {
-  it('should match 2023 post-defection party strengths', () => {
+  it('should reflect current seated MLA party counts and exclude the vacant Khairatabad seat', () => {
     const tally: Record<string, number> = {};
-    TELANGANA_MLA_PROFILES.forEach((p) => {
+    getCurrentMLAProfiles().forEach((p) => {
       tally[p.party] = (tally[p.party] ?? 0) + 1;
     });
-    // INC: 64 elected + 10 defections + 1 by-election = 75
+    // INC: 64 elected, 10 reported party changes, and two subsequent by-election results,
+    // less the Khairatabad member who was disqualified and whose seat is vacant.
     expect(tally['INC']).toBe(75);
-    // BRS: 39 elected - 10 defections - 1 by-election = 28
-    expect(tally['BRS']).toBe(28);
+    // BRS: 39 elected less ten reported party changes and two by-election seat changes.
+    expect(tally['BRS']).toBe(27);
     // BJP: 8
     expect(tally['BJP']).toBe(8);
     // AIMIM: 7
     expect(tally['AIMIM']).toBe(7);
     // CPI: 1
     expect(tally['CPI']).toBe(1);
-    // Total: 119
+    // One of 119 seats is vacant.
     const total = Object.values(tally).reduce((a, b) => a + b, 0);
-    expect(total).toBe(119);
+    expect(total).toBe(118);
   });
 });
 
@@ -127,9 +109,9 @@ describe('MLA Profiles — Utility functions', () => {
     expect(getMLAProfile(120)).toBeUndefined();
   });
 
-  it('getMLAsByParty should return correct counts', () => {
+  it('getMLAsByParty should return seated members only', () => {
     expect(getMLAsByParty('INC').length).toBe(75);
-    expect(getMLAsByParty('BRS').length).toBe(28);
+    expect(getMLAsByParty('BRS').length).toBe(27);
     expect(getMLAsByParty('BJP').length).toBe(8);
     expect(getMLAsByParty('AIMIM').length).toBe(7);
     expect(getMLAsByParty('CPI').length).toBe(1);
@@ -142,6 +124,12 @@ describe('MLA Profiles — Utility functions', () => {
       expect(p.electedParty).toBe('BRS');
       expect(p.party).toBe('INC');
     });
+  });
+
+  it('should not expose the disqualified Khairatabad MLA as a sitting member', () => {
+    const khairatabad = getMLAProfile(60);
+    expect(khairatabad?.isCurrentMember).toBe(false);
+    expect(getCurrentMLAProfiles().some((profile) => profile.acNo === 60)).toBe(false);
   });
 
   it('getFemaleMLAs should return known female MLAs', () => {

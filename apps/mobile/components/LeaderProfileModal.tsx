@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -16,12 +16,19 @@ import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { AspirantProfile } from '../lib/aspirantTypes';
+import { isAspirantMetricAvailable } from '../lib/aspirantTypes';
 import { useFeedStore } from '../stores/feed';
 import { useAuthStore } from '../stores/auth';
 import { useAspirantStore } from '../stores/aspirant';
 import { useDMStore } from '../stores/dmStore';
 import PostCard from './PostCard';
 import type { Post } from '../lib/feedTypes';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
+import { fetchUserFollowerCount } from '../lib/supabaseDataService';
+import {
+  canManageLeaderProfile,
+  getLeaderProfilePosts,
+} from '../lib/leaderProfileTruth';
 
 interface LeaderProfileModalProps {
   visible: boolean;
@@ -40,6 +47,7 @@ export default function LeaderProfileModal({
 }: LeaderProfileModalProps) {
   const { t, i18n } = useTranslation();
   const isTelugu = i18n.language === 'te';
+  const unavailableLabel = t('constituency.dataUnavailable', { defaultValue: 'Unavailable' });
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
@@ -48,41 +56,55 @@ export default function LeaderProfileModal({
   const [votedPolls, setVotedPolls] = useState<Record<string, number>>({});
   const [visionVotes, setVisionVotes] = useState<Record<string, number>>({});
   const [volunteerJoined, setVolunteerJoined] = useState(false);
+  const [liveFollowerCount, setLiveFollowerCount] = useState<number | null>(null);
 
   const authUser = useAuthStore((s) => s.user);
   const feedPosts = useFeedStore((s) => s.posts);
   const addFeedPost = useFeedStore((s) => s.addPost);
+  const followUser = useFeedStore((s) => s.followUser);
+  const unfollowUser = useFeedStore((s) => s.unfollowUser);
+  const isFollowing = useFeedStore((s) =>
+    s.isFollowing(aspirant?.userId || ''),
+  );
   const endorseAspirant = useAspirantStore((s) => s.endorseAspirant);
   const endorsedIds = useAspirantStore((s) => s.endorsedIds);
 
-  const isUserOwner = useMemo(() => {
-    if (isOwner) return true;
-    if (!authUser || !aspirant) return false;
-    return authUser.id === aspirant.userId || authUser.id === 'demo-aspirant-1';
-  }, [isOwner, authUser, aspirant]);
+  const isUserOwner = useMemo(
+    () => canManageLeaderProfile(aspirant, authUser?.id, isOwner, IS_LIVE_ENVIRONMENT),
+    [isOwner, authUser?.id, aspirant],
+  );
 
   const isEndorsed = aspirant ? endorsedIds.includes(aspirant.id) : false;
 
-  // Filter posts created by this aspirant/leader
-  const leaderPosts = useMemo(() => {
-    if (!aspirant) return [];
-    const nameMatch = aspirant.displayName.toLowerCase().trim();
-    return feedPosts.filter((p) => {
-      const authorId = p.author?.id;
-      const authorName = (p.author?.displayName || '').toLowerCase().trim();
-      return (
-        authorId === aspirant.userId ||
-        authorId === aspirant.id ||
-        authorName === nameMatch ||
-        (aspirant.id === 'asp-1' && (authorId === 'demo-aspirant-1' || authorName.includes('priya')))
-      );
-    });
-  }, [feedPosts, aspirant]);
+  useEffect(() => {
+    let active = true;
+    setLiveFollowerCount(null);
 
-  // Ensure candidate has rich, engaging, fully functional seed posts if none exist
+    if (!IS_LIVE_ENVIRONMENT || !visible || !aspirant?.userId) {
+      return () => {
+        active = false;
+      };
+    }
+
+    void fetchUserFollowerCount(aspirant.userId).then((count) => {
+      if (active) setLiveFollowerCount(count);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [aspirant?.userId, isFollowing, visible]);
+
+  // Filter posts created by this aspirant/leader
+  const leaderPosts = useMemo(
+    () => getLeaderProfilePosts(feedPosts, aspirant, IS_LIVE_ENVIRONMENT),
+    [feedPosts, aspirant],
+  );
+
+  // Seed posts are limited to non-live previews; production shows only stored posts.
   const effectivePosts: Post[] = useMemo(() => {
     if (leaderPosts.length > 0) return leaderPosts;
-    if (!aspirant) return [];
+    if (!aspirant || IS_LIVE_ENVIRONMENT) return [];
     const authorId = aspirant.userId || aspirant.id;
     const authorName = aspirant.displayName;
     const constName = aspirant.targetConstituencyName || 'Constituency';
@@ -185,6 +207,7 @@ export default function LeaderProfileModal({
 
   // Bilingual strings resolution
   const effectiveMotto = useMemo(() => {
+    if (IS_LIVE_ENVIRONMENT) return aspirant?.motto || '';
     if (aspirant?.motto) {
       if (!isTelugu && /[\u0C00-\u0C7F]/.test(aspirant.motto)) {
         return 'Serving with integrity, transparency, and accountability for every citizen.';
@@ -195,6 +218,7 @@ export default function LeaderProfileModal({
   }, [aspirant, isTelugu]);
 
   const effectiveBio = useMemo(() => {
+    if (IS_LIVE_ENVIRONMENT) return aspirant?.bio || '';
     if (aspirant?.bio) {
       if (!isTelugu && /[\u0C00-\u0C7F]/.test(aspirant.bio)) {
         return `Civic leader and public advocate active in ${aspirant.targetConstituencyName || 'the constituency'}. Dedicated to local development, youth empowerment, and grievance resolution.`;
@@ -207,6 +231,7 @@ export default function LeaderProfileModal({
   }, [aspirant, isTelugu]);
 
   const effectiveJourneyBio = useMemo(() => {
+    if (IS_LIVE_ENVIRONMENT) return aspirant?.journeyBio || '';
     if (aspirant?.journeyBio) {
       if (!isTelugu && /[\u0C00-\u0C7F]/.test(aspirant.journeyBio)) {
         return `${aspirant.displayName} has completed over 10 years of grassroots service across the villages and wards of this constituency. Through continuous town halls, medical camps, and civic grievance resolution, they have built trusted public goodwill.`;
@@ -219,6 +244,7 @@ export default function LeaderProfileModal({
   }, [aspirant, isTelugu]);
 
   const defaultPledges = useMemo(() => {
+    if (IS_LIVE_ENVIRONMENT) return [];
     if (isTelugu) {
       return [
         { id: 'vis-1', title: 'మంచినీటి పైప్‌లైన్ మరియు తాగునీటి భద్రత', desc: 'ప్రతి గ్రామానికి శుద్ధి చేసిన తాగునీరు మరియు ఆర్వో ప్లాంట్ల నిరంతర నిర్వహణ.', supportCount: 1420 },
@@ -234,6 +260,7 @@ export default function LeaderProfileModal({
   }, [isTelugu]);
 
   const pollData = useMemo(() => {
+    if (IS_LIVE_ENVIRONMENT) return null;
     if (isTelugu) {
       return {
         question: `${aspirant?.targetConstituencyName || 'నియోజకవర్గం'}లో వచ్చే ఆర్థిక సంవత్సరంలో అత్యవసరంగా చేపట్టాల్సిన మొదటి ప్రాజెక్ట్ ఏది అని మీరు భావిస్తున్నారు?`,
@@ -256,30 +283,74 @@ export default function LeaderProfileModal({
     };
   }, [isTelugu, aspirant]);
 
+  const displayedInitiatives = useMemo(() => {
+    if (aspirant?.fieldInitiatives) return aspirant.fieldInitiatives;
+    if (IS_LIVE_ENVIRONMENT) return [];
+    return [
+      { id: 'init-1', title: 'రెంటచింతల ప్రాథమిక పాఠశాలలో మంచినీటి ఆర్వో ప్లాంట్ పునరుద్ధరణ', desc: 'మూతపడిన ఆర్వో ప్లాంట్‌ను పంచాయతీ అధికారులతో మరమ్మతులు చేయించి 350 మంది విద్యార్థులకు తాగునీరు అందించాము.', date: '2026-11-01', isResolved: true },
+      { id: 'init-2', title: 'మాచర్ల బైపాస్ రోడ్డు గుంతల మరమ్మత్తు ప్రచారం', desc: 'ప్రమాదకర గుంతలపై ఆర్‌అండ్‌బీ అధికారులతో 4 కిలోమీటర్ల మేర తాత్కాలిక ప్యాచ్ వర్క్ పూర్తి చేయించాము.', date: '2026-10-24', isResolved: true },
+    ];
+  }, [aspirant]);
+
+  const displayedPledges = aspirant?.visionPledges ?? defaultPledges;
+
   if (!aspirant) return null;
 
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Discover ${aspirant.displayName}'s official civic vision & field track record on Poligram: https://poligram.app/aspirant/${aspirant.id}`,
+        message: `View ${aspirant.displayName}'s profile on Poligram: https://poligram.app/aspirant/${aspirant.id}`,
       });
     } catch {
       // dismissed
     }
   };
 
-  const handleCreatePost = () => {
+  const handleFollowToggle = async () => {
+    if (!aspirant.userId || authUser?.id === aspirant.userId) {
+      Alert.alert(unavailableLabel);
+      return;
+    }
+    const stateCode = aspirant.stateCode.trim().toUpperCase();
+    const succeeded = isFollowing
+      ? await unfollowUser(aspirant.userId, stateCode || undefined, null)
+      : await followUser(aspirant.userId, stateCode || undefined, null);
+    if (!succeeded) {
+      Alert.alert(useFeedStore.getState().lastError || unavailableLabel);
+    }
+  };
+
+  const handleEndorse = async () => {
+    try {
+      await endorseAspirant(aspirant.id, authUser?.id);
+    } catch (error) {
+      Alert.alert(error instanceof Error ? error.message : unavailableLabel);
+    }
+  };
+
+  const handleCreatePost = async () => {
     if (!newPostText.trim()) return;
+    if (IS_LIVE_ENVIRONMENT && (!authUser?.id || authUser.id !== aspirant.userId)) {
+      Alert.alert(isTelugu ? 'దయచేసి సైన్ ఇన్ చేయండి' : 'Sign in before publishing a post.');
+      return;
+    }
+    const stateCode = aspirant.stateCode.trim().toUpperCase();
+    if (IS_LIVE_ENVIRONMENT && !/^[A-Z]{2}$/.test(stateCode)) {
+      Alert.alert(unavailableLabel);
+      return;
+    }
     const newPost: Post = {
       id: `post-${Date.now()}`,
       author: {
-        id: aspirant.userId || 'current-user',
+        id: authUser?.id || aspirant.userId || 'current-user',
         displayName: aspirant.displayName,
         avatarUrl: aspirant.avatarUrl,
-        isVerified: true,
+        isVerified: false,
       },
-      stateCode: aspirant.stateCode || 'IN',
-      constituencyId: aspirant.targetConstituencyAcNo ? `${aspirant.stateCode}-AC-${aspirant.targetConstituencyAcNo}` : undefined,
+      stateCode: stateCode || (IS_LIVE_ENVIRONMENT ? '' : 'IN'),
+      constituencyId: stateCode && aspirant.targetConstituencyAcNo
+        ? `${stateCode}-AC-${aspirant.targetConstituencyAcNo}`
+        : undefined,
       constituencyName: aspirant.targetConstituencyName,
       content: newPostText.trim(),
       type: 'discussion',
@@ -287,14 +358,22 @@ export default function LeaderProfileModal({
       reactionCount: 1,
       isPinned: false,
       isDeleted: false,
-      language: 'te',
+      language: i18n.language.split('-')[0] || 'en',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      hashtags: [aspirant.targetConstituencyName?.replace(/\s+/g, '') || 'CivicLeader', 'Kshetra'],
+      hashtags: [aspirant.targetConstituencyName?.replace(/\s+/g, '') || 'CivicLeader'],
     };
-    addFeedPost(newPost);
+    const outcome = await addFeedPost(newPost);
+    if (outcome === 'failed') {
+      Alert.alert(useFeedStore.getState().lastError || unavailableLabel);
+      return;
+    }
     setNewPostText('');
-    Alert.alert('విజయం', 'మీ పోస్ట్ విజయవంతంగా పబ్లిష్ చేయబడింది!');
+    Alert.alert(isTelugu ? 'పోస్ట్' : 'Post', outcome === 'queued'
+      ? (isTelugu ? 'కనెక్షన్ అందుబాటులోకి వచ్చినప్పుడు పోస్ట్ పంపబడుతుంది.' : 'Your post will be sent when the connection is available.')
+      : outcome === 'local'
+        ? (isTelugu ? 'ఇది స్థానిక ప్రివ్యూ మాత్రమే; ప్రచురించబడలేదు.' : 'This is a local preview; it was not published.')
+        : (isTelugu ? 'పోస్ట్ ప్రచురించబడింది.' : 'Your post was published.'));
   };
 
   const handleVotePoll = (pollId: string, optIndex: number) => {
@@ -338,12 +417,14 @@ export default function LeaderProfileModal({
             </Pressable>
 
             {/* Live Status Pill */}
-            <View style={styles.liveStatusPill}>
-              <View style={styles.livePulseDot} />
-              <Text style={styles.liveStatusText} numberOfLines={1}>
-                {aspirant.liveStatus ? aspirant.liveStatus.replace('క్షేత్ర పర్యటన: ', '') : t('pages.inFieldTour', { defaultValue: 'క్షేత్ర పర్యటనలో ఉన్నారు' })}
-              </Text>
-            </View>
+            {(!IS_LIVE_ENVIRONMENT || aspirant.liveStatus) && (
+              <View style={[styles.liveStatusPill, IS_LIVE_ENVIRONMENT && { backgroundColor: '#475569' }]}>
+                {!IS_LIVE_ENVIRONMENT && <View style={styles.livePulseDot} />}
+                <Text style={styles.liveStatusText} numberOfLines={1}>
+                  {aspirant.liveStatus ? aspirant.liveStatus.replace('క్షేత్ర పర్యటన: ', '') : t('pages.inFieldTour', { defaultValue: 'క్షేత్ర పర్యటనలో ఉన్నారు' })}
+                </Text>
+              </View>
+            )}
 
             <Pressable
               style={styles.circleBtn}
@@ -383,43 +464,54 @@ export default function LeaderProfileModal({
                     </Text>
                   </View>
                 )}
-                <View style={styles.verifiedCheckBadge}>
-                  <Ionicons name="checkmark" size={12} color="#FFFFFF" />
-                </View>
+                {!IS_LIVE_ENVIRONMENT && (
+                  <View style={styles.verifiedCheckBadge}>
+                    <Ionicons name="checkmark" size={12} color="#FFFFFF" />
+                  </View>
+                )}
               </View>
 
               {/* Primary Actions: Follow & Endorse */}
               <View style={styles.topActionsRow}>
-                <Pressable
-                  style={[
-                    styles.primaryActionPill,
-                    styles.followPill,
-                  ]}
-                  onPress={() => Alert.alert('ఫాలో అయ్యారు', `${aspirant.displayName} తాజా అప్‌డేట్‌లు మీ ఫీడ్‌లో కనిపిస్తాయి.`)}
-                >
-                  <Ionicons name="notifications-outline" size={16} color="#FFFFFF" />
-                  <Text style={styles.followPillText}>
-                    {t('common.follow', { defaultValue: 'ఫాలో' })}
-                  </Text>
-                </Pressable>
+                {!isUserOwner && (
+                  <>
+                    <Pressable
+                      style={[styles.primaryActionPill, styles.followPill]}
+                      onPress={handleFollowToggle}
+                      accessibilityRole="button"
+                      accessibilityLabel={t('common.follow', { defaultValue: 'Follow' })}
+                    >
+                      <Ionicons name="notifications-outline" size={16} color="#FFFFFF" />
+                      <Text style={styles.followPillText}>
+                        {isFollowing ? '✓ ' : ''}{t('common.follow', { defaultValue: 'Follow' })}
+                      </Text>
+                    </Pressable>
 
-                <Pressable
-                  style={[
-                    styles.primaryActionPill,
-                    isEndorsed ? styles.endorsedPillActive : styles.endorsePill,
-                  ]}
-                  onPress={() => endorseAspirant(aspirant.id, authUser?.id)}
-                  disabled={isEndorsed}
-                >
-                  <Ionicons
-                    name={isEndorsed ? 'checkmark-circle' : 'thumbs-up'}
-                    size={16}
-                    color={isEndorsed ? '#10B981' : '#002B7F'}
-                  />
-                  <Text style={[styles.endorsePillText, isEndorsed && styles.endorsedPillTextActive]}>
-                    {isEndorsed ? t('pages.endorsed', { defaultValue: 'ఎండార్స్ చేసారు' }) : '+5 ఎండార్స్'}
-                  </Text>
-                </Pressable>
+                    <Pressable
+                      style={[
+                        styles.primaryActionPill,
+                        isEndorsed ? styles.endorsedPillActive : styles.endorsePill,
+                      ]}
+                      onPress={handleEndorse}
+                      disabled={isEndorsed}
+                      accessibilityRole="button"
+                      accessibilityLabel={isEndorsed
+                        ? t('pages.endorsed', { defaultValue: 'Endorsed' })
+                        : t('civicScoreCard.endorsements')}
+                    >
+                      <Ionicons
+                        name={isEndorsed ? 'checkmark-circle' : 'thumbs-up'}
+                        size={16}
+                        color={isEndorsed ? '#10B981' : '#002B7F'}
+                      />
+                      <Text style={[styles.endorsePillText, isEndorsed && styles.endorsedPillTextActive]}>
+                        {isEndorsed
+                          ? t('pages.endorsed', { defaultValue: 'Endorsed' })
+                          : `+5 ${t('civicScoreCard.endorsements')}`}
+                      </Text>
+                    </Pressable>
+                  </>
+                )}
               </View>
             </View>
 
@@ -427,7 +519,7 @@ export default function LeaderProfileModal({
             <View style={styles.namesBlock}>
               <View style={styles.nameRow}>
                 <Text style={styles.displayName}>{aspirant.displayName}</Text>
-                <Ionicons name="checkmark-circle" size={18} color="#0284C7" />
+                {!IS_LIVE_ENVIRONMENT && <Ionicons name="checkmark-circle" size={18} color="#0284C7" />}
               </View>
 
               <View style={styles.metaBadgeRow}>
@@ -446,46 +538,63 @@ export default function LeaderProfileModal({
               </View>
 
               {/* Live Status Description Box */}
-              <View style={styles.liveBoxContainer}>
-                <View style={styles.liveBoxDot} />
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.liveBoxTitle}>
-                    {t('pages.liveStatus', { defaultValue: isTelugu ? 'లైవ్ స్టేటస్' : 'Live Status' })}: {aspirant.liveStatus || (isTelugu ? 'నియోజకవర్గ ప్రజా సంబంధాల్లో ఉన్నారు' : 'Active in constituency outreach Sabhas')}
-                  </Text>
-                  <Text style={styles.liveBoxSub}>
-                    {aspirant.liveStatusTime || (isTelugu ? '1 గంట క్రితం' : '1 hr ago')} · {isTelugu ? 'అధికారిక ఫీల్డ్ అప్‌డేట్' : 'Verified Field Update'}
-                  </Text>
+              {(!IS_LIVE_ENVIRONMENT || aspirant.liveStatus) && (
+                <View style={styles.liveBoxContainer}>
+                  <View style={[styles.liveBoxDot, IS_LIVE_ENVIRONMENT && { backgroundColor: '#94A3B8' }]} />
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.liveBoxTitle}>
+                      {t('pages.liveStatus', { defaultValue: isTelugu ? 'లైవ్ స్టేటస్' : 'Live Status' })}: {aspirant.liveStatus || (isTelugu ? 'నియోజకవర్గ ప్రజా సంబంధాల్లో ఉన్నారు' : 'Active in constituency outreach Sabhas')}
+                    </Text>
+                    <Text style={styles.liveBoxSub}>
+                      {aspirant.liveStatusTime || (IS_LIVE_ENVIRONMENT ? unavailableLabel : (isTelugu ? '1 గంట క్రితం' : '1 hr ago'))}{!IS_LIVE_ENVIRONMENT && ` · ${isTelugu ? 'అధికారిక ఫీల్డ్ అప్‌డేట్' : 'Verified Field Update'}`}
+                    </Text>
+                  </View>
                 </View>
-              </View>
+              )}
 
               {/* Bio */}
-              <Text style={styles.bioText}>{effectiveBio}</Text>
+              {effectiveBio ? <Text style={styles.bioText}>{effectiveBio}</Text> : null}
             </View>
 
             {/* ═══ Public Metrics Bar (Strictly Public) ═══ */}
             <View style={styles.publicMetricsGrid}>
               <View style={styles.metricCard}>
-                <Text style={styles.metricCardLabel}>{t('pages.followers', { defaultValue: 'ఫాలోవర్స్' })}</Text>
+                <Text style={styles.metricCardLabel}>{t('common.followers')}</Text>
                 <Text style={styles.metricCardValue}>
-                  {aspirant.communityEndorsements > 1000 ? `${(aspirant.communityEndorsements * 9).toLocaleString('en-IN')}` : '38.4K'}
+                  {IS_LIVE_ENVIRONMENT
+                    ? (liveFollowerCount?.toLocaleString('en-IN') ?? unavailableLabel)
+                    : (aspirant.communityEndorsements > 1000
+                      ? `${(aspirant.communityEndorsements * 9).toLocaleString('en-IN')}`
+                      : '38.4K')}
                 </Text>
               </View>
               <View style={styles.metricCard}>
-                <Text style={styles.metricCardLabel}>{t('pages.endorsements', { defaultValue: 'ఎండార్స్‌మెంట్స్' })}</Text>
+                <Text style={styles.metricCardLabel}>{t('civicScoreCard.endorsements')}</Text>
                 <Text style={[styles.metricCardValue, { color: '#047857' }]}>
-                  {aspirant.communityEndorsements.toLocaleString('en-IN')}
+                  {isAspirantMetricAvailable(aspirant, 'communityEndorsements')
+                    ? aspirant.communityEndorsements.toLocaleString('en-IN')
+                    : unavailableLabel}
                 </Text>
               </View>
               <View style={styles.metricCard}>
-                <Text style={styles.metricCardLabel}>{t('pages.civicScore', { defaultValue: 'సివిక్ స్కోరు' })}</Text>
+                <Text style={styles.metricCardLabel}>{t('civicScoreCard.title')}</Text>
                 <Text style={[styles.metricCardValue, { color: '#002B7F' }]}>
-                  {aspirant.civicScore} <Text style={{ fontSize: 11, color: '#D97706' }}>★</Text>
+                  {isAspirantMetricAvailable(aspirant, 'civicScore') ? (
+                    <>
+                      {aspirant.civicScore}{' '}
+                      <Text style={{ fontSize: 11, color: '#D97706' }}>★</Text>
+                    </>
+                  ) : (
+                    unavailableLabel
+                  )}
                 </Text>
               </View>
               <View style={styles.metricCard}>
-                <Text style={styles.metricCardLabel}>{t('pages.resolvedIssues', { defaultValue: 'పరిష్కారాలు' })}</Text>
+                <Text style={styles.metricCardLabel}>{t('civicScoreCard.resolved')}</Text>
                 <Text style={[styles.metricCardValue, { color: '#4F46E5' }]}>
-                  {aspirant.issuesResolved || 28}
+                  {isAspirantMetricAvailable(aspirant, 'issuesResolved')
+                    ? aspirant.issuesResolved
+                    : unavailableLabel}
                 </Text>
               </View>
             </View>
@@ -584,17 +693,6 @@ export default function LeaderProfileModal({
                     multiline
                   />
                   <View style={styles.composerFooter}>
-                    <View style={styles.composerToolIcons}>
-                      <Pressable style={styles.composerIconBtn}>
-                        <Ionicons name="camera-outline" size={18} color="#64748B" />
-                      </Pressable>
-                      <Pressable style={styles.composerIconBtn}>
-                        <Ionicons name="bar-chart-outline" size={18} color="#64748B" />
-                      </Pressable>
-                      <Pressable style={styles.composerIconBtn}>
-                        <Ionicons name="location-outline" size={18} color="#64748B" />
-                      </Pressable>
-                    </View>
                     <Pressable style={styles.composerPublishBtn} onPress={handleCreatePost}>
                       <Text style={styles.composerPublishText}>
                         {t('pages.postBtn', { defaultValue: 'పోస్ట్ చేయండి' })}
@@ -611,7 +709,8 @@ export default function LeaderProfileModal({
                 </View>
               ))}
 
-              {/* Interactive Citizen Poll Card */}
+              {/* The local poll preview is not a production poll service. */}
+              {pollData && (
               <View style={styles.pollCard}>
                 <View style={styles.pollHeaderRow}>
                   <View style={styles.avatarImgSmall}>
@@ -658,6 +757,7 @@ export default function LeaderProfileModal({
                   {pollData.footerNote}
                 </Text>
               </View>
+              )}
             </View>
           )}
 
@@ -671,16 +771,16 @@ export default function LeaderProfileModal({
                   <Text style={styles.blockTitle}>
                     🌱 {t('pages.tabProfile', { defaultValue: 'పరిచయం & ప్రస్థానం' })}
                   </Text>
-                  <View style={styles.verifiedBadgePill}>
-                    <Text style={styles.verifiedBadgePillText}>ECI Verified</Text>
-                  </View>
+                  {!IS_LIVE_ENVIRONMENT && (
+                    <View style={styles.verifiedBadgePill}>
+                      <Text style={styles.verifiedBadgePillText}>ECI Verified</Text>
+                    </View>
+                  )}
                 </View>
-                <Text style={styles.paragraphText}>
-                  {effectiveJourneyBio}
-                </Text>
+                {effectiveJourneyBio ? <Text style={styles.paragraphText}>{effectiveJourneyBio}</Text> : null}
               </View>
 
-              <View style={styles.contentBlockCard}>
+              {!IS_LIVE_ENVIRONMENT && <View style={styles.contentBlockCard}>
                 <Text style={styles.blockTitle}>🎓 {isTelugu ? 'విద్యార్హతలు & నేపథ్యం' : 'Education & Grassroots Background'}</Text>
                 <View style={styles.timelineItem}>
                   <View style={styles.timelineDot} />
@@ -696,7 +796,7 @@ export default function LeaderProfileModal({
                     <Text style={styles.timelineSub}>{isTelugu ? 'పల్నాడు తాగునీటి పోరాట కమిటీ కన్వీనర్ (2018 - ప్రస్తుతం)' : 'Water Security & Youth Convenor (2018 - Present)'}</Text>
                   </View>
                 </View>
-              </View>
+              </View>}
             </View>
           )}
 
@@ -710,17 +810,22 @@ export default function LeaderProfileModal({
                   📋 {t('pages.tabVision', { defaultValue: isTelugu ? 'విజన్ & ప్రణాళిక' : 'Vision & Manifesto' })}
                 </Text>
                 <Text style={styles.paragraphText}>
-                  {isTelugu ? 'నియోజకవర్గ భవిష్యత్తు కోసం రూపొందించిన స్పష్టమైన ప్రజా ఎజెండా. ప్రతి అంశంపై పౌరులు తమ ప్రాధాన్యతను మద్దతు ద్వారా తెలపవచ్చు:' : 'A clear public agenda for the future of this constituency. Citizens can vote to prioritize initiatives:'}
+                  {IS_LIVE_ENVIRONMENT
+                    ? unavailableLabel
+                    : (isTelugu ? 'నియోజకవర్గ భవిష్యత్తు కోసం రూపొందించిన స్పష్టమైన ప్రజా ఎజెండా. ప్రతి అంశంపై పౌరులు తమ ప్రాధాన్యతను మద్దతు ద్వారా తెలపవచ్చు:' : 'A clear public agenda for the future of this constituency. Citizens can vote to prioritize initiatives:')}
                 </Text>
               </View>
 
-              {(aspirant.visionPledges || defaultPledges).map((pledge) => {
+              {displayedPledges.length === 0 && (
+                <Text style={styles.paragraphText}>{unavailableLabel}</Text>
+              )}
+              {displayedPledges.map((pledge) => {
                 const addVotes = visionVotes[pledge.id] || 0;
                 return (
                   <View key={pledge.id} style={styles.pledgeCard}>
                     <Text style={styles.pledgeTitle}>{pledge.title}</Text>
                     <Text style={styles.pledgeDesc}>{pledge.desc}</Text>
-                    <View style={styles.pledgeFooterRow}>
+                    {!IS_LIVE_ENVIRONMENT && <View style={styles.pledgeFooterRow}>
                       <Pressable
                         style={[styles.pledgeSupportBtn, addVotes > 0 && styles.pledgeSupportBtnActive]}
                         onPress={() => handleSupportVision(pledge.id)}
@@ -730,7 +835,7 @@ export default function LeaderProfileModal({
                           {t('pages.agreeWithVision', { defaultValue: isTelugu ? 'మద్దతు తెలపండి' : 'Support Vision' })} ({pledge.supportCount + addVotes})
                         </Text>
                       </Pressable>
-                    </View>
+                    </View>}
                   </View>
                 );
               })}
@@ -747,20 +852,24 @@ export default function LeaderProfileModal({
                   ⚡ {t('pages.tabInitiatives', { defaultValue: 'క్షేత్ర సేవా రికార్డు' })}
                 </Text>
                 <Text style={styles.paragraphText}>
-                  నియోజకవర్గంలో నేరుగా పరిష్కరించిన ప్రజా సమస్యలు మరియు క్షేత్రస్థాయి ఫలితాలు:
+                  {IS_LIVE_ENVIRONMENT ? unavailableLabel : 'నియోజకవర్గంలో నేరుగా పరిష్కరించిన ప్రజా సమస్యలు మరియు క్షేత్రస్థాయి ఫలితాలు:'}
                 </Text>
               </View>
 
-              {(aspirant.fieldInitiatives || [
-                { id: 'init-1', title: 'రెంటచింతల ప్రాథమిక పాఠశాలలో మంచినీటి ఆర్వో ప్లాంట్ పునరుద్ధరణ', desc: 'మూతపడిన ఆర్వో ప్లాంట్‌ను పంచాయతీ అధికారులతో మరమ్మతులు చేయించి 350 మంది విద్యార్థులకు తాగునీరు అందించాము.', date: '2026-11-01', isResolved: true },
-                { id: 'init-2', title: 'మాచర్ల బైపాస్ రోడ్డు గుంతల మరమ్మత్తు ప్రచారం', desc: 'ప్రమాదకర గుంతలపై ఆర్‌అండ్‌బీ అధికారులతో 4 కిలోమీటర్ల మేర తాత్కాలిక ప్యాచ్ వర్క్ పూర్తి చేయించాము.', date: '2026-10-24', isResolved: true },
-              ]).map((init) => (
+              {displayedInitiatives.length === 0 && (
+                <Text style={styles.paragraphText}>{unavailableLabel}</Text>
+              )}
+              {displayedInitiatives.map((init) => (
                 <View key={init.id} style={styles.initiativeCard}>
                   <View style={styles.initiativeTopRow}>
-                    <View style={styles.resolvedBadgePill}>
-                      <Ionicons name="checkmark-circle" size={13} color="#047857" />
-                      <Text style={styles.resolvedBadgeText}>పరిష్కరించబడింది</Text>
-                    </View>
+                    {init.isResolved && (
+                      <View style={styles.resolvedBadgePill}>
+                        <Ionicons name="checkmark-circle" size={13} color="#047857" />
+                        <Text style={styles.resolvedBadgeText}>
+                          {t('pages.civicScoreCard.resolved', { defaultValue: isTelugu ? 'పరిష్కరించబడింది' : 'Resolved' })}
+                        </Text>
+                      </View>
+                    )}
                     <Text style={styles.initiativeDate}>{init.date}</Text>
                   </View>
                   <Text style={styles.initiativeTitle}>{init.title}</Text>
@@ -775,15 +884,20 @@ export default function LeaderProfileModal({
           {/* ═══════════════════════════════════════════════════════════════ */}
           {activeSubTab === 'values' && (
             <View style={styles.tabSection}>
-              <View style={styles.contentBlockCard}>
+              {IS_LIVE_ENVIRONMENT ? (
+                <View style={styles.contentBlockCard}>
+                  <Text style={styles.paragraphText}>{unavailableLabel}</Text>
+                </View>
+              ) : <View style={styles.contentBlockCard}>
                 <Text style={styles.blockTitle}>
                   ⚖️ {t('pages.tabValues', { defaultValue: 'నైతిక విలువలు & హామీ' })}
                 </Text>
                 <Text style={styles.paragraphText}>
                   రాజకీయాల్లో పూర్తి పారదర్శకత, జవాబుదారీతనం మరియు స్వచ్ఛంద ప్రమాణాలు:
                 </Text>
-              </View>
+              </View>}
 
+              {!IS_LIVE_ENVIRONMENT && <>
               <View style={styles.disclosureGrid}>
                 <View style={[styles.disclosureCard, { backgroundColor: '#ECFDF5', borderColor: '#A7F3D0' }]}>
                   <Text style={{ fontSize: 24, textAlign: 'center', marginBottom: 4 }}>🛡️</Text>
@@ -816,6 +930,7 @@ export default function LeaderProfileModal({
                     : 'I solemnly pledge to uphold the Constitution of India, maintain zero tolerance for corruption, ensure total transparency in public expenditure, and remain accessible and accountable to every citizen.'}
                 </Text>
               </View>
+              </>}
             </View>
           )}
 
@@ -843,17 +958,27 @@ export default function LeaderProfileModal({
                   <View style={styles.studioStatBox}>
                     <Text style={styles.studioStatLabel}>{isTelugu ? 'బూత్ రీచ్' : 'Booth Reach'}</Text>
                     <Text style={styles.studioStatVal}>
-                      {aspirant.privateTelemetry?.boothCoverageText || (isTelugu ? '218 / 248 బూత్‌లు' : '218 / 248 Booths')}
+                      {aspirant.privateTelemetry?.boothCoverageText?.trim() || unavailableLabel}
                     </Text>
-                    <Text style={styles.studioStatSub}>{isTelugu ? '87.9% గ్రాస్ రూట్స్ రీచ్' : '87.9% Grassroots Coverage'}</Text>
+                    <Text style={styles.studioStatSub}>
+                      {aspirant.privateTelemetry?.grassrootsReachPercent != null
+                        ? `${aspirant.privateTelemetry.grassrootsReachPercent}% ${isTelugu ? 'గ్రాస్‌రూట్స్ రీచ్' : 'Grassroots reach'}`
+                        : unavailableLabel}
+                    </Text>
                   </View>
 
                   <View style={styles.studioStatBox}>
                     <Text style={styles.studioStatLabel}>{isTelugu ? 'స్పందన సమయం' : 'Response Time'}</Text>
                     <Text style={[styles.studioStatVal, { color: '#047857' }]}>
-                      &lt; {aspirant.privateTelemetry?.avgResponseHours || 3.2} {isTelugu ? 'గంటలు' : 'Hours'}
+                      {aspirant.privateTelemetry?.avgResponseHours != null
+                        ? `${aspirant.privateTelemetry.avgResponseHours} ${isTelugu ? 'గంటలు' : 'Hours'}`
+                        : unavailableLabel}
                     </Text>
-                    <Text style={styles.studioStatSub}>{isTelugu ? '96% విజ్ఞప్తులకు సమాధానం' : '96% Inquiries Answered'}</Text>
+                    <Text style={styles.studioStatSub}>
+                      {aspirant.privateTelemetry?.responseRatePercent != null
+                        ? `${aspirant.privateTelemetry.responseRatePercent}% ${isTelugu ? 'విజ్ఞప్తులకు సమాధానం' : 'inquiries answered'}`
+                        : unavailableLabel}
+                    </Text>
                   </View>
                 </View>
 
@@ -862,7 +987,9 @@ export default function LeaderProfileModal({
                     {t('pages.profileViews', { defaultValue: isTelugu ? '30-రోజుల ప్రొఫైల్ వీక్షణలు' : '30-Day Profile Views' })}:
                   </Text>
                   <Text style={styles.studioEngagementVal}>
-                    {(aspirant.privateTelemetry?.profileViews30Days || 182400).toLocaleString('en-IN')}
+                    {aspirant.privateTelemetry?.profileViews30Days != null
+                      ? aspirant.privateTelemetry.profileViews30Days.toLocaleString('en-IN')
+                      : unavailableLabel}
                   </Text>
                 </View>
 
@@ -871,7 +998,9 @@ export default function LeaderProfileModal({
                     {t('pages.pendingCitizenRequests', { defaultValue: isTelugu ? 'పెండింగ్‌లో ఉన్న పౌర విజ్ఞప్తులు' : 'Pending Citizen Inquiries' })}:
                   </Text>
                   <Text style={[styles.studioEngagementVal, { color: '#D97706' }]}>
-                    {aspirant.privateTelemetry?.pendingRequestsCount || 6} {isTelugu ? 'విజ్ఞప్తులు' : 'Requests'}
+                    {aspirant.privateTelemetry?.pendingRequestsCount != null
+                      ? `${aspirant.privateTelemetry.pendingRequestsCount} ${isTelugu ? 'విజ్ఞప్తులు' : 'Requests'}`
+                      : unavailableLabel}
                   </Text>
                 </View>
               </View>
@@ -886,15 +1015,24 @@ export default function LeaderProfileModal({
           <Pressable
             style={styles.dockPrimaryBtn}
             onPress={async () => {
+              const currentUserId = authUser?.id;
+              if (!currentUserId) {
+                Alert.alert(isTelugu ? 'దయచేసి సైన్ ఇన్ చేయండి' : 'Sign in to message this profile.');
+                return;
+              }
+              if (IS_LIVE_ENVIRONMENT && !aspirant.userId) {
+                Alert.alert(unavailableLabel);
+                return;
+              }
               onClose();
-              const candidateUserId = aspirant.userId || aspirant.id || `candidate-${aspirant.displayName.replace(/\s+/g, '-').toLowerCase()}`;
+              const candidateUserId = aspirant.userId || aspirant.id;
               const convId = await useDMStore.getState().startConversationWithUser(
-                useAuthStore.getState().user?.id || 'anon',
+                currentUserId,
                 {
                   id: candidateUserId,
                   displayName: aspirant.displayName,
                   role: 'aspirant',
-                  isVerified: true,
+                  isVerified: false,
                 },
               );
               if (convId) {
@@ -910,15 +1048,17 @@ export default function LeaderProfileModal({
             </Text>
           </Pressable>
 
-          <Pressable
-            style={[styles.dockSecondaryBtn, volunteerJoined && styles.dockSecondaryBtnActive]}
-            onPress={handleVolunteer}
-          >
-            <Ionicons name="people" size={17} color={volunteerJoined ? '#047857' : '#002B7F'} />
-            <Text style={[styles.dockSecondaryText, volunteerJoined && { color: '#047857' }]}>
-              {volunteerJoined ? (isTelugu ? 'వాలంటీర్ ✓' : 'Volunteer ✓') : t('pages.volunteer', { defaultValue: isTelugu ? 'వాలంటీర్' : 'Volunteer' })}
-            </Text>
-          </Pressable>
+          {!IS_LIVE_ENVIRONMENT && (
+            <Pressable
+              style={[styles.dockSecondaryBtn, volunteerJoined && styles.dockSecondaryBtnActive]}
+              onPress={handleVolunteer}
+            >
+              <Ionicons name="people" size={17} color={volunteerJoined ? '#047857' : '#002B7F'} />
+              <Text style={[styles.dockSecondaryText, volunteerJoined && { color: '#047857' }]}>
+                {volunteerJoined ? (isTelugu ? 'వాలంటీర్ ✓' : 'Volunteer ✓') : t('pages.volunteer', { defaultValue: isTelugu ? 'వాలంటీర్' : 'Volunteer' })}
+              </Text>
+            </Pressable>
+          )}
         </View>
       </View>
     </Modal>

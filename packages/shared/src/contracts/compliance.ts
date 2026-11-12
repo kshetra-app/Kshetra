@@ -117,7 +117,8 @@ export interface DataPrincipalExportArchive {
     profileRecordsCount: number;
     activityRecordsCount: number;
     walletTransactionsCount: number;
-    sessionsCount: number;
+    /** Null when authentication session records are not available to the export provider. */
+    sessionsCount: number | null;
     publicStatutoryRecordsNotice: string;
   };
   dataPayload: {

@@ -192,7 +192,6 @@ export interface LegislativePerformance {
   questionsAsked: number;
   debatesParticipated: number;
   privateMemberBills: number;
-  attendancePercent: number;
   mpladsFundsUtilized?: number;           // % of MPLADS/MLALADS used
   developmentProjects?: number;
   performanceScore: number;               // Weighted 0-100
@@ -255,7 +254,6 @@ export type RedFlagType =
   | 'income_asset_mismatch'
   | 'education_mismatch'
   | 'party_hopping'
-  | 'low_attendance'
   | 'dynasty_concentration';
 
 export interface RedFlag {
@@ -270,7 +268,6 @@ export interface ComputedInsights {
   wealthRank?: number;                    // Among all MLAs/MPs in state
   criminalRank?: number;
   performanceRank?: number;
-  attendanceRank?: number;
   incumbencyAdvantage: boolean;
   voteShareTrend: Trend;
   assetGrowthTrend: 'normal' | 'high' | 'suspicious';
@@ -420,7 +417,6 @@ export function computeCompleteness(profile: LegislatorProfile): number {
     profile.criminalRecord.totalCases >= 0,
     !!profile.education.educationLevel,
     !!profile.education.selfProfession,
-    profile.performance.attendancePercent > 0,
     profile.performance.questionsAsked >= 0,
     !!profile.sources.mynetaUrl,
   ];
@@ -487,16 +483,6 @@ export function detectAllRedFlags(profile: LegislatorProfile): RedFlag[] {
     });
   }
 
-  // Low attendance
-  if (profile.performance.attendancePercent > 0 && profile.performance.attendancePercent < 50) {
-    flags.push({
-      type: 'low_attendance',
-      severity: profile.performance.attendancePercent < 30 ? 'critical' : 'warning',
-      description: `Only ${profile.performance.attendancePercent}% attendance in legislative sessions`,
-      value: `${profile.performance.attendancePercent}%`,
-    });
-  }
-
   // Dynasty concentration
   if (profile.dynasty.isDynast && profile.dynasty.familyInPolitics.length >= 3) {
     flags.push({
@@ -531,7 +517,7 @@ export function createEmptyProfile(id: string, house: HouseType): LegislatorProf
     financialHistory: [],
     criminalRecord: { hasCriminalCases: false, totalCases: 0, seriousCases: 0, convictions: 0, caseDetails: [] },
     education: { educationLevel: 'others', educationCategory: '', selfProfession: '', otherActivities: [] },
-    performance: { questionsAsked: 0, debatesParticipated: 0, privateMemberBills: 0, attendancePercent: 0, performanceScore: 0 },
+    performance: { questionsAsked: 0, debatesParticipated: 0, privateMemberBills: 0, performanceScore: 0 },
     constituencyContext: { totalElectors: 0 },
     dynasty: { isDynast: false, politicalGeneration: 1, familyInPolitics: [], familyConstituencies: [] },
     keyDates: { dob: null, notableEventsTimeline: [] },
@@ -569,6 +555,5 @@ export const RED_FLAG_CONFIG: Record<RedFlagType, { icon: string; color: string;
   income_asset_mismatch:  { icon: 'swap-horizontal',   color: '#8B5CF6', label: 'Income-Asset Mismatch' },
   education_mismatch:     { icon: 'school',            color: '#6B7280', label: 'Education Mismatch' },
   party_hopping:          { icon: 'swap-vertical',     color: '#3B82F6', label: 'Party Hopping' },
-  low_attendance:         { icon: 'time-outline',      color: '#EF4444', label: 'Low Attendance' },
   dynasty_concentration:  { icon: 'people',            color: '#F97316', label: 'Dynasty Concentration' },
 };

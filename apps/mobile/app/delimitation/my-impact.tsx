@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -13,9 +13,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useFocusEffect } from 'expo-router';
 import { useMyConstituencyStore } from '../../stores/myConstituency';
 import { useActiveStateStore } from '../../stores/activeState';
 import { useDelimitationStore } from '../../stores/delimitation';
+import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
 import { computeStateSeatAllocation } from '../../lib/delimitation/seatCalculator';
 import {
   DELIMITATION_STATUS_CONFIG,
@@ -43,6 +45,9 @@ export default function MyImpactScreen() {
   const myHome = useMyConstituencyStore((s) => s.home);
   const activeState = useActiveStateStore((s) => s.stateCode);
   const nationalStatus = useDelimitationStore((s) => s.nationalStatus);
+  const statusAvailable = useDelimitationStore((s) => s.statusAvailable);
+  const statusLabel = useDelimitationStore((s) => s.statusLabel);
+  const refreshOfficialData = useDelimitationStore((s) => s.refreshOfficialData);
   const getCitizenImpact = useDelimitationStore((s) => s.getCitizenImpact);
   const getCitizenImpactForConstituency = useDelimitationStore((s) => s.getCitizenImpactForConstituency);
 
@@ -51,7 +56,15 @@ export default function MyImpactScreen() {
     [activeState],
   );
 
-  const statusConfig = DELIMITATION_STATUS_CONFIG[nationalStatus];
+  const statusConfig = nationalStatus
+    ? DELIMITATION_STATUS_CONFIG[nationalStatus]
+    : { label: t('common.dataUnavailable'), color: colors.textMuted, icon: 'help-circle-outline' };
+
+  useFocusEffect(
+    useCallback(() => {
+      void refreshOfficialData();
+    }, [refreshOfficialData]),
+  );
 
   const handleSearch = (overridePin?: string) => {
     const targetPin = overridePin ?? pinCode;
@@ -246,7 +259,10 @@ export default function MyImpactScreen() {
             <View style={styles.statusRow}>
               <Ionicons name={statusConfig.icon as any} size={16} color={statusConfig.color} />
               <Text style={[styles.statusText, { color: statusConfig.color }]}>
-                {t('delimitationExtended.currentStatus', { status: statusConfig.label, defaultValue: `Current Status: ${statusConfig.label}` })}
+                {t('delimitationExtended.currentStatus', {
+                  status: statusAvailable && statusLabel ? statusLabel : t('common.dataUnavailable'),
+                  defaultValue: `Current Status: ${statusAvailable && statusLabel ? statusLabel : t('common.dataUnavailable')}`,
+                })}
               </Text>
             </View>
 
@@ -307,8 +323,8 @@ export default function MyImpactScreen() {
           </View>
         )}
 
-        {/* Sample PIN codes for quick demonstration */}
-        <View style={[styles.sampleCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        {/* Development-only sample PINs for trying the simulation */}
+        {!IS_LIVE_ENVIRONMENT && <View style={[styles.sampleCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Text style={[styles.sampleTitle, { color: colors.text }]}>{t('delimitation.quickTestPin', { defaultValue: 'Quick Test PIN Codes' })}</Text>
           <Text style={[styles.sampleSub, { color: colors.textSecondary }]}>{t('delimitation.quickTestPinDesc', { defaultValue: 'Tap any PIN code to immediately calculate personal delimitation impact:' })}</Text>
           <View style={styles.sampleChipsRow}>
@@ -343,7 +359,7 @@ export default function MyImpactScreen() {
               </Pressable>
             ))}
           </View>
-        </View>
+        </View>}
 
         {/* {t('delimitation.constitutionalFramework', { defaultValue: 'Constitutional Framework & Citizen Rights' })} */}
         <View style={[styles.comingSoonCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>

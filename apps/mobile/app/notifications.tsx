@@ -7,6 +7,10 @@ import { Stack, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNotificationsStore, type NotificationItem } from '../stores/notifications';
 import { useAuthStore } from '../stores/auth';
+import {
+  selectOwnedNotificationItems,
+  selectOwnedUnreadCount,
+} from '../lib/notificationInboxOwnership';
 import { useTheme } from '../lib/theme';
 import DiscoveryHubSheet from '../components/DiscoveryHubSheet';
 
@@ -35,11 +39,12 @@ export default function NotificationsScreen() {
   const router = useRouter();
   const { colors } = useTheme();
   const user = useAuthStore((s) => s.user);
-  const items = useNotificationsStore((s) => s.items);
+  const userId = user?.id ?? null;
+  const items = useNotificationsStore((s) => selectOwnedNotificationItems(s, userId));
   const markRead = useNotificationsStore((s) => s.markRead);
   const markAllRead = useNotificationsStore((s) => s.markAllRead);
   const clearAll = useNotificationsStore((s) => s.clearAll);
-  const unreadCount = useNotificationsStore((s) => s.unreadCount);
+  const unreadCount = useNotificationsStore((s) => selectOwnedUnreadCount(s, userId));
   const loading = useNotificationsStore((s) => s.loading);
   const fetchNotifications = useNotificationsStore((s) => s.fetchNotifications);
   const insets = useSafeAreaInsets();

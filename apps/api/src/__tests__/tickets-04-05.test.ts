@@ -9,6 +9,8 @@ import { supabase } from '../lib/supabase';
 
 describe('Tickets 0.4 & 0.5: Web Page Manager & Grievance Policy Routes', () => {
   let app: FastifyInstance;
+  let originalRazorpayKey: string | undefined;
+  let originalRazorpaySecret: string | undefined;
 
   beforeAll(async () => {
     setTestAuthResolver(async () => ({ userId: 'user-1', role: 'politician' }));
@@ -27,6 +29,27 @@ describe('Tickets 0.4 & 0.5: Web Page Manager & Grievance Policy Routes', () => 
   });
 
   beforeEach(() => {
+    originalRazorpayKey = process.env.RAZORPAY_KEY_ID;
+    originalRazorpaySecret = process.env.RAZORPAY_KEY_SECRET;
+    process.env.RAZORPAY_KEY_ID = 'rzp_test_ticket_suite_key';
+    process.env.RAZORPAY_KEY_SECRET = 'ticket_suite_test_secret';
+    jest.spyOn(global, 'fetch').mockImplementation(async (_input, init) => {
+      const requestBody = JSON.parse(String(init?.body || '{}')) as {
+        amount: number;
+        currency: string;
+      };
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          id: 'order_razorpay_ticket_suite_test',
+          amount: requestBody.amount,
+          currency: requestBody.currency,
+          status: 'created',
+        }),
+      } as Response;
+    });
+
     let queriedId = 'test-page-1';
     const chainable: any = {
       eq: (col: string, val: any) => {
@@ -75,6 +98,14 @@ describe('Tickets 0.4 & 0.5: Web Page Manager & Grievance Policy Routes', () => 
     }) as any);
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+    if (originalRazorpayKey === undefined) delete process.env.RAZORPAY_KEY_ID;
+    else process.env.RAZORPAY_KEY_ID = originalRazorpayKey;
+    if (originalRazorpaySecret === undefined) delete process.env.RAZORPAY_KEY_SECRET;
+    else process.env.RAZORPAY_KEY_SECRET = originalRazorpaySecret;
+  });
+
   describe('Ticket 0.4: Web Page Manager Shell', () => {
     it('GET /manage serves the HTML Page Manager shell', async () => {
       const response = await app.inject({
@@ -108,7 +139,7 @@ describe('Tickets 0.4 & 0.5: Web Page Manager & Grievance Policy Routes', () => 
         method: 'POST',
         url: '/api/v1/pages/test-page-1/pro/order',
         headers: { 'x-user-id': 'user-1' },
-        payload: { amount: 199900 },
+        payload: { billingCycle: 'annual', amount: 499900 },
       });
 
       expect(response.statusCode).toBe(200);

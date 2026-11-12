@@ -49,8 +49,8 @@ export class ApiValidationError extends ApiError {
 }
 
 export class ApiNotFoundError extends ApiError {
-  constructor(message: string = 'Resource not found', requestId?: string) {
-    super(message, 404, requestId);
+  constructor(message: string = 'Resource not found', requestId?: string, data?: unknown) {
+    super(message, 404, requestId, data);
     this.name = 'ApiNotFoundError';
   }
 }
@@ -108,7 +108,7 @@ export function createApiErrorFromResponse(
     return new ApiValidationError(message, statusCode, envelopeRequestId, payload);
   }
   if (statusCode === 404) {
-    return new ApiNotFoundError(message, envelopeRequestId);
+    return new ApiNotFoundError(message, envelopeRequestId, payload);
   }
   if (statusCode === 408 || statusCode === 504) {
     return new ApiTimeoutError(message, envelopeRequestId);

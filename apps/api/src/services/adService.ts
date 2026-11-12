@@ -5,7 +5,6 @@
  */
 
 import crypto from 'node:crypto';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import type {
   PoliticalAdCategory,
   PoliticalAdDTO,
@@ -26,8 +25,13 @@ import type {
 } from '@kshetra/shared';
 
 // Cryptographic Secret for ViewToken Generation & Verification
-const VIEW_TOKEN_SECRET =
-  process.env.AD_VIEW_TOKEN_SECRET || 'poligram-ad-telemetry-secret-key-2026';
+function getViewTokenSecret(): string {
+  const secret = process.env.AD_VIEW_TOKEN_SECRET?.trim();
+  if (!secret || Buffer.byteLength(secret, 'utf8') < 32) {
+    throw new Error('AD_VIEW_TOKEN_SECRET must contain at least 32 bytes');
+  }
+  return secret;
+}
 
 // In-Memory Storage for High-Throughput Serving & Standalone Test Resilience
 const MEMORY_POLITICAL_ADS: Map<string, PoliticalAdDTO> = new Map();
@@ -454,10 +458,9 @@ export class AdService {
     const timestamp = Date.now();
     const payload = `${adId}:${userSessionHash}:${timestamp}`;
     const signature = crypto
-      .createHmac('sha256', VIEW_TOKEN_SECRET)
+      .createHmac('sha256', getViewTokenSecret())
       .update(payload)
-      .digest('hex')
-      .slice(0, 16);
+      .digest('hex');
     return Buffer.from(`${payload}:${signature}`).toString('base64url');
   }
 
@@ -471,18 +474,21 @@ export class AdService {
       if (parts.length !== 4) return { valid: false };
 
       const [adId, sessionHash, timestampStr, signature] = parts;
+      if (!/^[0-9a-f]{64}$/i.test(signature)) return { valid: false };
+      const timestamp = Number(timestampStr);
+      if (!Number.isSafeInteger(timestamp)) return { valid: false };
       const expectedPayload = `${adId}:${sessionHash}:${timestampStr}`;
       const expectedSignature = crypto
-        .createHmac('sha256', VIEW_TOKEN_SECRET)
+        .createHmac('sha256', getViewTokenSecret())
         .update(expectedPayload)
-        .digest('hex')
-        .slice(0, 16);
+        .digest();
+      const providedSignature = Buffer.from(signature, 'hex');
 
-      if (signature !== expectedSignature) return { valid: false };
+      if (!crypto.timingSafeEqual(providedSignature, expectedSignature)) return { valid: false };
 
       // Expire view tokens older than 15 minutes
-      const age = Date.now() - parseInt(timestampStr, 10);
-      if (age > 900000) return { valid: false };
+      const age = Date.now() - timestamp;
+      if (age < 0 || age > 900000) return { valid: false };
 
       return { valid: true, adId, userSessionHash: sessionHash };
     } catch {

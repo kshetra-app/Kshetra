@@ -15,7 +15,7 @@ import {
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { sendAIChat, isAIConfigured, type AIChatMessage } from '../lib/aiService';
+import { sendAIChat, type AIChatMessage } from '../lib/aiService';
 import { getUnifiedConstituenciesForState } from '../lib/stateDataAdapter';
 import { useActiveStateStore } from '../stores/activeState';
 import { useTheme } from '../lib/theme';
@@ -26,6 +26,8 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   timestamp: number;
+  groundingStatus?: 'reference_data_unverified';
+  isError?: boolean;
 }
 
 const GENERAL_QUESTIONS = [
@@ -37,6 +39,7 @@ const GENERAL_QUESTIONS = [
   'Which constituencies saw the biggest defections?',
   'Analyze the BRS→INC mass defection of 2024',
 ];
+const MAX_AI_HISTORY_MESSAGES = 50;
 
 export default function AIChatScreen() {
   const { t } = useTranslation();
@@ -46,7 +49,6 @@ export default function AIChatScreen() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [aiConfigured, setAiConfigured] = useState<boolean | null>(null);
   const [selectedAcNo, setSelectedAcNo] = useState<number | undefined>(initialAcNo);
   const [helpVisible, setHelpVisible] = useState(false);
   const flatListRef = useRef<FlatList>(null);
@@ -74,28 +76,40 @@ export default function AIChatScreen() {
     setLoading(true);
 
     const history: AIChatMessage[] = [
-      ...messages.map((m) => ({
+      ...messages.slice(-(MAX_AI_HISTORY_MESSAGES - 1)).map((m) => ({
         role: m.role,
         content: m.content,
       })),
       { role: 'user', content: text },
     ];
 
-    const response = await sendAIChat(
-      history,
-      constituency ? { constituencyName: constituency.name, acNo: constituency.acNo } : undefined,
-    );
+    try {
+      const response = await sendAIChat(
+        history,
+        constituency ? { constituencyName: constituency.name, acNo: constituency.acNo } : undefined,
+      );
 
-    const assistantMsg: Message = {
-      id: `assistant-${Date.now()}`,
-      role: 'assistant',
-      content: response.response,
-      timestamp: Date.now(),
-    };
+      const assistantMsg: Message = {
+        id: `assistant-${Date.now()}`,
+        role: 'assistant',
+        content: response.response,
+        timestamp: Date.now(),
+        groundingStatus: response.groundingStatus,
+      };
 
-    setMessages((prev) => [...prev, assistantMsg]);
-    setLoading(false);
-  }, [input, loading, messages, constituency]);
+      setMessages((prev) => [...prev, assistantMsg]);
+    } catch {
+      setMessages((prev) => [...prev, {
+        id: `assistant-error-${Date.now()}`,
+        role: 'assistant',
+        content: t('ai.unavailable', { defaultValue: 'AI is temporarily unavailable. Check your connection and try again.' }),
+        timestamp: Date.now(),
+        isError: true,
+      }]);
+    } finally {
+      setLoading(false);
+    }
+  }, [input, loading, messages, constituency, t]);
 
   const renderMessage = ({ item }: { item: Message }) => (
     <View
@@ -126,6 +140,18 @@ export default function AIChatScreen() {
         >
           {item.content}
         </Text>
+        {item.groundingStatus === 'reference_data_unverified' && (
+          <Text style={[styles.provenanceText, { color: colors.textMuted }]}>
+            {t('ai.referenceDataNotVerified', {
+              defaultValue: 'Reference data has not been verified against dated sources.',
+            })}
+          </Text>
+        )}
+        {item.isError && (
+          <Text style={[styles.provenanceText, { color: colors.danger }]}>
+            {t('ai.tryAgain', { defaultValue: 'Please try again later.' })}
+          </Text>
+        )}
       </View>
     </View>
   );
@@ -375,6 +401,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#241814',
     lineHeight: 20,
+  },
+  provenanceText: {
+    fontSize: 11,
+    lineHeight: 15,
+    marginTop: 6,
   },
   userText: {
     color: '#FFFFFF',

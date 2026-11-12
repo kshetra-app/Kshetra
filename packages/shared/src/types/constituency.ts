@@ -113,6 +113,8 @@ export type ReservationStatus = 'GEN' | 'SC' | 'ST';
 
 export interface ConstituencyBrief {
   id: string;
+  /** Stable canonical ID when supplied by the canonical database. */
+  internalId?: string;
   name: string;
   acNo: number;
   stateCode: string;
@@ -120,6 +122,7 @@ export interface ConstituencyBrief {
   reservationStatus: ReservationStatus;
   currentParty: string;
   currentMLA: string;
+  officeholderStatus?: 'INCUMBENT_ACTIVE' | 'BY_ELECTION_SEATED' | 'VACANT' | 'UNRESOLVED';
 }
 
 export interface ConstituencyDetail extends ConstituencyBrief {

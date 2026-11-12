@@ -14,16 +14,40 @@ import type { ApiClient } from '../client';
 import { ApiValidationError } from '../errors';
 
 export interface UploadShortRequestDTO {
+  /** Existing persisted ID used only to safely replay a queued legacy upload. */
+  id?: string;
   title: string;
   videoUrl: string;
   thumbnailUrl?: string;
   description?: string;
   stateCode: string;
+  stateName?: string;
   constituencyId?: string;
+  districtName?: string;
   durationSeconds?: number;
-  duration?: number;
-  channelName?: string;
-  uploadedBy?: string;
+  hashtags?: string[];
+  gradientColors?: string[];
+  stateAccent?: string;
+}
+
+export interface UploadShortResponseDTO {
+  success: boolean;
+  id: string;
+  short?: Record<string, unknown>;
+}
+
+export interface ShortCommentDTO {
+  id: string;
+  authorName: string;
+  text: string;
+  createdAt: string;
+}
+
+export interface ShortCommentsResponseDTO {
+  success: boolean;
+  shortId: string;
+  comments: ShortCommentDTO[];
+  total: number;
 }
 
 export class ShortsEndpoint {
@@ -32,13 +56,18 @@ export class ShortsEndpoint {
   /**
    * 1. Upload short
    */
-  async uploadShort(payload: UploadShortRequestDTO): Promise<{ success: boolean; id: string; short?: any }> {
-    if (!payload?.title || !payload?.videoUrl || !payload?.stateCode) {
+  async uploadShort(payload: UploadShortRequestDTO): Promise<UploadShortResponseDTO> {
+    if (
+      !payload?.title?.trim() ||
+      payload.title.trim().length > 200 ||
+      !payload?.videoUrl?.trim() ||
+      !payload?.stateCode?.trim()
+    ) {
       throw new ApiValidationError('Invalid upload short: title, videoUrl, and stateCode are required');
     }
-    const res = await this.client.post<{ success: boolean; id: string; short?: any }>(
+    const res = await this.client.post<UploadShortResponseDTO>(
       '/api/v1/shorts',
-      payload,
+      { ...payload, title: payload.title.trim(), videoUrl: payload.videoUrl.trim() },
       { authPolicy: 'authenticated' },
     );
     return res.data;
@@ -92,14 +121,44 @@ export class ShortsEndpoint {
   /**
    * 5. Add short comment
    */
-  async addComment(shortId: string, content: string): Promise<{ success: boolean; id: string; shortId: string }> {
-    if (!shortId || !content) {
+  async addComment(shortId: string, content: string): Promise<{
+    success: boolean;
+    id: string;
+    shortId: string;
+    comment: ShortCommentDTO;
+  }> {
+    if (!shortId || !content?.trim() || content.trim().length > 500) {
       throw new ApiValidationError('Invalid comment: shortId and content are required');
     }
-    const res = await this.client.post<{ success: boolean; id: string; shortId: string }>(
+    const res = await this.client.post<{
+      success: boolean;
+      id: string;
+      shortId: string;
+      comment: ShortCommentDTO;
+    }>(
       `/api/v1/shorts/${encodeURIComponent(shortId)}/comments`,
-      { content },
+      { content: content.trim() },
       { authPolicy: 'authenticated' },
+    );
+    return res.data;
+  }
+
+  /** Load persisted public comments for a short. */
+  async listComments(
+    shortId: string,
+    options: { offset?: number; limit?: number } = {},
+  ): Promise<ShortCommentsResponseDTO> {
+    if (!shortId) {
+      throw new ApiValidationError('Invalid list comments request: shortId is required');
+    }
+    const offset = options.offset ?? 0;
+    const limit = options.limit ?? 50;
+    if (!Number.isInteger(offset) || offset < 0 || !Number.isInteger(limit) || limit < 1 || limit > 100) {
+      throw new ApiValidationError('Invalid comments pagination: offset must be non-negative and limit must be 1–100');
+    }
+    const res = await this.client.get<ShortCommentsResponseDTO>(
+      `/api/v1/shorts/${encodeURIComponent(shortId)}/comments?offset=${offset}&limit=${limit}`,
+      { authPolicy: 'public' },
     );
     return res.data;
   }

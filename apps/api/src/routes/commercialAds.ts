@@ -15,17 +15,19 @@ import type {
   AdTelemetryEventInput,
 } from '@kshetra/shared';
 
+const isProductionRuntime = () => isProductionLikeRuntime();
+
 export const commercialAdRoutes: FastifyPluginAsync = async (app) => {
-  // This service is process-memory backed. Never present simulated spend,
-  // delivery, click, impression, or invoice data as live in deployed runtimes.
+  // AdService is currently process-memory only. Do not accept or serve simulated accounts,
+  // budgets, delivery, impressions, clicks, or invoices from production endpoints.
   app.addHook('preHandler', async (request, reply) => {
-    if (isProductionLikeRuntime()) {
+    if (isProductionRuntime()) {
       return sendApiError(
         reply,
         request,
         503,
         'Service Unavailable',
-        'Commercial advertising storage and delivery are not connected',
+        'Commercial advertising storage and delivery providers are not connected',
         { code: 'AD_SERVICE_UNAVAILABLE' },
       );
     }

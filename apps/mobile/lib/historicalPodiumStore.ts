@@ -37,7 +37,13 @@ export interface HistoricalPodiumContest {
   secondRunnerUp: CandidatePodiumDetail | null;
 }
 
+function containsNonAsciiCharacters(value: string): boolean {
+  return Array.from(value).some((character) => character.codePointAt(0)! > 0x7f);
+}
+
 import { API_BASE_URL } from './constants';
+import { stripHonorifics, getCanonicalCandidateName } from './candidatePhotos';
+import { IS_LIVE_ENVIRONMENT } from './environment';
 
 // In-memory cache for parsed state podium files (hydrated on demand from API or local cache)
 const stateCache = new Map<string, Record<string, HistoricalPodiumContest[]>>();
@@ -57,6 +63,52 @@ export function setCachedStatePodium(stateCode: string, data: Record<string, His
 }
 
 /**
+ * Reconciles and sanitizes an election contest against authoritative local seed data.
+ * Protects against stale remote API responses, old GeoJSON fallbacks, or outdated CDN caches.
+ */
+export function sanitizeContestWithSeed(
+  stateCode: string,
+  acNoOrName: number | string,
+  contest: HistoricalPodiumContest,
+): HistoricalPodiumContest {
+  if (!contest) return contest;
+  try {
+    const { getUnifiedConstituenciesForState } = require('./stateDataAdapter');
+    const consts = getUnifiedConstituenciesForState(stateCode);
+    const acNum = typeof acNoOrName === 'number' ? acNoOrName : parseInt(String(acNoOrName), 10);
+    const seed = consts?.find((c: any) => c.acNo === acNum);
+    if (seed && seed.electionYear != null && contest.year === seed.electionYear) {
+      const authenticWinnerVotes = seed.winnerVotes ?? seed.votes;
+      const authenticMargin = seed.margin;
+      const authenticRuVotes = seed.runnerUpVotes;
+      const isGenericCand = (n?: string | null) => !n || /candidate|runner\s*up|winner|ind|nota/i.test(n.trim());
+      const authenticRuName = (!isGenericCand(seed.runnerUpName) ? seed.runnerUpName : null) ||
+                              (!isGenericCand(contest.firstRunnerUp?.name) ? contest.firstRunnerUp?.name : null) ||
+                              seed.runnerUpName || contest.firstRunnerUp?.name || seed.runnerUp || '';
+      const authenticWinnerName = seed.winnerName || contest.winner?.name || seed.winner || '';
+
+      if (authenticWinnerVotes != null && authenticWinnerVotes > 0) {
+        if (contest.winner) {
+          contest.winner.votes = authenticWinnerVotes;
+          if (authenticWinnerName) contest.winner.name = authenticWinnerName;
+          if (seed.winnerParty) contest.winner.party = seed.winnerParty;
+        }
+        if (authenticMargin != null) {
+          contest.marginWinnerToRunnerUp1 = authenticMargin;
+        }
+        if (contest.firstRunnerUp) {
+          if (authenticRuVotes != null) contest.firstRunnerUp.votes = authenticRuVotes;
+          if (authenticRuName) contest.firstRunnerUp.name = authenticRuName;
+          if (seed.runnerUp || (seed as any).runnerUpParty) contest.firstRunnerUp.party = seed.runnerUp || (seed as any).runnerUpParty;
+          if (authenticMargin != null) contest.firstRunnerUp.marginToWinner = authenticMargin;
+        }
+      }
+    }
+  } catch {}
+  return contest;
+}
+
+/**
  * On-demand asynchronous fetch for an entire state's historical podium data.
  */
 export async function fetchStatePodium(stateCode: string): Promise<Record<string, HistoricalPodiumContest[]>> {
@@ -69,6 +121,11 @@ export async function fetchStatePodium(stateCode: string): Promise<Record<string
     const res = await fetch(`${API_BASE_URL}/api/v1/states/${code}/podium`);
     if (res.ok) {
       const data = await res.json();
+      for (const acKey of Object.keys(data)) {
+        if (Array.isArray(data[acKey])) {
+          data[acKey] = data[acKey].map((c: HistoricalPodiumContest) => sanitizeContestWithSeed(code, acKey, c));
+        }
+      }
       stateCache.set(code, data);
       return data;
     }
@@ -94,8 +151,9 @@ export async function fetchHistoricalPodiumForConstituency(
   try {
     const res = await fetch(`${API_BASE_URL}/api/v1/states/${code}/constituencies/${acNoOrName}/podium`);
     if (res.ok) {
-      const contests = await res.json();
+      let contests = await res.json();
       if (Array.isArray(contests) && contests.length > 0) {
+        contests = contests.map((c: HistoricalPodiumContest) => sanitizeContestWithSeed(code, acNoOrName, c));
         let stateMap = stateCache.get(code);
         if (!stateMap) {
           stateMap = {};
@@ -109,18 +167,18 @@ export async function fetchHistoricalPodiumForConstituency(
     console.warn(`[historicalPodiumStore] Failed to fetch AC podium for ${code} ${acNoOrName}:`, err);
   }
 
-  // Offline / fallback from SQLite prebuilt database
-  try {
+  // Offline / fallback from SQLite prebuilt database is development-only.
+  if (!IS_LIVE_ENVIRONMENT) try {
     const { loadHistoricalResultsForState, getHistoricalResults } = require('./seedDataLoader');
     await loadHistoricalResultsForState(code);
     const acNum = typeof acNoOrName === 'number' ? acNoOrName : parseInt(String(acNoOrName), 10);
     if (!isNaN(acNum)) {
       const rows = getHistoricalResults(code, acNum);
       if (rows && rows.length > 0) {
-        const converted: HistoricalPodiumContest[] = rows.map((r: any) => ({
+        const converted: HistoricalPodiumContest[] = rows.map((r: any) => sanitizeContestWithSeed(code, acNum, {
           year: r.year,
-          delimitationId: String(r.delimitation_id || '4'),
-          totalValidVotes: r.total_valid_votes || 0,
+          ...(r.delimitation_id != null && String(r.delimitation_id).trim() !== '' ? { delimitationId: String(r.delimitation_id) } : {}),
+          totalValidVotes: r.total_valid_votes ?? undefined,
           constituencyName: r.constituency_name,
           marginWinnerToRunnerUp1: r.margin_winner_to_runner_up_1,
           marginWinnerToRunnerUp2: r.margin_winner_to_runner_up_2,
@@ -164,7 +222,8 @@ export async function fetchHistoricalPodiumForConstituency(
     }
   } catch {}
 
-  return cached || [];
+  const fallback = getLatestPodiumForConstituency(code, acNoOrName);
+  return fallback ? [fallback] : (cached || []);
 }
 
 // Ultra-thin online architecture: Full historical multi-election datasets (~118 MB)
@@ -229,6 +288,13 @@ export function getHistoricalPodiumForConstituency(
   acNoOrName: number | string,
 ): HistoricalPodiumContest[] {
   const code = (stateCode || 'TS').toUpperCase();
+  if (IS_LIVE_ENVIRONMENT) {
+    const apiData = stateCache.get(code);
+    const apiContests = apiData?.[String(acNoOrName)] || apiData?.[Number(acNoOrName) as any] || [];
+    return Array.isArray(apiContests)
+      ? [...apiContests].sort((a, b) => (b.year ?? 0) - (a.year ?? 0))
+      : [];
+  }
   if (code === 'IN' || code === 'LOK_SABHA') {
     buildLokSabhaIndexes();
     if (typeof acNoOrName === 'number') {
@@ -241,7 +307,9 @@ export function getHistoricalPodiumForConstituency(
   const data = getStateData(code);
   const contests = data[String(acNoOrName)] || data[Number(acNoOrName) as any] || [];
   if (Array.isArray(contests) && contests.length > 0) {
-    return [...contests].sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
+    return [...contests]
+      .sort((a, b) => (b.year ?? 0) - (a.year ?? 0))
+      .map((c) => sanitizeContestWithSeed(code, acNoOrName, c));
   }
 
   try {
@@ -250,10 +318,10 @@ export function getHistoricalPodiumForConstituency(
     if (!isNaN(acNum)) {
       const rows = getHistoricalResults(code, acNum);
       if (rows && rows.length > 0) {
-        return rows.map((r: any) => ({
+        return rows.map((r: any) => sanitizeContestWithSeed(code, acNum, {
           year: r.year,
-          delimitationId: String(r.delimitation_id || '4'),
-          totalValidVotes: r.total_valid_votes || 0,
+          ...(r.delimitation_id != null && String(r.delimitation_id).trim() !== '' ? { delimitationId: String(r.delimitation_id) } : {}),
+          totalValidVotes: r.total_valid_votes ?? undefined,
           constituencyName: r.constituency_name,
           marginWinnerToRunnerUp1: r.margin_winner_to_runner_up_1,
           marginWinnerToRunnerUp2: r.margin_winner_to_runner_up_2,
@@ -301,39 +369,65 @@ export function getLatestPodiumForConstituency(
 ): HistoricalPodiumContest | null {
   const list = getHistoricalPodiumForConstituency(stateCode, acNoOrName);
   if (list && list.length > 0) {
-    return list[0];
+    const contest = sanitizeContestWithSeed(stateCode, acNoOrName, { ...list[0] });
+    if (contest.firstRunnerUp && (!contest.firstRunnerUp.name || /candidate|runner\s*up/i.test(contest.firstRunnerUp.name))) {
+      try {
+        const { getUnifiedConstituenciesForState } = require('./stateDataAdapter');
+        const consts = getUnifiedConstituenciesForState(stateCode);
+        const acNo = typeof acNoOrName === 'number' ? acNoOrName : parseInt(String(acNoOrName), 10);
+        const match = consts?.find((c: any) => c.acNo === acNo);
+        if (match?.runnerUpName && !/candidate/i.test(match.runnerUpName)) {
+          contest.firstRunnerUp = {
+            ...contest.firstRunnerUp,
+            name: match.runnerUpName,
+            photoUrl: contest.firstRunnerUp.photoUrl || (match.runnerUpName ? require('./candidatePhotos').getStaticPhoto(match.runnerUpName) : undefined),
+          };
+        }
+      } catch {}
+    }
+    return contest;
   }
-  // Online-first fallback: synthesize authoritative latest contest from seed stateDataAdapter
+  // Use fields that the adapter actually carries. Do not infer runner-up votes,
+  // totals, shares, or an election year from partial records.
   try {
     const { getUnifiedConstituenciesForState } = require('./stateDataAdapter');
     const consts = getUnifiedConstituenciesForState(stateCode);
     const acNo = typeof acNoOrName === 'number' ? acNoOrName : parseInt(String(acNoOrName), 10);
     const match = consts?.find((c: any) => c.acNo === acNo);
     if (match) {
-      const winnerVotes = match.winnerVotes || match.votes || 0;
-      const margin = match.margin || 0;
-      const runnerUpVotes = match.runnerUpVotes || (winnerVotes > margin ? winnerVotes - margin : 0);
-      const totalValid = winnerVotes + runnerUpVotes;
-      const winnerShare = totalValid > 0 ? (winnerVotes / totalValid) * 100 : 0;
-      const runnerUpShare = totalValid > 0 ? (runnerUpVotes / totalValid) * 100 : 0;
+      const year = Number(match.electionYear);
+      const winnerName = typeof match.winnerName === 'string' ? match.winnerName.trim() : '';
+      const winnerParty = typeof match.winnerParty === 'string' ? match.winnerParty.trim() : '';
+      if (!Number.isInteger(year) || year <= 0 || !winnerName || !winnerParty) return null;
+
+      const readCount = (value: unknown): number | undefined =>
+        typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : undefined;
+      const winnerVotes = readCount(match.winnerVotes);
+      const runnerUpVotes = readCount(match.runnerUpVotes);
+      const totalValidVotes = readCount(match.totalValidVotes);
+      const margin = readCount(match.margin);
+      const runnerUpName = typeof match.runnerUpName === 'string' ? match.runnerUpName.trim() : '';
+      const runnerUpParty = typeof match.runnerUp === 'string' ? match.runnerUp.trim() : '';
 
       return {
-        year: match.electionYear || 2023,
+        year,
         constituencyName: match.name,
-        totalValidVotes: totalValid,
-        marginWinnerToRunnerUp1: margin,
+        ...(totalValidVotes != null ? { totalValidVotes } : {}),
+        ...(margin != null ? { marginWinnerToRunnerUp1: margin } : {}),
         winner: {
-          name: match.winnerName || match.winner || '',
-          party: match.winnerParty || match.winner || '',
-          votes: winnerVotes,
-          voteShare: Math.round(winnerShare * 10) / 10,
+          name: winnerName,
+          party: winnerParty,
+          ...(winnerVotes != null ? { votes: winnerVotes } : {}),
+          ...(typeof match.winnerVoteShare === 'number' ? { voteShare: match.winnerVoteShare } : {}),
+          photoUrl: require('./candidatePhotos').getStaticPhoto(winnerName) || undefined,
         },
-        firstRunnerUp: {
-          name: match.runnerUpName || match.runnerUp || '',
-          party: match.runnerUpParty || match.runnerUp || '',
-          votes: runnerUpVotes,
-          voteShare: Math.round(runnerUpShare * 10) / 10,
-        },
+        firstRunnerUp: runnerUpName && runnerUpParty ? {
+          name: runnerUpName,
+          party: runnerUpParty,
+          ...(runnerUpVotes != null ? { votes: runnerUpVotes } : {}),
+          ...(typeof match.runnerUpVoteShare === 'number' ? { voteShare: match.runnerUpVoteShare } : {}),
+          photoUrl: require('./candidatePhotos').getStaticPhoto(runnerUpName) || undefined,
+        } : null,
         secondRunnerUp: null,
       };
     }
@@ -351,13 +445,30 @@ export function getCandidatePodiumDetail(
   rank: 'winner' | 'ru1' | 'ru2',
 ): { candidate: CandidatePodiumDetail | null; contest: HistoricalPodiumContest | null } {
   const contests = getHistoricalPodiumForConstituency(stateCode, acNoOrName);
-  const match = contests.find(c => c.year === year) || (contests.length > 0 ? contests[0] : null);
+  const match = contests.find(c => c.year === year) || null;
   if (!match) return { candidate: null, contest: null };
 
   let candidate: CandidatePodiumDetail | null = null;
   if (rank === 'winner') candidate = match.winner;
   else if (rank === 'ru1') candidate = match.firstRunnerUp;
   else if (rank === 'ru2') candidate = match.secondRunnerUp;
+
+  // Sanitize candidate name if generic
+  if (candidate && (!candidate.name || /candidate|runner\s*up/i.test(candidate.name))) {
+    try {
+      const { getUnifiedConstituenciesForState } = require('./stateDataAdapter');
+      const consts = getUnifiedConstituenciesForState(stateCode);
+      const acNo = typeof acNoOrName === 'number' ? acNoOrName : parseInt(String(acNoOrName), 10);
+      const m = consts?.find((c: any) => c.acNo === acNo);
+      if (rank === 'ru1' && m?.runnerUpName && !/candidate/i.test(m.runnerUpName)) {
+        candidate = {
+          ...candidate,
+          name: m.runnerUpName,
+          photoUrl: candidate.photoUrl || require('./candidatePhotos').getStaticPhoto(m.runnerUpName) || undefined,
+        };
+      }
+    } catch {}
+  }
 
   return { candidate, contest: match };
 }
@@ -508,9 +619,7 @@ export function getLocalizedCandidateName(
 
   if (typeof candidateOrName === 'object' && candidateOrName.localizedNames) {
     const loc = candidateOrName.localizedNames[lang];
-    // Intentional ASCII check: NUL is only the lower bound of the tested byte range.
-    // eslint-disable-next-line no-control-regex
-    if (loc && !/^[\x00-\x7F]*$/.test(loc)) {
+    if (loc && containsNonAsciiCharacters(loc)) {
       return loc;
     }
   }
@@ -679,4 +788,57 @@ export function getLocalizedPartyName(
   };
 
   return PARTY_NAMES[partyCode]?.[lang] || partyCode;
+}
+
+/**
+ * Calculates true historical terms served by a candidate across election years.
+ * Dynamically counts every recorded election where the candidate emerged as winner.
+ */
+export function calculateTermsServed(
+  candidateName: string,
+  stateCode: string,
+  acNo?: number,
+  asOfYear?: number,
+): number {
+  if (!candidateName) return 1;
+  const canonicalTarget = getCanonicalCandidateName(candidateName);
+  const targetNorm = stripHonorifics(canonicalTarget).toLowerCase().replace(/[.,]/g, '').replace(/\s+/g, ' ').trim();
+  if (!targetNorm) return 1;
+
+  const code = (stateCode || 'TS').toUpperCase();
+  const wonYears = new Set<number>();
+
+  // 1. If acNo is provided, query full historical contests for the constituency
+  if (acNo != null) {
+    const constContests = getHistoricalPodiumForConstituency(code, acNo);
+    for (const c of constContests) {
+      if (asOfYear != null && c.year > asOfYear) continue;
+      if (c.winner && c.winner.name) {
+        const wCanonical = getCanonicalCandidateName(c.winner.name);
+        const wNorm = stripHonorifics(wCanonical).toLowerCase().replace(/[.,]/g, '').replace(/\s+/g, ' ').trim();
+        if (wNorm === targetNorm || (targetNorm.length > 5 && wNorm.includes(targetNorm)) || (wNorm.length > 5 && targetNorm.includes(wNorm))) {
+          wonYears.add(c.year);
+        }
+      }
+    }
+  }
+
+  // 2. Query stateCache if loaded
+  const podiumData = stateCache.get(code);
+  if (podiumData) {
+    for (const [_, contests] of Object.entries(podiumData)) {
+      for (const c of contests) {
+        if (asOfYear != null && c.year > asOfYear) continue;
+        if (c.winner && c.winner.name) {
+          const wCanonical = getCanonicalCandidateName(c.winner.name);
+          const wNorm = stripHonorifics(wCanonical).toLowerCase().replace(/[.,]/g, '').replace(/\s+/g, ' ').trim();
+          if (wNorm === targetNorm || (targetNorm.length > 5 && wNorm.includes(targetNorm)) || (wNorm.length > 5 && targetNorm.includes(wNorm))) {
+            wonYears.add(c.year);
+          }
+        }
+      }
+    }
+  }
+
+  return Math.max(wonYears.size, 1);
 }

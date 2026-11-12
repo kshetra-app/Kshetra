@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { metricsCollector } from '../lib/metrics';
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 
 export async function metricsRoutes(app: FastifyInstance) {
   /**
@@ -17,7 +18,7 @@ export async function metricsRoutes(app: FastifyInstance) {
   app.get('/metrics', async (request, reply) => {
     const env = process.env.NODE_ENV || 'development';
 
-    if (env === 'production') {
+    if (isProductionLikeRuntime()) {
       const authHeader = request.headers['authorization'] || '';
       const tokenHeader = request.headers['x-metrics-token'] as string | undefined;
       const expectedToken = process.env.METRICS_AUTH_TOKEN;

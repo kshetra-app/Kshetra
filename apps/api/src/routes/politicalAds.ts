@@ -7,7 +7,12 @@ import { isIsolatedTestRuntime, isProductionLikeRuntime } from '../lib/runtimeEn
  */
 
 import type { FastifyPluginAsync } from 'fastify';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import {
+  publicSupabase,
+  isPublicSupabaseConfigured,
+  supabase,
+  isSupabaseConfigured,
+} from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
 import { adService } from '../services/adService';
 import type {
@@ -31,10 +36,178 @@ interface PoliticalAdRow {
   reviewed_at?: string | null;
 }
 
-// In-memory cache/fallback for legacy non-database test environments
-// No seeded or synthetic political ads. Production delivery remains closed
-// until durable storage, compliance review, and real delivery are connected.
+// Isolated nonproduction compatibility store for legacy submission tests.
+// Production public reads use Supabase; writes, review, and delivery remain gated.
 const MEMORY_ADS: PoliticalAdRow[] = [];
+
+/**
+ * This projection is deliberately limited to columns introduced by the
+ * original political_ads table contract (migration 034). The Domain 6
+ * campaign-ad columns were added later and may not yet be present in every
+ * reconciled environment. Public reads must therefore remain compatible with
+ * the stable legacy schema and rely on its active/ended RLS policy.
+ */
+const PUBLIC_POLITICAL_AD_COLUMNS =
+  'id,page_id,post_id,mcmc_certificate_id,status,amount_paid,target_scope,target_value,impressions,created_at,reviewed_at';
+
+type PublicPoliticalAd = Omit<PoliticalAdRow, 'reviewed_by'>;
+
+interface PublicAdListOptions {
+  page: number;
+  limit: number;
+  status?: 'active';
+  state?: string;
+  constituency?: string;
+  search?: string;
+}
+
+async function listPersistedPublicAds(options: PublicAdListOptions): Promise<{
+  ads: PublicPoliticalAd[];
+  total: number;
+}> {
+  if (!isPublicSupabaseConfigured) {
+    throw new Error('POLITICAL_AD_STORAGE_UNAVAILABLE');
+  }
+
+  let query = publicSupabase
+    .from('political_ads')
+    .select(PUBLIC_POLITICAL_AD_COLUMNS, { count: 'exact' })
+    .in('status', options.status ? [options.status] : ['active', 'ended']);
+
+  if (options.state) {
+    query = query.eq('target_scope', 'state').eq('target_value', options.state);
+  }
+  if (options.constituency) {
+    query = query.eq('target_scope', 'constituency').eq('target_value', options.constituency);
+  }
+  if (options.search) {
+    // Restrict the search token to identifier characters before building a
+    // PostgREST expression. A UUID searches page_id exactly; other terms search
+    // certificate numbers. page_id is UUID-typed, so it must not use ILIKE.
+    const search = options.search.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 100);
+    if (search) {
+      if (
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(search)
+      ) {
+        query = query.eq('page_id', search);
+      } else {
+        query = query.ilike('mcmc_certificate_id', `%${search}%`);
+      }
+    }
+  }
+
+  const offset = (options.page - 1) * options.limit;
+  const { data, error, count } = await query
+    .order('created_at', { ascending: false })
+    .range(offset, offset + options.limit - 1);
+
+  if (error || typeof count !== 'number' || !Array.isArray(data)) {
+    throw new Error('POLITICAL_AD_STORAGE_UNAVAILABLE');
+  }
+
+  return { ads: data as PublicPoliticalAd[], total: count };
+}
+
+function escapeHtml(value: unknown): string {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function renderPublicPoliticalAdLibrary(
+  ads: PublicPoliticalAd[],
+  total: number,
+  page: number,
+  limit: number,
+): string {
+  const formatAmount = (amount: unknown): string => {
+    if (amount === null || amount === undefined || amount === '') return 'Not recorded';
+    const parsed = Number(amount);
+    if (!Number.isFinite(parsed) || parsed < 0) return 'Unavailable';
+    return parsed === 0
+      ? 'No payment amount recorded'
+      : `₹${parsed.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+  };
+
+  const formatImpressions = (impressions: unknown): string => {
+    if (impressions === null || impressions === undefined || impressions === '') {
+      return 'Unavailable';
+    }
+    const parsed = Number(impressions);
+    if (!Number.isSafeInteger(parsed) || parsed < 0) return 'Unavailable';
+    return parsed === 0 ? 'No impressions recorded' : parsed.toLocaleString('en-IN');
+  };
+
+  const formatDate = (date: unknown): string => {
+    const parsed = typeof date === 'string' ? new Date(date) : null;
+    return parsed && !Number.isNaN(parsed.getTime())
+      ? parsed.toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' })
+      : 'Not recorded';
+  };
+
+  const cards = ads.length
+    ? ads
+        .map(
+          (ad) => `<article class="ad-card">
+  <div class="ad-header"><span class="status">${escapeHtml(ad.status)}</span><span class="date">${escapeHtml(formatDate(ad.created_at))}</span></div>
+  <h2>Political advertisement</h2>
+  <dl>
+    <dt>MCMC certificate</dt><dd>${escapeHtml(ad.mcmc_certificate_id || 'Not recorded')}</dd>
+    <dt>Sponsor page ID</dt><dd>${escapeHtml(ad.page_id || 'Not recorded')}</dd>
+    <dt>Sponsored post ID</dt><dd>${escapeHtml(ad.post_id || 'Not recorded')}</dd>
+    <dt>Target</dt><dd>${escapeHtml(ad.target_scope)}: ${escapeHtml(ad.target_value || 'Not recorded')}</dd>
+    <dt>Recorded amount</dt><dd>${escapeHtml(formatAmount(ad.amount_paid))}</dd>
+    <dt>Recorded impressions</dt><dd>${escapeHtml(formatImpressions(ad.impressions))}</dd>
+    <dt>Reviewed</dt><dd>${escapeHtml(formatDate(ad.reviewed_at))}</dd>
+  </dl>
+</article>`,
+        )
+        .join('\n')
+    : '<p class="empty">No public political advertisements are recorded.</p>';
+  const firstRecord = total === 0 ? 0 : (page - 1) * limit + 1;
+  const lastRecord = Math.min(total, (page - 1) * limit + ads.length);
+  const previousPage = page > 1 ? page - 1 : null;
+  const nextPage = page * limit < total ? page + 1 : null;
+  const pagination =
+    previousPage || nextPage
+      ? `<nav class="pagination" aria-label="Ad library pages">
+  ${previousPage ? `<a href="?page=${previousPage}&amp;limit=${limit}" rel="prev">Previous</a>` : '<span></span>'}
+  <span>Page ${page}</span>
+  ${nextPage ? `<a href="?page=${nextPage}&amp;limit=${limit}" rel="next">Next</a>` : '<span></span>'}
+</nav>`
+      : '';
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Political Ad Library · Poligram</title>
+  <style>
+    :root{color-scheme:light dark;font-family:system-ui,sans-serif;background:#0b1220;color:#e5e7eb}
+    body{max-width:960px;margin:0 auto;padding:24px 16px}
+    h1{font-size:1.7rem;margin:0 0 8px}.intro,.summary{color:#aab4c4;line-height:1.5}
+    .summary{margin:20px 0}.ad-card{border:1px solid #334155;border-radius:14px;padding:18px;margin:14px 0;background:#111827}
+    .ad-header{display:flex;justify-content:space-between;gap:12px;color:#aab4c4;font-size:.85rem;text-transform:capitalize}
+    .status{color:#fbbf24;font-weight:700}.ad-card h2{font-size:1rem;margin:14px 0}
+    dl{display:grid;grid-template-columns:minmax(140px,220px) 1fr;gap:8px 16px;margin:0}
+    dt{color:#aab4c4}dd{margin:0;overflow-wrap:anywhere}.empty{padding:24px;border:1px dashed #475569;border-radius:12px;color:#cbd5e1}
+    .pagination{display:flex;justify-content:space-between;align-items:center;margin:20px 0}.pagination a{color:#fbbf24}
+    @media(max-width:520px){dl{grid-template-columns:1fr;gap:2px}dd{margin-bottom:10px}}
+  </style>
+</head>
+<body>
+  <h1>Political Ad Library</h1>
+  <p class="intro">Public records of active and ended political advertisements. Values are shown as recorded in the ad database; the record alone does not verify payment settlement or delivery.</p>
+  <p class="summary">${total.toLocaleString('en-IN')} public record${total === 1 ? '' : 's'} found. Showing ${firstRecord}–${lastRecord}.</p>
+  <main>${cards}</main>
+  ${pagination}
+</body>
+</html>`;
+}
 
 const submitPoliticalAdSchema = {
   params: {
@@ -102,9 +275,35 @@ const libraryAdsQuerySchema = {
   },
 };
 
+const publicLibraryViewQuerySchema = {
+  querystring: {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      page: { type: 'integer', minimum: 1, maximum: 100000 },
+      limit: { type: 'integer', minimum: 1, maximum: 100 },
+    },
+  },
+};
+
 export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
+  // Mutations, review decisions, ad delivery, and analytics still use
+  // process-memory services. The public legacy-table read is off by default;
+  // enable it only after the environment's RLS policy and schema are verified.
+  const isProductionRuntime = () => isProductionLikeRuntime();
   app.addHook('preHandler', async (request, reply) => {
-    if (isProductionLikeRuntime()) {
+    const pathname = request.url.split('?')[0];
+    const publicReadPath =
+      request.method === 'GET' &&
+      (pathname === '/api/v1/political-ads/active' ||
+        pathname === '/api/v1/political-ads/library' ||
+        pathname === '/political-ads/library/view');
+    const durablePublicRead =
+      publicReadPath &&
+      process.env.POLITICAL_AD_PUBLIC_LIBRARY_ENABLED?.trim().toLowerCase() === 'true' &&
+      isPublicSupabaseConfigured;
+
+    if (isProductionRuntime() && !durablePublicRead) {
       return sendApiError(
         reply,
         request,
@@ -308,6 +507,29 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
     Querystring: { state?: string; constituency?: string; limit?: number };
   }>('/api/v1/political-ads/active', { schema: activeAdsQuerySchema }, async (request, reply) => {
     const { state, constituency, limit = 20 } = request.query;
+
+    if (isProductionRuntime()) {
+      try {
+        const result = await listPersistedPublicAds({
+          page: 1,
+          limit,
+          status: 'active',
+          state,
+          constituency,
+        });
+        return reply.send({ ads: result.ads });
+      } catch {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Political advertisement records are temporarily unavailable.',
+          { code: 'POLITICAL_AD_STORAGE_UNAVAILABLE' },
+        );
+      }
+    }
+
     let ads = MEMORY_ADS.filter((a) => a.status === 'active');
     if (state) {
       ads = ads.filter((a) => a.target_scope === 'state' && a.target_value === state);
@@ -323,9 +545,24 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
     Querystring: { search?: string; state?: string; page?: number; limit?: number };
   }>('/api/v1/political-ads/library', { schema: libraryAdsQuerySchema }, async (request, reply) => {
     const { search, state, page = 1, limit = 20 } = request.query;
-    let ads = MEMORY_ADS.filter(
-      (a) => a.status === 'active' || a.status === 'certified' || a.status === 'ended',
-    );
+
+    if (isProductionRuntime()) {
+      try {
+        const result = await listPersistedPublicAds({ page, limit, search, state });
+        return reply.send({ ...result, page, limit });
+      } catch {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Political advertisement records are temporarily unavailable.',
+          { code: 'POLITICAL_AD_STORAGE_UNAVAILABLE' },
+        );
+      }
+    }
+
+    let ads = MEMORY_ADS.filter((a) => a.status === 'active' || a.status === 'ended');
     if (search) {
       const s = search.toLowerCase();
       ads = ads.filter(
@@ -346,9 +583,33 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
   });
 
   // GET /political-ads/library/view (Public HTML View)
-  app.get('/political-ads/library/view', async (_request, reply) => {
-    reply.type('text/html');
-    return `<!DOCTYPE html>
+  app.get<{
+    Querystring: { page?: number; limit?: number };
+  }>(
+    '/political-ads/library/view',
+    { schema: publicLibraryViewQuerySchema },
+    async (request, reply) => {
+      if (isProductionRuntime()) {
+        try {
+          const page = request.query.page ?? 1;
+          const limit = request.query.limit ?? 20;
+          const result = await listPersistedPublicAds({ page, limit });
+          reply.type('text/html; charset=utf-8');
+          return renderPublicPoliticalAdLibrary(result.ads, result.total, page, limit);
+        } catch {
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Political advertisement records are temporarily unavailable.',
+            { code: 'POLITICAL_AD_STORAGE_UNAVAILABLE' },
+          );
+        }
+      }
+
+      reply.type('text/html');
+      return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -358,7 +619,8 @@ export const politicalAdsRoutes: FastifyPluginAsync = async (app) => {
   <h1>Political Ad Library</h1>
 </body>
 </html>`;
-  });
+    },
+  );
 };
 
 export const politicalAdRoutes = politicalAdsRoutes;

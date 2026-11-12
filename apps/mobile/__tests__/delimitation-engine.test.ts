@@ -23,8 +23,25 @@ import {
   generateStateConstituencyMappings,
 } from '../lib/delimitation/constituencyMapper';
 import { simulateStateQuick } from '../lib/delimitation/boundarySimulator';
+import { generateSyntheticWards } from '../lib/delimitation/populationAggregator';
+import { CENSUS_2011_STATES } from '../../../data/census/india-district-population-2011';
 
 describe('Delimitation Engine', () => {
+  describe('Synthetic population allocation', () => {
+    it('is repeatable for identical district inputs and conserves source population', () => {
+      const state = CENSUS_2011_STATES.find((item) => item.stateCode === 'TS');
+      const district = state?.districts[0];
+      expect(state).toBeDefined();
+      expect(district).toBeDefined();
+
+      const first = generateSyntheticWards(district!, 4, state!.currentAssemblySeats, state!.totalPopulation);
+      const second = generateSyntheticWards(district!, 4, state!.currentAssemblySeats, state!.totalPopulation);
+
+      expect(second).toEqual(first);
+      expect(first.reduce((total, ward) => total + ward.population, 0)).toBe(district!.totalPopulation);
+    });
+  });
+
   describe('PIN Code Resolver', () => {
     it('resolves valid 6-digit Indian PIN codes to correct states and districts', () => {
       const hyd = resolvePinCode('500001');

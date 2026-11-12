@@ -2,13 +2,14 @@
  * LeadershipAcademy — Full screen for aspiring leaders.
  * Shows modules grouped by category, civic score, badges, challenges, and aspirant directory.
  */
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, Text, StyleSheet, ScrollView, Pressable, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Platform, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
 import { useResponsive } from '../lib/responsive';
 import { useAspirantStore } from '../stores/aspirant';
+import { useAuthStore } from '../stores/auth';
 import { useTheme } from '../lib/theme';
 import CivicScoreCard from '../components/CivicScoreCard';
 import CivicBadgeGrid from '../components/CivicBadgeGrid';
@@ -16,6 +17,7 @@ import ChallengeCard from '../components/ChallengeCard';
 import ModuleDetailModal from '../components/ModuleDetailModal';
 import RegisterAspirantModal from '../components/RegisterAspirantModal';
 import {
+  BADGE_CONFIG,
   MODULE_CATEGORY_CONFIG,
   CIVIC_LEVEL_CONFIG,
   type ModuleCategory,
@@ -26,6 +28,7 @@ import {
   type CommunityChallenge,
   type ChallengeParticipation,
 } from '../lib/aspirantTypes';
+import { isAspirantMetricAvailable } from '../lib/aspirantTypes';
 
 type AcademyTab = 'modules' | 'challenges' | 'badges' | 'community';
 
@@ -45,25 +48,56 @@ export default function LeadershipAcademyScreen() {
   const [registerVisible, setRegisterVisible] = useState(false);
   const profile = useAspirantStore((s: any) => s.profile) as AspirantProfile | null;
   const modules = useAspirantStore((s: any) => s.modules) as LeadershipModule[];
+  const academyStatus = useAspirantStore((s: any) => s.academyStatus) as 'idle' | 'loading' | 'ready' | 'error';
+  const academyError = useAspirantStore((s: any) => s.academyError) as string | undefined;
+  const academyBadgesStatus = useAspirantStore((s: any) => s.academyBadgesStatus) as 'idle' | 'loading' | 'ready' | 'error';
+  const academyChallengesStatus = useAspirantStore((s: any) => s.academyChallengesStatus) as 'idle' | 'loading' | 'ready' | 'error';
+  const authUserId = useAuthStore((s) => s.user?.id);
   const badges = useAspirantStore((s: any) => s.badges) as CivicBadge[];
   const getCivicScore = useAspirantStore((s: any) => s.getCivicScore) as () => CivicScoreBreakdown | null;
   const getCompletedModules = useAspirantStore((s: any) => s.getCompletedModules) as () => string[];
   const getActiveChallenges = useAspirantStore((s: any) => s.getActiveChallenges) as () => CommunityChallenge[];
-  const startModule = useAspirantStore((s: any) => s.startModule) as (id: string) => void;
-  const completeModule = useAspirantStore((s: any) => s.completeModule) as (id: string, quizScore?: number) => void;
-  const joinChallenge = useAspirantStore((s: any) => s.joinChallenge) as (id: string) => void;
+  const startModule = useAspirantStore((s: any) => s.startModule) as (id: string) => Promise<void>;
+  const completeModule = useAspirantStore((s: any) => s.completeModule) as (id: string, quizScore?: number) => Promise<void>;
+  const submitModuleQuiz = useAspirantStore((s: any) => s.submitModuleQuiz) as (id: string, answers: Array<{ questionId: string; selectedIndex: number }>) => Promise<any>;
+  const hydrateAcademy = useAspirantStore((s: any) => s.hydrateAcademy) as () => Promise<void>;
+  const hydrateAcademyBadges = useAspirantStore((s: any) => s.hydrateAcademyBadges) as () => Promise<void>;
+  const hydrateAspirantProfile = useAspirantStore((s: any) => s.hydrateAspirantProfile) as () => Promise<void>;
+  const joinChallenge = useAspirantStore((s: any) => s.joinChallenge) as (id: string) => Promise<void>;
   const challengeProgress = useAspirantStore((s: any) => s.challengeProgress) as ChallengeParticipation[];
   const publicAspirants = useAspirantStore((s: any) => s.publicAspirants) as AspirantProfile[];
+  const publicAspirantsStatus = useAspirantStore((s: any) => s.publicAspirantsStatus) as 'idle' | 'loading' | 'ready' | 'error';
+  const hydrateAspirants = useAspirantStore((s: any) => s.hydrateAspirants) as () => Promise<void>;
   const endorseAspirant = useAspirantStore((s: any) => s.endorseAspirant) as (id: string) => void;
   const endorsedIds = useAspirantStore((s: any) => s.endorsedIds) as string[];
 
   const civicScore = getCivicScore();
+  const unavailableLabel = t('constituency.dataUnavailable', { defaultValue: 'Unavailable' });
   const completedModuleIds = getCompletedModules();
   const activeChallenges = getActiveChallenges();
 
-  const openModule = (mod: LeadershipModule) => {
-    startModule(mod.id);
-    setSelectedModule(mod);
+  useEffect(() => {
+    void hydrateAcademy();
+    void hydrateAcademyBadges();
+    void hydrateAspirantProfile();
+    void hydrateAspirants();
+  }, [hydrateAcademy, hydrateAcademyBadges, hydrateAspirantProfile, hydrateAspirants, authUserId, profile?.stateCode]);
+
+  const openModule = async (mod: LeadershipModule) => {
+    try {
+      await startModule(mod.id);
+      setSelectedModule(mod);
+    } catch (error: any) {
+      Alert.alert('Module unavailable', error?.message || 'The module could not be opened right now.');
+    }
+  };
+
+  const handleJoinChallenge = async (challengeId: string) => {
+    try {
+      await joinChallenge(challengeId);
+    } catch (error: any) {
+      Alert.alert('Could not join challenge', error?.message || 'Please try again.');
+    }
   };
 
   // Group modules by category
@@ -99,6 +133,10 @@ export default function LeadershipAcademyScreen() {
         <View style={styles.scoreSection}>
           <CivicScoreCard score={civicScore} displayName={profile?.displayName} />
         </View>
+      ) : profile ? (
+        <View style={styles.scoreSection}>
+          <Text style={styles.emptyText}>{unavailableLabel}</Text>
+        </View>
       ) : (
         <Pressable style={styles.registerCta} onPress={() => setRegisterVisible(true)}>
           <View style={styles.registerIcon}>
@@ -133,7 +171,16 @@ export default function LeadershipAcademyScreen() {
         {/* MODULES TAB */}
         {activeTab === 'modules' && (
           <View style={styles.tabContent}>
-            {moduleGroups.map(([category, mods]) => {
+            {academyStatus === 'loading' && (
+              <View style={styles.empty}><ActivityIndicator color="#4F8EF7" /><Text style={styles.emptyText}>Loading modules…</Text></View>
+            )}
+            {academyStatus === 'error' && (
+              <View style={styles.empty}><Ionicons name="cloud-offline-outline" size={40} color="#6B7280" /><Text style={styles.emptyText}>{academyError || 'Leadership Academy is currently unavailable.'}</Text></View>
+            )}
+            {academyStatus === 'ready' && modules.length === 0 && (
+              <View style={styles.empty}><Ionicons name="school-outline" size={40} color="#6B7280" /><Text style={styles.emptyText}>No published modules are available.</Text></View>
+            )}
+            {academyStatus === 'ready' && moduleGroups.map(([category, mods]) => {
               const catConfig = MODULE_CATEGORY_CONFIG[category];
               return (
                 <View key={category} style={styles.moduleGroup}>
@@ -161,7 +208,7 @@ export default function LeadershipAcademyScreen() {
                       <Pressable
                         key={mod.id}
                         style={[styles.moduleCard, isCompleted && styles.moduleCardComplete]}
-                        onPress={() => openModule(mod)}
+                        onPress={() => { void openModule(mod); }}
                       >
                         <View style={styles.moduleLeft}>
                           <Ionicons
@@ -193,10 +240,20 @@ export default function LeadershipAcademyScreen() {
         {/* CHALLENGES TAB */}
         {activeTab === 'challenges' && (
           <View style={styles.tabContent}>
-            {activeChallenges.length === 0 ? (
+            {academyChallengesStatus === 'loading' ? (
+              <View style={styles.empty}><ActivityIndicator color="#4F8EF7" /><Text style={styles.emptyText}>{t('leadershipAcademy.loadingChallenges')}</Text></View>
+            ) : academyChallengesStatus === 'error' ? (
+              <View style={styles.empty}>
+                <Ionicons name="cloud-offline-outline" size={40} color="#6B7280" />
+                <Text style={styles.emptyText}>{t('leadershipAcademy.challengesUnavailable')}</Text>
+                <Pressable onPress={() => void hydrateAcademy()}><Text style={styles.emptyText}>{t('common.retry')}</Text></Pressable>
+              </View>
+            ) : activeChallenges.length === 0 ? (
               <View style={styles.empty}>
                 <Ionicons name="flash-outline" size={48} color="#1F2937" />
-                <Text style={styles.emptyText}>{t('leadershipAcademy.noActiveChallenges')}</Text>
+                <Text style={styles.emptyText}>
+                  {t('leadershipAcademy.noActiveChallenges')}
+                </Text>
               </View>
             ) : (
               activeChallenges.map((ch) => (
@@ -204,7 +261,7 @@ export default function LeadershipAcademyScreen() {
                   key={ch.id}
                   challenge={ch}
                   participation={challengeProgress.find((cp) => cp.challengeId === ch.id)}
-                  onJoin={() => joinChallenge(ch.id)}
+                  onJoin={() => void handleJoinChallenge(ch.id)}
                 />
               ))
             )}
@@ -214,10 +271,22 @@ export default function LeadershipAcademyScreen() {
         {/* BADGES TAB */}
         {activeTab === 'badges' && (
           <View style={styles.tabContent}>
-            <Text style={styles.badgeHeader}>
-              {badges.length} {t('leadershipAcademy.earned')} · {13 - badges.length} {t('leadershipAcademy.locked')}
-            </Text>
-            <CivicBadgeGrid earned={badges} />
+            {academyBadgesStatus === 'loading' ? (
+              <View style={styles.empty}><ActivityIndicator color="#4F8EF7" /><Text style={styles.emptyText}>{t('leadershipAcademy.loadingBadges')}</Text></View>
+            ) : academyBadgesStatus === 'error' ? (
+              <View style={styles.empty}>
+                <Ionicons name="cloud-offline-outline" size={40} color="#6B7280" />
+                <Text style={styles.emptyText}>{t('leadershipAcademy.badgesUnavailable')}</Text>
+                <Pressable onPress={() => void hydrateAcademyBadges()}><Text style={styles.emptyText}>{t('common.retry')}</Text></Pressable>
+              </View>
+            ) : (
+              <>
+                <Text style={styles.badgeHeader}>
+                  {badges.length} {t('leadershipAcademy.earned')} · {Math.max(0, Object.keys(BADGE_CONFIG).length - badges.length)} {t('leadershipAcademy.locked')}
+                </Text>
+                <CivicBadgeGrid earned={badges} />
+              </>
+            )}
           </View>
         )}
 
@@ -228,14 +297,20 @@ export default function LeadershipAcademyScreen() {
               <Ionicons name="people" size={18} color="#8B5CF6" />
               <Text style={styles.communityTitle}>{t('leadershipAcademy.aspiringLeaders')}</Text>
             </View>
-            {publicAspirants.length === 0 ? (
+            {publicAspirantsStatus === 'loading' ? (
+              <View style={styles.empty}><ActivityIndicator color="#4F8EF7" /><Text style={styles.emptyText}>{t('leadershipAcademy.loadingAspirants')}</Text></View>
+            ) : publicAspirantsStatus === 'error' ? (
+              <View style={styles.empty}><Ionicons name="cloud-offline-outline" size={40} color="#6B7280" /><Text style={styles.emptyText}>{t('leadershipAcademy.aspirantsUnavailable')}</Text></View>
+            ) : publicAspirants.length === 0 ? (
               <View style={styles.empty}>
                 <Ionicons name="people-outline" size={48} color="#1F2937" />
                 <Text style={styles.emptyText}>{t('leadershipAcademy.noPublicAspirants')}</Text>
               </View>
             ) : (
               publicAspirants.map((asp) => {
+                const scoreAvailable = isAspirantMetricAvailable(asp, 'civicScore');
                 const levelConfig = CIVIC_LEVEL_CONFIG[
+                  !scoreAvailable ? 'observer' :
                   asp.civicScore >= 1000 ? 'champion' :
                   asp.civicScore >= 600 ? 'leader' :
                   asp.civicScore >= 300 ? 'advocate' :
@@ -257,16 +332,18 @@ export default function LeadershipAcademyScreen() {
                               {asp.targetConstituencyName} · {asp.targetElectionYear}
                             </Text>
                           )}
-                          <View style={[styles.levelTag, { backgroundColor: levelConfig.color + '20' }]}>
-                            <Text style={[styles.levelTagText, { color: levelConfig.color }]}>
-                              {levelConfig.label}
-                            </Text>
-                          </View>
+                          {scoreAvailable ? (
+                            <View style={[styles.levelTag, { backgroundColor: levelConfig.color + '20' }]}>
+                              <Text style={[styles.levelTagText, { color: levelConfig.color }]}>
+                                {levelConfig.label}
+                              </Text>
+                            </View>
+                          ) : null}
                         </View>
                       </View>
                       <View style={styles.aspirantScore}>
                         <Text style={[styles.aspirantScoreValue, { color: levelConfig.color }]}>
-                          {asp.civicScore}
+                          {scoreAvailable ? asp.civicScore : unavailableLabel}
                         </Text>
                         <Text style={styles.aspirantScoreLabel}>{t('leadershipAcademy.civicScore')}</Text>
                       </View>
@@ -284,7 +361,11 @@ export default function LeadershipAcademyScreen() {
                       <Text style={[styles.endorseText, isEndorsed && { color: '#EF4444' }]}>
                         {isEndorsed ? t('leadershipAcademy.endorsed') : t('leadershipAcademy.endorse')}
                       </Text>
-                      <Text style={styles.endorseCount}>· {asp.communityEndorsements}</Text>
+                      <Text style={styles.endorseCount}>
+                        · {isAspirantMetricAvailable(asp, 'communityEndorsements')
+                          ? asp.communityEndorsements
+                          : unavailableLabel}
+                      </Text>
                     </Pressable>
                   </View>
                 );
@@ -302,10 +383,13 @@ export default function LeadershipAcademyScreen() {
         module={selectedModule}
         isCompleted={selectedModule ? completedModuleIds.includes(selectedModule.id) : false}
         onClose={() => setSelectedModule(null)}
-        onComplete={(quizScore?: number) => {
-          if (selectedModule) completeModule(selectedModule.id, quizScore);
+        onComplete={async (quizScore?: number) => {
+          if (selectedModule) await completeModule(selectedModule.id, quizScore);
           setSelectedModule(null);
         }}
+        onSubmitQuiz={(answers) => selectedModule
+          ? submitModuleQuiz(selectedModule.id, answers)
+          : Promise.reject(new Error('No module is selected'))}
       />
 
       {/* Aspirant registration */}

@@ -22,22 +22,49 @@ describe('Public route contracts', () => {
     // so fallback handlers respond instantly without 30s TCP connection timeouts.
     jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
       const okResult = { data: { id: 'mock-id-1', status: 'submitted' }, error: null };
+      let queryResult: any = okResult;
       const chainable: any = {
         eq: () => chainable,
+        neq: () => chainable,
+        gte: () => chainable,
+        lte: () => chainable,
         or: () => chainable,
         order: () => chainable,
-        select: () => chainable,
-        maybeSingle: async () => okResult,
+        limit: () => chainable,
+        range: () => chainable,
+        select: () => {
+          // Model an empty, successfully counted fixture database. Routes that
+          // require exact totals must not mistake a missing count for zero.
+          queryResult = { data: [], count: 0, error: null };
+          return chainable;
+        },
+        maybeSingle: async () =>
+          table === 'politician_portal_profiles' ? { data: null, error: null } : okResult,
         single: async () => okResult,
-        then: (resolve: any) => resolve(okResult),
+        then: (resolve: any) => resolve(queryResult),
       };
       return {
-        select: () => chainable,
-        insert: () => chainable,
-        upsert: () => chainable,
-        update: () => ({ eq: () => chainable }),
+        select: () => chainable.select(),
+        insert: () => {
+          queryResult = okResult;
+          return chainable;
+        },
+        upsert: () => {
+          queryResult = okResult;
+          return chainable;
+        },
+        update: () => ({
+          eq: () => {
+            queryResult = okResult;
+            return chainable;
+          },
+        }),
       };
     }) as any);
+    jest.spyOn(supabase, 'rpc').mockResolvedValue({
+      data: [{ support: 1, oppose: 0, neutral: 0 }],
+      error: null,
+    } as any);
   });
 
   afterAll(async () => {
@@ -100,10 +127,9 @@ describe('Public route contracts', () => {
 
   // ── Civic ───────────────────────────────────────────────
   describe('civic', () => {
-    it('budget, attendance, bills, schemes, projects, rti, hearings, cdi', async () => {
+    it('budget, bills, schemes, projects, rti, hearings, cdi', async () => {
       for (const url of [
         '/api/v1/civic/budget/TS',
-        '/api/v1/civic/attendance?state=TS',
         '/api/v1/civic/bills?state=TS',
         '/api/v1/civic/schemes',
         '/api/v1/civic/projects',
@@ -112,7 +138,9 @@ describe('Public route contracts', () => {
         '/api/v1/civic/cdi/TS-AC-1',
       ]) {
         const res = await get(url);
-        expect(res.statusCode).toBe(200);
+        if (res.statusCode !== 200) {
+          throw new Error(`${url} returned ${res.statusCode}: ${res.payload}`);
+        }
       }
     });
 

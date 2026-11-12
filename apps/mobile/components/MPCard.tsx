@@ -127,14 +127,8 @@ export default function MPCard({ profile, compact, onPress }: MPCardProps) {
           </View>
 
           {/* Parliamentary performance */}
-          {(profile.attendancePercent !== undefined || profile.questionsAsked !== undefined) && (
+          {(profile.questionsAsked !== undefined || profile.debatesParticipated !== undefined) && (
             <View style={styles.perfRow}>
-              {profile.attendancePercent !== undefined && (
-                <View style={styles.perfItem}>
-                  <Ionicons name="checkmark-done" size={13} color="#10B981" />
-                  <Text style={styles.perfText}>{profile.attendancePercent}% {t('parliament.attendance')}</Text>
-                </View>
-              )}
               {profile.questionsAsked !== undefined && (
                 <View style={styles.perfItem}>
                   <Ionicons name="help-circle" size={13} color="#4F8EF7" />

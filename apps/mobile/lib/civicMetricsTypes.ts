@@ -1,5 +1,5 @@
 // ─── Enhanced Civic Metrics Types ───
-// Covers: Budget/expenditure tracking, RTI integration, MLA/MP attendance,
+// Covers: Budget/expenditure tracking, RTI integration,
 // bill/legislation tracker, government scheme tracker, development projects,
 // public hearing calendar, comparative constituency metrics
 
@@ -8,8 +8,6 @@
 export type BudgetCategory = 'education' | 'healthcare' | 'infrastructure' | 'agriculture' | 'social_welfare' | 'law_enforcement' | 'rural_development' | 'urban_development' | 'environment' | 'industry' | 'defence' | 'debt_servicing' | 'salaries' | 'other';
 
 export type RTIStatus = 'draft' | 'filed' | 'acknowledged' | 'first_appeal' | 'second_appeal' | 'information_received' | 'denied' | 'partial_response' | 'transferred' | 'closed';
-
-export type AttendanceType = 'assembly_session' | 'committee_meeting' | 'question_hour' | 'debate' | 'voting' | 'zero_hour';
 
 export type BillStatus = 'introduced' | 'first_reading' | 'committee_review' | 'second_reading' | 'passed_lower' | 'passed_upper' | 'presidential_assent' | 'enacted' | 'lapsed' | 'withdrawn' | 'referred_select';
 
@@ -120,14 +118,86 @@ export interface StateBudgetSummary {
   stateCode: string;
   fiscalYear: string;
   totalBudgetCrores: number;
-  totalRevisedCrores: number;
-  totalSpentCrores: number;
-  overallUtilization: number;
-  categoryBreakdown: { category: BudgetCategory; allocated: number; spent: number; utilization: number }[];
-  topSchemes: { name: string; allocated: number; spent: number }[];
-  fiscalDeficitCrores: number;
-  revenueDeficitCrores: number;
-  debtToGDPRatio: number;
+  totalRevisedCrores: number | null;
+  totalSpentCrores: number | null;
+  overallUtilization: number | null;
+  categoryBreakdown: { category: BudgetCategory; allocated: number | null; spent: number | null; utilization: number | null }[];
+  topSchemes: { name: string; allocated: number | null; spent: number | null }[];
+  fiscalDeficitCrores: number | null;
+  revenueDeficitCrores: number | null;
+  debtToGDPRatio: number | null;
+  updatedAt?: string | null;
+}
+
+type StateBudgetSummaryRow = Record<string, unknown>;
+
+function readFiniteNumber(value: unknown): number | null {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+  if (typeof value !== 'string' || value.trim() === '') return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function readBudgetField(row: StateBudgetSummaryRow, snakeCase: string, camelCase: string): unknown {
+  return Object.prototype.hasOwnProperty.call(row, snakeCase) ? row[snakeCase] : row[camelCase];
+}
+
+/** Maps the stored Supabase row without turning missing financial fields into zero. */
+export function parseStateBudgetSummary(
+  value: unknown,
+  requestedStateCode: string,
+): StateBudgetSummary | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const row = value as StateBudgetSummaryRow;
+  const fiscalYear = readBudgetField(row, 'fiscal_year', 'fiscalYear');
+  const totalBudgetCrores = readFiniteNumber(readBudgetField(row, 'total_budget_crores', 'totalBudgetCrores'));
+  if (typeof fiscalYear !== 'string' || fiscalYear.trim() === '' || totalBudgetCrores === null) return null;
+
+  const categoryRows = readBudgetField(row, 'category_breakdown', 'categoryBreakdown');
+  const topSchemeRows = readBudgetField(row, 'top_schemes', 'topSchemes');
+  const categoryBreakdown = Array.isArray(categoryRows)
+    ? categoryRows.flatMap((item) => {
+      if (!item || typeof item !== 'object' || Array.isArray(item)) return [];
+      const category = (item as Record<string, unknown>).category;
+      if (typeof category !== 'string' || category.trim() === '') return [];
+      const entry = item as Record<string, unknown>;
+      return [{
+        category: category as BudgetCategory,
+        allocated: readFiniteNumber(entry.allocated ?? entry.allocatedCrores ?? entry.allocated_crores),
+        spent: readFiniteNumber(entry.spent ?? entry.actualSpentCrores ?? entry.actual_spent_crores),
+        utilization: readFiniteNumber(entry.utilization ?? entry.utilizationPercent ?? entry.utilization_percent),
+      }];
+    })
+    : [];
+  const topSchemes = Array.isArray(topSchemeRows)
+    ? topSchemeRows.flatMap((item) => {
+      if (!item || typeof item !== 'object' || Array.isArray(item)) return [];
+      const entry = item as Record<string, unknown>;
+      if (typeof entry.name !== 'string' || entry.name.trim() === '') return [];
+      return [{
+        name: entry.name,
+        allocated: readFiniteNumber(entry.allocated ?? entry.allocatedCrores ?? entry.allocated_crores),
+        spent: readFiniteNumber(entry.spent ?? entry.actualSpentCrores ?? entry.actual_spent_crores),
+      }];
+    })
+    : [];
+
+  const stateCode = readBudgetField(row, 'state_code', 'stateCode');
+  const updatedAt = readBudgetField(row, 'updated_at', 'updatedAt');
+  return {
+    stateCode: typeof stateCode === 'string' && stateCode ? stateCode : requestedStateCode,
+    fiscalYear,
+    totalBudgetCrores,
+    totalRevisedCrores: readFiniteNumber(readBudgetField(row, 'total_revised_crores', 'totalRevisedCrores')),
+    totalSpentCrores: readFiniteNumber(readBudgetField(row, 'total_spent_crores', 'totalSpentCrores')),
+    overallUtilization: readFiniteNumber(readBudgetField(row, 'overall_utilization', 'overallUtilization')),
+    categoryBreakdown,
+    topSchemes,
+    fiscalDeficitCrores: readFiniteNumber(readBudgetField(row, 'fiscal_deficit_crores', 'fiscalDeficitCrores')),
+    revenueDeficitCrores: readFiniteNumber(readBudgetField(row, 'revenue_deficit_crores', 'revenueDeficitCrores')),
+    debtToGDPRatio: readFiniteNumber(readBudgetField(row, 'debt_to_gdp_ratio', 'debtToGDPRatio')),
+    updatedAt: typeof updatedAt === 'string' ? updatedAt : null,
+  };
 }
 
 export interface RTIRequest {
@@ -141,7 +211,7 @@ export interface RTIRequest {
   stateCode: string;
   districtName?: string;
   constituencyAcNo?: number;
-  filedDate: string;
+  filedDate?: string;
   acknowledgedDate?: string;
   responseDate?: string;
   responseText?: string;
@@ -157,24 +227,6 @@ export interface RTIRequest {
   createdAt: string;
 }
 
-export interface LegislatorAttendance {
-  legislatorId: string;
-  legislatorName: string;
-  party: string;
-  stateCode: string;
-  constituencyAcNo?: number;
-  sessionYear: string;
-  type: AttendanceType;
-  totalSessions: number;
-  attended: number;
-  attendancePercent: number;
-  questionsAsked: number;
-  debatesParticipated: number;
-  privateMemberBills: number;
-  ranking: number;
-  totalLegislators: number;
-}
-
 export interface Bill {
   id: string;
   title: string;
@@ -182,25 +234,25 @@ export interface Bill {
   type: BillType;
   status: BillStatus;
   introducedBy: string;
-  introducedByParty: string;
+  introducedByParty: string | null;
   houseIntroduced: 'lok_sabha' | 'rajya_sabha' | 'state_assembly' | 'state_council';
   stateCode?: string;
   introducedDate: string;
-  lastActionDate: string;
+  lastActionDate: string | null;
   summary: string;
   fullTextUrl?: string;
   committeeReportUrl?: string;
   relatedDepartments: string[];
   tags: string[];
   affectedConstituencies?: number[];
-  votesFor: number;
-  votesAgainst: number;
-  votesAbstain: number;
-  publicOpinion: { support: number; oppose: number; neutral: number };
+  votesFor: number | null;
+  votesAgainst: number | null;
+  votesAbstain: number | null;
+  publicOpinion: { support: number | null; oppose: number | null; neutral: number | null };
   amendments: { id: string; proposedBy: string; description: string; status: 'accepted' | 'rejected' | 'pending' }[];
   timeline: { date: string; action: string; details?: string }[];
-  createdAt: string;
-  updatedAt: string;
+  createdAt: string | null;
+  updatedAt: string | null;
 }
 
 export interface GovernmentScheme {
@@ -217,14 +269,14 @@ export interface GovernmentScheme {
   eligibility: string;
   benefits: string;
   applicationUrl?: string;
-  budgetCrores: number;
-  beneficiariesTarget: number;
-  beneficiariesActual: number;
-  coveragePercent: number;
-  districtWiseCoverage?: { districtName: string; beneficiaries: number; target: number }[];
-  constituencyWiseCoverage?: { acNo: number; acName: string; beneficiaries: number }[];
+  budgetCrores: number | null;
+  beneficiariesTarget: number | null;
+  beneficiariesActual: number | null;
+  coveragePercent: number | null;
+  districtWiseCoverage?: { districtName: string; beneficiaries: number | null; target: number | null }[];
+  constituencyWiseCoverage?: { acNo: number; acName: string; beneficiaries: number | null }[];
   documents: { title: string; url: string }[];
-  updatedAt: string;
+  updatedAt: string | null;
 }
 
 export interface DevelopmentProject {
@@ -238,23 +290,23 @@ export interface DevelopmentProject {
   wardNo?: number;
   description: string;
   contractor?: string;
-  sanctionedCostCrores: number;
-  revisedCostCrores?: number;
-  expenditureCrores: number;
-  sanctionedDate: string;
-  expectedCompletion: string;
+  sanctionedCostCrores: number | null;
+  revisedCostCrores?: number | null;
+  expenditureCrores: number | null;
+  sanctionedDate: string | null;
+  expectedCompletion: string | null;
   actualCompletion?: string;
-  delayDays: number;
-  physicalProgress: number;
-  financialProgress: number;
+  delayDays: number | null;
+  physicalProgress: number | null;
+  financialProgress: number | null;
   gpsLat?: number;
   gpsLng?: number;
   photos: { url: string; caption: string; date: string }[];
   milestones: { title: string; targetDate: string; completedDate?: string; status: 'pending' | 'completed' | 'delayed' }[];
   issues: string[];
   lastInspection?: { date: string; by: string; findings: string };
-  source: string;
-  updatedAt: string;
+  source: string | null;
+  updatedAt: string | null;
 }
 
 export interface PublicHearing {
@@ -269,14 +321,13 @@ export interface PublicHearing {
   venue: string;
   date: string;
   time: string;
-  isOpen: boolean;
+  isOpen: boolean | null;
   registrationUrl?: string;
   agendaItems: string[];
-  attendeeCount?: number;
   minutesUrl?: string;
   outcome?: string;
   relatedProjectId?: string;
-  createdAt: string;
+  createdAt: string | null;
 }
 
 export interface ConstituencyComparison {
@@ -321,15 +372,6 @@ export function getUtilizationColor(pct: number): string {
   if (pct >= 60) return '#F59E0B';
   if (pct >= 40) return '#F97316';
   return '#EF4444';
-}
-
-export function getAttendanceGrade(pct: number): { grade: string; color: string; label: string } {
-  if (pct >= 90) return { grade: 'A+', color: '#10B981', label: 'Excellent' };
-  if (pct >= 80) return { grade: 'A', color: '#84CC16', label: 'Very Good' };
-  if (pct >= 70) return { grade: 'B', color: '#F59E0B', label: 'Good' };
-  if (pct >= 50) return { grade: 'C', color: '#F97316', label: 'Average' };
-  if (pct >= 30) return { grade: 'D', color: '#EF4444', label: 'Poor' };
-  return { grade: 'F', color: '#991B1B', label: 'Very Poor' };
 }
 
 export function getProjectHealthColor(phase: ProjectPhase): string {

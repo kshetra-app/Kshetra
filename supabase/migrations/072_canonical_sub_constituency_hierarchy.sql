@@ -11,7 +11,7 @@
 --   5. Enhance polling_booths with canonical internal_id, 1:1 AC binding check constraint, ward linkages, and W012 governance
 --   6. Enforce Row Level Security (RLS) with public read and service_role administrative policies
 --   7. Register W012 governance data sources, datasets, and dataset versions
---   8. Seed canonical sub-constituency pilot hierarchy for Telangana ACs (Kodangal, Gajwel, Mancherial)
+--   8. Keep the schema ready for source-backed sub-constituency ingestion.
 -- ==============================================================================
 
 BEGIN;
@@ -85,18 +85,11 @@ VALUES
     'ds_sub_constituency_hierarchy',
     '2024_canonical_hierarchy',
     '2024-01-01',
-    'UNVERIFIED',
-    50,
-    '{"statutory_reference": "TSEC Local Body Gazette & ECI Polling Station Directory 2023-2024", "authority": "statutory", "tier": "sub_constituency"}'::jsonb
+    'UNKNOWN',
+    0,
+    '{"scope": "sub_constituency schema registration", "loaded_record_count": 0, "data_status": "UNKNOWN", "note": "No local-body, ward, or polling-station records are imported by this migration."}'::jsonb
   )
-ON CONFLICT (id) DO UPDATE SET
-  dataset_id = EXCLUDED.dataset_id,
-  version_tag = EXCLUDED.version_tag,
-  effective_from = EXCLUDED.effective_from,
-  default_status = EXCLUDED.default_status,
-  record_count = EXCLUDED.record_count,
-  metadata = EXCLUDED.metadata,
-  retrieved_at = now();
+ON CONFLICT (id) DO NOTHING;
 
 -- ─── 3. ENHANCE URBAN_LOCAL_BODIES TABLE ───────────────────────────────────────
 
@@ -349,94 +342,5 @@ CREATE POLICY "Service role full access on gp_wards" ON public.gp_wards FOR ALL 
 
 DROP POLICY IF EXISTS "Service role full access on polling_booths" ON public.polling_booths;
 CREATE POLICY "Service role full access on polling_booths" ON public.polling_booths FOR ALL TO service_role USING (true) WITH CHECK (true);
-
--- ─── 9. PILOT SUB-CONSTITUENCY POPULATION ──────────────────────────────────────
--- Seed representative sub-constituency data for pilot ACs (Kodangal AC 30, Gajwel AC 33, Mancherial AC 4)
-DO $$
-DECLARE
-  v_ac_kodangal UUID;
-  v_ac_gajwel UUID;
-  v_ac_mancherial UUID;
-  v_dist_vikarabad UUID;
-  v_dist_siddipet UUID;
-  v_dist_mancherial UUID;
-  v_mdl_kodangal TEXT;
-  v_mdl_gajwel TEXT;
-  v_mdl_mancherial TEXT;
-  v_gp_kodangal UUID;
-  v_ulb_mancherial UUID;
-  v_ward_mancherial UUID;
-  v_gp_ward_kodangal UUID;
-BEGIN
-  SELECT internal_id INTO v_ac_kodangal FROM public.constituencies WHERE ac_no = 72 AND state_code = 'TS';
-  SELECT internal_id INTO v_ac_gajwel FROM public.constituencies WHERE ac_no = 33 AND state_code = 'TS';
-  SELECT internal_id INTO v_ac_mancherial FROM public.constituencies WHERE ac_no = 4 AND state_code = 'TS';
-
-  SELECT id INTO v_dist_vikarabad FROM public.districts WHERE code = 'TS-DIST-VIKARABAD';
-  SELECT id INTO v_dist_siddipet FROM public.districts WHERE code = 'TS-DIST-SIDDIPET';
-  SELECT id INTO v_dist_mancherial FROM public.districts WHERE code = 'TS-DIST-MANCHERIAL';
-
-  -- Pilot Gram Panchayat in Kodangal
-  IF v_ac_kodangal IS NOT NULL THEN
-    INSERT INTO public.gram_panchayats (id, name, local_name, mandal_id, state_code, district_id, constituency_internal_id, lgd_code, type, primary_dataset_version_id, data_status)
-    VALUES ('TS-GP-210001', 'Hasnabad', 'హస్నాబాద్', 'TS-MDL-7105', 'TS', v_dist_vikarabad, v_ac_kodangal, 210001, 'gram_panchayat', 'ver_sub_constituency_2024_v1', 'UNVERIFIED')
-    ON CONFLICT (id) DO UPDATE SET
-      name = EXCLUDED.name,
-      district_id = EXCLUDED.district_id,
-      constituency_internal_id = EXCLUDED.constituency_internal_id
-    RETURNING internal_id INTO v_gp_kodangal;
-
-    -- Pilot GP Ward
-    IF v_gp_kodangal IS NOT NULL THEN
-      INSERT INTO public.gp_wards (id, panchayat_id, state_code, ward_no, name, reservation, panchayat_internal_id, constituency_internal_id, primary_dataset_version_id, data_status)
-      VALUES ('TS-GP-210001-W01', 'TS-GP-210001', 'TS', 1, 'Hasnabad Ward 1', 'GEN', v_gp_kodangal, v_ac_kodangal, 'ver_sub_constituency_2024_v1', 'UNVERIFIED')
-      ON CONFLICT (id) DO UPDATE SET
-        name = EXCLUDED.name,
-        panchayat_internal_id = EXCLUDED.panchayat_internal_id,
-        constituency_internal_id = EXCLUDED.constituency_internal_id
-      RETURNING internal_id INTO v_gp_ward_kodangal;
-
-      -- Pilot Polling Booth bound 1:1 to Kodangal AC
-      INSERT INTO public.polling_booths (id, booth_number, booth_name, polling_station_name, constituency_id, constituency_internal_id, panchayat_id, panchayat_internal_id, gp_ward_internal_id, state_code, total_voters, primary_dataset_version_id, data_status)
-      VALUES ('TS-AC72-B001', 1, 'MPPS Hasnabad Room 1', 'Mandal Parishad Primary School', 'TS-AC-072', v_ac_kodangal, 'TS-GP-210001', v_gp_kodangal, v_gp_ward_kodangal, 'TS', 850, 'ver_sub_constituency_2024_v1', 'UNVERIFIED')
-      ON CONFLICT (id) DO UPDATE SET
-        booth_name = EXCLUDED.booth_name,
-        constituency_internal_id = EXCLUDED.constituency_internal_id,
-        panchayat_internal_id = EXCLUDED.panchayat_internal_id,
-        gp_ward_internal_id = EXCLUDED.gp_ward_internal_id;
-    END IF;
-  END IF;
-
-  -- Pilot Urban Local Body in Mancherial
-  IF v_ac_mancherial IS NOT NULL THEN
-    INSERT INTO public.urban_local_bodies (id, name, local_name, state_code, district, district_id, constituency_internal_id, lgd_code, type, head_office_type, primary_constituency_id, total_wards, primary_dataset_version_id, data_status)
-    VALUES ('TS-ULB-803420', 'Mancherial Municipality', 'మంచిర్యాల మున్సిపాలిటీ', 'TS', 'Mancherial', v_dist_mancherial, v_ac_mancherial, 803420, 'municipality', 'chairperson', 'TS-AC-004', 36, 'ver_sub_constituency_2024_v1', 'UNVERIFIED')
-    ON CONFLICT (id) DO UPDATE SET
-      name = EXCLUDED.name,
-      district_id = EXCLUDED.district_id,
-      constituency_internal_id = EXCLUDED.constituency_internal_id
-    RETURNING internal_id INTO v_ulb_mancherial;
-
-    -- Pilot ULB Ward
-    IF v_ulb_mancherial IS NOT NULL THEN
-      INSERT INTO public.ulb_wards (id, ulb_id, state_code, ward_no, name, reservation, ulb_internal_id, constituency_internal_id, primary_dataset_version_id, data_status)
-      VALUES ('TS-ULB-803420-W01', 'TS-ULB-803420', 'TS', 1, 'Mancherial Ward 1 (Old Town)', 'GEN', v_ulb_mancherial, v_ac_mancherial, 'ver_sub_constituency_2024_v1', 'UNVERIFIED')
-      ON CONFLICT (id) DO UPDATE SET
-        name = EXCLUDED.name,
-        ulb_internal_id = EXCLUDED.ulb_internal_id,
-        constituency_internal_id = EXCLUDED.constituency_internal_id
-      RETURNING internal_id INTO v_ward_mancherial;
-
-      -- Pilot Urban Polling Booth bound 1:1 to Mancherial AC
-      INSERT INTO public.polling_booths (id, booth_number, booth_name, polling_station_name, constituency_id, constituency_internal_id, ulb_ward_internal_id, state_code, total_voters, primary_dataset_version_id, data_status)
-      VALUES ('TS-AC04-B001', 1, 'Govt High School Mancherial Room 1', 'Government High School for Boys', 'TS-AC-004', v_ac_mancherial, v_ward_mancherial, 'TS', 1042, 'ver_sub_constituency_2024_v1', 'UNVERIFIED')
-      ON CONFLICT (id) DO UPDATE SET
-        booth_name = EXCLUDED.booth_name,
-        constituency_internal_id = EXCLUDED.constituency_internal_id,
-        ulb_ward_internal_id = EXCLUDED.ulb_ward_internal_id;
-    END IF;
-  END IF;
-
-END $$;
 
 COMMIT;

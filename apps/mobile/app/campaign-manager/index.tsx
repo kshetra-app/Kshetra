@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import { useResponsive } from '../../lib/responsive';
@@ -12,8 +12,10 @@ import GrassrootsOverview from '../../components/campaign/GrassrootsOverview';
 import SimplifiedOutreach from '../../components/campaign/SimplifiedOutreach';
 import GrassrootsBooths from '../../components/campaign/GrassrootsBooths';
 import GrassrootsWorkers from '../../components/campaign/GrassrootsWorkers';
+import CampaignAds from '../../components/campaign/CampaignAds';
+import CreateCampaignModal from '../../components/campaign/CreateCampaignModal';
 
-export type MainCampaignTab = 'overview' | 'outreach' | 'booths' | 'workers';
+export type MainCampaignTab = 'overview' | 'outreach' | 'booths' | 'workers' | 'ads';
 
 const IS_LIVE_ENVIRONMENT = IS_PRODUCTION || IS_STAGING;
 
@@ -29,6 +31,7 @@ const TABS: TabItem[] = [
   { key: 'outreach', icon: 'megaphone', labelKey: 'campaignManager.tabs.outreach', defaultLabel: 'Reach Voters' },
   { key: 'booths', icon: 'location', labelKey: 'campaignManager.tabs.booths', defaultLabel: 'Booths' },
   { key: 'workers', icon: 'people', labelKey: 'campaignManager.tabs.workers', defaultLabel: 'Cadre' },
+  { key: 'ads', icon: 'megaphone', labelKey: 'campaignManager.tabs.ads', defaultLabel: 'Ads' },
 ];
 
 export default function CampaignManagerScreen() {
@@ -37,33 +40,24 @@ export default function CampaignManagerScreen() {
   const { colors } = useTheme();
 
   const [activeTab, setActiveTab] = useState<MainCampaignTab>('overview');
-  const fetchPricing = useCampaignStore((s) => s.fetchPricing);
+  const [refreshing, setRefreshing] = useState(false);
+  const [helpVisible, setHelpVisible] = useState(false);
+  const [createCampaignVisible, setCreateCampaignVisible] = useState(false);
+
+  const loadCampaignWorkspace = useCampaignStore((s) => s.loadCampaignWorkspace);
 
   useEffect(() => {
-    if (!IS_LIVE_ENVIRONMENT) fetchPricing();
-  }, [fetchPricing]);
+    loadCampaignWorkspace();
+  }, [loadCampaignWorkspace]);
 
-  if (IS_LIVE_ENVIRONMENT) {
-    return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <Stack.Screen
-          options={{
-            title: t('campaignManager.screenTitle', { defaultValue: 'Campaign Command Center' }),
-            headerShown: true,
-            headerStyle: { backgroundColor: colors.surface },
-            headerTintColor: colors.primary,
-            headerTitleStyle: { fontWeight: '800', fontSize: 17 },
-          }}
-        />
-        <View style={[styles.unavailableCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <Ionicons name="information-circle-outline" size={30} color={colors.primary} />
-          <Text style={[styles.unavailableTitle, { color: colors.text }]}>Campaign tools are not connected to verified live data yet</Text>
-          <Text style={[styles.unavailableBody, { color: colors.textSecondary }]}>Campaign records, voter counts, budgets, ad performance, and outreach delivery are unavailable in this environment. Payment and broadcast actions are disabled; no funds will be charged and no messages will be sent.</Text>
-        </View>
-        <View style={{ height: insets.bottom }} />
-      </View>
-    );
-  }
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    loadCampaignWorkspace().finally(() => setRefreshing(false));
+  }, [loadCampaignWorkspace]);
+
+  const onCampaignCreated = useCallback(() => {
+    loadCampaignWorkspace();
+  }, [loadCampaignWorkspace]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -74,6 +68,36 @@ export default function CampaignManagerScreen() {
           headerStyle: { backgroundColor: colors.surface },
           headerTintColor: colors.primary,
           headerTitleStyle: { fontWeight: '800', fontSize: 17 },
+          headerRight: () => (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+              <Pressable
+                accessibilityLabel={t('campaignManager.createCampaign', { defaultValue: 'Create a campaign' })}
+                accessibilityRole="button"
+                style={{ padding: 4 }}
+                onPress={() => setCreateCampaignVisible(true)}
+              >
+                <Ionicons name="add-circle-outline" size={22} color={colors.primary} />
+              </Pressable>
+              <Pressable
+                accessibilityLabel={t('common.refresh', { defaultValue: 'Refresh campaign data' })}
+                accessibilityRole="button"
+                style={{ padding: 4 }}
+                onPress={onRefresh}
+                disabled={refreshing}
+              >
+                {refreshing
+                  ? <ActivityIndicator size="small" color={colors.primary} />
+                  : <Ionicons name="refresh" size={20} color={colors.primary} />}
+              </Pressable>
+              <Pressable
+                accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
+                style={{ padding: 4 }}
+                onPress={() => setHelpVisible(true)}
+              >
+                <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
+              </Pressable>
+            </View>
+          ),
         }}
       />
 
@@ -116,10 +140,17 @@ export default function CampaignManagerScreen() {
         {activeTab === 'outreach' && <SimplifiedOutreach />}
         {activeTab === 'booths' && <GrassrootsBooths />}
         {activeTab === 'workers' && <GrassrootsWorkers />}
+        {activeTab === 'ads' && <CampaignAds />}
       </View>
 
       {/* Bottom spacer for insets */}
       <View style={{ height: insets.bottom }} />
+
+      <CreateCampaignModal
+        visible={createCampaignVisible}
+        onClose={() => setCreateCampaignVisible(false)}
+        onCreated={onCampaignCreated}
+      />
     </View>
   );
 }
@@ -138,7 +169,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   tabLabel: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: '600',
   },
   content: {

@@ -15,8 +15,8 @@
 export interface MLAProfile {
   acNo: number;
   name: string;
-  /** Candidate name as recorded in the official result for the election under test. */
-  electionName?: string;
+  /** Name as recorded by the Election Commission for the most recent assembly election. */
+  officialElectionName?: string;
   party: string;
   electedParty?: string;
   age?: number;
@@ -67,7 +67,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 2,
     name: 'Gaddam Vivekanand',
-    electionName: 'Vivek Venkat Swamy',
+    officialElectionName: 'Vivek Venkat Swamy',
     party: 'INC',
     gender: 'M',
     terms: 1,
@@ -211,8 +211,8 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   },
   {
     acNo: 10,
-    name: 'Rama Rao Pawar',
-    electionName: 'Ram Rao Pawar',
+    name: 'Ram Rao Pawar',
+    officialElectionName: 'Ram Rao Pawar',
     party: 'BJP',
     gender: 'M',
     terms: 1,
@@ -255,7 +255,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 13,
     name: 'Thota Laxmi Kantha Rao',
-    electionName: 'Laxmi Kantha Rao Thota',
+    officialElectionName: 'Laxmi Kantha Rao Thota',
     party: 'INC',
     gender: 'M',
     terms: 1,
@@ -274,7 +274,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 14,
     name: 'Pocharam Srinivas Reddy',
-    electionName: 'Srinivas Reddy Parige (pocharam)',
+    officialElectionName: 'Srinivas Reddy Parige (pocharam)',
     party: 'INC',
     electedParty: 'BRS',
     gender: 'M',
@@ -293,7 +293,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 15,
     name: 'K. Madan Mohan Rao',
-    electionName: 'Madan Mohan Rao. K',
+    officialElectionName: 'Madan Mohan Rao. K',
     party: 'INC',
     gender: 'M',
     terms: 1,
@@ -312,7 +312,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 16,
     name: 'K. V. Ramana Reddy',
-    electionName: 'Katipally Venkata Ramana Reddy',
+    officialElectionName: 'Katipally Venkata Ramana Reddy',
     party: 'BJP',
     gender: 'M',
     terms: 1,
@@ -331,7 +331,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 17,
     name: 'Dhanpal Suryanarayana Gupta',
-    electionName: 'Dhanpal Suryanarayana',
+    officialElectionName: 'Dhanpal Suryanarayana',
     party: 'BJP',
     gender: 'M',
     terms: 1,
@@ -350,7 +350,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 18,
     name: 'Rekulapally Bhoopathi Reddy',
-    electionName: 'Bhoopathi Reddy Rekulapally',
+    officialElectionName: 'Bhoopathi Reddy Rekulapally',
     party: 'INC',
     gender: 'M',
     terms: 1,
@@ -369,7 +369,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 19,
     name: 'Vemula Prashanth Reddy',
-    electionName: 'Prashanth Reddy Vemula',
+    officialElectionName: 'Prashanth Reddy Vemula',
     party: 'BRS',
     gender: 'M',
     terms: 3,
@@ -406,7 +406,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 21,
     name: 'M. Sanjay Kumar',
-    electionName: 'Dr. Sanjay',
+    officialElectionName: 'Dr. Sanjay',
     party: 'INC',
     electedParty: 'BRS',
     gender: 'M',
@@ -503,7 +503,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 27,
     name: 'Medipally Satyam',
-    electionName: 'Medipally Sathyam',
+    officialElectionName: 'Medipally Sathyam',
     party: 'INC',
     gender: 'M',
     terms: 1,
@@ -539,7 +539,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 29,
     name: 'K. T. Rama Rao',
-    electionName: 'Kalvakuntla Taraka Rama Rao (k.T.R)',
+    officialElectionName: 'Kalvakuntla Taraka Rama Rao (k.T.R)',
     party: 'BRS',
     gender: 'M',
     terms: 3,
@@ -565,7 +565,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 31,
     name: 'Padi Kaushik Reddy',
-    electionName: 'Kaushik Reddy Padi',
+    officialElectionName: 'Kaushik Reddy Padi',
     party: 'BRS',
     gender: 'M',
     terms: 1,
@@ -655,7 +655,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 36,
     name: 'C. Damodar Raja Narasimha',
-    electionName: 'C. Damodar Rajanarsimha',
+    officialElectionName: 'C. Damodar Rajanarsimha',
     party: 'INC',
     gender: 'M',
     terms: 1,
@@ -735,7 +735,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 41,
     name: 'Kotha Prabhakar Reddy',
-    electionName: 'Kotta Prabhakar Reddy',
+    officialElectionName: 'Kotta Prabhakar Reddy',
     party: 'BRS',
     gender: 'M',
     terms: 1,
@@ -754,7 +754,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 42,
     name: 'K. Chandrashekar Rao',
-    electionName: 'Kalvakuntla Chandrashekar Rao',
+    officialElectionName: 'Kalvakuntla Chandrashekar Rao',
     party: 'BRS',
     gender: 'M',
     terms: 3,
@@ -791,7 +791,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 44,
     name: 'Marri Rajasekhar Reddy',
-    electionName: 'Marri Rajashekar Reddy',
+    officialElectionName: 'Marri Rajashekar Reddy',
     party: 'BRS',
     gender: 'M',
     terms: 1,
@@ -849,7 +849,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 49,
     name: 'Devireddy Sudheer Reddy',
-    electionName: 'Devireddy Sudhir Reddy',
+    officialElectionName: 'Devireddy Sudhir Reddy',
     party: 'BRS',
     gender: 'M',
     terms: 2,
@@ -868,7 +868,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 50,
     name: 'Sabitha Indra Reddy',
-    electionName: 'Patlolla Sabitha Indra Reddy',
+    officialElectionName: 'Patlolla Sabitha Indra Reddy',
     party: 'BRS',
     gender: 'F',
     terms: 2,
@@ -943,7 +943,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 54,
     name: 'Tammannagari Ram Mohan Reddy',
-    electionName: 'Dr. T. Ram Mohan Reddy',
+    officialElectionName: 'Dr. T. Ram Mohan Reddy',
     party: 'INC',
     gender: 'M',
     terms: 1,
@@ -1043,6 +1043,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
     name: 'Danam Nagender',
     party: 'INC',
     electedParty: 'BRS',
+    isCurrentMember: false,
     gender: 'M',
     terms: 2,
     age: 60,
@@ -1059,21 +1060,17 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   },
   {
     acNo: 61,
-    name: 'Maganti Gopinath',
-    party: 'BRS',
+    name: 'Naveen Yadav V',
+    officialElectionName: 'Naveen Yadav V',
+    party: 'INC',
+    electedParty: 'INC',
     gender: 'M',
-    terms: 3,
-    age: 60,
-    dob: '1963-01-01',
-    dobEstimated: true,
-    education: '12th Pass',
-    profession: 'Polictical Service/Member of Legislative Assembly',
-    criminalCases: 0,
-    totalAssets: 199303309,
-    totalLiabilities: 3000000,
-    maritalStatus: 'Married',
-    photoUrl: 'https://www.myneta.info/images_candidate/Telangana2023/37aa8812a529f1fc897fa45f5f6ee51f0f9223f5.jpg',
-    sourceUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=109',
+    terms: 1,
+    constituencyName: 'Jubilee Hills',
+    district: 'Hyderabad',
+    isBypoll: true,
+    isCurrentMember: true,
+    sourceUrl: 'https://ceotelangana.nic.in/Bye-Election%20to%20the%2061-Jubilee%20Hills-2025/2080-163_AC_61_Declaration%20of%20result%20in%20Form-21D%20-%20Published%20in%20State%20GAzette.pdf',
   },
   {
     acNo: 62,
@@ -1095,7 +1092,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 63,
     name: 'Mohammad Majid Hussain',
-    electionName: 'Mohammed Majid Hussain',
+    officialElectionName: 'Mohammed Majid Hussain',
     party: 'AIMIM',
     gender: 'M',
     terms: 1,
@@ -1175,7 +1172,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 68,
     name: 'Jaffer Hussain',
-    electionName: 'Jaffar Hussain',
+    officialElectionName: 'Jaffar Hussain',
     party: 'AIMIM',
     gender: 'M',
     terms: 1,
@@ -1211,7 +1208,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 70,
     name: 'T. Padma Rao Goud',
-    electionName: 'Padma Rao.T',
+    officialElectionName: 'Padma Rao.T',
     party: 'BRS',
     gender: 'M',
     terms: 3,
@@ -1230,21 +1227,16 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 71,
     name: 'Sri Ganesh Narayanan',
+    officialElectionName: 'Sri Ganesh',
     party: 'INC',
-    isBypoll: true,
+    electedParty: 'INC',
     gender: 'M',
     terms: 1,
-    age: 45,
-    dob: '1979-01-01',
-    dobEstimated: true,
-    education: 'Post Graduate',
-    profession: 'Business & Social Work',
-    criminalCases: 0,
-    totalAssets: 47250000,
-    totalLiabilities: 8500000,
-    maritalStatus: 'Married',
-    photoUrl: 'https://www.myneta.info/images_candidate/Telangana2023/f978cd00d05ec2b8982b2fe43f29026cb032d8a5.jpg',
-    sourceUrl: 'https://results.eci.gov.in',
+    constituencyName: 'Secunderabad Cantonment',
+    district: 'Hyderabad',
+    isBypoll: true,
+    isCurrentMember: true,
+    sourceUrl: 'https://ceotelangana.nic.in/BYE_ELECTION%2871-SEC_CANTT%29/2090-82-Bye%20Elecs%20to%20TSLA%2071-Sec%27bad%20cant%20Declaration%20of%20Result-Reg.pdf',
   },
   {
     acNo: 72,
@@ -1303,7 +1295,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 75,
     name: 'Janampalli Anirudh Reddy',
-    electionName: 'Anirudh Reddy Janampalli',
+    officialElectionName: 'Anirudh Reddy Janampalli',
     party: 'INC',
     gender: 'M',
     terms: 1,
@@ -1322,7 +1314,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 76,
     name: 'Gavinolla Madhusudan Reddy',
-    electionName: 'Gavinolla Madhusudan Reddy (gmr)',
+    officialElectionName: 'Gavinolla Madhusudan Reddy (gmr)',
     party: 'INC',
     gender: 'M',
     terms: 1,
@@ -1359,7 +1351,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 78,
     name: 'Tudi Megha Reddy',
-    electionName: 'Megha Reddy Tudi',
+    officialElectionName: 'Megha Reddy Tudi',
     party: 'INC',
     gender: 'M',
     terms: 1,
@@ -1505,7 +1497,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 86,
     name: 'Nenavath Balu Naik',
-    electionName: 'Balu Naik Nenavath',
+    officialElectionName: 'Balu Naik Nenavath',
     party: 'INC',
     gender: 'M',
     terms: 1,
@@ -1523,7 +1515,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 87,
     name: 'Kunduru Jayaveer Reddy',
-    electionName: 'Kunduru Jayaveer',
+    officialElectionName: 'Kunduru Jayaveer',
     party: 'INC',
     gender: 'M',
     terms: 1,
@@ -1559,7 +1551,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 89,
     name: 'Nalamada Uttam Kumar Reddy',
-    electionName: 'Uttam Kumar Reddy Nalamada',
+    officialElectionName: 'Uttam Kumar Reddy Nalamada',
     party: 'INC',
     gender: 'M',
     terms: 3,
@@ -1685,7 +1677,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 96,
     name: 'Mandula Samuel',
-    electionName: 'Mandula Samel',
+    officialElectionName: 'Mandula Samel',
     party: 'INC',
     gender: 'M',
     terms: 1,
@@ -1704,7 +1696,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 97,
     name: 'Beerla Ilaiah',
-    electionName: 'Ilaiah Beerla',
+    officialElectionName: 'Ilaiah Beerla',
     party: 'INC',
     gender: 'M',
     terms: 1,
@@ -1760,7 +1752,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 100,
     name: 'Mamidala Yashaswini Reddy',
-    electionName: 'Yashaswini Mamidala',
+    officialElectionName: 'Yashaswini Mamidala',
     party: 'INC',
     gender: 'F',
     terms: 1,
@@ -1875,7 +1867,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 107,
     name: 'K. R. Nagaraj',
-    electionName: 'K.R.Nagaraj.K',
+    officialElectionName: 'K.R.Nagaraj.K',
     party: 'INC',
     gender: 'M',
     terms: 1,
@@ -1911,7 +1903,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 109,
     name: 'Seethakka',
-    electionName: 'Anasuya Seethakka Danasari',
+    officialElectionName: 'Anasuya Seethakka Danasari',
     party: 'INC',
     gender: 'F',
     terms: 2,
@@ -1991,7 +1983,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 114,
     name: 'Mallu Bhatti Vikramarka',
-    electionName: 'Bhatti Vikramarka Mallu',
+    officialElectionName: 'Bhatti Vikramarka Mallu',
     party: 'INC',
     gender: 'M',
     terms: 3,
@@ -2062,7 +2054,7 @@ export const TS_MLA_PROFILES: MLAProfile[] = [
   {
     acNo: 118,
     name: 'Jare Adinarayana',
-    electionName: 'Adinarayana. Jare',
+    officialElectionName: 'Adinarayana. Jare',
     party: 'INC',
     gender: 'M',
     terms: 1,
@@ -2099,6 +2091,11 @@ export function getDefectedMLAs(): MLAProfile[] {
   return TS_MLA_PROFILES.filter((p) => p.electedParty && p.electedParty !== p.party);
 }
 
+/** Profiles of members currently seated; excludes historical profiles for vacant seats. */
+export function getCurrentMLAProfiles(): MLAProfile[] {
+  return TS_MLA_PROFILES.filter((p) => p.isCurrentMember !== false);
+}
+
 /** Get all MLA profiles */
 export function getAllTSMLAs(): MLAProfile[] {
   return TS_MLA_PROFILES;
@@ -2107,7 +2104,7 @@ export function getAllTSMLAs(): MLAProfile[] {
 export const TELANGANA_MLA_PROFILES = TS_MLA_PROFILES;
 
 export function getMLAsByParty(party: string): MLAProfile[] {
-  return TS_MLA_PROFILES.filter((p) => p.party === party);
+  return getCurrentMLAProfiles().filter((p) => p.party === party);
 }
 
 export function getFemaleMLAs(): MLAProfile[] {

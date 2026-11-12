@@ -14,6 +14,11 @@
 
 BEGIN;
 
+-- The legacy states table predates updated_at; add it before this migration's
+-- idempotent national catalog upsert uses it.
+ALTER TABLE public.states
+  ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now();
+
 -- ─── 1. AUTHORITATIVE NATIONAL DATASET VERSIONS ───────────────────────────────
 
 INSERT INTO public.dataset_versions (id, dataset_id, version_tag, effective_from, default_status, record_count, metadata)
@@ -135,7 +140,8 @@ VALUES
   ('RJ', 'RJ-STATE-2008', 'Rajasthan', 'Jaipur', 8, '08', '2008-02-19'::date, NULL, true, 'mha_national_jurisdictions_2024_v1'),
   ('SK', 'SK-STATE-2008', 'Sikkim', 'Gangtok', 11, '11', '2008-02-19'::date, NULL, true, 'mha_national_jurisdictions_2024_v1'),
   ('TN', 'TN-STATE-2008', 'Tamil Nadu', 'Chennai', 33, '33', '2008-02-19'::date, NULL, true, 'mha_national_jurisdictions_2024_v1'),
-  ('TS', 'TS-STATE-2008', 'Telangana', 'Hyderabad', 36, '36', '2008-02-19'::date, NULL, true, 'mha_national_jurisdictions_2024_v1'),
+  -- Telangana's current state version begins on 2014-06-02 and was seeded by
+  -- migration 041; it must not be backdated to the 2008 delimitation date.
   ('TR', 'TR-STATE-2008', 'Tripura', 'Agartala', 16, '16', '2008-02-19'::date, NULL, true, 'mha_national_jurisdictions_2024_v1'),
   ('UP', 'UP-STATE-2008', 'Uttar Pradesh', 'Lucknow', 9, '09', '2008-02-19'::date, NULL, true, 'mha_national_jurisdictions_2024_v1'),
   ('UK', 'UK-STATE-2008', 'Uttarakhand', 'Dehradun', 5, '05', '2008-02-19'::date, NULL, true, 'mha_national_jurisdictions_2024_v1'),

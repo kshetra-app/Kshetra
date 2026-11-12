@@ -4,13 +4,15 @@
  * Authority: Master Product Blueprint (Jobs 062-066), DEC-188, DEC-189
  * Features:
  * - Governed 10-Field Event Schema Ingestion (Single & Batch up to 100)
- * - DPDP 2023 IP Cryptographic Salt-Hashing (Zero raw citizen PII storage)
+ * - Optional keyed HMAC pseudonymization for request IPs
+ * - Removes common raw phone/email fields from event metadata; this is not comprehensive PII detection
  * - Pluggable External Exporter Sink Interface (DEC-189 Option B)
  * - Temporal & Geospatial Multi-Dimensional Queries
  */
 
-import { createHash } from 'crypto';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { createHmac, randomUUID } from 'crypto';
+import { supabase, isSupabaseAvailable } from '../lib/supabase';
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import type {
   UniversalAnalyticsEventDTO,
   BatchAnalyticsEventsRequest,
@@ -21,11 +23,17 @@ export interface AnalyticsSinkExporter {
   exportEvents(events: UniversalAnalyticsEventDTO[]): Promise<void>;
 }
 
+export class AnalyticsStorageUnavailableError extends Error {
+  constructor() {
+    super('Analytics storage is unavailable. Events were not accepted.');
+    this.name = 'AnalyticsStorageUnavailableError';
+  }
+}
+
 export class UniversalAnalyticsService {
   // In-memory ring buffer for testing and fast retrieval
   private static eventBuffer: UniversalAnalyticsEventDTO[] = [];
   private static registeredSinks: AnalyticsSinkExporter[] = [];
-  private static readonly DPDP_SALT = 'kshetra_dpdp_salt_2026_s9x';
 
   static resetForTesting(): void {
     this.eventBuffer = [];
@@ -41,6 +49,7 @@ export class UniversalAnalyticsService {
   static async ingestBatch(
     req: BatchAnalyticsEventsRequest,
     clientIp?: string,
+    authenticatedUserId?: string | null,
   ): Promise<BatchAnalyticsEventsResponse> {
     if (!req.events || !Array.isArray(req.events)) {
       return {
@@ -66,9 +75,14 @@ export class UniversalAnalyticsService {
     const validEvents: UniversalAnalyticsEventDTO[] = [];
 
     const now = new Date().toISOString();
-    const ipHash = clientIp
-      ? createHash('sha256').update(`${clientIp}-${this.DPDP_SALT}`).digest('hex')
-      : undefined;
+    // Set ANALYTICS_IP_HASH_SECRET per deployment to enable keyed IP pseudonymization.
+    const configuredHashSecret = process.env.ANALYTICS_IP_HASH_SECRET?.trim();
+    const ipHashSecret =
+      configuredHashSecret || (!isProductionLikeRuntime() ? 'local-development-only' : '');
+    const ipHash =
+      clientIp && ipHashSecret
+        ? createHmac('sha256', ipHashSecret).update(clientIp).digest('hex')
+        : undefined;
 
     for (let i = 0; i < req.events.length; i++) {
       const e = req.events[i];
@@ -99,20 +113,26 @@ export class UniversalAnalyticsService {
         continue;
       }
 
-      // Sanitize metadata to prevent raw phone/email leaks (DPDP 2023)
+      // Remove common raw phone/email fields; arbitrary nested metadata needs separate privacy review.
       const sanitizedMeta = { ...(e.metadata || {}) };
+      // Never preserve a client-supplied value under this server-owned field.
+      delete sanitizedMeta._clientIpHash;
       if (ipHash) sanitizedMeta._clientIpHash = ipHash;
       delete sanitizedMeta.phone;
       delete sanitizedMeta.email;
       delete sanitizedMeta.rawIp;
 
       const eventDto: UniversalAnalyticsEventDTO = {
-        id: e.id || `evt_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+        // The database primary key is UUID. Do not trust arbitrary client IDs here.
+        id: randomUUID(),
         eventName: e.eventName,
-        userId: e.userId || null,
+        // Never trust user identity asserted in an event payload. The API route
+        // supplies this only after validating the bearer token with Supabase.
+        userId: authenticatedUserId || null,
         anonymousId: e.anonymousId,
         sessionId: e.sessionId,
-        timestamp: e.timestamp || now,
+        // The client timestamp is not trusted for time-window reporting.
+        timestamp: now,
         screen: e.screen,
         geography: e.geography || {},
         entity: e.entity || {},
@@ -120,13 +140,16 @@ export class UniversalAnalyticsService {
         appVersion: e.appVersion,
       };
 
-      this.eventBuffer.push(eventDto);
       validEvents.push(eventDto);
       ingestedCount++;
     }
 
-    // Persist valid events to database
-    if (validEvents.length > 0 && isSupabaseConfigured) {
+    // A production success response means the durable write completed. The
+    // process-local buffer is only an isolated development/test fallback.
+    if (validEvents.length > 0 && !isSupabaseAvailable()) {
+      if (isProductionLikeRuntime()) throw new AnalyticsStorageUnavailableError();
+      this.cacheForLocalUse(validEvents);
+    } else if (validEvents.length > 0) {
       try {
         const rows = validEvents.map((v) => ({
           id: v.id,
@@ -142,9 +165,11 @@ export class UniversalAnalyticsService {
           app_version: v.appVersion,
           ingested_at: now,
         }));
-        await supabase.from('universal_analytics_events').insert(rows);
-      } catch (err) {
-        // In-memory buffer serves as fallback
+        const { error } = await supabase.from('universal_analytics_events').insert(rows);
+        if (error) throw error;
+        if (!isProductionLikeRuntime()) this.cacheForLocalUse(validEvents);
+      } catch {
+        throw new AnalyticsStorageUnavailableError();
       }
     }
 
@@ -173,7 +198,41 @@ export class UniversalAnalyticsService {
     to?: string;
     limit?: number;
   }): Promise<UniversalAnalyticsEventDTO[]> {
-    const limit = filter.limit || 100;
+    const requestedLimit = Number.isFinite(filter.limit) ? Math.trunc(filter.limit!) : 100;
+    const limit = Math.max(1, Math.min(requestedLimit || 100, 500));
+
+    if (isSupabaseAvailable()) {
+      let query = supabase
+        .from('universal_analytics_events')
+        .select(
+          'id, event_name, user_id, anonymous_id, session_id, timestamp, screen, geography, entity, metadata, app_version',
+        );
+      if (filter.eventName) query = query.eq('event_name', filter.eventName);
+      if (filter.userId) query = query.eq('user_id', filter.userId);
+      if (filter.acId) query = query.filter('geography->>acId', 'eq', filter.acId);
+      if (filter.from) query = query.gte('timestamp', filter.from);
+      if (filter.to) query = query.lte('timestamp', filter.to);
+
+      const { data, error } = await query.order('timestamp', { ascending: false }).limit(limit);
+      if (error) throw new AnalyticsStorageUnavailableError();
+
+      return (data || []).map((row: any) => ({
+        id: String(row.id),
+        eventName: String(row.event_name),
+        userId: row.user_id ? String(row.user_id) : null,
+        anonymousId: String(row.anonymous_id),
+        sessionId: String(row.session_id),
+        timestamp: String(row.timestamp),
+        screen: String(row.screen),
+        geography: row.geography || {},
+        entity: row.entity || {},
+        metadata: row.metadata || {},
+        appVersion: String(row.app_version),
+      }));
+    }
+
+    if (isProductionLikeRuntime()) throw new AnalyticsStorageUnavailableError();
+
     let results = [...this.eventBuffer];
 
     if (filter.eventName) {
@@ -199,6 +258,13 @@ export class UniversalAnalyticsService {
 
   static getRawEventBuffer(): UniversalAnalyticsEventDTO[] {
     return this.eventBuffer;
+  }
+
+  private static cacheForLocalUse(events: UniversalAnalyticsEventDTO[]): void {
+    this.eventBuffer.push(...events);
+    if (this.eventBuffer.length > 5000) {
+      this.eventBuffer.splice(0, this.eventBuffer.length - 5000);
+    }
   }
 }
 

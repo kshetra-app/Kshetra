@@ -66,6 +66,7 @@ export function resolveBreakdownState(record: FinancialRecord): BreakdownState {
     record.selfImmovableAssets != null &&
     record.spouseMovableAssets != null &&
     record.spouseImmovableAssets != null &&
+    record.dependentsAssets != null &&
     totalAssets != null &&
     totalAssets > 0;
 
@@ -98,11 +99,11 @@ export function resolveBreakdownState(record: FinancialRecord): BreakdownState {
   let percentages: BreakdownState['percentages'] = null;
   if (hasCompleteBreakdown && totalAssets && totalAssets > 0) {
     const total = totalAssets;
-    const selfMov = record.selfMovableAssets ?? 0;
-    const selfImm = record.selfImmovableAssets ?? 0;
-    const spouseMov = record.spouseMovableAssets ?? 0;
-    const spouseImm = record.spouseImmovableAssets ?? 0;
-    const dep = record.dependentsAssets ?? 0;
+    const selfMov = record.selfMovableAssets!;
+    const selfImm = record.selfImmovableAssets!;
+    const spouseMov = record.spouseMovableAssets!;
+    const spouseImm = record.spouseImmovableAssets!;
+    const dep = record.dependentsAssets!;
 
     percentages = {
       selfMovPct: Math.round((selfMov / total) * 100),
@@ -261,7 +262,7 @@ export default function FinancialBreakdownCard({ records, compact }: Props) {
               <LegendItem color={colors.success} label="Self Immovable" value={formatINR(latest.selfImmovableAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
             </View>
             <View style={styles.legendRow}>
-              <LegendItem color={colors.gold} label="Spouse" value={formatINR((latest.spouseMovableAssets ?? 0) + (latest.spouseImmovableAssets ?? 0))} textSecondary={colors.textSecondary} textPrimary={colors.text} />
+              <LegendItem color={colors.gold} label="Spouse" value={formatINR(latest.spouseMovableAssets! + latest.spouseImmovableAssets!)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
               {latest.dependentsAssets != null && latest.dependentsAssets > 0 && (
                 <LegendItem color={colors.primary} label="Dependents" value={formatINR(latest.dependentsAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
               )}

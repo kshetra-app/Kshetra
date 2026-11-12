@@ -1,5 +1,6 @@
 import Fastify, { type FastifyInstance } from 'fastify';
 import { politicalAdsRoutes } from '../routes/politicalAds';
+import { publicSupabase } from '../lib/supabase';
 
 describe('Political advertising routes', () => {
   let app: FastifyInstance;
@@ -96,17 +97,37 @@ describe('Political advertising routes', () => {
     expect(JSON.parse(certified.payload).status).toBe('active');
   });
 
-  it('fails closed in production until political ad storage and delivery exist', async () => {
+  it('fails closed without exposing details when persisted public ad storage is unavailable', async () => {
     const originalNodeEnv = process.env.NODE_ENV;
+    const originalPublicLibraryEnabled = process.env.POLITICAL_AD_PUBLIC_LIBRARY_ENABLED;
+    const query: any = {
+      select: () => query,
+      in: () => query,
+      eq: () => query,
+      order: () => query,
+      range: async () => ({
+        data: null,
+        error: new Error('test database unavailable'),
+        count: null,
+      }),
+    };
+    const fromSpy = jest.spyOn(publicSupabase, 'from').mockReturnValue(query);
     process.env.NODE_ENV = 'production';
+    process.env.POLITICAL_AD_PUBLIC_LIBRARY_ENABLED = 'true';
     try {
       const res = await app.inject({ method: 'GET', url: '/api/v1/political-ads/active' });
 
       expect(res.statusCode).toBe(503);
-      expect(JSON.parse(res.payload).code).toBe('POLITICAL_AD_SERVICE_UNAVAILABLE');
+      expect(JSON.parse(res.payload).code).toBe('POLITICAL_AD_STORAGE_UNAVAILABLE');
     } finally {
+      fromSpy.mockRestore();
       if (originalNodeEnv === undefined) delete process.env.NODE_ENV;
       else process.env.NODE_ENV = originalNodeEnv;
+      if (originalPublicLibraryEnabled === undefined) {
+        delete process.env.POLITICAL_AD_PUBLIC_LIBRARY_ENABLED;
+      } else {
+        process.env.POLITICAL_AD_PUBLIC_LIBRARY_ENABLED = originalPublicLibraryEnabled;
+      }
     }
   });
 });

@@ -1,6 +1,6 @@
 import { STATES, PARTY_CONFIG } from '@kshetra/shared';
 import { Dimensions } from 'react-native';
-import { DEFAULT_API_BASE_URL } from './environment';
+import { CURRENT_ENVIRONMENT, resolveApiBaseUrl } from './environment';
 
 /** Telangana centroid — default map center (kept for backward compat) */
 export const TELANGANA_CENTER: [number, number] = [79.0193, 17.8495];
@@ -15,11 +15,11 @@ export const CONSTITUENCY_ZOOM = 10;
 export const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
 export const MAP_STYLE_LIGHT = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
 
-/** Resolve one API host for every mobile feature from the build environment. */
-const configuredApiBaseUrl = process.env.EXPO_PUBLIC_API_URL?.trim();
-export const API_BASE_URL = (configuredApiBaseUrl || DEFAULT_API_BASE_URL)
-  .replace(/\/+$/, '')
-  .replace(/\/api(?:\/v\d+)?$/i, '');
+/** Environment-aware API host; callers append their versioned API paths. */
+export const API_BASE_URL = resolveApiBaseUrl(
+  process.env.EXPO_PUBLIC_API_URL,
+  CURRENT_ENVIRONMENT,
+);
 
 /**
  * A *hosted* API base URL, or live Railway backend.

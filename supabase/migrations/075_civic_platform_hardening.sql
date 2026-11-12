@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS public.community_groups (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL CHECK (char_length(name) >= 3 AND char_length(name) <= 100),
     slug TEXT UNIQUE NOT NULL,
-    constituency_id TEXT NOT NULL REFERENCES public.constituencies(id) ON DELETE RESTRICT,
+    constituency_id TEXT,
     description TEXT,
     category TEXT NOT NULL CHECK (category IN (
         'sanitation', 'roads', 'water', 'electricity', 
@@ -91,6 +91,38 @@ CREATE TABLE IF NOT EXISTS public.development_projects (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Migration 018 already created this table with legacy geography columns
+-- (state_code, district_name, constituency_ac_no). Add the canonical text ID
+-- used by the API without replacing or invalidating those existing fields.
+ALTER TABLE public.development_projects
+    ADD COLUMN IF NOT EXISTS constituency_id TEXT;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_constraint
+        WHERE conrelid = 'public.development_projects'::regclass
+          AND conname = 'fk_development_projects_constituency'
+    ) THEN
+        ALTER TABLE public.development_projects
+            ADD CONSTRAINT fk_development_projects_constituency
+            FOREIGN KEY (constituency_id) REFERENCES public.constituencies(id)
+            ON DELETE RESTRICT;
+    END IF;
+END $$;
+
+-- Existing constituency_ac_no values map unambiguously with state_code because
+-- constituencies has a unique (state_code, ac_no) constraint. Keep rows without
+-- a confirmed match NULL rather than inventing a constituency assignment.
+UPDATE public.development_projects AS project
+SET constituency_id = constituency.id
+FROM public.constituencies AS constituency
+WHERE project.constituency_id IS NULL
+  AND project.constituency_ac_no IS NOT NULL
+  AND project.state_code = constituency.state_code
+  AND project.constituency_ac_no = constituency.ac_no;
+
 CREATE INDEX IF NOT EXISTS idx_dev_projects_constituency ON public.development_projects(constituency_id);
 CREATE INDEX IF NOT EXISTS idx_dev_projects_state ON public.development_projects(state_code);
 
@@ -154,5 +186,6 @@ CREATE POLICY "Public read issue evidence" ON public.issue_evidence FOR SELECT U
 CREATE POLICY "Auth users submit evidence" ON public.issue_evidence FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- Schemes & Projects RLS (Public read, admin write)
-CREATE POLICY "Public read schemes" ON public.government_schemes FOR SELECT USING (true);
+-- Migration 018 already grants public SELECT on government_schemes via its
+-- "Public read schemes" policy; do not create a duplicate permissive policy.
 CREATE POLICY "Public read development projects" ON public.development_projects FOR SELECT USING (true);

@@ -7,6 +7,7 @@ describe('deployed advertising fails closed until durable delivery exists', () =
   let app: FastifyInstance;
   const originalAppEnv = process.env.APP_ENV;
   const originalExpoAppEnv = process.env.EXPO_PUBLIC_APP_ENV;
+  const originalPublicLibraryEnabled = process.env.POLITICAL_AD_PUBLIC_LIBRARY_ENABLED;
 
   beforeAll(async () => {
     app = Fastify({ logger: false });
@@ -20,6 +21,17 @@ describe('deployed advertising fails closed until durable delivery exists', () =
     else process.env.APP_ENV = originalAppEnv;
     if (originalExpoAppEnv === undefined) delete process.env.EXPO_PUBLIC_APP_ENV;
     else process.env.EXPO_PUBLIC_APP_ENV = originalExpoAppEnv;
+    if (originalPublicLibraryEnabled === undefined) {
+      delete process.env.POLITICAL_AD_PUBLIC_LIBRARY_ENABLED;
+    } else {
+      process.env.POLITICAL_AD_PUBLIC_LIBRARY_ENABLED = originalPublicLibraryEnabled;
+    }
+  });
+
+  beforeEach(() => {
+    // A working public Supabase key is not enough: the public ad library must
+    // be explicitly enabled only after the deployed schema and RLS are verified.
+    process.env.POLITICAL_AD_PUBLIC_LIBRARY_ENABLED = 'false';
   });
 
   afterAll(async () => {

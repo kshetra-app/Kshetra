@@ -1,3 +1,4 @@
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import type { FastifyInstance } from 'fastify';
 import { sendApiError } from '../lib/replyHelper';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
@@ -10,6 +11,14 @@ import {
 } from '../services/civicService';
 import { canonicalGeographyService } from '../services/canonicalGeographyService';
 import { checkContentModeration } from '../services/contentModeration';
+
+const isProductionRuntime = () => isProductionLikeRuntime();
+
+function parseNonNegativeInteger(value: unknown): number | null {
+  const parsed =
+    typeof value === 'number' ? value : typeof value === 'string' ? Number(value) : NaN;
+  return Number.isSafeInteger(parsed) && parsed >= 0 ? parsed : null;
+}
 
 // Schema definitions for civic endpoints
 const budgetSchema = {
@@ -26,39 +35,12 @@ const budgetSchema = {
       properties: {
         stateCode: { type: 'string' },
         message: { type: 'string' },
-        budget: { type: 'object', additionalProperties: true },
+        budget: {
+          anyOf: [{ type: 'object', additionalProperties: true }, { type: 'null' }],
+        },
       },
       required: ['stateCode', 'message'],
       additionalProperties: true,
-    },
-  },
-};
-
-const attendanceSchema = {
-  querystring: {
-    type: 'object',
-    properties: {
-      state: { type: 'string', pattern: '^[A-Z]{2}$' },
-      sessionYear: { type: 'string' },
-      page: { type: 'integer', minimum: 1 },
-      limit: { type: 'integer', minimum: 1, maximum: 100 },
-    },
-  },
-  response: {
-    200: {
-      type: 'object',
-      properties: {
-        attendance: { type: 'array' },
-        total: { type: 'number' },
-        filters: {
-          type: 'object',
-          properties: {
-            state: { type: 'string' },
-            sessionYear: { type: 'string' },
-          },
-        },
-      },
-      required: ['attendance', 'total'],
     },
   },
 };
@@ -68,8 +50,26 @@ const billsSchema = {
     type: 'object',
     properties: {
       state: { type: 'string', pattern: '^[A-Z]{2}$' },
-      status: { type: 'string' },
-      type: { type: 'string' },
+      status: {
+        type: 'string',
+        enum: [
+          'introduced',
+          'first_reading',
+          'committee_review',
+          'second_reading',
+          'passed_lower',
+          'passed_upper',
+          'presidential_assent',
+          'enacted',
+          'lapsed',
+          'withdrawn',
+          'referred_select',
+        ],
+      },
+      type: {
+        type: 'string',
+        enum: ['ordinary', 'money', 'finance', 'constitutional_amendment', 'private_member'],
+      },
       page: { type: 'integer', minimum: 1 },
       limit: { type: 'integer', minimum: 1, maximum: 100 },
     },
@@ -117,6 +117,15 @@ const billOpinionSchema = {
         billId: { type: 'string' },
         support: { type: 'boolean' },
         message: { type: 'string' },
+        publicOpinion: {
+          type: 'object',
+          properties: {
+            support: { type: 'integer', minimum: 0 },
+            oppose: { type: 'integer', minimum: 0 },
+            neutral: { type: 'integer', minimum: 0 },
+          },
+          required: ['support', 'oppose', 'neutral'],
+        },
       },
       required: ['success', 'billId', 'support'],
     },
@@ -129,7 +138,7 @@ const schemesSchema = {
     properties: {
       state: { type: 'string', pattern: '^[A-Z]{2}$' },
       category: { type: 'string' },
-      level: { type: 'string' },
+      level: { type: 'string', enum: ['central', 'state', 'joint'] },
       page: { type: 'integer', minimum: 1 },
       limit: { type: 'integer', minimum: 1, maximum: 100 },
     },
@@ -159,9 +168,22 @@ const projectsSchema = {
     type: 'object',
     properties: {
       state: { type: 'string', pattern: '^[A-Z]{2}$' },
-      phase: { type: 'string' },
+      phase: {
+        type: 'string',
+        enum: [
+          'proposed',
+          'approved',
+          'tendered',
+          'under_construction',
+          'delayed',
+          'completed',
+          'inaugurated',
+          'cancelled',
+          'stalled',
+        ],
+      },
       category: { type: 'string' },
-      constituency: { type: 'string' },
+      constituency: { type: 'string', pattern: '^(AC-)?[0-9]{1,3}$' },
       page: { type: 'integer', minimum: 1 },
       limit: { type: 'integer', minimum: 1, maximum: 100 },
     },
@@ -192,7 +214,21 @@ const rtiListSchema = {
     type: 'object',
     properties: {
       state: { type: 'string', pattern: '^[A-Z]{2}$' },
-      status: { type: 'string' },
+      status: {
+        type: 'string',
+        enum: [
+          'draft',
+          'filed',
+          'acknowledged',
+          'first_appeal',
+          'second_appeal',
+          'information_received',
+          'denied',
+          'partial_response',
+          'transferred',
+          'closed',
+        ],
+      },
       department: { type: 'string' },
       page: { type: 'integer', minimum: 1 },
       limit: { type: 'integer', minimum: 1, maximum: 100 },
@@ -266,11 +302,24 @@ const upvoteRtiSchema = {
 
 const hearingsSchema = {
   querystring: {
+    additionalProperties: false,
     type: 'object',
     properties: {
       state: { type: 'string', pattern: '^[A-Z]{2}$' },
-      type: { type: 'string' },
-      upcoming: { type: 'string' },
+      type: {
+        type: 'string',
+        enum: [
+          'public_hearing',
+          'gram_sabha',
+          'ward_meeting',
+          'town_hall',
+          'environment_clearance',
+          'land_acquisition',
+          'budget_consultation',
+          'grievance_redressal',
+        ],
+      },
+      upcoming: { type: 'string', enum: ['true', 'false'] },
       page: { type: 'integer', minimum: 1 },
       limit: { type: 'integer', minimum: 1, maximum: 100 },
     },
@@ -482,8 +531,10 @@ const listIssuesSchema = {
       properties: {
         issues: { type: 'array' },
         total: { type: 'number' },
+        page: { type: 'integer' },
+        limit: { type: 'integer' },
       },
-      required: ['issues', 'total'],
+      required: ['issues', 'total', 'page', 'limit'],
       additionalProperties: true,
     },
   },
@@ -607,6 +658,8 @@ const listGroupsSchema = {
     required: ['constituencyId'],
     properties: {
       constituencyId: { type: 'string', minLength: 1 },
+      mandal: { type: 'string', minLength: 1 },
+      ward: { type: 'string', minLength: 1 },
     },
   },
   response: {
@@ -629,8 +682,23 @@ const createGroupSchema = {
     properties: {
       name: { type: 'string', minLength: 3, maxLength: 100 },
       constituencyId: { type: 'string', minLength: 1 },
-      category: { type: 'string', minLength: 1 },
+      category: {
+        type: 'string',
+        enum: [
+          'sanitation',
+          'roads',
+          'water',
+          'electricity',
+          'education',
+          'environment',
+          'public_safety',
+          'healthcare',
+          'general',
+        ],
+      },
       description: { type: 'string', maxLength: 500 },
+      mandal: { type: 'string', maxLength: 100 },
+      ward: { type: 'string', maxLength: 100 },
     },
   },
   response: {
@@ -700,6 +768,7 @@ const addIssueCommentSchema = {
 
 async function resolveAuthUser(request: any): Promise<{ userId: string; role: string } | null> {
   let userId: string | null = null;
+  let role = 'citizen';
   const authHeader = request.headers.authorization;
 
   if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -714,17 +783,29 @@ async function resolveAuthUser(request: any): Promise<{ userId: string; role: st
       } = await supabase.auth.getUser(token);
       if (!error && user) {
         userId = user.id;
+        try {
+          const { data: profile, error: profileError } = await supabase
+            .from('user_profiles')
+            .select('role')
+            .eq('user_id', user.id)
+            .maybeSingle();
+          if (!profileError && profile?.role) role = profile.role;
+        } catch {
+          // Profile lookup failure must not grant elevated access.
+          role = 'citizen';
+        }
       }
     }
   }
 
-  if (!userId && (request.headers['x-user-id'] as string)) {
+  if (!isProductionRuntime() && !userId && (request.headers['x-user-id'] as string)) {
     userId = request.headers['x-user-id'] as string;
+    role = (request.headers['x-user-role'] as string) || 'citizen';
   }
 
   if (!userId) return null;
 
-  return { userId, role: (request.headers['x-user-role'] as string) || 'citizen' };
+  return { userId, role };
 }
 
 export async function civicRoutes(app: FastifyInstance) {
@@ -734,30 +815,70 @@ export async function civicRoutes(app: FastifyInstance) {
     {
       schema: budgetSchema,
     },
-    async (request) => {
+    async (request, reply) => {
       const { stateCode } = request.params;
-      return {
-        stateCode,
-        message: 'Budget endpoint — connect to Supabase for live data',
-      };
-    },
-  );
+      if (!isSupabaseConfigured) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'State budget data is unavailable because storage is not configured.',
+          {
+            code: 'DATABASE_UNAVAILABLE',
+          },
+        );
+      }
 
-  /** 2. GET /api/v1/civic/attendance — legislator attendance */
-  app.get<{
-    Querystring: { state?: string; sessionYear?: string; page?: number; limit?: number };
-  }>(
-    '/api/v1/civic/attendance',
-    {
-      schema: attendanceSchema,
-    },
-    async (request) => {
-      const { state, sessionYear } = request.query;
-      return {
-        attendance: [],
-        total: 0,
-        filters: { state, sessionYear },
-      };
+      try {
+        const { data, error } = await supabase
+          .from('state_budget_summaries')
+          .select('*')
+          .eq('state_code', stateCode)
+          .order('fiscal_year', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (error) {
+          request.log.error(
+            { err: error.message, stateCode },
+            'Failed to load state budget summary',
+          );
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'State budget data could not be loaded from storage.',
+            {
+              code: 'DATABASE_ERROR',
+            },
+          );
+        }
+
+        return {
+          stateCode,
+          message: data
+            ? 'Budget summary loaded from stored records.'
+            : 'No state budget record is available yet.',
+          budget: data ?? null,
+        };
+      } catch (error: any) {
+        request.log.error(
+          { err: error?.message, stateCode },
+          'Exception loading state budget summary',
+        );
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'State budget data could not be loaded from storage.',
+          {
+            code: 'DATABASE_ERROR',
+          },
+        );
+      }
     },
   );
 
@@ -769,13 +890,113 @@ export async function civicRoutes(app: FastifyInstance) {
     {
       schema: billsSchema,
     },
-    async (request) => {
-      const { state, status, type } = request.query;
-      return {
-        bills: [],
-        total: 0,
-        filters: { state, status, type },
-      };
+    async (request, reply) => {
+      const { state, status, type, page = 1, limit = 50 } = request.query;
+      if (!isSupabaseConfigured) {
+        if (isProductionRuntime()) {
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Legislation records are unavailable because storage is not configured.',
+            { code: 'CIVIC_BILLS_UNAVAILABLE' },
+          );
+        }
+        return { bills: [], total: 0, filters: { state, status, type } };
+      }
+
+      try {
+        let query = supabase.from('bills').select('*', { count: 'exact' });
+        if (state) query = query.eq('state_code', state);
+        if (status) query = query.eq('status', status);
+        if (type) query = query.eq('type', type);
+
+        const offset = (page - 1) * limit;
+        const { data, count, error } = await query
+          .order('introduced_date', { ascending: false })
+          .range(offset, offset + limit - 1);
+
+        if (error) {
+          request.log.error({ err: error.message }, 'Failed to load legislation records');
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Legislation records could not be loaded from storage.',
+            { code: 'CIVIC_BILLS_UNAVAILABLE' },
+          );
+        }
+
+        const total = parseNonNegativeInteger(count);
+        if (total === null) {
+          request.log.error('Exact legislation record count is unavailable');
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Legislation records could not be counted reliably.',
+            { code: 'CIVIC_BILLS_UNAVAILABLE' },
+          );
+        }
+
+        const rows = data || [];
+        const opinionsByBill = new Map<
+          string,
+          { support: number; oppose: number; neutral: number }
+        >();
+        if (rows.length > 0) {
+          const { data: opinions, error: opinionError } = await supabase.rpc(
+            'get_bill_opinion_counts',
+            {
+              p_bill_ids: rows.map((row: any) => row.id),
+            },
+          );
+          if (opinionError) {
+            request.log.warn({ err: opinionError.message }, 'Bill opinion counts are unavailable');
+          } else if (Array.isArray(opinions)) {
+            for (const opinion of opinions) {
+              const support = parseNonNegativeInteger(opinion.support);
+              const oppose = parseNonNegativeInteger(opinion.oppose);
+              const neutral = parseNonNegativeInteger(opinion.neutral);
+              if (
+                typeof opinion.bill_id === 'string' &&
+                support !== null &&
+                oppose !== null &&
+                neutral !== null
+              ) {
+                opinionsByBill.set(opinion.bill_id, { support, oppose, neutral });
+              }
+            }
+          }
+        }
+
+        return {
+          bills: rows.map((row: any) => ({
+            ...row,
+            // Never trust the legacy JSON aggregate; only show counts derived from unique vote records.
+            public_opinion: opinionsByBill.get(row.id) || {
+              support: null,
+              oppose: null,
+              neutral: null,
+            },
+          })),
+          total,
+          filters: { state, status, type },
+        };
+      } catch (error: any) {
+        request.log.error({ err: error?.message }, 'Exception loading legislation records');
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Legislation records could not be loaded from storage.',
+          { code: 'CIVIC_BILLS_UNAVAILABLE' },
+        );
+      }
     },
   );
 
@@ -809,43 +1030,48 @@ export async function civicRoutes(app: FastifyInstance) {
       }
       const { id } = request.params;
       const { support } = request.body;
-      const { data: bill, error: fetchErr } = await supabase
-        .from('bills')
-        .select('public_opinion')
-        .eq('id', id)
-        .maybeSingle();
-      if (fetchErr) {
-        if (process.env.NODE_ENV !== 'production') {
+      const { data, error } = await supabase.rpc('record_bill_opinion', {
+        p_bill_id: id,
+        p_user_id: auth.userId,
+        p_support: support,
+      });
+      if (error) {
+        if (!isProductionRuntime()) {
           return { success: true, billId: id, support, message: 'Opinion recorded' };
         }
-        return sendApiError(reply, request, 500, 'Internal Server Error', fetchErr.message, {
-          code: 'DATABASE_ERROR',
-        });
+        return sendApiError(
+          reply,
+          request,
+          error.code === '23503' ? 404 : 503,
+          error.code === '23503' ? 'Not Found' : 'Service Unavailable',
+          error.code === '23503'
+            ? `Bill ${id} not found`
+            : 'Bill opinions could not be recorded from storage.',
+          { code: error.code === '23503' ? 'NOT_FOUND' : 'CIVIC_BILL_OPINION_UNAVAILABLE' },
+        );
       }
-      if (!bill) {
-        if (process.env.NODE_ENV !== 'production') {
-          return { success: true, billId: id, support, message: 'Opinion recorded' };
-        }
-        return sendApiError(reply, request, 404, 'Not Found', `Bill ${id} not found`, {
-          code: 'NOT_FOUND',
-        });
+
+      const opinion = Array.isArray(data) ? data[0] : data;
+      const supportCount = parseNonNegativeInteger(opinion?.support);
+      const opposeCount = parseNonNegativeInteger(opinion?.oppose);
+      const neutralCount = parseNonNegativeInteger(opinion?.neutral);
+      if (supportCount === null || opposeCount === null || neutralCount === null) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Bill opinion totals are unavailable from storage.',
+          { code: 'CIVIC_BILL_OPINION_UNAVAILABLE' },
+        );
       }
-      const opinion = bill.public_opinion || { support: 0, oppose: 0, neutral: 0 };
-      if (support) opinion.support = (opinion.support || 0) + 1;
-      else opinion.oppose = (opinion.oppose || 0) + 1;
-      const { error: updateErr } = await supabase
-        .from('bills')
-        .update({ public_opinion: opinion, updated_at: new Date().toISOString() })
-        .eq('id', id);
-      if (updateErr) {
-        if (process.env.NODE_ENV !== 'production') {
-          return { success: true, billId: id, support, message: 'Opinion recorded' };
-        }
-        return sendApiError(reply, request, 500, 'Internal Server Error', updateErr.message, {
-          code: 'DATABASE_ERROR',
-        });
-      }
-      return { success: true, billId: id, support, message: 'Opinion recorded' };
+      return {
+        success: true,
+        billId: id,
+        support,
+        publicOpinion: { support: supportCount, oppose: opposeCount, neutral: neutralCount },
+        message: 'Opinion recorded',
+      };
     },
   );
 
@@ -863,24 +1089,85 @@ export async function civicRoutes(app: FastifyInstance) {
     {
       schema: schemesSchema,
     },
-    async (request) => {
-      const { state, category, level } = request.query;
+    async (request, reply) => {
+      const { state, category, level, page = 1, limit = 50 } = request.query;
       let schemesList: any[] = [];
+      let total = 0;
+      if (!isSupabaseConfigured && isProductionRuntime()) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Government scheme records are unavailable from the authoritative database.',
+          { code: 'CIVIC_SCHEMES_UNAVAILABLE' },
+        );
+      }
       if (isSupabaseConfigured) {
         try {
-          let q = supabase.from('government_schemes').select('*');
+          let q = supabase.from('government_schemes').select('*', { count: 'exact' });
           if (state) q = q.or(`state_code.eq.${state},state_code.is.null`);
           if (category) q = q.eq('category', category);
-          const { data, error } = await q;
-          if (!error && data && data.length > 0) schemesList = data;
-        } catch {}
+          if (level) q = q.eq('level', level);
+          const offset = (page - 1) * limit;
+          const { data, count, error } = await q
+            .order('updated_at', { ascending: false })
+            .range(offset, offset + limit - 1);
+          if (error && isProductionRuntime()) {
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Government scheme records could not be loaded from the authoritative database.',
+              { code: 'CIVIC_SCHEMES_UNAVAILABLE' },
+            );
+          }
+          const exactCount = parseNonNegativeInteger(count);
+          if (!error && exactCount !== null) {
+            schemesList = data || [];
+            total = exactCount;
+          } else if (isProductionRuntime()) {
+            request.log.error(
+              { err: error?.message, count },
+              'Exact government scheme record count is unavailable',
+            );
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Government scheme records could not be counted reliably.',
+              { code: 'CIVIC_SCHEMES_UNAVAILABLE' },
+            );
+          }
+        } catch {
+          if (isProductionRuntime()) {
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Government scheme records could not be loaded from the authoritative database.',
+              { code: 'CIVIC_SCHEMES_UNAVAILABLE' },
+            );
+          }
+        }
       }
-      if (schemesList.length === 0) {
-        schemesList = await civicService.getSchemes({ stateCode: state, category });
+      if (!isProductionRuntime() && schemesList.length === 0) {
+        const fallbackSchemes = await civicService.getSchemes({ stateCode: state, category });
+        const filteredSchemes = fallbackSchemes.filter(
+          (scheme) =>
+            (!level || scheme.level === level) &&
+            (!state || !scheme.stateCode || scheme.stateCode === state),
+        );
+        total = filteredSchemes.length;
+        const offset = (page - 1) * limit;
+        schemesList = filteredSchemes.slice(offset, offset + limit);
       }
       return {
         schemes: schemesList,
-        total: schemesList.length,
+        total,
         filters: { state, category, level },
       };
     },
@@ -901,28 +1188,96 @@ export async function civicRoutes(app: FastifyInstance) {
     {
       schema: projectsSchema,
     },
-    async (request) => {
-      const { state, phase, category, constituency } = request.query;
+    async (request, reply) => {
+      const { state, phase, category, constituency, page = 1, limit = 50 } = request.query;
       let projectsList: any[] = [];
+      let total = 0;
+      if (!isSupabaseConfigured && isProductionRuntime()) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Development project records are unavailable from the authoritative database.',
+          { code: 'CIVIC_PROJECTS_UNAVAILABLE' },
+        );
+      }
       if (isSupabaseConfigured) {
         try {
-          let q = supabase.from('development_projects').select('*');
+          let q = supabase.from('development_projects').select('*', { count: 'exact' });
           if (state) q = q.eq('state_code', state);
-          if (constituency) q = q.eq('constituency_id', constituency);
+          if (constituency)
+            q = q.eq('constituency_ac_no', Number(constituency.replace(/^AC-/i, '')));
           if (category) q = q.eq('category', category);
-          const { data, error } = await q;
-          if (!error && data && data.length > 0) projectsList = data;
-        } catch {}
+          if (phase) q = q.eq('phase', phase);
+          const offset = (page - 1) * limit;
+          const { data, count, error } = await q
+            .order('updated_at', { ascending: false })
+            .range(offset, offset + limit - 1);
+          if (error && isProductionRuntime()) {
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Development project records could not be loaded from the authoritative database.',
+              { code: 'CIVIC_PROJECTS_UNAVAILABLE' },
+            );
+          }
+          const exactCount = parseNonNegativeInteger(count);
+          if (!error && exactCount !== null) {
+            projectsList = data || [];
+            total = exactCount;
+          } else if (isProductionRuntime()) {
+            request.log.error(
+              { err: error?.message, count },
+              'Exact development project record count is unavailable',
+            );
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Development project records could not be counted reliably.',
+              { code: 'CIVIC_PROJECTS_UNAVAILABLE' },
+            );
+          }
+        } catch {
+          if (isProductionRuntime()) {
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Development project records could not be loaded from the authoritative database.',
+              { code: 'CIVIC_PROJECTS_UNAVAILABLE' },
+            );
+          }
+        }
       }
-      if (projectsList.length === 0) {
-        projectsList = await civicService.getProjects({
+      if (!isProductionRuntime() && projectsList.length === 0) {
+        const fallbackProjects = await civicService.getProjects({
           constituencyId: constituency,
           stateCode: state,
         });
+        const filteredProjects = fallbackProjects.filter((project) => {
+          const projectConstituency =
+            typeof project.constituencyId === 'string'
+              ? Number(project.constituencyId.replace(/^AC-/i, ''))
+              : null;
+          return (
+            (!phase || project.phase === phase) &&
+            (!category || project.category === category) &&
+            (!constituency || projectConstituency === Number(constituency.replace(/^AC-/i, '')))
+          );
+        });
+        total = filteredProjects.length;
+        const offset = (page - 1) * limit;
+        projectsList = filteredProjects.slice(offset, offset + limit);
       }
       return {
         projects: projectsList,
-        total: projectsList.length,
+        total,
         filters: { state, phase, category, constituency },
       };
     },
@@ -942,13 +1297,83 @@ export async function civicRoutes(app: FastifyInstance) {
     {
       schema: rtiListSchema,
     },
-    async (request) => {
-      const { state, status, department } = request.query;
-      return {
-        rtiRequests: [],
-        total: 0,
-        filters: { state, status, department },
-      };
+    async (request, reply) => {
+      const { state, status, department, page = 1, limit = 50 } = request.query;
+      if (!isSupabaseConfigured) {
+        if (isProductionRuntime()) {
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Public RTI records are unavailable because storage is not configured.',
+            { code: 'CIVIC_RTI_UNAVAILABLE' },
+          );
+        }
+        return { rtiRequests: [], total: 0, filters: { state, status, department } };
+      }
+
+      try {
+        // Do not return account identifiers or unpublished drafts from this public listing.
+        let query = supabase
+          .from('rti_requests')
+          .select(
+            'id,status,department,authority,subject,question_text,state_code,district_name,constituency_ac_no,filed_date,acknowledged_date,response_date,response_text,first_appeal_date,second_appeal_date,fees,is_public,upvotes,views,tags,created_at',
+            { count: 'exact' },
+          )
+          .eq('is_public', true)
+          .neq('status', 'draft');
+
+        if (state) query = query.eq('state_code', state);
+        if (status) query = query.eq('status', status);
+        if (department) query = query.eq('department', department);
+
+        const offset = (page - 1) * limit;
+        const { data, count, error } = await query
+          .order('created_at', { ascending: false })
+          .range(offset, offset + limit - 1);
+
+        if (error) {
+          request.log.error({ err: error.message }, 'Failed to load public RTI records');
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Public RTI records could not be loaded from storage.',
+            { code: 'CIVIC_RTI_UNAVAILABLE' },
+          );
+        }
+
+        const total = parseNonNegativeInteger(count);
+        if (total === null) {
+          request.log.error('Exact public RTI record count is unavailable');
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Public RTI records could not be counted reliably.',
+            { code: 'CIVIC_RTI_UNAVAILABLE' },
+          );
+        }
+
+        return {
+          rtiRequests: data || [],
+          total,
+          filters: { state, status, department },
+        };
+      } catch (error: any) {
+        request.log.error({ err: error?.message }, 'Exception loading public RTI records');
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Public RTI records could not be loaded from storage.',
+          { code: 'CIVIC_RTI_UNAVAILABLE' },
+        );
+      }
     },
   );
 
@@ -995,7 +1420,7 @@ export async function civicRoutes(app: FastifyInstance) {
         .select('id')
         .single();
       if (error || !data) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProductionRuntime()) {
           return { success: true, id: 'rti-test-1', message: 'RTI request filed', data: body };
         }
         return sendApiError(
@@ -1047,7 +1472,7 @@ export async function civicRoutes(app: FastifyInstance) {
         .eq('id', id)
         .maybeSingle();
       if (fetchErr) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProductionRuntime()) {
           return { success: true, rtiId: id, message: 'RTI request upvoted' };
         }
         return sendApiError(reply, request, 500, 'Internal Server Error', fetchErr.message, {
@@ -1055,7 +1480,7 @@ export async function civicRoutes(app: FastifyInstance) {
         });
       }
       if (!rti) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProductionRuntime()) {
           return { success: true, rtiId: id, message: 'RTI request upvoted' };
         }
         return sendApiError(reply, request, 404, 'Not Found', `RTI request ${id} not found`, {
@@ -1068,7 +1493,7 @@ export async function civicRoutes(app: FastifyInstance) {
         .update({ upvotes: newUpvotes, updated_at: new Date().toISOString() })
         .eq('id', id);
       if (updateErr) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProductionRuntime()) {
           return { success: true, rtiId: id, message: 'Upvote recorded' };
         }
         return sendApiError(reply, request, 500, 'Internal Server Error', updateErr.message, {
@@ -1093,13 +1518,82 @@ export async function civicRoutes(app: FastifyInstance) {
     {
       schema: hearingsSchema,
     },
-    async (request) => {
-      const { state, type, upcoming } = request.query;
-      return {
-        hearings: [],
-        total: 0,
-        filters: { state, type, upcoming },
-      };
+    async (request, reply) => {
+      const { state, type, upcoming, page = 1, limit = 50 } = request.query;
+      const filters = { state, type, upcoming };
+
+      if (!isSupabaseConfigured) {
+        if (isProductionRuntime()) {
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Public hearing records are unavailable because storage is not configured.',
+            { code: 'CIVIC_HEARINGS_UNAVAILABLE' },
+          );
+        }
+        return { hearings: [], total: 0, filters };
+      }
+
+      try {
+        let query = supabase
+          .from('public_hearings')
+          .select(
+            'id,type,title,description,organizer,state_code,district_name,constituency_ac_no,venue,date,time,is_open,registration_url,agenda_items,minutes_url,outcome,related_project_id,created_at',
+            { count: 'exact' },
+          );
+        if (state) query = query.eq('state_code', state);
+        if (type) query = query.eq('type', type);
+
+        // Hearing dates are Indian local calendar dates; avoid UTC midnight
+        // shifting the upcoming window around the start/end of an IST day.
+        const currentDate = new Date(Date.now() + 330 * 60_000).toISOString().slice(0, 10);
+        if (upcoming === 'true') query = query.gte('date', currentDate);
+        if (upcoming === 'false') query = query.lt('date', currentDate);
+
+        const offset = (page - 1) * limit;
+        const { data, count, error } = await query
+          .order('date', { ascending: upcoming !== 'false' })
+          .range(offset, offset + limit - 1);
+
+        if (error) {
+          request.log.error({ err: error.message }, 'Failed to load public hearing records');
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Public hearing records could not be loaded from storage.',
+            { code: 'CIVIC_HEARINGS_UNAVAILABLE' },
+          );
+        }
+
+        const total = parseNonNegativeInteger(count);
+        if (total === null) {
+          request.log.error('Exact public hearing record count is unavailable');
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Public hearing records could not be counted reliably.',
+            { code: 'CIVIC_HEARINGS_UNAVAILABLE' },
+          );
+        }
+
+        return { hearings: data || [], total, filters };
+      } catch (error: any) {
+        request.log.error({ err: error?.message }, 'Exception loading public hearing records');
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Public hearing records could not be loaded from storage.',
+          { code: 'CIVIC_HEARINGS_UNAVAILABLE' },
+        );
+      }
     },
   );
 
@@ -1109,7 +1603,17 @@ export async function civicRoutes(app: FastifyInstance) {
     {
       schema: cdiSchema,
     },
-    async (request) => {
+    async (request, reply) => {
+      if (isProductionRuntime()) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'The constituency development index is not backed by durable production analytics yet.',
+          { code: 'CIVIC_ANALYTICS_UNAVAILABLE' },
+        );
+      }
       const { constituencyId } = request.params;
       const metrics = await civicService.getConstituencyDevelopmentIndex(constituencyId);
       return {
@@ -1769,24 +2273,87 @@ export async function civicRoutes(app: FastifyInstance) {
     {
       schema: listIssuesSchema,
     },
-    async (request) => {
+    async (request, reply) => {
       const { constituencyId, stateCode, category, status } = request.query;
-      let issuesList: any[] = [];
+      const page = request.query.page ?? 1;
+      const limit = request.query.limit ?? 50;
+      const offset = (page - 1) * limit;
       if (isSupabaseConfigured) {
         try {
-          let q = supabase.from('civic_issues').select('*');
+          let q = supabase.from('civic_issues').select('*', { count: 'exact' });
           if (constituencyId) q = q.eq('constituency_id', constituencyId);
           if (stateCode) q = q.eq('state_code', stateCode);
           if (category && category !== 'all') q = q.eq('category', category);
           if (status && status !== 'all') q = q.eq('status', status);
-          const { data, error } = await q.order('created_at', { ascending: false });
-          if (!error && data && data.length > 0) issuesList = data;
-        } catch {}
+          const { data, count, error } = await q
+            .order('created_at', { ascending: false })
+            .range(offset, offset + limit - 1);
+          if (error) {
+            if (isProductionRuntime()) {
+              request.log.error({ err: error.message }, 'Failed to load civic issues');
+              return sendApiError(
+                reply,
+                request,
+                503,
+                'Service Unavailable',
+                'Civic issue data is currently unavailable',
+                { code: 'DATABASE_ERROR' },
+              );
+            }
+            request.log.warn(
+              { err: error.message },
+              'Civic issue query failed; using isolated nonproduction store',
+            );
+          } else {
+            if (typeof count !== 'number' || !Number.isInteger(count) || count < 0) {
+              request.log.error('Civic issue query returned no exact count');
+              return sendApiError(
+                reply,
+                request,
+                503,
+                'Service Unavailable',
+                'Civic issue totals are currently unavailable',
+                { code: 'CIVIC_ISSUE_COUNT_UNAVAILABLE' },
+              );
+            }
+            return { issues: data ?? [], total: count, page, limit };
+          }
+        } catch (error: any) {
+          if (isProductionRuntime()) {
+            request.log.error({ err: error?.message }, 'Exception loading civic issues');
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Civic issue data is currently unavailable',
+              { code: 'DATABASE_ERROR' },
+            );
+          }
+        }
       }
-      if (issuesList.length === 0) {
-        issuesList = await civicService.listIssues({ constituencyId, stateCode, category, status });
+      if (isProductionRuntime()) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Civic issue storage is not configured',
+          { code: 'DATABASE_UNAVAILABLE' },
+        );
       }
-      return { issues: issuesList, total: issuesList.length };
+      const issuesList = await civicService.listIssues({
+        constituencyId,
+        stateCode,
+        category,
+        status,
+      });
+      return {
+        issues: issuesList.slice(offset, offset + limit),
+        total: issuesList.length,
+        page,
+        limit,
+      };
     },
   );
 
@@ -1915,7 +2482,17 @@ export async function civicRoutes(app: FastifyInstance) {
     {
       schema: getSentimentSchema,
     },
-    async (request) => {
+    async (request, reply) => {
+      if (isProductionRuntime()) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Constituency civic activity metrics are not backed by durable production analytics yet.',
+          { code: 'CIVIC_ANALYTICS_UNAVAILABLE' },
+        );
+      }
       const { constituencyId } = request.params;
       const sentiment = await civicService.getSentiment(constituencyId);
       return sentiment;
@@ -1924,35 +2501,87 @@ export async function civicRoutes(app: FastifyInstance) {
 
   /** 26. GET /api/v1/civic/groups — list community working groups */
   app.get<{
-    Querystring: { constituencyId: string };
+    Querystring: { constituencyId: string; mandal?: string; ward?: string };
   }>(
     '/api/v1/civic/groups',
     {
       schema: listGroupsSchema,
     },
-    async (request) => {
+    async (request, reply) => {
       const { constituencyId } = request.query;
-      let groupsList: any[] = [];
-      if (isSupabaseConfigured) {
-        try {
-          const { data, error } = await supabase
-            .from('community_groups')
-            .select('*')
-            .eq('constituency_id', constituencyId)
-            .eq('is_active', true);
-          if (!error && data) groupsList = data;
-        } catch {}
+      if (!isSupabaseConfigured) {
+        if (isProductionRuntime()) {
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Community group storage is not configured',
+            { code: 'DATABASE_UNAVAILABLE' },
+          );
+        }
+        const groupsList = await civicService.listGroups(constituencyId, request.query);
+        return { groups: groupsList, total: groupsList.length };
       }
-      if (groupsList.length === 0) {
-        groupsList = await civicService.listGroups(constituencyId);
+
+      try {
+        let query = supabase
+          .from('community_groups')
+          .select('*')
+          .eq('constituency_id', constituencyId)
+          .eq('is_active', true);
+        if (request.query.mandal) query = query.eq('mandal', request.query.mandal);
+        if (request.query.ward) query = query.eq('ward', request.query.ward);
+        const { data, error } = await query.order('created_at', { ascending: false });
+        if (error) {
+          if (isProductionRuntime()) {
+            request.log.error({ err: error.message }, 'Failed to load community groups');
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Community group data is currently unavailable',
+              { code: 'DATABASE_ERROR' },
+            );
+          }
+          request.log.warn(
+            { err: error.message },
+            'Community group query failed; using isolated nonproduction store',
+          );
+          const groupsList = await civicService.listGroups(constituencyId, request.query);
+          return { groups: groupsList, total: groupsList.length };
+        }
+        const groupsList = data ?? [];
+        return { groups: groupsList, total: groupsList.length };
+      } catch (error: any) {
+        if (isProductionRuntime()) {
+          request.log.error({ err: error?.message }, 'Exception loading community groups');
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Community group data is currently unavailable',
+            { code: 'DATABASE_ERROR' },
+          );
+        }
+        const groupsList = await civicService.listGroups(constituencyId, request.query);
+        return { groups: groupsList, total: groupsList.length };
       }
-      return { groups: groupsList, total: groupsList.length };
     },
   );
 
   /** 27. POST /api/v1/civic/groups — create community working group */
   app.post<{
-    Body: { name: string; constituencyId: string; category: string; description?: string };
+    Body: {
+      name: string;
+      constituencyId: string;
+      category: string;
+      description?: string;
+      mandal?: string;
+      ward?: string;
+    };
   }>(
     '/api/v1/civic/groups',
     {
@@ -1981,9 +2610,22 @@ export async function civicRoutes(app: FastifyInstance) {
         const group = await civicService.createGroup(request.body, auth.userId);
         return { success: true, group };
       } catch (err: any) {
-        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
-          code: err.code || 'BAD_REQUEST',
-        });
+        const statusCode =
+          Number(err.statusCode) || (err.code === 'COMMUNITY_GROUP_SLUG_CONFLICT' ? 409 : 400);
+        return sendApiError(
+          reply,
+          request,
+          statusCode,
+          statusCode === 503
+            ? 'Service Unavailable'
+            : statusCode === 409
+              ? 'Conflict'
+              : 'Bad Request',
+          err.message,
+          {
+            code: err.code || 'BAD_REQUEST',
+          },
+        );
       }
     },
   );
@@ -2025,9 +2667,23 @@ export async function civicRoutes(app: FastifyInstance) {
           message: 'Joined community group',
         };
       } catch (err: any) {
-        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
-          code: err.code || 'BAD_REQUEST',
-        });
+        const statusCode = Number(err.statusCode) || 400;
+        return sendApiError(
+          reply,
+          request,
+          statusCode,
+          statusCode === 503
+            ? 'Service Unavailable'
+            : statusCode === 409
+              ? 'Conflict'
+              : statusCode === 404
+                ? 'Not Found'
+                : 'Bad Request',
+          err.message,
+          {
+            code: err.code || 'BAD_REQUEST',
+          },
+        );
       }
     },
   );
@@ -2069,9 +2725,23 @@ export async function civicRoutes(app: FastifyInstance) {
           message: 'Left community group',
         };
       } catch (err: any) {
-        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
-          code: err.code || 'BAD_REQUEST',
-        });
+        const statusCode = Number(err.statusCode) || 400;
+        return sendApiError(
+          reply,
+          request,
+          statusCode,
+          statusCode === 503
+            ? 'Service Unavailable'
+            : statusCode === 409
+              ? 'Conflict'
+              : statusCode === 404
+                ? 'Not Found'
+                : 'Bad Request',
+          err.message,
+          {
+            code: err.code || 'BAD_REQUEST',
+          },
+        );
       }
     },
   );

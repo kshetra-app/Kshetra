@@ -9,10 +9,13 @@ import {
   setTestAuthResolver,
   setTestPageAuthorityResolver,
 } from '../routes/pages';
-import { supabase, setSupabaseConfiguredForTesting } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, setSupabaseConfiguredForTesting } from '../lib/supabase';
+import { RazorpayProvider } from '../providers/razorpayProvider';
 
 describe('Manage & Pages Routes Comprehensive Unit Tests', () => {
   let app: FastifyInstance;
+  let originalRazorpayKey: string | undefined;
+  let originalRazorpaySecret: string | undefined;
 
   beforeAll(async () => {
     resetPagesTestResolvers();
@@ -28,6 +31,27 @@ describe('Manage & Pages Routes Comprehensive Unit Tests', () => {
   });
 
   beforeEach(() => {
+    originalRazorpayKey = process.env.RAZORPAY_KEY_ID;
+    originalRazorpaySecret = process.env.RAZORPAY_KEY_SECRET;
+    process.env.RAZORPAY_KEY_ID = 'rzp_test_pages_suite_key';
+    process.env.RAZORPAY_KEY_SECRET = 'pages_suite_test_secret';
+    jest.spyOn(global, 'fetch').mockImplementation(async (_input, init) => {
+      const requestBody = JSON.parse(String(init?.body || '{}')) as {
+        amount: number;
+        currency: string;
+      };
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          id: 'order_razorpay_pages_suite_test',
+          amount: requestBody.amount,
+          currency: requestBody.currency,
+          status: 'created',
+        }),
+      } as Response;
+    });
+
     resetPagesTestResolvers();
     ENTITLEMENT_CACHE.clear();
     PRO_ORDER_REGISTRY.clear();
@@ -35,17 +59,26 @@ describe('Manage & Pages Routes Comprehensive Unit Tests', () => {
     // Default safe Supabase mock
     jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
       const isOrders = table === 'page_pro_orders';
+      let requestedOrderId: string | undefined;
       const builder: any = {
         select: jest.fn().mockReturnThis(),
-        eq: jest.fn().mockReturnThis(),
+        eq: jest.fn((column: string, value: unknown) => {
+          if (isOrders && column === 'provider_order_id') {
+            requestedOrderId = String(value);
+          }
+          return builder;
+        }),
         order: jest.fn().mockReturnThis(),
-        maybeSingle: jest.fn().mockResolvedValue({
+        maybeSingle: jest.fn().mockImplementation(async () => ({
           data: isOrders
             ? {
-                provider_order_id: 'order_default',
+                provider_order_id: requestedOrderId,
                 page_id: 'b8e974e1-2c6b-4e1b-944a-3fb927977461',
                 user_id: 'user-owner-1',
                 billing_cycle: 'monthly',
+                amount_paise: 49900,
+                currency: 'INR',
+                product: 'pages_pro',
                 status: 'created',
                 provider_payment_id: null,
               }
@@ -58,7 +91,7 @@ describe('Manage & Pages Routes Comprehensive Unit Tests', () => {
                 pro_expires_at: new Date(Date.now() + 86400000).toISOString(),
               },
           error: null,
-        }),
+        })),
         single: jest.fn().mockResolvedValue({
           data: { id: 'b8e974e1-2c6b-4e1b-944a-3fb927977461' },
           error: null,
@@ -72,6 +105,10 @@ describe('Manage & Pages Routes Comprehensive Unit Tests', () => {
 
   afterEach(() => {
     jest.restoreAllMocks();
+    if (originalRazorpayKey === undefined) delete process.env.RAZORPAY_KEY_ID;
+    else process.env.RAZORPAY_KEY_ID = originalRazorpayKey;
+    if (originalRazorpaySecret === undefined) delete process.env.RAZORPAY_KEY_SECRET;
+    else process.env.RAZORPAY_KEY_SECRET = originalRazorpaySecret;
     setSupabaseConfiguredForTesting(true);
     resetPagesTestResolvers();
   });
@@ -875,18 +912,57 @@ describe('Manage & Pages Routes Comprehensive Unit Tests', () => {
       process.env.NODE_ENV = 'production';
       process.env.RAZORPAY_KEY_SECRET = 'test_secret_for_rpc_error';
       try {
+        const orderId = 'order_rpc_err';
+        const paymentId = 'pay_rpc_err';
         jest.spyOn(supabase.auth, 'getUser').mockResolvedValueOnce({
           data: { user: { id: 'user-owner-1' } as any },
           error: null,
         });
+
+        jest.spyOn(RazorpayProvider.prototype, 'verifyPaymentSignature').mockResolvedValueOnce({
+          valid: true,
+          orderId,
+          paymentId,
+        });
+
+        jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+          if (table === 'page_pro_orders') {
+            return {
+              select: () => ({
+                eq: () => ({
+                  maybeSingle: async () => ({
+                    data: {
+                      provider_order_id: orderId,
+                      page_id: pageId,
+                      user_id: 'user-owner-1',
+                      product: 'pages_pro',
+                      billing_cycle: 'monthly',
+                      amount_paise: 49900,
+                      currency: 'INR',
+                      status: 'created',
+                    },
+                    error: null,
+                  }),
+                }),
+              }),
+            } as any;
+          }
+          const data =
+            table === 'pages'
+              ? { id: pageId, owner_id: 'user-owner-1', role: 'politician' }
+              : { role: 'politician' };
+          return {
+            select: () => ({
+              eq: () => ({ maybeSingle: async () => ({ data, error: null }) }),
+            }),
+          } as any;
+        }) as any);
 
         jest.spyOn(supabase, 'rpc').mockResolvedValueOnce({
           data: null,
           error: { message: 'Database RPC execution error' },
         } as any);
 
-        const orderId = 'order_rpc_err';
-        const paymentId = 'pay_rpc_err';
         const validSig = crypto
           .createHmac('sha256', 'test_secret_for_rpc_error')
           .update(`${orderId}|${paymentId}`)
@@ -1052,6 +1128,7 @@ describe('Manage & Pages Routes Comprehensive Unit Tests', () => {
 
     it('handles verification error conditions: unauthenticated, notFound, forbidden, invalid signature, config error', async () => {
       const pageId = 'b8e974e1-2c6b-4e1b-944a-3fb927977461';
+      const previousConfigured = isSupabaseConfigured;
 
       // 1. Unauthenticated
       const resUnauth = await app.inject({
@@ -1121,11 +1198,34 @@ describe('Manage & Pages Routes Comprehensive Unit Tests', () => {
       expect(resForbidden.statusCode).toBe(403);
 
       // 4. Invalid signature (when sandboxBypass is false and RAZORPAY_KEY_SECRET is set)
-      process.env.RAZORPAY_KEY_SECRET = 'secret_test_key';
-      jest.spyOn(supabase.auth, 'getUser').mockResolvedValueOnce({
-        data: { user: { id: 'user-owner-1' } as any },
-        error: null,
+      setSupabaseConfiguredForTesting(false);
+      setTestAuthResolver(async () => ({ userId: 'user-owner-1', role: 'politician' }));
+      setTestPageAuthorityResolver(async (auth, pId) => ({
+        authorized: true,
+        notFound: false,
+        page: { id: pId, owner_id: auth.userId },
+      }));
+      PRO_ORDER_REGISTRY.set('ord_sig_fail', {
+        orderId: 'ord_sig_fail',
+        pageId,
+        userId: 'user-owner-1',
+        billingCycle: 'monthly',
+        amount: 49900,
+        product: 'pages_pro',
+        createdAt: Date.now(),
+        status: 'created',
       });
+      PRO_ORDER_REGISTRY.set('ord_cfg_fail', {
+        orderId: 'ord_cfg_fail',
+        pageId,
+        userId: 'user-owner-1',
+        billingCycle: 'monthly',
+        amount: 49900,
+        product: 'pages_pro',
+        createdAt: Date.now(),
+        status: 'created',
+      });
+      process.env.RAZORPAY_KEY_SECRET = 'secret_test_key';
       const resBadSig = await app.inject({
         method: 'POST',
         url: `/api/v1/pages/${pageId}/pro/verify`,
@@ -1142,10 +1242,6 @@ describe('Manage & Pages Routes Comprehensive Unit Tests', () => {
 
       // 5. Config error (when sandboxBypass is false and RAZORPAY_KEY_SECRET is unset)
       delete process.env.RAZORPAY_KEY_SECRET;
-      jest.spyOn(supabase.auth, 'getUser').mockResolvedValueOnce({
-        data: { user: { id: 'user-owner-1' } as any },
-        error: null,
-      });
       const resNoSecret = await app.inject({
         method: 'POST',
         url: `/api/v1/pages/${pageId}/pro/verify`,
@@ -1157,8 +1253,9 @@ describe('Manage & Pages Routes Comprehensive Unit Tests', () => {
           sandboxBypass: false,
         },
       });
-      expect(resNoSecret.statusCode).toBe(500);
+      expect(resNoSecret.statusCode).toBe(503);
       expect(JSON.parse(resNoSecret.payload).code).toBe('PROVIDER_CONFIG_ERROR');
+      setSupabaseConfiguredForTesting(previousConfigured);
     });
 
     it('validates in-memory PRO_ORDER_REGISTRY fallback matching rules', async () => {

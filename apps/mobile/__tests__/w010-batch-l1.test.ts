@@ -79,12 +79,10 @@ describe('W010 BATCH L1 — DEF-001 & DEF-007 VERIFICATION', () => {
       expect(isValidUuid(undefined)).toBe(false);
     });
 
-    it('uploadShort rejects non-UUID uploadedBy with { id: null, success: false }', async () => {
+    it('uploadShort reports an unavailable backend without inventing a persisted short ID', async () => {
       const res = await uploadShort({
         title: 'Test Short',
         videoUrl: 'https://youtube.com/embed/test',
-        channelName: 'Test Channel',
-        uploadedBy: 'invalid-user-id',
         stateCode: 'TS',
         duration: 30,
       });
@@ -113,12 +111,13 @@ describe('W010 BATCH L1 — DEF-001 & DEF-007 VERIFICATION', () => {
       expect(res).toBe(false);
     });
 
-    it('addShortComment rejects non-UUID shortId or userId with { id: null, success: false }', async () => {
-      const res1 = await addShortComment('short-ts-001', validUuid, 'Citizen', 'Great video!');
-      expect(res1).toEqual({ id: null, success: false });
-
-      const res2 = await addShortComment(validUuid, 'local-user-999', 'Citizen', 'Great video!');
-      expect(res2).toEqual({ id: null, success: false });
+    it('addShortComment rejects an invalid short ID or empty content without reporting a false save', async () => {
+      await expect(addShortComment('short-ts-001', 'Great video!')).rejects.toThrow(
+        'A valid published short is required to comment.',
+      );
+      await expect(addShortComment(validUuid, '   ')).rejects.toThrow(
+        'Comments must be between 1 and 500 characters.',
+      );
     });
   });
 });

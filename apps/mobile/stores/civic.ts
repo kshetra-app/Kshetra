@@ -17,7 +17,56 @@ import type {
 import { MILESTONE_THRESHOLDS, HEADLINE_PROMOTION_THRESHOLD } from '../lib/civicTypes';
 import * as dataService from '../lib/supabaseDataService';
 import { enqueue, type SyncStatus, retryFailedOp } from '../lib/offlineSync';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 import { useAuthStore } from './auth';
+import { apiClient } from '../lib/api';
+
+let issueLoadRequestSequence = 0;
+
+export function getCivicIssueScopeKey(
+  scope: CivicScope,
+  stateCode: string,
+  constituencyId?: string,
+): string {
+  if (scope === 'national') return 'national';
+  if (scope === 'state') return `state:${stateCode}`;
+  return constituencyId ? `constituency:${constituencyId}` : 'constituency:unselected';
+}
+
+function mapServerIssue(issue: Record<string, unknown>): CivicIssue {
+  const value = (snake: string, camel: string) => issue[snake] ?? issue[camel];
+  return {
+    id: String(issue.id),
+    reporterId: String(value('reporter_id', 'reporterId') ?? 'anonymous'),
+    reporterName: String(value('reporter_name', 'reporterName') ?? 'Anonymous'),
+    constituencyId: value('constituency_id', 'constituencyId') as string | undefined,
+    stateCode: String(value('state_code', 'stateCode') ?? ''),
+    title: String(issue.title ?? ''),
+    description: (issue.description as string | null | undefined) ?? undefined,
+    category: String(issue.category) as IssueCategory,
+    severity: String(issue.severity ?? 'medium') as CivicIssue['severity'],
+    status: String(issue.status) as IssueStatus,
+    upvoteCount: Number(value('upvote_count', 'upvoteCount') ?? 0),
+    commentCount: Number(value('comment_count', 'commentCount') ?? 0),
+    followCount: Number(value('follow_count', 'followCount') ?? 0),
+    evidenceCount: Number(value('evidence_count', 'evidenceCount') ?? 0),
+    disputeCount: Number(value('dispute_count', 'disputeCount') ?? 0),
+    mediaUrls: (value('media_urls', 'mediaUrls') as string[] | null | undefined) ?? [],
+    mlaTagged: Boolean(value('mla_tagged', 'mlaTagged') ?? false),
+    mlaResponded: Boolean(value('mla_responded', 'mlaResponded') ?? false),
+    mlaResponseNote: (value('mla_response_note', 'mlaResponseNote') as string | null | undefined) ?? undefined,
+    resolutionNote: (value('resolution_note', 'resolutionNote') as string | null | undefined) ?? undefined,
+    resolvedAt: (value('resolved_at', 'resolvedAt') as string | null | undefined) ?? undefined,
+    resolvedBy: (value('resolved_by', 'resolvedBy') as string | null | undefined) ?? undefined,
+    isVerifiedReport: Boolean(value('is_verified_report', 'isVerifiedReport') ?? false),
+    latitude: value('latitude', 'latitude') as number | undefined,
+    longitude: value('longitude', 'longitude') as number | undefined,
+    createdAt: String(value('created_at', 'createdAt') ?? ''),
+    updatedAt: String(value('updated_at', 'updatedAt') ?? ''),
+    userUpvoted: Boolean(value('user_upvoted', 'userUpvoted') ?? false),
+    userFollowing: Boolean(value('user_following', 'userFollowing') ?? false),
+  };
+}
 
 // ─── Seed Issues (multi-state, full lifecycle showcase) ───
 
@@ -495,12 +544,12 @@ const SEED_HEADLINES: Headline[] = [
   {
     id: 'hl-3',
     stateCode: 'TS',
-    title: 'Anti-Defection Law: Supreme Court to hear Telangana BRS petitions next week',
-    summary: '10 BRS-to-INC defection cases pending. Court will examine Speaker\'s delayed disqualification proceedings.',
+    title: 'Supreme Court upholds Danam Nagender disqualification',
+    summary: 'Danam Nagender was disqualified from Khairatabad effective 23 April 2024. The Supreme Court upheld the Telangana High Court ruling on 24 September 2026; challenges involving other members continued separately.',
     sourceName: 'Indian Express',
-    sourceUrl: 'https://indianexpress.com',
+    sourceUrl: 'https://indianexpress.com/article/legal-news/supreme-court-upholds-telangana-mla-danam-nagender-disqualification-10892090/',
     category: 'law_and_order',
-    publishedAt: seedDate(1, 10),
+    publishedAt: '2026-09-24T12:00:00.000Z',
   },
   {
     id: 'hl-4',
@@ -691,6 +740,12 @@ const SEED_STATUS_HISTORY: IssueStatusChange[] = [
 
 interface CivicState {
   issues: CivicIssue[];
+  issueLoadStatus: 'idle' | 'loading' | 'loading_more' | 'loaded' | 'error';
+  issueLoadScopeKey: string | null;
+  issueLoadTotal: number | null;
+  issueLoadPage: number;
+  issueLoadLimit: number;
+  issueLoadMoreError: boolean;
   headlines: Headline[];
   sentiment: ConstituencySentiment[];
   comments: IssueComment[];
@@ -730,17 +785,25 @@ interface CivicState {
   disputeResolution: (issueId: string, reason?: string) => void;
   updateIssueStatus: (issueId: string, newStatus: IssueStatus, note?: string, changedByName?: string) => Promise<boolean>;
   shareIssue: (issueId: string) => string; // returns share text
-  hydrateFromServer: (serverIssues: any[]) => void;
+  loadIssuesForScope: (scope: CivicScope, stateCode: string, constituencyId?: string, force?: boolean) => Promise<void>;
+  loadMoreIssuesForScope: (scope: CivicScope, stateCode: string, constituencyId?: string) => Promise<void>;
+  hydrateFromServer: (serverIssues: Record<string, unknown>[]) => void;
   reconcileIssueSync: (clientToken: string, status: SyncStatus, serverId?: string | null) => void;
   retryIssue: (clientToken: string) => Promise<boolean>;
 }
 
 export const useCivicStore = create<CivicState>()((set, get) => ({
-  issues: SEED_ISSUES,
-  headlines: SEED_HEADLINES,
-  sentiment: SEED_SENTIMENT,
-  comments: SEED_COMMENTS,
-  statusHistory: SEED_STATUS_HISTORY,
+  issues: IS_LIVE_ENVIRONMENT ? [] : SEED_ISSUES,
+  issueLoadStatus: 'idle',
+  issueLoadScopeKey: null,
+  issueLoadTotal: null,
+  issueLoadPage: 0,
+  issueLoadLimit: 50,
+  issueLoadMoreError: false,
+  headlines: IS_LIVE_ENVIRONMENT ? [] : SEED_HEADLINES,
+  sentiment: IS_LIVE_ENVIRONMENT ? [] : SEED_SENTIMENT,
+  comments: IS_LIVE_ENVIRONMENT ? [] : SEED_COMMENTS,
+  statusHistory: IS_LIVE_ENVIRONMENT ? [] : SEED_STATUS_HISTORY,
   issueFilter: 'all',
   statusFilter: 'all',
   stateFilter: null,
@@ -1068,36 +1131,97 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
     return [...get().sentiment].sort((a, b) => a.score - b.score);
   },
 
+  loadIssuesForScope: async (scope, stateCode, constituencyId, force = false) => {
+    if (!IS_LIVE_ENVIRONMENT || (scope === 'constituency' && !constituencyId)) return;
+
+    const scopeKey = getCivicIssueScopeKey(scope, stateCode, constituencyId);
+    const current = get();
+    if (!force && current.issueLoadScopeKey === scopeKey &&
+      (current.issueLoadStatus === 'loading' || current.issueLoadStatus === 'loaded')) return;
+
+    const requestSequence = ++issueLoadRequestSequence;
+    const limit = 50;
+    set({
+      issueLoadStatus: 'loading',
+      issueLoadScopeKey: scopeKey,
+      issueLoadTotal: null,
+      issueLoadPage: 0,
+      issueLoadLimit: limit,
+      issueLoadMoreError: false,
+    });
+
+    try {
+      const result = await apiClient.civic.listIssues({
+        scope,
+        stateCode,
+        constituencyId,
+        page: 1,
+        limit,
+      });
+      if (requestSequence !== issueLoadRequestSequence) return;
+      get().hydrateFromServer(result.issues);
+      set({
+        issueLoadStatus: 'loaded',
+        issueLoadScopeKey: scopeKey,
+        issueLoadTotal: result.total,
+        issueLoadPage: result.page,
+        issueLoadLimit: result.limit,
+      });
+    } catch (error) {
+      if (requestSequence !== issueLoadRequestSequence) return;
+      set({
+        issueLoadStatus: 'error',
+        issueLoadScopeKey: scopeKey,
+        issueLoadTotal: null,
+        issueLoadPage: 0,
+      });
+      throw error;
+    }
+  },
+
+  loadMoreIssuesForScope: async (scope, stateCode, constituencyId) => {
+    const current = get();
+    if (!IS_LIVE_ENVIRONMENT || current.issueLoadStatus !== 'loaded' || current.issueLoadTotal === null) return;
+    if (current.issueLoadScopeKey !== getCivicIssueScopeKey(scope, stateCode, constituencyId)) return;
+    if (current.issueLoadPage * current.issueLoadLimit >= current.issueLoadTotal) return;
+
+    const requestSequence = ++issueLoadRequestSequence;
+    const nextPage = current.issueLoadPage + 1;
+    set({ issueLoadStatus: 'loading_more', issueLoadMoreError: false });
+    try {
+      const result = await apiClient.civic.listIssues({
+        scope,
+        stateCode,
+        constituencyId,
+        page: nextPage,
+        limit: current.issueLoadLimit,
+      });
+      if (requestSequence !== issueLoadRequestSequence) return;
+      set((state) => {
+        const merged = new Map(state.issues.map((issue) => [issue.id, issue]));
+        for (const row of result.issues) merged.set(String(row.id), mapServerIssue(row));
+        return {
+          issues: Array.from(merged.values()),
+          issueLoadStatus: 'loaded',
+          issueLoadTotal: result.total,
+          issueLoadPage: result.page,
+          issueLoadMoreError: false,
+        };
+      });
+    } catch (error) {
+      if (requestSequence !== issueLoadRequestSequence) return;
+      set({ issueLoadStatus: 'loaded', issueLoadMoreError: true });
+      throw error;
+    }
+  },
+
   hydrateFromServer: (serverIssues) => {
-    if (!serverIssues || serverIssues.length === 0) return;
-    const serverIds = new Set(serverIssues.map((i: any) => i.id));
-    const localOnly = SEED_ISSUES.filter((i) => !serverIds.has(i.id));
-    const transformed: CivicIssue[] = serverIssues.map((i: any) => ({
-      id: i.id,
-      reporterId: i.reporter_id,
-      reporterName: i.reporter_name ?? 'Anonymous',
-      constituencyId: i.constituency_id,
-      stateCode: i.state_code,
-      title: i.title,
-      description: i.description,
-      category: i.category as IssueCategory,
-      severity: i.severity,
-      status: i.status as IssueStatus,
-      upvoteCount: i.upvote_count ?? 0,
-      commentCount: i.comment_count ?? 0,
-      followCount: i.follow_count ?? 0,
-      evidenceCount: i.evidence_count ?? 0,
-      disputeCount: i.dispute_count ?? 0,
-      mediaUrls: i.media_urls ?? [],
-      mlaTagged: i.mla_tagged ?? false,
-      mlaResponded: i.mla_responded ?? false,
-      isVerifiedReport: i.is_verified_report ?? false,
-      createdAt: i.created_at,
-      updatedAt: i.updated_at,
-      resolvedAt: i.resolved_at,
-      userUpvoted: i.user_upvoted ?? false,
-      userFollowing: i.user_following ?? false,
-    }));
+    if (!serverIssues) return;
+    const serverIds = new Set(serverIssues.map((i) => i.id));
+    const localOnly = get().issues.filter((i) =>
+      !serverIds.has(i.id) && (!IS_LIVE_ENVIRONMENT || (i.syncStatus && i.syncStatus !== 'SYNCED')),
+    );
+    const transformed: CivicIssue[] = serverIssues.map(mapServerIssue);
     set({ issues: [...transformed, ...localOnly] });
   },
 

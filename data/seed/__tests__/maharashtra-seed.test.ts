@@ -2,7 +2,7 @@
  * Tests for Maharashtra seed data files.
  */
 import { MH_ELECTION_HISTORY, getMHElectionByYear, getMHPartyTrend } from '../maharashtra-election-history';
-import { MAHARASHTRA_2019_RESULTS, getMH2019Result, getMH2019ResultsByParty } from '../maharashtra-historical-results';
+import { MAHARASHTRA_2019_RESULTS, getMH2019PartySeatCount, getMH2019Result, getMH2019ResultsByParty } from '../maharashtra-historical-results';
 import { MH_MLA_PROFILES, getMHMLAProfile, getMHMLAsByParty, getMHFemaleMLAs } from '../maharashtra-mla-profiles';
 import { MH_DEMOGRAPHICS, getMHConstituencyDemographics } from '../maharashtra-demographics';
 import { MH_POLITICAL_LEDGER, computeMHPartyStrength, auditMHLedger } from '../maharashtra-political-timeline';
@@ -60,10 +60,20 @@ describe('MH Historical Results (2019)', () => {
     expect(new Set(acNos).size).toBe(288);
   });
 
-  it('getMH2019Result should find a constituency', () => {
-    const r = getMH2019Result(170);
+  it('2019 results use official constituency numbers and find Fadnavis at Nagpur South West (AC 52)', () => {
+    const r = getMH2019Result(52);
     expect(r).toBeDefined();
     expect(r!.winner).toContain('Fadnavis');
+    expect(r!.name).toBe('Nagpur South West');
+  });
+
+  it('2019 party seat totals match the source results', () => {
+    const tally = getMH2019PartySeatCount();
+    expect(tally.BJP).toBe(105);
+    expect(tally.SHS).toBe(56);
+    expect(tally.NCP).toBe(54);
+    expect(tally.INC).toBe(44);
+    expect(Object.values(tally).reduce((sum, seats) => sum + seats, 0)).toBe(288);
   });
 
   it('getMH2019ResultsByParty should return BJP seats', () => {
@@ -87,7 +97,7 @@ describe('MH MLA Profiles', () => {
     }
   });
 
-  it('getMHMLAProfile should find Fadnavis', () => {
+  it('getMHMLAProfile should find Fadnavis at Nagpur South West (AC 52)', () => {
     const mla = getMHMLAProfile(52);
     expect(mla).toBeDefined();
     expect(mla!.name).toContain('Fadnavis');

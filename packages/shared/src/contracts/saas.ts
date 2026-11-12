@@ -167,8 +167,6 @@ export interface SaasBillingVerifyRequest {
   orderId: string;
   paymentId: string;
   signature: string;
-  targetTier: 'pro' | 'enterprise';
-  billingCycle?: 'monthly' | 'annual';
 }
 
 export interface SaasBillingVerifyResponse {

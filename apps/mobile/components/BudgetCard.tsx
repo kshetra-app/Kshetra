@@ -11,6 +11,12 @@ interface BudgetCardProps {
 
 export default function BudgetCard({ summary, onPress }: BudgetCardProps) {
   const { t } = useTranslation();
+  const unavailable = t('common.dataUnavailable');
+  const utilizationColor = summary.overallUtilization === null
+    ? '#6B7280'
+    : getUtilizationColor(summary.overallUtilization);
+  const formatOptionalCrores = (value: number | null) => value === null ? unavailable : formatCrores(value);
+
   return (
     <Pressable style={styles.card} onPress={onPress}>
       <View style={styles.header}>
@@ -18,8 +24,10 @@ export default function BudgetCard({ summary, onPress }: BudgetCardProps) {
           <Text style={styles.title}>{t('civicMetrics.stateBudget')} {summary.fiscalYear}</Text>
           <Text style={styles.subtitle}>{summary.stateCode} · {t('civicMetrics.totalBudget')}: {formatCrores(summary.totalBudgetCrores)}</Text>
         </View>
-        <View style={[styles.utilizationBadge, { backgroundColor: getUtilizationColor(summary.overallUtilization) + '20' }]}>
-          <Text style={[styles.utilizationText, { color: getUtilizationColor(summary.overallUtilization) }]}>{summary.overallUtilization}%</Text>
+        <View style={[styles.utilizationBadge, { backgroundColor: utilizationColor + '20' }]}>
+          <Text style={[styles.utilizationText, { color: utilizationColor }]}>
+            {summary.overallUtilization === null ? unavailable : `${summary.overallUtilization}%`}
+          </Text>
           <Text style={styles.utilizationLabel}>{t('civicMetrics.utilized')}</Text>
         </View>
       </View>
@@ -27,6 +35,7 @@ export default function BudgetCard({ summary, onPress }: BudgetCardProps) {
       {/* Category breakdown */}
       {summary.categoryBreakdown.slice(0, 5).map((cat) => {
         const config = BUDGET_CATEGORY_CONFIG[cat.category as keyof typeof BUDGET_CATEGORY_CONFIG];
+        const categoryColor = cat.utilization === null ? '#6B7280' : getUtilizationColor(cat.utilization);
         return (
           <View key={cat.category} style={styles.categoryRow}>
             <View style={styles.categoryInfo}>
@@ -34,9 +43,14 @@ export default function BudgetCard({ summary, onPress }: BudgetCardProps) {
               <Text style={styles.categoryName}>{config?.label || cat.category}</Text>
             </View>
             <View style={styles.categoryBar}>
-              <View style={[styles.categoryBarFill, { width: `${cat.utilization}%`, backgroundColor: getUtilizationColor(cat.utilization) }]} />
+              {cat.utilization !== null && (
+                <View style={[styles.categoryBarFill, {
+                  width: `${Math.max(0, Math.min(100, cat.utilization))}%`,
+                  backgroundColor: categoryColor,
+                }]} />
+              )}
             </View>
-            <Text style={styles.categoryAmount}>{formatCrores(cat.allocated)}</Text>
+            <Text style={styles.categoryAmount}>{formatOptionalCrores(cat.allocated)}</Text>
           </View>
         );
       })}
@@ -45,15 +59,23 @@ export default function BudgetCard({ summary, onPress }: BudgetCardProps) {
       <View style={styles.fiscalRow}>
         <View style={styles.fiscal}>
           <Text style={styles.fiscalLabel}>{t('civicMetrics.fiscalDeficit')}</Text>
-          <Text style={[styles.fiscalValue, { color: '#EF4444' }]}>{formatCrores(summary.fiscalDeficitCrores)}</Text>
+          <Text style={[styles.fiscalValue, { color: summary.fiscalDeficitCrores === null ? '#6B7280' : '#EF4444' }]}>
+            {formatOptionalCrores(summary.fiscalDeficitCrores)}
+          </Text>
         </View>
         <View style={styles.fiscal}>
           <Text style={styles.fiscalLabel}>{t('civicMetrics.revenueDeficit')}</Text>
-          <Text style={[styles.fiscalValue, { color: '#F59E0B' }]}>{formatCrores(summary.revenueDeficitCrores)}</Text>
+          <Text style={[styles.fiscalValue, { color: summary.revenueDeficitCrores === null ? '#6B7280' : '#F59E0B' }]}>
+            {formatOptionalCrores(summary.revenueDeficitCrores)}
+          </Text>
         </View>
         <View style={styles.fiscal}>
           <Text style={styles.fiscalLabel}>{t('civicMetrics.debtGDP')}</Text>
-          <Text style={[styles.fiscalValue, { color: summary.debtToGDPRatio > 25 ? '#EF4444' : '#10B981' }]}>{summary.debtToGDPRatio}%</Text>
+          <Text style={[styles.fiscalValue, {
+            color: summary.debtToGDPRatio === null ? '#6B7280' : summary.debtToGDPRatio > 25 ? '#EF4444' : '#10B981',
+          }]}>
+            {summary.debtToGDPRatio === null ? unavailable : `${summary.debtToGDPRatio}%`}
+          </Text>
         </View>
       </View>
     </Pressable>

@@ -42,12 +42,14 @@ import { PoliticianEndpoint } from './endpoints/politician';
 import { SpatialEndpoint } from './endpoints/spatial';
 import { ConstituenciesEndpoint } from './endpoints/constituencies';
 import { ElectionsEndpoint } from './endpoints/elections';
+import { DelimitationEndpoint } from './endpoints/delimitation';
 import { FeedEndpoint } from './endpoints/feed';
 import { PromisesEndpoint } from './endpoints/promises';
 import { ShortsEndpoint } from './endpoints/shorts';
 import { AspirantEndpoint } from './endpoints/aspirant';
 import { UsersEndpoint } from './endpoints/users';
 import { NotificationsEndpoint } from './endpoints/notifications';
+import { AIEndpoint } from './endpoints/ai';
 
 export class ApiClient {
   readonly baseUrl: string;
@@ -64,12 +66,14 @@ export class ApiClient {
   readonly spatial: SpatialEndpoint;
   readonly constituencies: ConstituenciesEndpoint;
   readonly elections: ElectionsEndpoint;
+  readonly delimitation: DelimitationEndpoint;
   readonly feed: FeedEndpoint;
   readonly promises: PromisesEndpoint;
   readonly shorts: ShortsEndpoint;
   readonly aspirant: AspirantEndpoint;
   readonly users: UsersEndpoint;
   readonly notifications: NotificationsEndpoint;
+  readonly ai: AIEndpoint;
 
   constructor(config: ApiClientConfig) {
     this.baseUrl = config.baseUrl.replace(/\/+$/, '');
@@ -86,12 +90,14 @@ export class ApiClient {
     this.spatial = new SpatialEndpoint(this);
     this.constituencies = new ConstituenciesEndpoint(this);
     this.elections = new ElectionsEndpoint(this);
+    this.delimitation = new DelimitationEndpoint(this);
     this.feed = new FeedEndpoint(this);
     this.promises = new PromisesEndpoint(this);
     this.shorts = new ShortsEndpoint(this);
     this.aspirant = new AspirantEndpoint(this);
     this.users = new UsersEndpoint(this);
     this.notifications = new NotificationsEndpoint(this);
+    this.ai = new AIEndpoint(this);
   }
 
   /**

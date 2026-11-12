@@ -177,6 +177,24 @@ CREATE POLICY "Service role full access on mandal_constituency_map" ON public.ma
 DROP POLICY IF EXISTS "Service role full access on polling_booths" ON public.polling_booths;
 CREATE POLICY "Service role full access on polling_booths" ON public.polling_booths FOR ALL TO service_role USING (true) WITH CHECK (true);
 
+-- Security-definer boundary functions need row visibility to enforce the
+-- mandal/version invariants. Column-level GRANTs still limit their updates.
+DROP POLICY IF EXISTS "Boundary definer read mandals" ON public.mandals;
+CREATE POLICY "Boundary definer read mandals"
+  ON public.mandals FOR SELECT TO panin_boundary_definer USING (true);
+
+DROP POLICY IF EXISTS "Boundary definer update mandals" ON public.mandals;
+CREATE POLICY "Boundary definer update mandals"
+  ON public.mandals FOR UPDATE TO panin_boundary_definer USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Boundary definer read mandal versions" ON public.mandal_versions;
+CREATE POLICY "Boundary definer read mandal versions"
+  ON public.mandal_versions FOR SELECT TO panin_boundary_definer USING (true);
+
+DROP POLICY IF EXISTS "Boundary definer update mandal versions" ON public.mandal_versions;
+CREATE POLICY "Boundary definer update mandal versions"
+  ON public.mandal_versions FOR UPDATE TO panin_boundary_definer USING (true) WITH CHECK (true);
+
 -- ─── 6. BOUNDED AUTHORITATIVE SEED RECORDS ─────────────────────────────────────
 
 -- 6.1 Seed Authoritative Mandals for Kumuram Bheem Asifabad & Mancherial Districts

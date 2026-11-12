@@ -13,8 +13,13 @@ interface ManifestoCardProps {
 function ManifestoItemRow({ item, onVote }: { item: ManifestoItem; onVote?: (support: boolean) => void }) {
   const { t } = useTranslation();
   const catConfig = MANIFESTO_CATEGORY_CONFIG[item.category];
-  const totalVotes = item.supportVotes + item.opposeVotes;
-  const supportPct = totalVotes > 0 ? Math.round((item.supportVotes / totalVotes) * 100) : 0;
+  const voteCounts = item.supportVotes !== null && item.opposeVotes !== null
+    ? { support: item.supportVotes, oppose: item.opposeVotes }
+    : null;
+  const totalVotes = voteCounts ? voteCounts.support + voteCounts.oppose : 0;
+  const supportPct = voteCounts && totalVotes > 0
+    ? Math.round((voteCounts.support / totalVotes) * 100)
+    : 0;
 
   return (
     <View style={styles.itemCard}>
@@ -34,23 +39,24 @@ function ManifestoItemRow({ item, onVote }: { item: ManifestoItem; onVote?: (sup
         {item.budgetEstimate && <Text style={styles.metaText}>💰 {item.budgetEstimate}</Text>}
       </View>
 
-      {/* Vote bar */}
-      <View style={styles.voteSection}>
-        <View style={styles.voteBar}>
-          <View style={[styles.voteBarFill, { width: `${supportPct}%`, backgroundColor: '#10B981' }]} />
+      {voteCounts && (
+        <View style={styles.voteSection}>
+          <View style={styles.voteBar}>
+            <View style={[styles.voteBarFill, { width: `${supportPct}%`, backgroundColor: '#10B981' }]} />
+          </View>
+          <View style={styles.voteRow}>
+            <Pressable style={styles.voteButton} onPress={() => onVote?.(true)}>
+              <Ionicons name="thumbs-up" size={14} color="#10B981" />
+              <Text style={[styles.voteCount, { color: '#10B981' }]}>{voteCounts.support}</Text>
+            </Pressable>
+            <Text style={styles.votePct}>{supportPct}% {t('civicMetrics.support')}</Text>
+            <Pressable style={styles.voteButton} onPress={() => onVote?.(false)}>
+              <Ionicons name="thumbs-down" size={14} color="#EF4444" />
+              <Text style={[styles.voteCount, { color: '#EF4444' }]}>{voteCounts.oppose}</Text>
+            </Pressable>
+          </View>
         </View>
-        <View style={styles.voteRow}>
-          <Pressable style={styles.voteButton} onPress={() => onVote?.(true)}>
-            <Ionicons name="thumbs-up" size={14} color="#10B981" />
-            <Text style={[styles.voteCount, { color: '#10B981' }]}>{item.supportVotes}</Text>
-          </Pressable>
-          <Text style={styles.votePct}>{supportPct}% {t('civicMetrics.support')}</Text>
-          <Pressable style={styles.voteButton} onPress={() => onVote?.(false)}>
-            <Ionicons name="thumbs-down" size={14} color="#EF4444" />
-            <Text style={[styles.voteCount, { color: '#EF4444' }]}>{item.opposeVotes}</Text>
-          </Pressable>
-        </View>
-      </View>
+      )}
     </View>
   );
 }
@@ -64,10 +70,12 @@ export default function ManifestoCard({ manifesto, onPress, onVoteItem }: Manife
           <Text style={styles.title}>{manifesto.title}</Text>
           <Text style={styles.author}>{manifesto.politicianName}{manifesto.party ? ` · ${manifesto.party}` : ''}</Text>
         </View>
-        <View style={styles.statsCol}>
-          <Text style={styles.statValue}>{manifesto.views}</Text>
-          <Text style={styles.statLabel}>{t('politicianPortal.views')}</Text>
-        </View>
+        {manifesto.views !== null && (
+          <View style={styles.statsCol}>
+            <Text style={styles.statValue}>{manifesto.views}</Text>
+            <Text style={styles.statLabel}>{t('politicianPortal.views')}</Text>
+          </View>
+        )}
       </View>
 
       {manifesto.preamble ? <Text style={styles.preamble} numberOfLines={3}>{manifesto.preamble}</Text> : null}

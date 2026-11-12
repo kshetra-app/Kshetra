@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useOutreachStore } from '../stores/outreach';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 import {
   CHANNELS,
   creditsPerRecipient,
@@ -69,7 +70,7 @@ function Composer({ onSent }: { onSent: () => void }) {
 
   const { t } = useTranslation();
   const [channel, setChannel] = useState<OutreachChannel>('whatsapp');
-  const [segment, setSegment] = useState<AudienceSegment>(segments[0]);
+  const [segment, setSegment] = useState<AudienceSegment | null>(segments[0] ?? null);
   const [templateId, setTemplateId] = useState<string | undefined>();
   const [body, setBody] = useState('');
   const [name, setName] = useState('');
@@ -80,7 +81,7 @@ function Composer({ onSent }: { onSent: () => void }) {
   const activeChannel = CHANNELS.find((c) => c.key === channel)!;
 
   const perRecipient = creditsPerRecipient(channel, body || ' ');
-  const estCredits = perRecipient * segment.size;
+  const estCredits = perRecipient * (segment?.size ?? 0);
   const smsSegments = channel === 'sms' ? Math.max(1, Math.ceil((body.length || 1) / 160)) : 0;
 
   const variables = channelTemplates.find((t) => t.id === templateId)?.variables ?? [];
@@ -96,9 +97,10 @@ function Composer({ onSent }: { onSent: () => void }) {
     return d.toISOString();
   };
 
-  const canSend = body.trim().length > 0 && !!segment && !sending;
+  const canSend = body.trim().length > 0 && !!segment && !sending && !IS_LIVE_ENVIRONMENT;
 
   const doSend = () => {
+    if (!segment) return;
     const finalName = name.trim() || `${activeChannel.label} to ${segment.name}`;
     const when = scheduledAt();
     Alert.alert(
@@ -110,10 +112,18 @@ function Composer({ onSent }: { onSent: () => void }) {
           text: when ? t('outreachPanel.schedule') : t('outreachPanel.sendNow'),
           onPress: async () => {
             setSending(true);
-            await createBroadcast({ name: finalName, channel, segment, templateId, body, scheduledAt: when });
-            setSending(false);
-            setBody(''); setName(''); setTemplateId(undefined);
-            onSent();
+            try {
+              await createBroadcast({ name: finalName, channel, segment, templateId, body, scheduledAt: when });
+              setBody(''); setName(''); setTemplateId(undefined);
+              onSent();
+            } catch (error) {
+              Alert.alert(
+                'Broadcast unavailable',
+                error instanceof Error ? error.message : 'The broadcast could not be created.',
+              );
+            } finally {
+              setSending(false);
+            }
           },
         },
       ],
@@ -126,7 +136,9 @@ function Composer({ onSent }: { onSent: () => void }) {
       <View style={styles.notice}>
         <Ionicons name="shield-checkmark" size={16} color="#F59E0B" />
         <Text style={styles.noticeText}>
-          Simulation mode. Real delivery needs provider setup{channel === 'sms' ? ' + DLT-registered templates' : ''}. {t('outreachPanel.optedInOnly')}
+          {IS_LIVE_ENVIRONMENT
+            ? 'Delivery is unavailable until a real messaging provider, consent-based audience source, and delivery reporting are connected.'
+            : `Simulation mode. No messages are sent. Real delivery needs provider setup${channel === 'sms' ? ' + DLT-registered templates' : ''}. ${t('outreachPanel.optedInOnly')}`}
         </Text>
       </View>
 
@@ -151,8 +163,12 @@ function Composer({ onSent }: { onSent: () => void }) {
 
       {/* Audience */}
       <Text style={styles.label}>{t('outreachPanel.audience')}</Text>
-      {segments.map((s) => {
-        const active = segment.id === s.id;
+      {segments.length === 0 ? (
+        <Text style={styles.emptyText}>
+          {IS_LIVE_ENVIRONMENT ? 'No live audience segments are connected.' : 'No audience segments are available.'}
+        </Text>
+      ) : segments.map((s) => {
+        const active = segment?.id === s.id;
         return (
           <Pressable key={s.id} style={[styles.segCard, active && styles.segCardActive]} onPress={() => setSegment(s)}>
             <View style={styles.radioOuter}>{active && <View style={styles.radioInner} />}</View>
@@ -215,7 +231,7 @@ function Composer({ onSent }: { onSent: () => void }) {
         style={styles.input}
         value={name}
         onChangeText={setName}
-        placeholder={`${activeChannel.label} to ${segment.name}`}
+        placeholder={`${activeChannel.label} to ${segment?.name ?? 'audience'}`}
         placeholderTextColor="#4B5563"
       />
 
@@ -232,12 +248,12 @@ function Composer({ onSent }: { onSent: () => void }) {
       {/* Estimate */}
       <View style={styles.estimate}>
         <View style={styles.estItem}>
-          <Text style={styles.estValue}>{fmt(segment.size)}</Text>
+          <Text style={styles.estValue}>{segment ? fmt(segment.size) : '—'}</Text>
           <Text style={styles.estLabel}>{t('outreachPanel.recipients')}</Text>
         </View>
         <View style={styles.estDivider} />
         <View style={styles.estItem}>
-          <Text style={styles.estValue}>{fmt(estCredits)}</Text>
+          <Text style={styles.estValue}>{segment ? fmt(estCredits) : '—'}</Text>
           <Text style={styles.estLabel}>{t('outreachPanel.estCredits')}</Text>
         </View>
         <View style={styles.estDivider} />
@@ -253,7 +269,11 @@ function Composer({ onSent }: { onSent: () => void }) {
         ) : (
           <>
             <Ionicons name={schedule === 'now' ? 'send' : 'time'} size={18} color="#FFF" />
-            <Text style={styles.sendBtnText}>{schedule === 'now' ? t('outreachPanel.sendBroadcast') : t('outreachPanel.scheduleBroadcast')}</Text>
+            <Text style={styles.sendBtnText}>
+              {IS_LIVE_ENVIRONMENT
+                ? 'Delivery not connected'
+                : schedule === 'now' ? t('outreachPanel.sendBroadcast') : t('outreachPanel.scheduleBroadcast')}
+            </Text>
           </>
         )}
       </Pressable>

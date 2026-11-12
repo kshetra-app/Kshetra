@@ -196,6 +196,13 @@ const en =  {
     "votes": "votes",
     "voteShare": "Vote Share",
     "demographics": "Demographics",
+    "demographicReferenceTitle": "Constituency Demographic Reference Data",
+    "noDemographicData": "Verified constituency demographic figures are not connected for this constituency.",
+    "dataUnavailable": "Unavailable",
+    "resultUnavailable": "Election result data is not available from a connected source.",
+    "noAffidavitYear": "Election year is unavailable, so no affidavit record can be matched.",
+    "demographicDataNoteTitle": "About these figures",
+    "demographicDataNote": "Bundled demographic values may be estimates or use older source years. Production views withhold them until each value has a traceable source, year, and constituency scope.",
     "population": "Population",
     "literacy": "Literacy Rate",
     "urbanRural": "Urban / Rural",
@@ -579,7 +586,7 @@ const en =  {
     "tryAsking": "Try asking",
     "thinkingSearch": "POLIGRAM AI is thinking...",
     "noResponse": "No response received. Try a different query.",
-    "poweredBy": "Powered by POLIGRAM AI • Google Gemini",
+    "poweredBy": "AI-generated • Check important claims against authoritative sources",
     "qWinner2023": "Who won {{name}} in 2023?",
     "qMarginTrend": "What is the margin trend in {{name}}?",
     "qTellAboutMLA": "Tell me about the MLA of {{name}}",
@@ -665,7 +672,7 @@ const en =  {
     "title": "Post-Election Defection",
     "elected": "Elected",
     "current": "Current",
-    "note": "This MLA switched parties after the 2023 election. Anti-defection proceedings may be pending.",
+    "note": "This MLA's reported party affiliation changed after the 2023 election. Legal status varies by member and may be under court review.",
     "tracker_label": "defections this term"
   },
   "timeline": {
@@ -799,7 +806,7 @@ const en =  {
       },
       "hl-5": {
         "title": "Anti-Defection Law: Supreme Court to hear Telangana BRS petitions next week",
-        "summary": "10 BRS-to-INC defection cases pending. Court will examine Speaker's delayed disqualification proceedings."
+        "summary": "Ten BRS MLAs joined INC in 2024. The Supreme Court upheld Danam Nagender's disqualification in September 2026; challenges to the Speaker's decisions on other petitions were before the Telangana High Court."
       },
       "hl-6": {
         "title": "TSRTC records highest revenue in April, but rural routes still loss-making",
@@ -972,7 +979,7 @@ const en =  {
       "content": "Attended the constituency-level review meeting today. Some interesting stats: 43 new ration cards issued this month, 12 pending pension cases cleared. Progress is slow but visible. #goshamahal #governance"
     },
     "seed-ts-4": {
-      "content": "Do you think the 10 BRS→INC defections have changed the ground-level governance in those constituencies?"
+      "content": "Ten BRS MLAs joined INC in 2024. How have those party changes affected local representation in the constituencies?"
     },
     "seed-ts-5": {
       "content": "KTR's margin in Sircilla — 51,489 votes — was the largest in the 2023 election. Even in a year where BRS lost badly overall, this constituency stayed loyal. What makes Sircilla different? #sircilla #brs #ktr"
@@ -1211,7 +1218,6 @@ const en =  {
     "state": "State",
     "party": "Party",
     "terms": "Terms",
-    "attendance": "Attendance",
     "questions": "Questions",
     "debates": "Debates",
     "allianceStrength": "Alliance Strength at Centre",
@@ -1233,10 +1239,10 @@ const en =  {
     "thTotal": "Total",
     "showTop15": "Show Top 15 Parties",
     "viewAllParties": "View All {{count}} Constituent Parties (includes YSRCP, BRS, TDP…)",
-    "lokSabhaMPsCount": "18th Lok Sabha MPs ({{count}} of {{total}})",
+    "lokSabhaMPsCount": "Lok Sabha profiles ({{count}} listed of {{total}})",
     "stateLokSabhaCount": "Lok Sabha MPs — {{state}} ({{count}})",
     "noMPsMatch": "No MPs match your search or filter.",
-    "rajyaSabhaMPsCount": "Rajya Sabha MPs ({{count}} of {{total}})",
+    "rajyaSabhaMPsCount": "Rajya Sabha profiles ({{count}} listed of {{total}}; {{seatTotal}} seats total)",
     "stateRajyaSabhaCount": "Rajya Sabha MPs — {{state}} ({{count}})",
     "noRajyaSabhaMatch": "No Rajya Sabha MPs match your query.",
     "termsElected": "Terms Elected",
@@ -1297,6 +1303,12 @@ const en =  {
     "registerNow": "Register Now",
     "min": "min",
     "noActiveChallenges": "No active challenges",
+    "loadingChallenges": "Loading active challenges…",
+    "challengesUnavailable": "Challenge data is unavailable right now.",
+    "loadingBadges": "Loading earned badges…",
+    "badgesUnavailable": "Badge data is unavailable right now.",
+    "loadingAspirants": "Loading public aspirants…",
+    "aspirantsUnavailable": "The public aspirant directory is unavailable right now.",
     "aspiringLeaders": "Aspiring Leaders",
     "noPublicAspirants": "No public aspirants",
     "earned": "earned",
@@ -1594,6 +1606,19 @@ const en =  {
     "traiAdvisory": "TRAI Calling Window Advisory",
     "walletCredited": "Wallet Credited",
     "createCampaign": "Create Campaign",
+    "createAdDraft": "Create ad draft",
+    "saveAdDraft": "Save draft",
+    "adDraftsTitle": "Ad creative drafts",
+    "adDraftOnlyNote": "Drafts are saved to this campaign. Review, audience targeting, billing, and ad delivery are not connected yet.",
+    "noCampaignForAds": "Create or select a campaign first.",
+    "noAdDrafts": "There are no ad drafts for this campaign yet.",
+    "adDraftRequired": "Enter a name, headline, sponsor, and disclosure.",
+    "adName": "Draft name",
+    "adHeadline": "Headline",
+    "adBody": "Message (optional)",
+    "adDisclosure": "Disclosure text",
+    "noVerifiedAdMetrics": "Delivery metrics are unavailable until verified ad delivery is connected.",
+    "adComplianceNotReviewed": "Compliance has not been reviewed",
     "activeCampaigns": "Active Campaigns",
     "adPerformance": "Ad Performance",
     "impressions": "Impressions",
@@ -1666,10 +1691,10 @@ const en =  {
   },
   "civicMetrics": {
     "screenTitle": "Civic Performance & Metrics",
-    "screenSubtitle": "Budget, attendance, bills & schemes",
+    "screenSubtitle": "Budget, bills, schemes and hearings",
     "stateBudgetOverview": "State Budget Overview",
     "noBudgetData": "No budget data available for this state",
-    "legislatorAttendance": "Legislator Attendance ({{count}})",
+    "noConnectedData": "Verified records are not available from a connected source yet.",
     "activeBills": "Active Bills & Legislation ({{count}})",
     "governmentSchemes": "Government Schemes & Welfare ({{count}})",
     "developmentProjects": "Infrastructure & Development Projects ({{count}})",
@@ -1677,15 +1702,18 @@ const en =  {
     "response": "Response: {{text}}",
     "views": "{{count}} views",
     "filed": "Filed on {{date}}",
+    "publicHearings": "Public hearings ({{count}})",
+    "noUpcomingHearings": "No upcoming public hearings are recorded for this state.",
+    "registerForHearing": "Registration details",
     "title": "Civic Metrics",
-    "subtitle": "Budget, attendance, bills & schemes",
+    "subtitle": "Budget, bills, schemes and hearings",
     "tabs": {
       "budget": "Budget",
-      "attendance": "Attendance",
       "bills": "Bills",
       "schemes": "Schemes",
       "projects": "Projects",
-      "rti": "RTI"
+      "rti": "RTI",
+      "hearings": "Hearings"
     },
     "stateBudget": "State Budget",
     "totalBudget": "Total",
@@ -1693,7 +1721,6 @@ const en =  {
     "fiscalDeficit": "Fiscal Deficit",
     "revenueDeficit": "Revenue Deficit",
     "debtGDP": "Debt/GDP",
-    "assemblyAttendance": "Assembly Attendance",
     "sessions": "sessions",
     "questionsRaised": "Questions",
     "debatesParticipated": "Debates",
@@ -1712,6 +1739,7 @@ const en =  {
     "revised": "Revised",
     "amountSpent": "Spent",
     "dueDate": "Due",
+    "delayLabel": "Delay",
     "daysDelayed": "{{n}} days delayed"
   },
   "lmx": {
@@ -2308,6 +2336,7 @@ const en =  {
     "margin": "Margin",
     "marginPct": "Margin %",
     "demographics": "Demographics",
+    "demographicsUnavailable": "Verified demographic comparison is unavailable because one or both selected constituencies lack provenance-backed figures.",
     "population": "Population",
     "totalVoters": "Total Voters",
     "turnout2023": "Turnout 2023",
@@ -2906,7 +2935,7 @@ const en =  {
       },
       "findRepresentatives": {
         "title": "Find my representatives",
-        "desc": "Lookup MPs, MLAs, municipal councillors, and attendance records"
+        "desc": "Look up MPs, MLAs, and municipal councillors"
       },
       "stayInformed": {
         "title": "Stay informed",
@@ -2937,7 +2966,7 @@ const en =  {
       },
       "civicMetrics": {
         "title": "Civic Metrics",
-        "desc": "Legislative attendance, fund utilization, and RTI disclosures"
+        "desc": "Budget transparency, fund utilization, and RTI disclosures"
       },
       "localBodies": {
         "title": "Local Bodies",

@@ -1,3 +1,4 @@
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import type { FastifyInstance } from 'fastify';
 import { sendApiError } from '../lib/replyHelper';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
@@ -7,6 +8,8 @@ import {
   type NotificationTrigger,
   type NotificationPayload,
 } from '../services/notifications';
+
+const isProductionRuntime = isProductionLikeRuntime();
 
 // Reusable schemas for notification operations
 const registerTokenSchema = {
@@ -180,6 +183,17 @@ export async function notificationRoutes(app: FastifyInstance) {
       if (!auth) return;
       const userId = auth.userId;
 
+      if (isProductionRuntime) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Push token storage is not connected',
+          { code: 'NOTIFICATION_STORAGE_UNAVAILABLE' },
+        );
+      }
+
       const { token, platform, deviceName } = request.body;
 
       // Non-DB invariant: Do NOT insert into device_tokens table. Return success with token info.
@@ -206,6 +220,16 @@ export async function notificationRoutes(app: FastifyInstance) {
       schema: sendNotificationSchema,
     },
     async (request, reply) => {
+      if (isProductionRuntime) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Push delivery provider is not connected',
+          { code: 'NOTIFICATION_PROVIDER_UNAVAILABLE' },
+        );
+      }
       const apiKey = request.headers['x-api-key'] as string;
       if (!apiKey) {
         return sendApiError(reply, request, 401, 'Unauthorized', 'API key required', {
@@ -235,6 +259,18 @@ export async function notificationRoutes(app: FastifyInstance) {
       schema: getPreferencesSchema,
     },
     async (request, reply) => {
+      if (isProductionRuntime) {
+        const auth = await resolveAuthenticatedUser(request, reply);
+        if (!auth) return;
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Notification preference storage is not connected',
+          { code: 'NOTIFICATION_STORAGE_UNAVAILABLE' },
+        );
+      }
       const userId = request.headers['x-user-id'] as string;
       if (!userId) {
         return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', {
@@ -263,6 +299,18 @@ export async function notificationRoutes(app: FastifyInstance) {
       schema: updatePreferencesSchema,
     },
     async (request, reply) => {
+      if (isProductionRuntime) {
+        const auth = await resolveAuthenticatedUser(request, reply);
+        if (!auth) return;
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Notification preference storage is not connected',
+          { code: 'NOTIFICATION_STORAGE_UNAVAILABLE' },
+        );
+      }
       const userId = request.headers['x-user-id'] as string;
       if (!userId) {
         return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', {

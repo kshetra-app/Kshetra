@@ -40,15 +40,16 @@ function StatCompare({
   higherIsBetter = true,
 }: {
   label: string;
-  leftValue: number;
-  rightValue: number;
+  leftValue: number | null;
+  rightValue: number | null;
   format?: 'number' | 'pct' | 'compact';
   higherIsBetter?: boolean;
 }) {
-  const leftBetter = higherIsBetter ? leftValue > rightValue : leftValue < rightValue;
-  const rightBetter = higherIsBetter ? rightValue > leftValue : rightValue < leftValue;
+  const leftBetter = leftValue != null && rightValue != null && (higherIsBetter ? leftValue > rightValue : leftValue < rightValue);
+  const rightBetter = leftValue != null && rightValue != null && (higherIsBetter ? rightValue > leftValue : rightValue < leftValue);
 
-  const fmt = (v: number) => {
+  const fmt = (v: number | null) => {
+    if (v == null) return '—';
     if (format === 'pct') return `${v}%`;
     if (format === 'compact') return v >= 1000 ? `${(v / 1000).toFixed(0)}K` : String(v);
     return v.toLocaleString();
@@ -253,12 +254,6 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
             </View>
             <StatCompare label={t('compare.winnerVotes')} leftValue={left.winnerVotes} rightValue={right.winnerVotes} format="compact" />
             <StatCompare label={t('compare.margin')} leftValue={left.margin} rightValue={right.margin} format="compact" />
-            <StatCompare
-              label={t('compare.marginPct')}
-              leftValue={parseFloat(((left.margin / Math.max(left.winnerVotes, 1)) * 100).toFixed(1))}
-              rightValue={parseFloat(((right.margin / Math.max(right.winnerVotes, 1)) * 100).toFixed(1))}
-              format="pct"
-            />
 
             {/* Demographics */}
             {leftDemo && rightDemo && (
@@ -274,6 +269,14 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
                 <StatCompare label={t('compare.scPct')} leftValue={leftDemo.scPercent} rightValue={rightDemo.scPercent} format="pct" />
                 <StatCompare label={t('compare.stPct')} leftValue={leftDemo.stPercent} rightValue={rightDemo.stPercent} format="pct" />
                 <StatCompare label={t('compare.area')} leftValue={leftDemo.areaSqKm} rightValue={rightDemo.areaSqKm} />
+              </>
+            )}
+            {(!leftDemo || !rightDemo) && (
+              <>
+                <View style={styles.sectionDivider}>
+                  <Text style={styles.sectionLabel}>{t('compare.demographics')}</Text>
+                </View>
+                <Text style={styles.emptyText}>{t('compare.demographicsUnavailable')}</Text>
               </>
             )}
 

@@ -23,22 +23,45 @@ import {
   getCanonicalMLAProfiles,
   getTSElectionHistory,
 } from '../services/stateData';
+import type { ConstituencyElectionSummary } from '../services/stateData';
 import { sendApiError } from '../lib/replyHelper';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 
-/** Map ConstituencyBrief to generic ConstituencyRecord for analytics */
-function constituencyToRecord(c: ConstituencyBrief): ConstituencyRecord {
+/** Preserve the legacy response field while keeping unavailable figures explicit. */
+function toLegacyElection2023(recentElection: ConstituencyElectionSummary | null) {
+  return {
+    winner: recentElection?.winner ?? '',
+    winnerName: recentElection?.winnerName ?? '',
+    winnerVotes: recentElection?.winnerVotes ?? null,
+    runnerUp: recentElection?.runnerUp ?? '',
+    margin: recentElection?.margin ?? null,
+    marginPercent: recentElection?.marginPercent ?? null,
+  };
+}
+
+/** Convert only explicit election winner records; reject current-seat fallbacks. */
+function constituencyToRecord(c: ConstituencyBrief): ConstituencyRecord | null {
   const elec = getConstituencyElectionData(c.stateCode, c.acNo);
   const rec = elec?.recentElection;
+  if (!rec?.winner || !rec.electionYear) return null;
+
+  const winnerVotes =
+    rec.winnerVotes != null && Number.isFinite(rec.winnerVotes) && rec.winnerVotes > 0
+      ? rec.winnerVotes
+      : null;
+  const margin =
+    rec.margin != null && Number.isFinite(rec.margin) && rec.margin > 0 ? rec.margin : null;
+
   return {
     acNo: c.acNo,
     name: c.name,
     district: c.district,
     type: (c.reservationStatus as 'GEN' | 'SC' | 'ST') || 'GEN',
-    winner: rec?.winner || c.currentParty || 'UNKNOWN',
-    winnerVotes: rec?.winnerVotes ?? 100000,
-    runnerUp: rec?.runnerUp || '',
-    margin: rec?.margin ?? 10000,
+    winner: rec.winner,
+    winnerVotes,
+    runnerUp: rec.runnerUp,
+    margin,
   };
 }
 
@@ -114,7 +137,7 @@ const getConstituencyDetailSchema = {
         currentParty: { type: 'string' },
         currentMLA: { type: 'string' },
         recentElection: {
-          type: 'object',
+          type: ['object', 'null'],
           properties: {
             electionYear: { type: ['integer', 'null'] },
             electionType: { type: ['string', 'null'], enum: ['GENERAL', 'BYPOLL', null] },
@@ -149,10 +172,10 @@ const getConstituencyDetailSchema = {
           properties: {
             winner: { type: 'string' },
             winnerName: { type: 'string' },
-            winnerVotes: { type: 'number' },
+            winnerVotes: { type: ['number', 'null'] },
             runnerUp: { type: 'string' },
-            margin: { type: 'number' },
-            marginPercent: { type: 'number' },
+            margin: { type: ['number', 'null'] },
+            marginPercent: { type: ['number', 'null'] },
           },
           required: ['winner', 'winnerName', 'winnerVotes', 'runnerUp', 'margin', 'marginPercent'],
         },
@@ -221,6 +244,26 @@ const analyticsSchema = {
       properties: {
         state: { type: 'string' },
         totalConstituencies: { type: 'number' },
+        geographicalConstituencies: { type: 'number' },
+        electionResultsCoverage: {
+          type: 'object',
+          properties: {
+            constituenciesWithElectionWinners: { type: 'number' },
+            constituenciesWithoutElectionWinners: { type: 'number' },
+            winnerCoveragePercentage: { type: 'number' },
+            constituenciesWithUsableMargins: { type: 'number' },
+            constituenciesWithoutUsableMargins: { type: 'number' },
+            marginCoveragePercentage: { type: 'number' },
+          },
+          required: [
+            'constituenciesWithElectionWinners',
+            'constituenciesWithoutElectionWinners',
+            'winnerCoveragePercentage',
+            'constituenciesWithUsableMargins',
+            'constituenciesWithoutUsableMargins',
+            'marginCoveragePercentage',
+          ],
+        },
         totalDistricts: { type: 'number' },
         partySummary: {
           type: 'array',
@@ -262,16 +305,16 @@ const analyticsSchema = {
             closest: {
               type: 'object',
               properties: {
-                constituency: { type: 'string' },
-                margin: { type: 'number' },
+                constituency: { type: ['string', 'null'] },
+                margin: { type: ['number', 'null'] },
               },
               required: ['constituency', 'margin'],
             },
             biggest: {
               type: 'object',
               properties: {
-                constituency: { type: 'string' },
-                margin: { type: 'number' },
+                constituency: { type: ['string', 'null'] },
+                margin: { type: ['number', 'null'] },
               },
               required: ['constituency', 'margin'],
             },
@@ -282,6 +325,8 @@ const analyticsSchema = {
       required: [
         'state',
         'totalConstituencies',
+        'geographicalConstituencies',
+        'electionResultsCoverage',
         'totalDistricts',
         'partySummary',
         'districts',
@@ -399,7 +444,7 @@ export async function constituencyRoutes(app: FastifyInstance) {
       const code = stateCode.toUpperCase();
 
       // Strangler pattern: Query canonical geography when Supabase is configured (fail-closed on error)
-      if (isSupabaseConfigured) {
+      if (isSupabaseConfigured || isProductionLikeRuntime()) {
         try {
           const dbConstituencies = await canonicalGeographyService.getConstituencies(code);
           if (dbConstituencies && dbConstituencies.length > 0) {
@@ -408,6 +453,18 @@ export async function constituencyRoutes(app: FastifyInstance) {
               count: dbConstituencies.length,
               data: dbConstituencies,
             };
+          }
+          if (isProductionLikeRuntime()) {
+            return sendApiError(
+              reply,
+              request,
+              isSupabaseConfigured ? 404 : 503,
+              isSupabaseConfigured ? 'Not Found' : 'Service Unavailable',
+              isSupabaseConfigured
+                ? `State ${code} has no constituency data available`
+                : 'Live constituency data is unavailable because the database is not configured.',
+              { code: isSupabaseConfigured ? 'NOT_FOUND' : 'DATA_SOURCE_UNAVAILABLE' },
+            );
           }
         } catch (err: any) {
           app.log.error(
@@ -468,32 +525,25 @@ export async function constituencyRoutes(app: FastifyInstance) {
       }
 
       // Strangler pattern: Query canonical geography when Supabase is configured (fail-closed on error)
-      if (isSupabaseConfigured && !isNaN(acNo)) {
+      if (isSupabaseConfigured || isProductionLikeRuntime()) {
         try {
-          const row = await canonicalGeographyService.getConstituency(code, acNo);
+          const row = !isNaN(acNo)
+            ? await canonicalGeographyService.getConstituency(code, acNo)
+            : ((await canonicalGeographyService.getConstituencies(code)).find(
+                (candidate) =>
+                  candidate.name.toLowerCase() === constituencyId.toLowerCase() ||
+                  candidate.id.toLowerCase() === constituencyId.toLowerCase(),
+              ) ?? null);
           if (row) {
-            const electionData = await getCanonicalConstituencyElectionData(code, acNo);
-            const recentElection = electionData?.recentElection ?? {
-              electionYear: null,
-              electionType: 'GENERAL' as const,
-              winner: row.currentParty || '',
-              winnerName: row.currentMLA || '',
-              winnerVotes: null,
-              runnerUp: '',
-              margin: null,
-              marginPercent: null,
-            };
-
-            const elections = electionData?.elections ?? [recentElection];
-
-            const election2023 = {
-              winner: recentElection.winner,
-              winnerName: recentElection.winnerName,
-              winnerVotes: recentElection.winnerVotes ?? 0,
-              runnerUp: recentElection.runnerUp,
-              margin: recentElection.margin ?? 0,
-              marginPercent: recentElection.marginPercent ?? 0,
-            };
+            const electionData = await getCanonicalConstituencyElectionData(code, row.acNo);
+            const electionRows = electionData?.elections ?? [];
+            const recentElection = electionData?.recentElection ?? electionRows[0] ?? null;
+            const elections = electionRows.length
+              ? electionRows
+              : recentElection
+                ? [recentElection]
+                : [];
+            const election2023 = toLegacyElection2023(recentElection);
 
             return {
               ...row,
@@ -501,6 +551,18 @@ export async function constituencyRoutes(app: FastifyInstance) {
               elections,
               election2023,
             };
+          }
+          if (isProductionLikeRuntime()) {
+            return sendApiError(
+              reply,
+              request,
+              isSupabaseConfigured ? 404 : 503,
+              isSupabaseConfigured ? 'Not Found' : 'Service Unavailable',
+              isSupabaseConfigured
+                ? `Constituency ${constituencyId} in ${code} not found`
+                : 'Live constituency data is unavailable because the database is not configured.',
+              { code: isSupabaseConfigured ? 'NOT_FOUND' : 'DATA_SOURCE_UNAVAILABLE' },
+            );
           }
         } catch (err: any) {
           app.log.error(
@@ -518,6 +580,17 @@ export async function constituencyRoutes(app: FastifyInstance) {
             },
           );
         }
+      }
+
+      if (isProductionLikeRuntime()) {
+        return sendApiError(
+          reply,
+          request,
+          404,
+          'Not Found',
+          `Constituency ${constituencyId} in ${code} not found`,
+          { code: 'NOT_FOUND' },
+        );
       }
 
       const brief = !isNaN(acNo)
@@ -542,30 +615,13 @@ export async function constituencyRoutes(app: FastifyInstance) {
       }
 
       const electionData = getConstituencyElectionData(code, brief.acNo);
-      const recentElection = electionData?.recentElection ?? {
-        electionYear: null,
-        electionType: 'GENERAL' as const,
-        winner: brief.currentParty,
-        winnerName: brief.currentMLA,
-        winnerVotes: null,
-        runnerUp: '',
-        margin: null,
-        marginPercent: null,
-      };
-
-      const elections = electionData?.elections ?? [recentElection];
+      const electionRows = electionData?.elections ?? [];
+      const recentElection = electionData?.recentElection ?? electionRows[0] ?? null;
+      const elections = electionRows.length ? electionRows : recentElection ? [recentElection] : [];
 
       // @deprecated LEGACY COMPATIBILITY ALIAS (CTO Directive 085)
-      // Preserved strictly for unmigrated legacy clients expecting election2023.
-      // Warning: this alias coerces null values to 0. Modern clients MUST consume recentElection and elections[].
-      const election2023 = {
-        winner: recentElection.winner,
-        winnerName: recentElection.winnerName,
-        winnerVotes: recentElection.winnerVotes ?? 0,
-        runnerUp: recentElection.runnerUp,
-        margin: recentElection.margin ?? 0,
-        marginPercent: recentElection.marginPercent ?? 0,
-      };
+      // Preserved for unmigrated clients; missing result metrics remain null.
+      const election2023 = toLegacyElection2023(recentElection);
 
       return {
         ...brief,
@@ -593,19 +649,40 @@ export async function constituencyRoutes(app: FastifyInstance) {
     {
       schema: searchConstituenciesSchema,
     },
-    async (request) => {
+    async (request, reply) => {
       const { stateCode } = request.params;
       const { q, party, district, type, minMargin, maxMargin, sort } = request.query;
       const code = stateCode.toUpperCase();
       let allBriefs = getConstituencies(code);
-      if (isSupabaseConfigured) {
+      if (isSupabaseConfigured || isProductionLikeRuntime()) {
         try {
           const dbAcs = await canonicalGeographyService.getConstituencies(code);
           if (dbAcs && dbAcs.length > 0) {
             allBriefs = dbAcs;
+          } else if (isProductionLikeRuntime()) {
+            if (!isSupabaseConfigured) {
+              return sendApiError(
+                reply,
+                request,
+                503,
+                'Service Unavailable',
+                'Live constituency data is unavailable because the database is not configured.',
+                { code: 'DATA_SOURCE_UNAVAILABLE' },
+              );
+            }
+            allBriefs = [];
           }
-        } catch {
-          // Fall back to seed data
+        } catch (err: any) {
+          if (isProductionLikeRuntime()) {
+            return sendApiError(
+              reply,
+              request,
+              500,
+              'Internal Server Error',
+              'Database error retrieving constituencies',
+              { code: 'DATABASE_ERROR' },
+            );
+          }
         }
       }
 
@@ -737,12 +814,51 @@ export async function constituencyRoutes(app: FastifyInstance) {
         );
       }
 
+      if (isProductionLikeRuntime()) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Election analytics are unavailable until the production election-results dataset is complete and verified.',
+          { code: 'ELECTION_ANALYTICS_UNAVAILABLE' },
+        );
+      }
+
       const constituencies = getConstituencies('TS');
-      const records = constituencies.map(constituencyToRecord);
+      const records = constituencies
+        .map(constituencyToRecord)
+        .filter((record): record is ConstituencyRecord => record !== null);
+      if (records.length === 0) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Election analytics are unavailable because no election winner records are available.',
+          { code: 'ELECTION_RESULTS_UNAVAILABLE' },
+        );
+      }
       const analytics = computeElectionAnalytics(records);
+      const marginsWithUsableValues = records.filter((record) => record.margin != null).length;
 
       return {
         state: 'TS',
+        geographicalConstituencies: constituencies.length,
+        electionResultsCoverage: {
+          constituenciesWithElectionWinners: records.length,
+          constituenciesWithoutElectionWinners: constituencies.length - records.length,
+          winnerCoveragePercentage:
+            constituencies.length > 0
+              ? parseFloat(((records.length / constituencies.length) * 100).toFixed(1))
+              : 0,
+          constituenciesWithUsableMargins: marginsWithUsableValues,
+          constituenciesWithoutUsableMargins: constituencies.length - marginsWithUsableValues,
+          marginCoveragePercentage:
+            constituencies.length > 0
+              ? parseFloat(((marginsWithUsableValues / constituencies.length) * 100).toFixed(1))
+              : 0,
+        },
         ...analytics,
       };
     },
@@ -780,7 +896,9 @@ export async function constituencyRoutes(app: FastifyInstance) {
         });
       }
 
-      const profile = getMLAProfile(num);
+      const profile = isProductionLikeRuntime()
+        ? await getCanonicalMLAProfile(code, num)
+        : getMLAProfile(num);
       if (!profile) {
         return sendApiError(
           reply,

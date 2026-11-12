@@ -84,6 +84,8 @@ export interface PoliticalLedgerEntry {
   id: string;
   /** ISO date: YYYY-MM-DD */
   date: string;
+  /** Date a ruling or other later record confirmed a retroactive effective date. */
+  recordedAt?: string;
   /** Assembly number: 1 (2014), 2 (2018), 3 (2023) */
   assembly: 1 | 2 | 3;
   /** Event classification */
@@ -840,6 +842,26 @@ const ASSEMBLY_3_EVENTS: PoliticalLedgerEntry[] = [
     verified: true,
   },
 
+  {
+    id: 'TS-3-2024-DEATH-SECCANTT',
+    date: '2024-02-23',
+    assembly: 3,
+    eventType: 'DEATH_IN_OFFICE',
+    acNos: [71],
+    memberNames: ['G. Lasya Nanditha (Secunderabad Cantonment)'],
+    debitParty: 'BRS',
+    creditParty: 'VACANT',
+    seats: 1,
+    explanation: 'Secunderabad Cantonment became vacant after MLA G. Lasya Nanditha died in a road accident.',
+    details: 'The vacancy was filled by an INC candidate in the June 2024 by-election.',
+    legalStatus: 'NOT_APPLICABLE',
+    sources: [
+      'https://www.deccanchronicle.com/news/cantonment-mla-lasya-nandita-death-in-patancheru-orr-883043',
+      'https://ceotelangana.nic.in/BYE_ELECTION%2871-SEC_CANTT%29/2090-82-Bye%20Elecs%20to%20TSLA%2071-Sec%27bad%20cant%20Declaration%20of%20Result-Reg.pdf',
+    ],
+    verified: true,
+  },
+
   // ── 2024 BRS → INC DEFECTIONS ──
   // "Operation Akarsh 2.0" — Now INC pulls BRS MLAs
   {
@@ -855,12 +877,52 @@ const ASSEMBLY_3_EVENTS: PoliticalLedgerEntry[] = [
     explanation:
       'Danam Nagender, BRS MLA from Khairatabad, defects to INC. He was the first BRS MLA to switch after the 2023 election. Notably, he had previously been in INC (2014), then joined TRS (2018), and now returns to INC.',
     details:
-      'A veteran politician who has been with multiple parties. His defection opened the floodgates for more BRS MLAs to follow.',
-    legalStatus: 'PETITION_FILED',
+      'The Telangana High Court disqualified Nagender effective 23 April 2024; the Supreme Court upheld the ruling on 24 September 2026. The Khairatabad seat is vacant.',
+    legalStatus: 'UPHELD',
     sources: [
       'https://www.thehindu.com/news/national/telangana/brs-moves-supreme-court-for-action-against-defected-mlas/article69104662.ece',
       'https://telanganatoday.com/defected-brs-mlas-in-a-spot-of-bother'
 ],
+    verified: true,
+  },
+  {
+    id: 'TS-3-2024-DQ-DANAM',
+    date: '2024-04-23',
+    recordedAt: '2026-09-18',
+    assembly: 3,
+    eventType: 'DISQUALIFICATION',
+    acNos: [60],
+    memberNames: ['Danam Nagender (Khairatabad)'],
+    debitParty: 'INC',
+    creditParty: 'VACANT',
+    seats: 1,
+    explanation: 'Danam Nagender was disqualified from Khairatabad with effect from 23 April 2024; the seat is vacant.',
+    details: 'The Telangana High Court set aside the Speaker’s decision on 18 September 2026. The Supreme Court upheld the disqualification on 24 September 2026. This entry uses the court-ordered effective date and separately records when the High Court ruled.',
+    legalStatus: 'UPHELD',
+    sources: [
+      'https://indiankanoon.org/doc/155227134/',
+      'https://indianexpress.com/article/legal-news/supreme-court-upholds-telangana-mla-danam-nagender-disqualification-10892090/',
+      'https://www.thenewsminute.com/amp/story/telangana/telangana-assembly-declares-khairatabad-seat-vacant-after-nagenders-disqualification',
+    ],
+    verified: true,
+  },
+  {
+    id: 'TS-3-2024-BY-SECCANTT',
+    date: '2024-06-04',
+    assembly: 3,
+    eventType: 'BY_ELECTION',
+    acNos: [71],
+    memberNames: ['Sri Ganesh (INC)'],
+    debitParty: 'VACANT',
+    creditParty: 'INC',
+    seats: 1,
+    explanation: 'INC candidate Sri Ganesh won the Secunderabad Cantonment by-election.',
+    details: 'The result was published in the Telangana Gazette on 4 June 2024.',
+    legalStatus: 'NOT_APPLICABLE',
+    sources: [
+      'https://ceotelangana.nic.in/BYE_ELECTION%2871-SEC_CANTT%29/2090-82-Bye%20Elecs%20to%20TSLA%2071-Sec%27bad%20cant%20Declaration%20of%20Result-Reg.pdf',
+      'https://eci.gov.in/statistical-report/ge/2024/11',
+    ],
     verified: true,
   },
   {
@@ -875,10 +937,11 @@ const ASSEMBLY_3_EVENTS: PoliticalLedgerEntry[] = [
     seats: 1,
     explanation:
       'Kadiyam Srihari, former Deputy CM under KCR, defects from BRS to INC. A high-profile exit that signalled deep cracks in BRS.',
-    details: 'Srihari was Deputy CM in 2018 TRS government. His departure was a major embarrassment for KCR.',
-    legalStatus: 'PETITION_FILED',
+    details: 'Srihari was Deputy CM in the 2018 TRS government. The Speaker dismissed the disqualification petition in March 2026; the dismissal was challenged in the Telangana High Court, where hearings were continuing in August 2026.',
+    legalStatus: 'COURT_CHALLENGE',
     sources: [
-      'https://www.thehindu.com/news/national/telangana/brs-moves-supreme-court-for-action-against-defected-mlas/article69104662.ece'
+      'https://www.thehindu.com/news/national/telangana/brs-moves-supreme-court-for-action-against-defected-mlas/article69104662.ece',
+      'https://telanganatoday.com/telangana-hc-continues-hearing-on-pleas-against-speakers-rejection-of-brs-mlas-disqualification'
 ],
     verified: true,
   },
@@ -893,10 +956,11 @@ const ASSEMBLY_3_EVENTS: PoliticalLedgerEntry[] = [
     creditParty: 'INC',
     seats: 1,
     explanation: 'Tellam Venkata Rao, Bhadrachalam (ST) MLA, defects from BRS to INC.',
-    details: 'Bhadrachalam is an ST-reserved constituency in tribal Bhadradri Kothagudem district.',
-    legalStatus: 'PETITION_FILED',
+    details: 'Bhadrachalam is an ST-reserved constituency in tribal Bhadradri Kothagudem district. The Speaker dismissed disqualification petitions in 2025–2026; challenges to the dismissals were being heard by the Telangana High Court in August 2026.',
+    legalStatus: 'COURT_CHALLENGE',
     sources: [
-      'https://www.thehindu.com/news/national/telangana/brs-moves-supreme-court-for-action-against-defected-mlas/article69104662.ece'
+      'https://www.thehindu.com/news/national/telangana/brs-moves-supreme-court-for-action-against-defected-mlas/article69104662.ece',
+      'https://telanganatoday.com/telangana-hc-continues-hearing-on-pleas-against-speakers-rejection-of-brs-mlas-disqualification'
 ],
     verified: true,
   },
@@ -921,10 +985,9 @@ const ASSEMBLY_3_EVENTS: PoliticalLedgerEntry[] = [
     explanation:
       '7 BRS MLAs defect to INC in a batch — the largest single-day defection event of the 3rd Assembly. ' +
       'Includes former Speaker Pocharam Srinivas Reddy and serial defector T. Prakash Goud (TDP→TRS→BRS→INC across 3 assemblies). ' +
-      'This brings total BRS→INC defections to 10, reducing BRS from 39 to 29 and inflating INC from 64 to 74.',
+      'This brings the reported 2024 BRS→INC party changes to 10. Khairatabad is accounted for separately as vacant after Danam Nagender’s later disqualification.',
     details:
-      'BRS filed a Special Leave Petition (SLP) in the Supreme Court against 3 MLAs (Danam Nagender, Kadiyam Srihari, Tellam Venkat Rao) ' +
-      'and a writ petition against these 7. The Telangana High Court served notices to the Speaker and all 10 MLAs. ' +
+      'The Speaker dismissed the disqualification petitions against these MLAs in 2025–2026. BRS and BJP legislators challenged the dismissals; the Telangana High Court was hearing those challenges in August 2026. ' +
       'Notably, T. Prakash Goud and Arekapudi Gandhi were originally TDP MLAs (2014) who merged with TRS (2016), ' +
       'won on TRS/BRS ticket (2018, 2023), and now joined INC — their 3rd party in 10 years.',
     legalStatus: 'COURT_CHALLENGE',
@@ -932,8 +995,47 @@ const ASSEMBLY_3_EVENTS: PoliticalLedgerEntry[] = [
       'https://www.thehindu.com/news/national/telangana/brs-moves-supreme-court-for-action-against-defected-mlas/article69104662.ece',
       'https://www.thehindu.com/news/national/telangana/telangana-hc-serves-notices-to-speaker-eci-over-10-mlas-defection/article68674908.ece',
       'https://www.newindianexpress.com/states/telangana/2024/Jul/14/operation-akarsh-congress-eyes-greater-hyderabad-gains-after-nine-brs-mlas-jump-ship',
-      'https://telanganatoday.com/defected-brs-mlas-in-a-spot-of-bother'
+      'https://telanganatoday.com/defected-brs-mlas-in-a-spot-of-bother',
+      'https://telanganatoday.com/telangana-hc-continues-hearing-on-pleas-against-speakers-rejection-of-brs-mlas-disqualification'
 ],
+    verified: true,
+  },
+  {
+    id: 'TS-3-2025-DEATH-JUBILEEHILLS',
+    date: '2025-06-08',
+    assembly: 3,
+    eventType: 'DEATH_IN_OFFICE',
+    acNos: [61],
+    memberNames: ['Maganti Gopinath (Jubilee Hills)'],
+    debitParty: 'BRS',
+    creditParty: 'VACANT',
+    seats: 1,
+    explanation: 'Jubilee Hills became vacant after MLA Maganti Gopinath died on 8 June 2025.',
+    details: 'The vacancy was filled when INC candidate Naveen Yadav V won the November 2025 by-election.',
+    legalStatus: 'NOT_APPLICABLE',
+    sources: [
+      'https://telanganatoday.com/brs-legislator-maganti-gopinath-is-no-more',
+      'https://ceotelangana.nic.in/Bye-Election%20to%20the%2061-Jubilee%20Hills-2025/2080-163_AC_61_Declaration%20of%20result%20in%20Form-21D%20-%20Published%20in%20State%20GAzette.pdf',
+    ],
+    verified: true,
+  },
+  {
+    id: 'TS-3-2025-BY-JUBILEEHILLS',
+    date: '2025-11-14',
+    assembly: 3,
+    eventType: 'BY_ELECTION',
+    acNos: [61],
+    memberNames: ['Naveen Yadav V (INC)'],
+    debitParty: 'VACANT',
+    creditParty: 'INC',
+    seats: 1,
+    explanation: 'INC candidate Naveen Yadav V won the Jubilee Hills by-election.',
+    details: 'The result was declared in Form 21-D and published in the Telangana Gazette on 14 November 2025.',
+    legalStatus: 'NOT_APPLICABLE',
+    sources: [
+      'https://ceotelangana.nic.in/Bye-Election%20to%20the%2061-Jubilee%20Hills-2025/2080-163_AC_61_Declaration%20of%20result%20in%20Form-21D%20-%20Published%20in%20State%20GAzette.pdf',
+      'https://eci.gov.in/statistical-report/ae/2025/8',
+    ],
     verified: true,
   }
 ]; 

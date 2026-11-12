@@ -71,11 +71,17 @@ export default function EventCard({ event, onPress, onRSVP }: EventCardProps) {
 
         {/* RSVP + Attendance */}
         <View style={styles.footer}>
-          <View style={styles.rsvpInfo}>
-            <Ionicons name="people" size={14} color="#3B82F6" />
-            <Text style={styles.rsvpCount}>{event.rsvpCount} {t('politicianPortal.going')}</Text>
-            {event.actualAttendance && <Text style={styles.attended}> · {event.actualAttendance} {t('politicianPortal.attended')}</Text>}
-          </View>
+          {(event.rsvpCount !== null || event.actualAttendance !== undefined) && (
+            <View style={styles.rsvpInfo}>
+              {event.rsvpCount !== null && (
+                <>
+                  <Ionicons name="people" size={14} color="#3B82F6" />
+                  <Text style={styles.rsvpCount}>{event.rsvpCount} {t('politicianPortal.going')}</Text>
+                </>
+              )}
+              {event.actualAttendance !== undefined && <Text style={styles.attended}>{event.actualAttendance} {t('politicianPortal.attended')}</Text>}
+            </View>
+          )}
           {isUpcoming && onRSVP && (
             <Pressable style={styles.rsvpButton} onPress={onRSVP}>
               <Text style={styles.rsvpButtonText}>RSVP</Text>

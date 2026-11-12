@@ -36,6 +36,7 @@ describe('Moderation Routes', () => {
         or: () => chainable,
         order: () => chainable,
         select: () => chainable,
+        range: async () => ({ data: [], error: null, count: 0 }),
         maybeSingle: async () => ({ data: okResult, error: null }),
         single: async () => ({ data: okResult, error: null }),
         then: (resolve: any) => resolve({ data: okResult, error: null }),
@@ -384,18 +385,21 @@ describe('Moderation Routes', () => {
           })
         ).statusCode,
       ).toBe(403);
-      expect(
-        (
-          await app.inject({
-            method: 'GET',
-            url: '/api/v1/moderation/audit-log',
-            headers: {
-              'x-user-id': 'admin-1',
-              'x-test-role': 'admin',
-            },
-          })
-        ).statusCode,
-      ).toBe(200);
+      const authorized = await app.inject({
+        method: 'GET',
+        url: '/api/v1/moderation/audit-log',
+        headers: {
+          'x-user-id': 'admin-1',
+          'x-test-role': 'admin',
+        },
+      });
+      expect(authorized.statusCode).toBe(200);
+      expect(JSON.parse(authorized.payload).data).toEqual({
+        entries: [],
+        total: 0,
+        limit: 50,
+        offset: 0,
+      });
     });
 
     it('verify-request and block require authentication', async () => {

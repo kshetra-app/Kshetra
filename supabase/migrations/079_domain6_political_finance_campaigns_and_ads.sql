@@ -105,6 +105,75 @@ CREATE TABLE IF NOT EXISTS political_ads (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Migration 034 created political_ads for the legacy page/post certification
+-- flow. Keep its columns and rows intact while adding the campaign-ad contract
+-- used here. Fields that cannot be reconstructed from legacy records remain
+-- NULL; new writes are validated by the campaign/ad service.
+ALTER TABLE public.political_ads
+  ADD COLUMN IF NOT EXISTS campaign_id UUID REFERENCES public.political_campaigns(id) ON DELETE SET NULL,
+  ADD COLUMN IF NOT EXISTS category TEXT,
+  ADD COLUMN IF NOT EXISTS title TEXT,
+  ADD COLUMN IF NOT EXISTS headline TEXT,
+  ADD COLUMN IF NOT EXISTS body_text TEXT,
+  ADD COLUMN IF NOT EXISTS media_url TEXT,
+  ADD COLUMN IF NOT EXISTS target_constituency_id TEXT,
+  ADD COLUMN IF NOT EXISTS sponsor_name TEXT,
+  ADD COLUMN IF NOT EXISTS disclaimer_text TEXT,
+  ADD COLUMN IF NOT EXISTS electoral_window_state TEXT,
+  ADD COLUMN IF NOT EXISTS mcmc_certificate_pdf_url TEXT,
+  ADD COLUMN IF NOT EXISTS statutory_candidate_id UUID,
+  ADD COLUMN IF NOT EXISTS pricing_model TEXT,
+  ADD COLUMN IF NOT EXISTS flight_start_date DATE,
+  ADD COLUMN IF NOT EXISTS flight_end_date DATE,
+  ADD COLUMN IF NOT EXISTS daily_budget_inr NUMERIC(12,2),
+  ADD COLUMN IF NOT EXISTS total_budget_inr NUMERIC(14,2),
+  ADD COLUMN IF NOT EXISTS spent_amount_inr NUMERIC(14,2),
+  ADD COLUMN IF NOT EXISTS impressions_count INTEGER,
+  ADD COLUMN IF NOT EXISTS clicks_count INTEGER,
+  ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ;
+
+-- Preserve known constituency targeting only when the legacy value resolves to
+-- a canonical registry row. Do not assign fake defaults to historical ads.
+UPDATE public.political_ads AS ad
+SET target_constituency_id = constituency.id
+FROM public.constituencies AS constituency
+WHERE ad.target_constituency_id IS NULL
+  AND ad.target_scope = 'constituency'
+  AND ad.target_value = constituency.id;
+
+UPDATE public.political_ads
+SET impressions_count = impressions
+WHERE impressions_count IS NULL AND impressions IS NOT NULL;
+
+-- Keep both legacy statuses and the campaign review lifecycle valid. The old
+-- scope constraint allowed only state/constituency; the campaign schema also
+-- supports district targeting.
+ALTER TABLE public.political_ads
+  DROP CONSTRAINT IF EXISTS political_ads_status_check,
+  DROP CONSTRAINT IF EXISTS political_ads_target_scope_check;
+
+ALTER TABLE public.political_ads
+  ADD CONSTRAINT political_ads_status_check
+    CHECK (status IN ('pending_certification', 'certified', 'rejected', 'active', 'ended',
+                      'pending_review', 'approved', 'paused', 'completed')),
+  ADD CONSTRAINT political_ads_target_scope_check
+    CHECK (target_scope IN ('state', 'constituency', 'district')),
+  ADD CONSTRAINT political_ads_category_check
+    CHECK (category IS NULL OR category IN (
+      'festival_wishes', 'birthday_congratulatory', 'milestone_achievement',
+      'rally_meeting', 'election_campaign', 'issue_advocacy'
+    )),
+  ADD CONSTRAINT political_ads_electoral_window_check
+    CHECK (electoral_window_state IS NULL OR electoral_window_state IN ('ROUTINE_CIVIC', 'MCC_ACTIVE')),
+  ADD CONSTRAINT political_ads_pricing_model_check
+    CHECK (pricing_model IS NULL OR pricing_model IN ('cpm', 'cpc', 'fixed_daily_flight')),
+  ADD CONSTRAINT political_ads_flight_dates_check
+    CHECK (flight_start_date IS NULL OR flight_end_date IS NULL OR flight_end_date >= flight_start_date),
+  ADD CONSTRAINT political_ads_budget_values_check
+    CHECK ((daily_budget_inr IS NULL OR daily_budget_inr >= 0)
+       AND (total_budget_inr IS NULL OR total_budget_inr >= 0)
+       AND (spent_amount_inr IS NULL OR spent_amount_inr >= 0));
+
 CREATE INDEX IF NOT EXISTS idx_political_ads_ac ON political_ads(target_constituency_id);
 CREATE INDEX IF NOT EXISTS idx_political_ads_status ON political_ads(status);
 CREATE INDEX IF NOT EXISTS idx_political_ads_category ON political_ads(category);
@@ -238,15 +307,9 @@ CREATE TABLE IF NOT EXISTS gst_tax_invoices (
 
 CREATE INDEX IF NOT EXISTS idx_invoices_account ON gst_tax_invoices(account_type, account_id);
 
--- Add reference_id and double_entry columns to wallet_transactions if not existing
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM information_schema.columns 
-    WHERE table_name = 'wallet_transactions' AND column_name = 'reference_id'
-  ) THEN
-    ALTER TABLE wallet_transactions ADD COLUMN reference_id UUID;
-    ALTER TABLE wallet_transactions ADD COLUMN tax_invoice_id UUID REFERENCES gst_tax_invoices(id);
-    ALTER TABLE wallet_transactions ADD COLUMN double_entry_type TEXT CHECK (double_entry_type IN ('debit_spend', 'credit_recharge', 'refund', 'adjustment'));
-  END IF;
-END $$;
+-- Older wallet_transactions already has a text reference_id. Preserve it and
+-- add the independent invoice/ledger fields even when that legacy column exists.
+ALTER TABLE public.wallet_transactions
+  ADD COLUMN IF NOT EXISTS tax_invoice_id UUID REFERENCES public.gst_tax_invoices(id),
+  ADD COLUMN IF NOT EXISTS double_entry_type TEXT
+    CHECK (double_entry_type IN ('debit_spend', 'credit_recharge', 'refund', 'adjustment'));

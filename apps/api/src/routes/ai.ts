@@ -25,10 +25,15 @@ import {
   AICivicClassifier,
   AskPoligramService,
   AICostControlService,
+  AIProviderUnavailableError,
+  AIBudgetUnavailableError,
+  AIBudgetLimitError,
+  AICostLedgerUnavailableError,
 } from '../services/ai';
 import { validate } from '../lib/validation';
 import { sendApiError } from '../lib/replyHelper';
-import { AIProviderUnavailableError } from '../services/aiProvider';
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
+import { resolveAuthenticatedUser } from '../lib/userAuth';
 import type { AIProviderType } from '@kshetra/shared';
 
 const MIN_AC_NO = 1;
@@ -42,18 +47,76 @@ const MAX_ISSUE_LENGTH = 1000;
 const MAX_TOPIC_LENGTH = 1000;
 const MAX_NAME_LENGTH = 200;
 
+function sendAIServiceError(
+  reply: FastifyReply,
+  request: FastifyRequest,
+  error: unknown,
+  fallbackMessage: string,
+) {
+  const budgetExceeded = error instanceof AIBudgetLimitError;
+  const unavailable =
+    error instanceof AIProviderUnavailableError ||
+    error instanceof AIBudgetUnavailableError ||
+    error instanceof AICostLedgerUnavailableError;
+  const code =
+    budgetExceeded || unavailable
+      ? (error as Error & { code?: string }).code || 'AI_SERVICE_UNAVAILABLE'
+      : 'AI_PROVIDER_ERROR';
+  if (error instanceof AIBudgetLimitError)
+    reply.header('Retry-After', String(error.resetInSeconds));
+  return sendApiError(
+    reply,
+    request,
+    budgetExceeded ? 429 : unavailable ? 503 : 500,
+    budgetExceeded
+      ? 'Too Many Requests'
+      : unavailable
+        ? 'Service Unavailable'
+        : 'Internal Server Error',
+    error instanceof AIBudgetLimitError
+      ? error.message
+      : unavailable
+        ? 'AI processing or durable usage accounting is currently unavailable.'
+        : fallbackMessage,
+    { code },
+  );
+}
+
+async function requireAIAdmin(request: FastifyRequest, reply: FastifyReply): Promise<boolean> {
+  const actor = await resolveAuthenticatedUser(request, reply);
+  if (!actor) return false;
+  if (!['admin', 'super_admin', 'data_engineer'].includes(actor.role)) {
+    sendApiError(
+      reply,
+      request,
+      403,
+      'Forbidden',
+      'Administrator access is required for AI budget and provider controls.',
+      {
+        code: 'FORBIDDEN',
+      },
+    );
+    return false;
+  }
+  return true;
+}
+
 // --- ZOD SCHEMAS ---
 
 const chatBodySchema = z.object({
   messages: z
     .array(
       z.object({
-        role: z.enum(['user', 'assistant', 'system']),
+        role: z.enum(['user', 'assistant']),
         content: z.string().min(1).max(MAX_MESSAGE_LENGTH),
       }),
     )
     .min(1, 'messages array is required and must not be empty')
-    .max(MAX_MESSAGES_COUNT),
+    .max(MAX_MESSAGES_COUNT)
+    .refine(
+      (messages) => messages.some((message) => message.role === 'user'),
+      'At least one user message is required',
+    ),
   constituencyAcNo: z.number().int().min(MIN_AC_NO).max(MAX_AC_NO).optional(),
   stateCode: z.string().trim().length(2).optional(),
   tenantId: z.string().trim().min(1).optional(),
@@ -102,7 +165,10 @@ const tenantBudgetBodySchema = z.object({
 });
 
 const configureProviderSchema = z.object({
-  priorityOrder: z.array(z.enum(['gemini', 'openai', 'custom', 'offline_heuristic'])).optional(),
+  priorityOrder: z
+    .array(z.enum(['gemini', 'openai', 'custom', 'offline_heuristic']))
+    .max(4, 'At most four providers can be prioritized')
+    .optional(),
   customConfig: z
     .object({
       baseUrl: z.string().url(),
@@ -176,33 +242,13 @@ export async function aiRoutes(app: FastifyInstance) {
       });
     }
 
-    const tenantId = parsed.data.tenantId || 'default_tenant';
-
-    // 1. Quota Check (JOB 071)
-    const budgetCheck = await AICostControlService.checkBudget(tenantId, 500);
-    if (!budgetCheck.allowed) {
-      reply.header('Retry-After', String(budgetCheck.resetInSeconds || 86400));
-      return sendApiError(
-        reply,
-        request,
-        429,
-        'Too Many Requests',
-        budgetCheck.reason || 'AI Daily Quota Exceeded',
-        {
-          code: 'AI_BUDGET_EXCEEDED',
-        },
-      );
-    }
-
     try {
-      const summary = await AINewsSummaryService.summarizeNews(parsed.data);
-      if (!summary.cacheHit) {
-        await AICostControlService.recordUsage(
-          tenantId,
-          summary.tokensUsed,
-          summary.estimatedCostUsd,
-        );
-      }
+      const summary = await AINewsSummaryService.summarizeNews({
+        canonicalUrl: parsed.data.canonicalUrl,
+        title: parsed.data.title,
+        content: parsed.data.content,
+        tenantId: 'default_tenant',
+      });
       return reply.status(200).send(summary);
     } catch (err: unknown) {
       if (err instanceof AIProviderUnavailableError) {
@@ -211,16 +257,7 @@ export async function aiRoutes(app: FastifyInstance) {
         });
       }
       request.log.error({ err }, 'AI news summarization failed');
-      return sendApiError(
-        reply,
-        request,
-        500,
-        'Internal Server Error',
-        'Failed to summarize news article',
-        {
-          code: 'AI_SUMMARIZATION_ERROR',
-        },
-      );
+      return sendAIServiceError(reply, request, err, 'Failed to summarize news article');
     }
   });
 
@@ -237,26 +274,20 @@ export async function aiRoutes(app: FastifyInstance) {
     }
 
     try {
-      const result = await AICivicClassifier.classify(parsed.data);
+      const result = await AICivicClassifier.classify({
+        ...parsed.data,
+        tenantId: 'default_tenant',
+      });
       return reply.status(200).send(result);
     } catch (err: unknown) {
       request.log.error({ err }, 'Civic issue classification failed');
-      return sendApiError(
-        reply,
-        request,
-        500,
-        'Internal Server Error',
-        'Failed to classify civic complaint',
-        {
-          code: 'CIVIC_CLASSIFICATION_ERROR',
-        },
-      );
+      return sendAIServiceError(reply, request, err, 'Failed to classify civic complaint');
     }
   });
 
   /**
    * POST /api/v1/ai/ask-poligram & /api/v1/ai/ask (JOB 070)
-   * Strictly grounded RAG over verified database records with statutory citations
+   * Q&A over bundled reference data with explicit unverified-source disclosure
    */
   const handleAskPoligram = async (request: FastifyRequest, reply: FastifyReply) => {
     const parsed = validate(askPoligramSchema, request.body);
@@ -266,43 +297,16 @@ export async function aiRoutes(app: FastifyInstance) {
       });
     }
 
-    const tenantId = parsed.data.tenantId || 'default_tenant';
-
-    // Quota Check
-    const budgetCheck = await AICostControlService.checkBudget(tenantId, 1000);
-    if (!budgetCheck.allowed) {
-      reply.header('Retry-After', String(budgetCheck.resetInSeconds || 86400));
-      return sendApiError(
-        reply,
-        request,
-        429,
-        'Too Many Requests',
-        budgetCheck.reason || 'AI Daily Quota Exceeded',
-        {
-          code: 'AI_BUDGET_EXCEEDED',
-        },
-      );
-    }
-
     try {
-      const response = await AskPoligramService.ask(parsed.data);
-      if (response.tokensUsed > 0) {
-        // Estimate cost based on nominal token usage
-        const costUsd = response.tokensUsed * 0.0000002;
-        await AICostControlService.recordUsage(tenantId, response.tokensUsed, costUsd);
-      }
+      const response = await AskPoligramService.ask({ ...parsed.data, tenantId: 'default_tenant' });
       return reply.status(200).send(response);
     } catch (err: unknown) {
       request.log.error({ err }, 'Ask POLIGRAM query failed');
-      return sendApiError(
+      return sendAIServiceError(
         reply,
         request,
-        500,
-        'Internal Server Error',
+        err,
         'Failed to process POLIGRAM intelligence query',
-        {
-          code: 'ASK_POLIGRAM_ERROR',
-        },
       );
     }
   };
@@ -315,25 +319,22 @@ export async function aiRoutes(app: FastifyInstance) {
    * Executive cost telemetry and quota report
    */
   app.get('/api/v1/ai/cost-report', async (request, reply) => {
+    if (!(await requireAIAdmin(request, reply))) return;
     const parsed = validate(costReportQuerySchema, request.query);
-    const tenantId = (parsed.ok && parsed.data?.tenantId) || 'default_tenant';
-    const period = (parsed.ok && parsed.data?.period) || 'day';
+    if (!parsed.ok) {
+      return sendApiError(reply, request, 400, 'Bad Request', parsed.error, {
+        code: 'FST_ERR_VALIDATION',
+      });
+    }
+    const tenantId = parsed.data.tenantId || 'default_tenant';
+    const period = parsed.data.period || 'day';
 
     try {
       const report = await AICostControlService.generateCostReport(tenantId, period);
       return reply.status(200).send(report);
     } catch (err: unknown) {
       request.log.error({ err }, 'Failed to generate AI cost report');
-      return sendApiError(
-        reply,
-        request,
-        500,
-        'Internal Server Error',
-        'Failed to generate cost report',
-        {
-          code: 'COST_REPORT_ERROR',
-        },
-      );
+      return sendAIServiceError(reply, request, err, 'Failed to generate cost report');
     }
   });
 
@@ -341,24 +342,21 @@ export async function aiRoutes(app: FastifyInstance) {
    * GET /api/v1/ai/tenant-budget (JOB 071)
    */
   app.get('/api/v1/ai/tenant-budget', async (request, reply) => {
+    if (!(await requireAIAdmin(request, reply))) return;
     const parsed = validate(costReportQuerySchema, request.query);
-    const tenantId = (parsed.ok && parsed.data?.tenantId) || 'default_tenant';
+    if (!parsed.ok) {
+      return sendApiError(reply, request, 400, 'Bad Request', parsed.error, {
+        code: 'FST_ERR_VALIDATION',
+      });
+    }
+    const tenantId = parsed.data.tenantId || 'default_tenant';
 
     try {
       const budget = await AICostControlService.getTenantBudget(tenantId);
       return reply.status(200).send(budget);
     } catch (err: unknown) {
       request.log.error({ err }, 'Failed to get tenant budget');
-      return sendApiError(
-        reply,
-        request,
-        500,
-        'Internal Server Error',
-        'Failed to retrieve tenant budget',
-        {
-          code: 'TENANT_BUDGET_ERROR',
-        },
-      );
+      return sendAIServiceError(reply, request, err, 'Failed to retrieve tenant budget');
     }
   });
 
@@ -366,6 +364,7 @@ export async function aiRoutes(app: FastifyInstance) {
    * POST /api/v1/ai/tenant-budget (JOB 071)
    */
   app.post('/api/v1/ai/tenant-budget', async (request, reply) => {
+    if (!(await requireAIAdmin(request, reply))) return;
     const parsed = validate(tenantBudgetBodySchema, request.body);
     if (!parsed.ok) {
       return sendApiError(reply, request, 400, 'Bad Request', parsed.error, {
@@ -378,16 +377,7 @@ export async function aiRoutes(app: FastifyInstance) {
       return reply.status(200).send(updated);
     } catch (err: unknown) {
       request.log.error({ err }, 'Failed to update tenant budget');
-      return sendApiError(
-        reply,
-        request,
-        500,
-        'Internal Server Error',
-        'Failed to update tenant budget',
-        {
-          code: 'TENANT_BUDGET_ERROR',
-        },
-      );
+      return sendAIServiceError(reply, request, err, 'Failed to update tenant budget');
     }
   });
 
@@ -397,16 +387,23 @@ export async function aiRoutes(app: FastifyInstance) {
    */
   app.get('/api/v1/ai/providers', async () => {
     const chain = defaultAIRegistry.getActiveChain();
+    const primaryProvider = chain[0]?.name;
+    const defaultModel =
+      primaryProvider === 'gemini'
+        ? process.env.GEMINI_MODEL || 'gemini-2.0-flash'
+        : primaryProvider === 'openai'
+          ? process.env.OPENAI_MODEL || 'gpt-4o-mini'
+          : primaryProvider === 'custom'
+            ? process.env.CUSTOM_LLM_MODEL || null
+            : null;
     return {
       activeChain: chain.map((p) => ({
         name: p.name,
         available: p.isAvailable(),
       })),
-      defaultModel:
-        chain[0]?.name === 'gemini'
-          ? process.env.GEMINI_MODEL || 'gemini-2.0-flash'
-          : 'gpt-4o-mini',
-      offlineSafe: true,
+      defaultModel,
+      configured: chain.some((provider) => provider.name !== 'offline_heuristic'),
+      offlineFallbackEnabled: !isProductionLikeRuntime(),
     };
   });
 
@@ -420,6 +417,20 @@ export async function aiRoutes(app: FastifyInstance) {
       return sendApiError(reply, request, 400, 'Bad Request', parsed.error, {
         code: 'FST_ERR_VALIDATION',
       });
+    }
+
+    if (!(await requireAIAdmin(request, reply))) return;
+    if (isProductionLikeRuntime()) {
+      return sendApiError(
+        reply,
+        request,
+        409,
+        'Conflict',
+        'Production AI providers must be configured through the deployment environment and rate-card release process.',
+        {
+          code: 'RUNTIME_PROVIDER_CONFIGURATION_DISABLED',
+        },
+      );
     }
 
     try {
@@ -457,43 +468,24 @@ export async function aiRoutes(app: FastifyInstance) {
       });
     }
 
-    const tenantId = parsed.data.tenantId || 'default_tenant';
-
-    // Budget check
-    const budgetCheck = await AICostControlService.checkBudget(tenantId, 1000);
-    if (!budgetCheck.allowed) {
-      reply.header('Retry-After', String(budgetCheck.resetInSeconds || 86400));
-      return sendApiError(
-        reply,
-        request,
-        429,
-        'Too Many Requests',
-        budgetCheck.reason || 'AI Daily Quota Exceeded',
-        {
-          code: 'AI_BUDGET_EXCEEDED',
-        },
-      );
-    }
+    const requiresActor = Boolean(request.headers.authorization) || isProductionLikeRuntime();
+    const actor = requiresActor ? await resolveAuthenticatedUser(request, reply) : undefined;
+    if (requiresActor && !actor) return reply;
 
     try {
       const response = await chatWithAI({
+        // The validated conversation history cannot contain caller-supplied system prompts.
         messages: parsed.data.messages,
         constituencyAcNo: parsed.data.constituencyAcNo,
         stateCode: parsed.data.stateCode,
+        tenantId: 'default_tenant',
+        userId: actor?.userId,
+        operation: 'ai_chat',
       });
-      return { response };
+      return { response, groundingStatus: 'reference_data_unverified' as const };
     } catch (err: unknown) {
       request.log.error({ err }, 'AI chat processing failed');
-      return sendApiError(
-        reply,
-        request,
-        500,
-        'Internal Server Error',
-        'Failed to process AI chat request',
-        {
-          code: 'AI_PROVIDER_ERROR',
-        },
-      );
+      return sendAIServiceError(reply, request, err, 'Failed to process AI chat request');
     }
   });
 
@@ -519,21 +511,23 @@ export async function aiRoutes(app: FastifyInstance) {
         ? queryParsed.data.stateCode.toUpperCase()
         : 'TS';
     const num = parsed.data.acNo;
+    const requiresActor = Boolean(request.headers.authorization) || isProductionLikeRuntime();
+    const actor = requiresActor ? await resolveAuthenticatedUser(request, reply) : undefined;
+    if (requiresActor && !actor) return reply;
     try {
-      const analysis = await analyzeConstituency(num, stateCode);
-      return { acNo: num, stateCode, analysis };
+      const analysis = await analyzeConstituency(num, stateCode, {
+        tenantId: 'default_tenant',
+        userId: actor?.userId,
+      });
+      return {
+        acNo: num,
+        stateCode,
+        analysis,
+        groundingStatus: 'reference_data_unverified' as const,
+      };
     } catch (err: unknown) {
       request.log.error({ err, acNo: num, stateCode }, 'AI constituency analysis failed');
-      return sendApiError(
-        reply,
-        request,
-        500,
-        'Internal Server Error',
-        'Failed to analyze constituency',
-        {
-          code: 'AI_PROVIDER_ERROR',
-        },
-      );
+      return sendAIServiceError(reply, request, err, 'Failed to analyze constituency');
     }
   });
 
@@ -544,16 +538,7 @@ export async function aiRoutes(app: FastifyInstance) {
       return { analysis };
     } catch (err: unknown) {
       request.log.error({ err }, 'AI trend analysis failed');
-      return sendApiError(
-        reply,
-        request,
-        500,
-        'Internal Server Error',
-        'Failed to analyze election trends',
-        {
-          code: 'AI_PROVIDER_ERROR',
-        },
-      );
+      return sendAIServiceError(reply, request, err, 'Failed to analyze election trends');
     }
   });
 
@@ -571,16 +556,7 @@ export async function aiRoutes(app: FastifyInstance) {
       return { results };
     } catch (err: unknown) {
       request.log.error({ err }, 'AI smart search failed');
-      return sendApiError(
-        reply,
-        request,
-        500,
-        'Internal Server Error',
-        'Failed to perform smart search',
-        {
-          code: 'AI_PROVIDER_ERROR',
-        },
-      );
+      return sendAIServiceError(reply, request, err, 'Failed to perform smart search');
     }
   });
 
@@ -598,16 +574,7 @@ export async function aiRoutes(app: FastifyInstance) {
       return { summary };
     } catch (err: unknown) {
       request.log.error({ err }, 'AI issue summarization failed');
-      return sendApiError(
-        reply,
-        request,
-        500,
-        'Internal Server Error',
-        'Failed to summarize issues',
-        {
-          code: 'AI_PROVIDER_ERROR',
-        },
-      );
+      return sendAIServiceError(reply, request, err, 'Failed to summarize issues');
     }
   });
 
@@ -645,16 +612,7 @@ export async function aiRoutes(app: FastifyInstance) {
       };
     } catch (err: unknown) {
       request.log.error({ err }, 'AI campaign copy generation failed');
-      return sendApiError(
-        reply,
-        request,
-        500,
-        'Internal Server Error',
-        'Failed to generate campaign copy',
-        {
-          code: 'AI_PROVIDER_ERROR',
-        },
-      );
+      return sendAIServiceError(reply, request, err, 'Failed to generate campaign copy');
     }
   });
 
@@ -663,12 +621,14 @@ export async function aiRoutes(app: FastifyInstance) {
     const chain = defaultAIRegistry.getActiveChain();
     const configuredProviders = chain.filter((provider) => provider.name !== 'offline_heuristic');
     const primary = configuredProviders[0];
+    const offlineFallbackActive = !primary && chain.some((p) => p.name === 'offline_heuristic');
     return {
-      configured: configuredProviders.length > 0,
-      provider: primary?.name ?? null,
-      model: (primary as { model?: string } | undefined)?.model ?? null,
-      activeProviders: configuredProviders.map((provider) => provider.name),
-      degradedOffline: configuredProviders.length === 0,
+      configured: chain.some((provider) => provider.name !== 'offline_heuristic'),
+      provider: primary?.name || null,
+      model: (primary as { model?: string } | undefined)?.model || null,
+      activeProviders: chain.map((p) => p.name),
+      degradedOffline: offlineFallbackActive,
+      offlineFallbackEnabled: !isProductionLikeRuntime(),
     };
   });
 }

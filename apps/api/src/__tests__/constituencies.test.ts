@@ -32,6 +32,7 @@ describe('Constituency Routes', () => {
     });
 
     expect(response.statusCode).toBe(200);
+    expect(response.headers['cache-control']).toBe('public, max-age=60, s-maxage=60');
 
     const body = JSON.parse(response.payload);
     expect(body.state).toBe('TS');
@@ -171,6 +172,15 @@ describe('Constituency Routes', () => {
 
     expect(body.state).toBe('TS');
     expect(body.totalConstituencies).toBe(119);
+    expect(body.geographicalConstituencies).toBe(119);
+    expect(body.electionResultsCoverage).toEqual({
+      constituenciesWithElectionWinners: 119,
+      constituenciesWithoutElectionWinners: 0,
+      winnerCoveragePercentage: 100,
+      constituenciesWithUsableMargins: 119,
+      constituenciesWithoutUsableMargins: 0,
+      marginCoveragePercentage: 100,
+    });
     expect(body.totalDistricts).toBeGreaterThan(0);
 
     expect(body.partySummary).toBeInstanceOf(Array);

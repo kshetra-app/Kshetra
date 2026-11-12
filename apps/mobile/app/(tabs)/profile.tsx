@@ -16,6 +16,7 @@ import { useFavoritesStore } from '../../stores/favorites';
 import { useRecentsStore } from '../../stores/recents';
 import { useAuthStore } from '../../stores/auth';
 import { useNotificationsStore } from '../../stores/notifications';
+import { selectOwnedUnreadCount } from '../../lib/notificationInboxOwnership';
 import { useUserProfileStore } from '../../stores/userProfile';
 import { getPartyColor } from '../../lib/constants';
 import UserProfileCard from '../../components/UserProfileCard';
@@ -68,7 +69,8 @@ export default function ProfileScreen() {
   const user = useAuthStore((s) => s.user);
   const signOut = useAuthStore((s) => s.signOut);
   const loading = useAuthStore((s) => s.loading);
-  const unreadCount = useNotificationsStore((s) => s.unreadCount);
+  const userId = user?.id ?? null;
+  const unreadCount = useNotificationsStore((s) => selectOwnedUnreadCount(s, userId));
   const notifEnabled = useNotificationsStore((s) => s.enabled);
   const toggleNotif = useNotificationsStore((s) => s.toggleEnabled);
   const userProfile = useUserProfileStore((s) => s.profile);

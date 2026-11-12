@@ -36,6 +36,7 @@ import { manageRoutes } from './routes/manage';
 import { pagesRoutes } from './routes/pages';
 import { policyRoutes } from './routes/policy';
 import { randomUUID } from 'crypto';
+import { isIsolatedTestRuntime } from './lib/runtimeEnvironment';
 import { dmRoutes } from './routes/dm';
 import { politicalAdsRoutes } from './routes/politicalAds';
 import { politicalCampaignRoutes } from './routes/politicalCampaigns';
@@ -144,7 +145,9 @@ export async function buildApp(): Promise<FastifyInstance> {
     fastifyOptions.requestIdLogLabel = 'reqId';
   }
 
-  // Keep Fastify's raw server type explicit when dynamic logger compatibility options are used.
+  // The explicit server generic prevents Fastify's overloaded factory from
+  // inferring HTTP/2 when the options object contains dynamically-selected
+  // logging compatibility settings.
   const app = Fastify<RawServerDefault>(fastifyOptions);
 
   // Track request start time for high-resolution latency tracking and metrics collection
@@ -184,7 +187,7 @@ export async function buildApp(): Promise<FastifyInstance> {
       request.method === 'GET' &&
       reply.statusCode === 200
     ) {
-      reply.header('Cache-Control', 'public, max-age=300, s-maxage=300');
+      reply.header('Cache-Control', 'public, max-age=60, s-maxage=60');
     }
     return payload;
   });
@@ -338,7 +341,7 @@ export async function start() {
 
 // Only start automatically when directly executed as the main entry point
 const isDirectExecution = typeof require !== 'undefined' && require.main === module;
-if (process.env.NODE_ENV !== 'test' && (process.env.START_SERVER === 'true' || isDirectExecution)) {
+if (!isIsolatedTestRuntime() && (process.env.START_SERVER === 'true' || isDirectExecution)) {
   start().catch((err) => {
     console.error('Fatal startup error in KSHETRA API server:', err);
     process.exit(1);

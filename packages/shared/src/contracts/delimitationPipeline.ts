@@ -16,7 +16,8 @@ export interface DelimitationBoundaryDelta {
   areaDeltaKm2: number;
   percentAreaChange: number;
   centroidShiftMeters: number;
-  voterReassignmentEstimate: number;
+  /** Null until an authoritative voter-to-boundary crosswalk is available. */
+  voterReassignmentEstimate: number | null;
 }
 
 export interface DelimitationTopologyCheckResult {
@@ -33,10 +34,12 @@ export interface DelimitationImpactReport {
   orderNumber: string;
   gazetteDate: string;
   stateCode: string;
+  canonicalVersionCodes: string[];
   constituencyCount: number;
   totalAreaDeltaKm2: number;
   centroidShiftMetersMax: number;
-  voterShiftEstimate: number;
+  /** Null until an authoritative voter-to-boundary crosswalk is available. */
+  voterShiftEstimate: number | null;
   topologyValid: boolean;
   topologyAudit: DelimitationTopologyCheckResult;
   boundaryDeltas: DelimitationBoundaryDelta[];
@@ -49,9 +52,6 @@ export interface DelimitationRevisionSubmission {
   stateCode: string;
   boundaries: Array<{
     constituencyId: string;
-    constituencyName: string;
     geojsonGeometry: Record<string, unknown>;
-    previousAreaKm2?: number;
-    estimatedVoters?: number;
   }>;
 }

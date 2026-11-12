@@ -412,6 +412,24 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
         status: 'accepted',
         initiated_by: 'usr-1',
       };
+      const mockInitialMessage = {
+        id: 'msg-new-mutual',
+        conversation_id: 'conv-new-mutual',
+        sender_id: 'usr-1',
+        content: 'Hello there',
+      };
+
+      const rpcSpy = jest.spyOn(supabase, 'rpc').mockResolvedValueOnce({
+        data: {
+          success: true,
+          created: true,
+          messageCreated: true,
+          notificationTriggered: true,
+          conversation: mockCreated,
+          initialMessage: mockInitialMessage,
+        },
+        error: null,
+      } as any);
 
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
@@ -441,11 +459,6 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
                 }),
               }),
             }),
-            insert: () => ({
-              select: () => ({
-                single: async () => ({ data: mockCreated, error: null }),
-              }),
-            }),
           } as any;
         }
         if (table === 'user_follows') {
@@ -459,11 +472,6 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
             }),
           } as any;
         }
-        if (table === 'messages') {
-          return {
-            insert: async () => ({ data: null, error: null }),
-          } as any;
-        }
         return {} as any;
       }) as any);
 
@@ -471,13 +479,28 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
         method: 'POST',
         url: '/api/v1/dm/conversations',
         headers: { 'x-user-id': 'usr-1' },
-        payload: { recipientId: 'usr-2', initialMessage: 'Hello there' },
+        payload: {
+          recipientId: 'usr-2',
+          initialMessage: 'Hello there',
+          clientToken: 'dm-unit-test-token',
+        },
       });
 
       expect(res.statusCode).toBe(201);
       const body = JSON.parse(res.payload);
       expect(body.success).toBe(true);
       expect(body.conversation.status).toBe('accepted');
+      expect(body.initialMessage.id).toBe('msg-new-mutual');
+      expect(body.initialMessage.client_token).toBeUndefined();
+      expect(body.notificationTriggered).toBe(true);
+      expect(rpcSpy).toHaveBeenCalledWith('create_dm_conversation_with_initial_message', {
+        p_participant_one: 'usr-1',
+        p_participant_two: 'usr-2',
+        p_initiated_by: 'usr-1',
+        p_status: 'accepted',
+        p_initial_message: 'Hello there',
+        p_client_token: 'dm-unit-test-token',
+      });
     });
   });
 
@@ -716,12 +739,27 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
           } as any;
         }
         if (table === 'conversations') {
+          const query: any = {
+            eq: () => query,
+            or: () => query,
+            select: () => query,
+            maybeSingle: async () => ({ data: { id: 'conv-1' }, error: null }),
+          };
           return {
-            update: () => ({
+            select: () => ({
               eq: () => ({
-                or: async () => ({ data: null, error: null }),
+                maybeSingle: async () => ({
+                  data: {
+                    id: 'conv-1',
+                    participant_one: 'usr-1',
+                    participant_two: 'usr-2',
+                    status: 'pending',
+                  },
+                  error: null,
+                }),
               }),
             }),
+            update: () => query,
           } as any;
         }
         return {} as any;
@@ -737,6 +775,35 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
       const body = JSON.parse(res.payload);
       expect(body.success).toBe(true);
       expect(body.status).toBe('declined');
+    });
+
+    it('does not report a missing or non-participant conversation as declined', async () => {
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        if (table === 'user_profiles') {
+          return {
+            select: () => ({
+              eq: () => ({ maybeSingle: async () => ({ data: { role: 'citizen' }, error: null }) }),
+            }),
+          } as any;
+        }
+        if (table === 'conversations') {
+          return {
+            select: () => ({
+              eq: () => ({ maybeSingle: async () => ({ data: null, error: null }) }),
+            }),
+          } as any;
+        }
+        return {} as any;
+      }) as any);
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/v1/dm/conversations/missing/decline',
+        headers: { 'x-user-id': 'usr-2' },
+      });
+
+      expect(response.statusCode).toBe(404);
+      expect(JSON.parse(response.payload).code).toBe('NOT_FOUND');
     });
   });
 
@@ -1018,6 +1085,10 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
     it('returns 500 when conversation creation fails in production environment', async () => {
       const origEnv = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
+      jest.spyOn(supabase, 'rpc').mockResolvedValueOnce({
+        data: null,
+        error: { code: 'XX000', message: 'Atomic database operation failed' },
+      } as any);
 
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
@@ -1095,6 +1166,57 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
       expect(res.statusCode).toBe(500);
       const body = JSON.parse(res.payload);
       expect(body.code).toBe('DATABASE_ERROR');
+    });
+
+    it('fails closed for conversation, message, accept, and decline mutations in production without persistence', async () => {
+      const origConfig = isSupabaseConfigured;
+      const origNodeEnv = process.env.NODE_ENV;
+      const origAppEnv = process.env.APP_ENV;
+      setSupabaseConfiguredForTesting(false);
+      process.env.NODE_ENV = 'production';
+      process.env.APP_ENV = 'production';
+      jest.spyOn(supabase.auth, 'getUser').mockResolvedValue({
+        data: { user: { id: 'verified-dm-user' } as any },
+        error: null,
+      } as any);
+
+      try {
+        const requests = [
+          await app.inject({
+            method: 'POST',
+            url: '/api/v1/dm/conversations',
+            headers: { authorization: 'Bearer verified-token' },
+            payload: { recipientId: 'recipient-1' },
+          }),
+          await app.inject({
+            method: 'POST',
+            url: '/api/v1/dm/conversations/conversation-1/messages',
+            headers: { authorization: 'Bearer verified-token' },
+            payload: { content: 'Must not report an unsaved message' },
+          }),
+          await app.inject({
+            method: 'POST',
+            url: '/api/v1/dm/conversations/conversation-1/accept',
+            headers: { authorization: 'Bearer verified-token' },
+          }),
+          await app.inject({
+            method: 'POST',
+            url: '/api/v1/dm/conversations/conversation-1/decline',
+            headers: { authorization: 'Bearer verified-token' },
+          }),
+        ];
+
+        for (const response of requests) {
+          expect(response.statusCode).toBe(503);
+          expect(JSON.parse(response.payload).code).toBe('DATABASE_UNAVAILABLE');
+        }
+      } finally {
+        setSupabaseConfiguredForTesting(origConfig);
+        if (origNodeEnv === undefined) delete process.env.NODE_ENV;
+        else process.env.NODE_ENV = origNodeEnv;
+        if (origAppEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = origAppEnv;
+      }
     });
 
     it('exercises offline fallback and error handling for /accept and /decline', async () => {
@@ -1196,12 +1318,27 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
           } as any;
         }
         if (table === 'conversations') {
+          const query: any = {
+            eq: () => query,
+            or: () => query,
+            select: () => query,
+            maybeSingle: async () => ({ data: null, error: { message: 'Decline deadlock' } }),
+          };
           return {
-            update: () => ({
+            select: () => ({
               eq: () => ({
-                or: async () => ({ error: { message: 'Decline deadlock' } }),
+                maybeSingle: async () => ({
+                  data: {
+                    id: 'c-dec-fail',
+                    participant_one: 'usr-1',
+                    participant_two: 'usr-2',
+                    status: 'pending',
+                  },
+                  error: null,
+                }),
               }),
             }),
+            update: () => query,
           } as any;
         }
         return {} as any;
@@ -1391,6 +1528,10 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
     });
 
     it('returns mock conversation on create error in test/dev environment', async () => {
+      jest.spyOn(supabase, 'rpc').mockResolvedValueOnce({
+        data: null,
+        error: { code: 'XX000', message: 'Local DB down' },
+      } as any);
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
           return {
@@ -1411,11 +1552,6 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
                 eq: () => ({
                   maybeSingle: async () => ({ data: null }),
                 }),
-              }),
-            }),
-            insert: () => ({
-              select: () => ({
-                single: async () => ({ data: null, error: { message: 'Local DB down' } }),
               }),
             }),
           } as any;

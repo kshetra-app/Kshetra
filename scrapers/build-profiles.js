@@ -315,7 +315,6 @@ function buildProfile(candidateKey, mynetaRecords, prsData, wikiDOBs, wikiEnrich
       questionsAsked: prsMatch?.questionsAsked || 0,
       debatesParticipated: prsMatch?.debates || 0,
       privateMemberBills: prsMatch?.privateBills || 0,
-      attendancePercent: prsMatch?.attendance || 0,
       performanceScore: 0,
     },
 
@@ -407,7 +406,6 @@ function computeCompleteness(profile) {
     profile.criminalRecord.totalCases >= 0,
     !!profile.education.educationLevel && profile.education.educationLevel !== 'others',
     !!profile.education.selfProfession,
-    profile.performance.attendancePercent > 0,
     profile.performance.questionsAsked >= 0,
     !!profile.sources.mynetaUrl,
   ];
@@ -452,14 +450,6 @@ function detectRedFlags(profile) {
     flags.push({
       type: 'party_hopping', severity: 'info',
       description: `Changed parties ${profile.career.previousParties.length} times`,
-    });
-  }
-
-  if (profile.performance.attendancePercent > 0 && profile.performance.attendancePercent < 50) {
-    flags.push({
-      type: 'low_attendance', severity: profile.performance.attendancePercent < 30 ? 'critical' : 'warning',
-      description: `Only ${profile.performance.attendancePercent}% attendance`,
-      value: `${profile.performance.attendancePercent}%`,
     });
   }
 

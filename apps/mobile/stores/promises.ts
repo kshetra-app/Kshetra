@@ -18,11 +18,14 @@ import { computePDI, buildReportCard } from '../lib/promiseTypes';
 import * as dataService from '../lib/supabaseDataService';
 import { enqueue } from '../lib/offlineSync';
 import { useAuthStore } from './auth';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 
 interface PromiseState {
   promises: ElectionPromise[];
   updates: PromiseUpdate[];
   evidence: PromiseEvidence[];
+  promiseLoadStatus: 'idle' | 'loading' | 'loaded' | 'error';
+  promiseLoadStateCode: string | null;
 
   // Queries
   getPromisesForState: (stateCode: string) => ElectionPromise[];
@@ -36,6 +39,7 @@ interface PromiseState {
   getStatusBreakdown: (stateCode: string) => Record<PromiseStatus, number>;
 
   // Actions
+  loadForState: (stateCode: string, force?: boolean, preserveLoadedData?: boolean) => Promise<void>;
   toggleFollowPromise: (promiseId: string) => Promise<void>;
   submitEvidence: (evidence: Omit<PromiseEvidence, 'id' | 'upvotes' | 'createdAt'>) => Promise<void>;
 }
@@ -498,10 +502,113 @@ const SEED_EVIDENCE: PromiseEvidence[] = [
   },
 ];
 
+let promiseLoadRequestSequence = 0;
+
+function mapServerPromiseRows(serverPromises: any[]): {
+  promises: ElectionPromise[];
+  updates: PromiseUpdate[];
+} {
+  const promises: ElectionPromise[] = serverPromises.map((row: any) => ({
+    id: row.id,
+    stateCode: row.state_code,
+    constituencyAcNo: row.constituency_ac_no ?? undefined,
+    constituencyName: row.constituency_name ?? undefined,
+    party: row.party,
+    mlaName: row.mla_name ?? undefined,
+    title: row.title,
+    description: row.description,
+    category: row.category as PromiseCategory,
+    source: row.source,
+    sourceUrl: row.source_url ?? undefined,
+    promisedDate: row.promised_date,
+    deadline: row.deadline ?? undefined,
+    status: row.status as PromiseStatus,
+    deliveryPercentage: Number(row.delivery_percentage ?? 0),
+    electionYear: Number(row.election_year),
+    followCount: Number(row.follow_count ?? 0),
+    verificationCount: Number(row.verification_count ?? 0),
+    disputeCount: Number(row.dispute_count ?? 0),
+  }));
+  const updates: PromiseUpdate[] = serverPromises.flatMap((row: any) =>
+    (row.promise_updates ?? []).map((update: any) => ({
+      id: update.id,
+      promiseId: update.promise_id,
+      fromStatus: update.from_status as PromiseStatus,
+      toStatus: update.to_status as PromiseStatus,
+      note: update.note,
+      updatedBy: update.updated_by ?? undefined,
+      updatedByName: update.updated_by_name ?? 'System',
+      sourceUrl: update.source_url ?? undefined,
+      createdAt: update.created_at,
+    })),
+  );
+  return { promises, updates };
+}
+
 export const usePromiseStore = create<PromiseState>()((set, get) => ({
-  promises: SEED_PROMISES,
-  updates: SEED_UPDATES,
-  evidence: SEED_EVIDENCE,
+  promises: IS_LIVE_ENVIRONMENT ? [] : SEED_PROMISES,
+  updates: IS_LIVE_ENVIRONMENT ? [] : SEED_UPDATES,
+  evidence: IS_LIVE_ENVIRONMENT ? [] : SEED_EVIDENCE,
+  promiseLoadStatus: 'idle',
+  promiseLoadStateCode: null,
+
+  loadForState: async (stateCode, force = false, preserveLoadedData = false) => {
+    const code = stateCode.trim().toUpperCase();
+    if (!code) return;
+
+    const current = get();
+    if (
+      !force &&
+      current.promiseLoadStateCode === code &&
+      (current.promiseLoadStatus === 'loading' || current.promiseLoadStatus === 'loaded')
+    ) {
+      return;
+    }
+
+    const requestSequence = ++promiseLoadRequestSequence;
+    const keepCurrentData = preserveLoadedData &&
+      current.promiseLoadStateCode === code &&
+      current.promiseLoadStatus === 'loaded';
+    const previewPromises = IS_LIVE_ENVIRONMENT && !keepCurrentData ? [] : current.promises;
+    const previewUpdates = IS_LIVE_ENVIRONMENT && !keepCurrentData ? [] : current.updates;
+    set({
+      promises: previewPromises,
+      updates: previewUpdates,
+      promiseLoadStatus: keepCurrentData ? 'loaded' : 'loading',
+      promiseLoadStateCode: code,
+    });
+
+    try {
+      const rows = await dataService.fetchPromisesForState(code);
+      if (requestSequence !== promiseLoadRequestSequence) return;
+      if (rows === null) {
+        set({
+          promises: previewPromises,
+          updates: previewUpdates,
+          promiseLoadStatus: 'error',
+          promiseLoadStateCode: code,
+        });
+        return;
+      }
+
+      const { promises, updates } = mapServerPromiseRows(rows);
+      set((state) => ({
+        promises,
+        updates,
+        evidence: state.evidence.filter((entry) => entry.syncStatus && entry.syncStatus !== 'SYNCED'),
+        promiseLoadStatus: 'loaded',
+        promiseLoadStateCode: code,
+      }));
+    } catch {
+      if (requestSequence !== promiseLoadRequestSequence) return;
+      set({
+        promises: previewPromises,
+        updates: previewUpdates,
+        promiseLoadStatus: 'error',
+        promiseLoadStateCode: code,
+      });
+    }
+  },
 
   getPromisesForState: (stateCode) =>
     get().promises.filter((p) => p.stateCode === stateCode),

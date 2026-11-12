@@ -82,7 +82,7 @@ export const ENDORSEMENT_TYPE_CONFIG: Record<EndorsementType, { label: string; i
 
 export interface PoliticianPortalProfile {
   id: string;
-  userId: string;
+  userId?: string;
   displayName: string;
   tier: PoliticianTier;
   party?: string;
@@ -98,19 +98,19 @@ export interface PoliticianPortalProfile {
   socialLinks: { platform: string; url: string }[];
   isVerified: boolean;
   isActive: boolean;
-  followerCount: number;
-  endorsementCount: number;
-  endorsementScore: number;
-  eventsHosted: number;
-  issuesResponded: number;
-  responseRate: number;
-  avgResponseTimeHours: number;
+  followerCount: number | null;
+  endorsementCount: number | null;
+  endorsementScore: number | null;
+  eventsHosted: number | null;
+  issuesResponded: number | null;
+  responseRate: number | null;
+  avgResponseTimeHours: number | null;
   manifestoId?: string;
   mentorId?: string;
-  menteesCount: number;
-  totalFundsRaised: number;
-  joinedAt: string;
-  lastActiveAt: string;
+  menteesCount: number | null;
+  totalFundsRaised: number | null;
+  joinedAt: string | null;
+  lastActiveAt: string | null;
 }
 
 export interface ConstituentBroadcast {
@@ -153,7 +153,7 @@ export interface PoliticalEvent {
   expectedAttendance?: number;
   actualAttendance?: number;
   isPublic: boolean;
-  rsvpCount: number;
+  rsvpCount: number | null;
   coverImageUrl?: string;
   liveStreamUrl?: string;
   mediaUrls: string[];
@@ -174,9 +174,9 @@ export interface EManifesto {
   stateCode: string;
   constituencyAcNo?: number;
   publishedAt?: string;
-  views: number;
-  endorsements: number;
-  feedbackCount: number;
+  views: number | null;
+  endorsements: number | null;
+  feedbackCount: number | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -191,8 +191,8 @@ export interface ManifestoItem {
   beneficiaries?: string;
   kpis: string[];
   priority: 'high' | 'medium' | 'low';
-  supportVotes: number;
-  opposeVotes: number;
+  supportVotes: number | null;
+  opposeVotes: number | null;
 }
 
 export interface Mentorship {
@@ -257,7 +257,7 @@ export interface PoliticianSurvey {
   targetStateCode: string;
   targetConstituencyAcNo?: number;
   questions: SurveyQuestion[];
-  responseCount: number;
+  responseCount: number | null;
   startDate: string;
   endDate: string;
   results?: SurveyResults;

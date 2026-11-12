@@ -101,7 +101,7 @@ describe('stateData service', () => {
   });
 });
 
-describe('ai service — graceful degradation without API key', () => {
+describe('AI service reports unavailable when no provider key is configured', () => {
   const original = process.env.OPENAI_API_KEY;
   const originalGemini = process.env.GEMINI_API_KEY;
   beforeAll(() => {
@@ -113,10 +113,9 @@ describe('ai service — graceful degradation without API key', () => {
     if (originalGemini) process.env.GEMINI_API_KEY = originalGemini;
   });
 
-  it('chatWithAI reports that AI is unavailable without fabricating an answer', async () => {
+  it('chatWithAI returns an unavailable notice when no provider key is configured', async () => {
     const res = await chatWithAI({ messages: [{ role: 'user', content: 'hi' }] });
     expect(res).toContain('unavailable');
-    expect(res).not.toContain('verified records');
   });
 
   it('smartSearch returns an empty list without a key', async () => {
@@ -135,6 +134,8 @@ describe('offline AI provider truthfulness', () => {
     expect(result.content).toContain('unavailable');
     expect(result.content).not.toContain('verified records');
     expect(result.usage).toEqual({ promptTokens: 0, completionTokens: 0, totalTokens: 0 });
+    expect(result.usageBasis).toBe('not_applicable');
+    expect(result.costBasis).toBe('unavailable');
     expect(result.degradedOffline).toBe(true);
   });
 

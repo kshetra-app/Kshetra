@@ -283,7 +283,7 @@ export async function delimitationRoutes(app: FastifyInstance) {
 
   /**
    * 3. GET /api/v1/delimitation/timeline
-   * Governed statutory timeline events from 2002 to Post-2026 window.
+   * Source-backed statutory, parliamentary, and Census timeline events.
    */
   app.get('/api/v1/delimitation/timeline', async (request, reply) => {
     try {

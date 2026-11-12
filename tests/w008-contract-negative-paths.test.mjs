@@ -108,7 +108,6 @@ assert.ok(notificationsRouteContent.includes('schema: getTriggersSchema'), 'GET 
 
 const civicRouteContent = fs.readFileSync(path.resolve('apps/api/src/routes/civic.ts'), 'utf8');
 assert.ok(civicRouteContent.includes('schema: budgetSchema'), 'GET /api/v1/civic/budget/:stateCode must have budgetSchema attached');
-assert.ok(civicRouteContent.includes('schema: attendanceSchema'), 'GET /api/v1/civic/attendance must have attendanceSchema attached');
 assert.ok(civicRouteContent.includes('schema: billsSchema'), 'GET /api/v1/civic/bills must have billsSchema attached');
 assert.ok(civicRouteContent.includes('schema: billOpinionSchema'), 'POST /api/v1/civic/bills/:id/opinion must have billOpinionSchema attached');
 assert.ok(civicRouteContent.includes('schema: schemesSchema'), 'GET /api/v1/civic/schemes must have schemesSchema attached');

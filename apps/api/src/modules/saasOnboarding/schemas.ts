@@ -39,7 +39,11 @@ export const createApiKeyBodySchema = z.object({
     .min(2, 'Key name must be at least 2 characters')
     .max(80, 'Key name must not exceed 80 characters'),
   environment: z.enum(['live', 'test']),
-  scopes: z.array(z.string()).min(1, 'At least one scope must be requested').optional(),
+  scopes: z
+    .array(z.string().max(80, 'Scope names must not exceed 80 characters'))
+    .min(1, 'At least one scope must be requested')
+    .max(50, 'At most 50 scopes can be requested')
+    .optional(),
   applicationId: z.string().uuid('Invalid application ID format').optional(),
 });
 
@@ -56,8 +60,6 @@ export const verifyPaymentBodySchema = z.object({
   orderId: z.string().trim().min(1, 'Order ID is required'),
   paymentId: z.string().trim().min(1, 'Payment ID is required'),
   signature: z.string().trim().min(1, 'Cryptographic signature is required'),
-  targetTier: z.enum(['pro', 'enterprise']),
-  billingCycle: z.enum(['monthly', 'annual']).optional(),
 });
 
 export type SignupBody = z.infer<typeof signupBodySchema>;

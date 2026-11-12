@@ -13,6 +13,7 @@ export default function ProjectCard({ project, onPress }: ProjectCardProps) {
   const { t } = useTranslation();
   const catConfig = PROJECT_CATEGORY_CONFIG[project.category];
   const phaseConfig = PROJECT_PHASE_CONFIG[project.phase];
+  const unavailable = t('common.dataUnavailable');
 
   return (
     <Pressable style={styles.card} onPress={onPress}>
@@ -35,17 +36,29 @@ export default function ProjectCard({ project, onPress }: ProjectCardProps) {
       <View style={styles.progressSection}>
         <View style={styles.progressRow}>
           <Text style={styles.progressLabel}>{t('civicMetrics.physicalProgress')}</Text>
-          <View style={styles.progressBar}>
-            <View style={[styles.progressFill, { width: `${project.physicalProgress}%`, backgroundColor: '#3B82F6' }]} />
-          </View>
-          <Text style={styles.progressPct}>{project.physicalProgress}%</Text>
+          {project.physicalProgress === null ? (
+            <Text style={styles.unavailable}>{unavailable}</Text>
+          ) : (
+            <>
+              <View style={styles.progressBar}>
+                <View style={[styles.progressFill, { width: `${project.physicalProgress}%`, backgroundColor: '#3B82F6' }]} />
+              </View>
+              <Text style={styles.progressPct}>{project.physicalProgress}%</Text>
+            </>
+          )}
         </View>
         <View style={styles.progressRow}>
           <Text style={styles.progressLabel}>{t('civicMetrics.financialProgress')}</Text>
-          <View style={styles.progressBar}>
-            <View style={[styles.progressFill, { width: `${project.financialProgress}%`, backgroundColor: '#10B981' }]} />
-          </View>
-          <Text style={styles.progressPct}>{project.financialProgress}%</Text>
+          {project.financialProgress === null ? (
+            <Text style={styles.unavailable}>{unavailable}</Text>
+          ) : (
+            <>
+              <View style={styles.progressBar}>
+                <View style={[styles.progressFill, { width: `${project.financialProgress}%`, backgroundColor: '#10B981' }]} />
+              </View>
+              <Text style={styles.progressPct}>{project.financialProgress}%</Text>
+            </>
+          )}
         </View>
       </View>
 
@@ -53,9 +66,9 @@ export default function ProjectCard({ project, onPress }: ProjectCardProps) {
       <View style={styles.costRow}>
         <View style={styles.costItem}>
           <Text style={styles.costLabel}>{t('civicMetrics.sanctioned')}</Text>
-          <Text style={styles.costValue}>{formatCrores(project.sanctionedCostCrores)}</Text>
+          <Text style={styles.costValue}>{project.sanctionedCostCrores === null ? unavailable : formatCrores(project.sanctionedCostCrores)}</Text>
         </View>
-        {project.revisedCostCrores && (
+        {project.revisedCostCrores !== undefined && project.revisedCostCrores !== null && (
           <View style={styles.costItem}>
             <Text style={styles.costLabel}>{t('civicMetrics.revised')}</Text>
             <Text style={[styles.costValue, { color: '#F59E0B' }]}>{formatCrores(project.revisedCostCrores)}</Text>
@@ -63,7 +76,7 @@ export default function ProjectCard({ project, onPress }: ProjectCardProps) {
         )}
         <View style={styles.costItem}>
           <Text style={styles.costLabel}>{t('civicMetrics.amountSpent')}</Text>
-          <Text style={styles.costValue}>{formatCrores(project.expenditureCrores)}</Text>
+          <Text style={styles.costValue}>{project.expenditureCrores === null ? unavailable : formatCrores(project.expenditureCrores)}</Text>
         </View>
       </View>
 
@@ -71,13 +84,19 @@ export default function ProjectCard({ project, onPress }: ProjectCardProps) {
       <View style={styles.footer}>
         <View style={styles.footerItem}>
           <Ionicons name="calendar" size={12} color="#6B7280" />
-          <Text style={styles.footerText}>{t('civicMetrics.dueDate')}: {project.expectedCompletion}</Text>
+          <Text style={styles.footerText}>{t('civicMetrics.dueDate')}: {project.expectedCompletion || unavailable}</Text>
         </View>
-        {project.delayDays > 0 && (
+        {project.delayDays !== null && project.delayDays > 0 ? (
           <View style={styles.delayBadge}>
             <Ionicons name="warning" size={12} color="#EF4444" />
             <Text style={styles.delayText}>{t('civicMetrics.daysDelayed', { n: project.delayDays })}</Text>
           </View>
+        ) : (
+          <Text style={styles.footerText}>
+            {t('civicMetrics.delayLabel')}: {project.delayDays === null
+              ? unavailable
+              : t('civicMetrics.daysDelayed', { n: project.delayDays })}
+          </Text>
         )}
       </View>
 
@@ -109,6 +128,7 @@ const styles = StyleSheet.create({
   progressBar: { flex: 1, height: 6, backgroundColor: '#E8DED1', borderRadius: 3, overflow: 'hidden' },
   progressFill: { height: '100%', borderRadius: 3 },
   progressPct: { fontSize: 12, fontWeight: '700', color: '#241814', width: 36, textAlign: 'right' },
+  unavailable: { flex: 1, fontSize: 11, color: '#988275', textAlign: 'right' },
   costRow: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: 10, paddingVertical: 8, backgroundColor: '#F5EFE4', borderRadius: 8, borderWidth: 1, borderColor: '#E8DED1' },
   costItem: { alignItems: 'center' },
   costLabel: { fontSize: 10, color: '#988275' },

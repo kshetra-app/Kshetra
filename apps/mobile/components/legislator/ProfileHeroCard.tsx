@@ -1,10 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getPartyColor } from '../../lib/constants';
 import { moderateScale as ms } from '../../lib/responsive';
 import { useTheme } from '../../lib/theme';
-import { getStaticPhoto, getCachedPhoto } from '../../lib/candidatePhotos';
+import { getStaticPhoto, getCachedPhoto, getSmartInitials } from '../../lib/candidatePhotos';
 
 import { useTranslation } from 'react-i18next';
 import {
@@ -34,6 +34,7 @@ interface Props {
   reservationType?: string;
   netWorth?: number | null;
   liabilities?: number | null;
+  votes?: number | null;
   margin?: number | null;
   voteShare?: number | null;
   dob?: string | null;
@@ -61,6 +62,7 @@ export default function ProfileHeroCard({
   reservationType,
   netWorth,
   liabilities,
+  votes,
   margin,
   voteShare,
   dob,
@@ -71,9 +73,14 @@ export default function ProfileHeroCard({
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const partyColor = getPartyColor(party);
+  const [imgError, setImgError] = useState(false);
 
   const effectivePhoto = useMemo(() => {
-    return photoUrl || getStaticPhoto(fullName) || getStaticPhoto(displayName) || getCachedPhoto(fullName) || getCachedPhoto(displayName) || null;
+    const raw = photoUrl || getStaticPhoto(fullName) || getStaticPhoto(displayName) || getCachedPhoto(fullName) || getCachedPhoto(displayName) || null;
+    if (!raw || typeof raw !== 'string') return null;
+    const trimmed = raw.trim();
+    if (!trimmed.startsWith('http') || trimmed.includes('.svg') || trimmed.includes('LokSabha2024/photos/')) return null;
+    return trimmed.replace(/^http:\/\//i, 'https://');
   }, [photoUrl, fullName, displayName]);
 
   const LEGISLATOR_HOUSE_LABELS: Record<string, string> = {
@@ -88,9 +95,20 @@ export default function ProfileHeroCard({
   const localizedDistrict = getLocalizedDistrictName(district, i18n.language) || district;
   const localizedState = getLocalizedStateName(stateCode, i18n.language) || stateCode;
 
+  // Clean redundant party labels like "TDP TDP" or "INC INC (Congress)"
+  const cleanPartyFull = useMemo(() => {
+    const raw = (partyFull || localizedParty || '').trim();
+    if (!raw) return '';
+    if (raw.toUpperCase() === party.toUpperCase()) return '';
+    if (raw.toUpperCase().startsWith(party.toUpperCase() + ' ')) {
+      return raw.slice(party.length).trim();
+    }
+    return raw;
+  }, [party, partyFull, localizedParty]);
+
   // Format Net Worth & Margin for Computed Metrics Pills
   const netWorthStr = useMemo(() => {
-    if (netWorth == null) return 'Not Declared';
+    if (netWorth == null) return 'Not available';
     const abs = Math.abs(netWorth);
     if (abs >= 10000000) return `₹${(netWorth / 10000000).toFixed(2)} Cr`;
     if (abs >= 100000) return `₹${(netWorth / 100000).toFixed(1)} L`;
@@ -104,11 +122,11 @@ export default function ProfileHeroCard({
 
   return (
     <View style={[styles.container, { backgroundColor: '#002B7F', borderColor: '#002B7F' }]}>
-      {/* Top Header Row with Verified Tag & Share */}
+      {/* Profile label and share */}
       <View style={styles.topBar}>
         <View style={styles.verifiedPill}>
-          <Ionicons name="shield-checkmark" size={12} color="#FDE68A" />
-          <Text style={styles.verifiedPillText}>ECI Verified Profile</Text>
+          <Ionicons name="person-circle-outline" size={12} color="#FDE68A" />
+          <Text style={styles.verifiedPillText}>Profile record</Text>
         </View>
         {onSharePress && (
           <Pressable style={styles.shareBtnNavy} onPress={onSharePress} hitSlop={8}>
@@ -121,12 +139,23 @@ export default function ProfileHeroCard({
       <View style={styles.content}>
         {/* Photo with verified badge */}
         <Pressable style={styles.photoContainer} onPress={() => onPhotoPress?.(effectivePhoto)}>
-          {effectivePhoto ? (
-            <Image key={effectivePhoto} source={{ uri: effectivePhoto }} style={styles.photo} resizeMode="cover" />
+          {!imgError && effectivePhoto ? (
+            <Image
+              key={effectivePhoto}
+              source={{
+                uri: effectivePhoto,
+                headers: {
+                  'User-Agent': 'PoligramApp/1.0 (https://kshetra.app; contact@kshetra.app)',
+                },
+              }}
+              style={styles.photo}
+              resizeMode="cover"
+              onError={() => setImgError(true)}
+            />
           ) : (
             <View style={[styles.photoPlaceholder, { backgroundColor: partyColor + '30', borderColor: partyColor }]}>
               <Text style={[styles.initials, { color: '#FFFFFF' }]}>
-                {fullName.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase()}
+                {getSmartInitials(displayName || fullName)}
               </Text>
             </View>
           )}
@@ -141,7 +170,9 @@ export default function ProfileHeroCard({
             <View style={[styles.partyPillBadge, { backgroundColor: partyColor }]}>
               <Text style={styles.partyPillText}>{party}</Text>
             </View>
-            <Text style={styles.partyFullText} numberOfLines={1}>{partyFull || localizedParty}</Text>
+            {Boolean(cleanPartyFull) && (
+              <Text style={styles.partyFullText} numberOfLines={1}>{cleanPartyFull}</Text>
+            )}
           </View>
 
           <Text style={styles.fullNameNavy} numberOfLines={2}>{displayName}</Text>
@@ -168,9 +199,17 @@ export default function ProfileHeroCard({
             </Text>
           </View>
           <View style={styles.computedMetricPill}>
-            <Text style={styles.computedMetricLabel}>{margin != null && margin < 0 ? t('constituency.deficit', { defaultValue: 'Deficit' }) : t('constituency.margin', { defaultValue: 'Margin' })}</Text>
+            <Text style={styles.computedMetricLabel}>
+              {rank === 'winner'
+                ? t('constituency.margin', { defaultValue: 'Margin' })
+                : t('constituency.votesPolled', { defaultValue: 'Votes Polled' })}
+            </Text>
             <Text style={[styles.computedMetricValue, { color: '#6EE7B7' }]}>
-              {marginStr}
+              {rank === 'winner'
+                ? marginStr
+                : (votes != null && votes > 0
+                    ? votes.toLocaleString()
+                    : (voteShare != null ? `${voteShare.toFixed(1)}%` : '—'))}
             </Text>
           </View>
         </View>

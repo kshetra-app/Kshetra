@@ -4,7 +4,6 @@
  * Authority: Master Product Blueprint, DEC-203, DEC-204 & Amendment v1.6 Control M
  */
 
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import type {
   DisasterRecoveryDrillReport,
   RollbackExerciseReport,
@@ -40,26 +39,6 @@ export class DisasterRecoveryService {
       zeroDataLossCertified: true,
       auditTrail,
     };
-
-    try {
-      if (isSupabaseConfigured && supabase) {
-        await supabase.from('disaster_recovery_drill_ledger').insert({
-          drill_id: `DRILL-RB-${Date.now()}`,
-          drill_type: 'ROLLBACK_EXERCISE',
-          rpo_actual_minutes: 0.0,
-          rpo_target_minutes: 60.0,
-          rpo_passed: true,
-          rto_actual_minutes: 0.75, // 45 seconds = 0.75 min
-          rto_target_minutes: 30.0,
-          rto_passed: true,
-          data_parity_percent: 100.0,
-          zero_data_loss_certified: true,
-          audit_report: report,
-        });
-      }
-    } catch {
-      // Allow local offline pass
-    }
 
     return report;
   }
@@ -118,26 +97,6 @@ export class DisasterRecoveryService {
       overallDrillPassed: true,
       runbookExecutedSteps,
     };
-
-    try {
-      if (isSupabaseConfigured && supabase) {
-        await supabase.from('disaster_recovery_drill_ledger').insert({
-          drill_id: drillId,
-          drill_type: 'PITR_DISASTER_RECOVERY',
-          rpo_actual_minutes: rpoActualMinutes,
-          rpo_target_minutes: 60.0,
-          rpo_passed: report.rpoPass,
-          rto_actual_minutes: rtoActualMinutes,
-          rto_target_minutes: 30.0,
-          rto_passed: report.rtoPass,
-          data_parity_percent: 100.0,
-          zero_data_loss_certified: true,
-          audit_report: report,
-        });
-      }
-    } catch {
-      // Allow local offline pass
-    }
 
     return report;
   }

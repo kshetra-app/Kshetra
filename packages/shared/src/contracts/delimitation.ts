@@ -51,7 +51,7 @@ export interface DelimitationSeatProvenance {
 export type LegislativeEventType = 'INTRODUCTION' | 'LEGISLATIVE_ACTION' | 'TERMINAL_STATUS';
 
 export type LegislativeEventOutcome =
-  'INTRODUCED' | 'DEFEATED' | 'INFRUCTUOUS' | 'ENACTED' | 'WITHDRAWN' | 'PENDING';
+  'INTRODUCED' | 'DEFEATED' | 'INFRUCTUOUS' | 'ENACTED' | 'WITHDRAWN' | 'PENDING' | 'NOT_PASSED';
 
 // ─── ORTHOGONAL TAXONOMY DIMENSIONS (Directive G5-17) ───
 
@@ -206,6 +206,8 @@ export interface TimelineEventItem {
   title: string;
   significance: 'critical' | 'high' | 'medium' | 'informational';
   verified: boolean;
+  category?: 'census_notification' | 'gazette_notification' | 'parliamentary_debate';
+  sourceUrl?: string;
   instrument?: string;
   authority?: string;
   description?: string;
@@ -247,8 +249,6 @@ export interface DelimitationStatusDTO {
   censusTracking: {
     constitutionalTrigger: string;
     currentExpectedCensusOperation: string;
-    poligramFutureAnticipatedRegime?: string;
-    paninFutureAnticipatedRegime?: string;
     finalPopulationAvailable: boolean;
   };
   lastUpdated: string;

@@ -12,6 +12,7 @@
  * - Conforms strictly to ECC-001 error envelopes via sendApiError.
  */
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import { isIsolatedTestRuntime } from '../lib/runtimeEnvironment';
 import { spatialAnalyticsService } from '../services/spatialAnalyticsService';
 import { sendApiError } from '../lib/replyHelper';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
@@ -129,7 +130,7 @@ export async function spatialAnalyticsRoutes(app: FastifyInstance): Promise<void
     const authHeader = request.headers.authorization;
     const testRole = request.headers['x-test-role'] as string | undefined;
 
-    if (process.env.NODE_ENV === 'test' && testRole) {
+    if (isIsolatedTestRuntime() && testRole) {
       if (testRole === 'service_role' || testRole === 'authenticated') {
         return { role: testRole as 'service_role' | 'authenticated', userId: 'test-user-id' };
       }

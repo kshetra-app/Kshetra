@@ -22,16 +22,18 @@ import { useAuthStore } from '../stores/auth';
 import { useActiveStateStore } from '../stores/activeState';
 import { useMyConstituencyStore } from '../stores/myConstituency';
 import { useFeedStore } from '../stores/feed';
+import type { PostSubmissionOutcome } from '../stores/feed';
 import { STATES } from '@kshetra/shared';
 import { gateContentAction, logContentAction } from '../lib/contentAccountability';
 import { useContentPromotionStore } from '../stores/contentPromotion';
 import { useUserProfileStore } from '../stores/userProfile';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 
 interface ComposeSheetProps {
   visible: boolean;
   onClose: () => void;
-  onSubmit: (post: Post) => void;
-  onEditSubmit?: (postId: string, content: string, media?: PostMedia[]) => void;
+  onSubmit: (post: Post) => Promise<PostSubmissionOutcome>;
+  onEditSubmit?: (postId: string, content: string) => Promise<boolean>;
   editPost?: Post;
   replyTo?: { postId: string; authorName: string };
 }
@@ -210,12 +212,16 @@ export default function ComposeSheet({
     setMediaItems((prev) => prev.filter((m) => m.id !== id));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!canSubmit || !canSubmitPoll) return;
 
     if (isEditMode && editPost) {
       if (!gateContentAction('edit_post')) return;
-      onEditSubmit?.(editPost.id, content.trim(), mediaItems.length > 0 ? mediaItems : undefined);
+      const saved = await onEditSubmit?.(editPost.id, content.trim());
+      if (!saved) {
+        Alert.alert(t('feed.editFailed', { defaultValue: 'Could not save this edit. Check your connection and try again.' }));
+        return;
+      }
       logContentAction('edit_post', {
         type: 'post',
         id: editPost.id,
@@ -284,26 +290,43 @@ export default function ComposeSheet({
         : undefined,
     };
 
-    onSubmit(newPost);
-    logContentAction('create_post', {
-      type: 'post',
-      id: newPost.id,
-      body: newPost.content,
-      screenName: 'compose',
-    });
+    const submission = await onSubmit(newPost);
+    if (submission === 'failed') {
+      Alert.alert(
+        t('feed.createPostFailed', { defaultValue: 'Could not publish this post' }),
+        useFeedStore.getState().lastError || t('feed.createPostFailedBody', { defaultValue: 'Check your connection and try again.' }),
+      );
+      return;
+    }
+    if (submission === 'queued') {
+      Alert.alert(
+        t('feed.postQueuedTitle', { defaultValue: 'Post queued' }),
+        t('feed.postQueuedBody', { defaultValue: 'This post will be sent when your connection is restored.' }),
+      );
+    } else if (submission === 'local') {
+      Alert.alert(
+        t('feed.postLocalTitle', { defaultValue: 'Local preview only' }),
+        t('feed.postLocalBody', { defaultValue: 'This post is stored only in the development preview and was not published.' }),
+      );
+    }
 
-    const profile = useUserProfileStore.getState().profile;
-    useContentPromotionStore.getState().registerContent({
-      contentType: postType === 'news' ? 'news' : postType === 'opinion' ? 'opinion' : 'post',
-      contentId: newPost.id,
-      authorId: user?.id ?? 'anon',
-      constituencyId: newPost.constituencyId ?? null,
-      stateCode: newPost.stateCode ?? null,
-      postType,
-      authorRole: profile?.role ?? 'citizen',
-      authorReputation: profile?.reputation ?? 0,
-      isAuthorVerified: profile?.isVerified ?? false,
-    });
+    if (!IS_LIVE_ENVIRONMENT && (submission === 'synced' || submission === 'local')) {
+      const profile = useUserProfileStore.getState().profile;
+      const persistedPost = useFeedStore.getState().posts.find((item) =>
+        item.clientToken === newPost.clientToken || item.id === newPost.id,
+      );
+      useContentPromotionStore.getState().registerContent({
+        contentType: postType === 'news' ? 'news' : postType === 'opinion' ? 'opinion' : 'post',
+        contentId: persistedPost?.id ?? newPost.id,
+        authorId: user?.id ?? 'anon',
+        constituencyId: newPost.constituencyId ?? null,
+        stateCode: newPost.stateCode ?? null,
+        postType,
+        authorRole: profile?.role ?? 'citizen',
+        authorReputation: profile?.reputation ?? 0,
+        isAuthorVerified: profile?.isVerified ?? false,
+      });
+    }
 
     onClose();
   };
@@ -568,9 +591,11 @@ export default function ComposeSheet({
                                 <Ionicons name="videocam" size={12} color="#FFFFFF" />
                               </View>
                             )}
-                            <Pressable style={styles.mediaThumbRemove} onPress={() => removeMedia(m.id)} hitSlop={6}>
-                              <Ionicons name="close-circle" size={18} color="#EF4444" />
-                            </Pressable>
+                            {!isEditMode && (
+                              <Pressable style={styles.mediaThumbRemove} onPress={() => removeMedia(m.id)} hitSlop={6}>
+                                <Ionicons name="close-circle" size={18} color="#EF4444" />
+                              </Pressable>
+                            )}
                           </View>
                         );
                       })}
@@ -590,9 +615,11 @@ export default function ComposeSheet({
                       <Text style={[styles.mediaItemText, { color: colors.text }]} numberOfLines={1}>
                         {m.altText || m.url}
                       </Text>
-                      <Pressable onPress={() => removeMedia(m.id)} hitSlop={8}>
-                        <Ionicons name="close-circle" size={18} color="#EF4444" />
-                      </Pressable>
+                      {!isEditMode && (
+                        <Pressable onPress={() => removeMedia(m.id)} hitSlop={8}>
+                          <Ionicons name="close-circle" size={18} color="#EF4444" />
+                        </Pressable>
+                      )}
                     </View>
                   );
                 })}
@@ -600,7 +627,12 @@ export default function ComposeSheet({
             )}
 
             {/* Media toolbar */}
-            {!isPoll && (
+            {!isPoll && !isEditMode && (
+              IS_LIVE_ENVIRONMENT ? (
+                <Text style={{ color: colors.textMuted, paddingVertical: 12 }}>
+                  {t('compose.mediaUnavailable', { defaultValue: 'Post media attachments are not available yet.' })}
+                </Text>
+              ) : (
               <View style={[styles.mediaToolbar, { borderTopColor: colors.border }]}>
                 <Pressable
                   style={styles.mediaButton}
@@ -646,6 +678,7 @@ export default function ComposeSheet({
                   </Text>
                 </Pressable>
               </View>
+              )
             )}
 
             {/* Link input */}

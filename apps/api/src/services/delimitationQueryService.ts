@@ -13,6 +13,10 @@
 
 import { supabase } from '../lib/supabase';
 import { getConstituencies as getStateConstituencies } from './stateData';
+import {
+  getCanonicalDelimitationStatus,
+  getCanonicalDelimitationTimeline,
+} from './delimitationTruth';
 import type {
   DelimitationRegimeRecord,
   DelimitationProposalRecord,
@@ -1296,151 +1300,13 @@ export class DelimitationQueryService {
     ];
   }
 
-  /**
-   * Retrieves statutory timeline events corroborated against public.evidence_records.
-   */
+  /** Returns the shared, source-reviewed statutory and Census timeline. */
   async getTimelineEvents(): Promise<TimelineEventItem[]> {
-    const events: TimelineEventItem[] = [
-      {
-        id: 'LEG-2002-01',
-        date: '2002-06-12',
-        title: 'Delimitation Act, 2002 Enacted',
-        significance: 'critical',
-        verified: true,
-        instrument: 'Delimitation Act, 2002 (Act No. 33 of 2002)',
-        authority: 'Parliament of India',
-        description:
-          'Constituted the Delimitation Commission to readjust seats based on Census 2001.',
-      },
-      {
-        id: 'LEG-2008-01',
-        date: '2008-02-19',
-        title: 'Delimitation of Parliamentary and Assembly Constituencies Order, 2008',
-        significance: 'critical',
-        verified: true,
-        instrument: 'Delimitation Order 2008, Schedule II (State of Andhra Pradesh)',
-        authority: 'Delimitation Commission of India',
-        description:
-          'Enacted 294 Assembly Constituencies and 42 Parliamentary Constituencies for undivided Andhra Pradesh.',
-      },
-      {
-        id: 'LEG-2014-01',
-        date: '2014-03-01',
-        title: 'Andhra Pradesh Reorganisation Act, 2014 Enacted',
-        significance: 'critical',
-        verified: true,
-        instrument: 'Act No. 6 of 2014',
-        authority: 'Parliament of India',
-        description: 'Bifurcated Andhra Pradesh into Telangana and residuary Andhra Pradesh.',
-      },
-      {
-        id: 'LEG-2014-02',
-        date: '2014-06-02',
-        title: 'Appointed Day — Bifurcation into Telangana and Andhra Pradesh',
-        significance: 'critical',
-        verified: true,
-        instrument: 'APRA 2014 Sec 15, Schedule XXXI & Schedule II',
-        authority: 'Union of India',
-        description:
-          'Schedule XXXI established 119 ACs for Telangana; Schedule II established 175 ACs for residuary AP.',
-      },
-      {
-        id: 'LEG-2015-01',
-        date: '2015-04-23',
-        title: 'AP Reorganisation (Removal of Difficulties) Order, 2015: G.S.R. 311(E)',
-        significance: 'critical',
-        verified: true,
-        instrument: 'G.S.R. 311(E), dated 23 April 2015 (comes into force at once)',
-        authority: 'President of India / Ministry of Home Affairs',
-        description:
-          'Transferred 7 mandals of Khammam district (Polavaram project submergence) from Telangana to Andhra Pradesh.',
-      },
-      {
-        id: 'LEG-2018-01',
-        date: '2018-09-22',
-        title: 'ECI Statutory Notification No. 282/AP/2018(DEL)',
-        significance: 'critical',
-        verified: true,
-        instrument: 'Notification No. 282/AP/2018(DEL), published 24 Sept 2018',
-        authority: 'Election Commission of India under Sec 9(1)(b) Delim Act 2002',
-        description:
-          'Formally updated boundary descriptions to incorporate the territorial transfers of G.S.R. 311(E).',
-      },
-      {
-        id: 'LEG-CENSUS-2027',
-        date: '2027-01-01',
-        title: 'Upcoming National Decennial Census (Census 2027 Tracking)',
-        significance: 'high',
-        verified: false,
-        instrument: 'Census Act, 1948 (Operation Pending)',
-        authority: 'Office of the Registrar General & Census Commissioner, India',
-        description:
-          'Active tracking record for the upcoming national decennial census. Final population data is UNAVAILABLE.',
-      },
-      {
-        id: 'LEG-FUTURE-DELIM',
-        date: '2028-01-01',
-        title: 'Future Anticipated Delimitation (Post-Census 2027 Operation)',
-        significance: 'critical',
-        verified: false,
-        instrument: 'Constitution of India (Articles 82 & 170 post-freeze mandate)',
-        authority: 'Future Delimitation Commission',
-        description:
-          'Prospective post-freeze delimitation mandated upon publication of first census after 2026.',
-      },
-    ];
-
-    return events;
+    return getCanonicalDelimitationTimeline();
   }
 
-  /**
-   * Retrieves constitutional status derived from canonical delimitation_regimes.
-   */
   async getDelimitationStatus(): Promise<DelimitationStatusDTO> {
-    const regimes = await this.getRegimes();
-    const futureRegime = regimes.find((r) => r.regimeType === 'FUTURE_ANTICIPATED_REGIME');
-
-    const provenance = {
-      inputDatasetVersions: [
-        {
-          datasetId: 'eci_delimitation_orders',
-          versionTag: '2008_statutory_order',
-          sourceAuthority: 'Delimitation Commission of India / Election Commission of India',
-          publicationDate: '2008-02-19',
-          checksum: undefined, // External statutory gazette; raw ECI order PDF not stored in repo (dossier: data/evidence/w020/authoritative/eci_delimitation_order_2008_source_dossier.md)
-          artifactPath:
-            'data/evidence/w020/authoritative/eci_delimitation_order_2008_source_dossier.md',
-          dossierIntegrityStatus: 'BITWISE_IN_REPO_VERIFIED' as const,
-          statutorySourceStatus: 'EXTERNAL_STATUTORY_PUBLICATION_NOT_CHECKED_IN' as const,
-          substantiveVerificationStatus: 'PENDING_OFFICIAL_GAZETTE_BITWISE_AUDIT' as const,
-          evidenceStatus: 'IN_REPO_DOSSIER_VERIFIED_EXTERNAL_INSTRUMENT_UNVERIFIED',
-        },
-      ],
-      methodology: 'CONSTITUTIONAL_STATUS_AUDIT',
-      modelVersion: '1.2.0',
-      calculatedAt: new Date().toISOString(),
-      legalStatus: 'CURRENT_LEGAL_REGIME' as DelimitationLegalRegime,
-      outputClassification: 'STATUTORY_FACT' as OutputClassification,
-      dataStatus: 'OFFICIAL' as W012DataStatus,
-    };
-
-    return {
-      nationalStatus: 'pre_census',
-      statusLabel: 'Pre-Census (Constitutional Freeze In Effect)',
-      description:
-        'The constitutional freeze mandated by the 84th Amendment (Articles 82 and 170) remains in force until the relevant figures for the first census taken after the year 2026 have been published.',
-      constitutionalFramework: 'Constitution of India Articles 81, 82, 170, 330, and 332',
-      nextMilestone: 'Census 2027 enumeration & population publication',
-      censusTracking: {
-        constitutionalTrigger: 'First census taken after 2026 (Articles 82 & 170 proviso)',
-        currentExpectedCensusOperation: 'Census 2027',
-        poligramFutureAnticipatedRegime: futureRegime?.name || 'Post-Census 2027 Operation',
-        paninFutureAnticipatedRegime: futureRegime?.name || 'Post-Census 2027 Operation',
-        finalPopulationAvailable: false,
-      },
-      lastUpdated: new Date().toISOString(),
-      provenance,
-    };
+    return getCanonicalDelimitationStatus();
   }
 }
 

@@ -63,20 +63,23 @@ export const partyFillColor: any = [
   'match',
   ['get', 'WINNER_PARTY'],
   ...Object.entries(MERGED_PARTY_COLORS).flatMap(([code, color]) => [code, color]),
-  '#808080', // fallback — IND / others
+  '#808080', // Unknown or unconfigured party
 ];
 
 /** Color by winning margin (heatmap) */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const marginFillColor: any = [
-  'interpolate',
+  'case',
+  ['==', ['get', 'MARGIN'], null], '#9CA3AF',
+  ['interpolate',
   ['linear'],
-  ['coalesce', ['get', 'MARGIN'], 0],
+  ['get', 'MARGIN'],
   0,    '#EF4444',   // red  = razor thin
   5000, '#F59E0B',   // amber = competitive
   20000, '#10B981',  // green = comfortable
   50000, '#3B82F6',  // blue  = landslide
   100000, '#8B5CF6', // purple = massive
+  ],
 ];
 
 /** Color by reservation type */
@@ -93,40 +96,49 @@ export const reservationFillColor: any = [
 /** Color by population density */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const populationFillColor: any = [
-  'interpolate',
+  'case',
+  ['==', ['get', 'POPULATION'], null], '#9CA3AF',
+  ['interpolate',
   ['linear'],
-  ['coalesce', ['get', 'POPULATION'], 0],
+  ['get', 'POPULATION'],
   200000, '#DBEAFE',   // light blue — sparse
   250000, '#60A5FA',   // blue
   280000, '#3B82F6',   // medium
   310000, '#2563EB',   // dense
   350000, '#1D4ED8',   // very dense
+  ],
 ];
 
 /** Color by literacy rate */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const literacyFillColor: any = [
-  'interpolate',
+  'case',
+  ['==', ['get', 'LITERACY'], null], '#9CA3AF',
+  ['interpolate',
   ['linear'],
-  ['coalesce', ['get', 'LITERACY'], 0],
+  ['get', 'LITERACY'],
   40,  '#EF4444',   // red — very low
   50,  '#F59E0B',   // amber — low
   60,  '#FBBF24',   // yellow — moderate
   70,  '#10B981',   // green — good
   80,  '#059669',   // dark green — high
+  ],
 ];
 
 /** Color by voter turnout */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const turnoutFillColor: any = [
-  'interpolate',
+  'case',
+  ['==', ['get', 'TURNOUT'], null], '#9CA3AF',
+  ['interpolate',
   ['linear'],
-  ['coalesce', ['get', 'TURNOUT'], 0],
+  ['get', 'TURNOUT'],
   60,  '#EF4444',   // red — low turnout
   68,  '#F59E0B',   // amber
   72,  '#FBBF24',   // yellow
   76,  '#10B981',   // green
   82,  '#059669',   // dark green — high turnout
+  ],
 ];
 
 /** Color by battleground status */
@@ -153,8 +165,10 @@ export const swingFillColor: any = [
 
 /** Get dynamic party fill color expression based on selected year */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getPartyFillColorExpression(year?: number, isIndia?: boolean): any {
-  const propertyName = (year && !isIndia) ? `WINNER_PARTY_${year}` : 'WINNER_PARTY';
+export function getPartyFillColorExpression(year?: number, isIndia?: boolean, useCurrentParty = false): any {
+  const propertyName = useCurrentParty
+    ? 'CURRENT_PARTY'
+    : (year && !isIndia) ? `WINNER_PARTY_${year}` : 'WINNER_PARTY';
   return [
     'match',
     ['get', propertyName],
@@ -170,16 +184,16 @@ export function getExtrusionHeightExpression(mode: string, isIndia?: boolean): a
     return ['+', 8000, ['*', ['coalesce', ['get', 'ASSEMBLY_SEATS'], 40], 250]];
   }
   if (mode === 'population') {
-    return ['+', 6000, ['*', ['coalesce', ['get', 'POPULATION'], 100000], 0.08]];
+    return ['+', 6000, ['*', ['coalesce', ['get', 'POPULATION'], 0], 0.08]];
   }
   if (mode === 'margin') {
-    return ['+', 6000, ['*', ['coalesce', ['get', 'MARGIN'], 5000], 0.5]];
+    return ['+', 6000, ['*', ['coalesce', ['get', 'MARGIN'], 0], 0.5]];
   }
   if (mode === 'turnout') {
-    return ['*', ['coalesce', ['get', 'TURNOUT'], 50], 200];
+    return ['+', 6000, ['*', ['coalesce', ['get', 'TURNOUT'], 0], 200]];
   }
   if (mode === 'literacy') {
-    return ['*', ['coalesce', ['get', 'LITERACY'], 50], 200];
+    return ['+', 6000, ['*', ['coalesce', ['get', 'LITERACY'], 0], 200]];
   }
   // Default party / general mode: dynamic height by margin/votes
   return ['+', 8000, ['*', ['coalesce', ['get', 'MARGIN'], 8000], 0.35]];

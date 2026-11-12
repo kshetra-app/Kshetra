@@ -2,6 +2,13 @@ import Fastify, { FastifyInstance } from 'fastify';
 import { lmxRoutes } from '../routes/lmx';
 import { supabase, setSupabaseConfiguredForTesting, isSupabaseConfigured } from '../lib/supabase';
 
+const validLiveEventBody = (overrides: Record<string, unknown> = {}) => ({
+  stream_id: 'stream-unit-test',
+  reporter_id: 'untrusted-reporter-id',
+  reporter_name: 'Untrusted Reporter Name',
+  ...overrides,
+});
+
 describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
   let app: FastifyInstance;
 
@@ -202,7 +209,7 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/lmx/live',
-        payload: { title: 'Test Stream' },
+        payload: validLiveEventBody(),
       });
 
       expect(res.statusCode).toBe(401);
@@ -226,7 +233,7 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
         method: 'POST',
         url: '/api/v1/lmx/live',
         headers: { 'x-user-id': 'usr-unknown' },
-        payload: { title: 'Test Stream' },
+        payload: validLiveEventBody(),
       });
 
       expect(res.statusCode).toBe(403);
@@ -255,7 +262,7 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
         method: 'POST',
         url: '/api/v1/lmx/live',
         headers: { 'x-user-id': 'usr-citizen-1' },
-        payload: { title: 'Unauthorized Stream' },
+        payload: validLiveEventBody(),
       });
 
       expect(res.statusCode).toBe(403);
@@ -284,7 +291,7 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
         method: 'POST',
         url: '/api/v1/lmx/live',
         headers: { 'x-user-id': 'usr-unverified-journo' },
-        payload: { title: 'Unverified Stream' },
+        payload: validLiveEventBody(),
       });
 
       expect(res.statusCode).toBe(403);
@@ -295,12 +302,19 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
     it('creates live event successfully for verified journalist with 201', async () => {
       const mockCreated = {
         id: 'stream-new-1',
-        title: 'Press Conference',
-        creator_id: 'usr-journo-1',
-        creator_role: 'journalist',
-        buffer_state: 'buffered',
-        priority_score: 50,
+        stream_id: 'stream-unit-test',
+        reporter_id: 'usr-journo-1',
+        reporter_name: 'Verified Journalist',
+        status: 'live',
+        buffer_state: 'buffering',
+        viewer_count: 0,
       };
+
+      const insert = jest.fn(() => ({
+        select: () => ({
+          single: async () => ({ data: mockCreated, error: null }),
+        }),
+      }));
 
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'user_profiles') {
@@ -308,7 +322,11 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
             select: () => ({
               eq: () => ({
                 maybeSingle: async () => ({
-                  data: { role: 'journalist', verification_status: 'verified' },
+                  data: {
+                    role: 'journalist',
+                    verification_status: 'verified',
+                    display_name: 'Verified Journalist',
+                  },
                   error: null,
                 }),
               }),
@@ -316,13 +334,7 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
           } as any;
         }
         if (table === 'live_events') {
-          return {
-            insert: () => ({
-              select: () => ({
-                single: async () => ({ data: mockCreated, error: null }),
-              }),
-            }),
-          } as any;
+          return { insert } as any;
         }
         return {} as any;
       }) as any);
@@ -331,13 +343,33 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
         method: 'POST',
         url: '/api/v1/lmx/live',
         headers: { 'x-user-id': 'usr-journo-1' },
-        payload: { title: 'Press Conference' },
+        payload: validLiveEventBody({
+          stream_id: 'stream-unit-test',
+          reporter_id: 'attacker-controlled-id',
+          reporter_name: 'Attacker Controlled Name',
+          status: 'ended',
+          buffer_state: 'cleared',
+          viewer_count: 9000,
+        }),
       });
 
       expect(res.statusCode).toBe(201);
       const body = JSON.parse(res.payload);
       expect(body.id).toBe('stream-new-1');
-      expect(body.creator_role).toBe('journalist');
+      expect(body.reporter_id).toBe('usr-journo-1');
+      expect(body.reporter_name).toBe('Verified Journalist');
+      expect(body.status).toBe('live');
+      expect(body.buffer_state).toBe('buffering');
+      expect(body.viewer_count).toBe(0);
+      expect(insert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reporter_id: 'usr-journo-1',
+          reporter_name: 'Verified Journalist',
+          status: 'live',
+          buffer_state: 'buffering',
+          viewer_count: 0,
+        }),
+      );
     });
   });
 
@@ -601,12 +633,10 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
         method: 'POST',
         url: '/api/v1/lmx/live',
         headers: { authorization: 'Bearer token-jwt-ok' },
-        payload: {
-          title: 'Live Press Briefing',
-          stream_url: 'https://stream.example.com/live.m3u8',
+        payload: validLiveEventBody({
           state_code: 'TS',
-          issue_category: 'governance',
-        },
+          issue_category: 'civic',
+        }),
       });
 
       expect(res.statusCode).toBe(201);
@@ -617,12 +647,10 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
         method: 'POST',
         url: '/api/v1/lmx/live',
         headers: { authorization: 'Bearer token-jwt-fail' },
-        payload: {
-          title: 'Live Press Briefing',
-          stream_url: 'https://stream.example.com/live.m3u8',
+        payload: validLiveEventBody({
           state_code: 'TS',
-          issue_category: 'governance',
-        },
+          issue_category: 'civic',
+        }),
       });
       expect(failRes.statusCode).toBe(401);
     });
@@ -662,12 +690,7 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
         method: 'POST',
         url: '/api/v1/lmx/live',
         headers: { 'x-user-id': 'usr-err' },
-        payload: {
-          title: 'Test Stream',
-          stream_url: 'https://stream.example.com/live.m3u8',
-          state_code: 'TS',
-          issue_category: 'civic',
-        },
+        payload: validLiveEventBody({ state_code: 'TS', issue_category: 'civic' }),
       });
 
       expect(res.statusCode).toBe(403);
@@ -705,12 +728,7 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
         method: 'POST',
         url: '/api/v1/lmx/live',
         headers: { 'x-user-id': 'usr-ok' },
-        payload: {
-          title: 'Test Stream',
-          stream_url: 'https://stream.example.com/live.m3u8',
-          state_code: 'TS',
-          issue_category: 'civic',
-        },
+        payload: validLiveEventBody({ state_code: 'TS', issue_category: 'civic' }),
       });
       expect(resErr.statusCode).toBe(500);
 
@@ -741,12 +759,7 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
         method: 'POST',
         url: '/api/v1/lmx/live',
         headers: { 'x-user-id': 'usr-ok' },
-        payload: {
-          title: 'Test Stream',
-          stream_url: 'https://stream.example.com/live.m3u8',
-          state_code: 'TS',
-          issue_category: 'civic',
-        },
+        payload: validLiveEventBody({ state_code: 'TS', issue_category: 'civic' }),
       });
       expect(resEx.statusCode).toBe(500);
     });
@@ -1039,11 +1052,10 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
         method: 'POST',
         url: '/api/v1/lmx/live',
         headers: { 'x-user-id': 'journo-123' },
-        payload: {
-          title: 'Custom Event',
+        payload: validLiveEventBody({
           buffer_state: 'cleared',
           priority_score: 95,
-        },
+        }),
       });
       expect(resCustom.statusCode).toBe(201);
     });

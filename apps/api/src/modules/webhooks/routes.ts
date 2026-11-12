@@ -8,6 +8,7 @@
 import type { FastifyPluginAsync, FastifyRequest, FastifyReply } from 'fastify';
 import type { ApiSuccessEnvelope } from '@kshetra/shared';
 import { sendApiError } from '../../lib/replyHelper';
+import { isIsolatedTestRuntime } from '../../lib/runtimeEnvironment';
 import { webhookService } from './webhookService';
 import { createWebhookBodySchema, updateWebhookBodySchema, webhookIdParamSchema } from './schemas';
 
@@ -61,7 +62,7 @@ export const webhookRoutes: FastifyPluginAsync = async (fastify) => {
           applicationId: auth.applicationId,
           endpointUrl: body.endpointUrl,
           subscribedEvents: body.subscribedEvents,
-          allowLocalhostInTest: process.env.NODE_ENV === 'test',
+          allowLocalhostInTest: isIsolatedTestRuntime(),
         });
 
         return sendSaasSuccess(reply, request, result, 201);
@@ -161,7 +162,7 @@ export const webhookRoutes: FastifyPluginAsync = async (fastify) => {
           endpointUrl: body.endpointUrl,
           subscribedEvents: body.subscribedEvents,
           status: body.status,
-          allowLocalhostInTest: process.env.NODE_ENV === 'test',
+          allowLocalhostInTest: isIsolatedTestRuntime(),
         });
 
         if (!updated) {
@@ -263,7 +264,7 @@ export const webhookRoutes: FastifyPluginAsync = async (fastify) => {
           auth.applicationId,
           id,
           {
-            allowLocalhostInTest: process.env.NODE_ENV === 'test',
+            allowLocalhostInTest: isIsolatedTestRuntime(),
           },
         );
 

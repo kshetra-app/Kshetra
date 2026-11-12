@@ -151,12 +151,22 @@ describe('computeElectionAnalytics', () => {
   });
 
   it('should have biggest margin > closest margin', () => {
-    expect(analytics.margins.biggest.margin).toBeGreaterThan(analytics.margins.closest.margin);
+    const biggestMargin = analytics.margins.biggest.margin;
+    const closestMargin = analytics.margins.closest.margin;
+    if (biggestMargin === null || closestMargin === null) {
+      throw new Error('The fixture should produce both closest and biggest margins.');
+    }
+    expect(biggestMargin).toBeGreaterThan(closestMargin);
   });
 
   it('should have non-empty constituency names in margins', () => {
-    expect(analytics.margins.closest.constituency.length).toBeGreaterThan(0);
-    expect(analytics.margins.biggest.constituency.length).toBeGreaterThan(0);
+    const closestConstituency = analytics.margins.closest.constituency;
+    const biggestConstituency = analytics.margins.biggest.constituency;
+    if (closestConstituency === null || biggestConstituency === null) {
+      throw new Error('The fixture should produce both closest and biggest constituencies.');
+    }
+    expect(closestConstituency.length).toBeGreaterThan(0);
+    expect(biggestConstituency.length).toBeGreaterThan(0);
   });
 
   it('districts should be sorted by totalSeats descending', () => {

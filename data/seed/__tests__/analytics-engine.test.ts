@@ -38,7 +38,12 @@ describe('Election Analytics Engine', () => {
           expect(c.winnerName).toBeTruthy();
           expect(c.winnerVotes).toBeGreaterThan(0);
           expect(c.margin).toBeGreaterThanOrEqual(0);
-          expect(c.currentParty).toBeTruthy();
+          if (c.officeholderStatus === 'VACANT') {
+            expect(c.currentMLA).toBeUndefined();
+          } else {
+            expect(c.currentParty).toBeTruthy();
+            if (c.stateCode === 'TS') expect(c.currentMLA).toBeTruthy();
+          }
           expect(c.electionYear).toBeGreaterThan(2020);
         }
       });
@@ -112,11 +117,24 @@ describe('Election Analytics Engine', () => {
 
     it('should detect defections in TS', () => {
       const data = getUnifiedConstituenciesForState('TS');
-      const defected = data.filter((c: any) => c.currentPartyChangeType === 'defection');
-      // We know TS has 10 BRS→INC defections
+      const defected = data.filter((c: any) =>
+        c.currentPartyChangeType === 'defection',
+      );
+      // Ten BRS winners changed affiliation; one seat is now vacant, so nine
+      // recorded defectors remain the current member of their constituency.
       expect(defected.length).toBe(10);
-      expect(defected.every((c: any) => c.winnerParty === 'BRS' && c.currentParty === 'INC')).toBe(true);
-      expect(data.filter((c: any) => c.currentPartyChangeType === 'by-election')).toHaveLength(1);
+      expect(defected.every((c: any) => c.winnerParty === 'BRS')).toBe(true);
+      expect(defected.filter((c: any) => c.currentParty === 'INC')).toHaveLength(9);
+      expect(defected.find((c: any) => c.acNo === 60)).toMatchObject({
+        currentParty: '',
+        officeholderStatus: 'VACANT',
+      });
+      expect(
+        data
+          .filter((c: any) => c.currentPartyChangeType === 'by-election')
+          .map((c: any) => c.acNo)
+          .sort((a: number, b: number) => a - b),
+      ).toEqual([61, 71]);
     });
 
     it('should compute cross-state comparison', () => {

@@ -3,12 +3,12 @@
     "job": "W008",
     "title": "Fastify API Route Contract Inventory",
     "specification": "Master Execution Framework Amendment v1.5-A / DEC-041",
-    "timestamp": "2026-11-11T00:07:47.509Z"
+    "timestamp": "2026-11-12T03:32:51.545Z"
   },
   "summary": {
-    "totalRoutesRegistered": 385,
-    "pioneerAndPhase1Routes": 94,
-    "schemaCoveredRoutes": 216
+    "totalRoutesRegistered": 392,
+    "pioneerAndPhase1Routes": 93,
+    "schemaCoveredRoutes": 221
   },
   "routes": [
     {
@@ -237,6 +237,15 @@
       "standardizedEnvelope": true
     },
     {
+      "method": "GET",
+      "path": "/api/v1/aspirant/me",
+      "file": "aspirant.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
       "method": "POST",
       "path": "/api/v1/aspirant/kyc/submit",
       "file": "aspirant.ts",
@@ -275,6 +284,24 @@
     {
       "method": "GET",
       "path": "/api/v1/aspirant/modules",
+      "file": "aspirant.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aspirant/challenges",
+      "file": "aspirant.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/aspirant/badges",
       "file": "aspirant.ts",
       "phase": "Phase 2-4",
       "schemaDefined": false,
@@ -543,8 +570,35 @@
       "standardizedEnvelope": true
     },
     {
+      "method": "POST",
+      "path": "/api/v1/campaign/campaigns",
+      "file": "campaign.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
       "method": "GET",
       "path": "/api/v1/campaign/campaigns",
+      "file": "campaign.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/campaign/ads",
+      "file": "campaign.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/campaign/ads",
       "file": "campaign.ts",
       "phase": "Phase 2-4",
       "schemaDefined": true,
@@ -572,6 +626,15 @@
     {
       "method": "GET",
       "path": "/api/v1/campaign/volunteers",
+      "file": "campaign.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/campaign/canvassing-records",
       "file": "campaign.ts",
       "phase": "Phase 2-4",
       "schemaDefined": true,
@@ -662,15 +725,6 @@
     {
       "method": "GET",
       "path": "/api/v1/civic/budget/:stateCode",
-      "file": "civic.ts",
-      "phase": "Phase 1 (Standardized)",
-      "schemaDefined": true,
-      "preValidationDefined": false,
-      "standardizedEnvelope": true
-    },
-    {
-      "method": "GET",
-      "path": "/api/v1/civic/attendance",
       "file": "civic.ts",
       "phase": "Phase 1 (Standardized)",
       "schemaDefined": true,
@@ -2662,9 +2716,9 @@
       "path": "/political-ads/library/view",
       "file": "politicalAds.ts",
       "phase": "Phase 2-4",
-      "schemaDefined": false,
+      "schemaDefined": true,
       "preValidationDefined": false,
-      "standardizedEnvelope": false
+      "standardizedEnvelope": true
     },
     {
       "method": "POST",
@@ -3298,69 +3352,6 @@
     },
     {
       "method": "GET",
-      "path": "/api/v1/system/audit/performance",
-      "file": "systemAudit.ts",
-      "phase": "Phase 2-4",
-      "schemaDefined": false,
-      "preValidationDefined": false,
-      "standardizedEnvelope": false
-    },
-    {
-      "method": "GET",
-      "path": "/api/v1/system/audit/database",
-      "file": "systemAudit.ts",
-      "phase": "Phase 2-4",
-      "schemaDefined": false,
-      "preValidationDefined": false,
-      "standardizedEnvelope": false
-    },
-    {
-      "method": "POST",
-      "path": "/api/v1/system/audit/database/run",
-      "file": "systemAudit.ts",
-      "phase": "Phase 2-4",
-      "schemaDefined": false,
-      "preValidationDefined": false,
-      "standardizedEnvelope": false
-    },
-    {
-      "method": "GET",
-      "path": "/api/v1/system/audit/load-test",
-      "file": "systemAudit.ts",
-      "phase": "Phase 2-4",
-      "schemaDefined": false,
-      "preValidationDefined": false,
-      "standardizedEnvelope": false
-    },
-    {
-      "method": "POST",
-      "path": "/api/v1/system/audit/load-test/run",
-      "file": "systemAudit.ts",
-      "phase": "Phase 2-4",
-      "schemaDefined": false,
-      "preValidationDefined": false,
-      "standardizedEnvelope": false
-    },
-    {
-      "method": "GET",
-      "path": "/api/v1/system/audit/security",
-      "file": "systemAudit.ts",
-      "phase": "Phase 2-4",
-      "schemaDefined": false,
-      "preValidationDefined": false,
-      "standardizedEnvelope": false
-    },
-    {
-      "method": "POST",
-      "path": "/api/v1/system/audit/security/run",
-      "file": "systemAudit.ts",
-      "phase": "Phase 2-4",
-      "schemaDefined": false,
-      "preValidationDefined": false,
-      "standardizedEnvelope": false
-    },
-    {
-      "method": "GET",
       "path": "/api/v1/system/audit/topology",
       "file": "systemAudit.ts",
       "phase": "Phase 2-4",
@@ -3379,7 +3370,43 @@
     },
     {
       "method": "GET",
-      "path": "/api/v1/system/audit/dr",
+      "path": "/api/v1/demo/system/audit/database",
+      "file": "systemAudit.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/demo/system/audit/load-test",
+      "file": "systemAudit.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/demo/system/audit/security",
+      "file": "systemAudit.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/demo/system/audit/dr",
+      "file": "systemAudit.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/demo/system/audit/performance",
       "file": "systemAudit.ts",
       "phase": "Phase 2-4",
       "schemaDefined": false,
@@ -3388,7 +3415,7 @@
     },
     {
       "method": "POST",
-      "path": "/api/v1/system/audit/dr/drill",
+      "path": "/api/v1/demo/system/audit/database/run",
       "file": "systemAudit.ts",
       "phase": "Phase 2-4",
       "schemaDefined": false,
@@ -3397,7 +3424,34 @@
     },
     {
       "method": "POST",
-      "path": "/api/v1/system/audit/dr/rollback",
+      "path": "/api/v1/demo/system/audit/load-test/run",
+      "file": "systemAudit.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/demo/system/audit/dr/drill",
+      "file": "systemAudit.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/demo/system/audit/dr/rollback",
+      "file": "systemAudit.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/demo/system/audit/security/run",
       "file": "systemAudit.ts",
       "phase": "Phase 2-4",
       "schemaDefined": false,
@@ -3417,6 +3471,15 @@
       "method": "GET",
       "path": "/api/v1/analytics/events",
       "file": "universalAnalytics.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users/me/following",
+      "file": "users.ts",
       "phase": "Phase 2-4",
       "schemaDefined": false,
       "preValidationDefined": false,

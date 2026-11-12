@@ -10,6 +10,7 @@
 
 import type { ApiClient } from '../client';
 import { ApiValidationError } from '../errors';
+import { trackProductEvent } from '../../analytics';
 
 export interface UpdateProfileRequestDTO {
   displayName?: string;
@@ -32,6 +33,13 @@ export class UsersEndpoint {
       payload,
       { authPolicy: 'authenticated' },
     );
+    if (res.data.success && payload.constituencyId) {
+      void trackProductEvent(this.client, 'constituency_selected', {
+        screen: '/profile',
+        constituencyId: payload.constituencyId,
+        entityType: 'user_profile',
+      });
+    }
     return res.data;
   }
 
@@ -61,6 +69,28 @@ export class UsersEndpoint {
       `/api/v1/users/${encodeURIComponent(targetUserId)}/follow`,
       { authPolicy: 'authenticated' },
     );
+    return res.data;
+  }
+
+  /** Load the authenticated user's private follow graph. */
+  async getFollowedUserIds(): Promise<{ success: boolean; followedUserIds: string[] }> {
+    const res = await this.client.get<{ success: boolean; followedUserIds: string[] }>(
+      '/api/v1/users/me/following',
+      { authPolicy: 'authenticated' },
+    );
+    return res.data;
+  }
+
+  /** Load the public aggregate count for a user's followers. */
+  async getFollowerCount(userId: string): Promise<{ success: boolean; userId: string; followerCount: number }> {
+    if (!userId) {
+      throw new ApiValidationError('Invalid follower count request: userId is required');
+    }
+    const res = await this.client.get<{
+      success: boolean;
+      userId: string;
+      followerCount: number;
+    }>(`/api/v1/users/${encodeURIComponent(userId)}/followers/count`, { authPolicy: 'public' });
     return res.data;
   }
 }

@@ -215,6 +215,11 @@ export default function AISmartSearch({ onSelect }: AISmartSearchProps) {
         <View style={[styles.responseContainer, { backgroundColor: colors.surfaceElevated, borderColor: colors.border }]}>
           <ScrollView style={styles.responseScroll} nestedScrollEnabled>
             <Text style={[styles.responseText, { color: colors.text }]}>{aiResponse}</Text>
+            <Text style={[styles.provenanceText, { color: colors.textMuted }]}>
+              {t('ai.referenceDataNotVerified', {
+                defaultValue: 'Reference data has not been verified against dated sources.',
+              })}
+            </Text>
           </ScrollView>
 
           {/* Quick jumps to mentioned constituencies */}
@@ -343,6 +348,11 @@ const styles = StyleSheet.create({
   responseText: {
     fontSize: 13,
     lineHeight: 20,
+  },
+  provenanceText: {
+    fontSize: 11,
+    lineHeight: 15,
+    marginTop: 8,
   },
   mentionedContainer: {
     marginTop: 10,

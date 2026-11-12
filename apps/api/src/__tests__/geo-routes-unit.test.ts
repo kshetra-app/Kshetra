@@ -24,7 +24,8 @@ describe('Geo Routes Unit Tests (Direct Route Injection)', () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.headers['content-type']).toContain('application/json');
-    expect(res.headers['cache-control']).toContain('max-age=86400');
+    expect(res.headers['cache-control']).toContain('max-age=60');
+    expect(res.headers['cache-control']).toContain('stale-while-revalidate=60');
     const body = JSON.parse(res.payload);
     expect(body['TS']).toBeDefined();
     expect(body['TS'].file).toBe('telangana-assembly.json');

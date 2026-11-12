@@ -33,6 +33,8 @@ export interface PaymentVerificationInput {
   paymentId: string;
   signature?: string;
   sandboxBypass?: boolean;
+  expectedAmountPaise?: number;
+  expectedCurrency?: string;
 }
 
 export interface PaymentVerificationResult {

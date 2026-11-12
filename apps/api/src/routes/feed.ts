@@ -5,6 +5,7 @@
  */
 
 import type { FastifyInstance } from 'fastify';
+import { createHash } from 'node:crypto';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
 import { resolveAuthenticatedUser, assertActingUserMatch } from '../lib/userAuth';
@@ -24,6 +25,7 @@ export async function feedRoutes(app: FastifyInstance) {
       language?: string;
       hashtags?: string[];
       pollOptions?: string[];
+      clientToken?: string;
     };
   }>(
     '/api/v1/feed/posts',
@@ -44,7 +46,13 @@ export async function feedRoutes(app: FastifyInstance) {
             parentId: { type: 'string' },
             language: { type: 'string' },
             hashtags: { type: 'array', items: { type: 'string' } },
-            pollOptions: { type: 'array', items: { type: 'string' } },
+            clientToken: { type: 'string', minLength: 1, maxLength: 128 },
+            pollOptions: {
+              type: 'array',
+              minItems: 2,
+              maxItems: 5,
+              items: { type: 'string', minLength: 1, maxLength: 200 },
+            },
           },
         },
       },
@@ -55,6 +63,38 @@ export async function feedRoutes(app: FastifyInstance) {
 
       if (!assertActingUserMatch(reply, request, auth.userId, request.body?.authorId, 'authorId')) {
         return;
+      }
+
+      const {
+        content,
+        type = 'discussion',
+        stateCode,
+        constituencyId,
+        parentId,
+        language = 'en',
+        hashtags,
+        pollOptions,
+        clientToken,
+      } = request.body;
+
+      const normalizedPollOptions = pollOptions?.map((option) => option.trim());
+      if (
+        type === 'poll' &&
+        (!normalizedPollOptions ||
+          normalizedPollOptions.length < 2 ||
+          normalizedPollOptions.length > 5 ||
+          normalizedPollOptions.some((option) => !option || option.length > 200) ||
+          new Set(normalizedPollOptions.map((option) => option.toLocaleLowerCase())).size !==
+            normalizedPollOptions.length)
+      ) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'Polls require 2–5 distinct, non-empty options of at most 200 characters.',
+          { code: 'VALIDATION_ERROR' },
+        );
       }
 
       if (!isSupabaseConfigured) {
@@ -70,18 +110,137 @@ export async function feedRoutes(app: FastifyInstance) {
         );
       }
 
-      const {
-        content,
-        type = 'discussion',
-        stateCode,
-        constituencyId,
-        parentId,
-        language = 'en',
-        hashtags,
-        pollOptions,
-      } = request.body;
+      const normalizedHashtags = [
+        ...new Set(
+          (hashtags ?? []).map((tag) => tag.replace(/^#/, '').toLowerCase().trim()).filter(Boolean),
+        ),
+      ].sort();
+      const requestHash = createHash('sha256')
+        .update(
+          JSON.stringify({
+            content,
+            type,
+            stateCode,
+            constituencyId: constituencyId ?? null,
+            parentId: parentId ?? null,
+            language,
+            hashtags: normalizedHashtags,
+            pollOptions: normalizedPollOptions ?? null,
+          }),
+        )
+        .digest('hex');
 
       try {
+        const lookupExistingPost = async () => {
+          if (!clientToken) return { kind: 'missing' as const };
+          const { data: existing, error: existingErr } = await supabase
+            .from('posts')
+            .select('*')
+            .eq('author_id', auth.userId)
+            .eq('client_token', clientToken)
+            .maybeSingle();
+          if (existingErr) return { kind: 'error' as const, message: existingErr.message };
+          if (!existing) return { kind: 'missing' as const };
+          if (existing.request_hash !== requestHash) return { kind: 'conflict' as const };
+
+          let existingPoll:
+            | {
+                id: string;
+                question: string;
+                totalVotes: number;
+                isClosed: boolean;
+                options: { id: string; label: string; voteCount: number; sortOrder: number }[];
+              }
+            | undefined;
+          if (existing.type === 'poll') {
+            const { data: poll, error: pollErr } = await supabase
+              .from('polls')
+              .select('id, question, total_votes, is_closed')
+              .eq('post_id', existing.id)
+              .maybeSingle();
+            if (pollErr || !poll)
+              return {
+                kind: 'pending' as const,
+                message: pollErr?.message || 'Persisted poll is not visible yet',
+              };
+            const { data: options, error: optionsErr } = await supabase
+              .from('poll_options')
+              .select('id, label, vote_count, sort_order')
+              .eq('poll_id', poll.id)
+              .order('sort_order', { ascending: true });
+            if (optionsErr || !options || options.length < 2) {
+              return {
+                kind: 'pending' as const,
+                message: optionsErr?.message || 'Persisted poll options are not visible yet',
+              };
+            }
+            existingPoll = {
+              id: poll.id,
+              question: poll.question,
+              totalVotes: poll.total_votes ?? 0,
+              isClosed: Boolean(poll.is_closed),
+              options: options.map((option) => ({
+                id: option.id,
+                label: option.label,
+                voteCount: option.vote_count ?? 0,
+                sortOrder: option.sort_order ?? 0,
+              })),
+            };
+          }
+          return { kind: 'found' as const, post: existing, poll: existingPoll };
+        };
+
+        const sendReplay = (result: Awaited<ReturnType<typeof lookupExistingPost>>) => {
+          if (result.kind === 'missing') return null;
+          if (result.kind === 'conflict') {
+            return sendApiError(
+              reply,
+              request,
+              409,
+              'Conflict',
+              'This post retry token was already used for different content.',
+              {
+                code: 'IDEMPOTENCY_KEY_REUSE',
+              },
+            );
+          }
+          if (result.kind === 'error') {
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Could not safely reconcile this post retry.',
+              {
+                code: 'POST_RECONCILIATION_UNAVAILABLE',
+              },
+            );
+          }
+          if (result.kind === 'pending') {
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'The original post is still finishing persistence. Retry this same request shortly.',
+              {
+                code: 'POST_RECONCILIATION_PENDING',
+              },
+            );
+          }
+          return reply.send({
+            success: true,
+            id: result.post.id,
+            post: result.post,
+            poll: result.poll,
+          });
+        };
+
+        if (clientToken) {
+          const replay = sendReplay(await lookupExistingPost());
+          if (replay) return replay;
+        }
+
         const { data: post, error: postErr } = await supabase
           .from('posts')
           .insert({
@@ -92,11 +251,16 @@ export async function feedRoutes(app: FastifyInstance) {
             constituency_id: constituencyId ?? null,
             parent_id: parentId ?? null,
             language,
+            ...(clientToken ? { client_token: clientToken, request_hash: requestHash } : {}),
           })
           .select('*')
           .single();
 
         if (postErr || !post) {
+          if (clientToken && postErr?.code === '23505') {
+            const replay = sendReplay(await lookupExistingPost());
+            if (replay) return replay;
+          }
           app.log.error({ err: postErr?.message }, 'Failed to insert post');
           return sendApiError(
             reply,
@@ -110,32 +274,93 @@ export async function feedRoutes(app: FastifyInstance) {
           );
         }
 
-        // If poll options provided, create poll and options
-        if (type === 'poll' && pollOptions && pollOptions.length > 0) {
+        let persistedPoll:
+          | {
+              id: string;
+              question: string;
+              totalVotes: number;
+              isClosed: boolean;
+              options: { id: string; label: string; voteCount: number; sortOrder: number }[];
+            }
+          | undefined;
+
+        // Create polls and options from the validated request. Remove the parent post
+        // if either child write fails so a partially-created poll is not reported.
+        if (type === 'poll') {
           const { data: poll, error: pollErr } = await supabase
             .from('polls')
             .insert({
               post_id: post.id,
               question: content,
             })
-            .select('id')
+            .select('id, question, total_votes, is_closed')
             .single();
 
-          if (!pollErr && poll) {
-            const optionRows = pollOptions.map((opt, idx) => ({
-              poll_id: poll.id,
-              label: opt,
-              sort_order: idx,
-            }));
-            await supabase.from('poll_options').insert(optionRows);
+          if (pollErr || !poll) {
+            const { error: cleanupError } = await supabase.from('posts').delete().eq('id', post.id);
+            if (cleanupError)
+              app.log.error(
+                { err: cleanupError.message, postId: post.id },
+                'Failed to roll back post after poll creation error',
+              );
+            return sendApiError(
+              reply,
+              request,
+              500,
+              'Internal Server Error',
+              pollErr?.message || 'Failed to create poll',
+              {
+                code: 'DATABASE_ERROR',
+              },
+            );
           }
+
+          const optionRows = normalizedPollOptions!.map((label, idx) => ({
+            poll_id: poll.id,
+            label,
+            sort_order: idx,
+          }));
+          const { data: options, error: optionsErr } = await supabase
+            .from('poll_options')
+            .insert(optionRows)
+            .select('id, label, vote_count, sort_order');
+
+          if (optionsErr || !options || options.length !== optionRows.length) {
+            const { error: cleanupError } = await supabase.from('posts').delete().eq('id', post.id);
+            if (cleanupError)
+              app.log.error(
+                { err: cleanupError.message, postId: post.id },
+                'Failed to roll back post after poll options error',
+              );
+            return sendApiError(
+              reply,
+              request,
+              500,
+              'Internal Server Error',
+              optionsErr?.message || 'Failed to create poll options',
+              {
+                code: 'DATABASE_ERROR',
+              },
+            );
+          }
+
+          persistedPoll = {
+            id: poll.id,
+            question: poll.question,
+            totalVotes: poll.total_votes ?? 0,
+            isClosed: Boolean(poll.is_closed),
+            options: options.map((option) => ({
+              id: option.id,
+              label: option.label,
+              voteCount: option.vote_count ?? 0,
+              sortOrder: option.sort_order ?? 0,
+            })),
+          };
         }
 
         // Sync hashtags if present
-        if (hashtags && hashtags.length > 0) {
-          for (const tag of hashtags) {
-            const normalized = tag.replace(/^#/, '').toLowerCase().trim();
-            if (!normalized) continue;
+        if (normalizedHashtags.length > 0) {
+          for (const normalized of normalizedHashtags) {
             const { data: tagRow } = await supabase
               .from('hashtags')
               .upsert({ tag: normalized }, { onConflict: 'tag' })
@@ -157,6 +382,7 @@ export async function feedRoutes(app: FastifyInstance) {
           success: true,
           id: post.id,
           post,
+          poll: persistedPoll,
         });
       } catch (err: any) {
         app.log.error({ err: err?.message }, 'Exception in compose post');
@@ -621,7 +847,7 @@ export async function feedRoutes(app: FastifyInstance) {
    */
   app.post<{
     Params: { id: string };
-    Body: { content: string; language?: string; authorId?: string };
+    Body: { content: string; language?: string; authorId?: string; clientToken?: string };
   }>(
     '/api/v1/feed/posts/:id/comments',
     {
@@ -638,6 +864,7 @@ export async function feedRoutes(app: FastifyInstance) {
             content: { type: 'string', minLength: 1, maxLength: 1000 },
             language: { type: 'string' },
             authorId: { type: 'string' },
+            clientToken: { type: 'string', minLength: 1, maxLength: 128 },
           },
         },
       },
@@ -664,9 +891,51 @@ export async function feedRoutes(app: FastifyInstance) {
       }
 
       const { id: postId } = request.params;
-      const { content, language = 'en' } = request.body;
+      const { content, language = 'en', clientToken } = request.body;
 
       try {
+        if (clientToken) {
+          const { data: existing, error: existingErr } = await supabase
+            .from('comments')
+            .select('*')
+            .eq('author_id', auth.userId)
+            .eq('client_token', clientToken)
+            .maybeSingle();
+
+          if (existingErr) {
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Comment retry protection is not available. Apply the feed comment idempotency migration before enabling this client.',
+              {
+                code: 'COMMENT_IDEMPOTENCY_UNAVAILABLE',
+              },
+            );
+          }
+
+          if (existing) {
+            if (
+              existing.post_id !== postId ||
+              existing.content !== content ||
+              existing.language !== language
+            ) {
+              return sendApiError(
+                reply,
+                request,
+                409,
+                'Conflict',
+                'This comment retry token was already used for a different comment.',
+                {
+                  code: 'IDEMPOTENCY_KEY_REUSE',
+                },
+              );
+            }
+            return reply.send({ success: true, id: existing.id, postId, comment: existing });
+          }
+        }
+
         const { data: comment, error: commentErr } = await supabase
           .from('comments')
           .insert({
@@ -674,11 +943,41 @@ export async function feedRoutes(app: FastifyInstance) {
             author_id: auth.userId,
             content,
             language,
+            ...(clientToken ? { client_token: clientToken } : {}),
           })
           .select('*')
           .single();
 
         if (commentErr || !comment) {
+          // A concurrent retry may have inserted the same token after the lookup.
+          // Resolve that unique-key race to the original persisted comment.
+          if (clientToken && commentErr?.code === '23505') {
+            const { data: existing, error: existingErr } = await supabase
+              .from('comments')
+              .select('*')
+              .eq('author_id', auth.userId)
+              .eq('client_token', clientToken)
+              .maybeSingle();
+            if (!existingErr && existing) {
+              if (
+                existing.post_id !== postId ||
+                existing.content !== content ||
+                existing.language !== language
+              ) {
+                return sendApiError(
+                  reply,
+                  request,
+                  409,
+                  'Conflict',
+                  'This comment retry token was already used for a different comment.',
+                  {
+                    code: 'IDEMPOTENCY_KEY_REUSE',
+                  },
+                );
+              }
+              return reply.send({ success: true, id: existing.id, postId, comment: existing });
+            }
+          }
           return sendApiError(
             reply,
             request,

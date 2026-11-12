@@ -196,6 +196,7 @@ const hi = {
     "votes": "मत",
     "voteShare": "मत प्रतिशत",
     "demographics": "जनसांख्यिकी",
+    "dataUnavailable": "उपलब्ध नहीं",
     "population": "जनसंख्या",
     "literacy": "साक्षरता दर",
     "urbanRural": "शहरी / ग्रामीण",
@@ -234,7 +235,13 @@ const hi = {
     "male": "पुरुष",
     "female": "महिला",
     "socialComposition": "सामाजिक संरचना",
-    "demoDisclaimer": "स्रोत: जनगणना 2011 · ECI 2023 मतदाता सूची"
+    "demoDisclaimer": "स्रोत: जनगणना 2011 · ECI 2023 मतदाता सूची",
+    "demographicReferenceTitle": "निर्वाचन क्षेत्र के जनसांख्यिकीय संदर्भ आँकड़े",
+    "noDemographicData": "इस निर्वाचन क्षेत्र के सत्यापित जनसांख्यिकीय आँकड़े किसी जुड़े स्रोत से उपलब्ध नहीं हैं।",
+    "resultUnavailable": "चुनाव परिणाम का डेटा किसी जुड़े स्रोत से उपलब्ध नहीं है।",
+    "noAffidavitYear": "चुनाव वर्ष उपलब्ध नहीं है, इसलिए हलफनामे का कोई रिकॉर्ड मिलान नहीं किया जा सकता।",
+    "demographicDataNoteTitle": "इन आँकड़ों के बारे में",
+    "demographicDataNote": "समेकित जनसांख्यिकीय मान अनुमान हो सकते हैं या पुराने स्रोत-वर्ष पर आधारित हो सकते हैं। प्रत्येक मान के लिए पता लगाने योग्य स्रोत, वर्ष और निर्वाचन क्षेत्र का दायरा सत्यापित होने तक इन्हें प्रोडक्शन दृश्य में नहीं दिखाया जाता।"
   },
   "feed": {
     "votes": "वोट",
@@ -579,7 +586,7 @@ const hi = {
     "tryAsking": "यह पूछकर देखें:",
     "thinkingSearch": "डेटा का विश्लेषण किया जा रहा है…",
     "noResponse": "कोई प्रतिक्रिया उपलब्ध नहीं",
-    "poweredBy": "पॉलीग्राम AI द्वारा संचालित • Google Gemini",
+    "poweredBy": "पॉलीग्राम AI द्वारा संचालित",
     "qWinner2023": "2023 में {{name}} से कौन जीता?",
     "qMarginTrend": "{{name}} में जीत के अंतर का रुझान क्या है?",
     "qTellAboutMLA": "{{name}} के विधायक के बारे में बताएं",
@@ -799,7 +806,7 @@ const hi = {
       },
       "hl-5": {
         "title": "दल-बदल कानून: तेलंगाना BRS याचिकाओं पर अगले हफ़्ते सुप्रीम कोर्ट की सुनवाई",
-        "summary": "10 BRS से INC दल-बदल के मामले लंबित। कोर्ट स्पीकर की विलंबित अयोग्यता कार्यवाही की जांच करेगा।"
+        "summary": "2024 में BRS के दस विधायक INC में शामिल हुए। सुप्रीम कोर्ट ने सितंबर 2026 में दानम नागेंदर की अयोग्यता बरकरार रखी; अन्य याचिकाओं पर स्पीकर के फैसलों को तेलंगाना हाई कोर्ट में चुनौती दी गई।"
       },
       "hl-6": {
         "title": "अप्रैल में TSRTC का सर्वाधिक राजस्व, लेकिन ग्रामीण मार्ग अभी भी घाटे में",
@@ -972,7 +979,7 @@ const hi = {
       "content": "आज निर्वाचन क्षेत्र स्तरीय समीक्षा बैठक में भाग लिया। इस माह 43 नए राशन कार्ड, 12 लंबित पेंशन मामले निपटाए गए। प्रगति धीमी लेकिन दिख रही है। #goshamahal #governance"
     },
     "seed-ts-4": {
-      "content": "क्या आपको लगता है कि 10 BRS→INC दलबदल ने उन निर्वाचन क्षेत्रों में जमीनी स्तर पर शासन बदला है?"
+      "content": "2024 में BRS के दस विधायक INC में शामिल हुए। इन दल परिवर्तनों ने संबंधित निर्वाचन क्षेत्रों के प्रतिनिधित्व को कैसे प्रभावित किया?"
     },
     "seed-ts-5": {
       "content": "सिरसिल्ला में KTR का अंतर — 51,489 वोट — 2023 चुनाव में सबसे बड़ा था। BRS के समग्र रूप से हारने के बावजूद यह क्षेत्र वफादार रहा। #sircilla #brs #ktr"
@@ -1211,7 +1218,6 @@ const hi = {
     "state": "राज्य",
     "party": "पार्टी",
     "terms": "कार्यकाल",
-    "attendance": "उपस्थिति",
     "questions": "प्रश्न",
     "debates": "बहस में भागीदारी",
     "allianceStrength": "केंद्र में गठबंधनों की ताकत",
@@ -1233,10 +1239,10 @@ const hi = {
     "thTotal": "कुल",
     "showTop15": "शीर्ष 15 दल दिखाएं",
     "viewAllParties": "सभी {{count}} घटक दल देखें (YSRCP, BRS, TDP सहित…)",
-    "lokSabhaMPsCount": "18th Lok Sabha MPs ({{count}} of {{total}})",
+    "lokSabhaMPsCount": "लोकसभा प्रोफ़ाइल ({{total}} में से {{count}} सूचीबद्ध)",
     "stateLokSabhaCount": "लोकसभा सांसद — {{state}} ({{count}})",
     "noMPsMatch": "आपकी खोज या फ़िल्टर से कोई सांसद मेल नहीं खाता।",
-    "rajyaSabhaMPsCount": "Rajya Sabha MPs ({{count}} of {{total}})",
+    "rajyaSabhaMPsCount": "राज्यसभा प्रोफ़ाइल ({{total}} में से {{count}} सूचीबद्ध; कुल {{seatTotal}} सीटें)",
     "stateRajyaSabhaCount": "राज्यसभा सांसद — {{state}} ({{count}})",
     "noRajyaSabhaMatch": "आपकी खोज से कोई राज्यसभा सांसद मेल नहीं खाता।",
     "termsElected": "निर्वाचित कार्यकाल",
@@ -1342,7 +1348,13 @@ const hi = {
       "grassrootsCampaign": "जमीनी स्तर पर प्रचार की रूपरेखा",
       "fundraising": "निर्दलीय प्रत्याशियों के लिए क्राउडफंडिंग",
       "rpaAct": "जन प्रतिनिधित्व अधिनियम के नियम"
-    }
+    },
+    "loadingChallenges": "सक्रिय चुनौतियाँ लोड हो रही हैं…",
+    "challengesUnavailable": "चुनौती का डेटा अभी उपलब्ध नहीं है।",
+    "loadingBadges": "अर्जित बैज लोड हो रहे हैं…",
+    "badgesUnavailable": "बैज का डेटा अभी उपलब्ध नहीं है।",
+    "loadingAspirants": "सार्वजनिक उम्मीदवारों की सूची लोड हो रही है…",
+    "aspirantsUnavailable": "सार्वजनिक उम्मीदवारों की निर्देशिका अभी उपलब्ध नहीं है।"
   },
   "becomeAspirant": {
     "title": "उम्मीदवार बनें",
@@ -1637,7 +1649,20 @@ const hi = {
       "tsReportCard": "तेलंगाना विकास रिपोर्ट कार्ड",
       "youthConnect": "युवा कनेक्ट 2026",
       "guaranteesImpact": "5 गारंटी प्रभाव रिपोर्ट"
-    }
+    },
+    "createAdDraft": "विज्ञापन का मसौदा बनाएँ",
+    "saveAdDraft": "मसौदा सहेजें",
+    "adDraftsTitle": "विज्ञापन रचनात्मक मसौदे",
+    "adDraftOnlyNote": "मसौदे इस अभियान में सहेजे जाते हैं। समीक्षा, दर्शक लक्ष्यीकरण, बिलिंग और विज्ञापन वितरण अभी जुड़े नहीं हैं।",
+    "noCampaignForAds": "पहले कोई अभियान बनाएँ या चुनें।",
+    "noAdDrafts": "इस अभियान के लिए अभी कोई विज्ञापन मसौदा नहीं है।",
+    "adDraftRequired": "नाम, शीर्षक, प्रायोजक और प्रकटीकरण दर्ज करें।",
+    "adName": "मसौदे का नाम",
+    "adHeadline": "शीर्षक",
+    "adBody": "संदेश (वैकल्पिक)",
+    "adDisclosure": "प्रकटीकरण का पाठ",
+    "noVerifiedAdMetrics": "सत्यापित विज्ञापन वितरण जुड़ने तक वितरण आँकड़े उपलब्ध नहीं हैं।",
+    "adComplianceNotReviewed": "अनुपालन की समीक्षा अभी नहीं हुई है"
   },
   "outreach": {
     "sentiment": "जनभावना",
@@ -1666,10 +1691,9 @@ const hi = {
   },
   "civicMetrics": {
     "screenTitle": "नागरिक प्रदर्शन एवं मीट्रिक्स",
-    "screenSubtitle": "बजट, उपस्थिति, विधेयक और योजनाएं",
+    "screenSubtitle": "बजट, विधेयक, योजनाएँ और सुनवाई",
     "stateBudgetOverview": "राज्य बजट अवलोकन",
     "noBudgetData": "इस राज्य के लिए बजट डेटा उपलब्ध नहीं है",
-    "legislatorAttendance": "विधायक उपस्थिति ({{count}})",
     "activeBills": "सक्रिय विधेयक और विधान ({{count}})",
     "governmentSchemes": "सरकारी योजनाएँ और कल्याण ({{count}})",
     "developmentProjects": "बुनियादी ढांचा और विकास परियोजनाएँ ({{count}})",
@@ -1677,15 +1701,18 @@ const hi = {
     "response": "प्रतिक्रिया: {{text}}",
     "views": "{{count}} बार देखा गया",
     "filed": "{{date}} को दाखिल",
+    "publicHearings": "सार्वजनिक सुनवाई ({{count}})",
+    "noUpcomingHearings": "इस राज्य के लिए कोई आगामी सार्वजनिक सुनवाई दर्ज नहीं है।",
+    "registerForHearing": "सुनवाई के लिए पंजीकरण",
     "title": "नागरिक मेट्रिक्स",
-    "subtitle": "बजट, उपस्थिति, विधेयक और योजनाएँ",
+    "subtitle": "बजट, विधेयक, योजनाएँ और सुनवाई",
     "tabs": {
       "budget": "बजट",
-      "attendance": "उपस्थिति",
       "bills": "विधेयक",
       "schemes": "योजनाएँ",
       "projects": "परियोजनाएँ",
-      "rti": "RTI"
+      "rti": "RTI",
+      "hearings": "सुनवाई"
     },
     "stateBudget": "राज्य बजट",
     "totalBudget": "कुल",
@@ -1693,7 +1720,6 @@ const hi = {
     "fiscalDeficit": "राजकोषीय घाटा",
     "revenueDeficit": "राजस्व घाटा",
     "debtGDP": "ऋण/GDP",
-    "assemblyAttendance": "विधानसभा उपस्थिति",
     "sessions": "सत्र",
     "questionsRaised": "प्रश्न",
     "debatesParticipated": "बहसें",
@@ -1712,7 +1738,9 @@ const hi = {
     "revised": "संशोधित",
     "amountSpent": "ख़र्च",
     "dueDate": "नियत तिथि",
-    "daysDelayed": "{{n}} दिन विलंबित"
+    "delayLabel": "विलंब",
+    "daysDelayed": "{{n}} दिन विलंबित",
+    "noConnectedData": "किसी जुड़े स्रोत से सत्यापित रिकॉर्ड अभी उपलब्ध नहीं हैं।"
   },
   "lmx": {
     "screenTitle": "पॉलीग्राम लाइव",
@@ -2321,7 +2349,8 @@ const hi = {
     "male": "पुरुष",
     "female": "महिला",
     "terms": "कार्यकाल",
-    "historical": "ऐतिहासिक तुलना"
+    "historical": "ऐतिहासिक तुलना",
+    "demographicsUnavailable": "चयनित एक या दोनों निर्वाचन क्षेत्रों के लिए स्रोत-सहित सत्यापित जनसांख्यिकीय आँकड़े उपलब्ध न होने के कारण तुलना उपलब्ध नहीं है।"
   },
   "export": {
     "title": "निर्यात डैशबोर्ड",
@@ -3060,38 +3089,38 @@ const hi = {
   },
   "pages": {
     "tabPosts": "पोस्ट और गतिविधियाँ",
-    "tabProfile": "प्रोफ़ाइल और यात्रा",
+    "tabProfile": "प्रोफ़ाइल और सफ़र",
     "tabVision": "दृष्टि और घोषणापत्र",
     "tabInitiatives": "मैदानी पहल",
-    "tabValues": "मूल्य और खुलासे",
+    "tabValues": "मूल्य और घोषणाएँ",
     "tabStudio": "नेता विश्लेषण स्टूडियो",
     "liveStatus": "लाइव स्थिति",
     "inFieldTour": "मैदानी दौरे पर",
-    "followers": "अनुयायी",
+    "followers": "फ़ॉलोअर्स",
     "civicScore": "नागरिक स्कोर",
-    "resolvedIssues": "समाधान किए गए",
-    "cleanAffidavit": "100% स्वच्छ हलफनामा",
+    "resolvedIssues": "समाधान किए",
+    "cleanAffidavit": "100% साफ़ हलफ़नामा",
     "noCriminalCases": "कोई आपराधिक मामला नहीं",
-    "assetDeclaration": "संपत्ति घोषणा",
-    "form26Verified": "स्वेच्छा से घोषित फॉर्म 26",
+    "assetDeclaration": "संपत्ति की घोषणा",
+    "form26Verified": "स्वेच्छा से फ़ॉर्म 26 घोषित",
     "accountabilityCharter": "जवाबदेही चार्टर की प्रतिज्ञा",
-    "volunteer": "स्वयंसेवक",
+    "volunteer": "स्वयंसेवा करें",
     "postUpdate": "मतदाताओं के साथ अपडेट साझा करें",
-    "postPlaceholder": "मैदानी अवलोकन, निरीक्षण अपडेट या कोई विचार साझा करें...",
+    "postPlaceholder": "मैदानी निरीक्षण, जाँच अपडेट या अपना विचार साझा करें…",
     "postBtn": "पोस्ट प्रकाशित करें",
     "privateAnalyticsNotice": "यह अनुभाग गोपनीय है — इसे केवल उम्मीदवार/स्वयं और प्लेटफ़ॉर्म प्रशासक देख सकते हैं।",
-    "boothCoverage": "निर्वाचन क्षेत्र के मतदान केंद्रों का कवरेज",
+    "boothCoverage": "निर्वाचन क्षेत्र के बूथों की पहुँच",
     "grassrootsReach": "जमीनी स्तर तक पहुँच",
     "avgResponseTime": "नागरिकों को औसत जवाब देने का समय",
-    "requestsAnswered": "हल किए गए प्रश्न",
-    "voterEngagementTrend": "30-दिन की प्रोफ़ाइल सहभागिता",
+    "requestsAnswered": "समाधान किए गए प्रश्न",
+    "voterEngagementTrend": "30 दिनों की प्रोफ़ाइल सहभागिता",
     "profileViews": "प्रोफ़ाइल दृश्य",
-    "pendingCitizenRequests": "नागरिकों के लंबित अनुरोध",
+    "pendingCitizenRequests": "लंबित नागरिक अनुरोध",
     "citizenPoll": "नागरिक प्राथमिकता सर्वेक्षण",
-    "castVote": "मत दें",
-    "totalVotes": "कुल मत",
-    "agreeWithVision": "प्राथमिकता से सहमत",
-    "verifiedOfficialFigure": "सत्यापित आधिकारिक नेता",
+    "castVote": "वोट दें",
+    "totalVotes": "कुल वोट",
+    "agreeWithVision": "प्राथमिकता से सहमत हैं",
+    "verifiedOfficialFigure": "आधिकारिक रूप से सत्यापित नेता",
       "screenTitle": "पेज और नेता",
       "tabAspirants": "नागरिक उम्मीदवार",
       "tabPoliticians": "प्रतिनिधि",
@@ -3138,7 +3167,7 @@ const hi = {
       "citizenAccount": "नागरिक प्रोफ़ाइल",
       "citizenAccountDesc": "पेज निर्माण उम्मीदवारों, आकांक्षियों, दलों और पत्रकारों के लिए उपलब्ध है। क्या आप अपने निर्वाचन क्षेत्र में चुनाव लड़ना चाहते हैं?",
       "registerAsAspirantBtn": "नागरिक उम्मीदवार के रूप में पंजीकरण करें",
-      "candidateProfile": "नागरिक उम्मीदवार पेज"
+      "candidateProfile": "नागरिक उम्मीदवार पेज",
   },
 }
 

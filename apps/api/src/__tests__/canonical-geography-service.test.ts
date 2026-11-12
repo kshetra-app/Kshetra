@@ -132,6 +132,33 @@ describe('Canonical Geography Service & Decoupled State Data Adapter', () => {
       expect(tsElection).not.toBeNull();
       expect(tsElection?.recentElection.electionYear).toBe(2023);
     });
+
+    it('does not substitute bundled geography, election, or MLA seed records in production', async () => {
+      const originalAppEnv = process.env.APP_ENV;
+      const originalExpoEnv = process.env.EXPO_PUBLIC_APP_ENV;
+      process.env.APP_ENV = 'production';
+      delete process.env.EXPO_PUBLIC_APP_ENV;
+      setSupabaseConfiguredForTesting(true);
+
+      jest.spyOn(canonicalGeographyService, 'getConstituencies').mockResolvedValue([]);
+      jest.spyOn(canonicalGeographyService, 'getConstituency').mockResolvedValue(null);
+      jest.spyOn(canonicalGeographyService, 'getConstituencyElectionData').mockResolvedValue(null);
+      jest.spyOn(canonicalGeographyService, 'getConstituencyMLA').mockResolvedValue(null);
+      jest.spyOn(canonicalGeographyService, 'getConstituencyMLAs').mockResolvedValue([]);
+
+      try {
+        expect(await stateData.getCanonicalConstituencies('TS')).toEqual([]);
+        expect(await stateData.getCanonicalConstituency('TS', 1)).toBeNull();
+        expect(await stateData.getCanonicalConstituencyElectionData('TS', 1)).toBeNull();
+        expect(await stateData.getCanonicalMLAProfile('TS', 1)).toBeNull();
+        expect(await stateData.getCanonicalMLAProfiles('TS')).toEqual([]);
+      } finally {
+        if (originalAppEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = originalAppEnv;
+        if (originalExpoEnv === undefined) delete process.env.EXPO_PUBLIC_APP_ENV;
+        else process.env.EXPO_PUBLIC_APP_ENV = originalExpoEnv;
+      }
+    });
   });
 
   describe('Database Online / Mocked Execution', () => {
@@ -183,6 +210,7 @@ describe('Canonical Geography Service & Decoupled State Data Adapter', () => {
       const mockRows = [
         {
           id: 'TN-AC-35',
+          internal_id: 'TN-AC-35-INTERNAL',
           ac_no: 35,
           name: 'Madurantakam',
           state_code: 'TN',
@@ -220,6 +248,315 @@ describe('Canonical Geography Service & Decoupled State Data Adapter', () => {
       const single = await canonicalGeographyService.getConstituency('TN', 35);
       expect(single?.currentParty).toBe('TVK');
       expect(single?.currentMLA).toBe('K. Maragatham Kumaravel');
+      expect(single?.internalId).toBe('TN-AC-35-INTERNAL');
+    });
+
+    it('uses the canonical elected tenure in production instead of deprecated constituency officeholder fields', async () => {
+      const originalAppEnv = process.env.APP_ENV;
+      const originalExpoEnv = process.env.EXPO_PUBLIC_APP_ENV;
+      process.env.APP_ENV = 'production';
+      process.env.EXPO_PUBLIC_APP_ENV = 'production';
+      setSupabaseConfiguredForTesting(true);
+
+      const mockRows = [
+        {
+          id: 'TN-AC-35',
+          internal_id: 'TN-AC-35-INTERNAL',
+          ac_no: 35,
+          name: 'Madurantakam',
+          state_code: 'TN',
+          district: 'Chengalpattu',
+          reservation_status: 'SC',
+          current_party: 'LIVE_PARTY',
+          current_mla: 'Stale legacy officeholder',
+        },
+      ];
+      const tenureRows = [
+        {
+          jurisdiction_id: 'TN-AC-35',
+          current_party: 'ORG-TVK',
+          canonical_persons: { canonical_name: 'Canonical current officeholder', gender: 'female' },
+          party: { ec_party_code: 'TVK', short_name: 'TVK' },
+        },
+      ];
+      const selectMock = jest.fn().mockReturnValue({
+        eq: jest.fn().mockReturnValue({
+          order: jest.fn().mockResolvedValue({ data: mockRows, error: null }),
+          eq: jest.fn().mockReturnValue({
+            maybeSingle: jest.fn().mockResolvedValue({ data: mockRows[0], error: null }),
+          }),
+        }),
+      });
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        if (table === 'constituencies') return { select: selectMock } as any;
+        if (table === 'elected_tenures') {
+          const tenureQuery = {
+            eq: jest.fn().mockReturnThis(),
+            in: jest.fn().mockResolvedValue({ data: tenureRows, error: null }),
+          };
+          return {
+            select: jest.fn().mockReturnValue(tenureQuery),
+          } as any;
+        }
+        return {} as any;
+      }) as any);
+
+      try {
+        const list = await canonicalGeographyService.getConstituencies('TN');
+        const single = await canonicalGeographyService.getConstituency('TN', 35);
+        const profile = await canonicalGeographyService.getConstituencyMLA('TN', 35);
+        const profiles = await canonicalGeographyService.getConstituencyMLAs('TN');
+        expect(list[0].currentParty).toBe('TVK');
+        expect(list[0].currentMLA).toBe('Canonical current officeholder');
+        expect(single?.currentParty).toBe('TVK');
+        expect(single?.currentMLA).toBe('Canonical current officeholder');
+        expect(profile).toMatchObject({
+          name: 'Canonical current officeholder',
+          party: 'TVK',
+          gender: 'F',
+        });
+        expect(profile).not.toHaveProperty('terms');
+        expect(profiles).toHaveLength(1);
+        expect(profiles[0]).toMatchObject({
+          name: 'Canonical current officeholder',
+          party: 'TVK',
+          gender: 'F',
+        });
+        expect(profiles[0]).not.toHaveProperty('terms');
+      } finally {
+        if (originalAppEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = originalAppEnv;
+        if (originalExpoEnv === undefined) delete process.env.EXPO_PUBLIC_APP_ENV;
+        else process.env.EXPO_PUBLIC_APP_ENV = originalExpoEnv;
+      }
+    });
+
+    it('does not fall back to a legacy officeholder or arbitrary row when current tenures are missing or ambiguous', async () => {
+      const originalAppEnv = process.env.APP_ENV;
+      const originalExpoEnv = process.env.EXPO_PUBLIC_APP_ENV;
+      process.env.APP_ENV = 'production';
+      process.env.EXPO_PUBLIC_APP_ENV = 'production';
+      setSupabaseConfiguredForTesting(true);
+
+      const row = {
+        id: 'TN-AC-35',
+        internal_id: 'TN-AC-35-INTERNAL',
+        ac_no: 35,
+        name: 'Madurantakam',
+        state_code: 'TN',
+        district: 'Chengalpattu',
+        reservation_status: 'SC',
+        current_party: 'LEGACY_PARTY',
+        current_mla: 'Stale legacy officeholder',
+      };
+      const constituencyQuery = {
+        eq: jest.fn().mockReturnThis(),
+        order: jest.fn().mockResolvedValue({ data: [row], error: null }),
+        maybeSingle: jest.fn().mockResolvedValue({ data: row, error: null }),
+      };
+      const selectMock = jest.fn().mockReturnValue(constituencyQuery);
+      let tenureRows: any[] = [];
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        if (table === 'constituencies') return { select: selectMock } as any;
+        if (table === 'elected_tenures') {
+          const tenureQuery = {
+            eq: jest.fn().mockReturnThis(),
+            in: jest
+              .fn()
+              .mockImplementation(() => Promise.resolve({ data: tenureRows, error: null })),
+          };
+          return { select: jest.fn().mockReturnValue(tenureQuery) } as any;
+        }
+        return {} as any;
+      }) as any);
+
+      try {
+        const missing = await canonicalGeographyService.getConstituency('TN', 35);
+        expect(missing?.currentMLA).toBe('');
+        expect(await canonicalGeographyService.getConstituencyMLA('TN', 35)).toBeNull();
+        expect(await canonicalGeographyService.getConstituencyMLAs('TN')).toEqual([]);
+
+        tenureRows = [
+          {
+            jurisdiction_id: 'TN-AC-35',
+            canonical_persons: { canonical_name: 'First current person', gender: 'male' },
+            party: { ec_party_code: 'AAA' },
+          },
+          {
+            jurisdiction_id: 'TN-AC-35',
+            canonical_persons: { canonical_name: 'Second current person', gender: 'female' },
+            party: { ec_party_code: 'BBB' },
+          },
+        ];
+        const ambiguous = await canonicalGeographyService.getConstituency('TN', 35);
+        expect(ambiguous?.currentMLA).toBe('');
+        expect(await canonicalGeographyService.getConstituencyMLA('TN', 35)).toBeNull();
+      } finally {
+        if (originalAppEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = originalAppEnv;
+        if (originalExpoEnv === undefined) delete process.env.EXPO_PUBLIC_APP_ENV;
+        else process.env.EXPO_PUBLIC_APP_ENV = originalExpoEnv;
+      }
+    });
+
+    it('resolves production point lookups from database boundaries and the canonical tenure registry', async () => {
+      const originalAppEnv = process.env.APP_ENV;
+      const originalExpoEnv = process.env.EXPO_PUBLIC_APP_ENV;
+      process.env.APP_ENV = 'production';
+      process.env.EXPO_PUBLIC_APP_ENV = 'production';
+      setSupabaseConfiguredForTesting(true);
+
+      const rpcSpy = jest.spyOn(supabase, 'rpc').mockResolvedValue({
+        data: [
+          {
+            id: 'TS-AC-72',
+            internal_id: '00000000-0000-0000-0000-000000000072',
+            ac_no: 72,
+            name: 'Kodangal',
+            state_code: 'TS',
+            district: 'Vikarabad',
+            reservation_status: 'GEN',
+          },
+        ],
+        error: null,
+      } as any);
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        if (table === 'elected_tenures') {
+          const tenureQuery = {
+            eq: jest.fn().mockReturnThis(),
+            in: jest.fn().mockResolvedValue({
+              data: [
+                {
+                  jurisdiction_id: 'TS-AC-72',
+                  canonical_persons: { canonical_name: 'Verified Current MLA', gender: 'male' },
+                  party: { ec_party_code: 'INC', short_name: 'INC' },
+                },
+              ],
+              error: null,
+            }),
+          };
+          return { select: jest.fn().mockReturnValue(tenureQuery) } as any;
+        }
+        return {} as any;
+      }) as any);
+
+      try {
+        const result = await canonicalGeographyService.locatePoint({ lat: 17.1, lng: 77.6 });
+        expect(rpcSpy).toHaveBeenCalledWith('locate_constituency_point_truthful', {
+          p_lat: 17.1,
+          p_lng: 77.6,
+        });
+        expect(result.constituency).toMatchObject({
+          id: 'TS-AC-72',
+          internalId: '00000000-0000-0000-0000-000000000072',
+          currentMLA: 'Verified Current MLA',
+          currentParty: 'INC',
+          officeholderStatus: 'INCUMBENT_ACTIVE',
+        });
+      } finally {
+        if (originalAppEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = originalAppEnv;
+        if (originalExpoEnv === undefined) delete process.env.EXPO_PUBLIC_APP_ENV;
+        else process.env.EXPO_PUBLIC_APP_ENV = originalExpoEnv;
+      }
+    });
+
+    it('fails closed in production when spatial lookup is unavailable or ambiguous', async () => {
+      const originalAppEnv = process.env.APP_ENV;
+      const originalExpoEnv = process.env.EXPO_PUBLIC_APP_ENV;
+      process.env.APP_ENV = 'production';
+      process.env.EXPO_PUBLIC_APP_ENV = 'production';
+      setSupabaseConfiguredForTesting(true);
+
+      const rpcSpy = jest.spyOn(supabase, 'rpc').mockResolvedValue({
+        data: null,
+        error: new Error('RPC unavailable'),
+      } as any);
+
+      try {
+        const unavailable = await canonicalGeographyService.locatePoint({ lat: 17.1, lng: 77.6 });
+        expect(unavailable.constituency).toBeNull();
+        expect(unavailable.source).toBe('unavailable');
+
+        rpcSpy.mockResolvedValue({
+          data: [
+            { id: 'TS-AC-71', ac_no: 71, name: 'First', state_code: 'TS' },
+            { id: 'TS-AC-72', ac_no: 72, name: 'Second', state_code: 'TS' },
+          ],
+          error: null,
+        } as any);
+        const ambiguous = await canonicalGeographyService.locatePoint({ lat: 17.1, lng: 77.6 });
+        expect(ambiguous.constituency).toBeNull();
+        expect(ambiguous.message).toMatch(/more than one/i);
+      } finally {
+        if (originalAppEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = originalAppEnv;
+        if (originalExpoEnv === undefined) delete process.env.EXPO_PUBLIC_APP_ENV;
+        else process.env.EXPO_PUBLIC_APP_ENV = originalExpoEnv;
+      }
+    });
+
+    it('does not promote provisional PIN hints into exact matches or invented probability weights', async () => {
+      const originalAppEnv = process.env.APP_ENV;
+      const originalExpoEnv = process.env.EXPO_PUBLIC_APP_ENV;
+      process.env.APP_ENV = 'production';
+      process.env.EXPO_PUBLIC_APP_ENV = 'production';
+      setSupabaseConfiguredForTesting(true);
+
+      const canonicalConstituency = {
+        id: 'TS-AC-66',
+        internal_id: '00000000-0000-0000-0000-000000000066',
+        ac_no: 66,
+        name: 'Database Charminar',
+        state_code: 'TS',
+        district: 'Hyderabad',
+        reservation_status: 'GEN',
+        current_party: null,
+        current_mla: 'Deprecated name must not be used',
+      };
+
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        if (table === 'constituencies') {
+          let requestedAcNo: number | undefined;
+          let query: any;
+          query = {
+            eq: jest.fn((column: string, value: unknown) => {
+              if (column === 'ac_no') requestedAcNo = value as number;
+              return query;
+            }),
+            maybeSingle: jest.fn().mockImplementation(async () => ({
+              data: requestedAcNo === 66 ? canonicalConstituency : null,
+              error: null,
+            })),
+          };
+          return { select: jest.fn().mockReturnValue(query) } as any;
+        }
+        if (table === 'elected_tenures') {
+          const query = {
+            eq: jest.fn().mockReturnThis(),
+            in: jest.fn().mockResolvedValue({ data: [], error: null }),
+          };
+          return { select: jest.fn().mockReturnValue(query) } as any;
+        }
+        return {} as any;
+      }) as any);
+
+      try {
+        const result = await canonicalGeographyService.locateByPinCode('500002');
+        expect(result.verificationStatus).toBe('PROVISIONAL_APPROXIMATION');
+        expect(result.singleMatch).toBe(false);
+        expect(result.primaryConstituency).toBeNull();
+        expect(result.candidates).toHaveLength(1);
+        expect(result.candidates[0].constituency.name).toBe('Database Charminar');
+        expect(result.candidates[0].constituency.currentMLA).toBe('');
+        expect(result.candidates[0].overlapWeight).toBeNull();
+        expect(result.source).toBe('curated_provisional_directory');
+      } finally {
+        if (originalAppEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = originalAppEnv;
+        if (originalExpoEnv === undefined) delete process.env.EXPO_PUBLIC_APP_ENV;
+        else process.env.EXPO_PUBLIC_APP_ENV = originalExpoEnv;
+      }
     });
 
     it('queries parliamentary constituencies from Supabase', async () => {
@@ -259,6 +596,176 @@ describe('Canonical Geography Service & Decoupled State Data Adapter', () => {
 
       const singlePC = await canonicalGeographyService.getParliamentaryConstituency('TS-PC-01');
       expect(singlePC?.name).toBe('Adilabad');
+    });
+
+    it('preserves missing booth voter counts as unavailable', async () => {
+      setSupabaseConfiguredForTesting(true);
+      jest.spyOn(canonicalGeographyService, 'getConstituency').mockResolvedValue({
+        id: 'TS-AC-1',
+        internalId: 'TS-AC-1-INTERNAL',
+        acNo: 1,
+        name: 'Sirpur',
+        stateCode: 'TS',
+        district: 'Kumuram Bheem Asifabad',
+        reservationStatus: 'ST',
+        currentParty: '',
+        currentMLA: '',
+      });
+
+      const rowsByTable: Record<string, unknown[]> = {
+        urban_local_bodies: [],
+        polling_booths: [
+          {
+            id: 'booth-empty-count',
+            internal_id: 'booth-empty-count',
+            booth_number: 1,
+            booth_name: 'Polling station 1',
+            polling_station_name: null,
+            total_voters: 0,
+          },
+          {
+            id: 'booth-recorded-count',
+            internal_id: 'booth-recorded-count',
+            booth_number: 2,
+            booth_name: 'Polling station 2',
+            polling_station_name: null,
+            total_voters: 950,
+            panchayat_id: 'TS-GP-501',
+            gp_ward_internal_id: 'gpw-internal-1',
+          },
+        ],
+        ulb_wards: [],
+        gp_wards: [
+          {
+            id: 'gpw-1',
+            internal_id: 'gpw-internal-1',
+            panchayat_id: 'TS-GP-501',
+            ward_no: 1,
+            name: 'Ward 1',
+            reservation: 'GEN',
+          },
+        ],
+        gram_panchayats: [
+          {
+            id: 'TS-GP-501',
+            internal_id: 'gp-internal-1',
+            name: 'Panchayat 1',
+            local_name: null,
+            mandal_id: 'TS-MDL-50',
+            lgd_code: 501,
+          },
+        ],
+      };
+      const queryCalls: Record<string, Array<{ eq: jest.Mock; in: jest.Mock }>> = {};
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        const eq = jest.fn().mockResolvedValue({ data: rowsByTable[table] ?? [], error: null });
+        const inFilter = jest
+          .fn()
+          .mockResolvedValue({ data: rowsByTable[table] ?? [], error: null });
+        queryCalls[table] ??= [];
+        queryCalls[table].push({ eq, in: inFilter });
+        return { select: jest.fn(() => ({ eq, in: inFilter })) } as any;
+      }) as any);
+
+      const hierarchy = await canonicalGeographyService.getSubConstituencyHierarchy('TS', 1);
+
+      expect(hierarchy?.pollingBooths.map((booth) => booth.totalVoters)).toEqual([null, 950]);
+      expect(hierarchy?.constituency.internalId).toBe('TS-AC-1-INTERNAL');
+      expect(queryCalls.polling_booths[0].eq).toHaveBeenCalledWith('constituency_id', 'TS-AC-1');
+      expect(queryCalls.gp_wards[0].in).toHaveBeenCalledWith('internal_id', ['gpw-internal-1']);
+      expect(queryCalls.gram_panchayats[0].in).toHaveBeenCalledWith('id', ['TS-GP-501']);
+      expect(queryCalls.gp_wards[1].in).toHaveBeenCalledWith('panchayat_id', ['TS-GP-501']);
+      expect(hierarchy?.gramPanchayats[0].wards).toEqual([
+        expect.objectContaining({ id: 'gpw-1', wardNo: 1, name: 'Ward 1' }),
+      ]);
+    });
+
+    it('surfaces live hierarchy query failures instead of returning an empty success', async () => {
+      const previousAppEnv = process.env.APP_ENV;
+      process.env.APP_ENV = 'production';
+      setSupabaseConfiguredForTesting(true);
+      jest.spyOn(canonicalGeographyService, 'getConstituency').mockResolvedValue({
+        id: 'TS-AC-1',
+        internalId: 'TS-AC-1-INTERNAL',
+        acNo: 1,
+        name: 'Sirpur',
+        stateCode: 'TS',
+        district: 'Kumuram Bheem Asifabad',
+        reservationStatus: 'ST',
+        currentParty: '',
+        currentMLA: '',
+      });
+      jest.spyOn(supabase, 'from').mockImplementation((() => ({
+        select: jest.fn(() => ({
+          eq: jest
+            .fn()
+            .mockResolvedValue({ data: null, error: new Error('hierarchy table unavailable') }),
+        })),
+      })) as any);
+
+      try {
+        await expect(
+          canonicalGeographyService.getSubConstituencyHierarchy('TS', 1),
+        ).rejects.toThrow('hierarchy table unavailable');
+      } finally {
+        if (previousAppEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = previousAppEnv;
+      }
+    });
+
+    it('does not return a live empty success when the canonical datastore is not configured', async () => {
+      const previousAppEnv = process.env.APP_ENV;
+      process.env.APP_ENV = 'production';
+      setSupabaseConfiguredForTesting(false);
+
+      try {
+        await expect(
+          canonicalGeographyService.getSubConstituencyHierarchy('TS', 1),
+        ).rejects.toThrow('Canonical geography datastore is not configured');
+      } finally {
+        if (previousAppEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = previousAppEnv;
+      }
+    });
+
+    it('does not use a local seed constituency as live hierarchy data', async () => {
+      const previousAppEnv = process.env.APP_ENV;
+      process.env.APP_ENV = 'production';
+      setSupabaseConfiguredForTesting(true);
+      jest.spyOn(canonicalGeographyService, 'getConstituency').mockResolvedValue(null);
+
+      try {
+        await expect(
+          canonicalGeographyService.getSubConstituencyHierarchy('TS', 1),
+        ).rejects.toThrow('Canonical constituency record could not be resolved');
+      } finally {
+        if (previousAppEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = previousAppEnv;
+      }
+    });
+
+    it('does not label the public constituency ID as a canonical internal ID', async () => {
+      const previousAppEnv = process.env.APP_ENV;
+      process.env.APP_ENV = 'production';
+      setSupabaseConfiguredForTesting(true);
+      jest.spyOn(canonicalGeographyService, 'getConstituency').mockResolvedValue({
+        id: 'TS-AC-1',
+        acNo: 1,
+        name: 'Sirpur',
+        stateCode: 'TS',
+        district: 'Kumuram Bheem Asifabad',
+        reservationStatus: 'ST',
+        currentParty: '',
+        currentMLA: '',
+      });
+      try {
+        await expect(
+          canonicalGeographyService.getSubConstituencyHierarchy('TS', 1),
+        ).rejects.toThrow('Canonical constituency internal ID is unavailable');
+      } finally {
+        if (previousAppEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = previousAppEnv;
+      }
     });
   });
 });

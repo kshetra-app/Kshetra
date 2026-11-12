@@ -1,3 +1,4 @@
+import { isIsolatedTestRuntime, isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import type { FastifyInstance } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
@@ -7,11 +8,12 @@ import {
   canPerformAction,
   ACTION_CONFIG,
   REPUTATION_RULES,
-  type ModerationAction,
   type ModerationActionPayload,
   type UserRole,
 } from '../services/moderation';
 import { moderateContent, ModerationUnavailableError } from '../services/contentModeration';
+
+const isProductionRuntime = () => isProductionLikeRuntime();
 
 // In-memory fallback queue for testing or offline mode
 let MOCK_REPORTS_QUEUE = [
@@ -184,6 +186,8 @@ const auditLogSchema = {
           properties: {
             entries: { type: 'array' },
             total: { type: 'number' },
+            limit: { type: 'integer' },
+            offset: { type: 'integer' },
             message: { type: 'string' },
           },
           required: ['entries', 'total'],
@@ -341,7 +345,7 @@ export async function moderationRoutes(app: FastifyInstance) {
     const userId = auth.userId;
 
     if (!isSupabaseConfigured) {
-      if (process.env.NODE_ENV === 'production') {
+      if (isProductionRuntime()) {
         return { state: 'DB_ERROR' };
       }
       const testRole =
@@ -350,7 +354,7 @@ export async function moderationRoutes(app: FastifyInstance) {
       return { state: 'RESOLVED', userId, role: testRole || 'moderator' };
     }
 
-    if (process.env.NODE_ENV !== 'production' && request.headers['x-test-role']) {
+    if (!isProductionRuntime() && request.headers['x-test-role']) {
       return { state: 'RESOLVED', userId, role: request.headers['x-test-role'] as UserRole };
     }
 
@@ -362,7 +366,7 @@ export async function moderationRoutes(app: FastifyInstance) {
         .maybeSingle();
 
       if (error) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProductionRuntime()) {
           return {
             state: 'RESOLVED',
             userId,
@@ -380,7 +384,7 @@ export async function moderationRoutes(app: FastifyInstance) {
       const verifiedRole = (profile?.role as UserRole) || (auth.role as UserRole) || 'citizen';
       return { state: 'RESOLVED', userId, role: verifiedRole };
     } catch (err: any) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (!isProductionRuntime()) {
         return {
           state: 'RESOLVED',
           userId,
@@ -467,7 +471,7 @@ export async function moderationRoutes(app: FastifyInstance) {
                 .update({ is_deleted: true, content: '[Removed by Moderator: Policy Violation]' })
                 .eq('id', payload.targetPostId);
               if (postErr) {
-                if (process.env.NODE_ENV === 'production') {
+                if (isProductionRuntime()) {
                   app.log.error({ err: postErr.message }, 'Failed to soft-delete post in Supabase');
                   return sendApiError(
                     reply,
@@ -489,7 +493,7 @@ export async function moderationRoutes(app: FastifyInstance) {
                 .update({ is_deleted: true, content: '[Removed by Moderator]' })
                 .eq('id', payload.targetCommentId);
               if (commentErr) {
-                if (process.env.NODE_ENV === 'production') {
+                if (isProductionRuntime()) {
                   app.log.error(
                     { err: commentErr.message },
                     'Failed to soft-delete comment in Supabase',
@@ -523,7 +527,7 @@ export async function moderationRoutes(app: FastifyInstance) {
               })
               .eq('id', payload.reportId);
             if (reportErr) {
-              if (process.env.NODE_ENV === 'production') {
+              if (isProductionRuntime()) {
                 app.log.error(
                   { err: reportErr.message },
                   'Failed to update report status in Supabase',
@@ -544,7 +548,7 @@ export async function moderationRoutes(app: FastifyInstance) {
             }
           }
         } catch (err: any) {
-          if (process.env.NODE_ENV === 'production') {
+          if (isProductionRuntime()) {
             app.log.error(
               { err: err?.message },
               'Exception persisting moderation action in Supabase',
@@ -671,14 +675,14 @@ export async function moderationRoutes(app: FastifyInstance) {
           const { data, error } = await supabase
             .from('reports')
             .select(
-              '*, post:posts(id, content, author_name:author_id), comment:comments(id, content), reported_user:user_profiles!reported_user_id(user_id, display_name, avatar_url, role)',
+              '*, post:posts(id, content, author_name:author_id), comment:comments(id, content)',
             )
             .eq('status', 'pending')
             .order('created_at', { ascending: false })
             .limit(50);
 
           if (error) {
-            if (process.env.NODE_ENV !== 'production') {
+            if (!isProductionRuntime()) {
               return reply.send({
                 success: true,
                 data: {
@@ -714,16 +718,50 @@ export async function moderationRoutes(app: FastifyInstance) {
           }
 
           if (data && data.length > 0) {
+            const reportedUserIds = [
+              ...new Set(
+                data
+                  .map((report) => report.reported_user_id)
+                  .filter(
+                    (userId): userId is string => typeof userId === 'string' && userId.length > 0,
+                  ),
+              ),
+            ];
+            let reportedUsersById = new Map<string, Record<string, unknown>>();
+
+            if (reportedUserIds.length > 0) {
+              const { data: profiles, error: profileError } = await supabase
+                .from('user_profiles')
+                .select('user_id, display_name, avatar_url, role')
+                .in('user_id', reportedUserIds);
+
+              if (profileError) {
+                app.log.warn(
+                  { err: profileError.message, count: reportedUserIds.length },
+                  'Could not load reported user profile details',
+                );
+              } else {
+                reportedUsersById = new Map(
+                  (profiles ?? []).map((profile) => [profile.user_id, profile]),
+                );
+              }
+            }
+
             return reply.send({
               success: true,
               data: {
-                queue: data,
+                queue: data.map((report) => ({
+                  ...report,
+                  reported_user: report.reported_user_id
+                    ? (reportedUsersById.get(report.reported_user_id) ?? null)
+                    : null,
+                })),
                 totalPending: data.length,
               },
             });
           }
         } catch (err: any) {
-          if (process.env.NODE_ENV !== 'production') {
+          if (!isProductionRuntime()) {
             return reply.send({
               success: true,
               data: {
@@ -745,7 +783,7 @@ export async function moderationRoutes(app: FastifyInstance) {
         }
       }
 
-      if (process.env.NODE_ENV === 'test') {
+      if (isIsolatedTestRuntime()) {
         return reply.send({
           success: true,
           data: {
@@ -819,15 +857,76 @@ export async function moderationRoutes(app: FastifyInstance) {
         });
       }
 
-      // In production: fetch from audit_log with pagination
-      return reply.send({
-        success: true,
-        data: {
-          entries: [],
-          total: 0,
-          message: 'Audit log will be populated when Supabase is connected',
-        },
-      });
+      if (!isSupabaseConfigured) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Moderation audit history is unavailable because database storage is not configured',
+          { code: 'DATABASE_UNAVAILABLE' },
+        );
+      }
+
+      const limit = request.query.limit ?? 50;
+      const offset = request.query.offset ?? 0;
+
+      try {
+        let query = supabase.from('audit_log').select('*', { count: 'exact' });
+
+        if (request.query.entityType) {
+          query = query.eq('entity_type', request.query.entityType);
+        }
+
+        const { data, error, count } = await query
+          .order('created_at', { ascending: false })
+          .range(offset, offset + limit - 1);
+        if (error) {
+          app.log.error({ err: error.message }, 'Failed to retrieve moderation audit history');
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Moderation audit history is temporarily unavailable',
+            { code: 'DATABASE_UNAVAILABLE' },
+          );
+        }
+        if (!Array.isArray(data) || count === null) {
+          app.log.error('Database did not return complete moderation audit history metadata');
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Moderation audit history is temporarily unavailable',
+            { code: 'DATABASE_UNAVAILABLE' },
+          );
+        }
+
+        return reply.send({
+          success: true,
+          data: {
+            entries: data,
+            total: count,
+            limit,
+            offset,
+          },
+        });
+      } catch (err: unknown) {
+        app.log.error(
+          { err: err instanceof Error ? err.message : String(err) },
+          'Exception retrieving moderation audit history',
+        );
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Moderation audit history is temporarily unavailable',
+          { code: 'DATABASE_UNAVAILABLE' },
+        );
+      }
     },
   );
 
@@ -882,7 +981,7 @@ export async function moderationRoutes(app: FastifyInstance) {
             .single();
 
           if (error) {
-            if (process.env.NODE_ENV !== 'production') {
+            if (!isProductionRuntime()) {
               return reply.send({
                 success: true,
                 data: {
@@ -920,7 +1019,7 @@ export async function moderationRoutes(app: FastifyInstance) {
             },
           });
         } catch (err: any) {
-          if (process.env.NODE_ENV !== 'production') {
+          if (!isProductionRuntime()) {
             return reply.send({
               success: true,
               data: {
@@ -1018,7 +1117,7 @@ export async function moderationRoutes(app: FastifyInstance) {
         );
 
         if (error) {
-          if (process.env.NODE_ENV !== 'production') {
+          if (!isProductionRuntime()) {
             return reply.send({
               success: true,
               data: { blockerId: userId, blockedId: blockedUserId },
@@ -1035,7 +1134,7 @@ export async function moderationRoutes(app: FastifyInstance) {
           );
         }
       } catch (err: any) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProductionRuntime()) {
           return reply.send({
             success: true,
             data: { blockerId: userId, blockedId: blockedUserId },
@@ -1112,7 +1211,7 @@ export async function moderationRoutes(app: FastifyInstance) {
           .eq('blocked_id', targetUserId);
 
         if (error) {
-          if (process.env.NODE_ENV !== 'production') {
+          if (!isProductionRuntime()) {
             return reply.send({
               success: true,
               data: { unblocked: targetUserId },
@@ -1129,7 +1228,7 @@ export async function moderationRoutes(app: FastifyInstance) {
           );
         }
       } catch (err: any) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProductionRuntime()) {
           return reply.send({
             success: true,
             data: { unblocked: targetUserId },
@@ -1174,7 +1273,7 @@ export async function moderationRoutes(app: FastifyInstance) {
     Body: {
       reporterId?: string;
       contentId: string;
-      contentType: string;
+      contentType: 'post' | 'comment' | 'user';
       reason: string;
       description?: string;
     };
@@ -1185,34 +1284,38 @@ export async function moderationRoutes(app: FastifyInstance) {
         body: {
           type: 'object',
           required: ['contentId', 'contentType', 'reason'],
+          additionalProperties: false,
           properties: {
             reporterId: { type: 'string' },
             contentId: { type: 'string', minLength: 1 },
-            contentType: { type: 'string', minLength: 1 },
-            reason: { type: 'string', minLength: 1 },
-            description: { type: 'string' },
+            contentType: { type: 'string', enum: ['post', 'comment', 'user'] },
+            reason: {
+              type: 'string',
+              enum: [
+                'spam',
+                'harassment',
+                'misinformation',
+                'hate_speech',
+                'violence',
+                'impersonation',
+                'other',
+              ],
+            },
+            description: { type: 'string', maxLength: 500 },
           },
         },
       },
     },
     async (request, reply) => {
-      let reporterId: string;
-
-      if (request.headers.authorization || request.body.reporterId) {
-        const auth = await resolveAuthenticatedUser(request, reply);
-        if (!auth) return;
-        if (
-          !assertActingUserMatch(reply, request, auth.userId, request.body.reporterId, 'reporterId')
-        ) {
-          return;
-        }
-        reporterId = auth.userId;
-      } else {
-        reporterId = 'anonymous';
+      const auth = await resolveAuthenticatedUser(request, reply);
+      if (!auth) return;
+      if (
+        !assertActingUserMatch(reply, request, auth.userId, request.body.reporterId, 'reporterId')
+      ) {
+        return;
       }
 
       const { contentId, contentType, reason, description } = request.body;
-      const reportId = `rep_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
 
       if (!isSupabaseConfigured) {
         return sendApiError(
@@ -1228,20 +1331,26 @@ export async function moderationRoutes(app: FastifyInstance) {
       }
 
       try {
-        const { error } = await supabase.from('reports').insert({
-          id: reportId,
-          reporter_id: reporterId,
+        const targetColumns = {
           post_id: contentType === 'post' ? contentId : null,
           comment_id: contentType === 'comment' ? contentId : null,
-          reason,
-          description: description || null,
-          status: 'pending',
-          created_at: new Date().toISOString(),
-        });
+          reported_user_id: contentType === 'user' ? contentId : null,
+        };
+        const { data, error } = await supabase
+          .from('reports')
+          .insert({
+            reporter_id: auth.userId,
+            ...targetColumns,
+            reason,
+            description: description || null,
+            status: 'pending',
+          })
+          .select('id')
+          .single();
 
-        if (error) {
+        if (error || !data?.id) {
           app.log.error(
-            { err: error.message, reportId, reporterId },
+            { err: error?.message ?? 'Report insert returned no row', reporterId: auth.userId },
             'Failed to persist report to DB',
           );
           return sendApiError(
@@ -1255,9 +1364,19 @@ export async function moderationRoutes(app: FastifyInstance) {
             },
           );
         }
+
+        return reply.status(201).send({
+          success: true,
+          data: {
+            reportId: data.id,
+            contentId,
+            contentType,
+            status: 'pending',
+          },
+        });
       } catch (err: any) {
         app.log.error(
-          { err: err?.message, reportId, reporterId },
+          { err: err?.message, reporterId: auth.userId },
           'Exception persisting report to DB',
         );
         return sendApiError(
@@ -1271,16 +1390,6 @@ export async function moderationRoutes(app: FastifyInstance) {
           },
         );
       }
-
-      return reply.status(201).send({
-        success: true,
-        data: {
-          reportId,
-          contentId,
-          contentType,
-          status: 'pending',
-        },
-      });
     },
   );
 }

@@ -43,6 +43,8 @@ import { electionService } from '../services/electionService';
 import { politicalEntityService } from '../services/politicalEntityService';
 import { delimitationService } from '../services/delimitationService';
 import * as stateData from '../services/stateData';
+import { canonicalGeographyService } from '../services/canonicalGeographyService';
+import { isSupabaseConfigured, setSupabaseConfiguredForTesting } from '../lib/supabase';
 
 describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite', () => {
   let app: FastifyInstance;
@@ -590,6 +592,45 @@ describe('W021-G4: Public/Partner SaaS API Routes (/api/vsaas/v1/...) Test Suite
       expect(first.acNo).toBeDefined();
       expect(first.name).toBeDefined();
       expect(first.provenance.authorityLayer).toBe('STATUTORY_FACT');
+    });
+
+    it('does not expose bundled constituency records through the partner API in production', async () => {
+      const originalAppEnv = process.env.APP_ENV;
+      const originalExpoEnv = process.env.EXPO_PUBLIC_APP_ENV;
+      const originalConfigured = isSupabaseConfigured;
+      process.env.APP_ENV = 'production';
+      process.env.EXPO_PUBLIC_APP_ENV = 'production';
+      setSupabaseConfiguredForTesting(true);
+      const listSpy = jest
+        .spyOn(canonicalGeographyService, 'getConstituencies')
+        .mockResolvedValue([]);
+      const singleSpy = jest
+        .spyOn(canonicalGeographyService, 'getConstituency')
+        .mockResolvedValue(null);
+
+      try {
+        const list = await app.inject({
+          method: 'GET',
+          url: '/api/vsaas/v1/geo/states/TG/constituencies',
+          headers: { 'x-api-key': validKey.rawKey },
+        });
+        expect(list.statusCode).toBe(404);
+
+        const single = await app.inject({
+          method: 'GET',
+          url: '/api/vsaas/v1/geo/states/TG/constituencies/65',
+          headers: { 'x-api-key': validKey.rawKey },
+        });
+        expect(single.statusCode).toBe(404);
+      } finally {
+        listSpy.mockRestore();
+        singleSpy.mockRestore();
+        if (originalAppEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = originalAppEnv;
+        if (originalExpoEnv === undefined) delete process.env.EXPO_PUBLIC_APP_ENV;
+        else process.env.EXPO_PUBLIC_APP_ENV = originalExpoEnv;
+        setSupabaseConfiguredForTesting(originalConfigured);
+      }
     });
 
     it('GET /api/vsaas/v1/geo/states/:stateCode/constituencies/:acNo: returns single AC details', async () => {

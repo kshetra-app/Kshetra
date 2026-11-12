@@ -3,18 +3,20 @@ import {
   getLatestPodiumForConstituency,
   getHistoricalPodiumForConstituency,
   fetchHistoricalPodiumForConstituency,
+  sanitizeContestWithSeed,
   getLocalizedCandidateName,
   type HistoricalPodiumContest,
 } from '../../lib/historicalPodiumStore';
 import { loadHistoricalResultsForState, getHistoricalResults } from '../../lib/seedDataLoader';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform, Pressable, Share, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Platform, Pressable, Share, Image, Alert } from 'react-native';
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { getPartyColor } from '../../lib/constants';
 import CandidateAvatar from '../../components/CandidateAvatar';
+import { getStaticPhoto } from '../../lib/candidatePhotos';
 import {
   getMLAProfileForState,
   getDemographicsForState,
@@ -67,6 +69,7 @@ import {
 import { SequenceGuard } from '../../lib/staleResponseGuard';
 import { apiClient } from '../../lib/api';
 import type { ConstituencyDetailDTO } from '../../lib/api/endpoints/constituencies';
+import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
 
 
 export default function ConstituencyDetailScreen() {
@@ -114,9 +117,12 @@ export default function ConstituencyDetailScreen() {
 
   // ─── Phase W021.5 / Directive 084: Canonical Data Path with SequenceGuard ───
   const [apiDetail, setApiDetail] = useState<ConstituencyDetailDTO | null>(null);
-  const [dataSource, setDataSource] = useState<'LIVE_API' | 'OFFLINE_SEED' | 'UNAVAILABLE'>('OFFLINE_SEED');
+  const [dataSource, setDataSource] = useState<'LIVE_API' | 'OFFLINE_SEED' | 'GEOGRAPHY_ONLY' | 'UNAVAILABLE'>(
+    IS_LIVE_ENVIRONMENT ? 'UNAVAILABLE' : 'OFFLINE_SEED',
+  );
   const [apiLoading, setApiLoading] = useState<boolean>(true);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [apiRetryRevision, setApiRetryRevision] = useState(0);
   const sequenceGuardRef = useRef(new SequenceGuard<string>());
 
   useEffect(() => {
@@ -126,6 +132,8 @@ export default function ConstituencyDetailScreen() {
     }
 
     const token = sequenceGuardRef.current.startRequest(`${stateCode}-${acNo}`);
+    setApiDetail(null);
+    setDataSource(IS_LIVE_ENVIRONMENT ? 'UNAVAILABLE' : 'OFFLINE_SEED');
     setApiLoading(true);
     setApiError(null);
 
@@ -140,7 +148,7 @@ export default function ConstituencyDetailScreen() {
         if (token.isStale()) return;
         const localFound = stateConstituencies.find((c) => c.acNo === acNo);
         if (localFound) {
-          setDataSource('OFFLINE_SEED');
+          setDataSource(IS_LIVE_ENVIRONMENT ? 'GEOGRAPHY_ONLY' : 'OFFLINE_SEED');
         } else {
           setDataSource('UNAVAILABLE');
           setApiError(err?.message || 'Constituency unavailable');
@@ -151,24 +159,26 @@ export default function ConstituencyDetailScreen() {
     return () => {
       sequenceGuardRef.current.reset();
     };
-  }, [stateCode, acNo, stateConstituencies]);
+  }, [stateCode, acNo, stateConstituencies, apiRetryRevision]);
+
+  const retryApiDetail = useCallback(() => {
+    setApiRetryRevision((revision) => revision + 1);
+  }, []);
 
   const effectiveConstituencyName = apiDetail?.name || constituency?.name || '';
   const effectiveDistrict = apiDetail?.district || constituency?.district || '';
-  const effectiveReservation = apiDetail?.reservationStatus || constituency?.type || 'GEN';
-  const effectiveWinnerParty = apiDetail?.recentElection?.winner || apiDetail?.currentParty || constituency?.winnerParty || '';
-  const effectiveWinnerName = apiDetail?.recentElection?.winnerName || apiDetail?.currentMLA || constituency?.winnerName || '';
-  const effectiveWinnerVotes = apiDetail?.recentElection?.winnerVotes !== undefined ? apiDetail.recentElection.winnerVotes : (constituency?.winnerVotes ?? null);
-  const effectiveMargin = apiDetail?.recentElection?.margin !== undefined ? apiDetail.recentElection.margin : (constituency?.margin ?? null);
-  const effectiveRunnerUp = apiDetail?.recentElection?.runnerUp || constituency?.runnerUp || '';
+  const effectiveReservation = apiDetail?.reservationStatus || constituency?.type || '';
+  const currentRepresentativeName = apiDetail?.currentMLA?.trim() || constituency?.currentMLA?.trim() || '';
+  const currentRepresentativeParty = apiDetail?.currentParty?.trim() || constituency?.currentParty?.trim() || '';
+  const effectiveWinnerParty = (constituency?.winnerParty && constituency.winnerParty.trim()) || apiDetail?.recentElection?.winner || '';
+  const effectiveWinnerName = (constituency?.winnerName && constituency.winnerName.trim()) || apiDetail?.recentElection?.winnerName || '';
+  const effectiveWinnerVotes = constituency?.winnerVotes ?? apiDetail?.recentElection?.winnerVotes ?? null;
+  const effectiveMargin = constituency?.margin ?? apiDetail?.recentElection?.margin ?? null;
+  const effectiveRunnerUp = (constituency?.runnerUp && constituency.runnerUp.trim()) || apiDetail?.recentElection?.runnerUp || '';
   const effectiveElectionYear = apiDetail?.recentElection?.electionYear !== undefined
     ? apiDetail.recentElection.electionYear
     : (constituency?.electionYear ?? null);
-  const effectiveMarginPercent = apiDetail?.recentElection?.marginPercent !== undefined
-    ? apiDetail.recentElection.marginPercent
-    : (effectiveMargin != null && effectiveWinnerVotes != null && effectiveWinnerVotes > 0
-        ? parseFloat(((effectiveMargin / effectiveWinnerVotes) * 100).toFixed(1))
-        : null);
+  const effectiveMarginPercent = apiDetail?.recentElection?.marginPercent ?? null;
 
   const localizedConstName = constituency
     ? getLocalizedConstituencyName(acNo, stateCode, effectiveConstituencyName, i18n.language, constituency.localName)
@@ -186,58 +196,99 @@ export default function ConstituencyDetailScreen() {
   });
   const [loadingHistory, setLoadingHistory] = useState(false);
 
-  const effectiveRunnerUpName = latestPodium?.firstRunnerUp?.name || constituency?.runnerUpName || '';
+  const isGenericCandidate = (name?: string | null) => {
+    if (!name) return true;
+    const lower = name.trim().toLowerCase();
+    return (
+      lower.includes('candidate') ||
+      lower.includes('runner up') ||
+      lower === 'winner' ||
+      lower === 'ind' ||
+      lower === 'nota' ||
+      lower === 'none of the above'
+    );
+  };
+
+  const seedRuName = constituency?.runnerUpName || (constituency as any)?.runnerUpName2023 || (constituency as any)?.runnerUpName2024 || '';
+  let effectiveRunnerUpName = latestPodium?.firstRunnerUp?.name || seedRuName || '';
+  if (isGenericCandidate(effectiveRunnerUpName) && !isGenericCandidate(seedRuName)) {
+    effectiveRunnerUpName = seedRuName;
+  }
+  const authoritativeRuName = (!isGenericCandidate(effectiveRunnerUpName) ? effectiveRunnerUpName : null) || (!isGenericCandidate(seedRuName) ? seedRuName : '') || '';
+
   const demo = useMemo(() => getDemographicsForState(stateCode, acNo), [stateCode, acNo]);
+  const mlaProfile = useMemo(() => getMLAProfileForState(stateCode, acNo), [stateCode, acNo]);
 
   // Canonical authoritative latest podium contest
-  const canonicalPodium = useMemo(() => {
+  const canonicalPodium = useMemo<HistoricalPodiumContest | null>(() => {
     const rawPodium = latestPodium || (historicalContests.length > 0 ? historicalContests[0] : null);
-    const effectiveYear = effectiveElectionYear || rawPodium?.year || 2024;
-    if (rawPodium && effectiveElectionYear && rawPodium.year >= effectiveElectionYear) {
-      return rawPodium;
-    }
-    // If rawPodium is outdated compared to the authoritative electionYear, synthesize latest
-    if (effectiveWinnerParty || effectiveWinnerName) {
-      const winnerVotes = effectiveWinnerVotes || 0;
-      const margin = effectiveMargin || 0;
-      const runnerUpVotes = winnerVotes > margin ? winnerVotes - margin : Math.round(winnerVotes * 0.85);
-      const totalValid = winnerVotes + runnerUpVotes + Math.round(winnerVotes * 0.15);
-      const winnerShare = totalValid > 0 ? parseFloat(((winnerVotes / totalValid) * 100).toFixed(2)) : 0;
-      const ruShare = totalValid > 0 ? parseFloat(((runnerUpVotes / totalValid) * 100).toFixed(2)) : 0;
-
-      const rawRu2 = rawPodium?.secondRunnerUp || historicalContests[0]?.secondRunnerUp;
-
+    const cleanCandidate = (candidate: HistoricalPodiumContest['winner']) => {
+      if (!candidate || isGenericCandidate(candidate.name) || !candidate.party?.trim()) return null;
       return {
-        year: effectiveElectionYear,
-        delimitationId: rawPodium?.delimitationId || '4',
-        totalValidVotes: totalValid,
-        constituencyName: effectiveConstituencyName,
-        marginWinnerToRunnerUp1: margin,
-        marginWinnerToRunnerUp2: rawRu2?.marginToWinner ?? rawPodium?.marginWinnerToRunnerUp2 ?? null,
-        marginRunnerUp1ToRunnerUp2: rawRu2?.marginToFirstRunnerUp ?? rawPodium?.marginRunnerUp1ToRunnerUp2 ?? null,
-        winner: {
-          name: effectiveWinnerName,
-          party: effectiveWinnerParty,
-          votes: winnerVotes,
-          voteShare: winnerShare,
-          photoUrl: rawPodium?.winner?.photoUrl,
-          localizedNames: rawPodium?.winner?.localizedNames,
-          localizedParties: rawPodium?.winner?.localizedParties,
-        },
-        firstRunnerUp: {
-          name: effectiveRunnerUpName || constituency?.runnerUpName || rawPodium?.firstRunnerUp?.name || '',
-          party: effectiveRunnerUp || constituency?.runnerUp || rawPodium?.firstRunnerUp?.party || '',
-          votes: runnerUpVotes,
-          voteShare: ruShare,
-          marginToWinner: margin,
-          photoUrl: rawPodium?.firstRunnerUp?.photoUrl,
-          localizedNames: rawPodium?.firstRunnerUp?.localizedNames,
-          localizedParties: rawPodium?.firstRunnerUp?.localizedParties,
-        },
-        secondRunnerUp: rawRu2 || null,
+        ...candidate,
+        photoUrl: candidate.photoUrl || getStaticPhoto(candidate.name) || undefined,
       };
+    };
+    const cleanContest = (contest: HistoricalPodiumContest): HistoricalPodiumContest | null => {
+      const winner = cleanCandidate(contest.winner);
+      if (!winner) return null;
+      return {
+        ...contest,
+        winner,
+        firstRunnerUp: cleanCandidate(contest.firstRunnerUp),
+        secondRunnerUp: cleanCandidate(contest.secondRunnerUp),
+      };
+    };
+
+    if (rawPodium && (effectiveElectionYear == null || rawPodium.year >= effectiveElectionYear)) {
+      return cleanContest(rawPodium);
     }
-    return rawPodium;
+
+    // Build a latest-result summary only from fields present in the result record.
+    // Do not infer runner-up votes, total valid votes, vote share, or delimitation.
+    const electionRecord = apiDetail?.recentElection;
+    const winnerName = (constituency?.winnerName || electionRecord?.winnerName || '').trim();
+    const winnerParty = (constituency?.winnerParty || electionRecord?.winner || '').trim();
+    if (effectiveElectionYear == null || !winnerName || !winnerParty) return null;
+
+    const optionalNumber = (value: unknown, allowZero = false): number | undefined =>
+      typeof value === 'number' && Number.isFinite(value) && (allowZero ? value >= 0 : value > 0)
+        ? value
+        : undefined;
+    const winnerVotes = optionalNumber(effectiveWinnerVotes);
+    const margin = optionalNumber(effectiveMargin, true);
+    const runnerUpName = !isGenericCandidate(authoritativeRuName) ? authoritativeRuName : '';
+    const runnerUpParty = (effectiveRunnerUp || '').trim();
+    const runnerUpVotes = optionalNumber((constituency as any)?.runnerUpVotes ?? (electionRecord as any)?.runnerUpVotes);
+    const totalValidVotes = optionalNumber((constituency as any)?.totalValidVotes ?? (electionRecord as any)?.totalValidVotes);
+    const winnerShare = optionalNumber((constituency as any)?.winnerVoteShare ?? (electionRecord as any)?.winnerVoteShare, true);
+    const runnerUpShare = optionalNumber((constituency as any)?.runnerUpVoteShare ?? (electionRecord as any)?.runnerUpVoteShare, true);
+
+    return {
+      year: effectiveElectionYear,
+      ...(constituency && typeof (constituency as any).delimitationId === 'string'
+        ? { delimitationId: (constituency as any).delimitationId }
+        : {}),
+      ...(totalValidVotes != null ? { totalValidVotes } : {}),
+      constituencyName: effectiveConstituencyName,
+      ...(margin != null ? { marginWinnerToRunnerUp1: margin } : {}),
+      winner: {
+        name: winnerName,
+        party: winnerParty,
+        ...(winnerVotes != null ? { votes: winnerVotes } : {}),
+        ...(winnerShare != null ? { voteShare: winnerShare } : {}),
+        photoUrl: getStaticPhoto(winnerName) || undefined,
+      },
+      firstRunnerUp: runnerUpName && runnerUpParty ? {
+        name: runnerUpName,
+        party: runnerUpParty,
+        ...(runnerUpVotes != null ? { votes: runnerUpVotes } : {}),
+        ...(runnerUpShare != null ? { voteShare: runnerUpShare } : {}),
+        ...(margin != null ? { marginToWinner: margin } : {}),
+        photoUrl: getStaticPhoto(runnerUpName) || undefined,
+      } : null,
+      secondRunnerUp: null,
+    };
   }, [
     latestPodium,
     historicalContests,
@@ -248,6 +299,7 @@ export default function ConstituencyDetailScreen() {
     effectiveMargin,
     effectiveRunnerUp,
     effectiveRunnerUpName,
+    authoritativeRuName,
     effectiveConstituencyName,
     constituency,
   ]);
@@ -262,25 +314,25 @@ export default function ConstituencyDetailScreen() {
       total_valid_votes: contest.totalValidVotes,
       winner: contest.winner?.name,
       party: contest.winner?.party,
-      winner_name: contest.winner?.name,
+      winner_name: (!isGenericCandidate(contest.winner?.name) ? contest.winner?.name : null) || contest.winner?.name || undefined,
       winner_party: contest.winner?.party,
-      winner_votes: contest.winner?.votes || 0,
-      winner_vote_share: contest.winner?.voteShare || 0,
+      winner_votes: contest.winner?.votes ?? null,
+      winner_vote_share: contest.winner?.voteShare ?? null,
       winner_education: contest.winner?.education,
-      first_runner_up_name: contest.firstRunnerUp?.name,
+      first_runner_up_name: !isGenericCandidate(contest.firstRunnerUp?.name) ? contest.firstRunnerUp?.name : undefined,
       first_runner_up_party: contest.firstRunnerUp?.party,
-      first_runner_up_votes: contest.firstRunnerUp?.votes || 0,
-      first_runner_up_vote_share: contest.firstRunnerUp?.voteShare || 0,
+      first_runner_up_votes: contest.firstRunnerUp?.votes ?? null,
+      first_runner_up_vote_share: contest.firstRunnerUp?.voteShare ?? null,
       margin_winner_to_runner_up_1: contest.marginWinnerToRunnerUp1 ?? contest.firstRunnerUp?.marginToWinner,
       second_runner_up_name: contest.secondRunnerUp?.name,
       second_runner_up_party: contest.secondRunnerUp?.party,
-      second_runner_up_votes: contest.secondRunnerUp?.votes || 0,
-      second_runner_up_vote_share: contest.secondRunnerUp?.voteShare || 0,
+      second_runner_up_votes: contest.secondRunnerUp?.votes ?? null,
+      second_runner_up_vote_share: contest.secondRunnerUp?.voteShare ?? null,
       margin_winner_to_runner_up_2: contest.marginWinnerToRunnerUp2 ?? contest.secondRunnerUp?.marginToWinner,
       margin_runner_up_1_to_runner_up_2: contest.marginRunnerUp1ToRunnerUp2 ?? contest.secondRunnerUp?.marginToFirstRunnerUp,
-      winner_photo_url: contest.winner?.photoUrl,
-      first_runner_up_photo_url: contest.firstRunnerUp?.photoUrl,
-      second_runner_up_photo_url: contest.secondRunnerUp?.photoUrl,
+      winner_photo_url: contest.winner?.photoUrl || (contest.winner?.name ? getStaticPhoto(contest.winner.name) : undefined) || undefined,
+      first_runner_up_photo_url: contest.firstRunnerUp?.photoUrl || (contest.firstRunnerUp?.name ? getStaticPhoto(contest.firstRunnerUp.name) : undefined) || undefined,
+      second_runner_up_photo_url: contest.secondRunnerUp?.photoUrl || (contest.secondRunnerUp?.name ? getStaticPhoto(contest.secondRunnerUp.name) : undefined) || undefined,
       localized_names_json: JSON.stringify({
         winner: contest.winner?.localizedNames,
         ru1: contest.firstRunnerUp?.localizedNames,
@@ -307,7 +359,9 @@ export default function ConstituencyDetailScreen() {
 
     setLoadingHistory(true);
     Promise.all([
-      loadHistoricalResultsForState(stateCode).catch(() => {}),
+      IS_LIVE_ENVIRONMENT
+        ? Promise.resolve()
+        : loadHistoricalResultsForState(stateCode).catch(() => {}),
       fetchHistoricalPodiumForConstituency(stateCode, acNo).catch(() => []),
     ]).then(([_, apiContests]) => {
       if (!isMounted) return;
@@ -315,13 +369,13 @@ export default function ConstituencyDetailScreen() {
         ? apiContests
         : getHistoricalPodiumForConstituency(stateCode, acNo);
 
-      if (!contests || contests.length === 0) {
+      if (!IS_LIVE_ENVIRONMENT && (!contests || contests.length === 0)) {
         const sqliteRows = getHistoricalResults(stateCode, acNo);
         if (sqliteRows && sqliteRows.length > 0) {
           contests = sqliteRows.map((r: any) => ({
             year: r.year,
-            delimitationId: String(r.delimitation_id || '4'),
-            totalValidVotes: r.total_valid_votes || 0,
+            delimitationId: r.delimitation_id != null ? String(r.delimitation_id) : undefined,
+            totalValidVotes: r.total_valid_votes ?? undefined,
             constituencyName: r.constituency_name,
             marginWinnerToRunnerUp1: r.margin_winner_to_runner_up_1,
             marginWinnerToRunnerUp2: r.margin_winner_to_runner_up_2,
@@ -352,8 +406,9 @@ export default function ConstituencyDetailScreen() {
       }
 
       if (contests && contests.length > 0) {
-        setHistoricalContests(contests);
-        setLatestPodium(contests[0]);
+        const sanitizedList = contests.map((c: any) => sanitizeContestWithSeed(stateCode, acNo, c));
+        setHistoricalContests(sanitizedList);
+        setLatestPodium(sanitizedList[0]);
       }
       setLoadingHistory(false);
     });
@@ -432,11 +487,11 @@ export default function ConstituencyDetailScreen() {
         acNo: constituency.acNo,
         name: constituency.name,
         district: constituency.district,
-        party: constituency.winnerParty,
+        party: IS_LIVE_ENVIRONMENT ? currentRepresentativeParty : constituency.winnerParty,
         stateCode: stateCode,
       });
     }
-  }, [constituency, addRecent, stateCode]);
+  }, [constituency, addRecent, stateCode, currentRepresentativeParty]);
 
   if (!constituency && !apiDetail && apiLoading) {
     return (
@@ -516,19 +571,25 @@ export default function ConstituencyDetailScreen() {
               <View style={[
                 styles.provenancePill,
                 {
-                  backgroundColor: dataSource === 'LIVE_API' ? '#10B98115' : '#3B82F615',
-                  borderColor: dataSource === 'LIVE_API' ? '#10B98140' : '#3B82F640',
+                  backgroundColor: dataSource === 'LIVE_API' ? '#10B98115' : dataSource === 'UNAVAILABLE' ? '#64748B15' : '#3B82F615',
+                  borderColor: dataSource === 'LIVE_API' ? '#10B98140' : dataSource === 'UNAVAILABLE' ? '#64748B40' : '#3B82F640',
                 }
               ]}>
                 <View style={[
                   styles.provenanceDot,
-                  { backgroundColor: dataSource === 'LIVE_API' ? '#10B981' : '#3B82F6' }
+                  { backgroundColor: dataSource === 'LIVE_API' ? '#10B981' : dataSource === 'UNAVAILABLE' ? '#64748B' : '#3B82F6' }
                 ]} />
                 <Text style={[
                   styles.provenanceText,
-                  { color: dataSource === 'LIVE_API' ? '#10B981' : '#3B82F6' }
+                  { color: dataSource === 'LIVE_API' ? '#10B981' : dataSource === 'UNAVAILABLE' ? '#64748B' : '#3B82F6' }
                 ]} numberOfLines={1}>
-                  {dataSource === 'LIVE_API' ? 'Live API + Seed' : (dataSource === 'OFFLINE_SEED' ? 'Offline Seed' : 'Unavailable')}
+                  {dataSource === 'LIVE_API'
+                    ? t('constituencyDirectory.databaseRecord', { defaultValue: 'Poligram database record' })
+                    : dataSource === 'GEOGRAPHY_ONLY'
+                      ? t('constituencyDirectory.geographyOnly', { defaultValue: 'Constituency geography only' })
+                      : dataSource === 'OFFLINE_SEED'
+                        ? t('constituencyDirectory.localPreviewData', { defaultValue: 'Local preview data' })
+                        : t('constituencyDirectory.unavailable', { defaultValue: 'Live records unavailable' })}
                 </Text>
               </View>
             </View>
@@ -557,6 +618,54 @@ export default function ConstituencyDetailScreen() {
           </View>
         </View>
 
+        {IS_LIVE_ENVIRONMENT && (
+          <View style={[styles.section, { paddingTop: 12, paddingBottom: 12 }]}>
+            <Text style={styles.sectionTitle}>
+              {t('constituencyDirectory.currentRepresentative', { defaultValue: 'Current representative' })}
+            </Text>
+            {currentRepresentativeName || currentRepresentativeParty ? (
+              <View style={[styles.resultCard, { marginTop: 8 }]}>
+                <View style={styles.resultRow}>
+                  <View style={styles.resultLeft}>
+                    <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.surfaceElevated, alignItems: 'center', justifyContent: 'center' }}>
+                      <Ionicons name="person-outline" size={21} color={colors.textMuted} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.resultCandidate}>
+                        {currentRepresentativeName
+                          ? getLocalizedCandidateName(currentRepresentativeName, i18n.language) || currentRepresentativeName
+                          : t('constituencyDirectory.nameUnavailable', { defaultValue: 'Name unavailable' })}
+                      </Text>
+                      <Text style={styles.resultParty}>
+                        {currentRepresentativeParty
+                          ? getLocalizedPartyName(currentRepresentativeParty, i18n.language) || currentRepresentativeParty
+                          : t('constituencyDirectory.partyUnavailable', { defaultValue: 'Party unavailable' })}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                <Text style={{ marginTop: 8, color: colors.textMuted, fontSize: 11 }}>
+                  {t('constituencyDirectory.databaseRecord', { defaultValue: 'Poligram database record' })}
+                </Text>
+              </View>
+            ) : (
+              <View style={[styles.resultCard, { marginTop: 8 }]}>
+                <Text style={{ color: colors.textSecondary, fontSize: 13 }}>
+                  {apiLoading
+                    ? t('constituencyDirectory.loading', { defaultValue: 'Checking live constituency records…' })
+                    : t('constituencyDirectory.officeholderUnavailable', { defaultValue: 'Representative details are not available from the connected database.' })}
+                </Text>
+                {!apiLoading && (!apiDetail || (!currentRepresentativeName && !currentRepresentativeParty)) && (
+                  <Pressable onPress={retryApiDetail} style={[styles.fullProfileBtn, { marginTop: 10 }]} accessibilityRole="button">
+                    <Ionicons name="refresh" size={15} color="#4F8EF7" />
+                    <Text style={styles.fullProfileBtnText}>{t('common.retry', { defaultValue: 'Retry' })}</Text>
+                  </Pressable>
+                )}
+              </View>
+            )}
+          </View>
+        )}
+
         {/* ── Unified Action Row: Set as Home Constituency + Follow ── */}
         <View style={styles.actionRow}>
           <Pressable
@@ -572,7 +681,7 @@ export default function ConstituencyDetailScreen() {
                   acNo: acNo,
                   name: effectiveConstituencyName,
                   district: effectiveDistrict,
-                  party: effectiveWinnerParty,
+                  party: currentRepresentativeParty || effectiveWinnerParty,
                 });
                 if (!isFavorite) {
                   toggleFavorite(acNo);
@@ -637,12 +746,12 @@ export default function ConstituencyDetailScreen() {
                 ? t('constituency.electionResult', { year: canonicalPodium.year })
                 : (effectiveElectionYear ? t('constituency.electionResult', { year: effectiveElectionYear }) : t('constituency.recentElectionResult', { defaultValue: 'Recent Election Result' }))}
             </Text>
-            <View style={[styles.provenancePill, { backgroundColor: '#10B98115', borderColor: '#10B98140', paddingVertical: 2, paddingHorizontal: 6 }]}>
+            {canonicalPodium && <View style={[styles.provenancePill, { backgroundColor: '#10B98115', borderColor: '#10B98140', paddingVertical: 2, paddingHorizontal: 6 }]}>
               <View style={[styles.provenanceDot, { backgroundColor: '#10B981', width: 5, height: 5 }]} />
               <Text style={[styles.provenanceText, { color: '#10B981', fontSize: 10 }]}>
-                Official Podium Results
+                {t('constituencyDirectory.connectedElectionRecord', { defaultValue: 'Connected election record' })}
               </Text>
-            </View>
+            </View>}
           </View>
 
           {canonicalPodium ? (
@@ -658,22 +767,22 @@ export default function ConstituencyDetailScreen() {
                 party: canonicalPodium.winner?.party || effectiveWinnerParty,
                 winner_name: canonicalPodium.winner?.name || effectiveWinnerName,
                 winner_party: canonicalPodium.winner?.party || effectiveWinnerParty,
-                winner_votes: canonicalPodium.winner?.votes || effectiveWinnerVotes || 0,
-                winner_vote_share: canonicalPodium.winner?.voteShare || 0,
+                winner_votes: canonicalPodium.winner?.votes ?? null,
+                winner_vote_share: canonicalPodium.winner?.voteShare ?? null,
                 winner_education: (canonicalPodium.winner as any)?.education || undefined,
-                first_runner_up_name: canonicalPodium.firstRunnerUp?.name || effectiveRunnerUpName || undefined,
+                first_runner_up_name: !isGenericCandidate(canonicalPodium.firstRunnerUp?.name) ? canonicalPodium.firstRunnerUp?.name : undefined,
                 first_runner_up_party: canonicalPodium.firstRunnerUp?.party || effectiveRunnerUp || undefined,
-                first_runner_up_votes: canonicalPodium.firstRunnerUp?.votes || 0,
-                first_runner_up_vote_share: canonicalPodium.firstRunnerUp?.voteShare || 0,
-                margin_winner_to_runner_up_1: canonicalPodium.marginWinnerToRunnerUp1 || effectiveMargin || 0,
+                first_runner_up_votes: canonicalPodium.firstRunnerUp?.votes ?? null,
+                first_runner_up_vote_share: canonicalPodium.firstRunnerUp?.voteShare ?? null,
+                margin_winner_to_runner_up_1: canonicalPodium.marginWinnerToRunnerUp1 ?? null,
                 second_runner_up_name: canonicalPodium.secondRunnerUp?.name || undefined,
                 second_runner_up_party: canonicalPodium.secondRunnerUp?.party || undefined,
-                second_runner_up_votes: canonicalPodium.secondRunnerUp?.votes || 0,
-                second_runner_up_vote_share: canonicalPodium.secondRunnerUp?.voteShare || 0,
-                margin_winner_to_runner_up_2: canonicalPodium.marginWinnerToRunnerUp2 || 0,
-                winner_photo_url: canonicalPodium.winner?.photoUrl || undefined,
-                first_runner_up_photo_url: canonicalPodium.firstRunnerUp?.photoUrl || undefined,
-                second_runner_up_photo_url: canonicalPodium.secondRunnerUp?.photoUrl || undefined,
+                second_runner_up_votes: canonicalPodium.secondRunnerUp?.votes ?? null,
+                second_runner_up_vote_share: canonicalPodium.secondRunnerUp?.voteShare ?? null,
+                margin_winner_to_runner_up_2: canonicalPodium.marginWinnerToRunnerUp2 ?? null,
+                winner_photo_url: canonicalPodium.winner?.photoUrl || (canonicalPodium.winner?.name ? getStaticPhoto(canonicalPodium.winner.name) : undefined) || undefined,
+                first_runner_up_photo_url: canonicalPodium.firstRunnerUp?.photoUrl || (canonicalPodium.firstRunnerUp?.name ? getStaticPhoto(canonicalPodium.firstRunnerUp.name) : undefined) || undefined,
+                second_runner_up_photo_url: canonicalPodium.secondRunnerUp?.photoUrl || (canonicalPodium.secondRunnerUp?.name ? getStaticPhoto(canonicalPodium.secondRunnerUp.name) : undefined) || undefined,
                 localized_names_json: JSON.stringify({
                   winner: canonicalPodium.winner?.localizedNames,
                   ru1: canonicalPodium.firstRunnerUp?.localizedNames,
@@ -687,7 +796,7 @@ export default function ConstituencyDetailScreen() {
               } as any}
               isLatest={true}
             />
-          ) : (
+          ) : effectiveWinnerName && effectiveWinnerParty ? (
             <View style={styles.resultCard}>
               <View style={styles.resultRow}>
                 <View style={styles.resultLeft}>
@@ -695,6 +804,7 @@ export default function ConstituencyDetailScreen() {
                     name={effectiveWinnerName}
                     party={effectiveWinnerParty}
                     size={52}
+                    photoUrl={mlaProfile?.photoUrl || undefined}
                     onPress={(uri) => setPhotoViewer({ uri, name: effectiveWinnerName, party: effectiveWinnerParty })}
                   />
                   <View>
@@ -719,7 +829,7 @@ export default function ConstituencyDetailScreen() {
               <View style={styles.statsRow}>
                 <View style={styles.statItem}>
                   <Text style={styles.statValue}>
-                    {effectiveMargin != null ? (effectiveMargin === 0 && !effectiveRunnerUp ? '0 (Uncontested)' : effectiveMargin.toLocaleString()) : '—'}
+                    {effectiveMargin != null ? effectiveMargin.toLocaleString() : '—'}
                   </Text>
                   <Text style={styles.statLabel}>{t('constituency.margin')}</Text>
                 </View>
@@ -739,32 +849,44 @@ export default function ConstituencyDetailScreen() {
                 </View>
               </View>
             </View>
+          ) : (
+            <View style={styles.resultCard}>
+              <Text style={{ color: colors.textSecondary, fontSize: 13 }}>
+                {apiLoading
+                  ? t('constituencyDirectory.loading', { defaultValue: 'Checking live constituency records…' })
+                  : t('constituency.resultUnavailable', { defaultValue: 'Election result data is not available from a connected source.' })}
+              </Text>
+            </View>
           )}
         </View>
 
         {/* MLA Profile */}
         {(() => {
+          // Production current officeholder details are shown from the database record above.
+          // Election winners and local profile fixtures must not be relabeled as the sitting MLA.
+          if (IS_LIVE_ENVIRONMENT) return null;
+
           const mla = getMLAProfileForState(stateCode, acNo);
           const winnerName = canonicalPodium?.winner?.name || effectiveWinnerName || mla?.name;
           const winnerParty = canonicalPodium?.winner?.party || effectiveWinnerParty || mla?.party;
-          if (!winnerName && !mla) return null;
+          if (!winnerName || !winnerParty) return null;
 
           const effectiveMla = {
             ...(mla || {}),
             acNo,
-            name: winnerName || 'Current MLA',
-            party: winnerParty || 'IND',
+            name: winnerName,
+            party: winnerParty,
             photoUrl: canonicalPodium?.winner?.photoUrl || mla?.photoUrl,
             education: (canonicalPodium?.winner as any)?.education || mla?.education,
             profession: (canonicalPodium?.winner as any)?.profession || mla?.profession,
-            criminalCases: (canonicalPodium?.winner as any)?.criminalCases ?? mla?.criminalCases ?? 0,
+            criminalCases: (canonicalPodium?.winner as any)?.criminalCases ?? mla?.criminalCases ?? null,
             totalAssets: (canonicalPodium?.winner as any)?.totalAssets ?? mla?.totalAssets,
             totalLiabilities: (canonicalPodium?.winner as any)?.totalLiabilities ?? mla?.totalLiabilities,
             constituencyName: effectiveConstituencyName,
             district: effectiveDistrict,
           };
 
-          const electionYr = canonicalPodium?.year || effectiveElectionYear || 2024;
+          const electionYr = canonicalPodium?.year ?? effectiveElectionYear ?? null;
 
           return (
             <View style={styles.section}>
@@ -773,7 +895,7 @@ export default function ConstituencyDetailScreen() {
                 <View style={[styles.provenancePill, { backgroundColor: '#3B82F615', borderColor: '#3B82F640', paddingVertical: 2, paddingHorizontal: 6 }]}>
                   <View style={[styles.provenanceDot, { backgroundColor: '#3B82F6', width: 5, height: 5 }]} />
                   <Text style={[styles.provenanceText, { color: '#3B82F6', fontSize: 10 }]}>
-                    Official Representative
+                    Profile record
                   </Text>
                 </View>
               </View>
@@ -781,14 +903,14 @@ export default function ConstituencyDetailScreen() {
                 profile={effectiveMla as any}
                 onAvatarPress={(uri) => setPhotoViewer({ uri, name: effectiveMla.name, party: effectiveMla.party })}
               />
-              <Pressable
+              {electionYr != null ? <Pressable
                 style={styles.fullProfileBtn}
                 onPress={() => router.push(`/legislator/MLA_${stateCode}_${electionYr}_${acNo}_W` as any)}
               >
                 <Ionicons name="person-circle" size={16} color="#4F8EF7" />
                 <Text style={styles.fullProfileBtnText}>{t('constituencyExtended.viewCompleteProfile')}</Text>
                 <Ionicons name="chevron-forward" size={14} color="#4F8EF7" />
-              </Pressable>
+              </Pressable> : null}
             </View>
           );
         })()}
@@ -1047,9 +1169,13 @@ export default function ConstituencyDetailScreen() {
                       onTagPress={(tag) => {
                         router.push({ pathname: '/(tabs)/feed', params: { hashtag: tag } } as any);
                       }}
-                      onReact={() => {
+                      onReact={async () => {
                         if (!gateContentAction('react_post')) return;
-                        feedToggleReaction(post.id, 'like');
+                        const saved = await feedToggleReaction(post.id, 'like');
+                        if (!saved) {
+                          Alert.alert(t('feed.reactionFailed', { defaultValue: 'Could not update your reaction. Check your connection and try again.' }));
+                          return;
+                        }
                         logContentAction('react_post', {
                           type: 'post',
                           id: post.id,
@@ -1376,7 +1502,9 @@ export default function ConstituencyDetailScreen() {
         {/* Candidate Transparency — Affidavit */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{t('constituencyExtended.candidateTransparency')}</Text>
-          <AffidavitCard stateCode={stateCode} acNo={acNo} electionYear={effectiveElectionYear ?? constituency?.electionYear ?? 2024} />
+          {(canonicalPodium?.year ?? effectiveElectionYear ?? constituency?.electionYear) != null
+            ? <AffidavitCard stateCode={stateCode} acNo={acNo} electionYear={(canonicalPodium?.year ?? effectiveElectionYear ?? constituency?.electionYear)!} />
+            : <Text style={styles.casteNoticeText}>{t('constituency.noAffidavitYear', { defaultValue: 'Election year is unavailable, so no affidavit record can be matched.' })}</Text>}
         </View>
 
         {/* AI Analysis */}
@@ -1387,47 +1515,37 @@ export default function ConstituencyDetailScreen() {
         </>)}
 
         {/* ═══════════════════════════════════════════════════════════════ */}
-        {/* ═══ TAB: DEMOGRAPHICS (ECI Form 20 Roll & Official Data) ═══ */}
+        {/* ═══ TAB: DEMOGRAPHICS (reference data) ═══ */}
         {/* ═══════════════════════════════════════════════════════════════ */}
         {activeTab === 'demographics' && (<>
-          {/* Official ECI Roll Summary */}
+          {/* Reference dataset summary; per-record official provenance is not yet attached. */}
           <View style={styles.section}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
               <Text style={styles.sectionTitle}>
-                {t('constituency.officialDemographics', { defaultValue: 'Official ECI Voter Demographics' })}
+                {t('constituency.demographicReferenceTitle', { defaultValue: 'Constituency Demographic Reference Data' })}
               </Text>
-              <View style={[styles.provenancePill, { backgroundColor: '#10B98115', borderColor: '#10B98140', paddingVertical: 2, paddingHorizontal: 6 }]}>
-                <View style={[styles.provenanceDot, { backgroundColor: '#10B981', width: 5, height: 5 }]} />
-                <Text style={[styles.provenanceText, { color: '#10B981', fontSize: 10 }]}>
-                  ECI Form 20 Verified
-                </Text>
-              </View>
             </View>
 
             {/* Quick Metrics Cards */}
-            <View style={styles.statsRow}>
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>
-                  {demo ? demo.totalVoters.toLocaleString() : '2,48,102'}
-                </Text>
-                <Text style={styles.statLabel}>{t('constituency.totalVoters', { defaultValue: 'Total Electors' })}</Text>
+            {(demo && (demo.totalVoters > 0 || demo.turnout2023 > 0)) || Boolean(localizedReservation) ? (
+              <View style={styles.statsRow}>
+                {demo && demo.totalVoters > 0 && <View style={styles.statItem}>
+                  <Text style={styles.statValue}>{demo.totalVoters.toLocaleString()}</Text>
+                  <Text style={styles.statLabel}>{t('constituency.totalVoters', { defaultValue: 'Total Electors' })}</Text>
+                </View>}
+                {demo && demo.turnout2023 > 0 && <View style={styles.statItem}>
+                  <Text style={[styles.statValue, { color: '#047857' }]}>{demo.turnout2023}%</Text>
+                  <Text style={styles.statLabel}>{t('constituency.turnout', { defaultValue: 'Voter Turnout' })}</Text>
+                </View>}
+                {localizedReservation && <View style={styles.statItem}>
+                  <Text style={styles.statValue}>{localizedReservation}</Text>
+                  <Text style={styles.statLabel}>{t('constituency.reservationStatus', { defaultValue: 'Reservation' })}</Text>
+                </View>}
               </View>
-              <View style={styles.statItem}>
-                <Text style={[styles.statValue, { color: '#047857' }]}>
-                  {demo?.turnout2023 ? `${demo.turnout2023}%` : '85.12%'}
-                </Text>
-                <Text style={styles.statLabel}>{t('constituency.turnout', { defaultValue: 'Voter Turnout' })}</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>
-                  {localizedReservation || 'General (GEN)'}
-                </Text>
-                <Text style={styles.statLabel}>{t('constituency.reservationStatus', { defaultValue: 'Reservation' })}</Text>
-              </View>
-            </View>
+            ) : <Text style={styles.casteNoticeText}>{t('constituency.noDemographicData', { defaultValue: 'No constituency demographic figures are available in the current reference dataset.' })}</Text>}
 
             {/* Gender Distribution */}
-            <View style={[styles.demoCard, { marginTop: 14 }]}>
+            {demo && (demo.maleVoters > 0 || demo.femaleVoters > 0) && <View style={[styles.demoCard, { marginTop: 14 }]}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 }}>
                 <Ionicons name="people" size={18} color="#002B7F" />
                 <Text style={styles.demoSubTitle}>{t('constituency.genderDistribution', { defaultValue: 'Electorate Gender Composition' })}</Text>
@@ -1435,27 +1553,27 @@ export default function ConstituencyDetailScreen() {
               <View style={styles.demoRow}>
                 <View style={styles.demoItem}>
                   <Text style={styles.demoValue}>
-                    {demo?.maleVoters ? `${(demo.maleVoters / 1000).toFixed(1)}K` : '122.4K'}
+                    {demo.maleVoters > 0 ? `${(demo.maleVoters / 1000).toFixed(1)}K` : '—'}
                   </Text>
                   <Text style={styles.demoLabel}>{t('constituency.male', { defaultValue: 'Male Voters' })}</Text>
                 </View>
                 <View style={styles.demoItem}>
                   <Text style={styles.demoValue}>
-                    {demo?.femaleVoters ? `${(demo.femaleVoters / 1000).toFixed(1)}K` : '125.6K'}
+                    {demo.femaleVoters > 0 ? `${(demo.femaleVoters / 1000).toFixed(1)}K` : '—'}
                   </Text>
                   <Text style={styles.demoLabel}>{t('constituency.female', { defaultValue: 'Female Voters' })}</Text>
                 </View>
                 <View style={styles.demoItem}>
                   <Text style={[styles.demoValue, { color: '#002B7F' }]}>
-                    {demo?.maleVoters && demo?.femaleVoters ? `${Math.round((demo.femaleVoters / demo.maleVoters) * 1000)}` : '1,026'}
+                    {demo.maleVoters > 0 && demo.femaleVoters > 0 ? `${Math.round((demo.femaleVoters / demo.maleVoters) * 1000)}` : '—'}
                   </Text>
                   <Text style={styles.demoLabel}>{t('constituency.sexRatio', { defaultValue: 'Sex Ratio' })}</Text>
                 </View>
               </View>
-            </View>
+            </View>}
 
             {/* Locality & Habitat Distribution (Urban vs Rural) */}
-            {demo && demo.urbanPercent != null && (
+            {demo && demo.urbanPercent > 0 && (
               <View style={[styles.demoCard, { marginTop: 14 }]}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 }}>
                   <Ionicons name="business" size={18} color="#002B7F" />
@@ -1483,7 +1601,7 @@ export default function ConstituencyDetailScreen() {
             {/* Social Composition: SC / ST Official Gazette Roll */}
             {demo && (demo.scPercent > 0 || demo.stPercent > 0) && (
               <View style={[styles.demoCard, { marginTop: 14 }]}>
-                <Text style={styles.demoSubTitle}>{t('constituency.socialComposition', { defaultValue: 'Scheduled Castes & Tribes (ECI Certified)' })}</Text>
+                <Text style={styles.demoSubTitle}>{t('constituency.socialComposition', { defaultValue: 'Social Composition' })}</Text>
                 <View style={styles.demoBarGroup}>
                   <View style={styles.demoBarRow}>
                     <Text style={styles.demoBarLabel}>{t('constituencyExtended.scLabel', { defaultValue: 'SC Electors' })}</Text>
@@ -1503,25 +1621,17 @@ export default function ConstituencyDetailScreen() {
               </View>
             )}
 
-            {/* Official Transparency Notice: BC Census Gazette Explanation */}
+            {/* Dataset limitations */}
             <View style={styles.casteNoticeCard}>
               <View style={styles.casteNoticeHeader}>
                 <Ionicons name="information-circle" size={20} color="#002B7F" />
                 <Text style={styles.casteNoticeTitle}>
-                  {t('constituency.casteNoticeTitle', { defaultValue: 'Caste Census & BC Classification Official Notice' })}
+                  {t('constituency.demographicDataNoteTitle', { defaultValue: 'About these figures' })}
                 </Text>
               </View>
               <Text style={styles.casteNoticeText}>
-                {i18n.language === 'te'
-                  ? 'భారత ప్రభుత్వ అధికారిక సెన్సస్ (Census of India) మరియు భారత ఎన్నికల సంఘం (ECI) నియోజకవర్గాల వారీగా BC (వెనుకబడిన తరగతులు) జనాభాను అధికారిక గెజిట్‌లో ప్రచురించవు. మా అప్లికేషన్ కల్పిత లేదా అంచనా గణాంకాలను ప్రదర్శించదు; కేంద్ర/రాష్ట్ర ఎన్నికల సంఘం ధృవీకరించిన వాస్తవ గణాంకాలను మాత్రమే ఇక్కడ పొందుపరిచాము.'
-                  : 'The decennial Census of India and the Election Commission of India (ECI) do not publish Backward Classes (BC) census enumerations at the Assembly Constituency level in official gazettes. Poligram strictly refrains from displaying synthetic or unverified community estimates; only 100% verified official ECI electoral roll data and certified census figures are published.'}
+                {t('constituency.demographicDataNote', { defaultValue: 'Some figures in the reference dataset are estimates or use older census and electoral roll years. Poligram does not yet show a source and publication date beside every constituency figure; treat these values as context, not as certified current counts.' })}
               </Text>
-              <View style={styles.casteNoticeBadge}>
-                <Ionicons name="shield-checkmark" size={14} color="#047857" />
-                <Text style={styles.casteNoticeBadgeText}>
-                  {t('constituency.eciCensusCompliance', { defaultValue: 'ECI & Census of India Compliance' })}
-                </Text>
-              </View>
             </View>
           </View>
         </>)}
@@ -1556,7 +1666,7 @@ export default function ConstituencyDetailScreen() {
           runnerUpParty: effectiveRunnerUp || undefined,
           runnerUpVotes: canonicalPodium?.firstRunnerUp?.votes ?? undefined,
           margin: effectiveMargin ?? undefined,
-          turnoutPercent: demo?.turnout2023 ?? undefined,
+          turnoutPercent: demo?.turnout2023 != null && demo.turnout2023 > 0 ? demo.turnout2023 : undefined,
           shareUrl: `https://poligram.in/constituency/${stateCode}-AC-${acNo}`,
         }}
       />
@@ -1582,10 +1692,7 @@ export default function ConstituencyDetailScreen() {
         <ComposeSheet
           visible={composeVisible}
           onClose={() => setComposeVisible(false)}
-          onSubmit={(post) => {
-            useFeedStore.getState().addPost(post);
-            setComposeVisible(false);
-          }}
+          onSubmit={(post) => useFeedStore.getState().addPost(post)}
         />
       )}
     </View>

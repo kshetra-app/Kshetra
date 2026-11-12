@@ -10,6 +10,7 @@ import type {
   PoliticianSurvey,
 } from '../lib/politicianPortalTypes';
 import { apiClient } from '../lib/api';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 
 // Fictional demo data only — no real, named public figures permitted here.
 // ─── Seed Politicians ───
@@ -137,6 +138,8 @@ interface PoliticianPortalState {
   fundraiseProjects: FundraiseProject[];
   surveys: PoliticianSurvey[];
   currentPoliticianId: string | null;
+  portalLoadStatus: 'idle' | 'loading' | 'loaded' | 'partial' | 'error';
+  portalLoadErrors: Array<'politicians' | 'events' | 'manifestos' | 'surveys'>;
 
   // Queries
   getPolitician: (id: string) => PoliticianPortalProfile | undefined;
@@ -151,6 +154,7 @@ interface PoliticianPortalState {
   getActiveSurveys: (stateCode?: string) => PoliticianSurvey[];
 
   // Actions
+  loadPortal: () => Promise<boolean>;
   setCurrentPolitician: (id: string) => void;
   createBroadcast: (broadcast: Partial<ConstituentBroadcast>) => void;
   createEvent: (event: Partial<PoliticalEvent>) => void;
@@ -163,15 +167,17 @@ interface PoliticianPortalState {
 }
 
 export const usePoliticianPortalStore = create<PoliticianPortalState>((set, get) => ({
-  politicians: SEED_POLITICIANS,
-  broadcasts: SEED_BROADCASTS,
-  events: SEED_EVENTS,
-  manifestos: SEED_MANIFESTOS,
-  mentorships: SEED_MENTORSHIPS,
-  endorsements: SEED_ENDORSEMENTS,
-  fundraiseProjects: SEED_FUNDRAISE,
-  surveys: SEED_SURVEYS,
+  politicians: IS_LIVE_ENVIRONMENT ? [] : SEED_POLITICIANS,
+  broadcasts: IS_LIVE_ENVIRONMENT ? [] : SEED_BROADCASTS,
+  events: IS_LIVE_ENVIRONMENT ? [] : SEED_EVENTS,
+  manifestos: IS_LIVE_ENVIRONMENT ? [] : SEED_MANIFESTOS,
+  mentorships: IS_LIVE_ENVIRONMENT ? [] : SEED_MENTORSHIPS,
+  endorsements: IS_LIVE_ENVIRONMENT ? [] : SEED_ENDORSEMENTS,
+  fundraiseProjects: IS_LIVE_ENVIRONMENT ? [] : SEED_FUNDRAISE,
+  surveys: IS_LIVE_ENVIRONMENT ? [] : SEED_SURVEYS,
   currentPoliticianId: null,
+  portalLoadStatus: 'idle',
+  portalLoadErrors: [],
 
   getPolitician: (id) => get().politicians.find((p) => p.id === id),
   getPoliticianByState: (stateCode) => get().politicians.filter((p) => p.stateCode === stateCode),
@@ -184,58 +190,100 @@ export const usePoliticianPortalStore = create<PoliticianPortalState>((set, get)
   getFundraiseForPolitician: (politicianId) => get().fundraiseProjects.filter((f) => f.politicianId === politicianId),
   getActiveSurveys: (stateCode) => get().surveys.filter((s) => s.status === 'active' && (stateCode ? s.targetStateCode === stateCode : true)),
 
+  loadPortal: async () => {
+    if (get().portalLoadStatus === 'loading') return false;
+    set({ portalLoadStatus: 'loading', portalLoadErrors: [] });
+    const results = await Promise.allSettled([
+      apiClient.politician.listProfiles(),
+      apiClient.politician.listEvents(),
+      apiClient.politician.listManifestos(),
+      apiClient.politician.listSurveys({ status: 'active' }),
+    ]);
+    const resources = ['politicians', 'events', 'manifestos', 'surveys'] as const;
+    const updates: Partial<PoliticianPortalState> = {};
+    const errors: PoliticianPortalState['portalLoadErrors'] = [];
+    results.forEach((result, index) => {
+      const resource = resources[index];
+      if (result.status === 'rejected') {
+        errors.push(resource);
+        return;
+      }
+      const stateKey = resource === 'politicians' ? 'politicians' : resource;
+      (updates as any)[stateKey] = result.value.items;
+    });
+    updates.portalLoadErrors = errors;
+    updates.portalLoadStatus = errors.length === results.length ? 'error' : errors.length > 0 ? 'partial' : 'loaded';
+    // Failed reads retain their last database-backed values; never replace them with demo data.
+    set(updates);
+    return errors.length === 0;
+  },
+
   setCurrentPolitician: (id) => set({ currentPoliticianId: id }),
 
-  createBroadcast: (broadcast) => set((s) => ({ broadcasts: [{ id: `cb-${Date.now()}`, politicianId: '', type: 'announcement', title: '', body: '', mediaUrls: [], targetScope: 'constituency', targetStateCode: '', sentAt: new Date().toISOString(), readCount: 0, reactionCount: 0, replyCount: 0, createdAt: new Date().toISOString(), ...broadcast } as ConstituentBroadcast, ...s.broadcasts] })),
+  createBroadcast: (broadcast) => {
+    if (IS_LIVE_ENVIRONMENT) return;
+    set((s) => ({ broadcasts: [{ id: `cb-${Date.now()}`, politicianId: '', type: 'announcement', title: '', body: '', mediaUrls: [], targetScope: 'constituency', targetStateCode: '', sentAt: new Date().toISOString(), readCount: 0, reactionCount: 0, replyCount: 0, createdAt: new Date().toISOString(), ...broadcast } as ConstituentBroadcast, ...s.broadcasts] }));
+  },
 
-  createEvent: (event) => set((s) => ({ events: [...s.events, { id: `pe-${Date.now()}`, politicianId: '', politicianName: '', type: 'meeting', status: 'planned', title: '', description: '', venue: '', address: '', stateCode: '', startTime: '', endTime: '', isPublic: true, rsvpCount: 0, mediaUrls: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), ...event } as PoliticalEvent] })),
+  createEvent: (event) => {
+    if (IS_LIVE_ENVIRONMENT) return;
+    set((s) => ({ events: [...s.events, { id: `pe-${Date.now()}`, politicianId: '', politicianName: '', type: 'meeting', status: 'planned', title: '', description: '', venue: '', address: '', stateCode: '', startTime: '', endTime: '', isPublic: true, rsvpCount: 0, mediaUrls: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), ...event } as PoliticalEvent] }));
+  },
 
   rsvpEvent: async (eventId) => {
-    set((s) => ({
-      events: s.events.map((e) =>
-        e.id === eventId ? { ...e, rsvpCount: e.rsvpCount + 1 } : e
-      ),
-    }));
+    if (!get().events.some((event) => event.id === eventId)) return false;
     try {
-      await apiClient.politician.rsvpEvent(eventId);
+      const result = await apiClient.politician.rsvpEvent(eventId);
+      if (!result.success) return false;
+      try {
+        const refreshed = await apiClient.politician.listEvents();
+        set({ events: refreshed.items });
+      } catch {
+        // The RSVP is already persisted; keep the last database-backed count until refresh succeeds.
+      }
       return true;
     } catch {
-      set((s) => ({
-        events: s.events.map((e) =>
-          e.id === eventId ? { ...e, rsvpCount: Math.max(0, e.rsvpCount - 1) } : e
-        ),
-      }));
       return false;
     }
   },
 
-  publishManifesto: (manifestoId) => set((s) => ({ manifestos: s.manifestos.map((m) => m.id === manifestoId ? { ...m, status: 'published' as const, publishedAt: new Date().toISOString() } : m) })),
+  publishManifesto: (manifestoId) => {
+    if (IS_LIVE_ENVIRONMENT) return;
+    set((s) => ({ manifestos: s.manifestos.map((m) => m.id === manifestoId ? { ...m, status: 'published' as const, publishedAt: new Date().toISOString() } : m) }));
+  },
 
-  voteManifestoItem: (manifestoId, itemId, support) => set((s) => ({
-    manifestos: s.manifestos.map((m) => m.id === manifestoId ? {
-      ...m, items: m.items.map((i) => i.id === itemId ? { ...i, supportVotes: i.supportVotes + (support ? 1 : 0), opposeVotes: i.opposeVotes + (support ? 0 : 1) } : i),
-    } : m),
-  })),
+  voteManifestoItem: (manifestoId, itemId, support) => {
+    if (IS_LIVE_ENVIRONMENT) return;
+    set((s) => ({
+      manifestos: s.manifestos.map((m) => m.id === manifestoId ? {
+        ...m, items: m.items.map((i) => i.id === itemId ? { ...i, supportVotes: i.supportVotes === null ? null : i.supportVotes + (support ? 1 : 0), opposeVotes: i.opposeVotes === null ? null : i.opposeVotes + (support ? 0 : 1) } : i),
+      } : m),
+    }));
+  },
 
-  endorsePolitician: (endorsement) => set((s) => ({ endorsements: [...s.endorsements, { id: `en-${Date.now()}`, endorserId: '', endorserName: '', endorserTier: 'aspirant', endorseeId: '', endorseeName: '', type: 'general', message: '', isPublic: true, createdAt: new Date().toISOString(), ...endorsement } as Endorsement] })),
+  endorsePolitician: (endorsement) => {
+    if (IS_LIVE_ENVIRONMENT) return;
+    set((s) => ({ endorsements: [...s.endorsements, { id: `en-${Date.now()}`, endorserId: '', endorserName: '', endorserTier: 'aspirant', endorseeId: '', endorseeName: '', type: 'general', message: '', isPublic: true, createdAt: new Date().toISOString(), ...endorsement } as Endorsement] }));
+  },
 
-  donateFundraise: (projectId, amount) => set((s) => ({ fundraiseProjects: s.fundraiseProjects.map((f) => f.id === projectId ? { ...f, raisedAmount: f.raisedAmount + amount, donorCount: f.donorCount + 1 } : f) })),
+  donateFundraise: (projectId, amount) => {
+    if (IS_LIVE_ENVIRONMENT) return;
+    set((s) => ({ fundraiseProjects: s.fundraiseProjects.map((f) => f.id === projectId ? { ...f, raisedAmount: f.raisedAmount + amount, donorCount: f.donorCount + 1 } : f) }));
+  },
 
   respondSurvey: async (surveyId, answers) => {
-    set((s) => ({
-      surveys: s.surveys.map((sv) =>
-        sv.id === surveyId ? { ...sv, responseCount: sv.responseCount + 1 } : sv
-      ),
-    }));
+    if (!get().surveys.some((survey) => survey.id === surveyId)) return false;
     try {
-      await apiClient.politician.respondSurvey(surveyId, answers);
+      const result = await apiClient.politician.respondSurvey(surveyId, answers);
+      if (!result.success) return false;
+      try {
+        const refreshed = await apiClient.politician.listSurveys({ status: 'active' });
+        set({ surveys: refreshed.items });
+      } catch {
+        // The response is already persisted; keep the last database-backed count until refresh succeeds.
+      }
       return true;
     } catch {
-      set((s) => ({
-        surveys: s.surveys.map((sv) =>
-          sv.id === surveyId ? { ...sv, responseCount: Math.max(0, sv.responseCount - 1) } : sv
-        ),
-      }));
       return false;
     }
   },

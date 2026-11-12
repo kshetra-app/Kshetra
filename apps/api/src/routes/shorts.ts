@@ -8,6 +8,10 @@ import type { FastifyInstance } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
 import { resolveAuthenticatedUser, assertActingUserMatch } from '../lib/userAuth';
+import { checkContentModeration, ModerationUnavailableError } from '../services/contentModeration';
+
+const SHORT_ID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export async function shortsRoutes(app: FastifyInstance) {
   /**
@@ -110,8 +114,11 @@ export async function shortsRoutes(app: FastifyInstance) {
             }
           }
         }
-      } catch (err: any) {
-        app.log.error({ err: err?.message, shortId }, 'Exception incrementing short view in DB');
+      } catch (err: unknown) {
+        app.log.error(
+          { err: err instanceof Error ? err.message : String(err), shortId },
+          'Exception incrementing short view in DB',
+        );
         return sendApiError(
           reply,
           request,
@@ -132,13 +139,133 @@ export async function shortsRoutes(app: FastifyInstance) {
     },
   );
 
-  /**
-   * 2. POST /api/v1/shorts/:id/comments
-   * Add comment to political short (Class B Method 44: addShortComment)
-   */
+  /** List persisted comments for a public short. */
+  app.get<{
+    Params: { id: string };
+    Querystring: { offset?: number; limit?: number };
+  }>(
+    '/api/v1/shorts/:id/comments',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          required: ['id'],
+          properties: { id: { type: 'string' } },
+        },
+        querystring: {
+          type: 'object',
+          properties: {
+            offset: { type: 'integer', minimum: 0 },
+            limit: { type: 'integer', minimum: 1, maximum: 100 },
+          },
+          additionalProperties: false,
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id: shortId } = request.params;
+      const offset = request.query.offset ?? 0;
+      const limit = request.query.limit ?? 100;
+      if (!SHORT_ID_PATTERN.test(shortId)) {
+        return sendApiError(reply, request, 400, 'Bad Request', 'Invalid short ID', {
+          code: 'INVALID_SHORT_ID',
+        });
+      }
+      if (!isSupabaseConfigured) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Database service is not configured',
+          {
+            code: 'DATABASE_UNAVAILABLE',
+          },
+        );
+      }
+
+      try {
+        const { data: short, error: shortError } = await supabase
+          .from('political_shorts')
+          .select('id,status')
+          .eq('id', shortId)
+          .maybeSingle();
+
+        if (shortError) {
+          app.log.error(
+            { err: shortError.message, shortId },
+            'Failed to load short before listing comments',
+          );
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            'Could not load comments',
+            {
+              code: 'DATABASE_ERROR',
+            },
+          );
+        }
+        if (!short || !['approved', 'pending'].includes(short.status)) {
+          return sendApiError(reply, request, 404, 'Not Found', 'Short not found', {
+            code: 'SHORT_NOT_FOUND',
+          });
+        }
+
+        const { data, count, error } = await supabase
+          .from('short_comments')
+          .select('id,author_name,text,created_at', { count: 'exact' })
+          .eq('short_id', shortId)
+          .order('created_at', { ascending: false })
+          .order('id', { ascending: false })
+          .range(offset, offset + limit - 1);
+
+        if (error) {
+          app.log.error({ err: error.message, shortId }, 'Failed to list short comments');
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            'Could not load comments',
+            {
+              code: 'DATABASE_ERROR',
+            },
+          );
+        }
+
+        const comments = (data || []).map((row) => ({
+          id: row.id,
+          authorName: row.author_name || 'Anonymous',
+          text: row.text,
+          createdAt: row.created_at,
+        }));
+
+        return reply.send({ success: true, shortId, comments, total: count ?? comments.length });
+      } catch (err: unknown) {
+        app.log.error(
+          { err: err instanceof Error ? err.message : String(err), shortId },
+          'Exception listing short comments',
+        );
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Could not load comments',
+          {
+            code: 'DATABASE_ERROR',
+          },
+        );
+      }
+    },
+  );
+
+  /** Add a persisted comment to a political short (Class B Method 44). */
   app.post<{
     Params: { id: string };
-    Body: { userId?: string; content: string };
+    Body: { content: string };
   }>(
     '/api/v1/shorts/:id/comments',
     {
@@ -152,8 +279,7 @@ export async function shortsRoutes(app: FastifyInstance) {
           type: 'object',
           required: ['content'],
           properties: {
-            userId: { type: 'string' },
-            content: { type: 'string', minLength: 1, maxLength: 2000 },
+            content: { type: 'string', minLength: 1, maxLength: 500 },
           },
         },
       },
@@ -161,16 +287,20 @@ export async function shortsRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const auth = await resolveAuthenticatedUser(request, reply);
       if (!auth) return;
-
-      if (!assertActingUserMatch(reply, request, auth.userId, request.body?.userId, 'userId')) {
-        return;
-      }
-
       const userId = auth.userId;
       const { id: shortId } = request.params;
-      const { content } = request.body;
-      const commentId = `comm_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-      const now = new Date().toISOString();
+      const content = request.body.content.trim();
+
+      if (!SHORT_ID_PATTERN.test(shortId)) {
+        return sendApiError(reply, request, 400, 'Bad Request', 'Invalid short ID', {
+          code: 'INVALID_SHORT_ID',
+        });
+      }
+      if (!content) {
+        return sendApiError(reply, request, 400, 'Bad Request', 'Comment cannot be empty', {
+          code: 'INVALID_COMMENT',
+        });
+      }
 
       if (!isSupabaseConfigured) {
         return sendApiError(
@@ -186,17 +316,93 @@ export async function shortsRoutes(app: FastifyInstance) {
       }
 
       try {
-        const { error } = await supabase.from('short_comments').insert({
-          id: commentId,
-          short_id: shortId,
-          user_id: userId,
-          content,
-          created_at: now,
-        });
+        const { data: short, error: shortError } = await supabase
+          .from('political_shorts')
+          .select('id,status')
+          .eq('id', shortId)
+          .maybeSingle();
 
-        if (error) {
+        if (shortError) {
           app.log.error(
-            { err: error.message, shortId, userId },
+            { err: shortError.message, shortId },
+            'Failed to load short before adding comment',
+          );
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            'Could not add comment',
+            {
+              code: 'DATABASE_ERROR',
+            },
+          );
+        }
+        if (!short || !['approved', 'pending'].includes(short.status)) {
+          return sendApiError(reply, request, 404, 'Not Found', 'Short not found', {
+            code: 'SHORT_NOT_FOUND',
+          });
+        }
+
+        let moderation;
+        try {
+          moderation = await checkContentModeration(content);
+        } catch (error) {
+          if (!(error instanceof ModerationUnavailableError)) throw error;
+          app.log.warn(
+            { err: error.message, shortId },
+            'Content moderation is unavailable for short comment',
+          );
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Comment moderation is temporarily unavailable. Please try again.',
+            { code: 'MODERATION_UNAVAILABLE' },
+          );
+        }
+        if (moderation.flagged) {
+          return sendApiError(
+            reply,
+            request,
+            422,
+            'Unprocessable Entity',
+            'Comment rejected due to policy violations',
+            {
+              code: 'CONTENT_MODERATION_FAILED',
+              details: moderation.reasons.map((reason) => ({ path: 'content', message: reason })),
+            },
+          );
+        }
+
+        const { data: profile, error: profileError } = await supabase
+          .from('user_profiles')
+          .select('display_name')
+          .eq('user_id', userId)
+          .maybeSingle();
+        if (profileError) {
+          app.log.warn(
+            { err: profileError.message, userId },
+            'Could not resolve short-comment author name',
+          );
+        }
+        const authorName = profile?.display_name || 'Anonymous';
+
+        const { data: comment, error } = await supabase
+          .from('short_comments')
+          .insert({
+            short_id: shortId,
+            user_id: userId,
+            author_name: authorName,
+            text: content,
+          })
+          .select('id,author_name,text,created_at')
+          .single();
+
+        if (error || !comment) {
+          app.log.error(
+            { err: error?.message, shortId, userId },
             'Failed to insert short comment in DB',
           );
           return sendApiError(
@@ -210,9 +416,20 @@ export async function shortsRoutes(app: FastifyInstance) {
             },
           );
         }
-      } catch (err: any) {
+        return reply.status(201).send({
+          success: true,
+          id: comment.id,
+          shortId,
+          comment: {
+            id: comment.id,
+            authorName: comment.author_name || 'Anonymous',
+            text: comment.text,
+            createdAt: comment.created_at,
+          },
+        });
+      } catch (err: unknown) {
         app.log.error(
-          { err: err?.message, shortId, userId },
+          { err: err instanceof Error ? err.message : String(err), shortId, userId },
           'Exception inserting short comment in DB',
         );
         return sendApiError(
@@ -226,15 +443,6 @@ export async function shortsRoutes(app: FastifyInstance) {
           },
         );
       }
-
-      return reply.status(201).send({
-        success: true,
-        commentId,
-        shortId,
-        userId,
-        content,
-        createdAt: now,
-      });
     },
   );
   /**
@@ -242,14 +450,19 @@ export async function shortsRoutes(app: FastifyInstance) {
    */
   app.post<{
     Body: {
+      id?: string;
       title: string;
       videoUrl: string;
       thumbnailUrl?: string;
       description?: string;
       stateCode: string;
+      stateName?: string;
       constituencyId?: string;
-      authorId?: string;
+      districtName?: string;
       durationSeconds?: number;
+      hashtags?: string[];
+      gradientColors?: string[];
+      stateAccent?: string;
     };
   }>(
     '/api/v1/shorts',
@@ -259,14 +472,27 @@ export async function shortsRoutes(app: FastifyInstance) {
           type: 'object',
           required: ['title', 'videoUrl', 'stateCode'],
           properties: {
-            title: { type: 'string', minLength: 1, maxLength: 300 },
+            id: { type: 'string', pattern: SHORT_ID_PATTERN.source },
+            title: { type: 'string', minLength: 1, maxLength: 200 },
             videoUrl: { type: 'string', minLength: 1 },
             thumbnailUrl: { type: 'string' },
-            description: { type: 'string' },
+            description: { type: 'string', maxLength: 5000 },
             stateCode: { type: 'string', minLength: 2, maxLength: 2 },
+            stateName: { type: 'string', maxLength: 100 },
             constituencyId: { type: 'string' },
-            authorId: { type: 'string' },
-            durationSeconds: { type: 'number' },
+            districtName: { type: 'string', maxLength: 100 },
+            durationSeconds: { type: 'integer', minimum: 0, maximum: 3600 },
+            hashtags: {
+              type: 'array',
+              maxItems: 20,
+              items: { type: 'string', minLength: 1, maxLength: 80 },
+            },
+            gradientColors: {
+              type: 'array',
+              maxItems: 2,
+              items: { type: 'string', pattern: '^#[0-9A-Fa-f]{6}$' },
+            },
+            stateAccent: { type: 'string', pattern: '^#[0-9A-Fa-f]{6}$' },
           },
         },
       },
@@ -274,10 +500,6 @@ export async function shortsRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const auth = await resolveAuthenticatedUser(request, reply);
       if (!auth) return;
-
-      if (!assertActingUserMatch(reply, request, auth.userId, request.body?.authorId, 'authorId')) {
-        return;
-      }
 
       if (!isSupabaseConfigured) {
         return sendApiError(
@@ -294,17 +516,120 @@ export async function shortsRoutes(app: FastifyInstance) {
 
       const body = request.body;
       try {
+        if (body.id) {
+          const { data: existing, error: existingError } = await supabase
+            .from('political_shorts')
+            .select('*')
+            .eq('id', body.id)
+            .maybeSingle();
+
+          if (existingError) {
+            app.log.error(
+              { err: existingError.message, shortId: body.id, userId: auth.userId },
+              'Failed to check an idempotent short upload',
+            );
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'The short upload could not be confirmed. Please retry.',
+              { code: 'UPLOAD_CONFIRMATION_UNAVAILABLE' },
+            );
+          }
+          if (existing) {
+            if (existing.uploaded_by !== auth.userId) {
+              return sendApiError(reply, request, 404, 'Not Found', 'Short not found', {
+                code: 'SHORT_NOT_FOUND',
+              });
+            }
+            return reply.send({
+              success: true,
+              id: existing.id,
+              short: existing,
+              alreadyPersisted: true,
+            });
+          }
+        }
+
+        const title = body.title.trim();
+        const videoUrl = body.videoUrl.trim();
+        const stateCode = body.stateCode.trim().toUpperCase();
+        if (!title || !videoUrl) {
+          return sendApiError(
+            reply,
+            request,
+            400,
+            'Bad Request',
+            'Title and video URL are required',
+            {
+              code: 'INVALID_SHORT_CONTENT',
+            },
+          );
+        }
+
+        const { data: verification, error: verificationError } = await supabase
+          .from('creator_kyc_records')
+          .select('status')
+          .eq('user_id', auth.userId)
+          .maybeSingle();
+
+        if (verificationError) {
+          app.log.error(
+            { err: verificationError.message, userId: auth.userId },
+            'Failed to verify short uploader eligibility',
+          );
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Creator verification could not be checked. Please try again.',
+            { code: 'VERIFICATION_UNAVAILABLE' },
+          );
+        }
+        if (verification?.status !== 'verified') {
+          return sendApiError(
+            reply,
+            request,
+            403,
+            'Forbidden',
+            'Verified creator status is required to upload a short.',
+            { code: 'CREATOR_VERIFICATION_REQUIRED' },
+          );
+        }
+
+        const { data: profile, error: profileError } = await supabase
+          .from('user_profiles')
+          .select('display_name')
+          .eq('user_id', auth.userId)
+          .maybeSingle();
+        if (profileError) {
+          app.log.warn(
+            { err: profileError.message, userId: auth.userId },
+            'Could not resolve short channel display name',
+          );
+        }
+
         const { data, error } = await supabase
           .from('political_shorts')
           .insert({
-            title: body.title,
-            video_url: body.videoUrl,
+            ...(body.id ? { id: body.id } : {}),
+            title,
+            video_url: videoUrl,
             thumbnail_url: body.thumbnailUrl || null,
-            description: body.description || null,
-            state_code: body.stateCode,
+            description: body.description?.trim() || null,
+            channel_name: profile?.display_name?.trim() || 'Verified contributor',
+            channel_verified: true,
+            state_code: stateCode,
+            state_name: body.stateName?.trim() || null,
             constituency_id: body.constituencyId || null,
-            author_id: auth.userId,
-            duration_seconds: body.durationSeconds || 0,
+            district_name: body.districtName?.trim() || null,
+            duration: body.durationSeconds ?? 0,
+            hashtags: body.hashtags ?? [],
+            gradient_colors: body.gradientColors ?? [],
+            state_accent: body.stateAccent || null,
+            uploaded_by: auth.userId,
           })
           .select('*')
           .single();
@@ -323,7 +648,7 @@ export async function shortsRoutes(app: FastifyInstance) {
         }
 
         return reply.status(201).send({ success: true, id: data.id, short: data });
-      } catch (err: any) {
+      } catch {
         return sendApiError(
           reply,
           request,
@@ -400,7 +725,7 @@ export async function shortsRoutes(app: FastifyInstance) {
         }
 
         return reply.send({ success: true, shortId, approved: true });
-      } catch (err: any) {
+      } catch {
         return sendApiError(
           reply,
           request,
@@ -477,7 +802,7 @@ export async function shortsRoutes(app: FastifyInstance) {
         }
 
         return reply.send({ success: true, shortId, flagged: true });
-      } catch (err: any) {
+      } catch {
         return sendApiError(
           reply,
           request,

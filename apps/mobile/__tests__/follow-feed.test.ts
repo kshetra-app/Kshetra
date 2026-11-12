@@ -3,7 +3,6 @@ jest.mock('@react-native-async-storage/async-storage', () =>
 );
 
 import { useFeedStore } from '../stores/feed';
-import type { Post } from '../lib/feedTypes';
 
 describe('Ticket 0.3: Follow Graph & Feed Blending', () => {
   beforeEach(() => {
@@ -87,5 +86,18 @@ describe('Ticket 0.3: Follow Graph & Feed Blending', () => {
     await store.refreshFeed('TS', 'TS-AC-01');
     const posts = useFeedStore.getState().posts;
     expect(posts.some((p) => p.id === 'post-page-1')).toBe(false);
+  });
+
+  it('refreshes the profile state scope after following from a leader profile', async () => {
+    const originalRefreshFeed = useFeedStore.getState().refreshFeed;
+    const refreshFeed = jest.fn().mockResolvedValue(undefined);
+    useFeedStore.setState({ refreshFeed });
+
+    try {
+      await useFeedStore.getState().followUser('profile-user-1', 'MH', null);
+      expect(refreshFeed).toHaveBeenCalledWith('MH', null);
+    } finally {
+      useFeedStore.setState({ refreshFeed: originalRefreshFeed });
+    }
   });
 });

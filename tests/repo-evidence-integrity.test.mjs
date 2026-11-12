@@ -8,10 +8,15 @@ console.log('=== RUNNING REPO EVIDENCE INTEGRITY REGRESSION SUITE ===\n');
 const scriptPath = path.resolve('scripts/check-repo-evidence-integrity.mjs');
 assert.ok(fs.existsSync(scriptPath), 'Script must exist');
 
+// This regression suite temporarily dirties a tracked file. Refuse to run in
+// an already-dirty checkout so it cannot overwrite unrelated developer work.
+const initialStatus = execSync('git status --porcelain', { encoding: 'utf8' }).trim();
+assert.strictEqual(initialStatus, '', 'Regression suite requires a clean working tree before it mutates README.md');
+
 // Test 1: Dirty working tree detection
 console.log('Test 1: Proving dirty working tree triggers immediate FAIL with exit code 1...');
 const trackedFile = path.resolve('README.md');
-const originalContent = fs.readFileSync(trackedFile, 'utf8');
+const originalContent = fs.readFileSync(trackedFile);
 
 try {
   // Dirty the tracked file
@@ -27,7 +32,7 @@ try {
   );
   console.log('[PASS] Test 1 Passed: Dirty working tree correctly rejected with exit code 1.');
 } finally {
-  execSync('git checkout -- README.md', { stdio: 'pipe' });
+  fs.writeFileSync(trackedFile, originalContent);
 }
 
 // Test 2: Clean working tree baseline

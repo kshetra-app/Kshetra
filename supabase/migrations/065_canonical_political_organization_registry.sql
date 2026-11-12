@@ -233,9 +233,9 @@ BEGIN
       e.headquarters_state AS existing_hq, i.headquarters_state AS incoming_hq
     FROM public.political_organizations e
     JOIN incoming i ON e.id = i.id
-    WHERE (e.org_type, e.name, e.short_name, e.recognition_level, COALESCE(e.headquarters_state, ''))
-       IS DISTINCT FROM 
-          (i.org_type, i.name, i.short_name, i.recognition_level, COALESCE(i.headquarters_state, ''))
+    WHERE (e.org_type, e.name, e.short_name, e.recognition_level)
+       IS DISTINCT FROM (i.org_type, i.name, i.short_name, i.recognition_level)
+       OR (e.headquarters_state IS NOT NULL AND e.headquarters_state IS DISTINCT FROM i.headquarters_state)
   )
   SELECT * INTO v_conflict FROM conflicts LIMIT 1;
 
@@ -359,7 +359,8 @@ VALUES
   ('ORG-PARTY-MNS', 'political_party', 'MNS', 'MNS', 'state', 'DL', 'OFFICIAL', '0215b22c-0000-0000-0000-000000000001', now(), now()),
   ('ORG-PARTY-PWPI', 'political_party', 'PWPI', 'PWPI', 'state', 'DL', 'OFFICIAL', '0215b22c-0000-0000-0000-000000000001', now(), now()),
   ('ORG-PARTY-MDMK', 'political_party', 'MDMK', 'MDMK', 'state', 'DL', 'OFFICIAL', '0215b22c-0000-0000-0000-000000000001', now(), now())
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO UPDATE SET
+  headquarters_state = COALESCE(public.political_organizations.headquarters_state, EXCLUDED.headquarters_state);
 
 -- ─── C2: ORGANIZATION RELATIONSHIPS (10 ROWS) ───────────────────────────────
 INSERT INTO public.organization_relationships (

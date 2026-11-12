@@ -11,326 +11,91 @@ import type {
   DelimitationStatus,
   SeatCalculationModel,
 } from '../lib/delimitationTypes';
+import type { DelimitationStatusDTO, TimelineEventItem } from '@kshetra/shared';
+import { apiClient } from '../lib/api';
 import { resolvePinCodeToImpact, getDelimitationImpactForAC } from '../lib/delimitation/pinCodeResolver';
 import { computeAllSeatAllocations } from '../lib/delimitation/seatCalculator';
 
-// ─── Seed Delimitation Timeline Events ───
-// Verified historical milestones + current status only (strictly past & present, no forward dates)
+// Timeline and status come from the canonical API; production does not ship local claims.
 
-const SEED_EVENTS: DelimitationEvent[] = [
-  {
-    id: 'evt-1',
-    eventType: 'parliamentary_debate',
-    title: '42nd Constitutional Amendment: 1971 seat freeze enacted',
-    description: 'Parliament freezes the total number of Lok Sabha seats (543) and their state-wise allocation based on the 1971 Census until the year 2000 to prevent penalizing states that successfully implement family planning.',
-    date: '1976-11-18',
-    source: 'parliament',
-    isVerified: true,
-    significance: 'critical',
-  },
-  {
-    id: 'evt-2',
-    eventType: 'parliamentary_debate',
-    title: '84th Constitutional Amendment: Seat freeze extended to 2026',
-    description: 'The 84th Constitutional Amendment Act, 2001, extends the freeze on state-wise Lok Sabha and Assembly seat allocations until the first census taken after the year 2026 (Articles 82 and 170(3)).',
-    date: '2001-02-21',
-    source: 'parliament',
-    sourceUrl: 'https://legislative.gov.in/constitution-amendment-acts',
-    isVerified: true,
-    significance: 'critical',
-  },
-  {
-    id: 'evt-3',
-    eventType: 'gazette_notification',
-    title: 'Delimitation Act 2002 enacted by Parliament',
-    description: 'Parliament passes the Delimitation Act, 2002 (Act 33 of 2002), providing the statutory mandate to constitute the 4th Delimitation Commission for redrawing intra-state constituency boundaries.',
-    date: '2002-06-12',
-    source: 'gazette_of_india',
-    sourceUrl: 'https://legislative.gov.in/sites/default/files/A2002-33_0.pdf',
-    isVerified: true,
-    significance: 'critical',
-  },
-  {
-    id: 'evt-4',
-    eventType: 'commission_formation',
-    title: '4th Delimitation Commission constituted under Justice Kuldip Singh',
-    description: 'Central Government appoints retired Supreme Court Justice Kuldip Singh as Chairman of the Delimitation Commission to adjust intra-state boundaries.',
-    date: '2002-07-12',
-    source: 'gazette_of_india',
-    isVerified: true,
-    significance: 'critical',
-  },
-  {
-    id: 'evt-5',
-    eventType: 'parliamentary_debate',
-    title: '87th Constitutional Amendment: 2001 Census adopted for boundaries',
-    description: 'Parliament enacts the 87th Amendment, mandating that the 2001 Census (instead of 1991) be used to redraw intra-state boundaries, while total state seat counts remain pegged to 1971.',
-    date: '2003-06-22',
-    source: 'parliament',
-    isVerified: true,
-    significance: 'high',
-  },
-  {
-    id: 'evt-6',
-    eventType: 'gazette_notification',
-    title: '4th Delimitation Commission final orders published',
-    description: 'Delimitation Commission publishes final orders for all states based on 2001 Census data. 543 Lok Sabha seats preserved; nationwide SC/ST reserved seats updated. Implemented in 2009 General Elections.',
-    date: '2008-02-19',
-    source: 'gazette_of_india',
-    sourceUrl: 'https://eci.gov.in/delimitation/',
-    isVerified: true,
-    significance: 'critical',
-  },
-  {
-    id: 'evt-7',
-    eventType: 'parliamentary_debate',
-    title: 'AP Reorganisation Act 2014 mandates seat expansion in AP & Telangana',
-    description: 'Section 26 of the Andhra Pradesh Reorganisation Act, 2014 statutorily mandates increasing Assembly seats from 175 to 225 in Andhra Pradesh and from 119 to 153 in Telangana, subject to Article 170 provisions.',
-    date: '2014-06-02',
-    stateCode: 'TS',
-    source: 'parliament',
-    isVerified: true,
-    significance: 'high',
-  },
-  {
-    id: 'evt-8',
-    eventType: 'commission_formation',
-    title: 'Jammu & Kashmir Delimitation Commission constituted',
-    description: 'Under the J&K Reorganisation Act, 2019, Central Government forms the Delimitation Commission headed by retired Supreme Court Justice Ranjana Prakash Desai to delimit assembly and parliamentary constituencies in J&K.',
-    date: '2020-03-06',
-    stateCode: 'JK',
-    source: 'gazette_of_india',
-    isVerified: true,
-    significance: 'critical',
-  },
-  {
-    id: 'evt-9',
-    eventType: 'census_notification',
-    title: 'Decennial Census 2021 postponed due to COVID-19',
-    description: 'The Office of the Registrar General & Census Commissioner postpones Census 2021 operations indefinitely due to the COVID-19 pandemic, delaying the census baseline required for subsequent delimitation.',
-    date: '2020-03-25',
-    source: 'census_india',
-    isVerified: true,
-    significance: 'high',
-  },
-  {
-    id: 'evt-10',
-    eventType: 'gazette_notification',
-    title: 'J&K Delimitation Commission final orders notified',
-    description: 'Justice Ranjana Desai Commission issues final order creating 90 assembly constituencies (43 Jammu, 47 Kashmir) and 5 parliamentary seats, reserving 9 seats for STs and 7 for SCs in Jammu & Kashmir.',
-    date: '2022-05-05',
-    stateCode: 'JK',
-    source: 'gazette_of_india',
-    sourceUrl: 'https://eci.gov.in/files/file/14187-final-order-dated-05052022-of-delimitation-commission-for-the-union-territory-of-jammu-kashmir/',
-    isVerified: true,
-    significance: 'critical',
-  },
-  {
-    id: 'evt-11',
-    eventType: 'gazette_notification',
-    title: 'Assam Delimitation final order published by ECI',
-    description: 'Election Commission of India publishes final delimitation order for Assam under Section 8A of the RP Act 1950. 126 Assembly and 14 Lok Sabha seats kept, but boundaries and SC/ST reservations reconfigured.',
-    date: '2023-08-11',
-    stateCode: 'AS',
-    source: 'gazette_of_india',
-    sourceUrl: 'https://eci.gov.in/files/file/15239-final-order-for-delimitation-of-parliamentary-assembly-constituencies-in-the-state-of-assam/',
-    isVerified: true,
-    significance: 'critical',
-  },
-  {
-    id: 'evt-12',
-    eventType: 'parliamentary_debate',
-    title: '106th Amendment (Nari Shakti Vandan Adhiniyam) enacted',
-    description: 'Parliament passes the 106th Constitutional Amendment Act granting 33% reservation for women in Lok Sabha and State Assemblies, with the constitutional mandate that it takes effect upon delimitation after the first post-2026 census.',
-    date: '2023-09-28',
-    source: 'parliament',
-    sourceUrl: 'https://legislative.gov.in/sites/default/files/The%20Constitution%20%28One%20Hundred%20and%20Sixth%20Amendment%29%20Act%2C%202023.pdf',
-    isVerified: true,
-    significance: 'critical',
-  },
-  {
-    id: 'evt-13',
-    eventType: 'parliamentary_debate',
-    title: 'Parliamentary debates on Southern States representation equity',
-    description: 'Parliamentarians and state leaders raise formal representations urging that states with low total fertility rates (TFR) like Telangana, AP, Tamil Nadu, Kerala, and Karnataka not lose parliamentary representation.',
-    date: '2024-02-14',
-    source: 'parliament',
-    isVerified: true,
-    significance: 'high',
-  },
-  {
-    id: 'evt-14',
-    eventType: 'census_notification',
-    title: 'MHA initiates preparatory framework for Digital Census & NPR',
-    description: 'Ministry of Home Affairs and Registrar General of India begin field-level IT testing and administrative preparations for conducting India\'s first digital census enumeration.',
-    date: '2024-09-15',
-    source: 'census_india',
-    isVerified: true,
-    significance: 'high',
-  },
-  {
-    id: 'evt-15',
-    eventType: 'media_report',
-    title: 'Southern political leadership holds policy summit on federal equity',
-    description: 'Senior leaders across southern parties convene to formulate policy proposals for constitutional safeguards, advocating a hybrid allocation model that balances population with development and fertility performance.',
-    date: '2024-11-20',
-    source: 'media',
-    isVerified: true,
-    significance: 'high',
-  },
-  // ─── 2026 LEGISLATIVE DELIMITATION PACKAGE (BILLS 45, 46, 47) ───
-  {
-    id: 'evt-2026-bill45-intro',
-    eventType: 'parliamentary_debate',
-    title: 'Constitution (131st Amendment) Bill, 2026 Introduced in Lok Sabha',
-    description: 'Government introduces Bill No. 45 of 2026 proposing to amend Article 81 to increase maximum Lok Sabha ceiling to 850 (not more than 815 chosen from States, not more than 35 from Union Territories) and readjust representation post-2026.',
-    date: '2026-04-16',
-    source: 'parliament',
-    sourceUrl: 'https://sansad.in/ls/legislation/bills',
-    isVerified: true,
-    significance: 'critical',
-    billNumber: 'Bill No. 45 of 2026',
-    houseOfIntroduction: 'LOK_SABHA',
-    legislativeEventType: 'INTRODUCTION',
-    outcome: 'INTRODUCED',
-    constitutionalArticleTarget: 'Article 81 & Article 82',
-    proposedCeiling: 850,
-    classification: 'PROPOSED_LEGISLATIVE',
-    officialSource: 'Lok Sabha Secretariat',
-    sourceReference: 'Lok Sabha List of Business, 16 April 2026; Gazette of India Extraordinary Part II Sec 2',
-    sourcePublicationMetadata: 'Parliamentary Bulletin Part I, Sl. No. 14, 16 April 2026',
-  },
-  {
-    id: 'evt-2026-bill46-intro',
-    eventType: 'parliamentary_debate',
-    title: 'Delimitation Bill, 2026 Introduced in Lok Sabha',
-    description: 'Government introduces Bill No. 46 of 2026 setting statutory duties, procedures, and criteria for the Delimitation Commission following anticipated enactment of the 131st Constitutional Amendment.',
-    date: '2026-04-16',
-    source: 'parliament',
-    sourceUrl: 'https://sansad.in/ls/legislation/bills',
-    isVerified: true,
-    significance: 'critical',
-    billNumber: 'Bill No. 46 of 2026',
-    houseOfIntroduction: 'LOK_SABHA',
-    legislativeEventType: 'INTRODUCTION',
-    outcome: 'INTRODUCED',
-    constitutionalArticleTarget: 'Article 82',
-    classification: 'PROPOSED_LEGISLATIVE',
-    officialSource: 'Lok Sabha Secretariat',
-    sourceReference: 'Lok Sabha List of Business, 16 April 2026; Gazette of India Extraordinary Part II Sec 2',
-    sourcePublicationMetadata: 'Parliamentary Bulletin Part I, Sl. No. 15, 16 April 2026',
-  },
-  {
-    id: 'evt-2026-bill47-intro',
-    eventType: 'parliamentary_debate',
-    title: 'Union Territories Laws (Amendment) Bill, 2026 Introduced in Lok Sabha',
-    description: 'Government introduces Bill No. 47 of 2026 to amend statutory representation allocations across Union Territories in alignment with the proposed Article 81 revisions.',
-    date: '2026-04-16',
-    source: 'parliament',
-    sourceUrl: 'https://sansad.in/ls/legislation/bills',
-    isVerified: true,
-    significance: 'high',
-    billNumber: 'Bill No. 47 of 2026',
-    houseOfIntroduction: 'LOK_SABHA',
-    legislativeEventType: 'INTRODUCTION',
-    outcome: 'INTRODUCED',
-    constitutionalArticleTarget: 'Article 239A & Article 81(1)(b)',
-    proposedCeiling: 35,
-    classification: 'PROPOSED_LEGISLATIVE',
-    officialSource: 'Lok Sabha Secretariat',
-    sourceReference: 'Lok Sabha List of Business, 16 April 2026; Gazette of India Extraordinary Part II Sec 2',
-    sourcePublicationMetadata: 'Parliamentary Bulletin Part I, Sl. No. 16, 16 April 2026',
-  },
-  {
-    id: 'evt-2026-bill45-defeat',
-    eventType: 'parliamentary_debate',
-    title: 'Constitution (131st Amendment) Bill, 2026 Negatived in Lok Sabha',
-    description: 'Motion for consideration of Bill No. 45 of 2026 fails on division. Result: Ayes 298, Noes 230. Fails to secure mandatory two-thirds majority of members present and voting required under Article 368(2). Bill is negatived / defeated.',
-    date: '2026-04-17',
-    source: 'parliament',
-    sourceUrl: 'https://sansad.in/ls/legislation/debates',
-    isVerified: true,
-    significance: 'critical',
-    billNumber: 'Bill No. 45 of 2026',
-    houseOfIntroduction: 'LOK_SABHA',
-    legislativeEventType: 'TERMINAL_STATUS',
-    outcome: 'DEFEATED',
-    divisionAyes: 298,
-    divisionNoes: 230,
-    constitutionalArticleTarget: 'Article 81 & Article 82',
-    proposedCeiling: 850,
-    classification: 'HISTORICAL_FACT',
-    officialSource: 'Lok Sabha Secretariat',
-    sourceReference: 'Lok Sabha Parliamentary Bulletin Part I (Brief Record of Proceedings), 17 April 2026',
-    sourcePublicationMetadata: 'LS Bulletin Part I, Division Result No. 4, 17 April 2026',
-  },
-  {
-    id: 'evt-2026-bill46-infructuous',
-    eventType: 'parliamentary_debate',
-    title: 'Delimitation Bill, 2026 Rendered Infructuous',
-    description: 'Following the defeat of the enabling Constitution (131st Amendment) Bill, 2026, Bill No. 46 of 2026 is rendered legally infructuous and devoid of constitutional enabling authority under Article 82.',
-    date: '2026-04-17',
-    source: 'parliament',
-    sourceUrl: 'https://sansad.in/ls/legislation/bills',
-    isVerified: true,
-    significance: 'critical',
-    billNumber: 'Bill No. 46 of 2026',
-    houseOfIntroduction: 'LOK_SABHA',
-    legislativeEventType: 'TERMINAL_STATUS',
-    outcome: 'INFRUCTUOUS',
-    constitutionalArticleTarget: 'Article 82',
-    classification: 'HISTORICAL_FACT',
-    officialSource: 'Lok Sabha Secretariat',
-    sourceReference: 'Lok Sabha Parliamentary Bulletin Part II, 17 April 2026; Parliamentary Practice & Procedure',
-    sourcePublicationMetadata: 'Rules of Procedure and Conduct of Business in Lok Sabha',
-  },
-  {
-    id: 'evt-2026-bill47-infructuous',
-    eventType: 'parliamentary_debate',
-    title: 'Union Territories Laws (Amendment) Bill, 2026 Rendered Infructuous',
-    description: 'Following the defeat of the enabling Constitution (131st Amendment) Bill, 2026, Bill No. 47 of 2026 is rendered legally infructuous and devoid of enabling constitutional foundation.',
-    date: '2026-04-17',
-    source: 'parliament',
-    sourceUrl: 'https://sansad.in/ls/legislation/bills',
-    isVerified: true,
-    significance: 'high',
-    billNumber: 'Bill No. 47 of 2026',
-    houseOfIntroduction: 'LOK_SABHA',
-    legislativeEventType: 'TERMINAL_STATUS',
-    outcome: 'INFRUCTUOUS',
-    constitutionalArticleTarget: 'Article 239A & Article 81(1)(b)',
-    classification: 'HISTORICAL_FACT',
-    officialSource: 'Lok Sabha Secretariat',
-    sourceReference: 'Lok Sabha Parliamentary Bulletin Part II, 17 April 2026; Parliamentary Practice & Procedure',
-    sourcePublicationMetadata: 'Rules of Procedure and Conduct of Business in Lok Sabha',
-  },
-  {
-    id: 'evt-16',
-    eventType: 'gazette_notification',
-    title: 'Current Status: Constitutional freeze in effect under Articles 82 & 170',
-    description: 'Total Lok Sabha seats remain frozen at 543 across all states. Delimitation Commission formation and seat reallocation await the conduct, completion, and official publication of the overdue decennial Census.',
-    date: '2026-08-30',
-    source: 'gazette_of_india',
-    isVerified: true,
-    significance: 'critical',
-    classification: 'CURRENT_OPERATIVE_LAW',
-    constitutionalArticleTarget: 'Articles 82 & 170(3)',
-    officialSource: 'Ministry of Law and Justice',
-    sourceReference: 'Constitution of India (Articles 82 & 170 provisos; Delimitation Order, 2008)',
-  },
+let latestOfficialDataRequest = 0;
+
+function mapTimelineEvent(event: TimelineEventItem): DelimitationEvent {
+  const eventType: DelimitationEvent['eventType'] =
+    event.category ??
+    (event.billNumber
+      ? 'parliamentary_debate'
+      : /census/i.test(`${event.title} ${event.instrument ?? ''}`)
+        ? 'census_notification'
+        : 'gazette_notification');
+  const source: DelimitationEvent['source'] =
+    eventType === 'census_notification'
+      ? 'census_india'
+      : eventType === 'parliamentary_debate'
+        ? 'parliament'
+        : /election commission/i.test(event.authority ?? '')
+          ? 'eci'
+          : /ministry|president/i.test(event.authority ?? '')
+            ? 'gazette_of_india'
+            : 'parliament';
+
+  return {
+    id: event.id,
+    eventType,
+    title: event.title,
+    description: event.description ?? event.instrument ?? event.title,
+    date: event.date,
+    source,
+    sourceUrl: event.sourceUrl,
+    isVerified: event.verified,
+    significance: event.significance === 'informational' ? 'low' : event.significance,
+    billNumber: event.billNumber,
+    houseOfIntroduction: event.houseOfIntroduction,
+    legislativeEventType: event.eventType,
+    outcome: event.outcome,
+    divisionAyes: event.divisionAyes,
+    divisionNoes: event.divisionNoes,
+    constitutionalArticleTarget: event.constitutionalArticleTarget,
+    proposedCeiling: event.proposedCeiling,
+    classification: event.classification,
+    officialSource: event.officialSource,
+    sourceReference: event.sourceReference,
+    sourcePublicationMetadata: event.sourcePublicationMetadata,
+  };
+}
+
+const DELIMITATION_STATUSES: readonly DelimitationStatus[] = [
+  'pre_census',
+  'census_underway',
+  'census_published',
+  'commission_formed',
+  'draft_published',
+  'objections_period',
+  'final_notified',
+  'implemented',
 ];
 
-// ─── Store Interface ───
+function isDelimitationStatus(value: string): value is DelimitationStatus {
+  return DELIMITATION_STATUSES.includes(value as DelimitationStatus);
+}
+
+function isStatusPayload(value: DelimitationStatusDTO): value is DelimitationStatusDTO & { nationalStatus: DelimitationStatus } {
+  return isDelimitationStatus(value.nationalStatus);
+}
 
 interface DelimitationState {
   // Current national status
-  nationalStatus: DelimitationStatus;
+  nationalStatus: DelimitationStatus | null;
+  statusAvailable: boolean;
+  statusLabel: string | null;
+  statusDescription: string | null;
 
   // Selected calculation model
   selectedModel: SeatCalculationModel;
 
   // Timeline events
   events: DelimitationEvent[];
+  timelineAvailable: boolean;
 
   // Proposals (when available)
   proposals: DelimitationProposal[];
@@ -374,13 +139,18 @@ interface DelimitationState {
   setCitizenImpact: (pinCode: string, impact: CitizenImpact) => void;
   setPartyImpacts: (impacts: PartyDelimitationImpact[]) => void;
   setMLAImpacts: (impacts: MLAImpact[]) => void;
+  refreshOfficialData: () => Promise<void>;
 }
 
 export const useDelimitationStore = create<DelimitationState>((set, get) => ({
   // ─── State ───
-  nationalStatus: 'pre_census',
+  nationalStatus: null,
+  statusAvailable: false,
+  statusLabel: null,
+  statusDescription: null,
   selectedModel: 'EXPANSION_SAFE',
-  events: SEED_EVENTS,
+  events: [],
+  timelineAvailable: false,
   proposals: [],
   seatAllocations: computeAllSeatAllocations(undefined, true, 'EXPANSION_SAFE'),
   activeStateCode: null,
@@ -457,4 +227,40 @@ export const useDelimitationStore = create<DelimitationState>((set, get) => ({
   setPartyImpacts: (impacts) => set({ partyImpacts: impacts }),
 
   setMLAImpacts: (impacts) => set({ mlaImpacts: impacts }),
+
+  refreshOfficialData: async () => {
+    const requestId = ++latestOfficialDataRequest;
+    set({
+      nationalStatus: null,
+      statusAvailable: false,
+      statusLabel: null,
+      statusDescription: null,
+      events: [],
+      timelineAvailable: false,
+      isLoadingEvents: true,
+    });
+
+    const [timelineResult, statusResult] = await Promise.allSettled([
+      apiClient.delimitation.getTimeline(),
+      apiClient.delimitation.getStatus(),
+    ]);
+
+    if (requestId !== latestOfficialDataRequest) return;
+
+    const nextState: Partial<DelimitationState> = { isLoadingEvents: false };
+
+    if (timelineResult.status === 'fulfilled') {
+      nextState.events = timelineResult.value.events.map(mapTimelineEvent);
+      nextState.timelineAvailable = true;
+    }
+
+    if (statusResult.status === 'fulfilled' && isStatusPayload(statusResult.value)) {
+      nextState.nationalStatus = statusResult.value.nationalStatus;
+      nextState.statusAvailable = true;
+      nextState.statusLabel = statusResult.value.statusLabel;
+      nextState.statusDescription = statusResult.value.description;
+    }
+
+    set(nextState);
+  },
 }));

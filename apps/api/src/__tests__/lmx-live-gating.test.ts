@@ -2,6 +2,12 @@ import { buildApp } from '../server';
 import type { FastifyInstance } from 'fastify';
 import { supabase } from '../lib/supabase';
 
+const validLiveEventBody = () => ({
+  stream_id: 'stream-auth-test',
+  reporter_id: 'spoofed-user-id',
+  reporter_name: 'Untrusted Reporter Name',
+});
+
 describe('FIX-3: Server-side Live Gating Authentication & Role Checks', () => {
   let app: FastifyInstance;
 
@@ -36,12 +42,7 @@ describe('FIX-3: Server-side Live Gating Authentication & Role Checks', () => {
     const res = await app.inject({
       method: 'POST',
       url: '/api/v1/lmx/live',
-      payload: {
-        title: 'Unauthorized Live Stream',
-        role: 'admin',
-        creator_role: 'admin',
-        verification_status: 'verified',
-      },
+      payload: validLiveEventBody(),
     });
 
     expect(res.statusCode).toBe(401);
@@ -56,12 +57,7 @@ describe('FIX-3: Server-side Live Gating Authentication & Role Checks', () => {
       headers: {
         'x-user-id': '00000000-0000-0000-0000-000000000999',
       },
-      payload: {
-        title: 'Spoofed Stream',
-        role: 'admin',
-        creator_role: 'admin',
-        verification_status: 'verified',
-      },
+      payload: validLiveEventBody(),
     });
 
     // Must return 403 because real DB profile is not verified admin
@@ -80,9 +76,7 @@ describe('FIX-3: Server-side Live Gating Authentication & Role Checks', () => {
         headers: {
           'x-user-id': '00000000-0000-0000-0000-000000000999',
         },
-        payload: {
-          title: 'Prod Test Stream',
-        },
+        payload: validLiveEventBody(),
       });
 
       expect(res.statusCode).toBe(401);

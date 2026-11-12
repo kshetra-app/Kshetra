@@ -68,4 +68,5 @@ scratch_*
 
 # Ephemeral runtime state
 .kshetra_runtime/
+supabase/.start.log
 

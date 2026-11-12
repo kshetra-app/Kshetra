@@ -90,9 +90,62 @@ export interface AspirantPublicProfileDTO {
   issuesResolved: number;
   communityEndorsements: number;
   modulesCompleted: number;
+  metricAvailability?: AspirantMetricAvailability;
   badges: Array<{ badgeType: string; earnedAt: string }>;
   upcomingEvents: PageEventDTO[];
   createdAt: string;
+}
+
+export type AspirantProfileMetric =
+  | 'civicScore'
+  | 'issuesReported'
+  | 'issuesResolved'
+  | 'commentsCount'
+  | 'evidenceSubmitted'
+  | 'promisesTracked'
+  | 'communityEndorsements'
+  | 'modulesCompleted'
+  | 'challengesCompleted';
+
+export type AspirantMetricAvailability = Partial<Record<AspirantProfileMetric, boolean>>;
+
+const ASPIRANT_PROFILE_METRIC_COLUMNS: Record<AspirantProfileMetric, string> = {
+  civicScore: 'civic_score',
+  issuesReported: 'issues_reported',
+  issuesResolved: 'issues_resolved',
+  commentsCount: 'comments_count',
+  evidenceSubmitted: 'evidence_submitted',
+  promisesTracked: 'promises_tracked',
+  communityEndorsements: 'community_endorsements',
+  modulesCompleted: 'modules_completed',
+  challengesCompleted: 'challenges_completed',
+};
+
+/**
+ * Preserve the difference between an actual zero and a missing or invalid
+ * persisted metric. Legacy clients can keep numeric fallbacks while newer
+ * clients use this metadata to avoid presenting an unknown value as zero.
+ */
+export function getAspirantMetricAvailability(
+  row: Record<string, unknown>,
+): AspirantMetricAvailability {
+  const priorAvailability = row.metricAvailability;
+  const availability: AspirantMetricAvailability = {};
+
+  for (const [metric, column] of Object.entries(ASPIRANT_PROFILE_METRIC_COLUMNS) as [
+    AspirantProfileMetric,
+    string,
+  ][]) {
+    const explicitAvailability =
+      priorAvailability && typeof priorAvailability === 'object'
+        ? (priorAvailability as AspirantMetricAvailability)[metric]
+        : undefined;
+    const value = row[column] ?? row[metric];
+    const isValidMetric = typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
+    availability[metric] = explicitAvailability === false ? false : isValidMetric;
+  }
+
+  return availability;
 }
 
 export interface PageCreateRequest {

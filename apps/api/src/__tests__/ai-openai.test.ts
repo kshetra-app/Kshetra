@@ -17,6 +17,8 @@ function response(content: string): AICompletionResponse {
     usage: { promptTokens: 3, completionTokens: 2, totalTokens: 5 },
     costUsd: 0,
     costInr: 0,
+    costBasis: 'unavailable',
+    usageBasis: 'provider_reported',
     latencyMs: 1,
     degradedOffline: false,
   };

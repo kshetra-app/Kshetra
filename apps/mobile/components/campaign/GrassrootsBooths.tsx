@@ -34,6 +34,9 @@ export default function GrassrootsBooths() {
   const [kshetraCheckResult, setKshetraCheckResult] = useState<{ isKshetraUser: boolean; displayName?: string } | null>(null);
 
   const booths = useCampaignStore((s) => s.booths);
+  const boothsLoading = useCampaignStore((s) => s.boothsLoading);
+  const boothsAvailable = useCampaignStore((s) => s.boothsAvailable);
+  const boothsError = useCampaignStore((s) => s.boothsError);
   const assignBoothIncharge = useCampaignStore((s) => s.assignBoothIncharge);
   const checkKshetraUser = useCampaignStore((s) => s.checkKshetraUser);
 
@@ -62,11 +65,20 @@ export default function GrassrootsBooths() {
   const handlePhoneBlur = async () => {
     if (inchargePhone.length >= 10) {
       setIsCheckingUser(true);
-      const res = await checkKshetraUser(inchargePhone);
-      setIsCheckingUser(false);
-      setKshetraCheckResult(res);
-      if (res.displayName && !inchargeName) {
-        setInchargeName(res.displayName);
+      try {
+        const res = await checkKshetraUser(inchargePhone);
+        setKshetraCheckResult(res);
+        if (res.displayName && !inchargeName) {
+          setInchargeName(res.displayName);
+        }
+      } catch (error) {
+        setKshetraCheckResult(null);
+        Alert.alert(
+          t('campaignManager.accountCheckUnavailable', { defaultValue: 'Account check unavailable' }),
+          error instanceof Error ? error.message : t('common.tryAgain', { defaultValue: 'Please try again.' }),
+        );
+      } finally {
+        setIsCheckingUser(false);
       }
     }
   };
@@ -80,7 +92,15 @@ export default function GrassrootsBooths() {
     }
 
     const isUser = kshetraCheckResult?.isKshetraUser ?? false;
-    await assignBoothIncharge(selectedBooth.id, inchargeName.trim(), inchargePhone.trim(), isUser);
+    try {
+      await assignBoothIncharge(selectedBooth.id, inchargeName.trim(), inchargePhone.trim(), isUser);
+    } catch (error) {
+      Alert.alert(
+        t('campaignManager.assignmentNotSaved', { defaultValue: 'Assignment not saved' }),
+        error instanceof Error ? error.message : t('common.tryAgain', { defaultValue: 'Please try again.' }),
+      );
+      return;
+    }
     setModalVisible(false);
 
     if (!isUser) {
@@ -159,6 +179,27 @@ export default function GrassrootsBooths() {
 
       {/* ─── Booth Cards List ─── */}
       <ScrollView showsVerticalScrollIndicator={false}>
+        {boothsLoading ? (
+          <View style={styles.dataNotice}>
+            <ActivityIndicator size="small" color={colors.primary} />
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>{t('common.loading', { defaultValue: 'Loading booth data…' })}</Text>
+          </View>
+        ) : boothsError ? (
+          <View style={styles.dataNotice}>
+            <Ionicons name="alert-circle-outline" size={18} color="#B45309" />
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>{boothsError}</Text>
+          </View>
+        ) : boothsAvailable && booths.length === 0 ? (
+          <View style={styles.dataNotice}>
+            <Ionicons name="information-circle-outline" size={18} color={colors.textSecondary} />
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>{t('campaignManager.noBoothsYet', { defaultValue: 'No booth records are available for this campaign yet.' })}</Text>
+          </View>
+        ) : boothsAvailable && filteredBooths.length === 0 ? (
+          <View style={styles.dataNotice}>
+            <Ionicons name="filter-outline" size={18} color={colors.textSecondary} />
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>{t('campaignManager.noBoothsMatchFilter', { defaultValue: 'No booths match this filter.' })}</Text>
+          </View>
+        ) : null}
         {filteredBooths.map((b) => {
           const hasIncharge = !!b.agentPhone;
 
@@ -178,10 +219,10 @@ export default function GrassrootsBooths() {
                 <View style={{ flex: 1, marginLeft: 10 }}>
                   <Text style={[styles.boothName, { color: colors.text }]}>{b.boothName}</Text>
                   <Text style={[styles.boothMeta, { color: colors.textSecondary }]}>
-                    Ward #{b.wardNo || 1} · {b.totalVoters.toLocaleString('en-IN')} Voters · Target: {b.targetVotes}
+                    {b.wardNo ? `Ward #${b.wardNo} · ` : ''}{b.totalVoters > 0 ? `${b.totalVoters.toLocaleString('en-IN')} Voters` : 'Voter count unavailable'} · {b.targetVotes > 0 ? `Target: ${b.targetVotes}` : 'Target unavailable'}
                   </Text>
                 </View>
-                <View
+                {b.supportEstimate > 0 ? <View
                   style={[
                     styles.supportBadge,
                     {
@@ -201,7 +242,7 @@ export default function GrassrootsBooths() {
                   >
                     {b.supportEstimate}%
                   </Text>
-                </View>
+                </View> : <Text style={[styles.boothMeta, { color: colors.textSecondary }]}>—</Text>}
               </View>
 
               {/* In-Charge Section */}
@@ -380,6 +421,8 @@ export default function GrassrootsBooths() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 16 },
+  dataNotice: { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 12, marginVertical: 8 },
+  emptyText: { flex: 1, fontSize: 13 },
   filterRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',

@@ -4,7 +4,7 @@
  * Authority: Master Product Blueprint, Amendment v1.2, Amendment v1.5-A & DEC-192
  */
 
-import { defaultAIRegistry } from './aiProvider';
+import { executeAICompletion } from './aiExecutionService';
 import {
   getConstituency,
   getRawConstituency,
@@ -14,12 +14,7 @@ import {
   getMLAProfile,
   getTSElectionHistory,
 } from './stateData';
-import type {
-  AskPoligramRequest,
-  AskPoligramResponse,
-  AskPoligramCitation,
-  ChatMessage,
-} from '@kshetra/shared';
+import type { AskPoligramRequest, AskPoligramResponse, ChatMessage } from '@kshetra/shared';
 
 const ADVERSARIAL_INJECTION_PATTERNS = [
   /\b(ignore|bypass|override)\s+(all\s+)?.*?(instructions|rules|directives|prompts)\b/i,
@@ -30,7 +25,7 @@ const ADVERSARIAL_INJECTION_PATTERNS = [
 ];
 
 export class AskPoligramService {
-  /** Execute grounded, non-partisan, statutory-cited Q&A */
+  /** Answer from bundled reference data while clearly disclosing its unverified provenance. */
   static async ask(req: AskPoligramRequest): Promise<AskPoligramResponse> {
     const startTime = Date.now();
     const query = req.query.trim();
@@ -41,33 +36,42 @@ export class AskPoligramService {
       if (pattern.test(query)) {
         return {
           answer:
-            'POLIGRAM is a sovereign civic intelligence platform strictly grounded in verified public records and statutory election datasets. Prompts attempting to bypass factual grounding, generate unverified political allegations, or deflect non-partisan protocols are deflected.',
+            'POLIGRAM cannot help bypass factuality safeguards or generate unverified political allegations. This request was not answered from platform reference data.',
           query,
           groundedContextSummary: 'Adversarial prompt injection deflected by security filter.',
+          groundingStatus: 'not_applicable',
           citations: [],
           deflectedInjection: true,
           provider: 'security_filter',
           tokensUsed: 0,
+          promptTokens: 0,
+          completionTokens: 0,
           latencyMs: Date.now() - startTime,
+          costUsd: 0,
+          costInr: 0,
+          costBasis: 'none',
+          costRateCardVersion: null,
+          costRateCardSource: null,
+          usageBasis: 'not_applicable',
         };
       }
     }
 
     // 2. Structured Grounded Context Retrieval
-    const { contextText, citations, acFound } = this.retrieveContext(query, stateCode, req.acNo);
+    const { contextText, acFound } = this.retrieveContext(query, stateCode, req.acNo);
 
-    // 3. Grounded System Prompt
-    const systemPrompt = `You are POLIGRAM AI — an expert, non-partisan civic and electoral intelligence assistant.
-You provide objective, strictly factual answers grounded EXCLUSIVELY in verified public records, Election Commission of India (ECI) data, and official constituency statistics.
+    // 3. Factuality prompt. The currently connected reference adapter has no
+    // per-record source manifest, so its values must not be represented as verified.
+    const systemPrompt = `You are POLIGRAM AI — a non-partisan civic and electoral information assistant.
+Use only the context supplied below. It comes from bundled platform reference datasets, and per-record source/date verification is not attached to this request. Do not describe these values as verified, official, current, or certified. Do not invent citations, sources, dates, links, or statistics.
 
-STRICT ANTI-HALLUCINATION & LEGAL COMPLIANCE INVARIANTS:
-1. Base all statements strictly on the verified database context provided below.
-2. Do NOT speculate, infer unverified corruption, or hallucinate criminal charges or voting records.
-3. If information about a person or metric is not present in the verified records, explicitly state: "Verified public records for this inquiry are not present in the current database. POLIGRAM does not speculate on unverified figures."
-4. Maintain a non-partisan, neutral, and dignified civic tone.
-5. Emphasize verified figures (votes, margins, party names, terms) with precision.
+FACTUALITY RULES:
+1. Do not speculate about corruption, crimes, or voting records.
+2. If information is absent from the supplied context, say that the current context does not contain it. Do not infer a missing value.
+3. Maintain a non-partisan, neutral, and dignified tone.
+4. Preserve the stated year and scope of every figure; explain that source verification is unavailable when relevant.
 
-VERIFIED DATABASE CONTEXT:
+REFERENCE DATA CONTEXT (NOT VERIFIED AT RECORD LEVEL):
 ${contextText}`;
 
     const messages: ChatMessage[] = [
@@ -76,7 +80,7 @@ ${contextText}`;
     ];
 
     // 4. Generate Completion via Fallback Cascade
-    const aiRes = await defaultAIRegistry.generateWithFallback({
+    const aiRes = await executeAICompletion({
       messages,
       tenantId: req.tenantId,
       operation: 'ask_poligram',
@@ -88,27 +92,34 @@ ${contextText}`;
       answer: aiRes.content,
       query,
       groundedContextSummary: acFound
-        ? `Grounded in verified records for AC #${acFound.acNo} ${acFound.name} (${stateCode})`
-        : `Grounded in verified state electoral records for ${stateCode}`,
-      citations,
+        ? `Bundled reference data used for AC #${acFound.acNo} ${acFound.name} (${stateCode}); per-record source and date verification is not attached.`
+        : `Bundled state reference data used for ${stateCode}; per-record source and date verification is not attached.`,
+      groundingStatus: 'reference_data_unverified',
+      citations: [],
       deflectedInjection: false,
       provider: aiRes.provider,
       tokensUsed: aiRes.usage.totalTokens,
+      promptTokens: aiRes.usage.promptTokens,
+      completionTokens: aiRes.usage.completionTokens,
       latencyMs,
+      costUsd: aiRes.costUsd,
+      costInr: aiRes.costInr,
+      costBasis: aiRes.costBasis,
+      costRateCardVersion: aiRes.costRateCardVersion,
+      costRateCardSource: aiRes.costRateCardSource,
+      usageBasis: aiRes.usageBasis,
     };
   }
 
-  /** Retrieve verified context and compile statutory citations */
+  /** Retrieve bundled reference context without constructing unverifiable citations. */
   private static retrieveContext(
     query: string,
     stateCode: string,
     explicitAcNo?: number,
   ): {
     contextText: string;
-    citations: AskPoligramCitation[];
     acFound?: { acNo: number; name: string };
   } {
-    const citations: AskPoligramCitation[] = [];
     const constituencies = getConstituencies(stateCode);
 
     // Identify target constituency
@@ -132,39 +143,13 @@ ${contextText}`;
       if (c) {
         let ctx = `Constituency: AC #${c.acNo} ${c.name} (${stateCode})\n`;
         ctx += `District: ${c.district || 'Unassigned'} | Reservation: ${c.reservationStatus}\n`;
-        ctx += `Current Elected MLA: ${c.currentMLA || 'Not Recorded'} (${c.currentParty || 'Unspecified'})\n`;
-
-        // Statutory citation: Elected tenure
-        citations.push({
-          sourceTitle: 'State Legislative Assembly Secretariat Official Members Register',
-          documentType: 'ELECTED_TENURE_REGISTER',
-          referenceId: `LA-SEC-REGISTER-${stateCode}-${c.acNo}`,
-          publicationYear: 2023,
-        });
-
-        // Delimitation citation
-        citations.push({
-          sourceTitle: 'Delimitation Commission of India — Delimitation Order (Gazette of India)',
-          documentType: 'DELIMITATION_ORDER',
-          referenceId: `DCI-DELIM-ORDER-${stateCode}-2008`,
-          url: 'https://eci.gov.in/files/file/2288-delimitation-order/',
-          publicationYear: 2008,
-        });
+        ctx += `Bundled dataset recorded MLA: ${c.currentMLA || 'Not Recorded'} (${c.currentParty || 'Unspecified'})\n`;
 
         if (stateCode === 'TS') {
           const raw = getRawConstituency('TS', c.acNo);
           if (raw) {
             ctx += `2023 Winner: ${raw.winnerName2023} (${raw.winner2023}) with ${raw.winnerVotes2023.toLocaleString()} votes\n`;
             ctx += `2023 Runner-up: ${raw.runnerUp2023} with margin of ${raw.margin2023.toLocaleString()} votes\n`;
-
-            citations.push({
-              sourceTitle:
-                'Election Commission of India — Form 20 Final Result Sheet (General Election 2023)',
-              documentType: 'ECI_FORM_20',
-              referenceId: `ECI-FORM20-TS-2023-AC${raw.acNo}`,
-              url: 'https://results.eci.gov.in',
-              publicationYear: 2023,
-            });
           }
 
           const mla = getMLAProfile(c.acNo);
@@ -178,24 +163,17 @@ ${contextText}`;
           const elec = getConstituencyElectionData(stateCode, c.acNo);
           if (elec?.recentElection) {
             const r = elec.recentElection;
-            ctx += `Recent Election (${r.electionYear || 2023}): Winner: ${r.winnerName || c.currentMLA} (${r.winner || c.currentParty})`;
+            ctx += 'Bundled election record';
+            if (r.electionYear != null) ctx += ` (${r.electionYear})`;
+            ctx += `: Winner: ${r.winnerName || c.currentMLA} (${r.winner || c.currentParty})`;
             if (r.winnerVotes) ctx += ` with ${r.winnerVotes.toLocaleString()} votes`;
             if (r.margin) ctx += ` (Margin: ${r.margin.toLocaleString()} votes)`;
             ctx += '\n';
-
-            citations.push({
-              sourceTitle: `Election Commission of India — Assembly General Election Results (${stateCode})`,
-              documentType: 'ECI_FORM_20',
-              referenceId: `ECI-FORM20-${stateCode}-${c.acNo}`,
-              url: 'https://results.eci.gov.in',
-              publicationYear: r.electionYear || 2023,
-            });
           }
         }
 
         return {
           contextText: ctx,
-          citations,
           acFound: { acNo: c.acNo, name: c.name },
         };
       }
@@ -217,18 +195,10 @@ ${contextText}`;
           .join(', ');
         stateCtx += `- ${h.year}: ${topParties} (Turnout: ${h.turnout}%)\n`;
       }
-      citations.push({
-        sourceTitle: 'Chief Electoral Officer (Telangana) — Statistical Reports (2014, 2018, 2023)',
-        documentType: 'ECI_FORM_20',
-        referenceId: 'CEO-TS-STAT-REPORT-2014-2023',
-        url: 'https://ceotelangana.nic.in',
-        publicationYear: 2023,
-      });
     }
 
     return {
       contextText: stateCtx,
-      citations,
     };
   }
 }

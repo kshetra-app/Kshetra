@@ -1,4 +1,5 @@
 import { buildApp } from '../server';
+import * as stateData from '../services/stateData';
 
 describe('Broadcast API Routes', () => {
   let app: any;
@@ -48,6 +49,9 @@ describe('Broadcast API Routes', () => {
     expect(body.standings.length).toBeGreaterThan(0);
     expect(body.standings[0].party).toBeDefined();
     expect(body.standings[0].won).toBeGreaterThan(0);
+    expect(body.standings[0].leading).toBeNull();
+    expect(body.resultCoverage.totalConstituencies).toBe(119);
+    expect(body.resultCoverage.withRecordedWinner).toBeGreaterThan(0);
 
     // Verify constituencies
     expect(body.constituencies.length).toBe(119);
@@ -55,6 +59,30 @@ describe('Broadcast API Routes', () => {
     expect(body.constituencies[0].name).toBeDefined();
     expect(body.constituencies[0].winnerParty).toBeDefined();
     expect(body.constituencies[0].margin).toBeDefined();
+    expect(body.constituencies[0].electionYear).toBe(2023);
+  });
+
+  it('does not present current seat holders or zero defaults as election results when records are missing', async () => {
+    jest.spyOn(stateData, 'getConstituencyElectionData').mockReturnValue(null);
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/v1/broadcast/state/TS',
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.payload);
+    expect(body.standings).toEqual([]);
+    expect(body.resultCoverage.withRecordedWinner).toBe(0);
+    expect(body.resultCoverage.unavailable).toBe(119);
+    expect(body.constituencies[0]).toMatchObject({
+      status: 'UNAVAILABLE',
+      winnerParty: 'UNKNOWN',
+      winnerName: null,
+      winnerVotes: null,
+      margin: null,
+      electionYear: null,
+    });
   });
 
   it('GET /api/v1/broadcast/state/TS/constituency/1 should return details for assembly constituency #1', async () => {

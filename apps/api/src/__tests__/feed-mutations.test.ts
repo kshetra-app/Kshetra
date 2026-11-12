@@ -170,7 +170,7 @@ describe('Track 3: Fastify Strangler Mutations API', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/aspirant/register',
-        payload: { targetConstituencyId: 'TS_1' },
+        payload: { displayName: 'Aspirant Rao', stateCode: 'TS' },
       });
       expect(res.statusCode).toBe(401);
     });
@@ -211,6 +211,16 @@ describe('Track 3: Fastify Strangler Mutations API', () => {
         url: '/api/v1/feed/polls/poll-1/vote',
         headers: { 'x-user-id': 'usr-1' },
         payload: {},
+      });
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('POST /api/v1/feed/posts rejects a poll with fewer than two options', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/v1/feed/posts',
+        headers: { 'x-user-id': 'usr-1' },
+        payload: { content: 'Question?', stateCode: 'TS', type: 'poll', pollOptions: ['Yes'] },
       });
       expect(res.statusCode).toBe(400);
     });

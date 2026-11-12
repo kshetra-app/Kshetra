@@ -11,6 +11,31 @@
 
 import type { ApiClient } from '../client';
 import { ApiValidationError } from '../errors';
+import type {
+  EManifesto,
+  PoliticianPortalProfile,
+  PoliticianSurvey,
+  PoliticalEvent,
+} from '../../politicianPortalTypes';
+
+export interface PoliticianPortalListResponse<T> {
+  items: T[];
+  total: number;
+}
+
+function validateListResponse<T>(data: unknown, key: string): PoliticianPortalListResponse<T> {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    throw new ApiValidationError(`Invalid politician ${key} response: expected an object`);
+  }
+  const value = data as Record<string, unknown>;
+  if (!Array.isArray(value[key])) {
+    throw new ApiValidationError(`Invalid politician ${key} response: expected an array`);
+  }
+  if (typeof value.total !== 'number' || !Number.isInteger(value.total) || value.total < 0) {
+    throw new ApiValidationError(`Invalid politician ${key} response: total must be a non-negative integer`);
+  }
+  return { items: value[key] as T[], total: value.total };
+}
 
 export interface SubmitGrievanceRequestDTO {
   politicianId: string;
@@ -21,6 +46,42 @@ export interface SubmitGrievanceRequestDTO {
 
 export class PoliticianEndpoint {
   constructor(private readonly client: ApiClient) {}
+
+  async listProfiles(filters: { state?: string; tier?: string; party?: string } = {}) {
+    const response = await this.client.get<unknown>('/api/v1/politician/profiles', {
+      query: filters,
+      authPolicy: 'public',
+    });
+    return validateListResponse<PoliticianPortalProfile>(response.data, 'politicians');
+  }
+
+  async listEvents(filters: { state?: string; type?: string; upcoming?: boolean } = {}) {
+    const response = await this.client.get<unknown>('/api/v1/politician/events', {
+      query: {
+        state: filters.state,
+        type: filters.type,
+        upcoming: filters.upcoming,
+      },
+      authPolicy: 'public',
+    });
+    return validateListResponse<PoliticalEvent>(response.data, 'events');
+  }
+
+  async listManifestos(filters: { politicianId?: string; state?: string } = {}) {
+    const response = await this.client.get<unknown>('/api/v1/politician/manifestos', {
+      query: filters,
+      authPolicy: 'public',
+    });
+    return validateListResponse<EManifesto>(response.data, 'manifestos');
+  }
+
+  async listSurveys(filters: { state?: string; status?: 'active' } = {}) {
+    const response = await this.client.get<unknown>('/api/v1/politician/surveys', {
+      query: filters,
+      authPolicy: 'public',
+    });
+    return validateListResponse<PoliticianSurvey>(response.data, 'surveys');
+  }
 
   /**
    * 7. RSVP to a politician event.

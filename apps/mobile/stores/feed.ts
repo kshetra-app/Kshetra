@@ -13,16 +13,20 @@ import type {
   SortOrder,
 } from '../lib/feedTypes';
 import * as dataService from '../lib/supabaseDataService';
-import { enqueue, type SyncStatus, retryFailedOp } from '../lib/offlineSync';
+import { enqueue, getPendingOps, type SyncStatus, retryFailedOp } from '../lib/offlineSync';
 import { rankPostsV1 } from '../lib/feedRanking';
 import { isOnline } from '../lib/networkStatus';
-import { isSupabaseConfigured } from '../lib/supabase';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
+import { logContentAction } from '../lib/contentAccountability';
+import { SequenceGuard } from '../lib/staleResponseGuard';
 import { useAuthStore } from './auth';
 
+const feedRefreshGuard = new SequenceGuard<string>();
+
 /**
- * Production & Seed posts for offline-first feed.
+ * Development-only synthetic posts for offline-first UI previews.
  * Multi-state: TS, AP, KA, MH, and National-scope posts.
- * Fully populated with accurate real-world civic & political discussions.
+ * These records are fixtures and must never appear in production.
  */
 const SEED_POSTS: Post[] = [
   // ─── Telangana ──────────────────────────────────────────────
@@ -1293,6 +1297,9 @@ const SEED_COMMENTS: Record<string, Comment[]> = {
 
 // ─── Feed Store Interface ───
 
+export type PostSubmissionOutcome = 'synced' | 'queued' | 'local' | 'failed';
+export type CommentSubmissionOutcome = 'synced' | 'queued' | 'local' | 'failed';
+
 interface FeedState {
   posts: Post[];
   comments: Record<string, Comment[]>;
@@ -1317,33 +1324,34 @@ interface FeedState {
   clearAllFilters: () => void;
 
   // Post Actions
-  addPost: (post: Post) => void;
-  editPost: (postId: string, content: string) => void;
-  deletePost: (postId: string) => void;
+  addPost: (post: Post) => Promise<PostSubmissionOutcome>;
+  editPost: (postId: string, content: string) => Promise<boolean>;
+  deletePost: (postId: string) => Promise<boolean>;
   addMediaToPost: (postId: string, media: PostMedia) => void;
-  toggleReaction: (postId: string, reaction: ReactionType) => void;
-  votePoll: (postId: string, optionId: string) => void;
+  toggleReaction: (postId: string, reaction: ReactionType) => Promise<boolean>;
+  votePoll: (postId: string, optionId: string) => Promise<boolean>;
 
   // Comments Actions
-  addComment: (postId: string, comment: Comment) => void;
-  deleteComment: (postId: string, commentId: string) => void;
-  toggleCommentReaction: (postId: string, commentId: string, reaction?: ReactionType) => void;
+  addComment: (postId: string, comment: Comment) => Promise<CommentSubmissionOutcome>;
+  deleteComment: (postId: string, commentId: string) => Promise<boolean>;
+  toggleCommentReaction: (postId: string, commentId: string, reaction?: ReactionType) => Promise<boolean>;
 
   // Follow Graph (Ticket 0.3)
   followedUserIds: string[];
-  followUser: (userId: string) => Promise<void>;
-  unfollowUser: (userId: string) => Promise<void>;
+  followedUserOwnerId: string | null;
+  followUser: (userId: string, stateCode?: string, constituencyId?: string | null) => Promise<boolean>;
+  unfollowUser: (userId: string, stateCode?: string, constituencyId?: string | null) => Promise<boolean>;
   isFollowing: (userId: string) => boolean;
 
   // Sync & Realtime
   refreshFeed: (stateCode?: string, constituencyId?: string | null) => Promise<void>;
-  hydrateFromServer: (serverPosts: any[]) => void;
   receiveRealtimePost: (serverPost: any) => void;
   receiveRealtimeComment: (serverComment: any) => void;
   receiveRealtimeReaction: (payload: any) => void;
   receiveRealtimeVote: (payload: any) => void;
-  reconcilePostSync: (clientToken: string, status: SyncStatus, serverId?: string | null) => void;
+  reconcilePostSync: (clientToken: string, status: SyncStatus, serverId?: string | null, poll?: Post['poll']) => void;
   reconcileCommentSync: (clientToken: string, status: SyncStatus, serverId?: string | null) => void;
+  retryComment: (postId: string, clientToken: string) => Promise<boolean>;
   retryPost: (clientToken: string) => Promise<boolean>;
 
   // Reliability & Throttling (Ticket 1.2)
@@ -1354,9 +1362,10 @@ interface FeedState {
 }
 
 export const useFeedStore = create<FeedState>()((set, get) => ({
-  posts: SEED_POSTS,
-  comments: SEED_COMMENTS,
+  posts: IS_LIVE_ENVIRONMENT ? [] : SEED_POSTS,
+  comments: IS_LIVE_ENVIRONMENT ? {} : SEED_COMMENTS,
   followedUserIds: [],
+  followedUserOwnerId: null,
   lastError: null,
   clearError: () => set({ lastError: null }),
   lastPostTime: 0,
@@ -1394,98 +1403,160 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
     if (now - lastTime < 5000) {
       const waitSec = Math.ceil((5000 - (now - lastTime)) / 1000);
       set({ lastError: `Please wait ${waitSec}s before posting again.` });
-      return;
+      return 'failed';
     }
 
+    const userId = useAuthStore.getState().user?.id;
+    if (IS_LIVE_ENVIRONMENT && !userId) {
+      set({ lastError: 'Sign in before publishing a post.' });
+      return 'failed';
+    }
+    if (IS_LIVE_ENVIRONMENT && post.media?.length) {
+      set({ lastError: 'Post attachments cannot be published until media upload is connected.' });
+      return 'failed';
+    }
+    if (IS_LIVE_ENVIRONMENT && post.stateCode.length !== 2) {
+      set({ lastError: 'Nationally scoped posts are unavailable until the feed scope is persisted.' });
+      return 'failed';
+    }
+    if (post.type === 'poll' && (!post.poll || post.poll.options.length < 2)) {
+      set({ lastError: 'Polls require at least two options.' });
+      return 'failed';
+    }
+
+    const clientToken = post.clientToken ?? post.id;
+    const onlineAtStart = isOnline();
+
     set((state) => ({
-      posts: [{ ...post, syncStatus: post.syncStatus ?? 'SYNCING' }, ...state.posts],
+      posts: [{ ...post, syncStatus: !userId ? 'LOCAL_ONLY' : onlineAtStart ? 'SYNCING' : 'QUEUED' }, ...state.posts],
       lastPostTime: now,
       lastError: null,
     }));
 
-    const userId = useAuthStore.getState().user?.id;
-    if (userId) {
+    if (!userId) return 'local'; // Non-production local preview.
+
+    const payload = {
+      content: post.content,
+      type: post.type,
+      stateCode: post.stateCode,
+      authorId: userId,
+      hashtags: post.hashtags ?? [],
+      constituencyId: post.constituencyId,
+      parentId: post.parentId,
+      language: post.language ?? 'en',
+      pollOptions: post.type === 'poll' ? post.poll?.options.map((option) => option.label) : undefined,
+      clientToken,
+    };
+
+    if (!onlineAtStart) {
       try {
-        const res = await dataService.composePost({
-          content: post.content,
-          type: post.type,
-          stateCode: post.stateCode,
-          authorId: userId,
-          hashtags: post.hashtags ?? [],
-          constituencyId: post.constituencyId,
-          language: post.language ?? 'en',
-        });
-        if (res.success) {
-          // Reconcile client temporary token with authoritative server UUID
-          set((state) => ({
-            posts: state.posts.map((p) =>
-              p.id === post.id
-                ? { ...p, id: res.id ?? p.id, syncStatus: 'SYNCED' }
-                : p,
-            ),
-          }));
-        } else {
-          // Explicit failure while online: rollback optimistic addition
-          set((state) => ({
-            posts: state.posts.filter((p) => p.id !== post.id),
-            lastError: 'Could not submit post. Please try again.',
-          }));
-        }
-      } catch (err: any) {
-        const isModViolation = err?.message && err.message.includes('community guidelines');
-        if (isModViolation) {
-          set((state) => ({
-            posts: state.posts.filter((p) => p.id !== post.id),
-            lastError: err.message,
-          }));
-        } else {
-          // Enqueue for offline sync and mark QUEUED
-          enqueue('compose_post', {
-            content: post.content,
-            type: post.type,
-            stateCode: post.stateCode,
-            authorId: userId,
-            hashtags: post.hashtags ?? [],
-            constituencyId: post.constituencyId,
-            language: post.language ?? 'en',
-            clientToken: post.clientToken ?? post.id,
-          }, post.clientToken ?? post.id);
-          set((state) => ({
-            posts: state.posts.map((p) =>
-              p.id === post.id ? { ...p, syncStatus: 'QUEUED' } : p,
-            ),
-            lastError: null,
-          }));
-        }
+        await enqueue('compose_post', payload, clientToken);
+        return get().posts.find((item) => item.clientToken === clientToken || item.id === clientToken)?.syncStatus === 'SYNCED'
+          ? 'synced'
+          : 'queued';
+      } catch {
+        set((state) => ({
+          posts: state.posts.filter((item) => item.clientToken !== clientToken && item.id !== clientToken),
+          lastError: 'Could not queue this post. Please try again.',
+        }));
+        return 'failed';
       }
+    }
+
+    try {
+      const res = await dataService.composePost(payload);
+      const pollCreationConfirmed = post.type !== 'poll' || Boolean(res.poll?.id && res.poll.options.length >= 2);
+      if (!res.success || !res.id || !pollCreationConfirmed) {
+        if (res.retryable) {
+          try {
+            await enqueue('compose_post', payload, clientToken);
+            const saved = get().posts.find((item) => item.clientToken === clientToken || item.id === clientToken);
+            return saved?.syncStatus === 'SYNCED' ? 'synced' : 'queued';
+          } catch {
+            // Fall through to remove the optimistic record if it could not be queued.
+          }
+        }
+        set((state) => ({
+          posts: state.posts.filter((item) => item.clientToken !== clientToken && item.id !== clientToken),
+          lastError: res.error || 'Could not submit post. Please try again.',
+        }));
+        return 'failed';
+      }
+
+      get().reconcilePostSync(clientToken, 'SYNCED', res.id, res.poll ?? undefined);
+      return 'synced';
+    } catch (err: any) {
+      const isModViolation = err?.message && err.message.includes('community guidelines');
+      set((state) => ({
+        posts: state.posts.filter((item) => item.clientToken !== clientToken && item.id !== clientToken),
+        lastError: isModViolation ? err.message : 'Could not submit post. Please try again.',
+      }));
+      return 'failed';
     }
   },
 
-  editPost: (postId, content) => {
-    set((state) => ({
-      posts: state.posts.map((p) =>
-        p.id === postId
-          ? {
-              ...p,
-              content,
-              updatedAt: new Date().toISOString(),
-              hashtags: content.match(/#(\w+)/g)?.map((h) => h.slice(1).toLowerCase()) ?? p.hashtags,
-            }
-          : p,
-      ),
-    }));
+  editPost: async (postId, content) => {
+    const post = get().posts.find((item) => item.id === postId);
+    if (!post || !content.trim()) return false;
     const userId = useAuthStore.getState().user?.id;
-    if (userId) dataService.editPost(postId, content, userId);
+    if (IS_LIVE_ENVIRONMENT && !userId) {
+      set({ lastError: 'Sign in to edit this post.' });
+      return false;
+    }
+
+    if (userId) {
+      try {
+        if (!await dataService.editPost(postId, content, userId)) {
+          set({ lastError: 'Could not save the post edit. Please try again.' });
+          return false;
+        }
+      } catch {
+        set({ lastError: 'Could not save the post edit. Please try again.' });
+        return false;
+      }
+    }
+
+    set((state) => ({
+      posts: state.posts.map((item) => item.id === postId
+        ? {
+            ...item,
+            content,
+            updatedAt: new Date().toISOString(),
+            hashtags: content.match(/#(\w+)/g)?.map((tag) => tag.slice(1).toLowerCase()) ?? item.hashtags,
+          }
+        : item),
+      lastError: null,
+    }));
+    return true;
   },
 
-  deletePost: (postId) => {
+  deletePost: async (postId) => {
+    const post = get().posts.find((item) => item.id === postId);
+    if (!post) return false;
+    const userId = useAuthStore.getState().user?.id;
+    if (IS_LIVE_ENVIRONMENT && !userId) {
+      set({ lastError: 'Sign in to delete this post.' });
+      return false;
+    }
+
     set((state) => ({
       posts: state.posts.map((p) =>
         p.id === postId ? { ...p, isDeleted: true, content: '[Deleted]' } : p,
       ),
     }));
-    const userId = useAuthStore.getState().user?.id;
-    if (userId) dataService.deletePost(postId, userId);
+    if (!userId) return true; // Non-production offline/demo interaction.
+
+    try {
+      if (await dataService.deletePost(postId, userId)) return true;
+    } catch {
+      // Restore the post below if the service did not confirm deletion.
+    }
+
+    set((state) => ({
+      posts: state.posts.map((item) => item.id === postId ? post : item),
+      lastError: 'Could not delete post. Please try again.',
+    }));
+    return false;
   },
 
   addMediaToPost: (postId, media) =>
@@ -1497,7 +1568,12 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
 
   toggleReaction: async (postId, reaction) => {
     const post = get().posts.find((p) => p.id === postId);
-    if (!post) return;
+    if (!post) return false;
+    const userId = useAuthStore.getState().user?.id;
+    if (IS_LIVE_ENVIRONMENT && !userId) {
+      set({ lastError: 'Sign in to react to a post.' });
+      return false;
+    }
     const currentReaction = post.userReaction;
     const isRemoving = currentReaction === reaction;
     const isSwitching = !!currentReaction && !isRemoving;
@@ -1524,39 +1600,42 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
       }),
     }));
 
-    const userId = useAuthStore.getState().user?.id;
-    if (userId) {
-      try {
-        let success = true;
-        if (isRemoving) {
-          success = await dataService.removeReaction(postId, userId);
-        } else {
-          success = await dataService.reactToPost(postId, userId, reaction);
-          enqueue('react_post', { postId, userId, reaction });
-        }
-        if (!success) {
-          // Rollback
-          set((state) => ({
-            posts: state.posts.map((p) =>
-              p.id === postId ? { ...p, userReaction: prevReaction, reactionCount: prevCount } : p,
-            ),
-            lastError: 'Failed to update reaction.',
-          }));
-        }
-      } catch (err) {
+    if (!userId) return true; // Non-production offline/demo interaction.
+
+    try {
+      const success = isRemoving
+        ? await dataService.removeReaction(postId, userId)
+        : await dataService.reactToPost(postId, userId, reaction);
+      if (!success) {
         set((state) => ({
           posts: state.posts.map((p) =>
             p.id === postId ? { ...p, userReaction: prevReaction, reactionCount: prevCount } : p,
           ),
-          lastError: 'Network error updating reaction.',
+          lastError: 'Failed to update reaction.',
         }));
+        return false;
       }
+      return true;
+    } catch {
+      set((state) => ({
+        posts: state.posts.map((p) =>
+          p.id === postId ? { ...p, userReaction: prevReaction, reactionCount: prevCount } : p,
+        ),
+        lastError: 'Network error updating reaction.',
+      }));
+      return false;
     }
   },
 
   votePoll: async (postId, optionId) => {
     const post = get().posts.find((p) => p.id === postId);
-    if (!post || !post.poll || post.poll.userVotedOptionId) return;
+    if (!post || !post.poll) return false;
+    if (post.poll.userVotedOptionId) return true;
+    const userId = useAuthStore.getState().user?.id;
+    if (IS_LIVE_ENVIRONMENT && (!userId || !post.poll.id)) {
+      set({ lastError: !userId ? 'Sign in to vote in this poll.' : 'This poll is not connected to a persisted record.' });
+      return false;
+    }
 
     // Snapshot for rollback
     const prevPoll = { ...post.poll };
@@ -1578,28 +1657,19 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
       }),
     }));
 
-    const userId = useAuthStore.getState().user?.id;
-    if (userId && post.poll.id) {
-      try {
-        const success = await dataService.votePoll(post.poll.id, optionId, userId);
-        if (!success) {
-          // Rollback
-          set((state) => ({
-            posts: state.posts.map((p) =>
-              p.id === postId ? { ...p, poll: prevPoll } : p,
-            ),
-            lastError: 'Failed to record vote. Please retry.',
-          }));
-        }
-      } catch (err) {
-        set((state) => ({
-          posts: state.posts.map((p) =>
-            p.id === postId ? { ...p, poll: prevPoll } : p,
-          ),
-          lastError: 'Network error submitting vote.',
-        }));
-      }
+    if (!userId || !post.poll.id) return true; // Non-production offline/demo interaction.
+
+    try {
+      if (await dataService.votePoll(post.poll.id, optionId, userId)) return true;
+    } catch {
+      // Restore the prior poll below if the service did not confirm the vote.
     }
+
+    set((state) => ({
+      posts: state.posts.map((p) => p.id === postId ? { ...p, poll: prevPoll } : p),
+      lastError: 'Could not record your vote. Please try again.',
+    }));
+    return false;
   },
 
   addComment: async (postId, comment) => {
@@ -1608,13 +1678,31 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
     const lastTime = get().lastCommentTime;
     if (now - lastTime < 2000) {
       set({ lastError: 'Please wait a moment before sending another comment.' });
-      return;
+      return 'failed';
     }
+
+    const userId = useAuthStore.getState().user?.id;
+    const parentPost = get().posts.find((item) => item.id === postId);
+    if (IS_LIVE_ENVIRONMENT && !userId) {
+      set({ lastError: 'Sign in before commenting.' });
+      return 'failed';
+    }
+    if (IS_LIVE_ENVIRONMENT && parentPost?.syncStatus && parentPost.syncStatus !== 'SYNCED') {
+      set({ lastError: 'This post is still syncing. Try commenting after it is published.' });
+      return 'failed';
+    }
+
+    const clientToken = comment.clientToken ?? comment.id;
+    const onlineAtStart = isOnline();
 
     set((state) => ({
       comments: {
         ...state.comments,
-        [postId]: [...(state.comments[postId] ?? []), comment],
+        [postId]: [...(state.comments[postId] ?? []), {
+          ...comment,
+          clientToken,
+          syncStatus: !userId ? 'LOCAL_ONLY' : onlineAtStart ? 'SYNCING' : 'QUEUED',
+        }],
       },
       posts: state.posts.map((p) =>
         p.id === postId ? { ...p, replyCount: p.replyCount + 1 } : p,
@@ -1623,71 +1711,83 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
       lastError: null,
     }));
 
-    const userId = useAuthStore.getState().user?.id;
-    if (userId) {
+    if (!userId) return 'local'; // Non-production local preview.
+
+    if (!onlineAtStart) {
       try {
-        const res = await dataService.addPostComment(postId, userId, comment.content, comment.language);
-        if (res.success) {
-          // Reconcile client comment token with authoritative server UUID
-          set((state) => ({
-            comments: {
-              ...state.comments,
-              [postId]: (state.comments[postId] ?? []).map((c) =>
-                c.id === comment.id
-                  ? { ...c, id: res.id ?? c.id, syncStatus: 'SYNCED' }
-                  : c,
-              ),
-            },
-          }));
-        } else {
-          // Rollback comment
-          set((state) => ({
-            comments: {
-              ...state.comments,
-              [postId]: (state.comments[postId] ?? []).filter((c) => c.id !== comment.id),
-            },
-            posts: state.posts.map((p) =>
-              p.id === postId ? { ...p, replyCount: Math.max(0, p.replyCount - 1) } : p,
-            ),
-            lastError: 'Failed to submit comment. Please retry.',
-          }));
-        }
-      } catch (err: any) {
-        const isModViolation = err?.message && err.message.includes('community guidelines');
-        if (isModViolation) {
-          set((state) => ({
-            comments: {
-              ...state.comments,
-              [postId]: (state.comments[postId] ?? []).filter((c) => c.id !== comment.id),
-            },
-            posts: state.posts.map((p) =>
-              p.id === postId ? { ...p, replyCount: Math.max(0, p.replyCount - 1) } : p,
-            ),
-            lastError: err.message,
-          }));
-        } else {
-          // Enqueue for offline sync and mark QUEUED
-          enqueue('add_comment', {
-            postId,
-            userId,
-            content: comment.content,
-            language: comment.language,
-          });
-          set((state) => ({
-            comments: {
-              ...state.comments,
-              [postId]: (state.comments[postId] ?? []).map((c) =>
-                c.id === comment.id ? { ...c, syncStatus: 'QUEUED' } : c,
-              ),
-            },
-            lastError: null,
-          }));
-        }
+        await enqueue('add_comment', {
+          postId,
+          userId,
+          content: comment.content,
+          language: comment.language,
+          clientToken,
+        }, clientToken);
+        const saved = get().comments[postId]?.find((item) => item.clientToken === clientToken || item.id === clientToken);
+        return saved?.syncStatus === 'SYNCED' ? 'synced' : 'queued';
+      } catch {
+        set((state) => ({
+          comments: {
+            ...state.comments,
+            [postId]: (state.comments[postId] ?? []).filter((item) => item.clientToken !== clientToken && item.id !== clientToken),
+          },
+          posts: state.posts.map((item) => item.id === postId
+            ? { ...item, replyCount: Math.max(0, item.replyCount - 1) }
+            : item),
+          lastError: 'Could not queue this comment. Please try again.',
+        }));
+        return 'failed';
       }
     }
+
+    const res = await dataService.addPostComment(postId, userId, comment.content, comment.language, clientToken);
+    if (res.success && res.id) {
+      get().reconcileCommentSync(clientToken, 'SYNCED', res.id);
+      return 'synced';
+    }
+
+    if (res.retryable) {
+      try {
+        await enqueue('add_comment', {
+          postId,
+          userId,
+          content: comment.content,
+          language: comment.language,
+          clientToken,
+        }, clientToken);
+        const saved = get().comments[postId]?.find((item) => item.clientToken === clientToken || item.id === clientToken);
+        return saved?.syncStatus === 'SYNCED' ? 'synced' : 'queued';
+      } catch {
+        // Fall through to remove the optimistic record if it could not be queued.
+      }
+    }
+
+    set((state) => ({
+      comments: {
+        ...state.comments,
+        [postId]: (state.comments[postId] ?? []).filter((item) => item.clientToken !== clientToken && item.id !== clientToken),
+      },
+      posts: state.posts.map((item) => item.id === postId
+        ? { ...item, replyCount: Math.max(0, item.replyCount - 1) }
+        : item),
+      lastError: res.error || 'Failed to submit comment. Please retry.',
+    }));
+    return 'failed';
   },
 
-  deleteComment: (postId, commentId) => {
+  deleteComment: async (postId, commentId) => {
+    const comment = (get().comments[postId] ?? []).find((item) => item.id === commentId);
+    if (!comment) return false;
+    if (comment.isDeleted) return true;
+    const userId = useAuthStore.getState().user?.id;
+    if (IS_LIVE_ENVIRONMENT && !userId) {
+      set({ lastError: 'Sign in before deleting a comment.' });
+      return false;
+    }
+    if (IS_LIVE_ENVIRONMENT && comment.syncStatus && comment.syncStatus !== 'SYNCED') {
+      set({ lastError: 'Wait until this comment finishes syncing before deleting it.' });
+      return false;
+    }
+
     set((state) => ({
       comments: {
         ...state.comments,
@@ -1698,60 +1798,125 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
       posts: state.posts.map((p) =>
         p.id === postId ? { ...p, replyCount: Math.max(0, p.replyCount - 1) } : p,
       ),
+      lastError: null,
     }));
-    const currentUserId = useAuthStore.getState().user?.id ?? '';
-    dataService.deletePostComment(commentId, currentUserId);
+
+    if (!userId) return true; // Non-production local preview.
+    if (await dataService.deletePostComment(commentId, userId)) return true;
+
+    set((state) => ({
+      comments: {
+        ...state.comments,
+        [postId]: (state.comments[postId] ?? []).map((item) =>
+          item.id === commentId ? { ...item, isDeleted: comment.isDeleted } : item,
+        ),
+      },
+      posts: state.posts.map((item) => item.id === postId
+        ? { ...item, replyCount: item.replyCount + 1 }
+        : item),
+      lastError: 'Could not delete this comment. Please try again.',
+    }));
+    return false;
   },
 
-  toggleCommentReaction: (postId, commentId, reaction = 'like') => {
+  toggleCommentReaction: async (postId, commentId, reaction = 'like') => {
+    const comment = (get().comments[postId] ?? []).find((item) => item.id === commentId);
+    if (!comment) return false;
+    const userId = useAuthStore.getState().user?.id;
+    if (IS_LIVE_ENVIRONMENT && !userId) {
+      set({ lastError: 'Sign in to react to a comment.' });
+      return false;
+    }
+
+    const previousReaction = comment.userReaction;
+    const previousCount = comment.reactionCount;
+    const isRemoving = previousReaction === reaction;
     set((state) => ({
       comments: {
         ...state.comments,
         [postId]: (state.comments[postId] ?? []).map((c) => {
           if (c.id !== commentId) return c;
-          const wasReacted = c.userReaction === reaction;
           return {
             ...c,
-            userReaction: wasReacted ? undefined : reaction,
-            reactionCount: Math.max(0, c.reactionCount + (wasReacted ? -1 : 1)),
+            userReaction: isRemoving ? undefined : reaction,
+            reactionCount: Math.max(0, c.reactionCount + (isRemoving ? -1 : previousReaction ? 0 : 1)),
           };
         }),
       },
     }));
-    const userId = useAuthStore.getState().user?.id;
-    if (userId) {
-      const comment = (get().comments[postId] ?? []).find((c) => c.id === commentId);
-      if (comment?.userReaction === reaction) {
-        dataService.reactToComment(commentId, userId, reaction);
-      } else {
-        dataService.removeCommentReaction(commentId, userId);
-      }
+
+    if (!userId) return true; // Non-production offline/demo interaction.
+
+    try {
+      const success = isRemoving
+        ? await dataService.removeCommentReaction(commentId, userId)
+        : await dataService.reactToComment(commentId, userId, reaction);
+      if (success) return true;
+    } catch {
+      // Restore the prior state below.
     }
+
+    set((state) => ({
+      comments: {
+        ...state.comments,
+        [postId]: (state.comments[postId] ?? []).map((item) =>
+          item.id === commentId
+            ? { ...item, userReaction: previousReaction, reactionCount: previousCount }
+            : item,
+        ),
+      },
+      lastError: 'Failed to update comment reaction.',
+    }));
+    return false;
   },
 
   // Follow Graph (Ticket 0.3)
-  followUser: async (userId: string) => {
-    const currentFollowed = get().followedUserIds;
-    if (currentFollowed.includes(userId)) return;
-    const updated = [...currentFollowed, userId];
-    set({ followedUserIds: updated });
-
-    const authUser = useAuthStore.getState().user;
-    if (authUser?.id) {
-      dataService.followUser(authUser.id, userId);
+  followUser: async (userId: string, stateCode?: string, constituencyId?: string | null) => {
+    if (!userId) return false;
+    const authUserId = useAuthStore.getState().user?.id;
+    if (IS_LIVE_ENVIRONMENT && !authUserId) {
+      set({ lastError: 'Sign in to follow this account.' });
+      return false;
     }
-    await get().refreshFeed();
+    if (userId === authUserId) {
+      set({ lastError: 'You cannot follow your own account.' });
+      return false;
+    }
+    if (get().followedUserIds.includes(userId)) return true;
+    if (authUserId && !await dataService.followUser(authUserId, userId)) {
+      set({ lastError: 'Could not follow this account. Please try again.' });
+      return false;
+    }
+
+    set((state) => ({
+      followedUserIds: [...state.followedUserIds, userId],
+      followedUserOwnerId: authUserId ?? null,
+      lastError: null,
+    }));
+    await get().refreshFeed(stateCode, constituencyId);
+    return true;
   },
 
-  unfollowUser: async (userId: string) => {
-    const updated = get().followedUserIds.filter((id) => id !== userId);
-    set({ followedUserIds: updated });
-
-    const authUser = useAuthStore.getState().user;
-    if (authUser?.id) {
-      dataService.unfollowUser(authUser.id, userId);
+  unfollowUser: async (userId: string, stateCode?: string, constituencyId?: string | null) => {
+    if (!userId) return false;
+    const authUserId = useAuthStore.getState().user?.id;
+    if (IS_LIVE_ENVIRONMENT && !authUserId) {
+      set({ lastError: 'Sign in to unfollow this account.' });
+      return false;
     }
-    await get().refreshFeed();
+    if (!get().followedUserIds.includes(userId)) return true;
+    if (authUserId && !await dataService.unfollowUser(authUserId, userId)) {
+      set({ lastError: 'Could not unfollow this account. Please try again.' });
+      return false;
+    }
+
+    set((state) => ({
+      followedUserIds: state.followedUserIds.filter((id) => id !== userId),
+      followedUserOwnerId: authUserId ?? null,
+      lastError: null,
+    }));
+    await get().refreshFeed(stateCode, constituencyId);
+    return true;
   },
 
   isFollowing: (userId: string) => {
@@ -1759,15 +1924,37 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
   },
 
   refreshFeed: async (stateCode = 'TS', constituencyId = null) => {
+    const authUser = useAuthStore.getState().user;
+    const requestOwnerId = authUser?.id ?? null;
+    const refreshToken = feedRefreshGuard.startRequest(
+      JSON.stringify([requestOwnerId, stateCode, constituencyId]),
+    );
+    const isStale = () =>
+      refreshToken.isStale() || (useAuthStore.getState().user?.id ?? null) !== requestOwnerId;
     set({ loading: true });
     try {
-      const authUser = useAuthStore.getState().user;
+      const serverFollowedIds = authUser?.id
+        ? await dataService.fetchFollowedUserIds(authUser.id)
+        : null;
+      if (isStale()) return;
+      const currentOwnerId = get().followedUserOwnerId;
+      const cachedFollowedIds = currentOwnerId === requestOwnerId ? get().followedUserIds : [];
+      const followedIds = Array.isArray(serverFollowedIds) ? serverFollowedIds : cachedFollowedIds;
+      if (authUser?.id && Array.isArray(serverFollowedIds)) {
+        set({ followedUserIds: serverFollowedIds, followedUserOwnerId: authUser.id });
+      } else if (!authUser?.id && IS_LIVE_ENVIRONMENT) {
+        set({ followedUserIds: [], followedUserOwnerId: null });
+      } else if (currentOwnerId !== requestOwnerId) {
+        set({ followedUserIds: cachedFollowedIds, followedUserOwnerId: requestOwnerId });
+      }
       const livePosts = await dataService.fetchBlendedFeed(
         authUser?.id,
         constituencyId,
         stateCode,
         50,
+        followedIds,
       );
+      if (isStale()) return;
       if (livePosts && livePosts.length > 0) {
         const transformed: Post[] = livePosts.map((p: any) => ({
           id: p.id,
@@ -1800,7 +1987,15 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
           seen.add(p.id);
           return true;
         });
-        set({ posts: deduped, isLive: true });
+        set({ posts: deduped, isLive: true, lastError: null });
+      } else if (IS_LIVE_ENVIRONMENT) {
+        if (livePosts === null) {
+          // Keep the last server-backed feed on transient failures; never add demo posts.
+          set({ isLive: false, lastError: 'Feed refresh failed. Showing previously loaded posts.' });
+        } else {
+          const localPending = get().posts.filter((p) => p.syncStatus && p.syncStatus !== 'SYNCED');
+          set({ posts: localPending, isLive: true, lastError: null });
+        }
       } else {
         // Offline / demo fallback: blend followed authors + constituency posts, ranked by Feed Ranking V1
         const followed = new Set(get().followedUserIds);
@@ -1829,6 +2024,11 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
         set({ posts: deduped });
       }
     } catch (_) {
+      if (isStale()) return;
+      if (IS_LIVE_ENVIRONMENT) {
+        set({ isLive: false, lastError: 'Feed refresh failed. Showing previously loaded posts.' });
+        return;
+      }
       // Offline fallback: blend followed authors + constituency posts, ranked by Feed Ranking V1
       const followed = new Set(get().followedUserIds);
       const seenIds = new Set<string>();
@@ -1855,58 +2055,8 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
       });
       set({ posts: deduped });
     } finally {
-      set({ loading: false });
+      if (!refreshToken.isStale()) set({ loading: false });
     }
-  },
-
-  hydrateFromServer: (serverPosts) => {
-    if (!serverPosts || serverPosts.length === 0) return;
-    const serverIds = new Set(serverPosts.map((p: any) => p.id));
-    const localOnly = get().posts.filter((p) => !serverIds.has(p.id));
-    const transformed: Post[] = serverPosts.map((p: any) => ({
-      id: p.id,
-      author: {
-        id: p.author_id ?? p.author_display_name ?? 'unknown',
-        displayName: p.author_display_name ?? 'Anonymous',
-        avatarUrl: p.author_avatar_url,
-        isVerified: p.author_is_verified ?? false,
-      },
-      stateCode: p.state_code,
-      constituencyId: p.constituency_id,
-      constituencyName: p.constituency_name,
-      content: p.content,
-      type: p.type ?? 'discussion',
-      replyCount: p.reply_count ?? 0,
-      reactionCount: p.reaction_count ?? 0,
-      isPinned: p.is_pinned ?? false,
-      isDeleted: p.is_deleted ?? false,
-      language: p.language ?? 'en',
-      createdAt: p.created_at,
-      updatedAt: p.updated_at,
-      hashtags: p.hashtags ?? [],
-      userReaction: p.user_reaction,
-      poll: p.poll_id
-        ? {
-            id: p.poll_id,
-            question: p.poll_question,
-            totalVotes: p.poll_total_votes ?? 0,
-            isClosed: p.poll_is_closed ?? false,
-            options: (p.poll_options ?? []).map((o: any) => ({
-              id: o.id,
-              label: o.label,
-              voteCount: o.vote_count ?? 0,
-              sortOrder: o.sort_order ?? 0,
-            })),
-          }
-        : undefined,
-      media: (p.media ?? []).map((m: any) => ({
-        id: m.id,
-        mediaType: m.media_type,
-        url: m.url,
-        altText: m.alt_text,
-      })),
-    }));
-    set({ posts: [...transformed, ...localOnly], isLive: true });
   },
 
   // ─── Realtime Event Handlers for Live Feed ───
@@ -2029,25 +2179,39 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
     }));
   },
 
-  reconcilePostSync: (clientToken: string, status: SyncStatus, serverId?: string | null) => {
+  reconcilePostSync: (clientToken: string, status: SyncStatus, serverId?: string | null, poll?: Post['poll']) => {
+    const post = get().posts.find((item) => item.clientToken === clientToken || item.id === clientToken);
+    const shouldRecordConfirmedPost = status === 'SYNCED' && post?.syncStatus !== 'SYNCED';
     set((state) => ({
       posts: state.posts.map((p) => {
         if (p.clientToken === clientToken || p.id === clientToken) {
           return {
             ...p,
             id: (status === 'SYNCED' && serverId) ? serverId : p.id,
+            poll: status === 'SYNCED' && poll ? poll : p.poll,
             syncStatus: status,
           };
         }
         return p;
       }),
     }));
+    if (shouldRecordConfirmedPost && post) {
+      void logContentAction('create_post', {
+        type: 'post',
+        id: serverId || post.id,
+        body: post.content,
+        screenName: 'compose',
+      });
+    }
   },
 
   reconcileCommentSync: (clientToken: string, status: SyncStatus, serverId?: string | null) => {
+    let confirmedComment: Comment | undefined;
     set((state) => {
       const nextComments: Record<string, Comment[]> = {};
       for (const [postId, comments] of Object.entries(state.comments)) {
+        const matchingComment = comments.find((comment) => comment.clientToken === clientToken || comment.id === clientToken);
+        if (matchingComment) confirmedComment = matchingComment;
         nextComments[postId] = comments.map((c) => {
           if (c.clientToken === clientToken || c.id === clientToken) {
             return {
@@ -2059,11 +2223,80 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
           return c;
         });
       }
-      return { comments: nextComments };
+      return {
+        comments: nextComments,
+        ...(status === 'FAILED' ? { lastError: 'This comment could not be synchronized. Please try again.' } : {}),
+      };
     });
+    if (status === 'SYNCED' && confirmedComment?.syncStatus !== 'SYNCED' && confirmedComment) {
+      void logContentAction('create_comment', {
+        type: 'comment',
+        id: serverId || confirmedComment.id,
+        body: confirmedComment.content,
+        screenName: 'post_detail',
+      });
+    }
+  },
+
+  retryComment: async (postId: string, clientToken: string) => {
+    const comment = (get().comments[postId] ?? []).find(
+      (item) => item.clientToken === clientToken || item.id === clientToken,
+    );
+    if (!comment || comment.syncStatus !== 'FAILED') return false;
+    const userId = useAuthStore.getState().user?.id;
+    if (!userId || comment.author.id !== userId) {
+      set({ lastError: 'Sign in with the account that created this comment to retry it.' });
+      return false;
+    }
+
+    set((state) => ({
+      comments: {
+        ...state.comments,
+        [postId]: (state.comments[postId] ?? []).map((item) =>
+          item.clientToken === clientToken || item.id === clientToken
+            ? { ...item, syncStatus: 'SYNCING' }
+            : item,
+        ),
+      },
+      lastError: null,
+    }));
+
+    try {
+      await enqueue('add_comment', {
+        postId,
+        userId,
+        content: comment.content,
+        language: comment.language,
+        clientToken,
+      }, clientToken);
+      const current = get().comments[postId]?.find(
+        (item) => item.clientToken === clientToken || item.id === clientToken,
+      );
+      return current?.syncStatus === 'SYNCED' || current?.syncStatus === 'QUEUED';
+    } catch {
+      get().reconcileCommentSync(clientToken, 'FAILED');
+      set({ lastError: 'Could not retry this comment. Please try again.' });
+      return false;
+    }
   },
 
   retryPost: async (clientToken: string) => {
+    const post = get().posts.find((item) => item.clientToken === clientToken || item.id === clientToken);
+    if (!post) return false;
+    const userId = useAuthStore.getState().user?.id;
+    if (IS_LIVE_ENVIRONMENT && (!userId || post.author.id !== userId)) {
+      set({ lastError: 'Sign in with the account that created this post to retry it.' });
+      return false;
+    }
+
+    const existingOperation = getPendingOps().some(
+      (operation) => operation.clientToken === clientToken || operation.payload?.clientToken === clientToken,
+    );
+    if (existingOperation && !isOnline()) {
+      get().reconcilePostSync(clientToken, 'QUEUED');
+      return true;
+    }
+
     set((state) => ({
       posts: state.posts.map((p) =>
         (p.clientToken === clientToken || p.id === clientToken)
@@ -2071,6 +2304,39 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
           : p
       ),
     }));
-    return retryFailedOp(clientToken);
+
+    if (existingOperation) {
+      await retryFailedOp(clientToken);
+      const current = get().posts.find((item) => item.clientToken === clientToken || item.id === clientToken);
+      if (current?.syncStatus === 'SYNCED') return true;
+      if (current?.syncStatus === 'QUEUED') return true;
+    }
+
+    if (!userId) {
+      set({ lastError: 'Sign in to retry this post.' });
+      get().reconcilePostSync(clientToken, 'FAILED');
+      return false;
+    }
+
+    try {
+      await enqueue('compose_post', {
+        content: post.content,
+        type: post.type,
+        stateCode: post.stateCode,
+        authorId: userId,
+        hashtags: post.hashtags ?? [],
+        constituencyId: post.constituencyId,
+        parentId: post.parentId,
+        language: post.language ?? 'en',
+        pollOptions: post.type === 'poll' ? post.poll?.options.map((option) => option.label) : undefined,
+        clientToken,
+      }, clientToken);
+      const current = get().posts.find((item) => item.clientToken === clientToken || item.id === clientToken);
+      return current?.syncStatus === 'SYNCED' || current?.syncStatus === 'QUEUED';
+    } catch {
+      get().reconcilePostSync(clientToken, 'FAILED');
+      set({ lastError: 'Could not retry this post. Please try again.' });
+      return false;
+    }
   },
 }));

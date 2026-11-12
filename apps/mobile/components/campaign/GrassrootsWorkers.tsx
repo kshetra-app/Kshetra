@@ -9,12 +9,13 @@ import {
   Modal,
   Linking,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../lib/theme';
 import { useCampaignStore } from '../../stores/campaign';
-import type { VolunteerRole } from '../../lib/campaignTypes';
+import type { Volunteer, VolunteerRole } from '../../lib/campaignTypes';
 
 export default function GrassrootsWorkers() {
   const { t } = useTranslation();
@@ -26,10 +27,33 @@ export default function GrassrootsWorkers() {
   const [newPhone, setNewPhone] = useState('');
   const [newRole, setNewRole] = useState<VolunteerRole>('booth_agent');
   const [newBooth, setNewBooth] = useState('');
+  const [logModalVisible, setLogModalVisible] = useState(false);
+  const [selectedVolunteer, setSelectedVolunteer] = useState<Volunteer | null>(null);
+  const [selectedBoothId, setSelectedBoothId] = useState('');
+  const [durationMinutes, setDurationMinutes] = useState('');
+  const [householdsVisited, setHouseholdsVisited] = useState('');
+  const [logSaving, setLogSaving] = useState(false);
 
   const volunteers = useCampaignStore((s) => s.volunteers);
+  const volunteersLoading = useCampaignStore((s) => s.volunteersLoading);
+  const volunteersAvailable = useCampaignStore((s) => s.volunteersAvailable);
+  const volunteersError = useCampaignStore((s) => s.volunteersError);
+  const campaigns = useCampaignStore((s) => s.campaigns);
+  const campaignsAvailable = useCampaignStore((s) => s.campaignsAvailable);
+  const selectedCampaignId = useCampaignStore((s) => s.selectedCampaignId);
+  const booths = useCampaignStore((s) => s.booths);
+  const boothsAvailable = useCampaignStore((s) => s.boothsAvailable);
   const addCadre = useCampaignStore((s) => s.addCadre);
   const checkKshetraUser = useCampaignStore((s) => s.checkKshetraUser);
+  const logCanvassing = useCampaignStore((s) => s.logCanvassing);
+
+  const workBoothOptions = React.useMemo(() => {
+    if (!selectedVolunteer) return [];
+    const assigned = booths.filter((booth) => selectedVolunteer.assignedBooths.some(
+      (assignedBooth) => assignedBooth === booth.boothId || assignedBooth === booth.boothNumber,
+    ));
+    return assigned.length > 0 ? assigned : booths;
+  }, [booths, selectedVolunteer]);
 
   const filteredVolunteers = React.useMemo(() => {
     if (!searchQuery.trim()) return volunteers;
@@ -53,6 +77,68 @@ export default function GrassrootsWorkers() {
     Linking.openURL(`whatsapp://send?phone=91${phone.replace(/\D/g, '').slice(-10)}&text=${encodeURIComponent(text)}`).catch(() => {});
   };
 
+  const handleOpenWorkLog = (volunteer: Volunteer) => {
+    const assignedBooth = booths.find((booth) => volunteer.assignedBooths.some(
+      (assigned) => assigned === booth.boothId || assigned === booth.boothNumber,
+    ));
+    setSelectedVolunteer(volunteer);
+    setSelectedBoothId(assignedBooth?.boothId || booths[0]?.boothId || '');
+    setDurationMinutes('');
+    setHouseholdsVisited('');
+    setLogModalVisible(true);
+  };
+
+  const handleSaveWorkLog = async () => {
+    const booth = workBoothOptions.find((item) => item.boothId === selectedBoothId);
+    const minutes = Number(durationMinutes);
+    const households = Number(householdsVisited);
+    const campaignId = selectedCampaignId || selectedVolunteer?.campaignId;
+    if (!selectedVolunteer || !campaignId || !booth) {
+      Alert.alert('Cannot save work log', 'Choose a campaign, worker, and booth that are available in the campaign records.');
+      return;
+    }
+    if (!durationMinutes.trim() || !Number.isInteger(minutes) || minutes < 1 || minutes > 1440) {
+      Alert.alert('Check the session duration', 'Enter a whole number of minutes from 1 to 1,440.');
+      return;
+    }
+    if (
+      !householdsVisited.trim() ||
+      !Number.isInteger(households) ||
+      households < 0 ||
+      households > 100000
+    ) {
+      Alert.alert('Check households visited', 'Enter a whole number from 0 to 100,000.');
+      return;
+    }
+
+    const endTime = new Date();
+    const startTime = new Date(endTime.getTime() - minutes * 60_000);
+    setLogSaving(true);
+    try {
+      await logCanvassing({
+        campaignId,
+        volunteerId: selectedVolunteer.id,
+        volunteerName: selectedVolunteer.name,
+        boothId: booth.boothId,
+        boothName: booth.boothName,
+        constituencyAcNo: booth.constituencyAcNo,
+        status: 'completed',
+        householdsVisited: households,
+        startTime: startTime.toISOString(),
+        endTime: endTime.toISOString(),
+      });
+      setLogModalVisible(false);
+      Alert.alert('Work session saved', 'This session was saved to the campaign work log.');
+    } catch (error) {
+      Alert.alert(
+        'Work session not saved',
+        error instanceof Error ? error.message : 'Please try again.',
+      );
+    } finally {
+      setLogSaving(false);
+    }
+  };
+
   // Save new worker
   const handleSaveWorker = async () => {
     if (!newName.trim() || !newPhone.trim()) {
@@ -60,14 +146,23 @@ export default function GrassrootsWorkers() {
       return;
     }
 
-    const userCheck = await checkKshetraUser(newPhone.trim());
-    await addCadre({
-      name: newName.trim(),
-      phone: newPhone.trim(),
-      role: newRole,
-      assignedBooths: newBooth.trim() ? [newBooth.trim()] : [],
-      isKshetraUser: userCheck.isKshetraUser,
-    });
+    let userCheck: { isKshetraUser: boolean; displayName?: string };
+    try {
+      userCheck = await checkKshetraUser(newPhone.trim());
+      await addCadre({
+        name: newName.trim(),
+        phone: newPhone.trim(),
+        role: newRole,
+        assignedBooths: newBooth.trim() ? [newBooth.trim()] : [],
+        isKshetraUser: userCheck.isKshetraUser,
+      });
+    } catch (error) {
+      Alert.alert(
+        t('campaignManager.workerNotSaved', { defaultValue: 'Worker not saved' }),
+        error instanceof Error ? error.message : t('common.tryAgain', { defaultValue: 'Please try again.' }),
+      );
+      return;
+    }
 
     setModalVisible(false);
     setNewName('');
@@ -114,7 +209,12 @@ export default function GrassrootsWorkers() {
           ) : null}
         </View>
 
-        <Pressable style={styles.addBtn} onPress={() => setModalVisible(true)}>
+        <Pressable
+          style={[styles.addBtn, (!campaignsAvailable || campaigns.length === 0) && { opacity: 0.5 }]}
+          onPress={() => setModalVisible(true)}
+          disabled={!campaignsAvailable || campaigns.length === 0}
+          accessibilityState={{ disabled: !campaignsAvailable || campaigns.length === 0 }}
+        >
           <Ionicons name="person-add" size={16} color="#FFFFFF" />
           <Text style={styles.addBtnText}>
             {t('campaignManager.addWorker', { defaultValue: 'Add Cadre' })}
@@ -124,6 +224,31 @@ export default function GrassrootsWorkers() {
 
       {/* ─── Volunteer List ─── */}
       <ScrollView showsVerticalScrollIndicator={false}>
+        {volunteersLoading ? (
+          <View style={styles.dataNotice}>
+            <ActivityIndicator size="small" color={colors.primary} />
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>{t('common.loading', { defaultValue: 'Loading campaign workers…' })}</Text>
+          </View>
+        ) : volunteersError ? (
+          <View style={styles.dataNotice}>
+            <Ionicons name="alert-circle-outline" size={18} color="#B45309" />
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>{volunteersError}</Text>
+          </View>
+        ) : volunteersAvailable && volunteers.length === 0 ? (
+          <View style={styles.dataNotice}>
+            <Ionicons name="information-circle-outline" size={18} color={colors.textSecondary} />
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+              {campaigns.length === 0
+                ? t('campaignManager.noCampaignForWorkers', { defaultValue: 'A campaign must be available before campaign workers can be added.' })
+                : t('campaignManager.noWorkersYet', { defaultValue: 'No workers are registered for this campaign yet.' })}
+            </Text>
+          </View>
+        ) : volunteersAvailable && filteredVolunteers.length === 0 ? (
+          <View style={styles.dataNotice}>
+            <Ionicons name="search-outline" size={18} color={colors.textSecondary} />
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>{t('campaignManager.noWorkersMatchSearch', { defaultValue: 'No workers match this search.' })}</Text>
+          </View>
+        ) : null}
         {filteredVolunteers.map((v) => (
           <View
             key={v.id}
@@ -159,6 +284,11 @@ export default function GrassrootsWorkers() {
                   {v.assignedBooths.length > 0 ? ` · Booth #${v.assignedBooths.join(', #')}` : ''}
                 </Text>
                 <Text style={styles.workerPhoneText}>{v.phone}</Text>
+                <Text style={[styles.workLogMetrics, { color: colors.textSecondary }]}>
+                  {v.tasksCompleted === null ? 'Completed sessions unavailable' : `${v.tasksCompleted} completed sessions`}
+                  {' · '}
+                  {v.hoursLogged === null ? 'Logged hours unavailable' : `${v.hoursLogged.toFixed(1)} hours logged`}
+                </Text>
               </View>
 
               {/* Action Buttons: 1-Tap Call and WhatsApp */}
@@ -174,6 +304,19 @@ export default function GrassrootsWorkers() {
                 </Pressable>
               </View>
             </View>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`Log completed outreach for ${v.name}`}
+              disabled={!boothsAvailable || booths.length === 0 || !volunteersAvailable}
+              onPress={() => handleOpenWorkLog(v)}
+              style={[
+                styles.logWorkButton,
+                { borderColor: colors.border, opacity: !boothsAvailable || booths.length === 0 || !volunteersAvailable ? 0.5 : 1 },
+              ]}
+            >
+              <Ionicons name="clipboard-outline" size={15} color={colors.primary} />
+              <Text style={[styles.logWorkButtonText, { color: colors.primary }]}>Log completed outreach</Text>
+            </Pressable>
           </View>
         ))}
 
@@ -235,12 +378,90 @@ export default function GrassrootsWorkers() {
           </View>
         </View>
       </Modal>
+
+      <Modal
+        visible={logModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setLogModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalCard, { backgroundColor: colors.surface }]}>
+            <View style={styles.modalHeader}>
+              <View style={{ flex: 1, paddingRight: 12 }}>
+                <Text style={[styles.modalTitle, { color: colors.text }]}>Log completed outreach</Text>
+                <Text style={[styles.logSubtitle, { color: colors.textSecondary }]}>
+                  {selectedVolunteer?.name || ''} · reported by the campaign team, not independently verified
+                </Text>
+              </View>
+              <Pressable onPress={() => setLogModalVisible(false)} disabled={logSaving}>
+                <Ionicons name="close" size={24} color="#6B7280" />
+              </Pressable>
+            </View>
+
+            <Text style={[styles.inputLabel, { color: colors.text, marginTop: 14 }]}>Campaign booth</Text>
+            {workBoothOptions.length > 0 ? (
+              <ScrollView style={styles.boothChoices} nestedScrollEnabled>
+                {workBoothOptions.map((booth) => {
+                  const selected = booth.boothId === selectedBoothId;
+                  return (
+                    <Pressable
+                      key={booth.id}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected }}
+                      onPress={() => setSelectedBoothId(booth.boothId)}
+                      style={[styles.boothChoice, { borderColor: selected ? colors.primary : colors.border }]}
+                    >
+                      <Text style={{ color: colors.text, fontWeight: selected ? '700' : '500' }}>
+                        #{booth.boothNumber} · {booth.boothName}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </ScrollView>
+            ) : (
+              <Text style={[styles.logSubtitle, { color: colors.textSecondary }]}>
+                Campaign booth records are unavailable. Refresh the campaign before logging work.
+              </Text>
+            )}
+
+            <Text style={[styles.inputLabel, { color: colors.text, marginTop: 12 }]}>Session duration (minutes)</Text>
+            <TextInput
+              style={[styles.modalInput, { color: colors.text, borderColor: colors.border }]}
+              keyboardType="number-pad"
+              value={durationMinutes}
+              onChangeText={setDurationMinutes}
+              accessibilityLabel="Session duration in minutes"
+            />
+
+            <Text style={[styles.inputLabel, { color: colors.text, marginTop: 10 }]}>Households visited</Text>
+            <TextInput
+              style={[styles.modalInput, { color: colors.text, borderColor: colors.border }]}
+              keyboardType="number-pad"
+              value={householdsVisited}
+              onChangeText={setHouseholdsVisited}
+              accessibilityLabel="Households visited"
+            />
+
+            <Pressable
+              style={[styles.btnSaveWorker, (logSaving || workBoothOptions.length === 0) && { opacity: 0.6 }]}
+              onPress={handleSaveWorkLog}
+              disabled={logSaving || workBoothOptions.length === 0}
+            >
+              {logSaving ? <ActivityIndicator size="small" color="#FFFFFF" /> : null}
+              <Text style={styles.btnSaveWorkerText}>{logSaving ? 'Saving…' : 'Save work session'}</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 16 },
+  dataNotice: { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 12, marginVertical: 8 },
+  emptyText: { flex: 1, fontSize: 13 },
   searchRow: { flexDirection: 'row', gap: 10, marginVertical: 12 },
   searchBox: {
     flex: 1,
@@ -289,7 +510,21 @@ const styles = StyleSheet.create({
   kshetraBadgeText: { fontSize: 9, fontWeight: '800', color: '#166534' },
   workerRole: { fontSize: 11, fontWeight: '600', marginTop: 1 },
   workerPhoneText: { fontSize: 11, color: '#9CA3AF', marginTop: 1 },
+  workLogMetrics: { fontSize: 10, marginTop: 3 },
   actionRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  logWorkButton: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+    marginTop: 10,
+    marginLeft: 50,
+  },
+  logWorkButtonText: { fontSize: 11, fontWeight: '700' },
   btnCall: {
     backgroundColor: '#10B981',
     width: 34,
@@ -318,6 +553,9 @@ const styles = StyleSheet.create({
   },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   modalTitle: { fontSize: 16, fontWeight: '800' },
+  logSubtitle: { fontSize: 11, marginTop: 3 },
+  boothChoices: { maxHeight: 150, marginTop: 4 },
+  boothChoice: { borderWidth: 1, borderRadius: 8, padding: 9, marginBottom: 6 },
   inputLabel: { fontSize: 12, fontWeight: '700', marginBottom: 4 },
   modalInput: {
     borderWidth: 1,

@@ -52,7 +52,7 @@ export interface SubConstituencyHierarchyDTO {
     boothNumber: number;
     boothName: string;
     pollingStationName: string | null;
-    totalVoters: number;
+    totalVoters: number | null;
     localBodyType: 'ulb' | 'gram_panchayat' | 'unassigned';
     panchayatId?: string | null;
     ulbWardId?: string | null;
@@ -70,20 +70,29 @@ export interface LocatePointResponse {
   longitude: number;
   constituency: ConstituencyBrief | null;
   message: string;
-  source: 'postgis_spatial' | 'canonical_database';
+  source: 'postgis_spatial' | 'canonical_database' | 'unavailable';
 }
 
 export interface PinCodeCandidate {
   constituency: ConstituencyBrief;
-  overlapWeight: number; // 0.0 - 1.0 (relative weight / probability of being in this AC)
+  /** Null when the source does not provide a defensible spatial share or probability. */
+  overlapWeight: number | null;
+  verificationStatus?:
+    | 'AUTHORITATIVE_RELATIONSHIP_ESTABLISHED'
+    | 'DOCUMENTED_MULTI_AC_AMBIGUITY'
+    | 'PROVISIONAL_APPROXIMATION'
+    | 'INSUFFICIENT_EVIDENCE'
+    | 'CONFLICTING_EVIDENCE';
   localityNote?: string;
 }
 
 export interface LocatePinCodeResponse {
   pinCode: string;
+  /** True only when the source establishes a verified, one-to-one linkage. */
   singleMatch: boolean;
   primaryConstituency: ConstituencyBrief | null;
   candidates: PinCodeCandidate[];
   message: string;
-  source: 'authoritative_pincode_directory';
+  verificationStatus?: PinCodeCandidate['verificationStatus'];
+  source: 'curated_provisional_directory';
 }

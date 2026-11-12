@@ -3,16 +3,16 @@ import type {
   BudgetAllocation,
   StateBudgetSummary,
   RTIRequest,
-  LegislatorAttendance,
   Bill,
   GovernmentScheme,
   DevelopmentProject,
   PublicHearing,
-  ConstituencyComparison,
   ConstituencyDevelopmentIndex,
   RTIStatus,
 } from '../lib/civicMetricsTypes';
+import { parseStateBudgetSummary } from '../lib/civicMetricsTypes';
 import { apiClient } from '../lib/api';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 
 // ─── Seed Budget Data ───
 const SEED_BUDGET_SUMMARIES: StateBudgetSummary[] = [
@@ -75,14 +75,6 @@ const SEED_RTI: RTIRequest[] = [
     fees: 10, isPublic: true, upvotes: 567, views: 12000, tags: ['education', 'teachers', 'vacancies'],
     createdAt: '2026-03-01',
   },
-];
-
-// ─── Seed Attendance ───
-const SEED_ATTENDANCE: LegislatorAttendance[] = [
-  { legislatorId: 'mla-1', legislatorName: 'Revanth Reddy', party: 'INC', stateCode: 'TS', constituencyAcNo: 116, sessionYear: '2025', type: 'assembly_session', totalSessions: 45, attended: 42, attendancePercent: 93.3, questionsAsked: 12, debatesParticipated: 8, privateMemberBills: 1, ranking: 3, totalLegislators: 119 },
-  { legislatorId: 'mla-2', legislatorName: 'KT Rama Rao', party: 'BRS', stateCode: 'TS', constituencyAcNo: 53, sessionYear: '2025', type: 'assembly_session', totalSessions: 45, attended: 38, attendancePercent: 84.4, questionsAsked: 25, debatesParticipated: 15, privateMemberBills: 3, ranking: 8, totalLegislators: 119 },
-  { legislatorId: 'mla-3', legislatorName: 'Akbaruddin Owaisi', party: 'AIMIM', stateCode: 'TS', constituencyAcNo: 56, sessionYear: '2025', type: 'assembly_session', totalSessions: 45, attended: 30, attendancePercent: 66.7, questionsAsked: 18, debatesParticipated: 12, privateMemberBills: 0, ranking: 25, totalLegislators: 119 },
-  { legislatorId: 'mla-4', legislatorName: 'Siddaramaiah', party: 'INC', stateCode: 'KA', constituencyAcNo: 86, sessionYear: '2025', type: 'assembly_session', totalSessions: 50, attended: 46, attendancePercent: 92.0, questionsAsked: 8, debatesParticipated: 10, privateMemberBills: 0, ranking: 5, totalLegislators: 224 },
 ];
 
 // ─── Seed Bills ───
@@ -223,12 +215,37 @@ const SEED_CDI: ConstituencyDevelopmentIndex[] = [
   },
 ];
 
+function currentIndiaCalendarDate(): string {
+  return new Date(Date.now() + 330 * 60_000).toISOString().slice(0, 10);
+}
+
 // ─── Store ───
 interface CivicMetricsState {
   budgetSummaries: StateBudgetSummary[];
+  budgetLoadStatus: 'idle' | 'loading' | 'loaded' | 'error';
+  budgetLoadStateCode: string | null;
+  rtiLoadStatus: 'idle' | 'loading' | 'loaded' | 'error';
+  rtiLoadStateCode: string | null;
+  rtiTotal: number;
+  rtiPage: number;
+  billLoadStatus: 'idle' | 'loading' | 'loaded' | 'error';
+  billLoadStateCode: string | null;
+  billTotal: number;
+  billPage: number;
+  schemeLoadStatus: 'idle' | 'loading' | 'loaded' | 'error';
+  schemeLoadStateCode: string | null;
+  schemeTotal: number;
+  schemePage: number;
+  projectLoadStatus: 'idle' | 'loading' | 'loaded' | 'error';
+  projectLoadStateCode: string | null;
+  projectTotal: number;
+  projectPage: number;
+  hearingLoadStatus: 'idle' | 'loading' | 'loaded' | 'error';
+  hearingLoadStateCode: string | null;
+  hearingTotal: number;
+  hearingPage: number;
   budgetAllocations: BudgetAllocation[];
   rtiRequests: RTIRequest[];
-  attendance: LegislatorAttendance[];
   bills: Bill[];
   schemes: GovernmentScheme[];
   projects: DevelopmentProject[];
@@ -238,9 +255,7 @@ interface CivicMetricsState {
   // Queries
   getBudgetSummary: (stateCode: string) => StateBudgetSummary | undefined;
   getRTIByState: (stateCode: string) => RTIRequest[];
-  getPublicRTIs: () => RTIRequest[];
-  getAttendanceForState: (stateCode: string) => LegislatorAttendance[];
-  getAttendanceForLegislator: (name: string) => LegislatorAttendance[];
+  getPublicRTIs: (stateCode?: string) => RTIRequest[];
   getBillsByState: (stateCode?: string) => Bill[];
   getActiveBills: () => Bill[];
   getSchemesByCategory: (category: string) => GovernmentScheme[];
@@ -252,37 +267,516 @@ interface CivicMetricsState {
   getCDI: (acNo: number, stateCode: string) => ConstituencyDevelopmentIndex | undefined;
 
   // Actions
+  loadBudgetSummary: (stateCode: string) => Promise<void>;
+  loadBillsByState: (stateCode: string) => Promise<void>;
+  loadMoreBillsByState: (stateCode: string) => Promise<void>;
+  loadSchemesByState: (stateCode: string) => Promise<void>;
+  loadMoreSchemesByState: (stateCode: string) => Promise<void>;
+  loadProjectsByState: (stateCode: string) => Promise<void>;
+  loadMoreProjectsByState: (stateCode: string) => Promise<void>;
+  loadPublicRTIs: (stateCode: string) => Promise<void>;
+  loadMorePublicRTIs: (stateCode: string) => Promise<void>;
+  loadHearingsByState: (stateCode: string) => Promise<void>;
+  loadMoreHearingsByState: (stateCode: string) => Promise<void>;
   fileRTI: (rti: Partial<RTIRequest>) => Promise<boolean>;
   upvoteRTI: (rtiId: string) => Promise<boolean>;
   supportBill: (billId: string) => Promise<boolean>;
   opposeBill: (billId: string) => Promise<boolean>;
 }
 
-export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => ({
-  budgetSummaries: SEED_BUDGET_SUMMARIES,
+export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => {
+  let budgetRequestSequence = 0;
+  let billRequestSequence = 0;
+  let schemeRequestSequence = 0;
+  let projectRequestSequence = 0;
+  let rtiRequestSequence = 0;
+  let hearingRequestSequence = 0;
+
+  return ({
+  budgetSummaries: IS_LIVE_ENVIRONMENT ? [] : SEED_BUDGET_SUMMARIES,
+  budgetLoadStatus: 'idle',
+  budgetLoadStateCode: null,
+  rtiLoadStatus: 'idle',
+  rtiLoadStateCode: null,
+  rtiTotal: 0,
+  rtiPage: 0,
+  billLoadStatus: 'idle',
+  billLoadStateCode: null,
+  billTotal: IS_LIVE_ENVIRONMENT ? 0 : SEED_BILLS.length,
+  billPage: 0,
+  schemeLoadStatus: 'idle',
+  schemeLoadStateCode: null,
+  schemeTotal: IS_LIVE_ENVIRONMENT ? 0 : SEED_SCHEMES.length,
+  schemePage: 0,
+  projectLoadStatus: 'idle',
+  projectLoadStateCode: null,
+  projectTotal: IS_LIVE_ENVIRONMENT ? 0 : SEED_PROJECTS.length,
+  projectPage: 0,
+  hearingLoadStatus: 'idle',
+  hearingLoadStateCode: null,
+  hearingTotal: IS_LIVE_ENVIRONMENT ? 0 : SEED_HEARINGS.length,
+  hearingPage: 0,
   budgetAllocations: [],
-  rtiRequests: SEED_RTI,
-  attendance: SEED_ATTENDANCE,
-  bills: SEED_BILLS,
-  schemes: SEED_SCHEMES,
-  projects: SEED_PROJECTS,
-  hearings: SEED_HEARINGS,
-  cdiList: SEED_CDI,
+  rtiRequests: IS_LIVE_ENVIRONMENT ? [] : SEED_RTI,
+  bills: IS_LIVE_ENVIRONMENT ? [] : SEED_BILLS,
+  schemes: IS_LIVE_ENVIRONMENT ? [] : SEED_SCHEMES,
+  projects: IS_LIVE_ENVIRONMENT ? [] : SEED_PROJECTS,
+  hearings: IS_LIVE_ENVIRONMENT ? [] : SEED_HEARINGS,
+  cdiList: IS_LIVE_ENVIRONMENT ? [] : SEED_CDI,
 
   getBudgetSummary: (stateCode) => get().budgetSummaries.find((b) => b.stateCode === stateCode),
   getRTIByState: (stateCode) => get().rtiRequests.filter((r) => r.stateCode === stateCode),
-  getPublicRTIs: () => get().rtiRequests.filter((r) => r.isPublic),
-  getAttendanceForState: (stateCode) => get().attendance.filter((a) => a.stateCode === stateCode).sort((a, b) => b.attendancePercent - a.attendancePercent),
-  getAttendanceForLegislator: (name) => get().attendance.filter((a) => a.legislatorName === name),
+  getPublicRTIs: (stateCode) => get().rtiRequests.filter(
+    (r) => r.isPublic && r.status !== 'draft' && (!stateCode || r.stateCode === stateCode),
+  ),
   getBillsByState: (stateCode) => get().bills.filter((b) => stateCode ? b.stateCode === stateCode : true),
   getActiveBills: () => get().bills.filter((b) => !['enacted', 'lapsed', 'withdrawn'].includes(b.status)),
   getSchemesByCategory: (category) => get().schemes.filter((s) => s.category === category && s.status === 'active'),
-  getSchemesByState: (stateCode) => get().schemes.filter((s) => stateCode ? (s.stateCode === stateCode || s.level === 'central') : true),
+  getSchemesByState: (stateCode) => get().schemes.filter((s) => stateCode
+    ? (s.stateCode === stateCode || s.level === 'central' || (s.level === 'joint' && !s.stateCode))
+    : true),
   getProjectsByState: (stateCode) => get().projects.filter((p) => p.stateCode === stateCode),
   getProjectsByAC: (acNo) => get().projects.filter((p) => p.constituencyAcNo === acNo),
-  getDelayedProjects: () => get().projects.filter((p) => p.phase === 'delayed' || p.phase === 'stalled' || p.delayDays > 90),
-  getUpcomingHearings: (stateCode) => get().hearings.filter((h) => (stateCode ? h.stateCode === stateCode : true) && new Date(h.date).getTime() > Date.now()).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
+  getDelayedProjects: () => get().projects.filter((p) =>
+    p.phase === 'delayed' || p.phase === 'stalled' || (p.delayDays !== null && p.delayDays > 90),
+  ),
+  getUpcomingHearings: (stateCode) => get().hearings
+    .filter((hearing) => (stateCode ? hearing.stateCode === stateCode : true) && hearing.date >= currentIndiaCalendarDate())
+    .sort((left, right) => left.date.localeCompare(right.date)),
   getCDI: (acNo, stateCode) => get().cdiList.find((c) => c.constituencyAcNo === acNo && c.stateCode === stateCode),
+
+  loadBudgetSummary: async (stateCode) => {
+    const requestSequence = ++budgetRequestSequence;
+    set({ budgetLoadStatus: 'loading', budgetLoadStateCode: stateCode });
+
+    try {
+      const row = await apiClient.civic.getStateBudgetSummary(stateCode);
+      if (requestSequence !== budgetRequestSequence) return;
+
+      const summary = row ? parseStateBudgetSummary(row, stateCode) : null;
+      set((state) => ({
+        budgetSummaries: summary
+          ? [...state.budgetSummaries.filter((item) => item.stateCode !== stateCode), summary]
+          : IS_LIVE_ENVIRONMENT
+            ? state.budgetSummaries.filter((item) => item.stateCode !== stateCode)
+            : state.budgetSummaries,
+        budgetLoadStatus: 'loaded',
+        budgetLoadStateCode: stateCode,
+      }));
+    } catch {
+      if (requestSequence !== budgetRequestSequence) return;
+      set((state) => ({
+        budgetSummaries: IS_LIVE_ENVIRONMENT
+          ? state.budgetSummaries.filter((item) => item.stateCode !== stateCode)
+          : state.budgetSummaries,
+        budgetLoadStatus: 'error',
+        budgetLoadStateCode: stateCode,
+      }));
+    }
+  },
+
+  loadBillsByState: async (stateCode) => {
+    const requestSequence = ++billRequestSequence;
+    set({ billLoadStatus: 'loading', billLoadStateCode: stateCode });
+
+    try {
+      const { items, total } = await apiClient.civic.listBills(stateCode);
+      if (requestSequence !== billRequestSequence) return;
+
+      set((state) => {
+        const keepDemoBills = items.length === 0 && !IS_LIVE_ENVIRONMENT;
+        const nextBills = keepDemoBills
+          ? state.bills
+          : [...state.bills.filter((bill) => bill.stateCode !== stateCode), ...items];
+        return {
+          bills: nextBills,
+          billLoadStatus: 'loaded',
+          billLoadStateCode: stateCode,
+          billTotal: keepDemoBills
+            ? nextBills.filter((bill) => bill.stateCode === stateCode).length
+            : total,
+          billPage: 1,
+        };
+      });
+    } catch {
+      if (requestSequence !== billRequestSequence) return;
+      set((state) => {
+        const nextBills = IS_LIVE_ENVIRONMENT
+          ? state.bills.filter((bill) => bill.stateCode !== stateCode)
+          : state.bills;
+        return {
+          bills: nextBills,
+          billLoadStatus: 'error',
+          billLoadStateCode: stateCode,
+          billTotal: IS_LIVE_ENVIRONMENT
+            ? 0
+            : nextBills.filter((bill) => bill.stateCode === stateCode).length,
+          billPage: 0,
+        };
+      });
+    }
+  },
+
+  loadMoreBillsByState: async (stateCode) => {
+    const current = get();
+    if (current.billLoadStatus === 'loading' && current.billLoadStateCode === stateCode) return;
+    if (current.billLoadStateCode !== stateCode || current.billPage < 1) {
+      await get().loadBillsByState(stateCode);
+      return;
+    }
+    if (current.getBillsByState(stateCode).length >= current.billTotal) return;
+
+    const requestSequence = ++billRequestSequence;
+    const page = current.billPage + 1;
+    set({ billLoadStatus: 'loading', billLoadStateCode: stateCode });
+
+    try {
+      const { items, total } = await apiClient.civic.listBills(stateCode, page);
+      if (requestSequence !== billRequestSequence) return;
+
+      set((state) => {
+        const mergedBills = new Map(state.bills.map((bill) => [bill.id, bill]));
+        for (const item of items) mergedBills.set(item.id, item);
+        return {
+          bills: [...mergedBills.values()],
+          billLoadStatus: 'loaded',
+          billLoadStateCode: stateCode,
+          billTotal: total,
+          billPage: page,
+        };
+      });
+    } catch {
+      if (requestSequence !== billRequestSequence) return;
+      set({ billLoadStatus: 'error', billLoadStateCode: stateCode });
+    }
+  },
+
+  loadSchemesByState: async (stateCode) => {
+    const requestSequence = ++schemeRequestSequence;
+    set({ schemeLoadStatus: 'loading', schemeLoadStateCode: stateCode });
+
+    try {
+      const { items, total } = await apiClient.civic.listGovernmentSchemes(stateCode);
+      if (requestSequence !== schemeRequestSequence) return;
+
+      set((state) => {
+        const keepDemoSchemes = items.length === 0 && !IS_LIVE_ENVIRONMENT;
+        const nextSchemes = keepDemoSchemes
+          ? state.schemes
+          : [
+              ...state.schemes.filter((scheme) =>
+                scheme.stateCode !== stateCode && scheme.level !== 'central' &&
+                !(scheme.level === 'joint' && !scheme.stateCode),
+              ),
+              ...items,
+            ];
+        return {
+          schemes: nextSchemes,
+          schemeLoadStatus: 'loaded',
+          schemeLoadStateCode: stateCode,
+          schemeTotal: keepDemoSchemes
+            ? nextSchemes.filter((scheme) =>
+                scheme.stateCode === stateCode || scheme.level === 'central' || (scheme.level === 'joint' && !scheme.stateCode),
+              ).length
+            : total,
+          schemePage: 1,
+        };
+      });
+    } catch {
+      if (requestSequence !== schemeRequestSequence) return;
+      set((state) => {
+        const nextSchemes = IS_LIVE_ENVIRONMENT
+          ? state.schemes.filter((scheme) =>
+              scheme.stateCode !== stateCode && scheme.level !== 'central' &&
+              !(scheme.level === 'joint' && !scheme.stateCode),
+            )
+          : state.schemes;
+        return {
+          schemes: nextSchemes,
+          schemeLoadStatus: 'error',
+          schemeLoadStateCode: stateCode,
+          schemeTotal: IS_LIVE_ENVIRONMENT
+            ? 0
+            : nextSchemes.filter((scheme) =>
+                scheme.stateCode === stateCode || scheme.level === 'central' || (scheme.level === 'joint' && !scheme.stateCode),
+              ).length,
+          schemePage: 0,
+        };
+      });
+    }
+  },
+
+  loadMoreSchemesByState: async (stateCode) => {
+    const current = get();
+    if (current.schemeLoadStatus === 'loading' && current.schemeLoadStateCode === stateCode) return;
+    if (current.schemeLoadStateCode !== stateCode || current.schemePage < 1) {
+      await get().loadSchemesByState(stateCode);
+      return;
+    }
+    if (current.schemePage * 50 >= current.schemeTotal) return;
+
+    const requestSequence = ++schemeRequestSequence;
+    const page = current.schemePage + 1;
+    set({ schemeLoadStatus: 'loading', schemeLoadStateCode: stateCode });
+
+    try {
+      const { items, total } = await apiClient.civic.listGovernmentSchemes(stateCode, page);
+      if (requestSequence !== schemeRequestSequence) return;
+
+      set((state) => {
+        const mergedSchemes = new Map(state.schemes.map((scheme) => [scheme.id, scheme]));
+        for (const item of items) mergedSchemes.set(item.id, item);
+        return {
+          schemes: [...mergedSchemes.values()],
+          schemeLoadStatus: 'loaded',
+          schemeLoadStateCode: stateCode,
+          schemeTotal: total,
+          schemePage: page,
+        };
+      });
+    } catch {
+      if (requestSequence !== schemeRequestSequence) return;
+      set({ schemeLoadStatus: 'error', schemeLoadStateCode: stateCode });
+    }
+  },
+
+  loadProjectsByState: async (stateCode) => {
+    const requestSequence = ++projectRequestSequence;
+    set({ projectLoadStatus: 'loading', projectLoadStateCode: stateCode });
+
+    try {
+      const { items, total } = await apiClient.civic.listDevelopmentProjects(stateCode);
+      if (requestSequence !== projectRequestSequence) return;
+
+      set((state) => {
+        const keepDemoProjects = items.length === 0 && !IS_LIVE_ENVIRONMENT;
+        const nextProjects = keepDemoProjects
+          ? state.projects
+          : [...state.projects.filter((project) => project.stateCode !== stateCode), ...items];
+        return {
+          projects: nextProjects,
+          projectLoadStatus: 'loaded',
+          projectLoadStateCode: stateCode,
+          projectTotal: keepDemoProjects
+            ? nextProjects.filter((project) => project.stateCode === stateCode).length
+            : total,
+          projectPage: 1,
+        };
+      });
+    } catch {
+      if (requestSequence !== projectRequestSequence) return;
+      set((state) => {
+        const nextProjects = IS_LIVE_ENVIRONMENT
+          ? state.projects.filter((project) => project.stateCode !== stateCode)
+          : state.projects;
+        return {
+          projects: nextProjects,
+          projectLoadStatus: 'error',
+          projectLoadStateCode: stateCode,
+          projectTotal: IS_LIVE_ENVIRONMENT
+            ? 0
+            : nextProjects.filter((project) => project.stateCode === stateCode).length,
+          projectPage: 0,
+        };
+      });
+    }
+  },
+
+  loadMoreProjectsByState: async (stateCode) => {
+    const current = get();
+    if (current.projectLoadStatus === 'loading' && current.projectLoadStateCode === stateCode) return;
+    if (current.projectLoadStateCode !== stateCode || current.projectPage < 1) {
+      await get().loadProjectsByState(stateCode);
+      return;
+    }
+    if (current.projectPage * 50 >= current.projectTotal) return;
+
+    const requestSequence = ++projectRequestSequence;
+    const page = current.projectPage + 1;
+    set({ projectLoadStatus: 'loading', projectLoadStateCode: stateCode });
+
+    try {
+      const { items, total } = await apiClient.civic.listDevelopmentProjects(stateCode, page);
+      if (requestSequence !== projectRequestSequence) return;
+
+      set((state) => {
+        const mergedProjects = new Map(state.projects.map((project) => [project.id, project]));
+        for (const item of items) mergedProjects.set(item.id, item);
+        return {
+          projects: [...mergedProjects.values()],
+          projectLoadStatus: 'loaded',
+          projectLoadStateCode: stateCode,
+          projectTotal: total,
+          projectPage: page,
+        };
+      });
+    } catch {
+      if (requestSequence !== projectRequestSequence) return;
+      set({ projectLoadStatus: 'error', projectLoadStateCode: stateCode });
+    }
+  },
+
+  loadHearingsByState: async (stateCode) => {
+    const requestSequence = ++hearingRequestSequence;
+    set({ hearingLoadStatus: 'loading', hearingLoadStateCode: stateCode });
+
+    try {
+      const { items, total } = await apiClient.civic.listPublicHearings(stateCode);
+      if (requestSequence !== hearingRequestSequence) return;
+
+      set((state) => {
+        const keepDemoHearings = items.length === 0 && !IS_LIVE_ENVIRONMENT;
+        const nextHearings = keepDemoHearings
+          ? state.hearings
+          : [...state.hearings.filter((hearing) => hearing.stateCode !== stateCode), ...items];
+        return {
+          hearings: nextHearings,
+          hearingLoadStatus: 'loaded',
+          hearingLoadStateCode: stateCode,
+          hearingTotal: keepDemoHearings
+            ? nextHearings.filter((hearing) => hearing.stateCode === stateCode).length
+            : total,
+          hearingPage: 1,
+        };
+      });
+    } catch {
+      if (requestSequence !== hearingRequestSequence) return;
+      set((state) => ({
+        hearings: IS_LIVE_ENVIRONMENT
+          ? state.hearings.filter((hearing) => hearing.stateCode !== stateCode)
+          : state.hearings,
+        hearingLoadStatus: 'error',
+        hearingLoadStateCode: stateCode,
+        hearingTotal: IS_LIVE_ENVIRONMENT
+          ? 0
+          : state.hearings.filter((hearing) => hearing.stateCode === stateCode).length,
+        hearingPage: 0,
+      }));
+    }
+  },
+
+  loadMoreHearingsByState: async (stateCode) => {
+    const current = get();
+    if (current.hearingLoadStatus === 'loading' && current.hearingLoadStateCode === stateCode) return;
+    if (current.hearingLoadStateCode !== stateCode || current.hearingPage < 1) {
+      await get().loadHearingsByState(stateCode);
+      return;
+    }
+    if (current.getUpcomingHearings(stateCode).length >= current.hearingTotal) return;
+
+    const requestSequence = ++hearingRequestSequence;
+    const page = current.hearingPage + 1;
+    set({ hearingLoadStatus: 'loading', hearingLoadStateCode: stateCode });
+
+    try {
+      const { items, total } = await apiClient.civic.listPublicHearings(stateCode, page);
+      if (requestSequence !== hearingRequestSequence) return;
+
+      set((state) => {
+        const mergedHearings = new Map(state.hearings.map((hearing) => [hearing.id, hearing]));
+        for (const item of items) mergedHearings.set(item.id, item);
+        return {
+          hearings: [...mergedHearings.values()],
+          hearingLoadStatus: 'loaded',
+          hearingLoadStateCode: stateCode,
+          hearingTotal: total,
+          hearingPage: page,
+        };
+      });
+    } catch {
+      if (requestSequence !== hearingRequestSequence) return;
+      set({ hearingLoadStatus: 'error', hearingLoadStateCode: stateCode });
+    }
+  },
+
+  loadPublicRTIs: async (stateCode) => {
+    const requestSequence = ++rtiRequestSequence;
+    set({ rtiLoadStatus: 'loading', rtiLoadStateCode: stateCode });
+
+    try {
+      const { items: requests, total } = await apiClient.civic.listPublicRtiRequests(stateCode);
+      if (requestSequence !== rtiRequestSequence) return;
+
+      set((state) => {
+        const keepDemoRequests = requests.length === 0 && !IS_LIVE_ENVIRONMENT;
+        const nextRequests = keepDemoRequests
+          ? state.rtiRequests
+          : [
+              ...state.rtiRequests.filter((request) =>
+                request.stateCode !== stateCode || request.status === 'draft',
+              ),
+              ...requests,
+            ];
+        return {
+          rtiRequests: nextRequests,
+          rtiLoadStatus: 'loaded',
+          rtiLoadStateCode: stateCode,
+          rtiTotal: keepDemoRequests
+            ? nextRequests.filter((request) =>
+                request.isPublic && request.status !== 'draft' && request.stateCode === stateCode,
+              ).length
+            : total,
+          rtiPage: 1,
+        };
+      });
+    } catch {
+      if (requestSequence !== rtiRequestSequence) return;
+      set((state) => {
+        const nextRequests = IS_LIVE_ENVIRONMENT
+          ? state.rtiRequests.filter((request) =>
+              request.stateCode !== stateCode || request.status === 'draft',
+            )
+          : state.rtiRequests;
+        return {
+          rtiRequests: nextRequests,
+          rtiLoadStatus: 'error',
+          rtiLoadStateCode: stateCode,
+          rtiTotal: IS_LIVE_ENVIRONMENT
+            ? 0
+            : nextRequests.filter((request) =>
+                request.isPublic && request.status !== 'draft' && request.stateCode === stateCode,
+              ).length,
+          rtiPage: 0,
+        };
+      });
+    }
+  },
+
+  loadMorePublicRTIs: async (stateCode) => {
+    const current = get();
+    if (current.rtiLoadStatus === 'loading' && current.rtiLoadStateCode === stateCode) return;
+    if (current.rtiLoadStateCode !== stateCode || current.rtiPage < 1) {
+      await get().loadPublicRTIs(stateCode);
+      return;
+    }
+    if (current.getPublicRTIs(stateCode).length >= current.rtiTotal) return;
+
+    const requestSequence = ++rtiRequestSequence;
+    const page = current.rtiPage + 1;
+    set({ rtiLoadStatus: 'loading', rtiLoadStateCode: stateCode });
+
+    try {
+      const { items, total } = await apiClient.civic.listPublicRtiRequests(stateCode, page);
+      if (requestSequence !== rtiRequestSequence) return;
+
+      set((state) => {
+        const mergedRequests = new Map(state.rtiRequests.map((request) => [request.id, request]));
+        for (const item of items) {
+          if (!mergedRequests.has(item.id)) mergedRequests.set(item.id, item);
+        }
+        return {
+          rtiRequests: [...mergedRequests.values()],
+          rtiLoadStatus: 'loaded',
+          rtiLoadStateCode: stateCode,
+          rtiTotal: total,
+          rtiPage: page,
+        };
+      });
+    } catch {
+      if (requestSequence !== rtiRequestSequence) return;
+      set({ rtiLoadStatus: 'error', rtiLoadStateCode: stateCode });
+    }
+  },
 
   fileRTI: async (rti) => {
     try {
@@ -344,72 +838,33 @@ export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => ({
   },
 
   supportBill: async (billId) => {
-    set((s) => ({
-      bills: s.bills.map((b) =>
-        b.id === billId
-          ? {
-              ...b,
-              publicOpinion: {
-                ...b.publicOpinion,
-                support: (b.publicOpinion?.support || 0) + 1,
-              },
-            }
-          : b
-      ),
-    }));
     try {
-      await apiClient.civic.postCitizenOpinion(billId, true);
-      return true;
-    } catch {
-      set((s) => ({
-        bills: s.bills.map((b) =>
-          b.id === billId
-            ? {
-                ...b,
-                publicOpinion: {
-                  ...b.publicOpinion,
-                  support: Math.max(0, (b.publicOpinion?.support || 1) - 1),
-                },
-              }
-            : b
-        ),
+      const result = await apiClient.civic.postCitizenOpinion(billId, true);
+      if (!result.success) return false;
+      set((state) => ({
+        bills: state.bills.map((bill) => bill.id === billId
+          ? { ...bill, publicOpinion: result.publicOpinion || { support: null, oppose: null, neutral: null } }
+          : bill),
       }));
+      return result.success;
+    } catch {
       return false;
     }
   },
 
   opposeBill: async (billId) => {
-    set((s) => ({
-      bills: s.bills.map((b) =>
-        b.id === billId
-          ? {
-              ...b,
-              publicOpinion: {
-                ...b.publicOpinion,
-                oppose: (b.publicOpinion?.oppose || 0) + 1,
-              },
-            }
-          : b
-      ),
-    }));
     try {
-      await apiClient.civic.postCitizenOpinion(billId, false);
-      return true;
-    } catch {
-      set((s) => ({
-        bills: s.bills.map((b) =>
-          b.id === billId
-            ? {
-                ...b,
-                publicOpinion: {
-                  ...b.publicOpinion,
-                  oppose: Math.max(0, (b.publicOpinion?.oppose || 1) - 1),
-                },
-              }
-            : b
-        ),
+      const result = await apiClient.civic.postCitizenOpinion(billId, false);
+      if (!result.success) return false;
+      set((state) => ({
+        bills: state.bills.map((bill) => bill.id === billId
+          ? { ...bill, publicOpinion: result.publicOpinion || { support: null, oppose: null, neutral: null } }
+          : bill),
       }));
+      return result.success;
+    } catch {
       return false;
     }
   },
-}));
+  });
+});

@@ -29,12 +29,14 @@ export * from './endpoints/politician';
 export * from './endpoints/spatial';
 export * from './endpoints/constituencies';
 export * from './endpoints/elections';
+export * from './endpoints/delimitation';
 export * from './endpoints/feed';
 export * from './endpoints/promises';
 export * from './endpoints/shorts';
 export * from './endpoints/aspirant';
 export * from './endpoints/users';
 export * from './endpoints/notifications';
+export * from './endpoints/ai';
 export * from '../staleResponseGuard';
 export {
   resolveRequestId,

@@ -1,10 +1,10 @@
+import { isIsolatedTestRuntime, isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import crypto from 'node:crypto';
 import type { FastifyPluginAsync } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
-import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
-import { RazorpayProvider } from '../providers/razorpayProvider';
-import type { PaymentProvider } from '../providers/types';
+import { PaymentProviderError, RazorpayProvider } from '../providers/razorpayProvider';
+import type { PaymentOrderResult, PaymentProvider } from '../providers/types';
 import { resolveAuthenticatedUser, assertActingUserMatch } from '../lib/userAuth';
 import { AspirantService } from '../services/aspirantService';
 import type {
@@ -12,6 +12,10 @@ import type {
   PageEventCreateRequest,
   PageEventRsvpStatus,
 } from '@kshetra/shared';
+
+function isProductionRuntime(): boolean {
+  return isProductionLikeRuntime();
+}
 
 export interface PageEntitlement {
   pageId: string;
@@ -66,13 +70,13 @@ let testPageAuthorityResolver: PageAuthorityResolver | null = null;
  * Never accessible or activatable by external HTTP callers.
  */
 export function setTestAuthResolver(resolver: AuthResolver | null) {
-  if (process.env.NODE_ENV !== 'production') {
+  if (!isProductionRuntime()) {
     testAuthResolver = resolver;
   }
 }
 
 export function setTestPageAuthorityResolver(resolver: PageAuthorityResolver | null) {
-  if (process.env.NODE_ENV !== 'production') {
+  if (!isProductionRuntime()) {
     testPageAuthorityResolver = resolver;
   }
 }
@@ -119,7 +123,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
         });
       }
 
-      if (process.env.NODE_ENV !== 'production' && testPageAuthorityResolver) {
+      if (!isProductionRuntime() && testPageAuthorityResolver) {
         const testAuth = testAuthResolver
           ? await testAuthResolver(request)
           : { userId: 'user-1', role: 'politician' };
@@ -165,7 +169,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       const { data: page, error } = await query.maybeSingle();
 
       if (error) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProductionRuntime()) {
           return reply.send({
             success: true,
             pageId,
@@ -304,7 +308,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
    * Fails closed when authoritative Supabase authentication infrastructure is unconfigured.
    */
   async function resolveAuthUser(request: any): Promise<{ userId: string; role: string } | null> {
-    if (process.env.NODE_ENV === 'test' && testAuthResolver) {
+    if (isIsolatedTestRuntime() && testAuthResolver) {
       return testAuthResolver(request);
     }
 
@@ -353,7 +357,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
     pageId: string,
     request: any,
   ): Promise<{ authorized: boolean; notFound: boolean; page?: any }> {
-    if (process.env.NODE_ENV === 'test' && testPageAuthorityResolver) {
+    if (isIsolatedTestRuntime() && testPageAuthorityResolver) {
       return testPageAuthorityResolver(auth, pageId, request);
     }
 
@@ -433,15 +437,47 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
     }
 
     const billingCycle = request.body?.billingCycle === 'annual' ? 'annual' : 'monthly';
-    const amount = request.body?.amount ?? (billingCycle === 'annual' ? 499900 : 49900); // ₹4,999 or ₹499 in paise
+    const amount = billingCycle === 'annual' ? 499900 : 49900; // ₹4,999 or ₹499 in paise
+    if (request.body?.amount !== undefined && request.body.amount !== amount) {
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'Bad Request',
+        'Requested amount does not match the Page Pro price for this billing cycle.',
+        { code: 'PRICE_MISMATCH' },
+      );
+    }
     const currency = request.body?.currency ?? 'INR';
 
-    const orderResult = await paymentProvider.createOrder({
-      amountINR: Math.round(amount / 100),
-      currency,
-      pageId,
-      billingCycle,
-    });
+    let orderResult: PaymentOrderResult;
+    try {
+      orderResult = await paymentProvider.createOrder({
+        amountINR: amount / 100,
+        currency,
+        pageId,
+        billingCycle,
+      });
+    } catch (error) {
+      const providerError = error instanceof PaymentProviderError ? error : null;
+      const statusCode = providerError?.statusCode ?? 500;
+      const statusText =
+        statusCode === 503
+          ? 'Service Unavailable'
+          : statusCode === 502
+            ? 'Bad Gateway'
+            : statusCode === 400
+              ? 'Bad Request'
+              : 'Internal Server Error';
+      return sendApiError(
+        reply,
+        request,
+        statusCode,
+        statusText,
+        providerError?.message || 'Unable to create payment order.',
+        { code: providerError?.code || 'PAYMENT_ORDER_FAILED' },
+      );
+    }
 
     const targetPageId = authority.page?.id || pageId;
 
@@ -458,7 +494,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       });
 
       if (insertError) {
-        if (process.env.NODE_ENV === 'production') {
+        if (isProductionRuntime()) {
           return sendApiError(
             reply,
             request,
@@ -557,7 +593,18 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
 
     // DEF-B5-PAY-01: A valid cryptographic razorpay_signature is mandatory.
     // Under unit/test environment, sandboxBypass is permitted only if explicitly requested.
-    const isTestSandboxBypass = process.env.NODE_ENV === 'test' && body.sandboxBypass === true;
+    const testBypassRequested = body.sandboxBypass === true;
+    const isTestSandboxBypass = isIsolatedTestRuntime() && testBypassRequested;
+    if (testBypassRequested && !isTestSandboxBypass) {
+      return sendApiError(
+        reply,
+        request,
+        403,
+        'Forbidden',
+        'Test payment verification bypass is disabled in this runtime.',
+        { code: 'TEST_BYPASS_DISABLED' },
+      );
+    }
 
     if (!body.razorpay_signature && !isTestSandboxBypass) {
       return sendApiError(
@@ -568,45 +615,6 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
         'Missing payment verification signature',
         { code: 'MISSING_SIGNATURE' },
       );
-    }
-
-    if (!isTestSandboxBypass) {
-      try {
-        const verifyResult = await paymentProvider.verifyPaymentSignature({
-          orderId: body.razorpay_order_id,
-          paymentId: body.razorpay_payment_id,
-          signature: body.razorpay_signature!,
-        });
-        if (!verifyResult.valid) {
-          return sendApiError(
-            reply,
-            request,
-            400,
-            'Bad Request',
-            'Invalid payment verification signature',
-            { code: verifyResult.reason || 'INVALID_SIGNATURE' },
-          );
-        }
-      } catch (err: any) {
-        if (err.message && err.message.includes('PROVIDER_CONFIG_ERROR')) {
-          return sendApiError(
-            reply,
-            request,
-            500,
-            'Internal Server Error',
-            'Payment verification service configuration missing (RAZORPAY_KEY_SECRET)',
-            { code: 'PROVIDER_CONFIG_ERROR' },
-          );
-        }
-        return sendApiError(
-          reply,
-          request,
-          400,
-          'Bad Request',
-          'Invalid payment verification signature',
-          { code: 'INVALID_SIGNATURE' },
-        );
-      }
     }
 
     const targetPageId = authority.page?.id || pageId;
@@ -633,7 +641,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
           .eq('provider_order_id', body.razorpay_order_id)
           .maybeSingle();
 
-        if (orderFetchErr && process.env.NODE_ENV === 'production') {
+        if (orderFetchErr && isProductionRuntime()) {
           return sendApiError(
             reply,
             request,
@@ -683,6 +691,19 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
             );
           }
 
+          // Do not activate a discounted or otherwise altered order amount.
+          const expectedAmountPaise = dbOrder.billing_cycle === 'annual' ? 499900 : 49900;
+          if (isProductionRuntime() && Number(dbOrder.amount_paise) !== expectedAmountPaise) {
+            return sendApiError(
+              reply,
+              request,
+              400,
+              'Bad Request',
+              'Payment order amount does not match the Page Pro price.',
+              { code: 'PRICE_MISMATCH' },
+            );
+          }
+
           // 4. Idempotency / replay check
           if (
             dbOrder.status === 'completed' &&
@@ -699,7 +720,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
           }
         }
       } catch (err: any) {
-        if (process.env.NODE_ENV === 'production') {
+        if (isProductionRuntime()) {
           return sendApiError(
             reply,
             request,
@@ -712,9 +733,10 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       }
     }
 
+    let registeredOrder = PRO_ORDER_REGISTRY.get(body.razorpay_order_id);
     if (!dbOrder) {
       // In-process fallback for headless unit tests without database runtime
-      const registeredOrder = PRO_ORDER_REGISTRY.get(body.razorpay_order_id);
+      registeredOrder = PRO_ORDER_REGISTRY.get(body.razorpay_order_id);
       if (registeredOrder) {
         // 1. Target pageId association check
         if (registeredOrder.pageId !== targetPageId && registeredOrder.pageId !== pageId) {
@@ -778,8 +800,68 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       }
     }
 
+    const trustedOrderId = dbOrder?.provider_order_id || registeredOrder?.orderId;
+    if (!trustedOrderId || trustedOrderId !== body.razorpay_order_id) {
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'Bad Request',
+        'Payment order was not found in the trusted order registry.',
+        { code: 'ORDER_NOT_FOUND' },
+      );
+    }
+
+    const trustedBillingCycle =
+      dbOrder?.billing_cycle || registeredOrder?.billingCycle || body.billingCycle || 'monthly';
+    const expectedAmountPaise = Number(
+      dbOrder?.amount_paise ??
+        registeredOrder?.amount ??
+        (trustedBillingCycle === 'annual' ? 499900 : 49900),
+    );
+    const expectedCurrency = String(dbOrder?.currency || 'INR');
+
+    if (!isTestSandboxBypass) {
+      try {
+        const verifyResult = await paymentProvider.verifyPaymentSignature({
+          orderId: trustedOrderId,
+          paymentId: body.razorpay_payment_id,
+          signature: body.razorpay_signature!,
+          expectedAmountPaise,
+          expectedCurrency,
+        });
+        if (!verifyResult.valid) {
+          return sendApiError(
+            reply,
+            request,
+            400,
+            'Bad Request',
+            'Payment could not be confirmed for this order.',
+            { code: verifyResult.reason || 'INVALID_PAYMENT' },
+          );
+        }
+      } catch (error) {
+        const providerError = error instanceof PaymentProviderError ? error : null;
+        const statusCode = providerError?.statusCode ?? 500;
+        const statusText =
+          statusCode === 503
+            ? 'Service Unavailable'
+            : statusCode === 502
+              ? 'Bad Gateway'
+              : 'Internal Server Error';
+        return sendApiError(
+          reply,
+          request,
+          statusCode,
+          statusText,
+          providerError?.message || 'Payment verification could not be completed.',
+          { code: providerError?.code || 'PAYMENT_VERIFICATION_FAILED' },
+        );
+      }
+    }
+
     // Authoritative persistence check: fail closed if Supabase is unconfigured (unless test fixture is active)
-    if (!isSupabaseConfigured && !(process.env.NODE_ENV === 'test' && testPageAuthorityResolver)) {
+    if (!isSupabaseConfigured && !(isIsolatedTestRuntime() && testPageAuthorityResolver)) {
       return sendApiError(
         reply,
         request,
@@ -801,15 +883,15 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
           p_user_id: auth.userId,
           p_provider_payment_id: body.razorpay_payment_id,
           p_signature: body.razorpay_signature,
-          p_billing_cycle: body.billingCycle || dbOrder?.billing_cycle || 'monthly',
+          p_billing_cycle: trustedBillingCycle,
           p_is_admin: auth.role === 'admin',
         },
       );
 
       if (rpcError) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (!isProductionRuntime()) {
           const expiryDate = new Date();
-          if (body.billingCycle === 'annual') {
+          if (trustedBillingCycle === 'annual') {
             expiryDate.setFullYear(expiryDate.getFullYear() + 1);
           } else {
             expiryDate.setDate(expiryDate.getDate() + 30);
@@ -840,7 +922,7 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       }
     } else {
       const expiryDate = new Date();
-      if (body.billingCycle === 'annual') {
+      if (trustedBillingCycle === 'annual') {
         expiryDate.setFullYear(expiryDate.getFullYear() + 1); // 365-day annual cycle
       } else {
         expiryDate.setDate(expiryDate.getDate() + 30); // 30-day monthly cycle
@@ -848,7 +930,6 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       finalExpiresAt = expiryDate.toISOString();
     }
 
-    const registeredOrder = PRO_ORDER_REGISTRY.get(body.razorpay_order_id);
     if (registeredOrder) {
       registeredOrder.status = 'verified';
       registeredOrder.paymentId = body.razorpay_payment_id;

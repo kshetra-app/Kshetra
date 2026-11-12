@@ -16,8 +16,8 @@
  *    (RES-LEGAL-01) and POLIGRAM's Hamilton largest-remainder computational sequence
  *    (RES-ALLOC-01 through RES-UNKNOWN-01).
  * 4. Generic Engine Architecture + Governed Jurisdiction Data (Telangana scope).
- * 5. Byte-Exact Legal Chain: 2008 Order -> APRA 2014 -> G.S.R. 311(E) (23 April 2015) ->
- *    Notification 282/AP/2018(DEL) (22 Sept 2018) -> Current Telangana Geography.
+ * 5. Legal-source confidence is tracked in the canonical timeline; repository-only records
+ *    remain explicitly unverified until their primary publications are retained and checked.
  * 6. Derived-Only isScenario: Derived strictly from legalStatus === 'SCENARIO_PROPOSED_REGIME'.
  *    Zero persistent database columns.
  */
@@ -29,6 +29,11 @@ import {
   type CensusStateData,
 } from '../../../../data/census/india-district-population-2011';
 import { getConstituencies as getStateConstituencies, getConstituency } from './stateData';
+import {
+  getCanonicalDelimitationStatus,
+  getCanonicalDelimitationTimeline,
+  getCanonicalDelimitationTimelineProvenance,
+} from './delimitationTruth';
 import type {
   DelimitationLegalRegime,
   OutputClassification,
@@ -39,7 +44,6 @@ import type {
   DynamicSeatProjection,
   DelimitationProjectionsDTO,
   SingleStateProjectionDTO,
-  TimelineEventItem,
   DelimitationTimelineDTO,
   DelimitationStatusDTO,
   GainersLosersDTO,
@@ -1962,296 +1966,31 @@ export class DelimitationService {
     };
   }
 
-  /**
-   * 3. GET /api/v1/delimitation/timeline (Directives G5-10, G5-11)
-   *
-   * Byte-Exact Legal Succession Chain:
-   * 1. Delimitation Order 2008 (Schedule II, 19 Feb 2008)
-   * 2. APRA 2014 (Schedule XXXI: TS 119, Schedule II: AP 175)
-   * 3. AP Reorganisation (Removal of Difficulties) Order, 2015: G.S.R. 311(E), 23 April 2015, "comes into force at once"
-   * 4. ECI Notification No. 282/AP/2018(DEL), 22 Sept 2018
-   * 5. Current Telangana Geography (Schedule XXXI)
-   */
+  /** Returns the canonical source-backed legal and Census timeline. */
   public getTimeline(): DelimitationTimelineDTO {
-    const events: TimelineEventItem[] = [
-      {
-        id: 'LEG-2002-01',
-        date: '2002-06-12',
-        title: 'Delimitation Act, 2002 Enacted',
-        significance: 'critical',
-        verified: true,
-        instrument: 'Delimitation Act, 2002 (Act No. 33 of 2002)',
-        authority: 'Parliament of India',
-        description:
-          'Constituted the Delimitation Commission to readjust seats based on Census 2001.',
-      },
-      {
-        id: 'LEG-2008-01',
-        date: '2008-02-19',
-        title: 'Delimitation of Parliamentary and Assembly Constituencies Order, 2008',
-        significance: 'critical',
-        verified: true,
-        instrument: 'Delimitation Order 2008, Schedule II (State of Andhra Pradesh)',
-        authority: 'Delimitation Commission of India',
-        description:
-          'Enacted 294 Assembly Constituencies and 42 Parliamentary Constituencies for undivided Andhra Pradesh.',
-      },
-      {
-        id: 'LEG-2014-01',
-        date: '2014-03-01',
-        title: 'Andhra Pradesh Reorganisation Act, 2014 Enacted',
-        significance: 'critical',
-        verified: true,
-        instrument: 'Act No. 6 of 2014',
-        authority: 'Parliament of India',
-        description: 'Bifurcated Andhra Pradesh into Telangana and residuary Andhra Pradesh.',
-      },
-      {
-        id: 'LEG-2014-02',
-        date: '2014-06-02',
-        title: 'Appointed Day — Bifurcation into Telangana and Andhra Pradesh',
-        significance: 'critical',
-        verified: true,
-        instrument: 'APRA 2014 Sec 15, Schedule XXXI & Schedule II',
-        authority: 'Union of India',
-        description:
-          'Schedule XXXI established 119 ACs for Telangana; Schedule II established 175 ACs for residuary AP.',
-      },
-      {
-        id: 'LEG-2015-01',
-        date: '2015-04-23',
-        title: 'AP Reorganisation (Removal of Difficulties) Order, 2015: G.S.R. 311(E)',
-        significance: 'critical',
-        verified: true,
-        instrument: 'G.S.R. 311(E), dated 23 April 2015 (comes into force at once)',
-        authority: 'President of India / Ministry of Home Affairs',
-        description:
-          'Transferred 7 mandals of Khammam district (Polavaram project submergence) from Telangana to Andhra Pradesh.',
-      },
-      {
-        id: 'LEG-2018-01',
-        date: '2018-09-22',
-        title: 'ECI Statutory Notification No. 282/AP/2018(DEL)',
-        significance: 'critical',
-        verified: true,
-        instrument: 'Notification No. 282/AP/2018(DEL), published 24 Sept 2018',
-        authority: 'Election Commission of India under Sec 9(1)(b) Delim Act 2002',
-        description:
-          'Formally updated boundary descriptions to incorporate the territorial transfers of G.S.R. 311(E).',
-      },
-      // ─── 2026 LEGISLATIVE PACKAGE: BILLS 45, 46, 47 (W020 SOURCE-TRUTH PROVENANCE) ───
-      {
-        id: 'LEG-2026-04-16-BILL-45-INTRO',
-        date: '2026-04-16',
-        title: 'Constitution (131st Amendment) Bill, 2026 Introduced in Lok Sabha',
-        significance: 'critical',
-        verified: true,
-        instrument: 'Bill No. 45 of 2026',
-        authority: 'Parliament of India (Lok Sabha)',
-        description:
-          'Proposed amending Article 81 to increase maximum Lok Sabha ceiling to 850 (815 States, 35 UTs) and readjust representation post-2026.',
-        billNumber: 'Bill No. 45 of 2026',
-        houseOfIntroduction: 'LOK_SABHA',
-        eventType: 'INTRODUCTION',
-        outcome: 'INTRODUCED',
-        constitutionalArticleTarget: 'Article 81 & Article 82',
-        proposedCeiling: 850,
-        classification: 'PROPOSED_LEGISLATIVE',
-        officialSource: 'Lok Sabha Secretariat',
-        sourceReference:
-          'Lok Sabha List of Business, 16 April 2026; Gazette of India Extraordinary Part II Sec 2',
-        sourcePublicationMetadata: 'Parliamentary Bulletin Part I, Sl. No. 14, 16 April 2026',
-      },
-      {
-        id: 'LEG-2026-04-16-BILL-46-INTRO',
-        date: '2026-04-16',
-        title: 'Delimitation Bill, 2026 Introduced in Lok Sabha',
-        significance: 'critical',
-        verified: true,
-        instrument: 'Bill No. 46 of 2026',
-        authority: 'Parliament of India (Lok Sabha)',
-        description:
-          'Proposed ordinary legislation setting procedural framework and criteria for Delimitation Commission upon 131st Amendment enactment.',
-        billNumber: 'Bill No. 46 of 2026',
-        houseOfIntroduction: 'LOK_SABHA',
-        eventType: 'INTRODUCTION',
-        outcome: 'INTRODUCED',
-        constitutionalArticleTarget: 'Article 82',
-        classification: 'PROPOSED_LEGISLATIVE',
-        officialSource: 'Lok Sabha Secretariat',
-        sourceReference:
-          'Lok Sabha List of Business, 16 April 2026; Gazette of India Extraordinary Part II Sec 2',
-        sourcePublicationMetadata: 'Parliamentary Bulletin Part I, Sl. No. 15, 16 April 2026',
-      },
-      {
-        id: 'LEG-2026-04-16-BILL-47-INTRO',
-        date: '2026-04-16',
-        title: 'Union Territories Laws (Amendment) Bill, 2026 Introduced in Lok Sabha',
-        significance: 'high',
-        verified: true,
-        instrument: 'Bill No. 47 of 2026',
-        authority: 'Parliament of India (Lok Sabha)',
-        description:
-          'Proposed adjusting statutory representation allocations for Union Territories in alignment with proposed Article 81 revisions.',
-        billNumber: 'Bill No. 47 of 2026',
-        houseOfIntroduction: 'LOK_SABHA',
-        eventType: 'INTRODUCTION',
-        outcome: 'INTRODUCED',
-        constitutionalArticleTarget: 'Article 239A & Article 81(1)(b)',
-        proposedCeiling: 35,
-        classification: 'PROPOSED_LEGISLATIVE',
-        officialSource: 'Lok Sabha Secretariat',
-        sourceReference:
-          'Lok Sabha List of Business, 16 April 2026; Gazette of India Extraordinary Part II Sec 2',
-        sourcePublicationMetadata: 'Parliamentary Bulletin Part I, Sl. No. 16, 16 April 2026',
-      },
-      {
-        id: 'LEG-2026-04-17-BILL-45-DEFEAT',
-        date: '2026-04-17',
-        title: 'Constitution (131st Amendment) Bill, 2026 Negatived in Lok Sabha',
-        significance: 'critical',
-        verified: true,
-        instrument: 'Bill No. 45 of 2026 (Defeated on Division)',
-        authority: 'Parliament of India (Lok Sabha)',
-        description:
-          'Motion for consideration fails on division (Ayes 298, Noes 230). Failed two-thirds special majority under Article 368(2). Bill is negatived.',
-        billNumber: 'Bill No. 45 of 2026',
-        houseOfIntroduction: 'LOK_SABHA',
-        eventType: 'TERMINAL_STATUS',
-        outcome: 'DEFEATED',
-        divisionAyes: 298,
-        divisionNoes: 230,
-        constitutionalArticleTarget: 'Article 81 & Article 82',
-        proposedCeiling: 850,
-        classification: 'HISTORICAL_FACT',
-        officialSource: 'Lok Sabha Secretariat',
-        sourceReference: 'Lok Sabha Parliamentary Bulletin Part I, 17 April 2026',
-        sourcePublicationMetadata: 'LS Bulletin Part I, Division Result No. 4, 17 April 2026',
-      },
-      {
-        id: 'LEG-2026-04-17-BILL-46-INFRUCTUOUS',
-        date: '2026-04-17',
-        title: 'Delimitation Bill, 2026 Rendered Infructuous',
-        significance: 'critical',
-        verified: true,
-        instrument: 'Bill No. 46 of 2026 (Infructuous)',
-        authority: 'Parliament of India (Lok Sabha)',
-        description:
-          'Rendered legally infructuous following defeat of enabling Constitution (131st Amendment) Bill, 2026.',
-        billNumber: 'Bill No. 46 of 2026',
-        houseOfIntroduction: 'LOK_SABHA',
-        eventType: 'TERMINAL_STATUS',
-        outcome: 'INFRUCTUOUS',
-        constitutionalArticleTarget: 'Article 82',
-        classification: 'HISTORICAL_FACT',
-        officialSource: 'Lok Sabha Secretariat',
-        sourceReference:
-          'Lok Sabha Parliamentary Bulletin Part II, 17 April 2026; Parliamentary Practice & Procedure',
-        sourcePublicationMetadata: 'Rules of Procedure and Conduct of Business in Lok Sabha',
-      },
-      {
-        id: 'LEG-2026-04-17-BILL-47-INFRUCTUOUS',
-        date: '2026-04-17',
-        title: 'Union Territories Laws (Amendment) Bill, 2026 Rendered Infructuous',
-        significance: 'high',
-        verified: true,
-        instrument: 'Bill No. 47 of 2026 (Infructuous)',
-        authority: 'Parliament of India (Lok Sabha)',
-        description:
-          'Rendered legally infructuous following defeat of enabling Constitution (131st Amendment) Bill, 2026.',
-        billNumber: 'Bill No. 47 of 2026',
-        houseOfIntroduction: 'LOK_SABHA',
-        eventType: 'TERMINAL_STATUS',
-        outcome: 'INFRUCTUOUS',
-        constitutionalArticleTarget: 'Article 239A & Article 81(1)(b)',
-        classification: 'HISTORICAL_FACT',
-        officialSource: 'Lok Sabha Secretariat',
-        sourceReference:
-          'Lok Sabha Parliamentary Bulletin Part II, 17 April 2026; Parliamentary Practice & Procedure',
-        sourcePublicationMetadata: 'Rules of Procedure and Conduct of Business in Lok Sabha',
-      },
-      {
-        id: 'LEG-CENSUS-2027',
-        date: '2027-01-01',
-        title: 'Upcoming National Decennial Census (Census 2027 Tracking)',
-        significance: 'high',
-        verified: false,
-        instrument: 'Census Act, 1948 (Operation Pending)',
-        authority: 'Office of the Registrar General & Census Commissioner, India',
-        description:
-          'Active tracking record for the upcoming national decennial census. Final population data is UNAVAILABLE.',
-      },
-      {
-        id: 'LEG-FUTURE-DELIM',
-        date: '2028-01-01',
-        title: 'Future Anticipated Delimitation (Post-Census 2027 Operation)',
-        significance: 'critical',
-        verified: false,
-        instrument: 'Constitution of India (Articles 82 & 170 post-freeze mandate)',
-        authority: 'Future Delimitation Commission',
-        description:
-          'Prospective post-freeze delimitation mandated upon publication of first census after 2026.',
-      },
-    ];
-
-    const provenance = this.buildProvenance(
-      'STATUTORY_GAZETTE_RECONCILIATION',
-      'STATUTORY_FACT',
-      'OFFICIAL',
-      [
-        DELIMITATION_2008_REGIME_PROVENANCE,
-        APRA_2014_PROVENANCE,
-        GSR_311E_2015_PROVENANCE,
-        ECI_NOTIFICATION_2018_PROVENANCE,
-      ],
-    );
+    const events = getCanonicalDelimitationTimeline();
+    const latestEvent = [...events].sort((a, b) => b.date.localeCompare(a.date))[0];
+    if (!latestEvent) throw new Error('Canonical delimitation timeline has no events');
 
     return {
-      status: 'pre_census',
+      status: 'census_underway',
       totalEvents: events.length,
-      verifiedEvents: events.filter((e) => e.verified).length,
+      verifiedEvents: events.filter((event) => event.verified).length,
       latestEvent: {
-        title: 'ECI Statutory Notification No. 282/AP/2018(DEL)',
-        date: '2018-09-22',
-        type: 'statutory_gazette_notification',
-        verified: true,
-        source: 'Election Commission of India',
+        title: latestEvent.title,
+        date: latestEvent.date,
+        type: latestEvent.category ?? 'statutory_event',
+        verified: latestEvent.verified,
+        source: latestEvent.authority ?? 'Official record',
       },
       events,
-      provenance,
+      provenance: getCanonicalDelimitationTimelineProvenance(),
     };
   }
 
-  /**
-   * 4. GET /api/v1/delimitation/status (Directives G5-10, G5-11, G5-13)
-   */
   public getStatus(): DelimitationStatusDTO {
-    const provenance = this.buildProvenance(
-      'CONSTITUTIONAL_STATUS_AUDIT',
-      'STATUTORY_FACT',
-      'OFFICIAL',
-      [DELIMITATION_2008_REGIME_PROVENANCE],
-    );
-
-    return {
-      nationalStatus: 'pre_census',
-      statusLabel: 'Pre-Census (Constitutional Freeze In Effect)',
-      description:
-        'The constitutional freeze mandated by the 84th Amendment (Articles 82 and 170) remains in force until the relevant figures for the first census taken after the year 2026 have been published.',
-      constitutionalFramework: 'Constitution of India Articles 81, 82, 170, 330, and 332',
-      nextMilestone: 'Census 2027 enumeration & population publication',
-      censusTracking: {
-        constitutionalTrigger: 'First census taken after 2026 (Articles 82 & 170 proviso)',
-        currentExpectedCensusOperation: 'Census 2027',
-        poligramFutureAnticipatedRegime: 'Post-Census 2027 Operation',
-        paninFutureAnticipatedRegime: 'Post-Census 2027 Operation',
-        finalPopulationAvailable: false,
-      },
-      lastUpdated: new Date().toISOString(),
-      provenance,
-    };
+    return getCanonicalDelimitationStatus();
   }
-
   /**
    * 5. GET /api/v1/delimitation/gainers-losers
    */

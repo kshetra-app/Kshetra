@@ -109,6 +109,70 @@ describe('Track 2: Four-State Offline Mutation Sync Lifecycle', () => {
         { opType: 'compose_post', clientToken: 'client-token-offline', status: 'QUEUED' },
       ]);
     });
+
+    it('reconciles persisted poll and option IDs after an offline poll syncs', async () => {
+      const clientToken = 'client-poll-token';
+      const poll = {
+        id: 'persisted-poll-id',
+        question: 'Question?',
+        totalVotes: 0,
+        isClosed: false,
+        options: [
+          { id: 'persisted-option-1', label: 'Yes', voteCount: 0, sortOrder: 0 },
+          { id: 'persisted-option-2', label: 'No', voteCount: 0, sortOrder: 1 },
+        ],
+      };
+      useFeedStore.setState({
+        posts: [{
+          id: clientToken,
+          clientToken,
+          author: { id: 'usr-1', displayName: 'Test User' },
+          content: 'Question?',
+          type: 'poll',
+          stateCode: 'TS',
+          replyCount: 0,
+          reactionCount: 0,
+          isPinned: false,
+          isDeleted: false,
+          language: 'en',
+          hashtags: [],
+          syncStatus: 'QUEUED',
+          poll: {
+            id: 'temporary-poll-id',
+            question: 'Question?',
+            totalVotes: 0,
+            isClosed: false,
+            options: [
+              { id: 'temporary-option-1', label: 'Yes', voteCount: 0, sortOrder: 0 },
+              { id: 'temporary-option-2', label: 'No', voteCount: 0, sortOrder: 1 },
+            ],
+          },
+        } as any],
+      });
+      mockIsOnline = false;
+      await enqueue('compose_post', {
+        content: 'Question?',
+        type: 'poll',
+        stateCode: 'TS',
+        authorId: 'usr-1',
+        pollOptions: ['Yes', 'No'],
+        clientToken,
+      }, clientToken);
+
+      jest.spyOn(dataService, 'composePost').mockResolvedValueOnce({
+        id: 'persisted-post-id',
+        success: true,
+        poll,
+      });
+      mockIsOnline = true;
+      await flushQueue();
+
+      const persistedPost = useFeedStore.getState().posts[0];
+      expect(persistedPost.id).toBe('persisted-post-id');
+      expect(persistedPost.poll?.id).toBe('persisted-poll-id');
+      expect(persistedPost.poll?.options[0].id).toBe('persisted-option-1');
+      expect(dataService.composePost).toHaveBeenCalledWith(expect.objectContaining({ pollOptions: ['Yes', 'No'] }));
+    });
   });
 
   describe('2. Queue Replay & Store Reconciliation on flushQueue', () => {

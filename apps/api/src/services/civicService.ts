@@ -1,3 +1,4 @@
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 /**
  * Canonical Civic Service
  * Master Product Blueprint — Domain 3: Core Civic & Engagement Platform
@@ -30,9 +31,39 @@ import type {
   DevelopmentProjectDTO,
   ConstituencySentimentDTO,
 } from '@kshetra/shared';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, isUsingServiceRole } from '../lib/supabase';
 import { canonicalGeographyService } from './canonicalGeographyService';
 import { checkContentModeration } from './contentModeration';
+
+function isProductionRuntime(): boolean {
+  return isProductionLikeRuntime();
+}
+
+function communityGroupStorageError(
+  message: string,
+  code = 'COMMUNITY_GROUP_DATABASE_ERROR',
+  statusCode = 503,
+): Error & { code: string; statusCode: number } {
+  return Object.assign(new Error(message), { code, statusCode });
+}
+
+function mapCommunityGroupRow(row: any): CommunityGroupDTO {
+  return {
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    constituencyId: row.constituency_id,
+    mandal: row.mandal ?? undefined,
+    ward: row.ward ?? undefined,
+    description: row.description ?? undefined,
+    category: row.category,
+    createdBy: row.created_by,
+    memberCount: Number(row.member_count ?? 0),
+    isActive: Boolean(row.is_active),
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
 
 export class InvalidCivicStatusTransitionError extends Error {
   public readonly code = 'INVALID_STATUS_TRANSITION';
@@ -1127,6 +1158,37 @@ export class CivicService {
     const slug = `${input.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${input.constituencyId.toLowerCase()}`;
     const now = new Date().toISOString();
 
+    if (isProductionRuntime()) {
+      if (!isSupabaseConfigured || !isUsingServiceRole) {
+        throw communityGroupStorageError(
+          'Durable community group storage is unavailable',
+          'DATABASE_UNAVAILABLE',
+        );
+      }
+
+      const { data, error } = await supabase.rpc('create_civic_community_group', {
+        p_name: input.name.trim(),
+        p_slug: slug,
+        p_constituency_id: input.constituencyId,
+        p_description: input.description?.trim() || null,
+        p_category: input.category,
+        p_mandal: input.mandal?.trim() || null,
+        p_ward: input.ward?.trim() || null,
+        p_created_by: userId,
+      });
+      const row = Array.isArray(data) ? data[0] : data;
+      if (error || !row) {
+        throw communityGroupStorageError(
+          error?.message || 'The group and initial admin membership were not persisted',
+          error?.code === '23505'
+            ? 'COMMUNITY_GROUP_SLUG_CONFLICT'
+            : 'COMMUNITY_GROUP_DATABASE_ERROR',
+          error?.code === '23505' ? 409 : 503,
+        );
+      }
+      return mapCommunityGroupRow(row);
+    }
+
     const group: CommunityGroupDTO = {
       id,
       name: input.name.trim(),
@@ -1158,7 +1220,8 @@ export class CivicService {
           description: group.description,
           category: group.category,
           created_by: group.createdBy,
-          member_count: group.memberCount,
+          // The membership insert below fires the database count trigger.
+          member_count: 0,
           is_active: group.isActive,
           created_at: group.createdAt,
           updated_at: group.updatedAt,
@@ -1192,6 +1255,23 @@ export class CivicService {
     groupId: string,
     userId: string,
   ): Promise<'admin' | 'moderator' | 'member' | null> {
+    if (isProductionRuntime()) {
+      if (!isSupabaseConfigured || !isUsingServiceRole) {
+        throw communityGroupStorageError(
+          'Durable community membership storage is unavailable',
+          'DATABASE_UNAVAILABLE',
+        );
+      }
+      const { data, error } = await supabase
+        .from('community_group_memberships')
+        .select('role')
+        .eq('group_id', groupId)
+        .eq('user_id', userId)
+        .maybeSingle();
+      if (error) throw communityGroupStorageError(error.message);
+      return (data?.role as 'admin' | 'moderator' | 'member' | undefined) ?? null;
+    }
+
     for (const entry of this.inMemoryGroupMemberships) {
       const [gId, uId, role] = entry.split(':');
       if (gId === groupId && uId === userId) {
@@ -1207,6 +1287,45 @@ export class CivicService {
     newRole: 'admin' | 'moderator' | 'member',
     actingUserId: string,
   ): Promise<{ success: boolean; role: 'admin' | 'moderator' | 'member' }> {
+    if (isProductionRuntime()) {
+      if (!isSupabaseConfigured || !isUsingServiceRole) {
+        throw communityGroupStorageError(
+          'Durable community membership storage is unavailable',
+          'DATABASE_UNAVAILABLE',
+        );
+      }
+      const { data, error } = await supabase.rpc('update_civic_community_member_role', {
+        p_group_id: groupId,
+        p_target_user_id: targetUserId,
+        p_new_role: newRole,
+        p_actor_user_id: actingUserId,
+      });
+      if (error) {
+        const code = error.message?.includes('LAST_GROUP_ADMIN')
+          ? 'LAST_GROUP_ADMIN'
+          : error.message?.includes('MEMBER_NOT_FOUND') ||
+              error.message?.includes('GROUP_NOT_FOUND')
+            ? 'NOT_FOUND'
+            : error.message?.includes('FORBIDDEN')
+              ? 'FORBIDDEN'
+              : error.message?.includes('INVALID_GROUP_ROLE')
+                ? 'INVALID_GROUP_ROLE'
+                : 'COMMUNITY_GROUP_DATABASE_ERROR';
+        const statusCode =
+          code === 'LAST_GROUP_ADMIN'
+            ? 409
+            : code === 'NOT_FOUND'
+              ? 404
+              : code === 'FORBIDDEN'
+                ? 403
+                : code === 'INVALID_GROUP_ROLE'
+                  ? 400
+                  : 503;
+        throw Object.assign(new Error(error.message), { code, statusCode });
+      }
+      return { success: true, role: data as 'admin' | 'moderator' | 'member' };
+    }
+
     const actingRole = await this.getMemberRole(groupId, actingUserId);
     if (actingRole !== 'admin') {
       throw new Error('FORBIDDEN: Only group admins can update member roles');
@@ -1215,6 +1334,7 @@ export class CivicService {
     if (!currentRole) {
       throw new Error('NOT_FOUND: User is not a member of this group');
     }
+
     this.inMemoryGroupMemberships.delete(`${groupId}:${targetUserId}:${currentRole}`);
     this.inMemoryGroupMemberships.add(`${groupId}:${targetUserId}:${newRole}`);
 
@@ -1235,6 +1355,27 @@ export class CivicService {
     groupId: string,
     userId: string,
   ): Promise<{ success: boolean; memberCount: number }> {
+    if (isProductionRuntime()) {
+      if (!isSupabaseConfigured || !isUsingServiceRole) {
+        throw communityGroupStorageError(
+          'Durable community membership storage is unavailable',
+          'DATABASE_UNAVAILABLE',
+        );
+      }
+      const { data, error } = await supabase.rpc('join_civic_community_group', {
+        p_group_id: groupId,
+        p_user_id: userId,
+      });
+      if (error) {
+        const code = error.message?.includes('GROUP_NOT_FOUND')
+          ? 'NOT_FOUND'
+          : 'COMMUNITY_GROUP_DATABASE_ERROR';
+        const statusCode = code === 'NOT_FOUND' ? 404 : 503;
+        throw Object.assign(new Error(error.message), { code, statusCode });
+      }
+      return { success: true, memberCount: Number(data ?? 0) };
+    }
+
     const group = this.inMemoryGroups.get(groupId);
     if (!group) throw new Error(`NOT_FOUND: Community group ${groupId} not found`);
 
@@ -1263,6 +1404,29 @@ export class CivicService {
     groupId: string,
     userId: string,
   ): Promise<{ success: boolean; memberCount: number }> {
+    if (isProductionRuntime()) {
+      if (!isSupabaseConfigured || !isUsingServiceRole) {
+        throw communityGroupStorageError(
+          'Durable community membership storage is unavailable',
+          'DATABASE_UNAVAILABLE',
+        );
+      }
+      const { data, error } = await supabase.rpc('leave_civic_community_group', {
+        p_group_id: groupId,
+        p_user_id: userId,
+      });
+      if (error) {
+        const code = error.message?.includes('LAST_GROUP_ADMIN')
+          ? 'LAST_GROUP_ADMIN'
+          : error.message?.includes('GROUP_NOT_FOUND')
+            ? 'NOT_FOUND'
+            : 'COMMUNITY_GROUP_DATABASE_ERROR';
+        const statusCode = code === 'LAST_GROUP_ADMIN' ? 409 : code === 'NOT_FOUND' ? 404 : 503;
+        throw Object.assign(new Error(error.message), { code, statusCode });
+      }
+      return { success: true, memberCount: Number(data ?? 0) };
+    }
+
     const group = this.inMemoryGroups.get(groupId);
     if (!group) throw new Error(`NOT_FOUND: Community group ${groupId} not found`);
 

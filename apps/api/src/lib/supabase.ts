@@ -32,6 +32,30 @@ export const isValidSupabaseKey = (token: string, type: 'service' | 'anon'): boo
 const hasValidServiceKey = isValidSupabaseKey(rawServiceKey, 'service');
 const hasValidAnonKey = isValidSupabaseKey(rawAnonKey, 'anon');
 
+/**
+ * Public reads must never reuse the privileged server client. Accept a
+ * publishable key or a legacy JWT whose role is explicitly `anon`; reject
+ * `sb_secret_` keys and service-role JWTs even if they were put in the anon
+ * environment variable by mistake.
+ */
+export function isPublicSupabaseAnonKey(token: string): boolean {
+  const trimmed = token.trim();
+  if (trimmed.startsWith('sb_publishable_')) return true;
+  if (!trimmed || trimmed.startsWith('sb_secret_')) return false;
+
+  const parts = trimmed.split('.');
+  if (parts.length !== 3) return false;
+
+  try {
+    const claims = JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf8')) as {
+      role?: unknown;
+    };
+    return claims.role === 'anon';
+  } catch {
+    return false;
+  }
+}
+
 // Prefer service_role key if valid (JWT or sb_secret_); fall back to anon key to prevent total DB outage
 const resolvedKey = hasValidServiceKey
   ? rawServiceKey
@@ -41,6 +65,12 @@ const resolvedKey = hasValidServiceKey
 
 export let isSupabaseConfigured = !!(supabaseUrl && (hasValidServiceKey || hasValidAnonKey));
 export const isUsingServiceRole = hasValidServiceKey;
+export const isPublicSupabaseConfigured = !!(supabaseUrl && isPublicSupabaseAnonKey(rawAnonKey));
+
+/** Read the mutable configuration state, including the isolated-test override. */
+export function isSupabaseAvailable(): boolean {
+  return isSupabaseConfigured;
+}
 
 export const setSupabaseConfiguredForTesting = (configured: boolean) => {
   isSupabaseConfigured = configured;
@@ -55,6 +85,18 @@ if (!hasValidServiceKey && hasValidAnonKey) {
 export const supabase: SupabaseClient = createClient(
   supabaseUrl || 'https://placeholder.supabase.co',
   resolvedKey,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  },
+);
+
+/** A separate least-privilege client for data intentionally exposed to visitors. */
+export const publicSupabase: SupabaseClient = createClient(
+  supabaseUrl || 'https://placeholder.supabase.co',
+  isPublicSupabaseConfigured ? rawAnonKey : 'placeholder-key',
   {
     auth: {
       autoRefreshToken: false,

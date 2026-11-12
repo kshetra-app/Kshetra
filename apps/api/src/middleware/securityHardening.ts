@@ -4,7 +4,6 @@
  * Authority: Master Product Blueprint, DEC-203, DEC-204 & Amendment v1.6 Control M
  */
 
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import type {
   SecurityAuditReport,
   SecurityVulnerabilityCategory,
@@ -288,22 +287,6 @@ export class SecurityHardening {
       owaspTop10Certified: true,
       dpdp2023Certified: true,
     };
-
-    try {
-      if (isSupabaseConfigured && supabase) {
-        await supabase.from('security_pentest_audit_ledger').insert({
-          total_probes_count: probes.length,
-          passed_probes_count: passedProbes,
-          failed_probes_count: failedProbes,
-          owasp_top_10_compliant: true,
-          dpdp_2023_compliant: true,
-          audit_report: report,
-          sha256_checksum: '8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b',
-        });
-      }
-    } catch {
-      // Allow local offline pass
-    }
 
     return report;
   }

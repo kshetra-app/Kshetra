@@ -102,16 +102,6 @@ export default React.memo(function PromiseCard({ promise, onFollow, onPress }: P
             {promise.followCount}
           </Text>
         </Pressable>
-        <View style={styles.engagementItem}>
-          <Ionicons name="checkmark-done" size={16} color="#10B981" />
-          <Text style={styles.engagementText}>{promise.verificationCount} {t('promiseCard.verified')}</Text>
-        </View>
-        <View style={styles.engagementItem}>
-          <Ionicons name="flag" size={16} color={promise.disputeCount > 100 ? '#EF4444' : '#6B7280'} />
-          <Text style={[styles.engagementText, promise.disputeCount > 100 && { color: '#EF4444' }]}>
-            {promise.disputeCount} {t('promiseCard.disputes')}
-          </Text>
-        </View>
       </View>
     </Pressable>
   );

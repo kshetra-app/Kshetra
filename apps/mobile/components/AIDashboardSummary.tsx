@@ -20,8 +20,7 @@ export default function AIDashboardSummary({ constituencyName, issues }: AIDashb
   const { t } = useTranslation();
   const { colors } = useTheme();
   const [summary, setSummary] = useState<string | null>(null);
-  const [trendAnalysis, setTrendAnalysis] = useState<string | null>(null);
-  const [loading, setLoading] = useState<'issues' | 'trends' | null>(null);
+  const [loading, setLoading] = useState<'issues' | null>(null);
 
   const fetchIssueSummary = useCallback(async () => {
     if (!constituencyName || !issues || issues.length === 0) return;
@@ -38,19 +37,6 @@ export default function AIDashboardSummary({ constituencyName, issues }: AIDashb
     }
   }, [constituencyName, issues]);
 
-  const fetchTrendAnalysis = useCallback(async () => {
-    setLoading('trends');
-    try {
-      const prompt = 'Analyze key election trends across Indian state assemblies in 150 words. Cover anti-incumbency patterns, regional party performance, voter turnout shifts, and coalition dynamics from recent elections (2021-2024).';
-      const result = await sendAIChat([{ role: 'user', content: prompt }]);
-      setTrendAnalysis(result.response ?? 'Unable to generate analysis.');
-    } catch {
-      setTrendAnalysis('Failed to connect. Check network.');
-    } finally {
-      setLoading(null);
-    }
-  }, []);
-
   return (
     <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, shadowColor: colors.shadowColor }]}>
       <View style={styles.header}>
@@ -65,6 +51,11 @@ export default function AIDashboardSummary({ constituencyName, issues }: AIDashb
           {summary ? (
             <>
               <Text style={[styles.summaryText, { color: colors.text }]}>{summary}</Text>
+              <Text style={[styles.provenanceText, { color: colors.textMuted }]}>
+                {t('ai.referenceDataNotVerified', {
+                  defaultValue: 'AI generated from supplied app data; source and date verification is unavailable.',
+                })}
+              </Text>
               <Pressable onPress={() => setSummary(null)} style={styles.resetLink}>
                 <Text style={[styles.resetText, { color: colors.primary }]}>{t('ai.regenerate')}</Text>
               </Pressable>
@@ -87,34 +78,6 @@ export default function AIDashboardSummary({ constituencyName, issues }: AIDashb
           )}
         </View>
       )}
-
-      {/* Election trends */}
-      <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>{t('ai.trendAnalysis')}</Text>
-        {trendAnalysis ? (
-          <>
-            <Text style={[styles.summaryText, { color: colors.text }]}>{trendAnalysis}</Text>
-            <Pressable onPress={() => setTrendAnalysis(null)} style={styles.resetLink}>
-              <Text style={[styles.resetText, { color: colors.primary }]}>{t('ai.regenerate')}</Text>
-            </Pressable>
-          </>
-        ) : (
-          <Pressable
-            style={[styles.actionButton, { backgroundColor: colors.primary }, loading === 'trends' && styles.actionButtonDisabled]}
-            onPress={fetchTrendAnalysis}
-            disabled={loading === 'trends'}
-          >
-            {loading === 'trends' ? (
-              <ActivityIndicator size="small" color="#FFFFFF" />
-            ) : (
-              <Ionicons name="trending-up" size={14} color="#FFFFFF" style={{ marginRight: 6 }} />
-            )}
-            <Text style={styles.actionButtonText}>
-              {loading === 'trends' ? t('ai.analyzing') + '...' : t('ai.analyzeTrends')}
-            </Text>
-          </Pressable>
-        )}
-      </View>
 
       <Text style={[styles.disclaimer, { color: colors.textMuted }]}>
         {t('ai.poweredBy')}
@@ -157,6 +120,11 @@ const styles = StyleSheet.create({
   summaryText: {
     fontSize: 13,
     lineHeight: 20,
+  },
+  provenanceText: {
+    fontSize: 10,
+    lineHeight: 14,
+    marginTop: 5,
   },
   resetLink: {
     marginTop: 6,

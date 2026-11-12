@@ -4,7 +4,7 @@
  * - TEST-W009-B2-01: PaymentProvider order creation and signature verification
  * - TEST-W009-B2-02: Fail-closed on missing RAZORPAY_KEY_SECRET (500)
  * - TEST-W009-B2-03: Rejection of invalid / empty signatures (400)
- * - TEST-W009-B2-04: Voice OBD dispatch during permitted window (08:00–21:00 IST)
+ * - TEST-W009-B2-04: Voice OBD dispatch during configured window (09:00–20:00 IST)
  * - TEST-W009-B2-05: Rejection outside permitted window (400 OUTSIDE_TRAI_WINDOW)
  * - TEST-W009-B2-06: Webhook validation, delivery report parsing, and carrier timeout handling
  * - TEST-W009-B2-07: MockProvider production safety guard violation
@@ -55,18 +55,72 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
       expect(provider.isConfigured()).toBe(true);
       expect(provider.getPublicKey()).toBe(testKey);
 
-      const order = await provider.createOrder({
-        amountINR: 1500,
-        currency: 'INR',
-        politicianId: 'pol_123',
-      });
+      const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          id: 'order_razorpay_test_123',
+          amount: 150000,
+          currency: 'INR',
+          status: 'created',
+        }),
+      } as Response);
 
-      expect(order.orderId).toMatch(/^order_/);
-      expect(order.amountINR).toBe(1500);
-      expect(order.amountPaise).toBe(150000);
-      expect(order.currency).toBe('INR');
-      expect(order.key).toBe(testKey);
-      expect(order.isSandbox).toBe(false);
+      try {
+        const order = await provider.createOrder({
+          amountINR: 1500,
+          currency: 'INR',
+          politicianId: 'pol_123',
+        });
+
+        expect(order.orderId).toBe('order_razorpay_test_123');
+        expect(order.amountINR).toBe(1500);
+        expect(order.amountPaise).toBe(150000);
+        expect(order.currency).toBe('INR');
+        expect(order.key).toBe(testKey);
+        expect(order.isSandbox).toBe(true);
+        expect(order.prefill).toBeUndefined();
+        expect(fetchSpy).toHaveBeenCalledWith(
+          'https://api.razorpay.com/v1/orders',
+          expect.objectContaining({
+            method: 'POST',
+            headers: expect.objectContaining({
+              Authorization: `Basic ${Buffer.from(`${testKey}:${testSecret}`).toString('base64')}`,
+              'Content-Type': 'application/json',
+            }),
+            body: JSON.stringify({ amount: 150000, currency: 'INR' }),
+          }),
+        );
+      } finally {
+        fetchSpy.mockRestore();
+      }
+    });
+
+    it('rejects order creation when provider credentials are missing and does not invent a key', async () => {
+      const provider = new RazorpayProvider('', '');
+      expect(provider.getPublicKey()).toBe('');
+      await expect(provider.createOrder({ amountINR: 500 })).rejects.toMatchObject({
+        code: 'PROVIDER_CONFIG_ERROR',
+        statusCode: 503,
+      });
+    });
+
+    it('does not report a rejected provider response as a created order', async () => {
+      const provider = new RazorpayProvider(testKey, testSecret);
+      const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
+        ok: false,
+        status: 401,
+        json: async () => ({ error: { description: 'sensitive provider response' } }),
+      } as Response);
+
+      try {
+        await expect(provider.createOrder({ amountINR: 500 })).rejects.toMatchObject({
+          code: 'PAYMENT_PROVIDER_ERROR',
+          statusCode: 502,
+        });
+      } finally {
+        fetchSpy.mockRestore();
+      }
     });
 
     it('TEST-W009-B2-01b: verifyPaymentSignature correctly verifies valid HMAC-SHA256 signature', async () => {
@@ -77,17 +131,76 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
         .createHmac('sha256', testSecret)
         .update(`${orderId}|${paymentId}`)
         .digest('hex');
+      const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          id: paymentId,
+          order_id: orderId,
+          amount: 150000,
+          amount_refunded: 0,
+          currency: 'INR',
+          status: 'captured',
+          captured: true,
+        }),
+      } as Response);
 
-      const result = await provider.verifyPaymentSignature({
-        orderId,
-        paymentId,
-        signature: validSignature,
-      });
+      try {
+        const result = await provider.verifyPaymentSignature({
+          orderId,
+          paymentId,
+          signature: validSignature,
+          expectedAmountPaise: 150000,
+          expectedCurrency: 'INR',
+        });
 
-      expect(result.valid).toBe(true);
-      expect(result.orderId).toBe(orderId);
-      expect(result.paymentId).toBe(paymentId);
-      expect(result.reason).toBeUndefined();
+        expect(result.valid).toBe(true);
+        expect(result.orderId).toBe(orderId);
+        expect(result.paymentId).toBe(paymentId);
+        expect(result.reason).toBeUndefined();
+        expect(fetchSpy).toHaveBeenCalledWith(
+          `https://api.razorpay.com/v1/payments/${paymentId}`,
+          expect.objectContaining({ method: 'GET' }),
+        );
+      } finally {
+        fetchSpy.mockRestore();
+      }
+    });
+
+    it('does not accept an authorized but uncaptured Razorpay payment', async () => {
+      const provider = new RazorpayProvider(testKey, testSecret);
+      const orderId = 'order_authorized_only';
+      const paymentId = 'pay_authorized_only';
+      const signature = crypto
+        .createHmac('sha256', testSecret)
+        .update(`${orderId}|${paymentId}`)
+        .digest('hex');
+      const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          id: paymentId,
+          order_id: orderId,
+          amount: 50000,
+          amount_refunded: 0,
+          currency: 'INR',
+          status: 'authorized',
+          captured: false,
+        }),
+      } as Response);
+
+      try {
+        const result = await provider.verifyPaymentSignature({
+          orderId,
+          paymentId,
+          signature,
+          expectedAmountPaise: 50000,
+        });
+        expect(result.valid).toBe(false);
+        expect(result.reason).toBe('PAYMENT_NOT_CAPTURED');
+      } finally {
+        fetchSpy.mockRestore();
+      }
     });
 
     it('TEST-W009-B2-02: verifyPaymentSignature fails closed when RAZORPAY_KEY_SECRET is missing', async () => {
@@ -100,7 +213,7 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
           paymentId: 'pay_123',
           signature: 'some_sig',
         }),
-      ).rejects.toThrow('PROVIDER_CONFIG_ERROR');
+      ).rejects.toMatchObject({ code: 'PROVIDER_CONFIG_ERROR', statusCode: 503 });
     });
 
     it('TEST-W009-B2-03a: verifyPaymentSignature rejects invalid signature', async () => {
@@ -140,15 +253,15 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
     });
   });
 
-  describe('VoiceObdProvider (Telecom & TRAI Statutory Window)', () => {
+  describe('VoiceObdProvider (Telecom & Configured Dispatch Window)', () => {
     const provider = new TelecomProvider();
 
-    it('TEST-W009-B2-04: permits calling inside TRAI window (08:00–21:00 IST)', () => {
-      // 08:30 IST is 03:00 UTC
-      const dateMorning = new Date('2026-09-18T03:00:00.000Z');
+    it('TEST-W009-B2-04: permits calling inside configured window (09:00–20:00 IST)', () => {
+      // 09:30 IST is 04:00 UTC
+      const dateMorning = new Date('2026-09-18T04:00:00.000Z');
       const checkMorning = provider.isWithinTraiCallingWindow(dateMorning);
       expect(checkMorning.permitted).toBe(true);
-      expect(checkMorning.currentISTHour).toBe(8);
+      expect(checkMorning.currentISTHour).toBe(9);
 
       // 14:00 IST is 08:30 UTC
       const dateAfternoon = new Date('2026-09-18T08:30:00.000Z');
@@ -156,30 +269,30 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
       expect(checkAfternoon.permitted).toBe(true);
       expect(checkAfternoon.currentISTHour).toBe(14);
 
-      // 20:59 IST is 15:29 UTC
-      const dateEvening = new Date('2026-09-18T15:29:00.000Z');
+      // 19:59 IST is 14:29 UTC
+      const dateEvening = new Date('2026-09-18T14:29:00.000Z');
       const checkEvening = provider.isWithinTraiCallingWindow(dateEvening);
       expect(checkEvening.permitted).toBe(true);
-      expect(checkEvening.currentISTHour).toBe(20);
+      expect(checkEvening.currentISTHour).toBe(19);
     });
 
-    it('TEST-W009-B2-05: rejects calling outside TRAI window (before 08:00 IST or at/after 21:00 IST)', () => {
-      // 07:30 IST is 02:00 UTC
-      const earlyMorning = new Date('2026-09-18T02:00:00.000Z');
+    it('TEST-W009-B2-05: rejects calling outside configured window (before 09:00 IST or at/after 20:00 IST)', () => {
+      // 08:30 IST is 03:00 UTC
+      const earlyMorning = new Date('2026-09-18T03:00:00.000Z');
       const checkEarly = provider.isWithinTraiCallingWindow(earlyMorning);
       expect(checkEarly.permitted).toBe(false);
-      expect(checkEarly.currentISTHour).toBe(7);
+      expect(checkEarly.currentISTHour).toBe(8);
       expect(checkEarly.message).toContain(
-        'TRAI regulations restrict automated political calls to 8:00 AM – 9:00 PM IST',
+        'configured political voice dispatch window is 9:00 AM – 8:00 PM IST',
       );
 
-      // 21:15 IST is 15:45 UTC
-      const lateNight = new Date('2026-09-18T15:45:00.000Z');
+      // 20:15 IST is 14:45 UTC
+      const lateNight = new Date('2026-09-18T14:45:00.000Z');
       const checkLate = provider.isWithinTraiCallingWindow(lateNight);
       expect(checkLate.permitted).toBe(false);
-      expect(checkLate.currentISTHour).toBe(21);
+      expect(checkLate.currentISTHour).toBe(20);
       expect(checkLate.message).toContain(
-        'TRAI regulations restrict automated political calls to 8:00 AM – 9:00 PM IST',
+        'configured political voice dispatch window is 9:00 AM – 8:00 PM IST',
       );
 
       // 01:00 IST is 19:30 UTC (prev day)
@@ -285,6 +398,56 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
 
   describe('Route Consumption (Pages Pro & Campaign Voice OBD)', () => {
     it('TEST-W009-B2-08a: POST /api/v1/pages/:pageId/pro/order uses provider order structure', async () => {
+      const pageTestKey = 'rzp_test_page_key_123';
+      const pageTestSecret = 'test_secret_for_page_order';
+      setTestAuthResolver(async () => ({ userId: 'test-owner-1', role: 'politician' }));
+      setTestPageAuthorityResolver(async (auth, pageId) => ({
+        authorized: true,
+        notFound: false,
+        page: { id: pageId, owner_id: auth.userId },
+      }));
+
+      const oldKey = process.env.RAZORPAY_KEY_ID;
+      const oldSecret = process.env.RAZORPAY_KEY_SECRET;
+      process.env.RAZORPAY_KEY_ID = pageTestKey;
+      process.env.RAZORPAY_KEY_SECRET = pageTestSecret;
+      const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          id: 'order_razorpay_page_123',
+          amount: 499900,
+          currency: 'INR',
+          status: 'created',
+        }),
+      } as Response);
+
+      try {
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/pages/my-page/pro/order',
+          payload: { billingCycle: 'annual' },
+        });
+
+        expect(res.statusCode).toBe(200);
+        const body = JSON.parse(res.payload);
+        expect(body.success).toBe(true);
+        expect(body.orderId).toBe('order_razorpay_page_123');
+        expect(body.amount).toBe(499900);
+        expect(body.billingCycle).toBe('annual');
+        expect(body.currency).toBe('INR');
+        expect(body.key).toBe(pageTestKey);
+        expect(body.isSandbox).toBe(true);
+      } finally {
+        fetchSpy.mockRestore();
+        if (oldKey === undefined) delete process.env.RAZORPAY_KEY_ID;
+        else process.env.RAZORPAY_KEY_ID = oldKey;
+        if (oldSecret === undefined) delete process.env.RAZORPAY_KEY_SECRET;
+        else process.env.RAZORPAY_KEY_SECRET = oldSecret;
+      }
+    });
+
+    it('rejects client-supplied Page Pro prices that do not match the selected plan', async () => {
       setTestAuthResolver(async () => ({ userId: 'test-owner-1', role: 'politician' }));
       setTestPageAuthorityResolver(async (auth, pageId) => ({
         authorized: true,
@@ -295,20 +458,18 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/pages/my-page/pro/order',
-        payload: { billingCycle: 'annual' },
+        payload: { billingCycle: 'monthly', amount: 100 },
       });
 
-      expect(res.statusCode).toBe(200);
-      const body = JSON.parse(res.payload);
-      expect(body.success).toBe(true);
-      expect(body.orderId).toMatch(/^order_/);
-      expect(body.amount).toBe(499900);
-      expect(body.billingCycle).toBe('annual');
-      expect(body.currency).toBe('INR');
-      expect(body.key).toBeDefined();
+      expect(res.statusCode).toBe(400);
+      expect(JSON.parse(res.payload).code).toBe('PRICE_MISMATCH');
     });
 
     it('TEST-W009-B2-08b: POST /api/v1/pages/:pageId/pro/verify rejects invalid signature with 400', async () => {
+      const previousConfigured = isSupabaseConfigured;
+      const previousKey = process.env.RAZORPAY_KEY_ID;
+      setSupabaseConfiguredForTesting(false);
+      process.env.RAZORPAY_KEY_ID = 'rzp_test_page_verify_key';
       process.env.RAZORPAY_KEY_SECRET = 'test_secret_for_pages';
       setTestAuthResolver(async () => ({ userId: 'test-owner-1', role: 'politician' }));
       setTestPageAuthorityResolver(async (auth, pageId) => ({
@@ -316,23 +477,43 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
         notFound: false,
         page: { id: pageId, owner_id: auth.userId },
       }));
-
-      const res = await app.inject({
-        method: 'POST',
-        url: '/api/v1/pages/my-page/pro/verify',
-        payload: {
-          razorpay_order_id: 'order_page_123',
-          razorpay_payment_id: 'pay_page_456',
-          razorpay_signature: 'invalid_signature_hex',
-        },
+      PRO_ORDER_REGISTRY.set('order_page_123', {
+        orderId: 'order_page_123',
+        pageId: 'my-page',
+        userId: 'test-owner-1',
+        billingCycle: 'monthly',
+        amount: 49900,
+        product: 'pages_pro',
+        createdAt: Date.now(),
+        status: 'created',
       });
 
-      expect(res.statusCode).toBe(400);
-      const body = JSON.parse(res.payload);
-      expect(body.code).toBe('INVALID_SIGNATURE');
+      try {
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/pages/my-page/pro/verify',
+          payload: {
+            razorpay_order_id: 'order_page_123',
+            razorpay_payment_id: 'pay_page_456',
+            razorpay_signature: 'invalid_signature_hex',
+          },
+        });
+
+        expect(res.statusCode).toBe(400);
+        const body = JSON.parse(res.payload);
+        expect(body.code).toBe('INVALID_SIGNATURE');
+      } finally {
+        setSupabaseConfiguredForTesting(previousConfigured);
+        if (previousKey === undefined) delete process.env.RAZORPAY_KEY_ID;
+        else process.env.RAZORPAY_KEY_ID = previousKey;
+      }
     });
 
-    it('TEST-W009-B2-08c: POST /api/v1/pages/:pageId/pro/verify fails closed (500) if RAZORPAY_KEY_SECRET missing', async () => {
+    it('TEST-W009-B2-08c: POST /api/v1/pages/:pageId/pro/verify fails closed (503) if RAZORPAY_KEY_SECRET missing', async () => {
+      const previousConfigured = isSupabaseConfigured;
+      const previousKey = process.env.RAZORPAY_KEY_ID;
+      setSupabaseConfiguredForTesting(false);
+      process.env.RAZORPAY_KEY_ID = 'rzp_test_page_verify_key';
       delete process.env.RAZORPAY_KEY_SECRET;
       setTestAuthResolver(async () => ({ userId: 'test-owner-1', role: 'politician' }));
       setTestPageAuthorityResolver(async (auth, pageId) => ({
@@ -341,31 +522,90 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
         page: { id: pageId, owner_id: auth.userId },
       }));
 
-      const res = await app.inject({
-        method: 'POST',
-        url: '/api/v1/pages/my-page/pro/verify',
-        payload: {
-          razorpay_order_id: 'order_page_123',
-          razorpay_payment_id: 'pay_page_456',
-          razorpay_signature: 'any_signature_hex',
-        },
-      });
+      try {
+        const res = await app.inject({
+          method: 'POST',
+          url: '/api/v1/pages/my-page/pro/verify',
+          payload: {
+            razorpay_order_id: 'order_page_123',
+            razorpay_payment_id: 'pay_page_456',
+            razorpay_signature: 'any_signature_hex',
+          },
+        });
 
-      // Provider throws PROVIDER_CONFIG_ERROR, route responds 500
-      expect(res.statusCode).toBe(500);
-      const body = JSON.parse(res.payload);
-      expect(body.code).toBe('PROVIDER_CONFIG_ERROR');
+        // Provider reports missing server credentials as service unavailable.
+        expect(res.statusCode).toBe(503);
+        const body = JSON.parse(res.payload);
+        expect(body.code).toBe('PROVIDER_CONFIG_ERROR');
+      } finally {
+        setSupabaseConfiguredForTesting(previousConfigured);
+        if (previousKey === undefined) delete process.env.RAZORPAY_KEY_ID;
+        else process.env.RAZORPAY_KEY_ID = previousKey;
+      }
     });
 
     describe('DEF-B5-PAY-01 & DEF-B5-PAY-02: Security Verification Suite (Round 2)', () => {
       const secSecret = 'test_sec_secret_pages_12345';
+      let razorpayFetchSpy: jest.SpyInstance;
+      let orderSequence = 0;
+      let latestCreatedOrder: { id: string; amount: number; currency: string } | null = null;
+
+      const registerOrder = (orderId: string, pageId: string, userId: string, amount = 49900) => {
+        PRO_ORDER_REGISTRY.set(orderId, {
+          orderId,
+          pageId,
+          userId,
+          billingCycle: amount === 499900 ? 'annual' : 'monthly',
+          amount,
+          product: 'pages_pro',
+          createdAt: Date.now(),
+          status: 'created',
+        });
+      };
 
       beforeEach(() => {
         resetPagesTestResolvers();
+        PRO_ORDER_REGISTRY.clear();
+        process.env.RAZORPAY_KEY_ID = 'rzp_test_security_suite_key';
         process.env.RAZORPAY_KEY_SECRET = secSecret;
+        latestCreatedOrder = null;
+        razorpayFetchSpy = jest.spyOn(global, 'fetch').mockImplementation(async (input, init) => {
+          if (init?.method === 'POST') {
+            const requestBody = JSON.parse(String(init.body || '{}')) as {
+              amount: number;
+              currency: string;
+            };
+            latestCreatedOrder = {
+              id: `order_razorpay_security_${++orderSequence}`,
+              amount: requestBody.amount,
+              currency: requestBody.currency,
+            };
+            return {
+              ok: true,
+              status: 200,
+              json: async () => ({ ...latestCreatedOrder, status: 'created' }),
+            } as Response;
+          }
+
+          const paymentId = String(input).split('/').pop() || '';
+          return {
+            ok: true,
+            status: 200,
+            json: async () => ({
+              id: paymentId,
+              order_id: latestCreatedOrder?.id,
+              amount: latestCreatedOrder?.amount,
+              currency: latestCreatedOrder?.currency,
+              amount_refunded: 0,
+              status: 'captured',
+              captured: true,
+            }),
+          } as Response;
+        });
       });
 
       afterEach(() => {
+        razorpayFetchSpy?.mockRestore();
         resetPagesTestResolvers();
       });
 
@@ -733,6 +973,7 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
           notFound: false,
           page: { id: pageId, owner_id: auth.userId },
         }));
+        registerOrder('order_sec_invalid_sig', 'sec-test-page', 'authorized_owner');
 
         const res = await app.inject({
           method: 'POST',
@@ -749,7 +990,7 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
         expect(body.code).toBe('INVALID_SIGNATURE');
       });
 
-      it('TEST-W009-B5-SEC-08: Missing Razorpay secret -> 500 PROVIDER_CONFIG_ERROR', async () => {
+      it('TEST-W009-B5-SEC-08: Missing Razorpay secret -> 503 PROVIDER_CONFIG_ERROR', async () => {
         delete process.env.RAZORPAY_KEY_SECRET;
         setTestAuthResolver(async () => ({ userId: 'authorized_owner', role: 'politician' }));
         setTestPageAuthorityResolver(async (auth, pageId) => ({
@@ -757,6 +998,7 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
           notFound: false,
           page: { id: pageId, owner_id: auth.userId },
         }));
+        registerOrder('order_sec_no_secret', 'sec-test-page', 'authorized_owner');
 
         const res = await app.inject({
           method: 'POST',
@@ -768,7 +1010,7 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
           },
         });
 
-        expect(res.statusCode).toBe(500);
+        expect(res.statusCode).toBe(503);
         const body = JSON.parse(res.payload);
         expect(body.code).toBe('PROVIDER_CONFIG_ERROR');
       });
@@ -781,6 +1023,7 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
           notFound: false,
           page: { id: pId, owner_id: auth.userId },
         }));
+        registerOrder('order_sec_9', pageId, 'owner_sec_9');
 
         // Check initial entitlement is free
         const initRes = await app.inject({
@@ -883,7 +1126,7 @@ describe('W009-B2 Provider Abstraction & Security Gates', () => {
         expect(res.statusCode).toBe(400);
         const body = JSON.parse(res.payload);
         expect(body.code).toBe('OUTSIDE_TRAI_WINDOW');
-        expect(body.message).toContain('TRAI regulations');
+        expect(body.message).toContain('configured political voice dispatch window');
       } finally {
         global.Date = realDate;
       }

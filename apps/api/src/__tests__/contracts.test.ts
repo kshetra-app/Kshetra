@@ -14,41 +14,50 @@
 
 import { buildApp } from '../server';
 import type { FastifyInstance } from 'fastify';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, setSupabaseConfiguredForTesting } from '../lib/supabase';
 
 describe('W008 API Contract Standardization & Schema Envelopes', () => {
   let app: FastifyInstance;
+  let originalSupabaseConfigured: boolean;
 
   beforeAll(async () => {
+    originalSupabaseConfigured = isSupabaseConfigured;
+    setSupabaseConfiguredForTesting(true);
     app = await buildApp();
   });
 
   afterAll(async () => {
     jest.restoreAllMocks();
+    setSupabaseConfiguredForTesting(originalSupabaseConfigured);
     await app.close();
   });
 
   beforeEach(() => {
     let queriedId = 'mock-page-1';
-    const chainable: any = {
-      eq: (col: string, val: any) => {
-        queriedId = val;
-        return chainable;
-      },
-      or: () => chainable,
-      order: () => chainable,
-      select: () => chainable,
-      maybeSingle: async () => ({
-        data: { id: queriedId, handle: queriedId, is_pro: false, subscription_tier: 'free' },
-        error: null,
-      }),
-      single: async () => ({
-        data: { id: queriedId, handle: queriedId, is_pro: false, subscription_tier: 'free' },
-        error: null,
-      }),
-      then: (resolve: any) => resolve({ data: [], error: null }),
-    };
     jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+      const result = () =>
+        table === 'state_budget_summaries'
+          ? {
+              data: { state_code: 'TS', fiscal_year: '2025-26', data: { totalBudget: 1000 } },
+              error: null,
+            }
+          : {
+              data: { id: queriedId, handle: queriedId, is_pro: false, subscription_tier: 'free' },
+              error: null,
+            };
+      const chainable: any = {
+        eq: (_col: string, val: any) => {
+          queriedId = val;
+          return chainable;
+        },
+        or: () => chainable,
+        order: () => chainable,
+        limit: () => chainable,
+        select: () => chainable,
+        maybeSingle: async () => result(),
+        single: async () => result(),
+        then: (resolve: any) => resolve({ data: [], error: null }),
+      };
       return {
         select: () => chainable,
         insert: () => chainable,
@@ -531,17 +540,6 @@ describe('W008 API Contract Standardization & Schema Envelopes', () => {
     });
 
     // Civic Pagination Bounds
-    it('Civic: rejects attendance query with limit > 100 with 400', async () => {
-      const res = await app.inject({
-        method: 'GET',
-        url: '/api/v1/civic/attendance?limit=150',
-      });
-      expect(res.statusCode).toBe(400);
-      const body = JSON.parse(res.payload);
-      expect(body.statusCode).toBe(400);
-      expect(body.code).toBe('FST_ERR_VALIDATION');
-    });
-
     it('Civic: rejects bills query with page < 1 with 400', async () => {
       const res = await app.inject({
         method: 'GET',
@@ -581,7 +579,12 @@ describe('W008 API Contract Standardization & Schema Envelopes', () => {
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
       expect(body.stateCode).toBe('TS');
-      expect(body.message).toBeDefined();
+      expect(body.message).toBe('Budget summary loaded from stored records.');
+      expect(body.budget).toEqual({
+        state_code: 'TS',
+        fiscal_year: '2025-26',
+        data: { totalBudget: 1000 },
+      });
     });
   });
 });

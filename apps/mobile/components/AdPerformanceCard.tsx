@@ -33,7 +33,7 @@ export default function AdPerformanceCard({ ad, onPress, onPause }: AdPerformanc
       <Text style={styles.headline} numberOfLines={1}>{ad.headline}</Text>
 
       {/* Performance KPIs */}
-      <View style={styles.kpiRow}>
+      {perf ? <View style={styles.kpiRow}>
         <View style={styles.kpi}>
           <Text style={styles.kpiValue}>{perf.impressions > 1000000 ? `${(perf.impressions / 1000000).toFixed(1)}M` : `${Math.round(perf.impressions / 1000)}K`}</Text>
           <Text style={styles.kpiLabel}>{t('campaignManager.impressions')}</Text>
@@ -50,10 +50,12 @@ export default function AdPerformanceCard({ ad, onPress, onPause }: AdPerformanc
           <Text style={[styles.kpiValue, { color: perf.roi > 200 ? '#10B981' : '#F59E0B' }]}>{perf.roi}%</Text>
           <Text style={styles.kpiLabel}>ROI</Text>
         </View>
-      </View>
+      </View> : (
+        <Text style={styles.noMetrics}>{t('campaignManager.noVerifiedAdMetrics', { defaultValue: 'Delivery metrics are unavailable until verified ad delivery is connected.' })}</Text>
+      )}
 
       {/* Sentiment */}
-      <View style={styles.sentimentRow}>
+      {perf ? <View style={styles.sentimentRow}>
         <Text style={styles.sentimentLabel}>{t('outreach.sentiment')}:</Text>
         <View style={styles.sentimentBar}>
           <View style={[styles.sentimentFill, { width: `${perf.sentimentPositive}%`, backgroundColor: '#10B981' }]} />
@@ -61,12 +63,16 @@ export default function AdPerformanceCard({ ad, onPress, onPause }: AdPerformanc
           <View style={[styles.sentimentFill, { width: `${perf.sentimentNegative}%`, backgroundColor: '#EF4444' }]} />
         </View>
         <Text style={styles.sentimentPct}>{perf.sentimentPositive}% +</Text>
-      </View>
+      </View> : null}
 
       {/* ECI Compliance */}
       <View style={styles.complianceRow}>
-        <Ionicons name={ad.isECICompliant ? 'checkmark-circle' : 'warning'} size={14} color={ad.isECICompliant ? '#10B981' : '#EF4444'} />
-        <Text style={[styles.complianceText, { color: ad.isECICompliant ? '#10B981' : '#EF4444' }]}>{ad.isECICompliant ? t('campaignManager.eciCompliant') : t('campaignManager.complianceIssue')}</Text>
+        <Ionicons name={ad.status === 'draft' || ad.status === 'pending_review' ? 'time-outline' : ad.isECICompliant ? 'checkmark-circle' : 'warning'} size={14} color={ad.status === 'draft' || ad.status === 'pending_review' ? '#B45309' : ad.isECICompliant ? '#10B981' : '#EF4444'} />
+        <Text style={[styles.complianceText, { color: ad.status === 'draft' || ad.status === 'pending_review' ? '#B45309' : ad.isECICompliant ? '#10B981' : '#EF4444' }]}>
+          {ad.status === 'draft' || ad.status === 'pending_review'
+            ? t('campaignManager.adComplianceNotReviewed', { defaultValue: 'Compliance has not been reviewed' })
+            : ad.isECICompliant ? t('campaignManager.eciCompliant') : t('campaignManager.complianceIssue')}
+        </Text>
         {ad.disclosureText && <Text style={styles.disclosureText} numberOfLines={1}>{t('campaignManager.paidBy')}: {ad.paidForBy}</Text>}
       </View>
 
@@ -90,6 +96,7 @@ const styles = StyleSheet.create({
   statusText: { fontSize: 10, fontWeight: '800' },
   name: { fontSize: 15, fontWeight: '700', color: '#241814', marginBottom: 2 },
   headline: { fontSize: 12, color: '#6D5549', marginBottom: 12 },
+  noMetrics: { fontSize: 12, color: '#6D5549', paddingVertical: 12 },
   kpiRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12, paddingVertical: 8, backgroundColor: '#F5EFE4', borderRadius: 10, paddingHorizontal: 12 },
   kpi: { alignItems: 'center' },
   kpiValue: { fontSize: 15, fontWeight: '800', color: '#241814' },

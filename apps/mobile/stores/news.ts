@@ -5,6 +5,7 @@ import { SEED_NEWS_FEED } from '../data/newsSeed';
 import { API_BASE_URL, REMOTE_API_URL } from '../lib/constants';
 import { apiClient } from '../lib/api';
 import { scrapeNewsOnDevice } from '../lib/news/scrape';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 import type { NewsFeed, NewsItem, NewsCategory, NewsLanguageCode } from '../lib/newsTypes';
 
 /**
@@ -69,6 +70,16 @@ function seedFeed(lang: NewsLanguageCode | null): NewsFeed {
   };
 }
 
+const EMPTY_FEED: NewsFeed = {
+  version: 1,
+  generatedAt: '',
+  refreshIntervalMin: 60,
+  sources: SEED_NEWS_FEED.sources,
+  items: [],
+};
+
+let newsRefreshSequence = 0;
+
 async function loadFeed(lang: NewsLanguageCode | null): Promise<NewsFeed> {
   // 1. Hosted backend (server path, if deployed).
   const backend = await fetchBackendFeed(lang);
@@ -89,8 +100,9 @@ async function loadFeed(lang: NewsLanguageCode | null): Promise<NewsFeed> {
   // 3. Last-good cache for this language.
   const cached = readCache(lang);
   if (cached) return cached;
-  // 4. Seed (text-only).
-  return seedFeed(lang);
+  // 4. Development-only seed. Production must show an empty state when no real
+  // provider or last-good cache can supply current news.
+  return IS_LIVE_ENVIRONMENT ? EMPTY_FEED : seedFeed(lang);
 }
 
 interface NewsState {
@@ -114,8 +126,8 @@ interface NewsState {
 export const useNewsStore = create<NewsState>()(
   persist(
     (set, get) => ({
-      items: SEED_NEWS_FEED.items,
-      generatedAt: SEED_NEWS_FEED.generatedAt,
+      items: IS_LIVE_ENVIRONMENT ? [] : SEED_NEWS_FEED.items,
+      generatedAt: IS_LIVE_ENVIRONMENT ? '' : SEED_NEWS_FEED.generatedAt,
       refreshIntervalMin: SEED_NEWS_FEED.refreshIntervalMin,
       loading: false,
 
@@ -140,19 +152,20 @@ export const useNewsStore = create<NewsState>()(
       isBookmarked: (id) => get().bookmarks.includes(id),
 
       refresh: async () => {
+        const requestSequence = ++newsRefreshSequence;
         set({ loading: true });
         const lang = get().language;
         try {
           const feed = await loadFeed(lang);
-          // Ignore a stale response if the user switched language mid-flight.
-          if (get().language !== lang) return;
+          // Ignore out-of-order responses and any result for a previous language.
+          if (requestSequence !== newsRefreshSequence || get().language !== lang) return;
           set({
             items: feed.items,
             generatedAt: feed.generatedAt,
             refreshIntervalMin: feed.refreshIntervalMin,
           });
         } finally {
-          set({ loading: false });
+          if (requestSequence === newsRefreshSequence) set({ loading: false });
         }
       },
     }),

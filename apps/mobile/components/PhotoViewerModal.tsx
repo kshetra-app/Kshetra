@@ -31,17 +31,26 @@ interface PhotoViewerModalProps {
 
 export default memo(function PhotoViewerModal({
   visible,
-  imageUri,
+  imageUri: rawImageUri,
   name,
   party,
   subtitle,
   onClose,
 }: PhotoViewerModalProps) {
   const [imgLoading, setImgLoading] = useState(true);
+  const [imgError, setImgError] = useState(false);
+
+  const imageUri = React.useMemo(() => {
+    if (!rawImageUri || typeof rawImageUri !== 'string') return null;
+    const trimmed = rawImageUri.trim();
+    if (!trimmed.startsWith('http') || trimmed.includes('.svg') || trimmed.includes('LokSabha2024/photos/')) return null;
+    return trimmed.replace(/^http:\/\//i, 'https://');
+  }, [rawImageUri]);
 
   useEffect(() => {
     if (visible) {
       setImgLoading(true);
+      setImgError(false);
     }
   }, [visible, imageUri]);
 
@@ -77,14 +86,14 @@ export default memo(function PhotoViewerModal({
               { borderColor: partyColor, width: IMAGE_SIZE, height: IMAGE_SIZE, borderRadius: IMAGE_SIZE / 2 },
             ]}
           >
-            {imageUri ? (
+            {imageUri && !imgError ? (
               <>
                 <Image
                   key={imageUri}
                   source={{
                     uri: imageUri,
                     headers: {
-                      'User-Agent': 'PoligramApp/1.0 (https://kshetra.app)',
+                      'User-Agent': 'PoligramApp/1.0 (https://kshetra.app; contact@kshetra.app)',
                     },
                   }}
                   style={{
@@ -95,6 +104,10 @@ export default memo(function PhotoViewerModal({
                   resizeMode="cover"
                   onLoadStart={() => setImgLoading(true)}
                   onLoadEnd={() => setImgLoading(false)}
+                  onError={() => {
+                    setImgError(true);
+                    setImgLoading(false);
+                  }}
                 />
                 {imgLoading && (
                   <ActivityIndicator

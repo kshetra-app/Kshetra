@@ -1,17 +1,28 @@
 /**
  * Administrative Hierarchy drill-down screen.
  *
- * Route: /hierarchy/[id]  where id = AC number; uses the active state.
- * Drills Constituency → Mandal → Gram Panchayat → Polling Booth using the
- * pilot hierarchy seed (Telangana ACs 1–5, Andhra Pradesh ACs 1–3).
+ * Route: /hierarchy/[id] where id = AC number; uses the active state.
+ * Live builds drill through persisted constituency, local-body, ward, and booth
+ * records. Development builds retain the existing pilot seed experience.
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
-import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
+import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator } from 'react-native';
+import { useLocalSearchParams, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import type { SubConstituencyHierarchyDTO } from '@kshetra/shared';
+import { apiClient, ApiError } from '../../lib/api';
+import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
+import {
+  getBoothsForHierarchyBody,
+  getBoothsForHierarchyWard,
+  getBoothsWithoutHierarchyBody,
+  getBoothsWithoutHierarchyWard,
+  getHierarchyBodies,
+} from '../../lib/liveHierarchy';
 import { useTheme } from '../../lib/useTheme';
+import type { ThemeColors } from '../../lib/theme';
 import { getPartyColor } from '../../lib/constants';
 import { useActiveStateStore } from '../../stores/activeState';
 import { getUnifiedConstituenciesForState } from '../../lib/stateDataAdapter';
@@ -24,6 +35,7 @@ import {
   getPanchayatsForMandal,
   getBoothsForPanchayat,
   getBoothsForConstituency,
+  hasCurrentBoothVoterCount,
   type MandalWithOverlap,
   type GramPanchayat,
 } from '../../lib/hierarchyData';
@@ -31,10 +43,13 @@ import DataPendingCard from '../../components/DataPendingCard';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
 type Level = 'mandals' | 'panchayats' | 'booths';
+type LiveHierarchyState = {
+  status: 'loading' | 'ready' | 'missing' | 'error';
+  data: SubConstituencyHierarchyDTO | null;
+};
 
 export default function HierarchyScreen() {
   const { t } = useTranslation();
-  const router = useRouter();
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -55,6 +70,10 @@ export default function HierarchyScreen() {
 
   const stateCode = parsedStateCode;
   const acNo = parsedAcNo;
+  const [liveHierarchy, setLiveHierarchy] = useState<LiveHierarchyState>({ status: 'loading', data: null });
+  const [liveReloadToken, setLiveReloadToken] = useState(0);
+  const [liveBodyKey, setLiveBodyKey] = useState<string | null>(null);
+  const [liveWardKey, setLiveWardKey] = useState<string | null>(null);
 
   useEffect(() => {
     if (parsedStateCode && parsedStateCode !== 'IN' && parsedStateCode !== stateCodeStore) {
@@ -62,11 +81,76 @@ export default function HierarchyScreen() {
     }
   }, [parsedStateCode, stateCodeStore, setStateCode]);
 
-  const config = getHierarchyConfig(stateCode);
-  const summary = useMemo(() => getConstituencyHierarchySummary(stateCode, acNo), [stateCode, acNo]);
-  const constituency = useMemo(
-    () => getUnifiedConstituenciesForState(stateCode).find((c) => c.acNo === acNo) ?? null,
+  useEffect(() => {
+    if (!IS_LIVE_ENVIRONMENT) return;
+    if (!stateCode || stateCode === 'IN' || !Number.isInteger(acNo) || acNo <= 0) {
+      setLiveHierarchy({ status: 'missing', data: null });
+      return;
+    }
+    let active = true;
+    setLiveHierarchy({ status: 'loading', data: null });
+    void apiClient.constituencies.getHierarchy(stateCode, acNo).then((data) => {
+      if (active) setLiveHierarchy({ status: 'ready', data });
+    }).catch((error: unknown) => {
+      if (!active) return;
+      const apiErrorCode =
+        error instanceof ApiError &&
+        typeof error.data === 'object' &&
+        error.data !== null &&
+        'code' in error.data
+          ? error.data.code
+          : null;
+      setLiveHierarchy({
+        status: apiErrorCode === 'HIERARCHY_NOT_FOUND' ? 'missing' : 'error',
+        data: null,
+      });
+    });
+    return () => { active = false; };
+  }, [stateCode, acNo, liveReloadToken]);
+
+  useEffect(() => {
+    setLiveBodyKey(null);
+    setLiveWardKey(null);
+  }, [stateCode, acNo]);
+
+  const config = IS_LIVE_ENVIRONMENT ? null : getHierarchyConfig(stateCode);
+  const summary = useMemo(
+    () => (IS_LIVE_ENVIRONMENT ? null : getConstituencyHierarchySummary(stateCode, acNo)),
     [stateCode, acNo],
+  );
+  const constituency = useMemo(
+    () =>
+      IS_LIVE_ENVIRONMENT
+        ? null
+        : getUnifiedConstituenciesForState(stateCode).find((c) => c.acNo === acNo) ?? null,
+    [stateCode, acNo],
+  );
+  const liveData = liveHierarchy.data;
+  const liveBodies = useMemo(() => (liveData ? getHierarchyBodies(liveData) : []), [liveData]);
+  const liveSelectedBody = liveBodies.find((body) => body.key === liveBodyKey) ?? null;
+  const liveSelectedWard =
+    liveSelectedBody?.wards.find((ward) => ward.internalId === liveWardKey) ?? null;
+  const liveBodyBooths = useMemo(
+    () => (liveData && liveSelectedBody ? getBoothsForHierarchyBody(liveData, liveSelectedBody) : []),
+    [liveData, liveSelectedBody],
+  );
+  const liveWardBooths = useMemo(
+    () =>
+      liveData && liveSelectedBody && liveSelectedWard
+        ? getBoothsForHierarchyWard(liveData, liveSelectedBody, liveSelectedWard)
+        : [],
+    [liveData, liveSelectedBody, liveSelectedWard],
+  );
+  const liveBoothsWithoutWard = useMemo(
+    () =>
+      liveData && liveSelectedBody
+        ? getBoothsWithoutHierarchyWard(liveData, liveSelectedBody)
+        : [],
+    [liveData, liveSelectedBody],
+  );
+  const liveBoothsWithoutBody = useMemo(
+    () => (liveData ? getBoothsWithoutHierarchyBody(liveData) : []),
+    [liveData],
   );
 
   const [level, setLevel] = useState<Level>('mandals');
@@ -74,12 +158,16 @@ export default function HierarchyScreen() {
   const [panchayat, setPanchayat] = useState<GramPanchayat | null>(null);
   const [helpVisible, setHelpVisible] = useState(false);
 
-  const mandals = useMemo(() => getMandalsForConstituency(stateCode, acNo), [stateCode, acNo]);
+  const mandals = useMemo(
+    () => (IS_LIVE_ENVIRONMENT ? [] : getMandalsForConstituency(stateCode, acNo)),
+    [stateCode, acNo],
+  );
   const panchayats = useMemo(
-    () => (mandal ? getPanchayatsForMandal(stateCode, mandal.id) : []),
+    () => (!IS_LIVE_ENVIRONMENT && mandal ? getPanchayatsForMandal(stateCode, mandal.id) : []),
     [stateCode, mandal],
   );
   const booths = useMemo(() => {
+    if (IS_LIVE_ENVIRONMENT) return [];
     if (panchayat) return getBoothsForPanchayat(stateCode, panchayat.id);
     return getBoothsForConstituency(stateCode, acNo);
   }, [stateCode, acNo, panchayat]);
@@ -87,8 +175,241 @@ export default function HierarchyScreen() {
   const labels = config?.displayLabels;
 
   // ─── Data-pending state (zero-fabrication) ───
-  // When no verified LGD/CEO pilot seed covers this constituency we show an
-  // explicit "Data pending" state — never synthesized drill-down data.
+  // Live builds use the persisted API above; the remaining pending state is
+  // for development builds without verified pilot seed coverage.
+  if (IS_LIVE_ENVIRONMENT) {
+    const liveBooths = liveData?.pollingBooths ?? [];
+    const liveConstituency = liveData?.constituency;
+    const atBodyList = !liveSelectedBody;
+    const atWardList = !!liveSelectedBody && !liveSelectedWard;
+    const bodyTitle = liveSelectedBody?.name ?? liveConstituency?.name ?? `AC ${acNo}`;
+
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <Stack.Screen
+          options={{
+            title: `${liveConstituency?.name ?? t('hierarchy.constituency')} — ${t('hierarchy.hierarchyLabel')}`,
+            headerBackTitle: t('hierarchy.back'),
+            headerRight: () => (
+              <Pressable
+                accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
+                style={{ padding: 4 }}
+                onPress={() => setHelpVisible(true)}
+              >
+                <Ionicons name="help-circle-outline" size={20} color={colors.text} />
+              </Pressable>
+            ),
+          }}
+        />
+        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 32 }}>
+          <View style={styles.pendingHeader}>
+            <Ionicons name="git-branch-outline" size={40} color={colors.textMuted} />
+            <Text style={[styles.emptyTitle, { color: colors.text }]}>
+              {bodyTitle}
+            </Text>
+          </View>
+
+          {liveHierarchy.status === 'loading' ? (
+            <View style={{ paddingVertical: 28, alignItems: 'center' }}>
+              <ActivityIndicator color={colors.primary} />
+              <Text style={[styles.note, { color: colors.textSecondary, marginTop: 10 }]}>
+                {t('common.loading')}
+              </Text>
+            </View>
+          ) : liveHierarchy.status === 'error' ? (
+            <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+              <Text style={[styles.note, { color: colors.textSecondary }]}>
+                {t('common.error')}
+              </Text>
+              <Pressable onPress={() => setLiveReloadToken((token) => token + 1)} style={{ marginTop: 12 }}>
+                <Text style={{ color: colors.primary, fontWeight: '700' }}>
+                  {t('common.retry')}
+                </Text>
+              </Pressable>
+            </View>
+          ) : liveHierarchy.status === 'missing' || !liveData ? (
+            <DataPendingCard
+              title={`${t('hierarchy.constituency')} records`}
+              message={t('hierarchy.noDataAvailable')}
+              sourceNote="Persisted constituency geography records"
+            />
+          ) : liveBodies.length === 0 && liveBooths.length === 0 ? (
+            <DataPendingCard
+              title={`${t('hierarchy.constituency')} records`}
+              message={t('hierarchy.noDataAvailable')}
+              sourceNote="Persisted constituency geography records"
+            />
+          ) : (
+            <>
+              <View style={[styles.breadcrumbContainer, { borderBottomColor: colors.border }]}>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.breadcrumb}
+                >
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => { setLiveBodyKey(null); setLiveWardKey(null); }}
+                    disabled={atBodyList}
+                    style={styles.crumb}
+                  >
+                    <Text style={[styles.crumbText, { color: atBodyList ? colors.text : colors.primary }]}>
+                      {liveConstituency?.name ?? `AC ${acNo}`}
+                    </Text>
+                  </Pressable>
+                  {liveSelectedBody ? (
+                    <>
+                      <Ionicons name="chevron-forward" size={14} color={colors.textMuted} />
+                      <Pressable
+                        accessibilityRole="button"
+                        onPress={() => setLiveWardKey(null)}
+                        disabled={atWardList}
+                        style={styles.crumb}
+                      >
+                        <Text style={[styles.crumbText, { color: atWardList ? colors.text : colors.primary }]}>
+                          {liveSelectedBody.name}
+                        </Text>
+                      </Pressable>
+                    </>
+                  ) : null}
+                  {liveSelectedWard ? (
+                    <>
+                      <Ionicons name="chevron-forward" size={14} color={colors.textMuted} />
+                      <Text numberOfLines={1} style={[styles.crumbText, { color: colors.text }]}>
+                        {liveSelectedWard.name || `${t('hierarchy.ward')} ${liveSelectedWard.wardNo}`}
+                      </Text>
+                    </>
+                  ) : null}
+                </ScrollView>
+              </View>
+
+              {atBodyList ? (
+                <>
+                  <View style={styles.summaryRow}>
+                    <Stat colors={colors} value={liveData.urbanLocalBodies.length} label={t('hierarchy.urban')} icon="business" />
+                    <Stat colors={colors} value={liveData.gramPanchayats.length} label={t('hierarchy.rural')} icon="home" />
+                    <Stat colors={colors} value={liveBooths.length} label={t('hierarchy.booths')} icon="location" />
+                  </View>
+                  {liveBodies.map((body) => {
+                    const bodyBooths = getBoothsForHierarchyBody(liveData, body);
+                    const bodyKind = body.kind === 'ulb' ? t('hierarchy.urban') : t('hierarchy.rural');
+                    return (
+                      <Pressable
+                        key={body.key}
+                        accessibilityRole="button"
+                        onPress={() => { setLiveBodyKey(body.key); setLiveWardKey(null); }}
+                        style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                      >
+                        <View style={styles.cardHead}>
+                          <View style={{ flex: 1 }}>
+                            <Text style={[styles.cardTitle, { color: colors.text }]}>{body.name}</Text>
+                            {body.localName ? <Text style={[styles.cardSub, { color: colors.textSecondary }]}>{body.localName}</Text> : null}
+                            <Text style={[styles.cardSub, { color: colors.textSecondary }]}>
+                              {bodyKind} · {body.wards.length} {t('hierarchy.wards')} · {bodyBooths.length} {t('hierarchy.booths')}
+                            </Text>
+                          </View>
+                          <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+                        </View>
+                      </Pressable>
+                    );
+                  })}
+                  {liveBoothsWithoutBody.length > 0 ? (
+                    <View style={{ marginTop: 10 }}>
+                      <Text style={[styles.cardTitle, { color: colors.text, marginBottom: 8 }]}>
+                        {t('hierarchy.unassigned', { defaultValue: 'Booths without a linked local body' })}
+                      </Text>
+                      {liveBoothsWithoutBody.map((booth) => (
+                        <LiveBoothCard
+                          key={booth.id}
+                          booth={booth}
+                          colors={colors}
+                          voterLabel={t('hierarchy.voters')}
+                          registeredVotersLabel={t('hierarchy.registeredVoters')}
+                        />
+                      ))}
+                    </View>
+                  ) : null}
+                  {liveBodies.length === 0 && liveBooths.length > 0 ? (
+                    <DataPendingCard
+                      title={`${t('hierarchy.booth')} records`}
+                      message={t('hierarchy.noDataAvailable')}
+                      sourceNote="Persisted constituency geography records; local-body links were not resolved"
+                    />
+                  ) : null}
+                </>
+              ) : atWardList && liveSelectedBody ? (
+                <>
+                  {liveSelectedBody.wards.map((ward) => {
+                    const wardBooths = getBoothsForHierarchyWard(liveData, liveSelectedBody, ward);
+                    return (
+                      <Pressable
+                        key={ward.internalId}
+                        accessibilityRole="button"
+                        onPress={() => setLiveWardKey(ward.internalId)}
+                        style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                      >
+                        <View style={styles.cardHead}>
+                          <View style={{ flex: 1 }}>
+                            <Text style={[styles.cardTitle, { color: colors.text }]}>
+                              {ward.name || `${t('hierarchy.ward')} ${ward.wardNo}`}
+                            </Text>
+                            <Text style={[styles.cardSub, { color: colors.textSecondary }]}>
+                              {t('hierarchy.ward')} {ward.wardNo} · {wardBooths.length} {t('hierarchy.booths')}
+                              {ward.reservation ? ` · ${ward.reservation}` : ''}
+                            </Text>
+                          </View>
+                          <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+                        </View>
+                      </Pressable>
+                    );
+                  })}
+                  {liveBoothsWithoutWard.length > 0 ? (
+                    <View style={{ marginTop: 10 }}>
+                      <Text style={[styles.cardTitle, { color: colors.text, marginBottom: 8 }]}>
+                        {t('hierarchy.unassigned', { defaultValue: 'Booths without a linked ward' })}
+                      </Text>
+                      {liveBoothsWithoutWard.map((booth) => (
+                        <LiveBoothCard
+                          key={booth.id}
+                          booth={booth}
+                          colors={colors}
+                          voterLabel={t('hierarchy.voters')}
+                          registeredVotersLabel={t('hierarchy.registeredVoters')}
+                        />
+                      ))}
+                    </View>
+                  ) : null}
+                  {liveSelectedBody.wards.length === 0 && liveBodyBooths.length === 0 ? (
+                    <Text style={[styles.note, { color: colors.textSecondary }]}>{t('hierarchy.noBoothSamples')}</Text>
+                  ) : null}
+                </>
+              ) : liveSelectedBody && liveSelectedWard ? (
+                liveWardBooths.length === 0 ? (
+                  <Text style={[styles.note, { color: colors.textSecondary }]}>{t('hierarchy.noBoothSamples')}</Text>
+                ) : (
+                  liveWardBooths.map((booth) => (
+                    <LiveBoothCard
+                      key={booth.id}
+                      booth={booth}
+                      colors={colors}
+                      voterLabel={t('hierarchy.voters')}
+                      registeredVotersLabel={t('hierarchy.registeredVoters')}
+                    />
+                  ))
+                )
+              ) : null}
+            </>
+          )}
+        </ScrollView>
+        <DiscoveryHubSheet
+          visible={helpVisible}
+          onClose={() => setHelpVisible(false)}
+          sourceScreen="hierarchy"
+        />
+      </View>
+    );
+  }
+
   const dataStatus = getConstituencyDataStatus(stateCode, acNo);
   if (dataStatus !== 'verified' || !config || !summary || summary.mandalCount === 0) {
     const labelCfg = getHierarchyLabelsConfig(stateCode);
@@ -238,12 +559,30 @@ export default function HierarchyScreen() {
                   <Text style={[styles.cardTitle, { color: colors.text }]}>{b.nameEn}</Text>
                   {b.nameTe ? <Text style={[styles.cardSub, { color: colors.textSecondary }]}>{b.nameTe}</Text> : null}
                 </View>
-                <View style={[styles.tag, { backgroundColor: (b.isUrban ? colors.warning : colors.success) + '22' }]}>
-                  <Text style={[styles.tagText, { color: b.isUrban ? colors.warning : colors.success }]}>{b.isUrban ? t('hierarchy.urban') : t('hierarchy.rural')}</Text>
-                </View>
+                {b.historical ? (
+                  <View style={[styles.tag, { backgroundColor: colors.textMuted + '22' }]}>
+                    <Text style={[styles.tagText, { color: colors.textMuted }]}>
+                      {t('mapExtended.boothHistorical', { year: b.sourceYear ?? '—' })}
+                    </Text>
+                  </View>
+                ) : (
+                  <View style={[styles.tag, { backgroundColor: (b.isUrban ? colors.warning : colors.success) + '22' }]}>
+                    <Text style={[styles.tagText, { color: b.isUrban ? colors.warning : colors.success }]}>
+                      {b.isUrban ? t('hierarchy.urban') : t('hierarchy.rural')}
+                    </Text>
+                  </View>
+                )}
               </View>
               <View style={styles.boothStats}>
-                <Text style={[styles.boothStat, { color: colors.text }]}>{b.totalVoters.toLocaleString('en-IN')} {t('hierarchy.voters')}</Text>
+                {hasCurrentBoothVoterCount(b) ? (
+                  <Text style={[styles.boothStat, { color: colors.text }]}>
+                    {b.totalVoters.toLocaleString('en-IN')} {t('hierarchy.voters')}
+                  </Text>
+                ) : (
+                  <Text style={[styles.boothStatMuted, { color: colors.textMuted }]}>
+                    {t('hierarchy.registeredVoters')}: —
+                  </Text>
+                )}
                 {b.maleVoters != null ? <Text style={[styles.boothStatMuted, { color: colors.textMuted }]}>M {b.maleVoters.toLocaleString('en-IN')}</Text> : null}
                 {b.femaleVoters != null ? <Text style={[styles.boothStatMuted, { color: colors.textMuted }]}>F {b.femaleVoters.toLocaleString('en-IN')}</Text> : null}
                 {b.location ? <Text style={[styles.boothStatMuted, { color: colors.textMuted }]}>{b.location.latitude.toFixed(3)}, {b.location.longitude.toFixed(3)}</Text> : null}
@@ -267,12 +606,58 @@ export default function HierarchyScreen() {
   );
 }
 
-function Stat({ colors, value, label, icon }: { colors: any; value: number; label: string; icon: any }) {
+function Stat({ colors, value, label, icon }: {
+  colors: ThemeColors;
+  value: number;
+  label: string;
+  icon: ComponentProps<typeof Ionicons>['name'];
+}) {
   return (
     <View style={[styles.stat, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       <Ionicons name={icon} size={18} color={colors.primary} />
       <Text style={[styles.statValue, { color: colors.text }]}>{value}</Text>
       <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{label}</Text>
+    </View>
+  );
+}
+
+function LiveBoothCard({
+  booth,
+  colors,
+  voterLabel,
+  registeredVotersLabel,
+}: {
+  booth: SubConstituencyHierarchyDTO['pollingBooths'][number];
+  colors: ThemeColors;
+  voterLabel: string;
+  registeredVotersLabel: string;
+}) {
+  return (
+    <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+      <View style={styles.cardHead}>
+        <View style={[styles.boothNo, { backgroundColor: colors.primaryLight }]}>
+          <Text style={[styles.boothNoText, { color: colors.primary }]}>{booth.boothNumber}</Text>
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={[styles.cardTitle, { color: colors.text }]}>
+            {booth.boothName || booth.pollingStationName || '—'}
+          </Text>
+          {booth.pollingStationName && booth.pollingStationName !== booth.boothName ? (
+            <Text style={[styles.cardSub, { color: colors.textSecondary }]}>{booth.pollingStationName}</Text>
+          ) : null}
+        </View>
+      </View>
+      <View style={styles.boothStats}>
+        {booth.totalVoters !== null && booth.totalVoters > 0 ? (
+          <Text style={[styles.boothStat, { color: colors.text }]}>
+            {booth.totalVoters.toLocaleString('en-IN')} {voterLabel}
+          </Text>
+        ) : (
+          <Text style={[styles.boothStatMuted, { color: colors.textMuted }]}>
+            {registeredVotersLabel}: —
+          </Text>
+        )}
+      </View>
     </View>
   );
 }

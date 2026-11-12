@@ -6,6 +6,7 @@ module.exports = {
   // RTL v13 auto-registers its Jest matchers — no extend-expect needed.
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
+    '^@kshetra/shared$': '<rootDir>/../../packages/shared/src/index.ts',
   },
   // Transform RN/Expo ESM packages that ship untranspiled code.
   transformIgnorePatterns: [

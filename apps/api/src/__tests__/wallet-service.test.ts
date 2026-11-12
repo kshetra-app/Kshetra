@@ -14,6 +14,8 @@ import { supabase, setSupabaseConfiguredForTesting, isSupabaseConfigured } from 
 
 describe('Campaign Wallet Service (walletService.ts)', () => {
   let originalConfigured: boolean;
+  const originalNodeEnv = process.env.NODE_ENV;
+  const originalAppEnv = process.env.APP_ENV;
 
   beforeAll(() => {
     originalConfigured = isSupabaseConfigured;
@@ -185,6 +187,35 @@ describe('Campaign Wallet Service (walletService.ts)', () => {
       expect(txs[0].id).toBe('tx-db-1');
       expect(txs[0].amountINR).toBe(5000);
       expect(txs[0].balanceAfterINR).toBe(15000);
+    });
+  });
+
+  describe('Production fail-closed behavior', () => {
+    it('does not expose seeded balances or transactions when the durable ledger is unavailable', async () => {
+      process.env.NODE_ENV = 'production';
+      process.env.APP_ENV = 'production';
+      setSupabaseConfiguredForTesting(false);
+
+      try {
+        await expect(getPoliticianWallet('pp1')).rejects.toThrow('WALLET_DATABASE_UNAVAILABLE');
+        await expect(getPoliticianWallet('')).rejects.toThrow('WALLET_PRINCIPAL_REQUIRED');
+        await expect(getWalletTransactions('pp1')).rejects.toThrow('WALLET_DATABASE_UNAVAILABLE');
+        await expect(createWalletRechargeOrder('pp1', 1000)).rejects.toThrow(
+          'PRODUCTION_RECHARGE_ORDERS_REQUIRE_THE_DURABLE_PROVIDER_ORDER_ROUTE',
+        );
+        await expect(creditWallet('pp1', 1000, 'pay_mock')).rejects.toThrow(
+          'PRODUCTION_RECHARGES_REQUIRE_ATOMIC_PROVIDER_VERIFICATION',
+        );
+        await expect(
+          deductWalletForService('pp1', 100, 'voice_obd', 'obd_mock', 'test'),
+        ).rejects.toThrow('PRODUCTION_WALLET_DEBITS_REQUIRE_AN_ATOMIC_PERSISTED_LEDGER_OPERATION');
+      } finally {
+        if (originalNodeEnv === undefined) delete process.env.NODE_ENV;
+        else process.env.NODE_ENV = originalNodeEnv;
+        if (originalAppEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = originalAppEnv;
+        setSupabaseConfiguredForTesting(originalConfigured);
+      }
     });
   });
 });

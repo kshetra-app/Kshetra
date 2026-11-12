@@ -93,10 +93,14 @@ export function resolveEnvironment(envStr?: string): Environment {
   return 'development';
 }
 
-/** Deployed staging and production runtimes must not use local demo behavior. */
+/**
+ * Staging runs deployed, user-facing code and must not present local demo data
+ * or trust development-only request identity shortcuts. Only development and
+ * the isolated test environment may use explicitly local/demo behavior.
+ */
 export function isProductionLikeEnvironment(envStr?: string): boolean {
-  const environment = resolveEnvironment(envStr);
-  return environment === 'staging' || environment === 'production';
+  const env = resolveEnvironment(envStr);
+  return env === 'staging' || env === 'production';
 }
 
 export function getEnvironmentConfig(envStr?: string): EnvironmentConfig {

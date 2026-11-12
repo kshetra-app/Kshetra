@@ -1,6 +1,10 @@
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import type { FastifyInstance } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
+import { getMediaHosts, isMediaPipelineConfigured, selectPipeline } from '../lib/mediaPipeline';
+
+const isProductionRuntime = () => isProductionLikeRuntime();
 
 // ─── AJV SCHEMAS FOR LMX ROUTES ───
 
@@ -28,18 +32,58 @@ const lmxStreamIdParamSchema = {
 const createLiveEventBodySchema = {
   body: {
     type: 'object',
-    required: ['title'],
+    required: ['stream_id', 'reporter_id', 'reporter_name'],
+    additionalProperties: false,
     properties: {
-      title: { type: 'string', minLength: 1, maxLength: 200 },
-      description: { type: 'string', maxLength: 2000 },
-      state_code: { type: 'string', pattern: '^[A-Z]{2}$' },
-      issue_category: { type: 'string', maxLength: 100 },
-      visibility_mode: { type: 'string', enum: ['public', 'unlisted', 'private'] },
-      buffer_state: { type: 'string', enum: ['buffered', 'cleared', 'bypassed', 'rejected'] },
-      priority_score: { type: 'integer', minimum: 0, maximum: 100 },
-      assembly_constituency_id: { type: 'string', maxLength: 100 },
-      parliamentary_constituency_id: { type: 'string', maxLength: 100 },
-      stream_url: { type: 'string', maxLength: 1000 },
+      stream_id: { type: 'string', minLength: 1, maxLength: 128 },
+      reporter_id: { type: 'string', minLength: 1, maxLength: 128 },
+      reporter_name: { type: 'string', minLength: 1, maxLength: 100 },
+      accreditation_tier: {
+        type: 'string',
+        enum: ['citizen', 'stringer', 'accredited', 'senior', 'editor', 'organization'],
+      },
+      credibility_score: { type: 'number', minimum: 0, maximum: 100 },
+      gps_lat: { anyOf: [{ type: 'number', minimum: -90, maximum: 90 }, { type: 'null' }] },
+      gps_lng: { anyOf: [{ type: 'number', minimum: -180, maximum: 180 }, { type: 'null' }] },
+      state_code: { anyOf: [{ type: 'string', pattern: '^[A-Z]{2}$' }, { type: 'null' }] },
+      district_name: { anyOf: [{ type: 'string', maxLength: 100 }, { type: 'null' }] },
+      mandal_name: { type: 'null' },
+      constituency_ac_no: { anyOf: [{ type: 'integer', minimum: 1 }, { type: 'null' }] },
+      locality: { anyOf: [{ type: 'string', maxLength: 200 }, { type: 'null' }] },
+      issue_category: {
+        type: 'string',
+        enum: ['emergency', 'traffic', 'weather', 'civic', 'breaking_news', 'general'],
+      },
+      tags: { type: 'array', items: { type: 'string', maxLength: 80 }, maxItems: 20 },
+      language: { type: 'string', minLength: 2, maxLength: 10 },
+      media_ingest_url: { anyOf: [{ type: 'string', maxLength: 1000 }, { type: 'null' }] },
+      media_playback_hls: { anyOf: [{ type: 'string', maxLength: 1000 }, { type: 'null' }] },
+      media_playback_webrtc: { anyOf: [{ type: 'string', maxLength: 1000 }, { type: 'null' }] },
+      thumbnail_url: { type: 'null' },
+      multi_camera_angles: { type: 'array', maxItems: 8 },
+      affiliation_id: { anyOf: [{ type: 'string', format: 'uuid' }, { type: 'null' }] },
+      active_brand_kit_id: { anyOf: [{ type: 'string', format: 'uuid' }, { type: 'null' }] },
+      exclusivity_flag: { type: 'boolean' },
+      visibility_mode: {
+        type: 'string',
+        enum: ['public', 'exclusive_partner', 'confidential_direct'],
+      },
+      alert_departments: { type: 'array', items: { type: 'string', maxLength: 80 }, maxItems: 20 },
+      buffer_state: { type: 'string', enum: ['buffering', 'cleared', 'held', 'cut', 'bypassed'] },
+      buffer_seconds: { type: 'integer', minimum: 0, maximum: 600 },
+      human_decision: {
+        anyOf: [{ type: 'string', enum: ['allow', 'mute', 'cut', 'escalate'] }, { type: 'null' }],
+      },
+      status: { type: 'string', enum: ['preparing', 'live', 'ended', 'archived', 'removed'] },
+      viewer_count: { type: 'integer', minimum: 0 },
+      peak_viewers: { type: 'integer', minimum: 0 },
+      priority_score: { type: 'number', minimum: 0, maximum: 100 },
+      content_hash: { type: 'null' },
+      raw_recording_url: { type: 'null' },
+      branded_recording_url: { type: 'null' },
+      retention_expiry: { type: 'null' },
+      started_at: { type: 'string', format: 'date-time' },
+      ended_at: { type: 'null' },
     },
   },
 };
@@ -266,11 +310,7 @@ export async function lmxRoutes(app: FastifyInstance) {
       }
 
       // Accept explicit x-user-id header only in non-production environments
-      if (
-        !userId &&
-        process.env.NODE_ENV !== 'production' &&
-        typeof request.headers['x-user-id'] === 'string'
-      ) {
+      if (!userId && !isProductionRuntime() && typeof request.headers['x-user-id'] === 'string') {
         userId = request.headers['x-user-id'];
       }
 
@@ -288,11 +328,12 @@ export async function lmxRoutes(app: FastifyInstance) {
       }
 
       // 2. Query user's real profile from Supabase user_profiles table
-      let profile: { role?: string; verification_status?: string } | null = null;
+      let profile: { role?: string; verification_status?: string; display_name?: string } | null =
+        null;
       try {
         const { data, error: profileErr } = await supabase
           .from('user_profiles')
-          .select('role, verification_status')
+          .select('role, verification_status, display_name')
           .eq('user_id', userId)
           .maybeSingle();
 
@@ -350,17 +391,62 @@ export async function lmxRoutes(app: FastifyInstance) {
         );
       }
 
-      const { creator_role: _cr, role: _r, verification_status: _vs, ...safeBody } = body;
+      const hosts = getMediaHosts();
+      if (isProductionRuntime() && !isMediaPipelineConfigured(hosts)) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Live broadcasting is unavailable because the media pipeline is not configured.',
+          { code: 'MEDIA_PIPELINE_UNAVAILABLE' },
+        );
+      }
+
+      const pipeline = selectPipeline(
+        {
+          streamId: body.stream_id,
+          issueCategory: body.issue_category || 'general',
+          alertDepartments: body.alert_departments || [],
+          visibilityMode: body.visibility_mode || 'public',
+        },
+        hosts,
+      );
+      const safeBody = { ...body };
+      for (const field of [
+        'media_ingest_url',
+        'media_playback_hls',
+        'media_playback_webrtc',
+        'credibility_score',
+        'buffer_state',
+        'buffer_seconds',
+        'human_decision',
+        'status',
+        'priority_score',
+        'viewer_count',
+        'peak_viewers',
+      ]) {
+        delete safeBody[field];
+      }
 
       try {
         const { data, error } = await supabase
           .from('live_events')
           .insert({
             ...safeBody,
-            creator_id: userId,
-            creator_role: profile.role,
-            buffer_state: body?.buffer_state || 'buffered',
-            priority_score: body?.priority_score || 50,
+            reporter_id: userId,
+            reporter_name: profile.display_name || body.reporter_name,
+            credibility_score: 50,
+            media_ingest_url: pipeline.ingestUrl,
+            media_playback_hls: pipeline.playbackHls,
+            media_playback_webrtc: pipeline.playbackWebrtc,
+            buffer_state: 'buffering',
+            buffer_seconds: 20,
+            human_decision: null,
+            status: 'live',
+            priority_score: 0,
+            viewer_count: 0,
+            peak_viewers: 0,
           })
           .select()
           .single();

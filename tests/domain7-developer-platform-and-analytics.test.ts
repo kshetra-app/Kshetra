@@ -10,14 +10,18 @@
  * - JOB 066: Executive Product Dashboard (Activation, Retention, Engagement, Density, Revenue Mathematical Proof)
  */
 
-import { describe, it, before, beforeEach } from 'node:test';
+import { after, describe, it, before, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import Fastify from 'fastify';
 import { developerPlatformService } from '../apps/api/src/services/developerPlatformService';
 import { publicWebService } from '../apps/api/src/services/publicWebService';
+import { isSupabaseConfigured, setSupabaseConfiguredForTesting } from '../apps/api/src/lib/supabase';
 import { embedService } from '../apps/api/src/services/embedService';
-import { universalAnalyticsService, type AnalyticsSinkExporter } from '../apps/api/src/services/universalAnalyticsService';
-import { productDashboardService } from '../apps/api/src/services/productDashboardService';
+import {
+  AnalyticsStorageUnavailableError,
+  universalAnalyticsService,
+  type AnalyticsSinkExporter,
+} from '../apps/api/src/services/universalAnalyticsService';
 
 import { developerPlatformRoutes } from '../apps/api/src/routes/developerPlatform';
 import { publicWebRoutes } from '../apps/api/src/routes/publicWeb';
@@ -28,8 +32,12 @@ import type { UniversalAnalyticsEventDTO } from '@kshetra/shared';
 
 describe('Domain 7: Developer Platform, Public Web Discovery, SEO & Embeds (JOB 062–066)', () => {
   let app: ReturnType<typeof Fastify>;
+  const originalSupabaseConfigured = isSupabaseConfigured;
 
   before(async () => {
+    // This domain test does not contact external Supabase. Public pages must fail
+    // closed when no local data source is available rather than return mock metrics.
+    setSupabaseConfiguredForTesting(false);
     app = Fastify({ logger: false });
     await app.register(developerPlatformRoutes);
     await app.register(publicWebRoutes);
@@ -37,6 +45,11 @@ describe('Domain 7: Developer Platform, Public Web Discovery, SEO & Embeds (JOB 
     await app.register(universalAnalyticsRoutes);
     await app.register(productDashboardRoutes);
     await app.ready();
+  });
+
+  after(async () => {
+    await app.close();
+    setSupabaseConfiguredForTesting(originalSupabaseConfigured);
   });
 
   beforeEach(() => {
@@ -221,7 +234,7 @@ describe('Domain 7: Developer Platform, Public Web Discovery, SEO & Embeds (JOB 
       assert.strictEqual(docsRes.statusCode, 200);
       const openapi = docsRes.json();
       assert.strictEqual(openapi.openapi, '3.1.0');
-      assert.strictEqual(openapi.info.title, 'PANIN Sovereign Civic & Delimitation Developer API');
+      assert.strictEqual(openapi.info.title, 'Poligram Sovereign Civic & Delimitation Developer API');
       assert.ok(openapi.components.securitySchemes.ApiKeyAuth);
     });
   });
@@ -230,81 +243,55 @@ describe('Domain 7: Developer Platform, Public Web Discovery, SEO & Embeds (JOB 
   // JOB 063: PUBLIC GEOGRAPHY WEB PAGES & SEO
   // ============================================================================
   describe('JOB 063: Public Geography Web Pages, SEO & Twin JSON APIs', () => {
-    it('should render canonical SSR HTML for state landing page with OpenGraph & Schema.org JSON-LD', async () => {
+    it('should return service unavailable when the public state data source is unavailable', async () => {
       const res = await app.inject({
         method: 'GET',
         url: '/public/states/TS',
       });
 
-      assert.strictEqual(res.statusCode, 200);
-      assert.ok(res.headers['content-type']?.includes('text/html'));
-      const html = res.body;
-
-      // Verify essential SEO & Social elements
-      assert.ok(html.includes('Telangana (TS)') && html.includes('Electoral Geography, Seats'));
-      assert.ok(html.includes('<meta property="og:title"'));
-      assert.ok(html.includes('<meta property="og:url" content="https://kshetra.in/public/states/TS"'));
-      assert.ok(html.includes('<script type="application/ld+json">'));
-      assert.ok(html.includes('"@type":"AdministrativeArea"'));
-      assert.ok(html.includes('Assembly Constituencies'));
-      assert.ok(html.includes('119'));
+      assert.strictEqual(res.statusCode, 503);
+      assert.ok(res.body.includes('Data temporarily unavailable'));
+      assert.ok(!res.body.includes('119'));
     });
 
-    it('should render canonical SSR HTML for assembly constituency with 2026 delimitation scenario', async () => {
+    it('should not synthesize an assembly constituency profile when the source database is unavailable', async () => {
       const res = await app.inject({
         method: 'GET',
         url: '/public/constituency/TS-AC-61',
       });
 
-      assert.strictEqual(res.statusCode, 200);
-      const html = res.body;
-
-      assert.ok(html.includes('Jubilee Hills (TS-AC-61)') && html.includes('Assembly Constituency Profile'));
-      assert.ok(html.includes('Current MLA'));
-      assert.ok(html.includes('Mohammad Azharuddin'));
-      assert.ok(html.includes('3,84,200')); // Electors
-      assert.ok(html.includes('2026 Delimitation Scenario'));
-      assert.ok(html.includes('Section 127A RPA 1951 Disclosed'));
+      assert.strictEqual(res.statusCode, 503);
+      assert.ok(!res.body.includes('Mohammad Azharuddin'));
+      assert.ok(!res.body.includes('3,84,200'));
+      assert.ok(!res.body.includes('2026 Delimitation Scenario'));
     });
 
-    it('should provide twin headless JSON API mirror for public discovery (DEC-189 Option B)', async () => {
+    it('should return service unavailable from both public JSON endpoints when the data source is unavailable', async () => {
       const stateRes = await app.inject({
         method: 'GET',
         url: '/api/v1/public/states/TS',
       });
-      assert.strictEqual(stateRes.statusCode, 200);
-      const state = stateRes.json().data;
-      assert.strictEqual(state.stateCode, 'TS');
-      assert.strictEqual(state.name, 'Telangana');
-      assert.strictEqual(state.totalAssemblyConstituencies, 119);
+      assert.strictEqual(stateRes.statusCode, 503);
 
       const acRes = await app.inject({
         method: 'GET',
         url: '/api/v1/public/constituency/TS-AC-61',
       });
-      assert.strictEqual(acRes.statusCode, 200);
-      const ac = acRes.json().data;
-      assert.strictEqual(ac.acId, 'TS-AC-61');
-      assert.strictEqual(ac.name, 'Jubilee Hills');
-      assert.strictEqual(ac.currentRepresentative.party, 'INC');
+      assert.strictEqual(acRes.statusCode, 503);
     });
 
-    it('should generate valid canonical XML sitemaps', async () => {
+    it('should not publish geography sitemaps when no database-backed public records are available', async () => {
       const sitemapRes = await app.inject({
         method: 'GET',
         url: '/sitemap.xml',
       });
-      assert.strictEqual(sitemapRes.statusCode, 200);
-      assert.ok(sitemapRes.headers['content-type']?.includes('xml'));
-      assert.ok(sitemapRes.body.includes('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'));
-      assert.ok(sitemapRes.body.includes('https://kshetra.in/public/states/TS'));
+      assert.strictEqual(sitemapRes.statusCode, 503, sitemapRes.body);
 
       const geoSitemapRes = await app.inject({
         method: 'GET',
         url: '/sitemap-geography.xml',
       });
-      assert.strictEqual(geoSitemapRes.statusCode, 200);
-      assert.ok(geoSitemapRes.body.includes('https://kshetra.in/public/constituency/TS-AC-61'));
+      assert.strictEqual(geoSitemapRes.statusCode, 503, geoSitemapRes.body);
     });
   });
 
@@ -346,7 +333,7 @@ describe('Domain 7: Developer Platform, Public Web Discovery, SEO & Embeds (JOB 
         assert.strictEqual(res.headers['content-security-policy'], 'frame-ancestors *');
         assert.strictEqual(res.headers['access-control-allow-origin'], '*');
         assert.ok(res.body.includes(w.expectedText), `Widget ${w.type} missing expected text`);
-        assert.ok(res.body.includes('Powered by PANIN Civic Tech &middot; RPA 1951 Sec 127A Disclosed'));
+        assert.ok(res.body.includes('Powered by POLIGRAM Civic Tech &middot; RPA 1951 Sec 127A Disclosed'));
         assert.ok(res.body.includes("type: 'kshetra:resize'"));
       }
     });
@@ -356,7 +343,7 @@ describe('Domain 7: Developer Platform, Public Web Discovery, SEO & Embeds (JOB 
   // JOB 065: UNIVERSAL ANALYTICS PLATFORM
   // ============================================================================
   describe('JOB 065: Universal Analytics Platform', () => {
-    it('should ingest batch events adhering strictly to canonical 10-field schema with DPDP IP salt-hashing', async () => {
+    it('should ingest batch events and attach a server-computed development IP hash', async () => {
       const events: UniversalAnalyticsEventDTO[] = [
         {
           eventName: 'signup_completed',
@@ -367,7 +354,7 @@ describe('Domain 7: Developer Platform, Public Web Discovery, SEO & Embeds (JOB 
           screen: '/signup/complete',
           geography: { stateCode: 'TS', acId: 'TS-AC-61' },
           entity: { entityType: 'user', entityId: 'user-ts-101' },
-          metadata: { channel: 'organic', email: 'leak@test.com', phone: '9999999999' }, // Contains PII to test sanitization
+          metadata: { channel: 'organic', email: 'leak@test.com', phone: '9999999999', _clientIpHash: 'client-controlled' },
           appVersion: 'android-2.1.0',
         },
         {
@@ -399,13 +386,29 @@ describe('Domain 7: Developer Platform, Public Web Discovery, SEO & Embeds (JOB 
       assert.strictEqual(body.data.ingestedCount, 2);
       assert.strictEqual(body.data.rejectedCount, 0);
 
-      // Verify DPDP 2023 sanitization in persisted events
-      const queried = await universalAnalyticsService.queryEvents({ userId: 'user-ts-101' });
+      // Verify basic common-field sanitization and the server-computed hash in the stored snapshot.
+      const queried = await universalAnalyticsService.queryEvents({});
       assert.strictEqual(queried.length, 2);
       const first = queried[0];
-      assert.strictEqual(first.metadata.email, undefined, 'Raw email must not be persisted (DPDP)');
-      assert.strictEqual(first.metadata.phone, undefined, 'Raw phone must not be persisted (DPDP)');
-      assert.ok(first.metadata._clientIpHash, 'Client IP must be salt-hashed');
+      assert.strictEqual(first.userId, null, 'Unauthenticated event payloads cannot assign a user identity');
+      assert.strictEqual(first.metadata.email, undefined, 'Common raw email fields are discarded');
+      assert.strictEqual(first.metadata.phone, undefined, 'Common raw phone fields are discarded');
+      assert.notStrictEqual(first.metadata._clientIpHash, 'client-controlled', 'Clients cannot set the server-owned hash field');
+      assert.ok(first.metadata._clientIpHash, 'Development requests with an IP should receive a server-computed hash');
+
+      const unauthenticatedQuery = await app.inject({
+        method: 'GET',
+        url: '/api/v1/analytics/events?userId=user-ts-101',
+      });
+      assert.strictEqual(unauthenticatedQuery.statusCode, 401);
+
+      const authorizedQuery = await app.inject({
+        method: 'GET',
+        url: '/api/v1/analytics/events',
+        headers: { 'x-user-id': 'admin-test', 'x-user-role': 'admin' },
+      });
+      assert.strictEqual(authorizedQuery.statusCode, 200);
+      assert.strictEqual(authorizedQuery.json().data.total, 2);
     });
 
     it('should reject malformed event payloads missing mandatory canonical fields fail-closed', async () => {
@@ -427,6 +430,32 @@ describe('Domain 7: Developer Platform, Public Web Discovery, SEO & Embeds (JOB 
       assert.strictEqual(body.data.rejectedCount, 1);
       assert.strictEqual(body.data.ingestedCount, 0);
       assert.ok(body.data.errors[0].includes('missing required'));
+    });
+
+    it('must not acknowledge analytics events when production persistence is unavailable', async () => {
+      const originalAppEnv = process.env.APP_ENV;
+      process.env.APP_ENV = 'production';
+      try {
+        await assert.rejects(
+          universalAnalyticsService.ingestBatch({
+            events: [{
+              eventName: 'signup_completed',
+              anonymousId: 'anon-no-db',
+              sessionId: 'session-no-db',
+              timestamp: new Date().toISOString(),
+              screen: '/signup',
+              geography: {},
+              entity: {},
+              metadata: {},
+              appVersion: 'test',
+            }],
+          }),
+          AnalyticsStorageUnavailableError,
+        );
+      } finally {
+        if (originalAppEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = originalAppEnv;
+      }
     });
 
     it('should dual-stream events to registered external sink exporter (DEC-189 Option B)', async () => {
@@ -461,10 +490,10 @@ describe('Domain 7: Developer Platform, Public Web Discovery, SEO & Embeds (JOB 
   });
 
   // ============================================================================
-  // JOB 066: EXECUTIVE PRODUCT DASHBOARD & MATHEMATICAL RECONSTRUCTION
+  // JOB 066: DURABLE EXECUTIVE METRICS & LOCAL DIAGNOSTIC
   // ============================================================================
-  describe('JOB 066: Executive Product Dashboard & Independent Reconstruction', () => {
-    it('should reconstruct all 5 metric dimensions with exact mathematical equality against raw events', async () => {
+  describe('JOB 066: Executive Product Dashboard & Honest Diagnostic Reconstruction', () => {
+    it('should require a durable privileged source and never claim caller data is verified', async () => {
       // 1. Seed deterministic event stream
       const testEvents: UniversalAnalyticsEventDTO[] = [
         {
@@ -531,38 +560,35 @@ describe('Domain 7: Developer Platform, Public Web Discovery, SEO & Embeds (JOB 
 
       await universalAnalyticsService.ingestBatch({ events: testEvents });
 
-      // 2. Fetch Executive Metrics via API
-      const res = await app.inject({
+      // Executive analytics are privileged and require durable database metrics.
+      const anonymousMetricsResponse = await app.inject({
         method: 'GET',
         url: '/api/v1/dashboard/metrics',
       });
-      assert.strictEqual(res.statusCode, 200);
-      const metrics = res.json().data;
+      assert.strictEqual(anonymousMetricsResponse.statusCode, 401);
 
-      // 3. Verify dimensions
-      assert.strictEqual(metrics.activation.totalSignups, 1);
-      assert.strictEqual(metrics.activation.verifiedUsers, 1);
-      assert.strictEqual(metrics.activation.firstCivicActionCount, 2); // 1 issue created + 1 upvoted
-      assert.strictEqual(metrics.retention.dau, 2); // usr-1 and usr-2
-      assert.strictEqual(metrics.geographyDensity.totalConstituencies, 4123);
-      assert.strictEqual(metrics.geographyDensity.activeConstituencies, 2); // TS-AC-61 and JH-AC-44
-      assert.strictEqual(metrics.geographyDensity.topActiveConstituencies.length, 2);
+      const unavailableMetricsResponse = await app.inject({
+        method: 'GET',
+        url: '/api/v1/dashboard/metrics',
+        headers: { 'x-user-id': 'admin-test', 'x-user-role': 'admin' },
+      });
+      assert.strictEqual(unavailableMetricsResponse.statusCode, 503);
 
-      // 4. Mathematical Reconstruction Proof Endpoint (JOB 066 Evidence)
+      // Caller-supplied reconstruction is a local diagnostic, never proof of production data.
       const proofRes = await app.inject({
         method: 'POST',
         url: '/api/v1/dashboard/reconstruct',
+        headers: { 'x-user-id': 'admin-test', 'x-user-role': 'admin' },
         payload: { events: testEvents },
       });
       assert.strictEqual(proofRes.statusCode, 200);
       const proofData = proofRes.json().data;
-      assert.strictEqual(proofData.verified, true);
+      assert.strictEqual(proofData.verified, false);
       assert.strictEqual(proofData.sourceEventCount, 5);
-
-      // Verify mathematical identity between direct re-computation and API metrics
-      assert.strictEqual(proofData.reconstructed.activation.totalSignups, metrics.activation.totalSignups);
-      assert.strictEqual(proofData.reconstructed.retention.dau, metrics.retention.dau);
-      assert.strictEqual(proofData.reconstructed.geographyDensity.activeConstituencies, metrics.geographyDensity.activeConstituencies);
+      assert.strictEqual(proofData.reconstructed.activation.totalSignups, 1);
+      assert.strictEqual(proofData.reconstructed.activation.firstCivicActionCount, 1);
+      assert.strictEqual(proofData.reconstructed.retention.day7RetentionRatePercent, null);
+      assert.strictEqual(proofData.reconstructed.revenue.adRevenueINR, null);
     });
   });
 });

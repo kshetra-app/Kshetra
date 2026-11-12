@@ -28,6 +28,31 @@ const CFG = {
   GA: { tcpd: 'Goa',           year: 2022, total: 40,  iface: 'GAConstituencySeed', konst: 'GA_CONSTITUENCIES', fn: 'getGAConstituency', label: 'Goa' },
 };
 
+// Post-election incumbency is a separate, sourced overlay; it must never replace
+// general-election results. These official Assembly by-election outcomes are
+// recorded in the Lok Sabha Secretariat's Journal of Parliamentary Information:
+// https://eparlib.sansad.in/bitstream/123456789/1933174/1/JPI_March_2023.pdf
+// https://eparlib.sansad.in/bitstream/123456789/2505177/1/Manuscript_pdf_file_JPI_September_Issue_2023.pdf
+const POST_ELECTION_UPDATES = {
+  UP: {
+    15: {
+      currentParty: 'RLD',
+      currentMemberName: 'Madan Bhaiya',
+      byElection: { year: 2022, month: 'December', winnerName: 'Madan Bhaiya', winnerParty: 'RLD' },
+    },
+    34: {
+      currentParty: 'ADAL',
+      currentMemberName: 'Shafeek Ahmed Ansari',
+      byElection: { year: 2023, month: 'May', winnerName: 'Shafeek Ahmed Ansari', winnerParty: 'ADAL' },
+    },
+    37: {
+      currentParty: 'BJP',
+      currentMemberName: 'Akash Saxena',
+      byElection: { year: 2022, month: 'December', winnerName: 'Akash Saxena', winnerParty: 'BJP' },
+    },
+  },
+};
+
 const code = process.argv[2];
 const WRITE = process.argv.includes('--write');
 const cfg = CFG[code];
@@ -98,6 +123,7 @@ for (const [cno, cand] of byCno) {
   const t = (w[COL.ctype] || 'GEN').toUpperCase();
   const type = t === 'SC' ? 'SC' : t === 'ST' ? 'ST' : 'GEN';
   const ex = existing.get(cno) || {};
+  const postElectionUpdate = POST_ELECTION_UPDATES[code]?.[cno] || {};
   const tcpdWinnerCode = partyCode(w[COL.party]);
   seats.push({
     acNo: cno,
@@ -113,7 +139,9 @@ for (const [cno, cand] of byCno) {
     margin: num(w[COL.margin]),
     turnout: num(w[COL.turnout]),
     electors: num(w[COL.electors]),
-    currentParty: ex.currentParty || tcpdWinnerCode,
+    currentParty: postElectionUpdate.currentParty || ex.currentParty || tcpdWinnerCode,
+    currentMemberName: postElectionUpdate.currentMemberName,
+    byElection: postElectionUpdate.byElection,
   });
 }
 seats.sort((a, b) => a.acNo - b.acNo);
@@ -143,7 +171,13 @@ if (WRITE && valid) {
   const recLine = (s) => {
     const loc = s.localName ? `localName: '${esc(s.localName)}', ` : '';
     const ruN = s.runnerUpName ? `runnerUpName${Y}: '${esc(s.runnerUpName)}', ` : '';
-    return `  { acNo: ${s.acNo}, name: '${esc(s.name)}', ${loc}district: '${esc(s.district)}', type: '${s.type}', winner${Y}: '${esc(s.winner)}', winnerName${Y}: '${esc(s.winnerName)}', winnerVotes${Y}: ${s.winnerVotes}, runnerUp${Y}: '${esc(s.runnerUp)}', ${ruN}margin${Y}: ${s.margin}, turnout${Y}: ${s.turnout}, electors${Y}: ${s.electors}, currentParty: '${esc(s.currentParty)}' },`;
+    const currentMember = s.currentMemberName
+      ? `, currentMemberName: '${esc(s.currentMemberName)}'`
+      : '';
+    const byElection = s.byElection
+      ? `, byElection: { year: ${s.byElection.year}, month: '${esc(s.byElection.month)}', winnerName: '${esc(s.byElection.winnerName)}', winnerParty: '${esc(s.byElection.winnerParty)}' }`
+      : '';
+    return `  { acNo: ${s.acNo}, name: '${esc(s.name)}', ${loc}district: '${esc(s.district)}', type: '${s.type}', winner${Y}: '${esc(s.winner)}', winnerName${Y}: '${esc(s.winnerName)}', winnerVotes${Y}: ${s.winnerVotes}, runnerUp${Y}: '${esc(s.runnerUp)}', ${ruN}margin${Y}: ${s.margin}, turnout${Y}: ${s.turnout}, electors${Y}: ${s.electors}, currentParty: '${esc(s.currentParty)}'${currentMember}${byElection} },`;
   };
   const header = `/**
  * ${cfg.label} Assembly Constituencies — ${Y} General Election (${cfg.total} seats)
@@ -174,6 +208,8 @@ export interface ${cfg.iface} {
   turnout${Y}: number;
   electors${Y}: number;
   currentParty: string;
+  currentMemberName?: string;
+  byElection?: { year: number; month: string; winnerName: string; winnerParty: string };
 }
 
 export const ${cfg.konst}: ${cfg.iface}[] = [

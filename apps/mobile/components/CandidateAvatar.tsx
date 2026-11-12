@@ -11,7 +11,7 @@
 import React, { useState, useEffect, memo, useMemo } from 'react';
 import { View, Image, Text, Pressable, StyleSheet } from 'react-native';
 import { getPartyColor } from '../lib/constants';
-import { fetchWikipediaPhoto, getCachedPhoto, getStaticPhoto, hasKnownPhoto } from '../lib/candidatePhotos';
+import { fetchWikipediaPhoto, getCachedPhoto, getStaticPhoto, hasKnownPhoto, getSmartInitials } from '../lib/candidatePhotos';
 
 interface CandidateAvatarProps {
   name: string;
@@ -26,13 +26,16 @@ interface CandidateAvatarProps {
 }
 
 function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .filter(Boolean)
-    .map((w) => w[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
+  return getSmartInitials(name);
+}
+
+function sanitizePhotoUrl(url?: string | null): string | null {
+  if (!url || typeof url !== 'string') return null;
+  const trimmed = url.trim();
+  if (!trimmed.startsWith('http')) return null;
+  if (trimmed.includes('.svg') || trimmed.includes('LokSabha2024/photos/')) return null;
+  // Upgrade http:// to https://
+  return trimmed.replace(/^http:\/\//i, 'https://');
 }
 
 export default memo(function CandidateAvatar({
@@ -43,9 +46,10 @@ export default memo(function CandidateAvatar({
   borderWidth = 2,
   onPress,
 }: CandidateAvatarProps) {
-  // 1. Instant static resolution (e.g. Chief Ministers, PM, seed photos, MMKV cache)
+  // 1. Instant static resolution (e.g. Chief Ministers, PM, seed photos, MMKV cache, static map)
   const staticPhoto = useMemo(() => {
-    return photoUrl || getStaticPhoto(name) || getCachedPhoto(name) || null;
+    const raw = photoUrl || getStaticPhoto(name) || getCachedPhoto(name) || null;
+    return sanitizePhotoUrl(raw);
   }, [name, photoUrl]);
 
   const [remoteUrl, setRemoteUrl] = useState<string | null>(null);

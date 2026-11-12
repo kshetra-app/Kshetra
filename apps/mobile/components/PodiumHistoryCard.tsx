@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { getPartyColor } from '../lib/constants';
 import CandidateAvatar from './CandidateAvatar';
+import { getStaticPhoto } from '../lib/candidatePhotos';
 import { useTheme } from '../lib/theme';
 import type { HistoricalResultRow } from '../lib/seedDataLoader';
 
@@ -51,48 +52,54 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
   };
 
   // Candidate Names
-  const cleanWinner = !isGenericCandidate(item.winner_name || item.winner) ? (item.winner_name || item.winner) : 'Winner';
-  const winnerName = localizedNames?.winner?.[currentLang] || getLocalizedCandidateName(cleanWinner, currentLang) || cleanWinner;
+  const cleanWinner = !isGenericCandidate(item.winner_name || item.winner) ? (item.winner_name || item.winner) : '';
+  const rawWinnerParty = item.winner_party || item.party || '';
+  if (!cleanWinner || !rawWinnerParty.trim()) {
+    return (
+      <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }, isLatest && styles.latestCard]}>
+        <Text style={[styles.year, { color: colors.text }]}>{item.year}</Text>
+        <Text style={{ color: colors.textMuted, marginTop: 6 }}>
+          {t('constituency.resultUnavailable', { defaultValue: 'Election result data is not available from a connected source.' })}
+        </Text>
+      </View>
+    );
+  }
+  const locWinner = localizedNames?.winner?.[currentLang];
+  const validLocWinner = locWinner && !isGenericCandidate(locWinner) ? locWinner : null;
+  const winnerName = validLocWinner || getLocalizedCandidateName(cleanWinner, currentLang) || cleanWinner;
 
   const rawRu1 = item.first_runner_up_name;
   const cleanRu1 = !isGenericCandidate(rawRu1) ? rawRu1 : null;
-  const ru1Name = localizedNames?.ru1?.[currentLang] || (cleanRu1 ? getLocalizedCandidateName(cleanRu1, currentLang) : null) || cleanRu1 || (item.first_runner_up_party ? `${item.first_runner_up_party}` : 'Runner Up');
+  const locRu1 = localizedNames?.ru1?.[currentLang];
+  const validLocRu1 = locRu1 && !isGenericCandidate(locRu1) ? locRu1 : null;
+  const ru1Name = validLocRu1 || (cleanRu1 ? getLocalizedCandidateName(cleanRu1, currentLang) : null) || cleanRu1 || '';
 
   const rawRu2 = item.second_runner_up_name;
   const cleanRu2 = !isGenericCandidate(rawRu2) ? rawRu2 : null;
-  const ru2Name = localizedNames?.ru2?.[currentLang] || (cleanRu2 ? getLocalizedCandidateName(cleanRu2, currentLang) : null) || cleanRu2 || (item.second_runner_up_party ? `${item.second_runner_up_party} Candidate` : null);
+  const locRu2 = localizedNames?.ru2?.[currentLang];
+  const validLocRu2 = locRu2 && !isGenericCandidate(locRu2) ? locRu2 : null;
+  const ru2Name = validLocRu2 || (cleanRu2 ? getLocalizedCandidateName(cleanRu2, currentLang) : null) || cleanRu2 || null;
 
   // Parties
-  const winnerParty = localizedParties?.winner?.[currentLang] || getLocalizedPartyName(item.winner_party || item.party, currentLang) || 'IND';
-  const ru1Party = localizedParties?.ru1?.[currentLang] || getLocalizedPartyName(item.first_runner_up_party || 'IND', currentLang) || 'IND';
-  const ru2Party = localizedParties?.ru2?.[currentLang] || getLocalizedPartyName(item.second_runner_up_party || 'IND', currentLang) || 'IND';
+  const winnerParty = localizedParties?.winner?.[currentLang] || getLocalizedPartyName(rawWinnerParty, currentLang) || rawWinnerParty;
+  const ru1Party = item.first_runner_up_party ? (localizedParties?.ru1?.[currentLang] || getLocalizedPartyName(item.first_runner_up_party, currentLang) || item.first_runner_up_party) : '';
+  const ru2Party = item.second_runner_up_party ? (localizedParties?.ru2?.[currentLang] || getLocalizedPartyName(item.second_runner_up_party, currentLang) || item.second_runner_up_party) : '';
 
-  const winnerVotes = item.winner_votes || 0;
-  const ru1Votes = item.first_runner_up_votes || 0;
-  const ru2Votes = item.second_runner_up_votes || 0;
+  const winnerVotes = item.winner_votes ?? null;
+  const ru1Votes = item.first_runner_up_votes ?? null;
+  const ru2Votes = item.second_runner_up_votes ?? null;
 
-  const winnerVoteShare = item.winner_vote_share || 0;
-  const ru1VoteShare = item.first_runner_up_vote_share || 0;
-  const ru2VoteShare = item.second_runner_up_vote_share || 0;
+  const winnerVoteShare = item.winner_vote_share ?? null;
+  const ru1VoteShare = item.first_runner_up_vote_share ?? null;
+  const ru2VoteShare = item.second_runner_up_vote_share ?? null;
 
-  const margin1 = item.margin_winner_to_runner_up_1 != null
-    ? item.margin_winner_to_runner_up_1
-    : (winnerVotes > 0 && ru1Votes > 0 ? winnerVotes - ru1Votes : null);
+  const margin1 = item.margin_winner_to_runner_up_1 ?? null;
 
-  const margin2 = item.margin_winner_to_runner_up_2 != null
-    ? item.margin_winner_to_runner_up_2
-    : (winnerVotes > 0 && ru2Votes > 0 ? winnerVotes - ru2Votes : null);
-
-  const marginRu1ToRu2 = item.margin_runner_up_1_to_runner_up_2 != null
-    ? item.margin_runner_up_1_to_runner_up_2
-    : (ru1Votes > 0 && ru2Votes > 0 ? ru1Votes - ru2Votes : null);
-
-  const hasPodium = Boolean(cleanRu1 || (item.first_runner_up_votes && item.first_runner_up_votes > 0));
-  const hasThirdPlace = Boolean(cleanRu2 || item.second_runner_up_party || (item.second_runner_up_votes && item.second_runner_up_votes > 0));
+  const hasPodium = Boolean(cleanRu1 && item.first_runner_up_party);
+  const hasThirdPlace = Boolean(cleanRu2 && item.second_runner_up_party);
   const handlePressCandidate = (rank: 'W' | 'RU1' | 'RU2') => {
-    if (item.ac_no) {
-      const stateCode = item.state_code || 'TS';
-      router.push(`/legislator/MLA_${stateCode}_${item.year}_${item.ac_no}_${rank}` as any);
+    if (item.ac_no && item.state_code) {
+      router.push(`/legislator/MLA_${item.state_code}_${item.year}_${item.ac_no}_${rank}` as any);
     }
   };
 
@@ -111,13 +118,13 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
           {item.delimitation_id && (
             <View style={styles.delimBadge}>
               <Text style={styles.delimBadgeText}>
-                {item.delimitation_id === '4' ? 'Delim 2008' : 'Delim 1976'}
+                {item.delimitation_id === '4' ? 'Delim 2008' : item.delimitation_id === '3' ? 'Delim 1976' : `Delim ${item.delimitation_id}`}
               </Text>
             </View>
           )}
         </View>
 
-        {item.total_valid_votes ? (
+        {item.total_valid_votes != null && item.total_valid_votes > 0 ? (
           <Text style={[styles.validVotes, { color: colors.textMuted }]}>
             {item.total_valid_votes.toLocaleString()} {t('common.votes', { defaultValue: 'votes' })}
           </Text>
@@ -133,9 +140,9 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
 
         <CandidateAvatar
           name={winnerName}
-          party={item.winner_party || item.party}
+          party={rawWinnerParty}
           size={36}
-          photoUrl={item.winner_photo_url}
+          photoUrl={item.winner_photo_url || getStaticPhoto(winnerName) || getStaticPhoto(cleanWinner) || undefined}
         />
 
         <View style={styles.candInfo}>
@@ -146,7 +153,7 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
             <Ionicons name="trophy" size={13} color="#F59E0B" />
           </View>
           <View style={styles.partyRow}>
-            <View style={[styles.partyDot, { backgroundColor: getPartyColor(item.winner_party || item.party) }]} />
+            <View style={[styles.partyDot, { backgroundColor: getPartyColor(rawWinnerParty) }]} />
             <Text style={[styles.partyText, { color: colors.textSecondary }]} numberOfLines={1}>
               {winnerParty}
             </Text>
@@ -160,9 +167,9 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
 
         <View style={styles.voteStats}>
           <Text style={[styles.voteCount, { color: colors.text }]}>
-            {winnerVotes > 0 ? winnerVotes.toLocaleString() : '-'}
+            {winnerVotes != null ? winnerVotes.toLocaleString() : '—'}
           </Text>
-          {winnerVoteShare > 0 && (
+          {winnerVoteShare != null && (
             <Text style={[styles.voteShare, { color: '#F59E0B' }]}>{winnerVoteShare}%</Text>
           )}
         </View>
@@ -178,9 +185,9 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
 
           <CandidateAvatar
             name={ru1Name}
-            party={item.first_runner_up_party || 'IND'}
+            party={item.first_runner_up_party || ''}
             size={32}
-            photoUrl={item.first_runner_up_photo_url}
+            photoUrl={item.first_runner_up_photo_url || (cleanRu1 ? getStaticPhoto(cleanRu1) : undefined) || getStaticPhoto(ru1Name) || undefined}
           />
 
           <View style={styles.candInfo}>
@@ -188,7 +195,7 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
               {ru1Name}
             </Text>
             <View style={styles.partyRow}>
-              <View style={[styles.partyDot, { backgroundColor: getPartyColor(item.first_runner_up_party || 'IND') }]} />
+              <View style={[styles.partyDot, { backgroundColor: getPartyColor(item.first_runner_up_party || '') }]} />
               <Text style={[styles.partyText, { color: colors.textSecondary }]} numberOfLines={1}>
                 {ru1Party}
               </Text>
@@ -197,11 +204,11 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
 
           <View style={styles.voteStats}>
             <Text style={[styles.voteCountSecondary, { color: colors.textSecondary }]}>
-              {ru1Votes > 0 ? ru1Votes.toLocaleString() : '-'}
+              {ru1Votes != null ? ru1Votes.toLocaleString() : '—'}
             </Text>
-            {margin1 != null && margin1 > 0 && (
+            {ru1VoteShare != null && (
               <View style={styles.marginBadge}>
-                <Text style={styles.marginBadgeText}>-{margin1.toLocaleString()}</Text>
+                <Text style={styles.marginBadgeText}>{ru1VoteShare.toFixed(1)}%</Text>
               </View>
             )}
           </View>
@@ -218,9 +225,9 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
 
           <CandidateAvatar
             name={ru2Name}
-            party={item.second_runner_up_party || 'IND'}
+            party={item.second_runner_up_party || ''}
             size={32}
-            photoUrl={item.second_runner_up_photo_url}
+            photoUrl={item.second_runner_up_photo_url || (cleanRu2 ? getStaticPhoto(cleanRu2) : undefined) || getStaticPhoto(ru2Name) || undefined}
           />
 
           <View style={styles.candInfo}>
@@ -228,7 +235,7 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
               {ru2Name}
             </Text>
             <View style={styles.partyRow}>
-              <View style={[styles.partyDot, { backgroundColor: getPartyColor(item.second_runner_up_party || 'IND') }]} />
+              <View style={[styles.partyDot, { backgroundColor: getPartyColor(item.second_runner_up_party || '') }]} />
               <Text style={[styles.partyText, { color: colors.textSecondary }]} numberOfLines={1}>
                 {ru2Party}
               </Text>
@@ -237,11 +244,11 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
 
           <View style={styles.voteStats}>
             <Text style={[styles.voteCountSecondary, { color: colors.textSecondary }]}>
-              {ru2Votes > 0 ? ru2Votes.toLocaleString() : '-'}
+              {ru2Votes != null ? ru2Votes.toLocaleString() : '—'}
             </Text>
-            {margin2 != null && margin2 > 0 && (
+            {ru2VoteShare != null && (
               <View style={[styles.marginBadge, { backgroundColor: '#F3F4F6' }]}>
-                <Text style={[styles.marginBadgeText, { color: '#6B7280' }]}>-{margin2.toLocaleString()}</Text>
+                <Text style={[styles.marginBadgeText, { color: '#6B7280' }]}>{ru2VoteShare.toFixed(1)}%</Text>
               </View>
             )}
           </View>
@@ -250,13 +257,13 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
       )}
 
       {/* Comparative Vote Share Bar */}
-      {winnerVoteShare > 0 && ru1VoteShare > 0 && (
+      {winnerVoteShare != null && ru1VoteShare != null && hasPodium && (
         <View style={styles.barContainer}>
           <View style={styles.barTrack}>
-            <View style={[styles.barFill, { width: `${winnerVoteShare}%`, backgroundColor: getPartyColor(item.winner_party || item.party) }]} />
-            <View style={[styles.barFill, { width: `${ru1VoteShare}%`, backgroundColor: getPartyColor(item.first_runner_up_party || 'IND') }]} />
-            {ru2VoteShare > 0 && (
-              <View style={[styles.barFill, { width: `${ru2VoteShare}%`, backgroundColor: getPartyColor(item.second_runner_up_party || 'IND') }]} />
+            <View style={[styles.barFill, { width: `${Math.max(0, Math.min(100, winnerVoteShare))}%`, backgroundColor: getPartyColor(rawWinnerParty) }]} />
+            <View style={[styles.barFill, { width: `${Math.max(0, Math.min(100, ru1VoteShare))}%`, backgroundColor: getPartyColor(item.first_runner_up_party || '') }]} />
+            {ru2VoteShare != null && hasThirdPlace && (
+              <View style={[styles.barFill, { width: `${Math.max(0, Math.min(100, ru2VoteShare))}%`, backgroundColor: getPartyColor(item.second_runner_up_party || '') }]} />
             )}
           </View>
         </View>

@@ -4,16 +4,11 @@ import type { AppFeatureFlags } from '@kshetra/shared';
 import { DEFAULT_FEATURE_FLAGS } from '@kshetra/shared';
 import { supabase } from '../lib/supabase';
 import {
-  ToggleLeft,
   ToggleRight,
   RefreshCw,
   RotateCcw,
   Save,
   CheckCircle2,
-  AlertCircle,
-  Layers,
-  Sparkles,
-  Zap,
 } from 'lucide-react';
 
 interface FlagMetadata {
@@ -44,6 +39,8 @@ const ALL_FLAGS: FlagMetadata[] = [
   { key: 'enableAspirants', label: 'Political Aspirant Incubation', category: 'Phase 5: Commercial', description: 'New candidate onboarding & constituency readiness scores' },
   { key: 'enableCampaignManager', label: 'Campaign Manager HQ', category: 'Phase 5: Commercial', description: 'Voice OBD & booth/cadre campaign tools' },
   { key: 'enableLeadershipAcademy', label: 'Leadership Academy', category: 'Phase 5: Commercial', description: 'Training courses & governance certifications for youth leaders' },
+  { key: 'enablePoliticalAds', label: 'Political Advertising', category: 'Phase 5: Commercial', description: 'Political ad submission and compliance review' },
+  { key: 'enableNativeLive', label: 'Native Live Broadcast', category: 'Phase 5: Commercial', description: 'In-app live video broadcast feature' },
 ];
 
 export function FeatureFlags() {
@@ -172,10 +169,10 @@ export function FeatureFlags() {
         <div className="space-y-1">
           <h1 className="text-xl font-bold text-white flex items-center gap-2">
             <ToggleRight className="w-5 h-5 text-blue-400" />
-            <span>Feature Flags & Live Kill Switches</span>
+            <span>Feature Flags</span>
           </h1>
           <p className="text-xs text-slate-400">
-            Control reactive feature visibility across the Android APK and Web clients in real-time.
+            Values load from the API. Saving requires an authorized administrator session and a configured flag store.
           </p>
         </div>
 
@@ -186,7 +183,7 @@ export function FeatureFlags() {
             className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 flex items-center gap-1.5 transition"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>Sync with Server</span>
+            <span>Refresh from API</span>
           </button>
           <button
             onClick={handleReset}
@@ -194,7 +191,7 @@ export function FeatureFlags() {
             className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-semibold border border-slate-700 flex items-center gap-1.5 transition"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span>Reset Defaults</span>
+            <span>Load Code Defaults</span>
           </button>
           <button
             onClick={handleSave}
@@ -202,7 +199,7 @@ export function FeatureFlags() {
             className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-lg shadow-blue-600/30 flex items-center gap-2 transition"
           >
             <Save className="w-4 h-4" />
-            <span>{saving ? 'Publishing...' : 'Publish Flags'}</span>
+            <span>{saving ? 'Saving...' : 'Save Changes'}</span>
           </button>
         </div>
       </div>

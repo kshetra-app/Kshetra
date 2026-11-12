@@ -10,7 +10,7 @@ import type {
   RevenueFlowData,
   CampaignStatus,
   AdFormat,
-  VoterSegment,
+  AdStatus,
   CampaignServicePricing,
 } from '../lib/campaignTypes';
 import type {
@@ -19,9 +19,40 @@ import type {
   OBDBroadcastJob,
 } from '../lib/walletTypes';
 import { API_BASE_URL } from '../lib/constants';
-import { IS_PRODUCTION, IS_STAGING } from '../lib/environment';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
+import { apiClient } from '../lib/api';
 
-const IS_LIVE_ENVIRONMENT = IS_PRODUCTION || IS_STAGING;
+type CampaignRequestKey =
+  | 'workspace'
+  | 'campaigns'
+  | 'ads'
+  | 'booths'
+  | 'volunteers'
+  | 'pricing'
+  | 'wallet'
+  | 'walletTransactions'
+  | 'obdBroadcasts';
+
+const latestRequestByResource: Record<CampaignRequestKey, number> = {
+  workspace: 0,
+  campaigns: 0,
+  ads: 0,
+  booths: 0,
+  volunteers: 0,
+  pricing: 0,
+  wallet: 0,
+  walletTransactions: 0,
+  obdBroadcasts: 0,
+};
+
+function beginRequest(resource: CampaignRequestKey): number {
+  latestRequestByResource[resource] += 1;
+  return latestRequestByResource[resource];
+}
+
+function isLatestRequest(resource: CampaignRequestKey, requestId: number): boolean {
+  return latestRequestByResource[resource] === requestId;
+}
 
 // ─── Seed Campaigns ───
 const SEED_CAMPAIGNS: Campaign[] = [
@@ -184,7 +215,7 @@ export const DEFAULT_PRICING: CampaignServicePricing = {
       howItWorks: 'Record or upload a 30-second audio appeal. Our telecom voice gateway calls voters in your selected ward or booth and plays your message upon pickup.',
       prerequisites: 'Clear audio recording (WAV or MP3, under 45 seconds). Target constituency or ward selected.',
       dos: [
-        'Call strictly between 9:00 AM and 8:00 PM per TRAI norms.',
+        'Use the configured 9:00 AM to 8:00 PM IST dispatch window. Verify current legal and provider requirements before enabling production delivery.',
         'State your name and constituency in the first 5 seconds.',
         'Keep the tone respectful, clear, and focused on 1-2 core promises.',
       ],
@@ -323,19 +354,206 @@ const SEED_REVENUE: RevenueFlowData = {
   },
 };
 
+const CAMPAIGN_TYPES = new Set<Campaign['type']>([
+  'election', 'awareness', 'fundraising', 'outreach', 'issue_advocacy', 'brand_building', 'get_out_vote',
+]);
+const CAMPAIGN_STATUSES = new Set<CampaignStatus>([
+  'draft', 'planned', 'active', 'paused', 'completed', 'cancelled',
+]);
+
+function readNumber(value: unknown): number | undefined {
+  if (value === null || value === undefined || value === '') return undefined;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+function readStringArray(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
+}
+
+function readNumberArray(value: unknown): number[] {
+  return Array.isArray(value)
+    ? value.map(readNumber).filter((item): item is number => item !== undefined)
+    : [];
+}
+
+function mapCampaignRow(row: any): Campaign | null {
+  if (!row || typeof row !== 'object') return null;
+  const id = row.id;
+  const name = row.name;
+  const type = row.type;
+  const status = row.status;
+  if (
+    typeof id !== 'string' || !id || typeof name !== 'string' || !name ||
+    !CAMPAIGN_TYPES.has(type) || !CAMPAIGN_STATUSES.has(status)
+  ) return null;
+
+  const totalBudget = readNumber(row.total_budget_inr ?? row.totalBudgetINR);
+  const politicianProfile = row.politician_portal_profiles ?? row.politicianProfile;
+  return {
+    id,
+    politicianId: String(row.politician_id ?? row.politicianId ?? ''),
+    politicianName: row.politician_name ?? row.politicianName ?? politicianProfile?.display_name,
+    party: row.party ?? politicianProfile?.party,
+    name,
+    description: String(row.description ?? ''),
+    type,
+    status,
+    stateCode: String(row.state_code ?? row.stateCode ?? ''),
+    targetConstituencies: readNumberArray(row.target_constituencies ?? row.targetConstituencies),
+    targetDistricts: readStringArray(row.target_districts ?? row.targetDistricts),
+    startDate: String(row.start_date ?? row.startDate ?? ''),
+    endDate: String(row.end_date ?? row.endDate ?? ''),
+    totalBudgetINR: totalBudget !== undefined && totalBudget > 0 ? totalBudget : undefined,
+    // Spend/performance stay absent until tied to durable billing and delivery events.
+    spentBudgetINR: undefined,
+    adCount: undefined,
+    volunteerCount: undefined,
+    boothsCovered: undefined,
+    totalBooths: undefined,
+    impressions: undefined,
+    reach: undefined,
+    engagements: undefined,
+    conversions: undefined,
+    sentimentScore: undefined,
+    createdAt: String(row.created_at ?? row.createdAt ?? ''),
+    updatedAt: String(row.updated_at ?? row.updatedAt ?? ''),
+  };
+}
+
+function mapBoothRow(row: any): BoothStrategy | null {
+  if (!row || typeof row !== 'object' || typeof row.id !== 'string') return null;
+  return {
+    id: row.id,
+    campaignId: String(row.campaign_id ?? row.campaignId ?? ''),
+    boothId: String(row.booth_id ?? row.boothId ?? ''),
+    boothName: String(row.booth_name ?? row.boothName ?? ''),
+    boothNumber: String(row.booth_number ?? row.boothNumber ?? ''),
+    constituencyAcNo: readNumber(row.constituency_ac_no ?? row.constituencyAcNo) ?? 0,
+    wardNo: readNumber(row.ward_no ?? row.wardNo),
+    totalVoters: readNumber(row.total_voters ?? row.totalVoters) ?? 0,
+    estimatedTurnout: readNumber(row.estimated_turnout ?? row.estimatedTurnout) ?? 0,
+    targetVotes: readNumber(row.target_votes ?? row.targetVotes) ?? 0,
+    historicalResults: Array.isArray(row.historical_results ?? row.historicalResults)
+      ? row.historical_results ?? row.historicalResults
+      : [],
+    assignedVolunteers: readStringArray(row.assigned_volunteers ?? row.assignedVolunteers),
+    agentId: row.agent_id ?? row.agentId,
+    agentName: row.agent_name ?? row.agentName,
+    agentPhone: row.agent_phone ?? row.agentPhone,
+    isKshetraUser: row.agent_id !== undefined
+      ? Boolean(row.agent_id)
+      : row.is_kshetra_user ?? row.isKshetraUser,
+    priority: row.priority,
+    status: row.status,
+    canvassingCompletion: readNumber(row.canvassing_completion ?? row.canvassingCompletion) ?? 0,
+    supportEstimate: readNumber(row.support_estimate ?? row.supportEstimate) ?? 0,
+    notes: String(row.notes ?? ''),
+  };
+}
+
+function mapVolunteerRow(row: any): Volunteer | null {
+  if (!row || typeof row !== 'object' || typeof row.id !== 'string') return null;
+  return {
+    id: row.id,
+    userId: String(row.user_id ?? row.userId ?? ''),
+    campaignId: String(row.campaign_id ?? row.campaignId ?? ''),
+    name: String(row.name ?? ''),
+    phone: String(row.phone ?? ''),
+    role: row.role,
+    status: row.status,
+    assignedBooths: readStringArray(row.assigned_booths ?? row.assignedBooths),
+    assignedWards: readNumberArray(row.assigned_wards ?? row.assignedWards),
+    constituencyAcNo: readNumber(row.constituency_ac_no ?? row.constituencyAcNo),
+    tasksCompleted: readNumber(row.tasks_completed ?? row.tasksCompleted) ?? null,
+    hoursLogged: readNumber(row.hours_logged ?? row.hoursLogged) ?? null,
+    rating: readNumber(row.rating) ?? null,
+    isKshetraUser: row.user_id !== undefined
+      ? Boolean(row.user_id)
+      : row.is_kshetra_user ?? row.isKshetraUser,
+    joinedAt: String(row.joined_at ?? row.joinedAt ?? row.created_at ?? ''),
+    lastActiveAt: String(row.last_active_at ?? row.lastActiveAt ?? ''),
+  };
+}
+
+const AD_FORMATS = new Set<AdFormat>([
+  'promoted_post', 'banner', 'video_ad', 'carousel', 'native_story',
+  'constituency_spotlight', 'push_notification', 'sms_blast', 'whatsapp_broadcast',
+]);
+const AD_STATUSES = new Set<AdStatus>([
+  'draft', 'pending_review', 'approved', 'active', 'paused', 'completed', 'rejected', 'expired',
+]);
+
+function mapAdRow(row: any): AdCreative | null {
+  if (
+    !row || typeof row !== 'object' || typeof row.id !== 'string' ||
+    typeof (row.campaign_id ?? row.campaignId) !== 'string' ||
+    !AD_FORMATS.has(row.format) || !AD_STATUSES.has(row.status) ||
+    typeof row.name !== 'string' || typeof row.headline !== 'string'
+  ) return null;
+
+  return {
+    id: row.id,
+    campaignId: row.campaign_id ?? row.campaignId,
+    format: row.format,
+    status: row.status,
+    name: row.name,
+    headline: row.headline,
+    body: String(row.body ?? ''),
+    callToAction: String(row.call_to_action ?? row.callToAction ?? ''),
+    mediaUrls: readStringArray(row.media_urls ?? row.mediaUrls),
+    thumbnailUrl: row.thumbnail_url ?? row.thumbnailUrl ?? undefined,
+    landingUrl: row.landing_url ?? row.landingUrl ?? undefined,
+    disclosureText: String(row.disclosure_text ?? row.disclosureText ?? ''),
+    paidForBy: String(row.paid_for_by ?? row.paidForBy ?? ''),
+    eciDisclosureId: row.eci_disclosure_id ?? row.eciDisclosureId ?? undefined,
+    isECICompliant: Boolean(row.is_eci_compliant ?? row.isECICompliant),
+    reviewNote: row.review_note ?? row.reviewNote ?? undefined,
+    // Delivery metrics are intentionally not selected from the legacy JSON default.
+    performance: null,
+    createdAt: String(row.created_at ?? row.createdAt ?? ''),
+    updatedAt: String(row.updated_at ?? row.updatedAt ?? ''),
+  };
+}
+
+type CampaignAdDraftInput = Pick<AdCreative, 'format' | 'name' | 'headline' | 'paidForBy' | 'disclosureText'> &
+  Partial<Pick<AdCreative, 'body' | 'callToAction' | 'mediaUrls' | 'thumbnailUrl' | 'landingUrl'>>;
+
 // ─── Store ───
 interface CampaignState {
   campaigns: Campaign[];
+  selectedCampaignId: string;
   ads: AdCreative[];
+  adsLoading: boolean;
+  adsAvailable: boolean;
+  adsError: string | null;
   abTests: ABTest[];
   volunteers: Volunteer[];
   booths: BoothStrategy[];
   canvassingRecords: CanvassingRecord[];
   revenueData: RevenueFlowData | null;
+  campaignsLoading: boolean;
+  campaignsAvailable: boolean;
+  campaignsError: string | null;
+  boothsLoading: boolean;
+  boothsAvailable: boolean;
+  boothsError: string | null;
+  volunteersLoading: boolean;
+  volunteersAvailable: boolean;
+  volunteersError: string | null;
+  volunteerWorkLogsAvailable: boolean;
   pricing: CampaignServicePricing;
+  pricingAvailable: boolean;
   wallet: CampaignWallet;
+  walletAvailable: boolean;
   walletTransactions: WalletTransaction[];
+  walletTransactionsAvailable: boolean;
+  walletTransactionsLoading: boolean;
+  walletTransactionsError: string | null;
   obdBroadcasts: OBDBroadcastJob[];
+  obdBroadcastsAvailable: boolean;
+  obdBroadcastsLoading: boolean;
+  obdBroadcastsError: string | null;
 
   // Queries
   getCampaign: (id: string) => Campaign | undefined;
@@ -351,6 +569,12 @@ interface CampaignState {
   getRevenueFlow: () => RevenueFlowData | null;
 
   // Actions
+  loadCampaignWorkspace: () => Promise<void>;
+  selectCampaign: (campaignId: string) => Promise<void>;
+  fetchCampaigns: () => Promise<Campaign[]>;
+  fetchAds: (campaignId: string) => Promise<void>;
+  fetchBooths: (campaignId: string) => Promise<void>;
+  fetchVolunteers: (campaignId: string) => Promise<void>;
   fetchPricing: () => Promise<void>;
   fetchWallet: () => Promise<void>;
   fetchWalletTransactions: () => Promise<void>;
@@ -361,28 +585,43 @@ interface CampaignState {
     targetSegment: { type: string; wardNo?: number; boothNumbers?: string[]; voterCount: number },
     audioUrl?: string,
   ) => Promise<{ success: boolean; message: string; warning?: string; remainingBalance?: number }>;
-  createCampaign: (campaign: Partial<Campaign>) => void;
+  createCampaign: (campaign: Partial<Campaign>) => Promise<Campaign>;
   updateCampaignStatus: (campaignId: string, status: CampaignStatus) => void;
-  createAd: (ad: Partial<AdCreative>) => void;
+  createAd: (ad: CampaignAdDraftInput) => Promise<AdCreative>;
   pauseAd: (adId: string) => void;
   addVolunteer: (volunteer: Partial<Volunteer>) => void;
   addCadre: (cadre: { name: string; phone: string; role: Volunteer['role']; assignedBooths: string[]; isKshetraUser: boolean }) => Promise<void>;
   assignBoothIncharge: (boothId: string, agentName: string, agentPhone: string, isKshetraUser: boolean) => Promise<void>;
   checkKshetraUser: (phone: string) => Promise<{ isKshetraUser: boolean; displayName?: string }>;
-  dispatchObdBroadcast: (title: string, voterCount: number) => Promise<{ success: boolean; cost: number; message: string }>;
-  updateBoothStatus: (boothId: string, status: string) => void;
-  logCanvassing: (record: Partial<CanvassingRecord>) => void;
+  dispatchObdBroadcast: (title: string, voterCount: number) => Promise<{ success: boolean; cost: number | null; message: string }>;
+  updateBoothStatus: (boothId: string, status: BoothStrategy['status']) => Promise<void>;
+  logCanvassing: (record: Partial<CanvassingRecord>) => Promise<void>;
 }
 
 export const useCampaignStore = create<CampaignState>((set, get) => ({
   campaigns: IS_LIVE_ENVIRONMENT ? [] : SEED_CAMPAIGNS,
+  selectedCampaignId: IS_LIVE_ENVIRONMENT ? '' : (SEED_CAMPAIGNS[0]?.id || ''),
   ads: IS_LIVE_ENVIRONMENT ? [] : SEED_ADS,
+  adsLoading: false,
+  adsAvailable: !IS_LIVE_ENVIRONMENT,
+  adsError: null,
   abTests: IS_LIVE_ENVIRONMENT ? [] : SEED_AB_TESTS,
   volunteers: IS_LIVE_ENVIRONMENT ? [] : SEED_VOLUNTEERS,
   booths: IS_LIVE_ENVIRONMENT ? [] : SEED_BOOTHS,
   canvassingRecords: [],
   revenueData: IS_LIVE_ENVIRONMENT ? null : SEED_REVENUE,
+  campaignsLoading: false,
+  campaignsAvailable: !IS_LIVE_ENVIRONMENT,
+  campaignsError: null,
+  boothsLoading: false,
+  boothsAvailable: !IS_LIVE_ENVIRONMENT,
+  boothsError: null,
+  volunteersLoading: false,
+  volunteersAvailable: !IS_LIVE_ENVIRONMENT,
+  volunteersError: null,
+  volunteerWorkLogsAvailable: !IS_LIVE_ENVIRONMENT,
   pricing: DEFAULT_PRICING,
+  pricingAvailable: !IS_LIVE_ENVIRONMENT,
   wallet: {
     id: IS_LIVE_ENVIRONMENT ? '' : 'w-pp1',
     politicianId: IS_LIVE_ENVIRONMENT ? '' : 'pp1',
@@ -392,6 +631,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
     currency: 'INR',
     updatedAt: new Date().toISOString(),
   },
+  walletAvailable: !IS_LIVE_ENVIRONMENT,
   walletTransactions: IS_LIVE_ENVIRONMENT ? [] : [
     {
       id: 'tx-1',
@@ -418,6 +658,9 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
       createdAt: '2026-05-20T10:30:00Z',
     },
   ],
+  walletTransactionsAvailable: !IS_LIVE_ENVIRONMENT,
+  walletTransactionsLoading: false,
+  walletTransactionsError: null,
   obdBroadcasts: IS_LIVE_ENVIRONMENT ? [] : [
     {
       id: 'obd-demo-1',
@@ -439,6 +682,9 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
       createdAt: '2026-05-20T10:25:00Z',
     },
   ],
+  obdBroadcastsAvailable: !IS_LIVE_ENVIRONMENT,
+  obdBroadcastsLoading: false,
+  obdBroadcastsError: null,
 
   getCampaign: (id) => get().campaigns.find((c) => c.id === id),
   getCampaignsForPolitician: (politicianId) => get().campaigns.filter((c) => c.politicianId === politicianId),
@@ -450,73 +696,366 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
   getCriticalBooths: (campaignId) => get().booths.filter((b) => b.campaignId === campaignId && (b.priority === 'critical' || b.priority === 'high')),
   getABTestsForCampaign: (campaignId) => get().abTests.filter((t) => t.campaignId === campaignId),
 
-  fetchPricing: async () => {
-    if (IS_LIVE_ENVIRONMENT) return;
+  fetchCampaigns: async () => {
+    if (!IS_LIVE_ENVIRONMENT) return get().campaigns;
+
+    const requestId = beginRequest('campaigns');
+    beginRequest('ads');
+    beginRequest('booths');
+    beginRequest('volunteers');
+
+    set({
+      campaigns: [], campaignsLoading: true, campaignsAvailable: false, campaignsError: null,
+      ads: [], adsLoading: false, adsAvailable: false, adsError: null,
+      booths: [], boothsLoading: false, boothsAvailable: false, boothsError: null,
+      volunteers: [], volunteersLoading: false, volunteersAvailable: false, volunteersError: null,
+      volunteerWorkLogsAvailable: false,
+    });
     try {
-      const res = await fetch(`${API_BASE_URL}/api/v1/campaign/pricing`);
-      if (res.ok) {
-        const json = await res.json();
-        if (json.pricing) {
-          set({ pricing: json.pricing });
-        }
+      const { data } = await apiClient.request<{ campaigns?: unknown[] }>(
+        '/api/v1/campaign/campaigns',
+      );
+      if (!Array.isArray(data.campaigns)) throw new Error('Invalid campaign response');
+      const rows = data.campaigns;
+      const mapped = rows
+        .map(mapCampaignRow)
+        .filter((campaign): campaign is Campaign => campaign !== null)
+        .sort((left, right) => right.createdAt.localeCompare(left.createdAt));
+      const hasInvalidRows = mapped.length !== rows.length;
+      if (!isLatestRequest('campaigns', requestId)) return get().campaigns;
+      set({
+        campaigns: mapped,
+        campaignsAvailable: !hasInvalidRows,
+        campaignsError: hasInvalidRows ? 'Some campaign records could not be displayed.' : null,
+      });
+      return mapped;
+    } catch {
+      if (!isLatestRequest('campaigns', requestId)) return get().campaigns;
+      set({
+        campaigns: [], campaignsAvailable: false, campaignsError: 'Campaign data could not be loaded.',
+        ads: [], adsLoading: false, adsAvailable: false, adsError: 'Campaign data could not be loaded.',
+      });
+      return [];
+    } finally {
+      if (isLatestRequest('campaigns', requestId)) set({ campaignsLoading: false });
+    }
+  },
+
+  fetchAds: async (campaignId) => {
+    if (!IS_LIVE_ENVIRONMENT) return;
+    if (!campaignId) {
+      beginRequest('ads');
+      set({ ads: [], adsLoading: false, adsAvailable: true, adsError: null });
+      return;
+    }
+
+    const requestId = beginRequest('ads');
+    set({ ads: [], adsLoading: true, adsAvailable: false, adsError: null });
+    try {
+      const { data } = await apiClient.request<{ ads?: unknown[] }>(
+        '/api/v1/campaign/ads',
+        { query: { campaignId } },
+      );
+      if (!Array.isArray(data.ads)) throw new Error('Invalid campaign ad response');
+      const rows = data.ads;
+      const mapped = rows.map(mapAdRow).filter((ad): ad is AdCreative => ad !== null);
+      if (!isLatestRequest('ads', requestId) || get().selectedCampaignId !== campaignId) return;
+      set({
+        ads: mapped,
+        adsAvailable: mapped.length === rows.length,
+        adsError: mapped.length === rows.length ? null : 'Some ad drafts could not be displayed.',
+      });
+    } catch {
+      if (isLatestRequest('ads', requestId) && get().selectedCampaignId === campaignId) {
+        set({ ads: [], adsAvailable: false, adsError: 'Campaign ad drafts could not be loaded.' });
+      }
+    } finally {
+      if (isLatestRequest('ads', requestId) && get().selectedCampaignId === campaignId) {
+        set({ adsLoading: false });
+      }
+    }
+  },
+
+  fetchBooths: async (campaignId) => {
+    if (!IS_LIVE_ENVIRONMENT) return;
+    if (!campaignId) {
+      beginRequest('booths');
+      set({ booths: [], boothsLoading: false, boothsAvailable: true, boothsError: null });
+      return;
+    }
+
+    const requestId = beginRequest('booths');
+    set({ booths: [], boothsLoading: true, boothsAvailable: false, boothsError: null });
+    try {
+      const { data } = await apiClient.request<{ booths?: unknown[] }>(
+        '/api/v1/campaign/booths',
+        { query: { campaignId } },
+      );
+      if (!Array.isArray(data.booths)) throw new Error('Invalid booth response');
+      const rows = data.booths;
+      const mapped = rows.map(mapBoothRow).filter((booth): booth is BoothStrategy => booth !== null);
+      const hasInvalidRows = mapped.length !== rows.length;
+      if (!isLatestRequest('booths', requestId) || get().selectedCampaignId !== campaignId) return;
+      set({
+        booths: mapped,
+        boothsAvailable: !hasInvalidRows,
+        boothsError: hasInvalidRows ? 'Some booth records could not be displayed.' : null,
+      });
+    } catch {
+      if (isLatestRequest('booths', requestId) && get().selectedCampaignId === campaignId) {
+        set({ booths: [], boothsAvailable: false, boothsError: 'Booth data could not be loaded.' });
+      }
+    } finally {
+      if (isLatestRequest('booths', requestId) && get().selectedCampaignId === campaignId) {
+        set({ boothsLoading: false });
+      }
+    }
+  },
+
+  fetchVolunteers: async (campaignId) => {
+    if (!IS_LIVE_ENVIRONMENT) return;
+    if (!campaignId) {
+      beginRequest('volunteers');
+      set({
+        volunteers: [],
+        volunteersLoading: false,
+        volunteersAvailable: true,
+        volunteersError: null,
+        volunteerWorkLogsAvailable: false,
+      });
+      return;
+    }
+
+    const requestId = beginRequest('volunteers');
+    set({
+      volunteers: [],
+      volunteersLoading: true,
+      volunteersAvailable: false,
+      volunteersError: null,
+      volunteerWorkLogsAvailable: false,
+    });
+    try {
+      const { data } = await apiClient.request<{
+        volunteers?: unknown[];
+        workLogMetricsAvailable?: boolean;
+        volunteerRatingsAvailable?: boolean;
+      }>(
+        '/api/v1/campaign/volunteers',
+        { query: { campaignId } },
+      );
+      if (!Array.isArray(data.volunteers)) throw new Error('Invalid worker response');
+      const rows = data.volunteers;
+      const mapped = rows.map(mapVolunteerRow).filter((volunteer): volunteer is Volunteer => volunteer !== null);
+      const hasInvalidRows = mapped.length !== rows.length;
+      const workLogMetricsAvailable = data.workLogMetricsAvailable === true && !hasInvalidRows;
+      const volunteerRatingsAvailable = data.volunteerRatingsAvailable === true && !hasInvalidRows;
+      const trustedVolunteers = mapped.map((volunteer) => ({
+        ...volunteer,
+        // Older API deployments may still return legacy zero/default counters.
+        // Require the explicit capability flag before treating them as metrics.
+        tasksCompleted: workLogMetricsAvailable ? volunteer.tasksCompleted : null,
+        hoursLogged: workLogMetricsAvailable ? volunteer.hoursLogged : null,
+        rating: volunteerRatingsAvailable ? volunteer.rating : null,
+      }));
+      if (!isLatestRequest('volunteers', requestId) || get().selectedCampaignId !== campaignId) return;
+      set({
+        volunteers: trustedVolunteers,
+        volunteersAvailable: !hasInvalidRows,
+        volunteersError: hasInvalidRows ? 'Some worker records could not be displayed.' : null,
+        volunteerWorkLogsAvailable: workLogMetricsAvailable,
+      });
+    } catch {
+      if (isLatestRequest('volunteers', requestId) && get().selectedCampaignId === campaignId) {
+        set({
+          volunteers: [],
+          volunteersAvailable: false,
+          volunteersError: 'Worker data could not be loaded.',
+          volunteerWorkLogsAvailable: false,
+        });
+      }
+    } finally {
+      if (isLatestRequest('volunteers', requestId) && get().selectedCampaignId === campaignId) {
+        set({ volunteersLoading: false });
+      }
+    }
+  },
+
+  loadCampaignWorkspace: async () => {
+    if (!IS_LIVE_ENVIRONMENT) {
+      await get().fetchPricing();
+      return;
+    }
+
+    const requestId = beginRequest('workspace');
+    // A workspace refresh replaces the active snapshot. Ignore any older detail
+    // requests while the new campaign list and its corresponding details load.
+    beginRequest('ads');
+    beginRequest('booths');
+    beginRequest('volunteers');
+
+    const [, , , , campaigns] = await Promise.all([
+      get().fetchPricing(),
+      get().fetchWallet(),
+      get().fetchWalletTransactions(),
+      get().fetchOBDBroadcasts(),
+      get().fetchCampaigns(),
+    ]);
+    if (!isLatestRequest('workspace', requestId)) return;
+    if (!get().campaignsAvailable) {
+      const message = get().campaignsError || 'Campaign data could not be loaded.';
+      set({
+        booths: [], boothsLoading: false, boothsAvailable: false, boothsError: message,
+        volunteers: [], volunteersLoading: false, volunteersAvailable: false, volunteersError: message,
+        volunteerWorkLogsAvailable: false,
+      });
+      return;
+    }
+
+    const selectedCampaign = campaigns.find((item) => item.id === get().selectedCampaignId);
+    const campaign = selectedCampaign || campaigns.find((item) => item.status === 'active') || campaigns[0];
+    set({ selectedCampaignId: campaign?.id || '' });
+    if (!campaign) {
+      set({
+        ads: [], adsLoading: false, adsAvailable: true, adsError: null,
+        booths: [], boothsLoading: false, boothsAvailable: true, boothsError: null,
+        volunteers: [], volunteersLoading: false, volunteersAvailable: true, volunteersError: null,
+        volunteerWorkLogsAvailable: false,
+      });
+      return;
+    }
+
+    await Promise.all([get().fetchAds(campaign.id), get().fetchBooths(campaign.id), get().fetchVolunteers(campaign.id)]);
+  },
+
+  selectCampaign: async (campaignId) => {
+    const campaign = get().campaigns.find((item) => item.id === campaignId);
+    if (!campaign) throw new Error('Choose a campaign available to this account.');
+    set({
+      selectedCampaignId: campaign.id,
+      ads: IS_LIVE_ENVIRONMENT ? [] : get().ads,
+      adsLoading: false,
+      adsAvailable: !IS_LIVE_ENVIRONMENT,
+      adsError: null,
+      booths: IS_LIVE_ENVIRONMENT ? [] : SEED_BOOTHS.filter((booth) => booth.campaignId === campaign.id),
+      boothsLoading: false,
+      boothsAvailable: !IS_LIVE_ENVIRONMENT,
+      boothsError: null,
+      volunteers: IS_LIVE_ENVIRONMENT ? [] : SEED_VOLUNTEERS.filter((volunteer) => volunteer.campaignId === campaign.id),
+      volunteersLoading: false,
+      volunteersAvailable: !IS_LIVE_ENVIRONMENT,
+      volunteerWorkLogsAvailable: !IS_LIVE_ENVIRONMENT,
+      volunteersError: null,
+    });
+    if (IS_LIVE_ENVIRONMENT) {
+      await Promise.all([get().fetchAds(campaign.id), get().fetchBooths(campaign.id), get().fetchVolunteers(campaign.id)]);
+    }
+  },
+
+  fetchPricing: async () => {
+    const requestId = beginRequest('pricing');
+    if (IS_LIVE_ENVIRONMENT) set({ pricingAvailable: false });
+    try {
+      const { data: json } = await apiClient.request<{ pricing?: CampaignServicePricing }>(
+        '/api/v1/campaign/pricing',
+        { authPolicy: 'public' },
+      );
+      if (json.pricing) {
+        if (!isLatestRequest('pricing', requestId)) return;
+        set({ pricing: json.pricing, pricingAvailable: true });
+        return;
       }
     } catch {
-      // Keep DEFAULT_PRICING if offline
+      // A production client must not present cached demo pricing as a live quote.
+    }
+    if (IS_LIVE_ENVIRONMENT && isLatestRequest('pricing', requestId)) {
+      set({ pricingAvailable: false });
     }
   },
 
   fetchWallet: async () => {
-    if (IS_LIVE_ENVIRONMENT) return;
+    const requestId = beginRequest('wallet');
+    if (IS_LIVE_ENVIRONMENT) set({ walletAvailable: false });
     try {
-      const res = await fetch(`${API_BASE_URL}/api/v1/campaign/wallet?politicianId=pp1`);
-      if (res.ok) {
-        const json = await res.json();
-        if (json.wallet) set({ wallet: json.wallet });
+      const { data: json } = await apiClient.request<{ wallet?: CampaignWallet }>('/api/v1/campaign/wallet');
+      if (json.wallet) {
+        if (!isLatestRequest('wallet', requestId)) return;
+        set({ wallet: json.wallet, walletAvailable: true });
+        return;
       }
-    } catch {}
+    } catch {
+      // No wallet is displayed as current unless the API returns it successfully.
+    }
+    if (IS_LIVE_ENVIRONMENT && isLatestRequest('wallet', requestId)) {
+      set({ walletAvailable: false });
+    }
   },
 
   fetchWalletTransactions: async () => {
-    if (IS_LIVE_ENVIRONMENT) return;
+    const requestId = beginRequest('walletTransactions');
+    if (IS_LIVE_ENVIRONMENT) {
+      set({ walletTransactionsAvailable: false, walletTransactionsLoading: true, walletTransactionsError: null });
+    }
     try {
-      const res = await fetch(`${API_BASE_URL}/api/v1/campaign/wallet/transactions?politicianId=pp1`);
-      if (res.ok) {
-        const json = await res.json();
-        if (json.transactions) set({ walletTransactions: json.transactions });
+      const { data: json } = await apiClient.request<{ transactions?: WalletTransaction[] }>(
+        '/api/v1/campaign/wallet/transactions',
+      );
+      if (!Array.isArray(json.transactions)) throw new Error('Invalid wallet transaction response');
+      if (!isLatestRequest('walletTransactions', requestId)) return;
+      set({ walletTransactions: json.transactions, walletTransactionsAvailable: true, walletTransactionsError: null });
+    } catch {
+      if (IS_LIVE_ENVIRONMENT && isLatestRequest('walletTransactions', requestId)) {
+        set({ walletTransactions: [], walletTransactionsAvailable: false, walletTransactionsError: 'Transaction history is unavailable.' });
       }
-    } catch {}
+    } finally {
+      if (isLatestRequest('walletTransactions', requestId)) set({ walletTransactionsLoading: false });
+    }
   },
 
   fetchOBDBroadcasts: async () => {
-    if (IS_LIVE_ENVIRONMENT) return;
+    const requestId = beginRequest('obdBroadcasts');
+    if (IS_LIVE_ENVIRONMENT) {
+      set({ obdBroadcastsAvailable: false, obdBroadcastsLoading: true, obdBroadcastsError: null });
+    }
     try {
-      const res = await fetch(`${API_BASE_URL}/api/v1/campaign/obd/broadcasts?politicianId=pp1`);
-      if (res.ok) {
-        const json = await res.json();
-        if (json.broadcasts) set({ obdBroadcasts: json.broadcasts });
+      const { data: json } = await apiClient.request<{ broadcasts?: OBDBroadcastJob[] }>(
+        '/api/v1/campaign/obd/broadcasts',
+      );
+      if (!Array.isArray(json.broadcasts)) throw new Error('Invalid broadcast response');
+      if (!isLatestRequest('obdBroadcasts', requestId)) return;
+      set({ obdBroadcasts: json.broadcasts, obdBroadcastsAvailable: true, obdBroadcastsError: null });
+    } catch {
+      if (IS_LIVE_ENVIRONMENT && isLatestRequest('obdBroadcasts', requestId)) {
+        set({ obdBroadcasts: [], obdBroadcastsAvailable: false, obdBroadcastsError: 'Broadcast history is unavailable.' });
       }
-    } catch {}
+    } finally {
+      if (isLatestRequest('obdBroadcasts', requestId)) set({ obdBroadcastsLoading: false });
+    }
   },
 
   rechargeWallet: async (amountINR: number) => {
     if (IS_LIVE_ENVIRONMENT) {
-      return { success: false, message: 'Wallet payments are unavailable in this environment. No payment was requested and no balance was changed.' };
+      return {
+        success: false,
+        message: 'Payment checkout is not connected. No payment was requested and no wallet balance was changed.',
+      };
     }
+
     try {
       const res = await fetch(`${API_BASE_URL}/api/v1/campaign/wallet/recharge/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          politicianId: 'pp1',
           amountINR,
           paymentReference: `pay_rzp_${Date.now()}`,
         }),
       });
       if (res.ok) {
         const json = await res.json();
-        if (json.wallet) set({ wallet: json.wallet });
-        get().fetchWalletTransactions();
-        return { success: true, message: json.message };
+        if (json.success === true && json.wallet) {
+          set({ wallet: json.wallet, walletAvailable: true });
+          get().fetchWalletTransactions();
+          return { success: true, message: json.message };
+        }
       }
     } catch {}
 
@@ -543,6 +1082,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
     };
     set((s) => ({
       wallet: updatedWallet,
+      walletAvailable: true,
       walletTransactions: [newTx, ...s.walletTransactions],
     }));
 
@@ -553,9 +1093,19 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
   },
 
   dispatchVoiceOBD: async (title, targetSegment, audioUrl) => {
-    if (IS_LIVE_ENVIRONMENT) {
-      return { success: false, message: 'Voice outreach is unavailable in this environment. No broadcast was sent and no balance was changed.' };
+    const campaign = get().campaigns.find((item) => item.id === get().selectedCampaignId)
+      || get().campaigns.find((item) => item.status === 'active')
+      || get().campaigns[0];
+    if (IS_LIVE_ENVIRONMENT && !campaign) {
+      return { success: false, message: 'Load a persisted campaign before scheduling a voice broadcast.' };
     }
+    if (IS_LIVE_ENVIRONMENT && (!get().pricingAvailable || !get().walletAvailable)) {
+      return {
+        success: false,
+        message: 'Voice broadcast is unavailable because verified campaign pricing or wallet data has not loaded.',
+      };
+    }
+
     const rate = get().pricing.voiceObd.finalRatePerCallINR;
     const totalCost = Math.round(targetSegment.voterCount * rate);
     const wallet = get().wallet;
@@ -569,31 +1119,44 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
     }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/v1/campaign/obd/dispatch`, {
+      const { data: json } = await apiClient.request<{
+        success?: boolean;
+        job?: OBDBroadcastJob;
+        wallet?: CampaignWallet;
+        message?: string;
+        warning?: string;
+      }>('/api/v1/campaign/obd/dispatch', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          politicianId: 'pp1',
-          campaignId: 'c1',
+        body: {
+          campaignId: campaign?.id || 'c1',
           title,
           targetSegment,
           audioUrl: audioUrl || 'https://assets.kshetra.app/audio/c1-manifesto.mp3',
-        }),
+        },
       });
 
-      if (res.ok) {
-        const json = await res.json();
-        if (json.wallet) set({ wallet: json.wallet });
-        if (json.job) set((s) => ({ obdBroadcasts: [json.job, ...s.obdBroadcasts] }));
+      if (json.success === true && json.job && json.wallet) {
+        set((s) => ({
+          wallet: json.wallet!,
+          walletAvailable: true,
+          obdBroadcasts: [json.job!, ...s.obdBroadcasts],
+        }));
         get().fetchWalletTransactions();
         return {
           success: true,
-          message: json.message,
+          message: json.message || 'The voice provider accepted the broadcast.',
           warning: json.warning,
-          remainingBalance: json.wallet?.balanceINR,
+          remainingBalance: json.wallet.balanceINR,
         };
       }
     } catch {}
+
+    if (IS_LIVE_ENVIRONMENT) {
+      return {
+        success: false,
+        message: 'The voice provider did not confirm this broadcast. No local delivery was recorded.',
+      };
+    }
 
     // Offline / dev fallback: deduct and record job
     const newBal = wallet.balanceINR - totalCost;
@@ -638,6 +1201,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
 
     set((s) => ({
       wallet: updatedWallet,
+      walletAvailable: true,
       walletTransactions: [newTx, ...s.walletTransactions],
       obdBroadcasts: [newJob, ...s.obdBroadcasts],
     }));
@@ -669,19 +1233,35 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
 
   checkKshetraUser: async (phone: string) => {
     const cleaned = phone.replace(/\D/g, '').slice(-10);
-    // Check locally first
-    const localMatch = get().volunteers.find((v) => v.phone.replace(/\D/g, '').slice(-10) === cleaned);
-    if (localMatch) {
-      return { isKshetraUser: !!localMatch.isKshetraUser, displayName: localMatch.name };
+    if (cleaned.length !== 10) {
+      throw new Error('Enter a valid 10-digit phone number.');
+    }
+
+    if (!IS_LIVE_ENVIRONMENT) {
+      const localMatch = get().volunteers.find((v) => v.phone.replace(/\D/g, '').slice(-10) === cleaned);
+      if (localMatch) {
+        return { isKshetraUser: !!localMatch.isKshetraUser, displayName: localMatch.name };
+      }
+    }
+
+    const campaign = get().campaigns.find((item) => item.id === get().selectedCampaignId)
+      || get().campaigns.find((item) => item.status === 'active')
+      || get().campaigns[0];
+    if (IS_LIVE_ENVIRONMENT && !campaign) {
+      throw new Error('Load a persisted campaign before checking a campaign contact.');
     }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/v1/campaign/users/check-kshetra?phone=${encodeURIComponent(cleaned)}`);
-      if (res.ok) {
-        const json = await res.json();
-        return { isKshetraUser: !!json.isKshetraUser, displayName: json.displayName };
+      const { data } = await apiClient.request<{ isKshetraUser?: boolean; displayName?: string }>(
+        '/api/v1/campaign/users/check-kshetra',
+        { query: { phone: cleaned, campaignId: campaign?.id } },
+      );
+      return { isKshetraUser: data.isKshetraUser === true, displayName: data.displayName };
+    } catch {
+      if (IS_LIVE_ENVIRONMENT) {
+        throw new Error('Account registration could not be verified. Check the connection and try again.');
       }
-    } catch {}
+    }
 
     if (IS_LIVE_ENVIRONMENT) return { isKshetraUser: false };
 
@@ -691,7 +1271,24 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
   },
 
   assignBoothIncharge: async (boothId, agentName, agentPhone, isKshetraUser) => {
-    if (IS_LIVE_ENVIRONMENT) return;
+    if (IS_LIVE_ENVIRONMENT) {
+      const { data } = await apiClient.request<{ success: boolean; booth?: unknown }>(
+        `/api/v1/campaign/booths/${encodeURIComponent(boothId)}`,
+        {
+          method: 'PATCH',
+          body: { agentName, agentPhone, isKshetraUser },
+        },
+      );
+      const persisted = mapBoothRow(data.booth);
+      if (data.success !== true || !persisted) {
+        throw new Error('The campaign service did not confirm saving this booth assignment.');
+      }
+      set((s) => ({
+        booths: s.booths.map((booth) => booth.id === persisted.id ? persisted : booth),
+      }));
+      return;
+    }
+
     set((s) => ({
       booths: s.booths.map((b) =>
         b.id === boothId || b.boothId === boothId
@@ -707,18 +1304,79 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
       ),
     }));
 
-    // Optionally sync with backend
-    try {
-      await fetch(`${API_BASE_URL}/api/v1/campaign/booths/${boothId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ agentName, agentPhone, isKshetraUser }),
-      });
-    } catch {}
+    if (!IS_LIVE_ENVIRONMENT) {
+      try {
+        await fetch(`${API_BASE_URL}/api/v1/campaign/booths/${boothId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ agentName, agentPhone, isKshetraUser }),
+        });
+      } catch {}
+    }
   },
 
   addCadre: async (cadre) => {
-    if (IS_LIVE_ENVIRONMENT) return;
+    if (IS_LIVE_ENVIRONMENT) {
+      const campaign = get().campaigns.find((item) => item.id === get().selectedCampaignId)
+        || get().campaigns.find((item) => item.status === 'active')
+        || get().campaigns[0];
+      if (!campaign) {
+        throw new Error('Load a persisted campaign before adding a campaign worker.');
+      }
+
+      const response = await apiClient.request<{
+        success: boolean;
+        volunteer?: {
+          id: string;
+          user_id: string | null;
+          campaign_id: string;
+          name: string;
+          phone: string;
+          role: Volunteer['role'];
+          status: Volunteer['status'];
+          assigned_booths: string[];
+          assigned_wards: number[];
+          created_at?: string;
+        };
+      }>('/api/v1/campaign/volunteers', {
+        method: 'POST',
+        body: {
+          campaignId: campaign.id,
+          name: cadre.name,
+          phone: cadre.phone,
+          role: cadre.role,
+          assignedBooths: cadre.assignedBooths,
+          assignedWards: [],
+          isKshetraUser: cadre.isKshetraUser,
+        },
+      });
+
+      const persisted = response.data.volunteer;
+      if (response.data.success !== true || !persisted) {
+        throw new Error('The campaign service did not confirm saving this worker.');
+      }
+
+      const savedCadre: Volunteer = {
+        id: persisted.id,
+        userId: persisted.user_id || '',
+        campaignId: persisted.campaign_id,
+        name: persisted.name,
+        phone: persisted.phone,
+        role: persisted.role,
+        status: persisted.status,
+        assignedBooths: persisted.assigned_booths || [],
+        assignedWards: persisted.assigned_wards || [],
+        isKshetraUser: Boolean(persisted.user_id),
+        tasksCompleted: null,
+        hoursLogged: null,
+        rating: null,
+        joinedAt: persisted.created_at || new Date().toISOString(),
+        lastActiveAt: persisted.created_at || new Date().toISOString(),
+      };
+      set((s) => ({ volunteers: [savedCadre, ...s.volunteers] }));
+      return;
+    }
+
     const newCadre: Volunteer = {
       id: `v-${Date.now().toString(36)}`,
       userId: `u-${Date.now()}`,
@@ -750,8 +1408,13 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
 
   dispatchObdBroadcast: async (title, voterCount) => {
     if (IS_LIVE_ENVIRONMENT) {
-      return { success: false, cost: 0, message: 'Voice outreach is unavailable in this environment. No broadcast was queued.' };
+      return {
+        success: false,
+        cost: null,
+        message: 'The legacy voice broadcast endpoint is not connected to the production delivery service.',
+      };
     }
+
     const rate = get().pricing.voiceObd.finalRatePerCallINR;
     const cost = Math.round(voterCount * rate);
 
@@ -766,9 +1429,17 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
       });
       if (res.ok) {
         const json = await res.json();
-        return { success: true, cost, message: json.message };
+      if (json.success === true) return { success: true, cost, message: json.message };
       }
     } catch {}
+
+    if (IS_LIVE_ENVIRONMENT) {
+      return {
+        success: false,
+        cost,
+        message: 'The campaign service did not confirm the broadcast. Nothing was queued.',
+      };
+    }
 
     return {
       success: true,
@@ -778,27 +1449,77 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
   },
 
   getCampaignAnalytics: (campaignId) => {
-    if (IS_LIVE_ENVIRONMENT) return null;
     const campaign = get().getCampaign(campaignId);
+    // Live analytics may be derived from persisted API records, but never from
+    // demo state. If the selected campaign was not loaded from the API, keep
+    // the whole report unavailable instead of returning seed or empty metrics.
+    if (IS_LIVE_ENVIRONMENT && !campaign) return null;
     const ads = get().getAdsForCampaign(campaignId);
     const vols = get().getVolunteersForCampaign(campaignId);
     const booths = get().getBoothsForCampaign(campaignId);
+    const adsWithPerformance = ads.filter((ad) =>
+      ad.performance !== null && ad.performance !== undefined &&
+      Number.isFinite(ad.performance.roi) &&
+      Number.isFinite(ad.performance.impressions) && ad.performance.impressions >= 0 &&
+      Number.isFinite(ad.performance.clicks) && ad.performance.clicks >= 0,
+    );
+    const hasCompleteAdPerformance = ads.length > 0 && adsWithPerformance.length === ads.length;
+    const totalAdImpressions = hasCompleteAdPerformance
+      ? adsWithPerformance.reduce((total, ad) => total + ad.performance!.impressions, 0)
+      : 0;
+    const totalAdClicks = hasCompleteAdPerformance
+      ? adsWithPerformance.reduce((total, ad) => total + ad.performance!.clicks, 0)
+      : 0;
     return {
       campaignId, period: 'total',
-      totalSpend: campaign?.spentBudgetINR || 0,
-      totalImpressions: campaign?.impressions || 0,
-      totalReach: campaign?.reach || 0,
-      totalEngagements: campaign?.engagements || 0,
-      totalConversions: campaign?.conversions || 0,
-      overallCTR: campaign && campaign.impressions > 0 ? Math.round((campaign.engagements / campaign.impressions) * 10000) / 100 : 0,
-      overallROI: 285,
-      costPerVoterReached: campaign && campaign.reach > 0 ? Math.round((campaign.spentBudgetINR / campaign.reach) * 100) / 100 : 0,
+      totalSpend: campaign?.spentBudgetINR ?? null,
+      totalImpressions: campaign?.impressions ?? null,
+      totalReach: campaign?.reach ?? null,
+      totalEngagements: campaign?.engagements ?? null,
+      totalConversions: campaign?.conversions ?? null,
+      overallCTR: hasCompleteAdPerformance && totalAdImpressions > 0
+        ? Math.round((totalAdClicks / totalAdImpressions) * 10000) / 100
+        : null,
+      overallROI: IS_LIVE_ENVIRONMENT ? null : 285,
+      costPerVoterReached: campaign?.reach && campaign.spentBudgetINR !== undefined
+        ? Math.round((campaign.spentBudgetINR / campaign.reach) * 100) / 100
+        : null,
       sentimentTrend: [],
-      topPerformingAds: ads.sort((a, b) => (b.performance?.roi || 0) - (a.performance?.roi || 0)).slice(0, 5).map((a) => ({ adId: a.id, name: a.name, roi: a.performance?.roi || 0, impressions: a.performance?.impressions || 0 })),
+      topPerformingAds: !get().adsAvailable
+        ? null
+        : ads.length === 0
+          ? []
+          : hasCompleteAdPerformance
+            ? [...adsWithPerformance]
+              .sort((a, b) => b.performance!.roi - a.performance!.roi)
+              .slice(0, 5)
+              .map((ad) => ({
+                adId: ad.id,
+                name: ad.name,
+                roi: ad.performance!.roi,
+                impressions: ad.performance!.impressions,
+              }))
+            : null,
       segmentPerformance: [],
       geographicHeatmap: [],
-      volunteerMetrics: { totalVolunteers: vols.length, activeVolunteers: vols.filter((v) => v.status === 'active').length, totalHours: vols.reduce((s, v) => s + v.hoursLogged, 0), householdsReached: 0 },
-      boothReadiness: { total: booths.length, ready: booths.filter((b) => b.status === 'ready').length, inProgress: booths.filter((b) => b.status === 'canvassing').length, notStarted: booths.filter((b) => b.status === 'not_started').length },
+      volunteerMetrics: get().volunteersAvailable
+        ? {
+            totalVolunteers: vols.length,
+            activeVolunteers: vols.filter((v) => v.status === 'active').length,
+            totalHours: get().volunteerWorkLogsAvailable && vols.every((volunteer) => volunteer.hoursLogged !== null)
+                ? vols.reduce((total, volunteer) => total + volunteer.hoursLogged!, 0)
+                : null,
+            householdsReached: null,
+          }
+        : null,
+      boothReadiness: get().boothsAvailable
+        ? {
+            total: booths.length,
+            ready: booths.filter((booth) => booth.status === 'ready').length,
+            inProgress: booths.filter((booth) => booth.status === 'canvassing').length,
+            notStarted: booths.filter((booth) => booth.status === 'not_started').length,
+          }
+        : null,
       channelBreakdown: [],
       dailyMetrics: [],
     };
@@ -806,38 +1527,231 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
 
   getRevenueFlow: () => get().revenueData,
 
-  createCampaign: (campaign) => {
-    if (IS_LIVE_ENVIRONMENT) return;
-    set((s) => ({ campaigns: [...s.campaigns, { id: `c-${Date.now()}`, politicianId: '', politicianName: '', name: '', description: '', type: 'outreach', status: 'draft', stateCode: '', targetConstituencies: [], targetDistricts: [], startDate: '', endDate: '', totalBudgetINR: 0, spentBudgetINR: 0, adCount: 0, volunteerCount: 0, boothsCovered: 0, totalBooths: 0, impressions: 0, reach: 0, engagements: 0, conversions: 0, sentimentScore: 0, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), ...campaign } as Campaign] }));
+  createCampaign: async (campaign) => {
+    if (!campaign.name?.trim() || !campaign.stateCode?.trim() || !campaign.startDate || !campaign.endDate) {
+      throw new Error('Campaign name, state, start date, and end date are required.');
+    }
+
+    if (IS_LIVE_ENVIRONMENT) {
+      const { data } = await apiClient.request<{ campaign?: unknown }>(
+        '/api/v1/campaign/campaigns',
+        {
+          method: 'POST',
+          body: {
+            name: campaign.name.trim(),
+            description: campaign.description?.trim() || '',
+            type: campaign.type || 'awareness',
+            stateCode: campaign.stateCode.trim().toUpperCase(),
+            startDate: campaign.startDate,
+            endDate: campaign.endDate,
+            totalBudgetINR: campaign.totalBudgetINR,
+            targetConstituencies: campaign.targetConstituencies || [],
+            targetDistricts: campaign.targetDistricts || [],
+          },
+        },
+      );
+      const persisted = mapCampaignRow(data.campaign);
+      if (!persisted) throw new Error('The campaign service did not return the saved campaign.');
+      set((state) => ({
+        campaigns: [persisted, ...state.campaigns.filter((item) => item.id !== persisted.id)],
+        selectedCampaignId: persisted.id,
+        booths: [], boothsLoading: false, boothsAvailable: false, boothsError: null,
+        volunteers: [], volunteersLoading: false, volunteersAvailable: false, volunteersError: null,
+        volunteerWorkLogsAvailable: false,
+        campaignsAvailable: true,
+        campaignsError: null,
+      }));
+      return persisted;
+    }
+
+    const created: Campaign = {
+      id: `c-${Date.now().toString(36)}`,
+      politicianId: campaign.politicianId || '',
+      politicianName: campaign.politicianName,
+      party: campaign.party,
+      name: campaign.name.trim(),
+      description: campaign.description || '',
+      type: campaign.type || 'awareness',
+      status: 'draft',
+      stateCode: campaign.stateCode.trim().toUpperCase(),
+      targetConstituencies: campaign.targetConstituencies || [],
+      targetDistricts: campaign.targetDistricts || [],
+      startDate: campaign.startDate,
+      endDate: campaign.endDate,
+      totalBudgetINR: campaign.totalBudgetINR,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    set((state) => ({
+      campaigns: [created, ...state.campaigns],
+      selectedCampaignId: created.id,
+      booths: [], boothsAvailable: true,
+      volunteers: [], volunteersAvailable: true,
+      volunteerWorkLogsAvailable: true,
+    }));
+    return created;
   },
 
   updateCampaignStatus: (campaignId, status) => {
-    if (IS_LIVE_ENVIRONMENT) return;
+    if (IS_LIVE_ENVIRONMENT) throw new Error('Campaign status updates are not connected to a persisted service yet.');
     set((s) => ({ campaigns: s.campaigns.map((c) => c.id === campaignId ? { ...c, status, updatedAt: new Date().toISOString() } : c) }));
   },
 
-  createAd: (ad) => {
-    if (IS_LIVE_ENVIRONMENT) return;
-    set((s) => ({ ads: [...s.ads, { id: `ad-${Date.now()}`, campaignId: '', format: 'promoted_post', status: 'draft', name: '', headline: '', body: '', callToAction: '', mediaUrls: [], targeting: { segments: [], estimatedReach: 0, targetingType: 'demographic' }, budget: { type: 'daily', totalINR: 0, spentINR: 0, biddingStrategy: 'lowest_cost', costPerResult: 0 }, schedule: { startDate: '', endDate: '', activeDays: [], activeHours: { start: 6, end: 23 }, timezone: 'Asia/Kolkata' }, performance: { impressions: 0, reach: 0, clicks: 0, engagements: 0, shares: 0, ctr: 0, cpm: 0, cpc: 0, cpe: 0, frequency: 0, spend: 0, conversions: 0, conversionRate: 0, roi: 0, sentimentPositive: 0, sentimentNeutral: 0, sentimentNegative: 0, byDay: [], bySegment: [], byConstituency: [] }, disclosureText: '', paidForBy: '', isECICompliant: false, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), ...ad } as AdCreative] }));
+  createAd: async (ad) => {
+    const campaignId = get().selectedCampaignId;
+    if (!campaignId) throw new Error('Choose a campaign before creating an ad draft.');
+    if (IS_LIVE_ENVIRONMENT) {
+      const { data } = await apiClient.request<{ ad?: unknown }>(
+        '/api/v1/campaign/ads',
+        {
+          method: 'POST',
+          body: {
+            campaignId,
+            ...ad,
+          },
+        },
+      );
+      const saved = mapAdRow(data.ad);
+      if (!saved || saved.campaignId !== campaignId || saved.status !== 'draft') {
+        throw new Error('The campaign service did not confirm the saved ad draft.');
+      }
+      set((state) => ({ ads: [saved, ...state.ads.filter((item) => item.id !== saved.id)], adsAvailable: true, adsError: null }));
+      return saved;
+    }
+
+    const now = new Date().toISOString();
+    const saved: AdCreative = {
+      id: `ad-${Date.now()}`,
+      campaignId,
+      format: ad.format,
+      status: 'draft',
+      name: ad.name,
+      headline: ad.headline,
+      body: ad.body || '',
+      callToAction: ad.callToAction || '',
+      mediaUrls: ad.mediaUrls || [],
+      thumbnailUrl: ad.thumbnailUrl,
+      landingUrl: ad.landingUrl,
+      disclosureText: ad.disclosureText,
+      paidForBy: ad.paidForBy,
+      isECICompliant: false,
+      performance: null,
+      createdAt: now,
+      updatedAt: now,
+    };
+    set((state) => ({ ads: [saved, ...state.ads] }));
+    return saved;
   },
 
   pauseAd: (adId) => {
-    if (IS_LIVE_ENVIRONMENT) return;
+    if (IS_LIVE_ENVIRONMENT) throw new Error('Ad status changes are unavailable until the persisted review service is connected.');
     set((s) => ({ ads: s.ads.map((a) => a.id === adId ? { ...a, status: 'paused' as const } : a) }));
   },
 
   addVolunteer: (volunteer) => {
-    if (IS_LIVE_ENVIRONMENT) return;
+    if (IS_LIVE_ENVIRONMENT) throw new Error('Use the persisted campaign cadre workflow to add a worker.');
     set((s) => ({ volunteers: [...s.volunteers, { id: `v-${Date.now()}`, userId: '', campaignId: '', name: '', phone: '', role: 'canvasser', status: 'active', assignedBooths: [], assignedWards: [], tasksCompleted: 0, hoursLogged: 0, rating: 0, joinedAt: new Date().toISOString(), lastActiveAt: new Date().toISOString(), ...volunteer } as Volunteer] }));
   },
 
-  updateBoothStatus: (boothId, status) => {
-    if (IS_LIVE_ENVIRONMENT) return;
-    set((s) => ({ booths: s.booths.map((b) => b.id === boothId ? { ...b, status: status as any, updatedAt: new Date().toISOString() } : b) }));
+  updateBoothStatus: async (boothId, status) => {
+    if (IS_LIVE_ENVIRONMENT) {
+      const { data } = await apiClient.request<{ success: boolean; booth?: unknown }>(
+        `/api/v1/campaign/booths/${encodeURIComponent(boothId)}`,
+        { method: 'PATCH', body: { status } },
+      );
+      const persisted = mapBoothRow(data.booth);
+      if (data.success !== true || !persisted) {
+        throw new Error('The campaign service did not confirm the booth status update.');
+      }
+      set((state) => ({ booths: state.booths.map((booth) => booth.id === persisted.id ? persisted : booth) }));
+      return;
+    }
+    set((state) => ({
+      booths: state.booths.map((booth) => booth.id === boothId ? { ...booth, status, updatedAt: new Date().toISOString() } : booth),
+    }));
   },
 
-  logCanvassing: (record) => {
-    if (IS_LIVE_ENVIRONMENT) return;
-    set((s) => ({ canvassingRecords: [...s.canvassingRecords, { id: `cr-${Date.now()}`, campaignId: '', volunteerId: '', boothId: '', boothName: '', constituencyAcNo: 0, status: 'in_progress', householdsVisited: 0, householdsTotal: 0, supporterCount: 0, oppositionCount: 0, undecidedCount: 0, issuesRaised: [], notes: '', startTime: new Date().toISOString(), createdAt: new Date().toISOString(), ...record } as CanvassingRecord] }));
+  logCanvassing: async (record) => {
+    if (!record.campaignId || !record.volunteerId || !record.boothId || !record.startTime || !record.endTime) {
+      throw new Error('Choose a campaign worker and booth, and provide a completed session time.');
+    }
+    if (!Number.isInteger(record.householdsVisited) || Number(record.householdsVisited) < 0) {
+      throw new Error('Enter a valid number of households visited.');
+    }
+    const campaignId = record.campaignId;
+    const volunteerId = record.volunteerId;
+    const boothId = record.boothId;
+    const startTime = record.startTime;
+    const endTime = record.endTime;
+    const visitedCount = record.householdsVisited!;
+    const startMs = Date.parse(startTime);
+    const endMs = Date.parse(endTime);
+    const nowMs = Date.now();
+    if (
+      !Number.isFinite(startMs) || !Number.isFinite(endMs) ||
+      endMs <= startMs || endMs - startMs > 24 * 60 * 60 * 1000 ||
+      endMs > nowMs + 5 * 60 * 1000
+    ) {
+      throw new Error('The work session must have valid times, last no more than 24 hours, and not end in the future.');
+    }
+
+    if (IS_LIVE_ENVIRONMENT) {
+      const { data } = await apiClient.request<{ success?: boolean; record?: unknown }>(
+        '/api/v1/campaign/canvassing-records',
+        {
+          method: 'POST',
+          body: {
+            campaignId,
+            volunteerId,
+            boothId,
+            startTime,
+            endTime,
+            householdsVisited: visitedCount,
+            notes: record.notes || '',
+          },
+        },
+      );
+      if (data.success !== true || !data.record) {
+        throw new Error('The campaign service did not confirm saving this work session.');
+      }
+      await get().fetchVolunteers(campaignId);
+      return;
+    }
+
+    const sessionHours = Math.round(((endMs - startMs) / 3_600_000) * 100) / 100;
+    set((state) => ({
+      canvassingRecords: [
+        ...state.canvassingRecords,
+        {
+          id: `cr-${Date.now()}`,
+          campaignId,
+          volunteerId,
+          volunteerName: record.volunteerName || '',
+          boothId,
+          boothName: record.boothName || '',
+          constituencyAcNo: record.constituencyAcNo || 0,
+          status: 'completed',
+          householdsVisited: visitedCount,
+          householdsTotal: record.householdsTotal || 0,
+          supporterCount: 0,
+          oppositionCount: 0,
+          undecidedCount: 0,
+          issuesRaised: [],
+          notes: record.notes || '',
+          startTime,
+          endTime,
+          createdAt: new Date().toISOString(),
+        },
+      ],
+      volunteers: state.volunteers.map((volunteer) => volunteer.id === volunteerId
+        ? {
+            ...volunteer,
+            tasksCompleted: (volunteer.tasksCompleted ?? 0) + 1,
+            hoursLogged: Math.round(((volunteer.hoursLogged ?? 0) + sessionHours) * 100) / 100,
+            lastActiveAt: endTime,
+          }
+        : volunteer),
+      volunteerWorkLogsAvailable: true,
+    }));
   },
 }));

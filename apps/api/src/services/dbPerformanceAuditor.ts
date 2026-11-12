@@ -4,7 +4,6 @@
  * Authority: Master Product Blueprint, DEC-203, DEC-204 & Amendment v1.6 Control M
  */
 
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import type {
   DbPerformanceAuditReport,
   DbQueryAuditEntry,
@@ -178,22 +177,6 @@ export class DbPerformanceAuditor {
       allSlasMet,
       nPlusOneQueriesCount: nPlusOneCount,
     };
-
-    // Durably record into db_performance_audit_ledger if supabase is connected
-    try {
-      if (isSupabaseConfigured && supabase) {
-        await supabase.from('db_performance_audit_ledger').insert({
-          dataset_entities_count: report.datasetSize.totalEntities,
-          audited_queries_count: auditedQueries.length,
-          n_plus_one_violations_count: nPlusOneCount,
-          max_p95_duration_ms: Math.max(...auditedQueries.map((q) => q.p95DurationMs)),
-          all_slas_met: allSlasMet,
-          audit_report: report,
-        });
-      }
-    } catch {
-      // In offline / local test environments, allow graceful pass
-    }
 
     return report;
   }

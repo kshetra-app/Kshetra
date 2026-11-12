@@ -6,34 +6,19 @@
 
 import { createHash, randomBytes } from 'crypto';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { AIProviderUnavailableError, defaultAIRegistry } from './aiProvider';
+import { AIProviderUnavailableError } from './aiProvider';
+import { AICostLedgerService, type AICostLedgerEntry } from './aiCostLedgerService';
+import { executeAICompletion } from './aiExecutionService';
+import { isIsolatedTestRuntime, isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import type { NewsSummaryRequest, NewsSummaryRecord, ChatMessage } from '@kshetra/shared';
-
-export interface AICostLedgerEntry {
-  id: string;
-  tenantId: string;
-  userId?: string;
-  operationType: string;
-  provider: string;
-  model: string;
-  promptTokens: number;
-  completionTokens: number;
-  totalTokens: number;
-  costUsd: number;
-  costInr: number;
-  latencyMs: number;
-  cacheHit: boolean;
-  createdAt: string;
-}
 
 export class AINewsSummaryService {
   // In-memory fallback stores for deterministic offline/test execution
   private static cacheStore = new Map<string, NewsSummaryRecord>();
-  private static ledgerStore: AICostLedgerEntry[] = [];
 
   static resetForTesting(): void {
     this.cacheStore.clear();
-    this.ledgerStore = [];
+    AICostLedgerService.resetForTesting();
   }
 
   /** Compute deterministic content-addressed SHA-256 digest */
@@ -47,6 +32,7 @@ export class AINewsSummaryService {
     const startTime = Date.now();
     const contentSha256 = this.computeContentSha256(req.canonicalUrl, req.title, req.content);
     const tenantId = req.tenantId || 'default_tenant';
+    const persistentCacheEnabled = isSupabaseConfigured && !isIsolatedTestRuntime();
 
     // 1. Check in-memory cache first
     const cached = this.cacheStore.get(contentSha256);
@@ -55,7 +41,7 @@ export class AINewsSummaryService {
     }
     if (cached && cached.providerUsed !== 'offline_heuristic') {
       cached.hitCount += 1;
-      await this.recordCostLedger({
+      await AICostLedgerService.recordCostLedger({
         tenantId,
         userId: req.userId,
         operationType: 'news_summary',
@@ -64,8 +50,12 @@ export class AINewsSummaryService {
         promptTokens: 0,
         completionTokens: 0,
         totalTokens: 0,
+        usageBasis: 'not_applicable',
         costUsd: 0,
         costInr: 0,
+        costBasis: 'cache_hit',
+        costRateCardVersion: null,
+        costRateCardSource: 'content-addressed cache hit',
         latencyMs: Date.now() - startTime,
         cacheHit: true,
       });
@@ -78,7 +68,7 @@ export class AINewsSummaryService {
     }
 
     // 2. Check persistent Supabase cache if configured
-    if (isSupabaseConfigured) {
+    if (persistentCacheEnabled) {
       try {
         const { data, error } = await supabase
           .from('ai_news_summary_cache')
@@ -95,7 +85,7 @@ export class AINewsSummaryService {
             })
             .eq('id', data.id);
 
-          await this.recordCostLedger({
+          await AICostLedgerService.recordCostLedger({
             tenantId,
             userId: req.userId,
             operationType: 'news_summary',
@@ -104,8 +94,12 @@ export class AINewsSummaryService {
             promptTokens: 0,
             completionTokens: 0,
             totalTokens: 0,
+            usageBasis: 'not_applicable',
             costUsd: 0,
             costInr: 0,
+            costBasis: 'cache_hit',
+            costRateCardVersion: null,
+            costRateCardSource: 'content-addressed cache hit',
             latencyMs: Date.now() - startTime,
             cacheHit: true,
           });
@@ -120,7 +114,11 @@ export class AINewsSummaryService {
             keyEntities: data.key_entities || [],
             providerUsed: data.provider_used,
             tokensUsed: data.tokens_used,
-            estimatedCostUsd: Number(data.estimated_cost_usd),
+            estimatedCostUsd:
+              data.estimated_cost_usd == null ? null : Number(data.estimated_cost_usd),
+            costBasis: data.cost_basis || 'legacy_unverified',
+            costRateCardVersion: data.cost_rate_card_version,
+            usageBasis: data.usage_basis || 'legacy_unverified',
             hitCount: (data.hit_count || 1) + 1,
             cacheHit: true,
             latencyMs: Date.now() - startTime,
@@ -152,20 +150,16 @@ Respond ONLY with a valid JSON object matching this schema:
       { role: 'user', content: userPrompt },
     ];
 
-    const aiRes = await defaultAIRegistry.generateWithFallback({
+    const aiRes = await executeAICompletion({
       messages,
       responseFormat: 'json',
       tenantId,
       operation: 'news_summary',
+      userId: req.userId,
     });
 
-    if (aiRes.degradedOffline) {
-      throw new AIProviderUnavailableError(
-        'AI news summarization is unavailable because no configured provider could complete the request.',
-      );
-    }
-
-    // Parse AI output with robust JSON fallback
+    // Parse model output. Production does not substitute fabricated summary text
+    // when the provider returns invalid or incomplete structured output.
     let summaryBullets: [string, string, string] = [
       'Official notification reported in public state proceedings.',
       'Electoral and civic stakeholders review local representation.',
@@ -190,6 +184,11 @@ Respond ONLY with a valid JSON object matching this schema:
       if (Array.isArray(b) && b.length >= 3) {
         summaryBullets = [String(b[0]), String(b[1]), String(b[2])];
       } else if (Array.isArray(b) && b.length > 0) {
+        if (isProductionLikeRuntime()) {
+          throw new AIProviderUnavailableError(
+            'The AI provider returned an incomplete news summary.',
+          );
+        }
         summaryBullets = [
           String(b[0] || summaryBullets[0]),
           String(b[1] || summaryBullets[1]),
@@ -207,6 +206,9 @@ Respond ONLY with a valid JSON object matching this schema:
         entities = parsed.entities.map(String);
       }
     } catch {
+      if (isProductionLikeRuntime()) {
+        throw new AIProviderUnavailableError('The AI provider returned an invalid news summary.');
+      }
       const lines = req.content
         .split(/[.\n]/)
         .map((s) => s.trim())
@@ -231,6 +233,9 @@ Respond ONLY with a valid JSON object matching this schema:
       providerUsed: aiRes.provider,
       tokensUsed: aiRes.usage.totalTokens,
       estimatedCostUsd: aiRes.costUsd,
+      costBasis: aiRes.costBasis,
+      costRateCardVersion: aiRes.costRateCardVersion,
+      usageBasis: aiRes.usageBasis,
       hitCount: 1,
       cacheHit: false,
       latencyMs,
@@ -239,23 +244,8 @@ Respond ONLY with a valid JSON object matching this schema:
 
     // 4. Persist in memory store
     this.cacheStore.set(contentSha256, record);
-    await this.recordCostLedger({
-      tenantId,
-      userId: req.userId,
-      operationType: 'news_summary',
-      provider: aiRes.provider,
-      model: aiRes.model,
-      promptTokens: aiRes.usage.promptTokens,
-      completionTokens: aiRes.usage.completionTokens,
-      totalTokens: aiRes.usage.totalTokens,
-      costUsd: aiRes.costUsd,
-      costInr: aiRes.costInr,
-      latencyMs,
-      cacheHit: false,
-    });
-
     // 5. Try Supabase write-through
-    if (isSupabaseConfigured) {
+    if (persistentCacheEnabled) {
       try {
         await supabase.from('ai_news_summary_cache').insert({
           id,
@@ -268,6 +258,10 @@ Respond ONLY with a valid JSON object matching this schema:
           provider_used: aiRes.provider,
           tokens_used: aiRes.usage.totalTokens,
           estimated_cost_usd: aiRes.costUsd,
+          cost_basis: aiRes.costBasis,
+          cost_rate_card_version: aiRes.costRateCardVersion,
+          cost_rate_card_source: aiRes.costRateCardSource,
+          usage_basis: aiRes.usageBasis,
           hit_count: 1,
           created_at: now,
           last_accessed_at: now,
@@ -280,45 +274,7 @@ Respond ONLY with a valid JSON object matching this schema:
     return record;
   }
 
-  /** Record cost ledger entry into memory and Supabase */
-  static async recordCostLedger(entry: Omit<AICostLedgerEntry, 'id' | 'createdAt'>): Promise<void> {
-    const id = `ledg_${Date.now()}_${randomBytes(4).toString('hex')}`;
-    const now = new Date().toISOString();
-
-    this.ledgerStore.push({
-      ...entry,
-      id,
-      createdAt: now,
-    });
-
-    if (isSupabaseConfigured) {
-      try {
-        await supabase.from('ai_cost_ledger').insert({
-          id,
-          tenant_id: entry.tenantId,
-          user_id: entry.userId || null,
-          operation_type: entry.operationType,
-          provider: entry.provider,
-          model: entry.model,
-          prompt_tokens: entry.promptTokens,
-          completion_tokens: entry.completionTokens,
-          total_tokens: entry.totalTokens,
-          cost_usd: entry.costUsd,
-          cost_inr: entry.costInr,
-          latency_ms: entry.latencyMs,
-          cache_hit: entry.cacheHit,
-          created_at: now,
-        });
-      } catch {
-        // Suppress if table not yet created on remote
-      }
-    }
-  }
-
   static getLedgerEntries(tenantId?: string): AICostLedgerEntry[] {
-    if (tenantId) {
-      return this.ledgerStore.filter((e) => e.tenantId === tenantId);
-    }
-    return [...this.ledgerStore];
+    return AICostLedgerService.getLedgerEntries(tenantId);
   }
 }

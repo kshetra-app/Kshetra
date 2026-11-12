@@ -10,6 +10,7 @@ import type {
   SendBroadcastInput,
   SendResult,
 } from './outreachTypes';
+import { IS_LIVE_ENVIRONMENT } from './environment';
 
 class MockOutreachProvider implements OutreachProvider {
   readonly id = 'mock';
@@ -34,10 +35,28 @@ class MockOutreachProvider implements OutreachProvider {
   }
 }
 
+class UnavailableOutreachProvider implements OutreachProvider {
+  readonly id = 'unavailable';
+  readonly label = 'Unavailable (no messaging provider connected)';
+  readonly channels = [];
+
+  isConfigured() {
+    return false;
+  }
+
+  async send(_input: SendBroadcastInput): Promise<SendResult> {
+    throw new Error(
+      'Broadcast delivery is unavailable until a real messaging provider and consent-based audience service are connected.',
+    );
+  }
+}
+
 const mock = new MockOutreachProvider();
+const unavailable = new UnavailableOutreachProvider();
 
 export function getOutreachProvider(): OutreachProvider {
-  // TODO(phase-2): switch on configured credentials, e.g.
-  //   if (MSG91_KEY) return new Msg91Provider(...);
-  return mock;
+  // Deployed builds must never report simulated acceptance or delivery.
+  // Keep the mock only for local/test demos; live delivery requires a real,
+  // configured provider and consent-based audience service.
+  return IS_LIVE_ENVIRONMENT ? unavailable : mock;
 }

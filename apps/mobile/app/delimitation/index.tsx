@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import {
+  ActivityIndicator,
   View,
   Text,
   StyleSheet,
@@ -10,7 +11,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useDelimitationStore } from '../../stores/delimitation';
 import { useActiveStateStore } from '../../stores/activeState';
@@ -61,12 +62,24 @@ export default function DelimitationHub() {
 
   const {
     nationalStatus,
+    statusAvailable,
+    statusLabel,
+    statusDescription,
     events,
+    timelineAvailable,
+    isLoadingEvents,
+    refreshOfficialData,
     setSeatAllocations,
     seatAllocations,
     selectedModel,
     setSelectedModel,
   } = useDelimitationStore();
+
+  useFocusEffect(
+    useCallback(() => {
+      void refreshOfficialData();
+    }, [refreshOfficialData]),
+  );
 
   // Compute seat allocations whenever model changes
   useEffect(() => {
@@ -74,7 +87,9 @@ export default function DelimitationHub() {
     setSeatAllocations(allocs);
   }, [selectedModel, setSeatAllocations]);
 
-  const statusConfig = DELIMITATION_STATUS_CONFIG[nationalStatus];
+  const statusConfig = nationalStatus
+    ? DELIMITATION_STATUS_CONFIG[nationalStatus]
+    : { label: t('common.dataUnavailable'), color: colors.textMuted, icon: 'help-circle-outline' };
 
   const { gainers, losers, summary } = useMemo(
     () => getGainersAndLosers(seatAllocations.length > 0 ? seatAllocations : undefined),
@@ -158,12 +173,12 @@ export default function DelimitationHub() {
           <View style={{ marginLeft: 10, flex: 1 }}>
             <Text style={[styles.statusLabel, { color: colors.textMuted }]}>{t('delimitation.overview')}</Text>
             <Text style={[styles.statusValue, { color: statusConfig.color }]}>
-              {statusConfig.label}
+              {statusAvailable && statusLabel ? statusLabel : t('common.dataUnavailable')}
             </Text>
           </View>
         </View>
         <Text style={[styles.statusDesc, { color: colors.textSecondary }]}>
-          {t('delimitationExtended.statusDesc')}
+          {statusAvailable && statusDescription ? statusDescription : t('common.dataUnavailable')}
         </Text>
       </View>
 
@@ -207,12 +222,16 @@ export default function DelimitationHub() {
         </View>
         <View style={[styles.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Ionicons name="time" size={20} color="#F59E0B" />
-          <Text style={[styles.statValue, { color: colors.text }]}>{events.length}</Text>
+          <Text style={[styles.statValue, { color: colors.text }]}>
+            {timelineAvailable ? events.length : t('common.dataUnavailable')}
+          </Text>
           <Text style={[styles.statLabel, { color: colors.textMuted }]}>{t('delimitationExtended.timelineEvents')}</Text>
         </View>
         <View style={[styles.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Ionicons name="checkmark-circle" size={20} color="#10B981" />
-          <Text style={[styles.statValue, { color: colors.text }]}>{verifiedCount}</Text>
+          <Text style={[styles.statValue, { color: colors.text }]}>
+            {timelineAvailable ? verifiedCount : t('common.dataUnavailable')}
+          </Text>
           <Text style={[styles.statLabel, { color: colors.textMuted }]}>{t('delimitationExtended.verifiedEvents')}</Text>
         </View>
         <View style={[styles.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
@@ -249,7 +268,13 @@ export default function DelimitationHub() {
 
       {/* Recent timeline */}
       <Text style={[styles.sectionTitle, { color: colors.text }]}>{t('delimitationExtended.recentEvents')}</Text>
-      <DelimitationTimeline events={timelineEvents} maxItems={5} compact />
+      {timelineEvents.length > 0 ? (
+        <DelimitationTimeline events={timelineEvents} maxItems={5} compact />
+      ) : isLoadingEvents ? (
+        <ActivityIndicator color={colors.primary} />
+      ) : (
+        <Text style={[styles.sectionSubtitle, { color: colors.textMuted }]}>{t('common.dataUnavailable')}</Text>
+      )}
 
       {/* Disclaimer */}
       <View style={[styles.disclaimer, { backgroundColor: '#F59E0B15', borderColor: '#F59E0B40' }]}>
@@ -320,7 +345,13 @@ export default function DelimitationHub() {
       <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
         {t('delimitation.timelineSubtitle', { defaultValue: 'Constitutional milestones, commission orders, and public consultations.' })}
       </Text>
-      <DelimitationTimeline events={timelineEvents} />
+      {timelineEvents.length > 0 ? (
+        <DelimitationTimeline events={timelineEvents} />
+      ) : isLoadingEvents ? (
+        <ActivityIndicator color={colors.primary} />
+      ) : (
+        <Text style={[styles.sectionSubtitle, { color: colors.textMuted }]}>{t('common.dataUnavailable')}</Text>
+      )}
     </View>
   );
 
@@ -551,7 +582,7 @@ export default function DelimitationHub() {
         <View style={[styles.liveBadge, { backgroundColor: statusConfig.color + '20' }]}>
           <View style={[styles.liveDot, { backgroundColor: statusConfig.color }]} />
           <Text style={[styles.liveText, { color: statusConfig.color }]}>
-            {statusConfig.label}
+            {statusAvailable && statusLabel ? statusLabel : t('common.dataUnavailable')}
           </Text>
         </View>
         <Pressable

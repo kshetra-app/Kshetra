@@ -14,6 +14,9 @@ import { retentionService } from './retentionService';
 import { rightsService } from './rightsService';
 import { sdfService } from './sdfService';
 import { breachService } from './breachService';
+import { resolveAuthenticatedUser } from '../../lib/userAuth';
+import { RightsPersistenceError } from './rightsService';
+import { ErasureExecutionError } from './retentionService';
 import {
   privacyNoticeQuerySchema,
   dataAccessRequestSchema,
@@ -35,6 +38,14 @@ function sendComplianceSuccess<T>(
     requestId: request.id,
     timestamp: new Date().toISOString(),
   });
+}
+
+async function resolvePrincipalId(
+  request: FastifyRequest,
+  reply: FastifyReply,
+): Promise<string | null> {
+  const user = await resolveAuthenticatedUser(request, reply);
+  return user?.userId ?? null;
 }
 
 export const complianceRoutes: FastifyPluginAsync = async (app) => {
@@ -88,55 +99,40 @@ export const complianceRoutes: FastifyPluginAsync = async (app) => {
 
   // ─── 4. DATA PRINCIPAL RIGHTS WORKFLOWS ───
   app.post('/api/v1/compliance/rights/access', async (request, reply) => {
-    // Resolve user ID from auth context or header fallback
-    const userId = (request as any).user?.id || (request.headers['x-user-id'] as string);
-    if (!userId) {
+    const userId = await resolvePrincipalId(request, reply);
+    if (!userId) return reply;
+
+    const parseResult = dataAccessRequestSchema.safeParse(request.body || {});
+    if (!parseResult.success) {
       return sendApiError(
         reply,
         request,
-        401,
-        'Unauthorized',
-        'Authenticated citizen session required',
-        {
-          code: 'AUTH_REQUIRED',
-        },
+        400,
+        'Bad Request',
+        parseResult.error.issues[0]?.message || 'Invalid data export parameters',
+        { code: 'VALIDATION_ERROR' },
       );
     }
 
-    const parseResult = dataAccessRequestSchema.safeParse(request.body || {});
-    const input = parseResult.success
-      ? parseResult.data
-      : { format: 'json' as const, includeActivityHistory: true };
-
     try {
-      const archive = await rightsService.processAccessRequest(userId, input);
+      const archive = await rightsService.processAccessRequest(userId, parseResult.data);
       return sendComplianceSuccess(reply, request, archive, 200);
     } catch (err: any) {
       request.log.error({ err, userId }, 'Error processing data access request');
       return sendApiError(
         reply,
         request,
-        500,
-        'Internal Server Error',
-        'Failed to generate data export archive',
+        err instanceof RightsPersistenceError ? 503 : 500,
+        'Data Export Unavailable',
+        'A data export could not be durably compiled from the configured user data stores.',
+        { code: 'DATA_EXPORT_UNAVAILABLE' },
       );
     }
   });
 
   app.post('/api/v1/compliance/rights/correction', async (request, reply) => {
-    const userId = (request as any).user?.id || (request.headers['x-user-id'] as string);
-    if (!userId) {
-      return sendApiError(
-        reply,
-        request,
-        401,
-        'Unauthorized',
-        'Authenticated citizen session required',
-        {
-          code: 'AUTH_REQUIRED',
-        },
-      );
-    }
+    const userId = await resolvePrincipalId(request, reply);
+    if (!userId) return reply;
 
     const parseResult = dataCorrectionRequestSchema.safeParse(request.body);
     if (!parseResult.success) {
@@ -145,40 +141,30 @@ export const complianceRoutes: FastifyPluginAsync = async (app) => {
         request,
         400,
         'Bad Request',
-        parseResult.error.errors[0]?.message || 'Invalid correction parameters',
+        parseResult.error.issues[0]?.message || 'Invalid correction parameters',
         { code: 'VALIDATION_ERROR' },
       );
     }
 
     try {
       const result = await rightsService.processCorrectionRequest(userId, parseResult.data);
-      return sendComplianceSuccess(reply, request, result, 200);
+      return sendComplianceSuccess(reply, request, result, 202);
     } catch (err: any) {
       request.log.error({ err, userId }, 'Error processing data correction request');
       return sendApiError(
         reply,
         request,
-        500,
-        'Internal Server Error',
-        'Failed to process correction',
+        503,
+        'Service Unavailable',
+        'Correction request storage is unavailable.',
+        { code: 'RIGHTS_STORAGE_UNAVAILABLE' },
       );
     }
   });
 
   app.post('/api/v1/compliance/rights/erasure', async (request, reply) => {
-    const userId = (request as any).user?.id || (request.headers['x-user-id'] as string);
-    if (!userId) {
-      return sendApiError(
-        reply,
-        request,
-        401,
-        'Unauthorized',
-        'Authenticated citizen session required',
-        {
-          code: 'AUTH_REQUIRED',
-        },
-      );
-    }
+    const userId = await resolvePrincipalId(request, reply);
+    if (!userId) return reply;
 
     const parseResult = dataErasureRequestSchema.safeParse(request.body);
     if (!parseResult.success) {
@@ -187,7 +173,7 @@ export const complianceRoutes: FastifyPluginAsync = async (app) => {
         request,
         400,
         'Bad Request',
-        parseResult.error.errors[0]?.message ||
+        parseResult.error.issues[0]?.message ||
           'Explicit confirmation phrase required for account erasure',
         { code: 'INVALID_CONFIRMATION' },
       );
@@ -201,17 +187,18 @@ export const complianceRoutes: FastifyPluginAsync = async (app) => {
       return sendApiError(
         reply,
         request,
-        500,
-        'Internal Server Error',
-        'Failed to execute account erasure',
+        err instanceof ErasureExecutionError ? 503 : 500,
+        'Erasure Not Completed',
+        'Account erasure and its completion ledger were not both confirmed; no certificate was issued.',
+        { code: 'ERASURE_NOT_COMPLETED' },
       );
     }
   });
 
   // ─── 5. GRIEVANCE REDRESSAL MECHANISM (DPO) ───
   app.post('/api/v1/compliance/grievance', async (request, reply) => {
-    const userId =
-      (request as any).user?.id || (request.headers['x-user-id'] as string) || 'guest_citizen';
+    const userId = await resolvePrincipalId(request, reply);
+    if (!userId) return reply;
     const parseResult = grievanceSubmissionSchema.safeParse(request.body);
     if (!parseResult.success) {
       return sendApiError(
@@ -219,7 +206,7 @@ export const complianceRoutes: FastifyPluginAsync = async (app) => {
         request,
         400,
         'Bad Request',
-        parseResult.error.errors[0]?.message || 'Invalid grievance parameters',
+        parseResult.error.issues[0]?.message || 'Invalid grievance parameters',
         { code: 'VALIDATION_ERROR' },
       );
     }
@@ -232,16 +219,32 @@ export const complianceRoutes: FastifyPluginAsync = async (app) => {
       return sendApiError(
         reply,
         request,
-        500,
-        'Internal Server Error',
-        'Failed to register grievance ticket',
+        503,
+        'Service Unavailable',
+        'Grievance storage is unavailable; no ticket was issued.',
+        { code: 'GRIEVANCE_STORAGE_UNAVAILABLE' },
       );
     }
   });
 
   app.get('/api/v1/compliance/grievance/:ticketId', async (request, reply) => {
+    const userId = await resolvePrincipalId(request, reply);
+    if (!userId) return reply;
     const { ticketId } = request.params as { ticketId: string };
-    const ticket = rightsService.getGrievance(ticketId);
+    let ticket;
+    try {
+      ticket = await rightsService.getGrievance(ticketId, userId);
+    } catch (err) {
+      request.log.error({ err, userId }, 'Could not retrieve persisted grievance ticket');
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Grievance storage is unavailable.',
+        { code: 'GRIEVANCE_STORAGE_UNAVAILABLE' },
+      );
+    }
     if (!ticket) {
       return sendApiError(
         reply,
@@ -259,8 +262,22 @@ export const complianceRoutes: FastifyPluginAsync = async (app) => {
 
   // ─── 6. SIGNIFICANT DATA FIDUCIARY (SDF) EVALUATION ───
   app.get('/api/v1/compliance/sdf-assessment', async (request, reply) => {
-    const assessment = sdfService.getAssessment();
-    return sendComplianceSuccess(reply, request, assessment);
+    try {
+      const assessment = sdfService.getAssessment();
+      return sendComplianceSuccess(reply, request, assessment);
+    } catch (error: any) {
+      if (error?.message?.startsWith('SDF_ASSESSMENT_UNAVAILABLE')) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'A current, measured, and reviewed SDF assessment is not available.',
+          { code: 'SDF_ASSESSMENT_UNAVAILABLE' },
+        );
+      }
+      throw error;
+    }
   });
 
   // ─── 7. BREACH INCIDENT LOGGING & SLA TRACKING ───
@@ -272,7 +289,7 @@ export const complianceRoutes: FastifyPluginAsync = async (app) => {
         request,
         400,
         'Bad Request',
-        parseResult.error.errors[0]?.message || 'Invalid incident parameters',
+        parseResult.error.issues[0]?.message || 'Invalid incident parameters',
       );
     }
 
