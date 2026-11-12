@@ -75,7 +75,8 @@ export const COMPLIANCE_PRIVACY_LOCALES: Record<SupportedPrivacyLocale, PrivacyN
   ta: {
     locale: 'ta',
     languageName: 'தமிழ் (Tamil)',
-    privacyPolicyTitle: 'பான்-இன் / க்ஷேத்ரா சட்டபூர்வ தனியுரிமை அறிவிப்பு & குடிமக்கள் தரவு சாசனம்',
+    privacyPolicyTitle:
+      'பான்-இன் / க்ஷேத்ரா சட்டபூர்வ தனியுரிமை அறிவிப்பு & குடிமக்கள் தரவு சாசனம்',
     purposeSummary:
       'டிஜிட்டல் தனிநபர் தரவு பாதுகாப்புச் சட்டம், 2023 இன் கீழ் உள்ளூர் குடிமைத் தகவல், கணக்கு சரிபார்ப்பு மற்றும் சட்டப்பூர்வ தேர்தல் புவியியல் தகவல்களை வழங்க மட்டுமே நாங்கள் தரவை செயலாக்குகிறோம்.',
     dataCollectedSummary:
