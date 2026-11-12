@@ -196,6 +196,7 @@ const kn = {
     "votes": "ಮತಗಳು",
     "voteShare": "ಮತ ಪ್ರಮಾಣ",
     "demographics": "ಜನಸಂಖ್ಯಾ ವಿವರ",
+    "dataUnavailable": "ಲಭ್ಯವಿಲ್ಲ",
     "population": "ಜನಸಂಖ್ಯೆ",
     "literacy": "ಸಾಕ್ಷರತೆ ಪ್ರಮಾಣ",
     "urbanRural": "ನಗರ / ಗ್ರಾಮೀಣ",
@@ -234,7 +235,13 @@ const kn = {
     "male": "ಪುರುಷ",
     "female": "ಮಹಿಳೆ",
     "socialComposition": "ಸಾಮಾಜಿಕ ಸಂರಚನೆ",
-    "demoDisclaimer": "ಮೂಲ: ಜನಗಣತಿ 2011 · ECI 2023 ಮತದಾರ ಪಟ್ಟಿ"
+    "demoDisclaimer": "ಮೂಲ: ಜನಗಣತಿ 2011 · ECI 2023 ಮತದಾರ ಪಟ್ಟಿ",
+    "demographicReferenceTitle": "ಕ್ಷೇತ್ರದ ಜನಸಂಖ್ಯಾ ಉಲ್ಲೇಖ ಮಾಹಿತಿ",
+    "noDemographicData": "ಈ ಕ್ಷೇತ್ರದ ಪರಿಶೀಲಿತ ಜನಸಂಖ್ಯಾ ಅಂಕಿಅಂಶಗಳು ಸಂಪರ್ಕಿತ ಮೂಲದಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ.",
+    "resultUnavailable": "ಸಂಪರ್ಕಿತ ಮೂಲದಲ್ಲಿ ಚುನಾವಣಾ ಫಲಿತಾಂಶದ ಮಾಹಿತಿ ಲಭ್ಯವಿಲ್ಲ.",
+    "noAffidavitYear": "ಚುನಾವಣೆಯ ವರ್ಷ ಲಭ್ಯವಿಲ್ಲದ ಕಾರಣ ಅಫಿಡವಿಟ್ ದಾಖಲೆಯನ್ನು ಹೊಂದಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.",
+    "demographicDataNoteTitle": "ಈ ಅಂಕಿಅಂಶಗಳ ಕುರಿತು",
+    "demographicDataNote": "ಒಟ್ಟುಗೂಡಿಸಿದ ಜನಸಂಖ್ಯಾ ಮೌಲ್ಯಗಳು ಅಂದಾಜಾಗಿರಬಹುದು ಅಥವಾ ಹಳೆಯ ಮೂಲ ವರ್ಷದದ್ದಾಗಿರಬಹುದು. ಪ್ರತಿ ಮೌಲ್ಯಕ್ಕೂ ಪತ್ತೆಹಚ್ಚಬಹುದಾದ ಮೂಲ, ವರ್ಷ ಮತ್ತು ಕ್ಷೇತ್ರದ ವ್ಯಾಪ್ತಿ ದೃಢೀಕರಿಸುವವರೆಗೆ ಅವುಗಳನ್ನು ನೇರ ಉತ್ಪಾದನಾ ಪರದೆಗಳಲ್ಲಿ ತೋರಿಸಲಾಗುವುದಿಲ್ಲ."
   },
   "feed": {
     "votes": "ಮತಗಳು",
@@ -1342,7 +1349,13 @@ const kn = {
       "grassrootsCampaign": "ತಳಮಟ್ಟದ ಪ್ರಚಾರ ಸಂಘಟನೆ",
       "fundraising": "ಸ್ವತಂತ್ರ ಅಭ್ಯರ್ಥಿಗಳಿಗೆ ನಿಧಿ ಸಂಗ್ರಹ",
       "rpaAct": "ಜನಪ್ರತಿನಿಧಿ ಕಾಯ್ದೆಯ ಮುಖ್ಯಾಂಶಗಳು"
-    }
+    },
+    "loadingChallenges": "ಸಕ್ರಿಯ ಸವಾಲುಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ…",
+    "challengesUnavailable": "ಸವಾಲಿನ ಮಾಹಿತಿ ಈಗ ಲಭ್ಯವಿಲ್ಲ.",
+    "loadingBadges": "ಗಳಿಸಿದ ಬ್ಯಾಡ್ಜ್‌ಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ…",
+    "badgesUnavailable": "ಬ್ಯಾಡ್ಜ್ ಮಾಹಿತಿ ಈಗ ಲಭ್ಯವಿಲ್ಲ.",
+    "loadingAspirants": "ಸಾರ್ವಜನಿಕ ಆಕಾಂಕ್ಷಿಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ…",
+    "aspirantsUnavailable": "ಸಾರ್ವಜನಿಕ ಆಕಾಂಕ್ಷಿಗಳ ಪಟ್ಟಿ ಈಗ ಲಭ್ಯವಿಲ್ಲ."
   },
   "becomeAspirant": {
     "title": "ಆಕಾಂಕ್ಷಿಯಾಗಿ",
@@ -1637,7 +1650,20 @@ const kn = {
       "tsReportCard": "ತೆಲಂಗಾಣ ಅಭಿವೃದ್ಧಿ ಪ್ರಗತಿ ವರದಿ",
       "youthConnect": "ಯೂತ್ ಕನೆಕ್ಟ್ 2026",
       "guaranteesImpact": "5 ಗ್ಯಾರಂಟಿ ಯೋಜನೆಗಳ ಪ್ರಭಾವ ವರದಿ"
-    }
+    },
+    "createAdDraft": "ಜಾಹೀರಾತಿನ ಕರಡು ರಚಿಸಿ",
+    "saveAdDraft": "ಕರಡನ್ನು ಉಳಿಸಿ",
+    "adDraftsTitle": "ಜಾಹೀರಾತು ಸೃಜನಶೀಲ ಕರಡುಗಳು",
+    "adDraftOnlyNote": "ಕರಡುಗಳನ್ನು ಈ ಪ್ರಚಾರದಲ್ಲಿ ಉಳಿಸಲಾಗುತ್ತದೆ. ಪರಿಶೀಲನೆ, ಪ್ರೇಕ್ಷಕರ ಗುರಿನಿರ್ಧಾರ, ಬಿಲ್ಲಿಂಗ್ ಮತ್ತು ಜಾಹೀರಾತು ವಿತರಣೆ ಇನ್ನೂ ಸಂಪರ್ಕಗೊಂಡಿಲ್ಲ.",
+    "noCampaignForAds": "ಮೊದಲು ಪ್ರಚಾರವನ್ನು ರಚಿಸಿ ಅಥವಾ ಆಯ್ಕೆಮಾಡಿ.",
+    "noAdDrafts": "ಈ ಪ್ರಚಾರಕ್ಕೆ ಇನ್ನೂ ಜಾಹೀರಾತಿನ ಕರಡುಗಳಿಲ್ಲ.",
+    "adDraftRequired": "ಹೆಸರು, ಶೀರ್ಷಿಕೆ, ಪ್ರಾಯೋಜಕರು ಮತ್ತು ಬಹಿರಂಗಪಡಿಸುವಿಕೆಯ ಪಠ್ಯವನ್ನು ನಮೂದಿಸಿ.",
+    "adName": "ಕರಡಿನ ಹೆಸರು",
+    "adHeadline": "ಶೀರ್ಷಿಕೆ",
+    "adBody": "ಸಂದೇಶ (ಐಚ್ಛಿಕ)",
+    "adDisclosure": "ಬಹಿರಂಗಪಡಿಸುವಿಕೆಯ ಪಠ್ಯ",
+    "noVerifiedAdMetrics": "ಪರಿಶೀಲಿತ ಜಾಹೀರಾತು ವಿತರಣೆ ಸಂಪರ್ಕವಾಗುವವರೆಗೆ ವಿತರಣಾ ಅಂಕಿಅಂಶಗಳು ಲಭ್ಯವಿರುವುದಿಲ್ಲ.",
+    "adComplianceNotReviewed": "ನಿಯಮಾನುಸರಣೆ ಇನ್ನೂ ಪರಿಶೀಲನೆಯಾಗಿಲ್ಲ"
   },
   "outreach": {
     "sentiment": "ಜನರ ಅಭಿಪ್ರಾಯ",
@@ -1666,10 +1692,9 @@ const kn = {
   },
   "civicMetrics": {
     "screenTitle": "ನಾಗರಿಕ ಸಾಧನೆ ಮತ್ತು ಅಂಕಿಅಂಶಗಳು",
-    "screenSubtitle": "ಬಜೆಟ್, ಮಸೂದೆಗಳು ಮತ್ತು ಯೋಜನೆಗಳು",
+    "screenSubtitle": "ಬಜೆಟ್, ಮಸೂದೆಗಳು, ಯೋಜನೆಗಳು ಮತ್ತು ವಿಚಾರಣೆಗಳು",
     "stateBudgetOverview": "ರಾಜ್ಯ ಬಜೆಟ್ ಅವಲೋಕನ",
     "noBudgetData": "ಈ ರಾಜ್ಯಕ್ಕೆ ಬಜೆಟ್ ಮಾಹಿತಿ ಲಭ್ಯವಿಲ್ಲ",
-    "legislatorAttendance": "ಶಾసನసಭ್ಯುಲ ಹಾಜరು ({{count}})",
     "activeBills": "ಕ್రಿಯಾಶೀಲ ಬಿಲ್ಲುಲು & ಚಟ್ಟಾಲು ({{count}})",
     "governmentSchemes": "ಪ್రಭುತ್ವ ಪಥಕಾಲು & సಂಕ್ಷೇమಂ ({{count}})",
     "developmentProjects": "మೌಲಿಕ సದುಪಾಯಾಲು & ಅಭಿವೃದ್ధಿ ಪ್రಾಜೆಕ್ಟುಲು ({{count}})",
@@ -1677,15 +1702,18 @@ const kn = {
     "response": "స್ಪಂದನ: {{text}}",
     "views": "{{count}} ವೀಕ್ಷಣಲು",
     "filed": "{{date}} ನ ದಾಖಲು ಚೇಯಬಡಿಂದಿ",
+    "publicHearings": "ಸಾರ್ವಜನಿಕ ವಿಚಾರಣೆಗಳು ({{count}})",
+    "noUpcomingHearings": "ಈ ರಾಜ್ಯಕ್ಕೆ ಮುಂಬರುವ ಸಾರ್ವಜನಿಕ ವಿಚಾರಣೆಗಳು ದಾಖಲಾಗಿಲ್ಲ.",
+    "registerForHearing": "ವಿಚಾರಣೆಗೆ ನೋಂದಣಿ",
     "title": "ನಾಗರಿಕ ಮಾನದಂಡಗಳು",
-    "subtitle": "ಬಜೆಟ್, ಹಾಜರಾತಿ, ವಿಧೇಯಕಗಳು ಮತ್ತು ಯೋಜನೆಗಳು",
+    "subtitle": "ಬಜೆಟ್, ಮಸೂದೆಗಳು, ಯೋಜನೆಗಳು ಮತ್ತು ವಿಚಾರಣೆಗಳು",
     "tabs": {
       "budget": "ಬಜೆಟ್",
-      "attendance": "ಹಾಜರಾತಿ",
       "bills": "ವಿಧೇಯಕಗಳು",
       "schemes": "ಯೋಜನೆಗಳು",
       "projects": "ಯೋಜನಾ ಕಾಮಗಾರಿ",
-      "rti": "RTI"
+      "rti": "RTI",
+      "hearings": "ವಿಚಾರಣೆಗಳು"
     },
     "stateBudget": "ರಾಜ್ಯ ಬಜೆಟ್",
     "totalBudget": "ಒಟ್ಟು",
@@ -1693,7 +1721,6 @@ const kn = {
     "fiscalDeficit": "ಹಣಕಾಸು ಕೊರತೆ",
     "revenueDeficit": "ಆದಾಯ ಕೊರತೆ",
     "debtGDP": "ಸಾಲ/GDP",
-    "assemblyAttendance": "ವಿಧಾನಸಭೆ ಹಾಜರಾತಿ",
     "sessions": "ಅಧಿವೇಶನಗಳು",
     "questionsRaised": "ಪ್ರಶ್ನೆಗಳು",
     "debatesParticipated": "ಚರ್ಚೆಗಳು",
@@ -1712,7 +1739,9 @@ const kn = {
     "revised": "ಪರಿಷ್ಕೃತ",
     "amountSpent": "ಖರ್ಚಾಗಿದೆ",
     "dueDate": "ಗಡುವು",
-    "daysDelayed": "{{n}} ದಿನ ವಿಳಂಬ"
+    "delayLabel": "ವಿಳಂಬ",
+    "daysDelayed": "{{n}} ದಿನ ವಿಳಂಬ",
+    "noConnectedData": "ಸಂಪರ್ಕಿತ ಮೂಲದಿಂದ ಪರಿಶೀಲಿತ ದಾಖಲೆಗಳು ಇನ್ನೂ ಲಭ್ಯವಿಲ್ಲ."
   },
   "lmx": {
     "screenTitle": "ಪಾಲಿಗ್ರಾಮ್ ಲೈವ್",
@@ -2321,7 +2350,8 @@ const kn = {
     "male": "ಪುರುಷ",
     "female": "ಮಹಿಳೆ",
     "terms": "ಅವಧಿಗಳು",
-    "historical": "ಐತಿಹಾಸಿಕ ಹೋಲಿಕೆ"
+    "historical": "ಐತಿಹಾಸಿಕ ಹೋಲಿಕೆ",
+    "demographicsUnavailable": "ಆಯ್ಕೆ ಮಾಡಿದ ಕ್ಷೇತ್ರಗಳಲ್ಲಿ ಒಂದಕ್ಕಾದರೂ ಮೂಲಾಧಾರಿತ ಜನಸಂಖ್ಯಾ ಅಂಕಿಅಂಶಗಳಿಲ್ಲದ ಕಾರಣ ಹೋಲಿಕೆ ಲಭ್ಯವಿಲ್ಲ."
   },
   "export": {
     "title": "ರಫ್ತು ಡ್ಯಾಶ್ಬೋರ್ಡ್",
@@ -2861,7 +2891,7 @@ const kn = {
     "decline": "ತಿರಸ್ಕರಿಸಿ",
     "accept": "ಸ್ವೀಕರಿಸಿ",
     "safetyOptions": "ಸುರಕ್ಷತೆ ಮತ್ತು ನಿಯಂತ್ರಣ",
-    "safetyDesc": "ಸಂಭಾಷಣೆ ಆಯ್ಕೆಗಳು:",
+    "safetyDesc": "{{name}} ಅವರೊಂದಿಗೆ ಸಂಭಾಷಣೆಯ ಆಯ್ಕೆಗಳು:",
     "blockUser": "ಬಳಕೆದಾರರನ್ನು ನಿರ್ಬಂಧಿಸಿ",
     "blockTitle": "ಬ್ಲಾಕ್ ದೃಢೀಕರಿಸಿ",
     "blockConfirm": "ನಿರ್ಬಂಧಿಸಿದ ಬಳಕೆದಾರರು ಸಂದೇಶ ಕಳುಹಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.",
@@ -3106,7 +3136,40 @@ const kn = {
       "citizenAccount": "ನಾಗರಿಕ ಪ್ರೊಫೈಲ್",
       "citizenAccountDesc": "ಪುಟ ರಚನೆಯು ಅಭ್ಯರ್ಥಿಗಳು ಮತ್ತು ನಾಯಕರಿಗೆ ಲಭ್ಯವಿದೆ.",
       "registerAsAspirantBtn": "ನಾಗರಿಕ ಆಕಾಂಕ್ಷಿಯಾಗಿ ನೋಂದಾಯಿಸಿ",
-      "candidateProfile": "ನಾಗರಿಕ ಅಭ್ಯರ್ಥಿ ಪುಟ"
+      "candidateProfile": "ನಾಗರಿಕ ಅಭ್ಯರ್ಥಿ ಪುಟ",
+      "tabPosts": "ಪೋಸ್ಟ್‌ಗಳು ಮತ್ತು ಚಟುವಟಿಕೆ",
+      "tabProfile": "ಪ್ರೊಫೈಲ್ ಮತ್ತು ಪಯಣ",
+      "tabVision": "ದೃಷ್ಟಿಕೋನ ಮತ್ತು ಪ್ರಣಾಳಿಕೆ",
+      "tabInitiatives": "ಕ್ಷೇತ್ರ ಉಪಕ್ರಮಗಳು",
+      "tabValues": "ಮೌಲ್ಯಗಳು ಮತ್ತು ಬಹಿರಂಗಪಡಿಸುವಿಕೆಗಳು",
+      "tabStudio": "ನಾಯಕ ವಿಶ್ಲೇಷಣಾ ಸ್ಟುಡಿಯೋ",
+      "liveStatus": "ನೇರ ಸ್ಥಿತಿ",
+      "inFieldTour": "ಕ್ಷೇತ್ರ ಪ್ರವಾಸದಲ್ಲಿ",
+      "followers": "ಅನುಯಾಯಿಗಳು",
+      "civicScore": "ನಾಗರಿಕ ಅಂಕ",
+      "resolvedIssues": "ಪರಿಹರಿಸಿದವು",
+      "cleanAffidavit": "100% ಸ್ವಚ್ಛ ಅಫಿಡವಿಟ್",
+      "noCriminalCases": "ಅಪರಾಧ ಪ್ರಕರಣಗಳಿಲ್ಲ",
+      "assetDeclaration": "ಆಸ್ತಿ ಘೋಷಣೆ",
+      "form26Verified": "ಸ್ವಯಂಪ್ರೇರಿತವಾಗಿ ಫಾರ್ಮ್ 26 ಬಹಿರಂಗಪಡಿಸಲಾಗಿದೆ",
+      "accountabilityCharter": "ಹೊಣೆಗಾರಿಕೆ ಪ್ರತಿಜ್ಞೆ",
+      "volunteer": "ಸ್ವಯಂಸೇವಕರಾಗಿ",
+      "postUpdate": "ಮತದಾರರೊಂದಿಗೆ ನವೀಕರಣ ಹಂಚಿಕೊಳ್ಳಿ",
+      "postPlaceholder": "ಕ್ಷೇತ್ರ ವೀಕ್ಷಣೆ, ಪರಿಶೀಲನಾ ನವೀಕರಣ ಅಥವಾ ನಿಮ್ಮ ಅಭಿಪ್ರಾಯ ಹಂಚಿಕೊಳ್ಳಿ…",
+      "postBtn": "ಪೋಸ್ಟ್ ಪ್ರಕಟಿಸಿ",
+      "privateAnalyticsNotice": "ಈ ವಿಭಾಗ ಗೌಪ್ಯ — ಅಭ್ಯರ್ಥಿ/ಸಂಬಂಧಿತ ವ್ಯಕ್ತಿ ಮತ್ತು ವೇದಿಕೆಯ ನಿರ್ವಾಹಕರು ಮಾತ್ರ ನೋಡಬಹುದು.",
+      "boothCoverage": "ಕ್ಷೇತ್ರದ ಮತಗಟ್ಟೆ ವ್ಯಾಪ್ತಿ",
+      "grassrootsReach": "ತಳಮಟ್ಟದ ಜನರನ್ನು ತಲುಪುವಿಕೆ",
+      "avgResponseTime": "ನಾಗರಿಕರಿಗೆ ಸರಾಸರಿ ಪ್ರತಿಕ್ರಿಯೆ ಸಮಯ",
+      "requestsAnswered": "ಪರಿಹರಿಸಿದ ಪ್ರಶ್ನೆಗಳು",
+      "voterEngagementTrend": "30 ದಿನಗಳ ಪ್ರೊಫೈಲ್ ತೊಡಗಿಸಿಕೊಳ್ಳುವಿಕೆ",
+      "profileViews": "ಪ್ರೊಫೈಲ್ ವೀಕ್ಷಣೆಗಳು",
+      "pendingCitizenRequests": "ಬಾಕಿ ಇರುವ ನಾಗರಿಕರ ವಿನಂತಿಗಳು",
+      "citizenPoll": "ನಾಗರಿಕ ಆದ್ಯತಾ ಸಮೀಕ್ಷೆ",
+      "castVote": "ಮತ ಚಲಾಯಿಸಿ",
+      "totalVotes": "ಒಟ್ಟು ಮತಗಳು",
+      "agreeWithVision": "ಆದ್ಯತೆಯನ್ನು ಒಪ್ಪುತ್ತೇನೆ",
+      "verifiedOfficialFigure": "ಅಧಿಕೃತವಾಗಿ ಪರಿಶೀಲಿತ ನಾಯಕ"
   },
 }
 

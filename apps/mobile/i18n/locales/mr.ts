@@ -196,6 +196,7 @@ const mr = {
     "votes": "मते",
     "voteShare": "मत टक्केवारी",
     "demographics": "लोकसंख्याशास्त्र",
+    "dataUnavailable": "उपलब्ध नाही",
     "population": "लोकसंख्या",
     "literacy": "साक्षरता दर",
     "urbanRural": "शहरी / ग्रामीण",
@@ -234,7 +235,13 @@ const mr = {
     "male": "पुरुष",
     "female": "स्त्री",
     "socialComposition": "सामाजिक रचना",
-    "demoDisclaimer": "स्रोत: जनगणना 2011 · ECI 2023 मतदार यादी"
+    "demoDisclaimer": "स्रोत: जनगणना 2011 · ECI 2023 मतदार यादी",
+    "demographicReferenceTitle": "मतदारसंघाची लोकसंख्याशास्त्रीय संदर्भ माहिती",
+    "noDemographicData": "या मतदारसंघासाठी सत्यापित लोकसंख्याशास्त्रीय आकडे जोडलेल्या स्रोतामध्ये उपलब्ध नाहीत.",
+    "resultUnavailable": "जोडलेल्या स्रोतामध्ये निवडणूक निकालांची माहिती उपलब्ध नाही.",
+    "noAffidavitYear": "निवडणुकीचे वर्ष उपलब्ध नसल्याने प्रतिज्ञापत्राची नोंद जुळवता येत नाही.",
+    "demographicDataNoteTitle": "या आकडेवारीबद्दल",
+    "demographicDataNote": "एकत्रित लोकसंख्याशास्त्रीय मूल्ये अंदाजित असू शकतात किंवा जुन्या स्रोत-वर्षातील असू शकतात. प्रत्येक मूल्यासाठी शोधता येणारा स्रोत, वर्ष आणि मतदारसंघाची व्याप्ती निश्चित होईपर्यंत ती उत्पादन दृश्यांमध्ये दाखवली जाणार नाहीत."
   },
   "feed": {
     "votes": "मते",
@@ -1342,7 +1349,13 @@ const mr = {
       "grassrootsCampaign": "तळागाळातील प्रचार उभारणी",
       "fundraising": "अपक्ष उमेदवारांसाठी निधी संकलन",
       "rpaAct": "लोकप्रतिनिधी कायदा नियम"
-    }
+    },
+    "loadingChallenges": "सक्रिय आव्हाने लोड होत आहेत…",
+    "challengesUnavailable": "आव्हानांची माहिती सध्या उपलब्ध नाही.",
+    "loadingBadges": "मिळवलेली बॅजेस लोड होत आहेत…",
+    "badgesUnavailable": "बॅजची माहिती सध्या उपलब्ध नाही.",
+    "loadingAspirants": "सार्वजनिक इच्छुक उमेदवार लोड होत आहेत…",
+    "aspirantsUnavailable": "सार्वजनिक इच्छुक उमेदवारांची यादी सध्या उपलब्ध नाही."
   },
   "becomeAspirant": {
     "title": "इच्छुक व्हा",
@@ -1637,7 +1650,20 @@ const mr = {
       "tsReportCard": "तेलंगणा विकास अहवाल",
       "youthConnect": "युवा कनेक्ट 2026",
       "guaranteesImpact": "५ हमी योजनांचा प्रभाव अहवाल"
-    }
+    },
+    "createAdDraft": "जाहिरातीचा मसुदा तयार करा",
+    "saveAdDraft": "मसुदा जतन करा",
+    "adDraftsTitle": "जाहिरात क्रिएटिव्ह मसुदे",
+    "adDraftOnlyNote": "मसुदे या प्रचार मोहिमेत जतन केले जातात. तपासणी, प्रेक्षक लक्ष्यीकरण, बिलिंग आणि जाहिरात वितरण अद्याप जोडलेले नाही.",
+    "noCampaignForAds": "आधी प्रचार मोहीम तयार करा किंवा निवडा.",
+    "noAdDrafts": "या प्रचार मोहिमेसाठी अद्याप जाहिरातीचे मसुदे नाहीत.",
+    "adDraftRequired": "नाव, मथळा, प्रायोजक आणि प्रकटीकरण मजकूर भरा.",
+    "adName": "मसुद्याचे नाव",
+    "adHeadline": "मथळा",
+    "adBody": "संदेश (ऐच्छिक)",
+    "adDisclosure": "प्रकटीकरण मजकूर",
+    "noVerifiedAdMetrics": "सत्यापित जाहिरात वितरण जोडेपर्यंत वितरणाची आकडेवारी उपलब्ध नाही.",
+    "adComplianceNotReviewed": "नियमपालनाची तपासणी अद्याप झालेली नाही"
   },
   "outreach": {
     "sentiment": "जनभावना",
@@ -1666,10 +1692,9 @@ const mr = {
   },
   "civicMetrics": {
     "screenTitle": "नागरी कार्यक्षमता आणि मापदंड",
-    "screenSubtitle": "अर्थसंकल्प, विधेयके आणि योजना",
+    "screenSubtitle": "अर्थसंकल्प, विधेयके, योजना आणि सुनावण्या",
     "stateBudgetOverview": "राज्य अर्थसंकल्प आढावा",
     "noBudgetData": "या राज्यासाठी अर्थसंकल्प माहिती उपलब्ध नाही",
-    "legislatorAttendance": "विधायक उपस्थिति ({{count}})",
     "activeBills": "सक्रिय विधेयक और विधान ({{count}})",
     "governmentSchemes": "सरकारी योजनाएँ और कल्याण ({{count}})",
     "developmentProjects": "बुनियादी ढांचा और विकास परियोजनाएँ ({{count}})",
@@ -1677,15 +1702,18 @@ const mr = {
     "response": "प्रतिक्रिया: {{text}}",
     "views": "{{count}} बार देखा गया",
     "filed": "{{date}} को दाखिल",
+    "publicHearings": "सार्वजनिक सुनावण्या ({{count}})",
+    "noUpcomingHearings": "या राज्यासाठी आगामी सार्वजनिक सुनावणी नोंदवलेली नाही.",
+    "registerForHearing": "सुनावणीसाठी नोंदणी",
     "title": "नागरिक मापदंड",
-    "subtitle": "अर्थसंकल्प, उपस्थिती, विधेयके आणि योजना",
+    "subtitle": "अर्थसंकल्प, विधेयके, योजना आणि सुनावण्या",
     "tabs": {
       "budget": "अर्थसंकल्प",
-      "attendance": "उपस्थिती",
       "bills": "विधेयके",
       "schemes": "योजना",
       "projects": "प्रकल्प",
-      "rti": "RTI"
+      "rti": "RTI",
+      "hearings": "सुनावण्या"
     },
     "stateBudget": "राज्य अर्थसंकल्प",
     "totalBudget": "एकूण",
@@ -1693,7 +1721,6 @@ const mr = {
     "fiscalDeficit": "वित्तीय तूट",
     "revenueDeficit": "महसूल तूट",
     "debtGDP": "कर्ज/GDP",
-    "assemblyAttendance": "विधानसभा उपस्थिती",
     "sessions": "सत्रे",
     "questionsRaised": "प्रश्न",
     "debatesParticipated": "चर्चा",
@@ -1712,7 +1739,9 @@ const mr = {
     "revised": "सुधारित",
     "amountSpent": "खर्च",
     "dueDate": "अंतिम तारीख",
-    "daysDelayed": "{{n}} दिवस विलंब"
+    "delayLabel": "विलंब",
+    "daysDelayed": "{{n}} दिवस विलंब",
+    "noConnectedData": "जोडलेल्या स्रोतामधून सत्यापित नोंदी अद्याप उपलब्ध नाहीत."
   },
   "lmx": {
     "screenTitle": "पॉलीग्राम लाइव्ह",
@@ -2321,7 +2350,8 @@ const mr = {
     "male": "पुरुष",
     "female": "स्त्री",
     "terms": "कार्यकाळ",
-    "historical": "ऐतिहासिक तुलना"
+    "historical": "ऐतिहासिक तुलना",
+    "demographicsUnavailable": "निवडलेल्या एक किंवा दोन्ही मतदारसंघांसाठी स्रोत-आधारित सत्यापित लोकसंख्याशास्त्रीय आकडे नसल्याने तुलना उपलब्ध नाही."
   },
   "export": {
     "title": "निर्यात डॅशबोर्ड",
@@ -2861,7 +2891,7 @@ const mr = {
     "decline": "नाकारा",
     "accept": "स्वीकारा",
     "safetyOptions": "सुरक्षा आणि नियंत्रण",
-    "safetyDesc": "संभाषण पर्याय:",
+    "safetyDesc": "{{name}} यांच्याशी संभाषणाचे पर्याय:",
     "blockUser": "ब्लॉक करा",
     "blockTitle": "ब्लॉकची पुष्टी करा",
     "blockConfirm": "ब्लॉक केलेले वापरकर्ते संदेश पाठवू शकत नाहीत.",
@@ -3106,7 +3136,40 @@ const mr = {
       "citizenAccount": "नागरिक प्रोफाइल",
       "citizenAccountDesc": "पेज निर्मिती उमेदवार आणि इच्छुकांसाठी उपलब्ध आहे.",
       "registerAsAspirantBtn": "नागरी इच्छुक म्हणून नोंदणी करा",
-      "candidateProfile": "नागरी उमेदवार पेज"
+      "candidateProfile": "नागरी उमेदवार पेज",
+      "tabPosts": "पोस्ट आणि उपक्रम",
+      "tabProfile": "प्रोफाइल आणि प्रवास",
+      "tabVision": "दृष्टी आणि जाहीरनामा",
+      "tabInitiatives": "क्षेत्रीय उपक्रम",
+      "tabValues": "मूल्ये आणि प्रकटीकरणे",
+      "tabStudio": "नेता विश्लेषण स्टुडिओ",
+      "liveStatus": "थेट स्थिती",
+      "inFieldTour": "क्षेत्रीय दौऱ्यावर",
+      "followers": "फॉलोअर्स",
+      "civicScore": "नागरिक गुणांकन",
+      "resolvedIssues": "निराकरण केलेले",
+      "cleanAffidavit": "100% स्वच्छ प्रतिज्ञापत्र",
+      "noCriminalCases": "गुन्हेगारी प्रकरणे नाहीत",
+      "assetDeclaration": "मालमत्ता जाहीरनामा",
+      "form26Verified": "स्वेच्छेने फॉर्म 26 जाहीर केले",
+      "accountabilityCharter": "उत्तरदायित्व सनदेची प्रतिज्ञा",
+      "volunteer": "स्वयंसेवक व्हा",
+      "postUpdate": "मतदारांसोबत अपडेट शेअर करा",
+      "postPlaceholder": "क्षेत्र निरीक्षण, तपासणीचे अपडेट किंवा तुमचे विचार शेअर करा…",
+      "postBtn": "पोस्ट प्रकाशित करा",
+      "privateAnalyticsNotice": "हा विभाग गोपनीय आहे — तो केवळ उमेदवार/स्वतः आणि प्लॅटफॉर्म प्रशासक पाहू शकतात.",
+      "boothCoverage": "मतदारसंघातील मतदान केंद्रांचे कव्हरेज",
+      "grassrootsReach": "तळागाळापर्यंत पोहोच",
+      "avgResponseTime": "नागरिकांना प्रतिसाद देण्याची सरासरी वेळ",
+      "requestsAnswered": "सोडवलेले प्रश्न",
+      "voterEngagementTrend": "३० दिवसांतील प्रोफाइल सहभाग",
+      "profileViews": "प्रोफाइल दृश्ये",
+      "pendingCitizenRequests": "प्रलंबित नागरिक विनंत्या",
+      "citizenPoll": "नागरिक प्राधान्य मतदान",
+      "castVote": "मत द्या",
+      "totalVotes": "एकूण मते",
+      "agreeWithVision": "प्राधान्याशी सहमत",
+      "verifiedOfficialFigure": "अधिकृतरीत्या सत्यापित नेता"
   },
 }
 

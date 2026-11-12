@@ -7,6 +7,7 @@
  * Supports all 28 states + Puducherry + J&K.
  */
 import type { ConstituencyBrief } from '@kshetra/shared';
+import { IS_LIVE_ENVIRONMENT } from './environment';
 import {
   TELANGANA_CONSTITUENCIES,
   type ConstituencySeed,
@@ -56,7 +57,7 @@ import { JK_CONSTITUENCIES } from '../../../data/seed/jammu-kashmir-constituenci
 /** Explicit metadata contract for simulated projections (never returned as actual results) */
 export interface SimulationProjection {
   isSimulation: true;
-  electionYear: number;
+  electionYear: number | null;
   projectedParty: string;
   projectedWinnerName: string;
   projectedVotes: number;
@@ -95,7 +96,7 @@ export interface UnifiedConstituency {
   /** Current sitting representative name */
   currentMLA?: string;
   /** Year of the verified general election result data */
-  electionYear: number;
+  electionYear: number | null;
   /** By-election metadata if a subsequent by-election changed or confirmed the seat */
   byElection?: ByElectionRecord;
   /** Current officeholder / tenure status */
@@ -105,7 +106,7 @@ export interface UnifiedConstituency {
   /** Optional simulation projection metadata (strictly segregated from actual results) */
   projection?: SimulationProjection;
   /** Data status flag indicating whether the data is current, stale, or by-election updated */
-  dataStatus?: 'CURRENT' | 'STALE_PENDING_INGESTION' | 'BY_ELECTION_UPDATED';
+  dataStatus?: 'CURRENT' | 'STALE_PENDING_INGESTION' | 'BY_ELECTION_UPDATED' | 'DATABASE_RECORDED' | 'UNAVAILABLE';
   /** Boolean flag indicating stale data awaiting election result ingestion */
   isStale?: boolean;
   /** Explanatory term status string */
@@ -225,7 +226,7 @@ function genericAdapter(
 }
 
 /** Normalize all states' seed data into UnifiedConstituency[] */
-export function getUnifiedConstituenciesForState(stateCode: string): UnifiedConstituency[] {
+function getSeedUnifiedConstituenciesForState(stateCode: string): UnifiedConstituency[] {
   switch (stateCode.toUpperCase()) {
     // ─── Original 8 (manually typed) ──────────────────────────────
     case 'TS':
@@ -479,6 +480,35 @@ export function getUnifiedConstituenciesForState(stateCode: string): UnifiedCons
   }
 }
 
+/** Remove bundled political assertions from live builds while retaining the seat geography. */
+export function toGeographyOnlyConstituency(item: UnifiedConstituency): UnifiedConstituency {
+  return {
+    ...item,
+    winnerParty: '',
+    winnerName: '',
+    winnerVotes: null,
+    runnerUp: '',
+    runnerUpName: undefined,
+    runnerUpVotes: undefined,
+    margin: null,
+    currentParty: '',
+    currentMLA: undefined,
+    electionYear: null,
+    byElection: undefined,
+    officeholderStatus: 'UNRESOLVED',
+    projection: undefined,
+    dataStatus: 'UNAVAILABLE',
+    isStale: false,
+    termStatus: undefined,
+  };
+}
+
+/** Seed elections are local reference data only; live builds must use the API-backed directory. */
+export function getUnifiedConstituenciesForState(stateCode: string): UnifiedConstituency[] {
+  const items = getSeedUnifiedConstituenciesForState(stateCode);
+  return IS_LIVE_ENVIRONMENT ? items.map(toGeographyOnlyConstituency) : items;
+}
+
 // ─── ConstituencyBrief adapters (for shared types) ───────────────────────
 
 /** Adapt Telangana seed → ConstituencyBrief */
@@ -617,7 +647,7 @@ function genericBriefAdapter(c: AnyConstituency, stateCode: string, year: number
 }
 
 /** Get all constituencies for a given state code as ConstituencyBrief[] */
-export function getConstituenciesForState(stateCode: string): ConstituencyBrief[] {
+function getSeedConstituenciesForState(stateCode: string): ConstituencyBrief[] {
   switch (stateCode.toUpperCase()) {
     case 'TS': return TELANGANA_CONSTITUENCIES.map(tsAdapter);
     case 'AP': return AP_CONSTITUENCIES.map(apAdapter);
@@ -653,6 +683,13 @@ export function getConstituenciesForState(stateCode: string): ConstituencyBrief[
     case 'JK': return JK_CONSTITUENCIES.map((c) => genericBriefAdapter(c, 'JK', 2024));
     default: return [];
   }
+}
+
+/** Keep seed representative fields out of live builds; preserve directory geography for navigation. */
+export function getConstituenciesForState(stateCode: string): ConstituencyBrief[] {
+  const items = getSeedConstituenciesForState(stateCode);
+  if (!IS_LIVE_ENVIRONMENT) return items;
+  return items.map((item) => ({ ...item, currentParty: '', currentMLA: '' }));
 }
 
 /** Get a single constituency brief by state + acNo */
@@ -691,6 +728,7 @@ export function getAvailableStates(): string[] {
 
 /** Get all available years for timeline slider (historical + current) */
 export function getAvailableYearsForState(stateCode: string, includeSimulations: boolean = false): number[] {
+  if (IS_LIVE_ENVIRONMENT) return [];
   switch (stateCode.toUpperCase()) {
     case 'TS': return [2014, 2018, 2023];
     case 'AP': return [2019, 2024];
@@ -716,7 +754,8 @@ export function getAvailableYearsForState(stateCode: string, includeSimulations:
     default: {
       const constituencies = getUnifiedConstituenciesForState(stateCode);
       if (constituencies.length > 0) {
-        return [constituencies[0].electionYear];
+        const electionYear = constituencies[0].electionYear;
+        return electionYear == null ? [] : [electionYear];
       }
       return [2024]; // default fallback
     }

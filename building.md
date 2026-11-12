@@ -2885,7 +2885,7 @@ User creates post → CCA gate (KYC) → Post created (constituency-local)
 | `015_journalist_platform.sql` | journalist_profiles, articles, fact_checks, breaking_news, editorial_assignments, article_vouches | Full journalist/newsroom backend |
 | `016_politician_portal.sql` | politician_portal_profiles, political_events, e_manifestos, manifesto_items, politician_surveys, grievances | Politician self-service portal |
 | `017_campaign_ad_engine.sql` | campaigns, ad_creatives, booth_strategies, volunteers, ab_tests, campaign_analytics, revenue_transactions | Campaign manager + ad engine |
-| `018_civic_metrics.sql` | budget_summaries, legislator_attendance, bills, government_schemes, development_projects, rti_requests, public_hearings, constituency_dev_index | Civic transparency dashboard |
+| `018_civic_metrics.sql` | budget_summaries, bills, government_schemes, development_projects, rti_requests, public_hearings, constituency_dev_index | Civic transparency dashboard; legacy legislator attendance is retired by migration 101 |
 | `019_election_live.sql` | live_elections, constituency_results, data_pipeline_status, election_simulations, investor_demo_snapshots | Live election counting + investor metrics |
 
 ### Phase 3: Zustand Stores (5 files)
@@ -3018,7 +3018,7 @@ User creates post → CCA gate (KYC) → Post created (constituency-local)
 | `searchMPs(query)` | Text search across name/party/constituency |
 | `getPartyStrengthForState(code)` | Party breakdown for a state's delegation |
 
-- [x] `MPProfile` interface extended with `ministerialRole?`, `isMinister?`, `committeeRoles?`, parliamentary performance metrics (`attendancePercent?`, `questionsAsked?`, `debatesParticipated?`, `billsIntroduced?`)
+- [x] `MPProfile` interface extended with `ministerialRole?`, `isMinister?`, `committeeRoles?`, and parliamentary activity metrics (`questionsAsked?`, `debatesParticipated?`, `billsIntroduced?`). Legislator attendance is excluded because recurring, comparable official coverage is not available across supported State Assemblies.
 - [x] Backward-compatible aliases added for existing consumers
 
 ### Phase 5: Parliament Screen Rewire — `app/parliament/index.tsx`

@@ -9,6 +9,7 @@ export type MapColorMode = 'party' | 'margin' | 'reservation' | 'population' | '
 interface MapColorToggleProps {
   mode: MapColorMode;
   onModeChange: (mode: MapColorMode) => void;
+  allowedModes?: MapColorMode[];
 }
 
 const PRIMARY_MODES: { key: MapColorMode; icon: string; tKey: string; fallbackText: string }[] = [
@@ -25,11 +26,13 @@ const DATA_MODES: { key: MapColorMode; icon: string; tKey: string; fallbackText:
   { key: 'swing', icon: 'shuffle', tKey: 'map.colorModes.swing', fallbackText: 'Swings' },
 ];
 
-export default function MapColorToggle({ mode, onModeChange }: MapColorToggleProps) {
+export default function MapColorToggle({ mode, onModeChange, allowedModes }: MapColorToggleProps) {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const [expanded, setExpanded] = useState(false);
-  const isDataMode = DATA_MODES.some((m) => m.key === mode);
+  const primaryModes = allowedModes ? PRIMARY_MODES.filter((m) => allowedModes.includes(m.key)) : PRIMARY_MODES;
+  const dataModes = allowedModes ? DATA_MODES.filter((m) => allowedModes.includes(m.key)) : DATA_MODES;
+  const isDataMode = dataModes.some((m) => m.key === mode);
 
   return (
     <View style={styles.wrapper}>
@@ -39,7 +42,7 @@ export default function MapColorToggle({ mode, onModeChange }: MapColorTogglePro
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
-          {PRIMARY_MODES.map((m) => {
+          {primaryModes.map((m) => {
             const active = mode === m.key;
             return (
               <Pressable
@@ -61,7 +64,7 @@ export default function MapColorToggle({ mode, onModeChange }: MapColorTogglePro
               </Pressable>
             );
           })}
-          <Pressable
+          {dataModes.length > 0 && <Pressable
             style={[styles.button, (expanded || isDataMode) && { backgroundColor: colors.tealLight || '#145C6820' }]}
             onPress={() => setExpanded((v) => !v)}
           >
@@ -76,12 +79,12 @@ export default function MapColorToggle({ mode, onModeChange }: MapColorTogglePro
             >
               {t('map.colorModes.data', 'Data')}
             </Text>
-          </Pressable>
+          </Pressable>}
         </ScrollView>
       </View>
       {expanded && (
         <View style={[styles.dataRow, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
-          {DATA_MODES.map((m) => {
+          {dataModes.map((m) => {
             const active = mode === m.key;
             return (
               <Pressable

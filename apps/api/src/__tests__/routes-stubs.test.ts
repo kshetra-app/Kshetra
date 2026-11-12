@@ -25,13 +25,17 @@ describe('Public route contracts', () => {
       let queryResult: any = okResult;
       const chainable: any = {
         eq: () => chainable,
+        neq: () => chainable,
         gte: () => chainable,
         lte: () => chainable,
         or: () => chainable,
         order: () => chainable,
         limit: () => chainable,
+        range: () => chainable,
         select: () => {
-          queryResult = { data: [], error: null };
+          // Model an empty, successfully counted fixture database. Routes that
+          // require exact totals must not mistake a missing count for zero.
+          queryResult = { data: [], count: 0, error: null };
           return chainable;
         },
         maybeSingle: async () =>
@@ -57,6 +61,10 @@ describe('Public route contracts', () => {
         }),
       };
     }) as any);
+    jest.spyOn(supabase, 'rpc').mockResolvedValue({
+      data: [{ support: 1, oppose: 0, neutral: 0 }],
+      error: null,
+    } as any);
   });
 
   afterAll(async () => {

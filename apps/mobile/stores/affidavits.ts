@@ -821,6 +821,7 @@ function generateAllAffidavits(): CandidateAffidavit[] {
   for (const sc of STATES_TO_GENERATE) {
     const constituencies = getUnifiedConstituenciesForState(sc);
     for (const c of constituencies) {
+      if (c.electionYear == null || !c.winnerName || !c.winnerParty) continue;
       const key = `${sc}-${c.acNo}-${c.electionYear}`;
       if (seedKeys.has(key)) continue; // skip hand-curated
 

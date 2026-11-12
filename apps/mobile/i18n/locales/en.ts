@@ -1692,11 +1692,10 @@ const en =  {
   },
   "civicMetrics": {
     "screenTitle": "Civic Performance & Metrics",
-    "screenSubtitle": "Budget, bills & schemes",
+    "screenSubtitle": "Budget, bills, schemes and hearings",
     "stateBudgetOverview": "State Budget Overview",
     "noBudgetData": "No budget data available for this state",
     "noConnectedData": "Verified records are not available from a connected source yet.",
-    "legislatorAttendance": "Legislator Attendance ({{count}})",
     "activeBills": "Active Bills & Legislation ({{count}})",
     "governmentSchemes": "Government Schemes & Welfare ({{count}})",
     "developmentProjects": "Infrastructure & Development Projects ({{count}})",
@@ -1704,15 +1703,18 @@ const en =  {
     "response": "Response: {{text}}",
     "views": "{{count}} views",
     "filed": "Filed on {{date}}",
+    "publicHearings": "Public hearings ({{count}})",
+    "noUpcomingHearings": "No upcoming public hearings are recorded for this state.",
+    "registerForHearing": "Registration details",
     "title": "Civic Metrics",
-    "subtitle": "Budget, bills & schemes",
+    "subtitle": "Budget, bills, schemes and hearings",
     "tabs": {
       "budget": "Budget",
-      "attendance": "Attendance",
       "bills": "Bills",
       "schemes": "Schemes",
       "projects": "Projects",
-      "rti": "RTI"
+      "rti": "RTI",
+      "hearings": "Hearings"
     },
     "stateBudget": "State Budget",
     "totalBudget": "Total",
@@ -1720,7 +1722,6 @@ const en =  {
     "fiscalDeficit": "Fiscal Deficit",
     "revenueDeficit": "Revenue Deficit",
     "debtGDP": "Debt/GDP",
-    "assemblyAttendance": "Assembly Attendance",
     "sessions": "sessions",
     "questionsRaised": "Questions",
     "debatesParticipated": "Debates",
@@ -1739,6 +1740,7 @@ const en =  {
     "revised": "Revised",
     "amountSpent": "Spent",
     "dueDate": "Due",
+    "delayLabel": "Delay",
     "daysDelayed": "{{n}} days delayed"
   },
   "lmx": {

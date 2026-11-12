@@ -196,6 +196,7 @@ const bn = {
     "votes": "ভোট",
     "voteShare": "ভোটের শতাংশ",
     "demographics": "জনমিতি",
+    "dataUnavailable": "পাওয়া যায়নি",
     "population": "জনসংখ্যা",
     "literacy": "সাক্ষরতার হার",
     "urbanRural": "শহুরে / গ্রামীণ",
@@ -234,7 +235,13 @@ const bn = {
     "male": "পুরুষ",
     "female": "মহিলা",
     "socialComposition": "সামাজিক গঠন",
-    "demoDisclaimer": "উৎস: আদমশুমারি ২০১১ · ইসিআই (ECI) ২০২৩ ভোটার তালিকা"
+    "demoDisclaimer": "উৎস: আদমশুমারি ২০১১ · ইসিআই (ECI) ২০২৩ ভোটার তালিকা",
+    "demographicReferenceTitle": "নির্বাচনী এলাকার জনসংখ্যাগত তথ্যসূত্র",
+    "noDemographicData": "এই নির্বাচনী এলাকার যাচাইকৃত জনসংখ্যাগত পরিসংখ্যান কোনো সংযুক্ত উৎসে পাওয়া যায়নি।",
+    "resultUnavailable": "সংযুক্ত উৎস থেকে নির্বাচনের ফলাফল পাওয়া যায়নি।",
+    "noAffidavitYear": "নির্বাচনের বছর পাওয়া যায়নি, তাই হলফনামার কোনো নথির সঙ্গে মেলানো যাচ্ছে না।",
+    "demographicDataNoteTitle": "এই পরিসংখ্যান সম্পর্কে",
+    "demographicDataNote": "একত্রিত জনসংখ্যাগত মানগুলি অনুমানভিত্তিক বা পুরোনো উৎস-বছরের হতে পারে। প্রতিটি মানের উৎস, বছর এবং নির্বাচনী এলাকার পরিধি শনাক্ত ও যাচাই না হওয়া পর্যন্ত সেগুলি প্রোডাকশন স্ক্রিনে দেখানো হবে না।"
   },
   "feed": {
     "votes": "বোট",
@@ -1342,7 +1349,13 @@ const bn = {
       "grassrootsCampaign": "তৃণমূল পর্যায়ে প্রচার সংগঠন",
       "fundraising": "স্বতন্ত্র প্রার্থীদের তহবিল সংগ্রহ",
       "rpaAct": "জনপ্রতিনিধিত্ব আইন"
-    }
+    },
+    "loadingChallenges": "সক্রিয় চ্যালেঞ্জ লোড হচ্ছে…",
+    "challengesUnavailable": "চ্যালেঞ্জের তথ্য এখন পাওয়া যাচ্ছে না।",
+    "loadingBadges": "অর্জিত ব্যাজ লোড হচ্ছে…",
+    "badgesUnavailable": "ব্যাজের তথ্য এখন পাওয়া যাচ্ছে না।",
+    "loadingAspirants": "সর্বসাধারণের প্রার্থীদের তালিকা লোড হচ্ছে…",
+    "aspirantsUnavailable": "সর্বসাধারণের প্রার্থীদের ডিরেক্টরি এখন পাওয়া যাচ্ছে না।"
   },
   "becomeAspirant": {
     "title": "উম্মীদবার বনেং",
@@ -1637,7 +1650,20 @@ const bn = {
       "tsReportCard": "তেলেঙ্গানা উন্নয়ন রিপোর্ট কার্ড",
       "youthConnect": "ইউথ কানেক্ট ২০২৬",
       "guaranteesImpact": "৫ গ্যারান্টি প্রভাব রিপোর্ট"
-    }
+    },
+    "createAdDraft": "বিজ্ঞাপনের খসড়া তৈরি করুন",
+    "saveAdDraft": "খসড়া সংরক্ষণ করুন",
+    "adDraftsTitle": "বিজ্ঞাপনের সৃজনশীল খসড়া",
+    "adDraftOnlyNote": "খসড়াগুলি এই প্রচারে সংরক্ষিত হয়। পর্যালোচনা, দর্শক লক্ষ্যকরণ, বিলিং এবং বিজ্ঞাপন সরবরাহ এখনও সংযুক্ত নয়।",
+    "noCampaignForAds": "আগে একটি প্রচার তৈরি করুন বা নির্বাচন করুন।",
+    "noAdDrafts": "এই প্রচারের জন্য এখনও কোনো বিজ্ঞাপনের খসড়া নেই।",
+    "adDraftRequired": "নাম, শিরোনাম, স্পনসর এবং প্রকাশ-সংক্রান্ত লেখা লিখুন।",
+    "adName": "খসড়ার নাম",
+    "adHeadline": "শিরোনাম",
+    "adBody": "বার্তা (ঐচ্ছিক)",
+    "adDisclosure": "প্রকাশ-সংক্রান্ত লেখা",
+    "noVerifiedAdMetrics": "যাচাইকৃত বিজ্ঞাপন সরবরাহ সংযুক্ত না হওয়া পর্যন্ত সরবরাহের পরিসংখ্যান পাওয়া যাবে না।",
+    "adComplianceNotReviewed": "নীতিপালন এখনও পর্যালোচনা করা হয়নি"
   },
   "outreach": {
     "sentiment": "জনভাবনা",
@@ -1666,10 +1692,9 @@ const bn = {
   },
   "civicMetrics": {
     "screenTitle": "নাগরিক পারফরম্যান্স ও মেট্রিক্স",
-    "screenSubtitle": "বাজেট, বিল ও প্রকল্প",
+    "screenSubtitle": "বাজেট, বিল, প্রকল্প ও শুনানি",
     "stateBudgetOverview": "রাজ্য বাজেট পর্যালোচনা",
     "noBudgetData": "এই রাজ্যের জন্য কোনো বাজেট তথ্য নেই",
-    "legislatorAttendance": "বিধায়কদের উপস্থিতি ({{count}})",
     "activeBills": "সক্রিয় বিলসমূহ ({{count}})",
     "governmentSchemes": "সরকারি কল্যাণ প্রকল্প ({{count}})",
     "developmentProjects": "উন্নয়ন প্রকল্প ({{count}})",
@@ -1677,15 +1702,18 @@ const bn = {
     "response": "প্রতিক্রিযা: {{text}}",
     "views": "{{count}} বার দেখা গযা",
     "filed": "{{date}} কো দাখিল",
+    "publicHearings": "জনশুনানি ({{count}})",
+    "noUpcomingHearings": "এই রাজ্যের জন্য কোনো আসন্ন জনশুনানি নথিভুক্ত নেই।",
+    "registerForHearing": "শুনানিতে নিবন্ধন",
     "title": "নাগরিক মেট্রিক্স",
-    "subtitle": "বজট, উপস্থিতি, বিধেযক ঔর যোজনাএঁ",
+    "subtitle": "বাজেট, বিল, প্রকল্প ও শুনানি",
     "tabs": {
       "budget": "বজট",
-      "attendance": "উপস্থিতি",
       "bills": "বিধেযক",
       "schemes": "যোজনাএঁ",
       "projects": "পরিযোজনাএঁ",
-      "rti": "RTI"
+      "rti": "RTI",
+      "hearings": "শুনানি"
     },
     "stateBudget": "রাজ্য বজট",
     "totalBudget": "কুল",
@@ -1693,7 +1721,6 @@ const bn = {
     "fiscalDeficit": "রাজকোষীয ঘাটা",
     "revenueDeficit": "রাজস্ব ঘাটা",
     "debtGDP": "ঋণ/GDP",
-    "assemblyAttendance": "বিধানসভা উপস্থিতি",
     "sessions": "সত্র",
     "questionsRaised": "প্রশ্ন",
     "debatesParticipated": "বহসেং",
@@ -1712,7 +1739,9 @@ const bn = {
     "revised": "সংশোধিত",
     "amountSpent": "খ़র্চ",
     "dueDate": "নিযত তিথি",
-    "daysDelayed": "{{n}} দিন বিলংবিত"
+    "delayLabel": "বিলম্ব",
+    "daysDelayed": "{{n}} দিন বিলংবিত",
+    "noConnectedData": "সংযুক্ত উৎস থেকে যাচাইকৃত নথি এখনও পাওয়া যায়নি।"
   },
   "lmx": {
     "screenTitle": "পলিগ্রাম লাইভ",
@@ -2321,7 +2350,8 @@ const bn = {
     "male": "পুরুষ",
     "female": "মহিলা",
     "terms": "মেয়াদ",
-    "historical": "ঐতিহাসিক তুলনা"
+    "historical": "ঐতিহাসিক তুলনা",
+    "demographicsUnavailable": "নির্বাচিত এক বা উভয় নির্বাচনী এলাকার উৎস-সমর্থিত যাচাইকৃত জনসংখ্যাগত পরিসংখ্যান না থাকায় তুলনা পাওয়া যাচ্ছে না।"
   },
   "export": {
     "title": "রপ্তানি ড্যাশবোর্ড",
@@ -2861,7 +2891,7 @@ const bn = {
     "decline": "প্রত্যাখ্যান করুন",
     "accept": "গ্রহণ করুন",
     "safetyOptions": "নিরাপত্তা ও সংযম",
-    "safetyDesc": "কথোপকথন বিকল্প:",
+    "safetyDesc": "{{name}}-এর সঙ্গে কথোপকথনের বিকল্প:",
     "blockUser": "ব্যবহারকারীকে ব্লক করুন",
     "blockTitle": "ব্লক নিশ্চিত করুন",
     "blockConfirm": "ব্লক করা ব্যবহারকারীরা বার্তা পাঠাতে পারবেন না।",
@@ -3106,7 +3136,40 @@ const bn = {
       "citizenAccount": "নাগরিক প্রোফাইল",
       "citizenAccountDesc": "পেজ তৈরি প্রার্থী ও পদপ্রার্থীদের জন্য উন্মুক্ত।",
       "registerAsAspirantBtn": "নাগরিক পদপ্রার্থী হিসেবে নিবন্ধন করুন",
-      "candidateProfile": "নাগরিক প্রার্থী পেজ"
+      "candidateProfile": "নাগরিক প্রার্থী পেজ",
+      "tabPosts": "পোস্ট ও কার্যকলাপ",
+      "tabProfile": "প্রোফাইল ও যাত্রা",
+      "tabVision": "দৃষ্টিভঙ্গি ও ইশতেহার",
+      "tabInitiatives": "মাঠপর্যায়ের উদ্যোগ",
+      "tabValues": "মূল্যবোধ ও প্রকাশ",
+      "tabStudio": "নেতা বিশ্লেষণ স্টুডিও",
+      "liveStatus": "লাইভ অবস্থা",
+      "inFieldTour": "মাঠপর্যায়ের সফরে",
+      "followers": "অনুসরণকারী",
+      "civicScore": "নাগরিক স্কোর",
+      "resolvedIssues": "সমাধান হয়েছে",
+      "cleanAffidavit": "১০০% স্বচ্ছ হলফনামা",
+      "noCriminalCases": "কোনও ফৌজদারি মামলা নেই",
+      "assetDeclaration": "সম্পত্তির ঘোষণা",
+      "form26Verified": "স্বেচ্ছায় ফর্ম ২৬ প্রকাশিত",
+      "accountabilityCharter": "জবাবদিহি সনদের অঙ্গীকার",
+      "volunteer": "স্বেচ্ছাসেবক হন",
+      "postUpdate": "ভোটারদের সঙ্গে আপডেট শেয়ার করুন",
+      "postPlaceholder": "মাঠপর্যায়ের পর্যবেক্ষণ, পরিদর্শনের আপডেট বা আপনার মতামত শেয়ার করুন…",
+      "postBtn": "পোস্ট প্রকাশ করুন",
+      "privateAnalyticsNotice": "এই বিভাগটি গোপনীয় — কেবল প্রার্থী/নিজে এবং প্ল্যাটফর্ম প্রশাসকেরা দেখতে পারবেন।",
+      "boothCoverage": "নির্বাচনী এলাকার বুথ কভারেজ",
+      "grassrootsReach": "তৃণমূল পর্যায়ে পৌঁছনো",
+      "avgResponseTime": "নাগরিকদের উত্তর দেওয়ার গড় সময়",
+      "requestsAnswered": "সমাধান হওয়া প্রশ্ন",
+      "voterEngagementTrend": "৩০ দিনের প্রোফাইল সম্পৃক্ততা",
+      "profileViews": "প্রোফাইল দেখা",
+      "pendingCitizenRequests": "বিচারাধীন নাগরিক অনুরোধ",
+      "citizenPoll": "নাগরিক অগ্রাধিকার জরিপ",
+      "castVote": "ভোট দিন",
+      "totalVotes": "মোট ভোট",
+      "agreeWithVision": "অগ্রাধিকারের সঙ্গে একমত",
+      "verifiedOfficialFigure": "সরকারিভাবে যাচাইকৃত নেতা"
   },
 }
 

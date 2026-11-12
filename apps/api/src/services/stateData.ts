@@ -6,6 +6,7 @@
  * into a unified ConstituencyBrief format for all 31 States & UTs.
  */
 import type { ConstituencyBrief } from '@kshetra/shared';
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 
 // Core Seed Imports
 import { TELANGANA_CONSTITUENCIES } from '../../../../data/seed/telangana-constituencies';
@@ -716,35 +717,37 @@ export function getTSMLAProfiles() {
 /**
  * Asynchronous canonical single MLA profile fetch.
  * Queries PostgreSQL via canonicalGeographyService when database is configured;
- * falls back seamlessly to in-memory state seed data.
+ * falls back to in-memory state seed data only outside production-like runtimes.
  */
 export async function getCanonicalMLAProfile(stateCode: string, acNo: number): Promise<any | null> {
   if (canonicalGeographyService.isAvailable()) {
     try {
       const dbMLA = await (canonicalGeographyService as any).getConstituencyMLA?.(stateCode, acNo);
       if (dbMLA) return dbMLA;
-    } catch {
-      // Fall back to seed
+    } catch (error) {
+      if (isProductionLikeRuntime()) throw error;
+      // Fall back to seed only in non-production runtimes
     }
   }
-  return getMLAProfileForState(stateCode, acNo);
+  return isProductionLikeRuntime() ? null : getMLAProfileForState(stateCode, acNo);
 }
 
 /**
  * Asynchronous canonical state MLA profiles fetch.
  * Queries PostgreSQL via canonicalGeographyService when database is configured;
- * falls back to in-memory state seed data.
+ * falls back to in-memory state seed data only outside production-like runtimes.
  */
 export async function getCanonicalMLAProfiles(stateCode: string): Promise<any[]> {
   if (canonicalGeographyService.isAvailable()) {
     try {
       const dbMLAs = await (canonicalGeographyService as any).getConstituencyMLAs?.(stateCode);
       if (dbMLAs && dbMLAs.length > 0) return dbMLAs;
-    } catch {
-      // Fall back to seed
+    } catch (error) {
+      if (isProductionLikeRuntime()) throw error;
+      // Fall back to seed only in non-production runtimes
     }
   }
-  return getMLAProfilesForState(stateCode);
+  return isProductionLikeRuntime() ? [] : getMLAProfilesForState(stateCode);
 }
 
 export interface ConstituencyElectionSummary {
@@ -983,24 +986,25 @@ export type {
 /**
  * Asynchronous canonical constituency fetch.
  * Queries PostgreSQL public.constituencies via canonicalGeographyService when database is configured;
- * falls back seamlessly to in-memory seed data when offline.
+ * falls back to in-memory seed data only outside production-like runtimes.
  */
 export async function getCanonicalConstituencies(stateCode: string): Promise<ConstituencyBrief[]> {
   if (canonicalGeographyService.isAvailable()) {
     try {
       const dbResults = await canonicalGeographyService.getConstituencies(stateCode);
       if (dbResults && dbResults.length > 0) return dbResults;
-    } catch {
-      // Fall back to seed data on database query exception
+    } catch (error) {
+      if (isProductionLikeRuntime()) throw error;
+      // Fall back to seed data only outside production-like runtimes
     }
   }
-  return getConstituencies(stateCode);
+  return isProductionLikeRuntime() ? [] : getConstituencies(stateCode);
 }
 
 /**
  * Asynchronous canonical single constituency fetch.
  * Queries PostgreSQL public.constituencies via canonicalGeographyService when database is configured;
- * falls back seamlessly to in-memory seed data when offline.
+ * falls back to in-memory seed data only outside production-like runtimes.
  */
 export async function getCanonicalConstituency(
   stateCode: string,
@@ -1010,11 +1014,12 @@ export async function getCanonicalConstituency(
     try {
       const dbResult = await canonicalGeographyService.getConstituency(stateCode, acNo);
       if (dbResult) return dbResult;
-    } catch {
-      // Fall back to seed data on database query exception
+    } catch (error) {
+      if (isProductionLikeRuntime()) throw error;
+      // Fall back to seed data only outside production-like runtimes
     }
   }
-  return getConstituency(stateCode, acNo);
+  return isProductionLikeRuntime() ? null : getConstituency(stateCode, acNo);
 }
 
 /**
@@ -1035,8 +1040,9 @@ export async function getCanonicalStateInfo(stateCode: string): Promise<StateDat
           totalSeats: dbState.totalSeats > 0 ? dbState.totalSeats : baseInfo.totalSeats,
         };
       }
-    } catch {
-      // Fall back to seed info
+    } catch (error) {
+      if (isProductionLikeRuntime()) throw error;
+      // Fall back to seed info outside production-like runtimes
     }
   }
   return baseInfo;
@@ -1064,8 +1070,9 @@ export async function getAllCanonicalStatesInfo(): Promise<StateDataInfo[]> {
           return info;
         });
       }
-    } catch {
-      // Fall back to seed list
+    } catch (error) {
+      if (isProductionLikeRuntime()) throw error;
+      // Fall back to seed list outside production-like runtimes
     }
   }
   return baseList;
@@ -1082,9 +1089,10 @@ export async function getCanonicalConstituencyElectionData(
     try {
       const dbData = await canonicalGeographyService.getConstituencyElectionData(stateCode, acNo);
       if (dbData && dbData.elections.length > 0) return dbData;
-    } catch {
-      // Fall back to seed
+    } catch (error) {
+      if (isProductionLikeRuntime()) throw error;
+      // Fall back to seed only outside production-like runtimes
     }
   }
-  return getConstituencyElectionData(stateCode, acNo);
+  return isProductionLikeRuntime() ? null : getConstituencyElectionData(stateCode, acNo);
 }

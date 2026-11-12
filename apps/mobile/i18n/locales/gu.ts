@@ -196,6 +196,7 @@ const gu = {
     "votes": "મતો",
     "voteShare": "મતોની ટકાવારી",
     "demographics": "વસ્તી વિષયક વિગતો",
+    "dataUnavailable": "ઉપલબ્ધ નથી",
     "population": "વસ્તી",
     "literacy": "સાક્ષરતા દર",
     "urbanRural": "શહેરી / ગ્રામીણ",
@@ -234,7 +235,13 @@ const gu = {
     "male": "પુરુષ",
     "female": "મહિલા",
     "socialComposition": "સામાજિક માળખું",
-    "demoDisclaimer": "સ્ત્રોત: વસ્તી ગણતરી ૨૦૧૧ · ભારતીય ચૂંટણી પંચ ૨૦૨૩ મતદાર યાદી"
+    "demoDisclaimer": "સ્ત્રોત: વસ્તી ગણતરી ૨૦૧૧ · ભારતીય ચૂંટણી પંચ ૨૦૨૩ મતદાર યાદી",
+    "demographicReferenceTitle": "મતવિસ્તારની વસ્તીવિષયક સંદર્ભ માહિતી",
+    "noDemographicData": "આ મતવિસ્તાર માટેના ચકાસેલા વસ્તીવિષયક આંકડા જોડાયેલા સ્રોતમાં ઉપલબ્ધ નથી.",
+    "resultUnavailable": "જોડાયેલા સ્રોતમાંથી ચૂંટણી પરિણામોની માહિતી ઉપલબ્ધ નથી.",
+    "noAffidavitYear": "ચૂંટણીનું વર્ષ ઉપલબ્ધ નથી, તેથી સોગંદનામાનો કોઈ રેકોર્ડ મેળવી શકાય તેમ નથી.",
+    "demographicDataNoteTitle": "આ આંકડાઓ વિશે",
+    "demographicDataNote": "એકત્રિત કરેલા વસ્તીવિષયક મૂલ્યો અંદાજિત હોઈ શકે અથવા જૂના સ્રોત-વર્ષના હોઈ શકે. દરેક મૂલ્યનો શોધી શકાય એવો સ્રોત, વર્ષ અને મતવિસ્તારનો વ્યાપ ચકાસાય ત્યાં સુધી તે પ્રોડક્શન દૃશ્યોમાં બતાવવામાં આવશે નહીં."
   },
   "feed": {
     "votes": "વોટ",
@@ -1342,7 +1349,13 @@ const gu = {
       "grassrootsCampaign": "ગ્રાઉન્ડ લેવલ પ્રચારનું આયોજન",
       "fundraising": "અપક્ષ ઉમેદવારો માટે ફંડ એકત્રીકરણ",
       "rpaAct": "લોકપ્રતિનિધિત્વ અધિનિયમના નિયમો"
-    }
+    },
+    "loadingChallenges": "સક્રિય પડકારો લોડ થઈ રહ્યા છે…",
+    "challengesUnavailable": "પડકારોની માહિતી અત્યારે ઉપલબ્ધ નથી.",
+    "loadingBadges": "મેળવેલા બેજ લોડ થઈ રહ્યા છે…",
+    "badgesUnavailable": "બેજની માહિતી અત્યારે ઉપલબ્ધ નથી.",
+    "loadingAspirants": "જાહેર ઉમેદવારો લોડ થઈ રહ્યા છે…",
+    "aspirantsUnavailable": "જાહેર ઉમેદવારોની ડિરેક્ટરી અત્યારે ઉપલબ્ધ નથી."
   },
   "becomeAspirant": {
     "title": "ઉમ્મીદવાર બનેં",
@@ -1637,7 +1650,20 @@ const gu = {
       "tsReportCard": "તેલંગાણા વિકાસ રિપોર્ટ કાર્ડ",
       "youthConnect": "યુથ કનેક્ટ ૨૦૨૬",
       "guaranteesImpact": "૫ ગેરંટી યોજનાઓનો રિપોર્ટ"
-    }
+    },
+    "createAdDraft": "જાહેરાતનો ડ્રાફ્ટ બનાવો",
+    "saveAdDraft": "ડ્રાફ્ટ સાચવો",
+    "adDraftsTitle": "જાહેરાતના સર્જનાત્મક ડ્રાફ્ટ",
+    "adDraftOnlyNote": "ડ્રાફ્ટ આ અભિયાનમાં સાચવવામાં આવે છે. સમીક્ષા, પ્રેક્ષક લક્ષ્યીકરણ, બિલિંગ અને જાહેરાત વિતરણ હજી જોડાયેલાં નથી.",
+    "noCampaignForAds": "પહેલાં કોઈ અભિયાન બનાવો અથવા પસંદ કરો.",
+    "noAdDrafts": "આ અભિયાન માટે હજી કોઈ જાહેરાતના ડ્રાફ્ટ નથી.",
+    "adDraftRequired": "નામ, શીર્ષક, પ્રાયોજક અને જાહેરાતની વિગતો દાખલ કરો.",
+    "adName": "ડ્રાફ્ટનું નામ",
+    "adHeadline": "શીર્ષક",
+    "adBody": "સંદેશ (વૈકલ્પિક)",
+    "adDisclosure": "જાહેરાતની વિગતો",
+    "noVerifiedAdMetrics": "ચકાસાયેલ જાહેરાત વિતરણ જોડાય ત્યાં સુધી વિતરણના આંકડા ઉપલબ્ધ નહીં હોય.",
+    "adComplianceNotReviewed": "નિયમપાલનની સમીક્ષા હજી થઈ નથી"
   },
   "outreach": {
     "sentiment": "જનભાવના",
@@ -1666,10 +1692,9 @@ const gu = {
   },
   "civicMetrics": {
     "screenTitle": "નાગરિક કામગીરી અને મેટ્રિક્સ",
-    "screenSubtitle": "બજેટ, બિલ અને યોજનાઓ",
+    "screenSubtitle": "બજેટ, બિલ, યોજનાઓ અને સુનાવણીઓ",
     "stateBudgetOverview": "રાજ્ય બજેટ ઝાંખી",
     "noBudgetData": "આ રાજ્ય માટે બજેટ ડેટા ઉપલબ્ધ નથી",
-    "legislatorAttendance": "ધારાસભ્યોની હાજરી ({{count}})",
     "activeBills": "સક્રિય વિધેયકો ({{count}})",
     "governmentSchemes": "સરકારી કલ્યાણકારી યોજનાઓ ({{count}})",
     "developmentProjects": "વિકાસ પ્રોજેક્ટ્સ ({{count}})",
@@ -1677,15 +1702,18 @@ const gu = {
     "response": "પ્રતિક્રિયા: {{text}}",
     "views": "{{count}} બાર દેખા ગયા",
     "filed": "{{date}} કો દાખિલ",
+    "publicHearings": "જાહેર સુનાવણીઓ ({{count}})",
+    "noUpcomingHearings": "આ રાજ્ય માટે આગામી જાહેર સુનાવણી નોંધાયેલી નથી.",
+    "registerForHearing": "સુનાવણી માટે નોંધણી",
     "title": "નાગરિક મેટ્રિક્સ",
-    "subtitle": "બજટ, ઉપસ્થિતિ, વિધેયક ઔર યોજનાએઁ",
+    "subtitle": "બજેટ, બિલ, યોજનાઓ અને સુનાવણીઓ",
     "tabs": {
       "budget": "બજટ",
-      "attendance": "ઉપસ્થિતિ",
       "bills": "વિધેયક",
       "schemes": "યોજનાએઁ",
       "projects": "પરિયોજનાએઁ",
-      "rti": "RTI"
+      "rti": "RTI",
+      "hearings": "સુનાવણીઓ"
     },
     "stateBudget": "રાજ્ય બજટ",
     "totalBudget": "કુલ",
@@ -1693,7 +1721,6 @@ const gu = {
     "fiscalDeficit": "રાજકોષીય ઘાટા",
     "revenueDeficit": "રાજસ્વ ઘાટા",
     "debtGDP": "ઋણ/GDP",
-    "assemblyAttendance": "વિધાનસભા ઉપસ્થિતિ",
     "sessions": "સત્ર",
     "questionsRaised": "પ્રશ્ન",
     "debatesParticipated": "બહસેં",
@@ -1712,7 +1739,9 @@ const gu = {
     "revised": "સંશોધિત",
     "amountSpent": "ખ़ર્ચ",
     "dueDate": "નિયત તિથિ",
-    "daysDelayed": "{{n}} દિન વિલંબિત"
+    "delayLabel": "વિલંબ",
+    "daysDelayed": "{{n}} દિન વિલંબિત",
+    "noConnectedData": "જોડાયેલા સ્રોતમાંથી ચકાસેલા રેકોર્ડ હજી ઉપલબ્ધ નથી."
   },
   "lmx": {
     "screenTitle": "પોલિગ્રામ લાઈવ",
@@ -2321,7 +2350,8 @@ const gu = {
     "male": "પુરુષ",
     "female": "સ્ત્રી",
     "terms": "કાર્યકાળ",
-    "historical": "ઐતિહાસિક સરખામણી"
+    "historical": "ઐતિહાસિક સરખામણી",
+    "demographicsUnavailable": "પસંદ કરેલા એક અથવા બંને મતવિસ્તારો માટે સ્રોત આધારિત ચકાસેલા વસ્તીવિષયક આંકડા ન હોવાથી સરખામણી ઉપલબ્ધ નથી."
   },
   "export": {
     "title": "નિકાસ ડેશબોર્ડ",
@@ -2861,7 +2891,7 @@ const gu = {
     "decline": "નકારો",
     "accept": "સ્વીકારો",
     "safetyOptions": "સુરક્ષા અને નિયંત્રણ",
-    "safetyDesc": "વાતચીતના વિકલ્પો:",
+    "safetyDesc": "{{name}} સાથેની વાતચીતના વિકલ્પો:",
     "blockUser": "બ્લોક કરો",
     "blockTitle": "બ્લોકની પુષ્ટિ કરો",
     "blockConfirm": "બ્લોક કરેલા વપરાશકર્તાઓ સંદેશ મોકલી શકતા નથી.",
@@ -3106,7 +3136,40 @@ const gu = {
       "citizenAccount": "નાગરિક પ્રોફાઇલ",
       "citizenAccountDesc": "પેજ બનાવવાની સુવિધા ઉમેદવારો માટે ઉપલબ્ધ છે.",
       "registerAsAspirantBtn": "નાગરિક દાવેદાર તરીકે નોંધણી કરો",
-      "candidateProfile": "નાગરિક ઉમેદવાર પેજ"
+      "candidateProfile": "નાગરિક ઉમેદવાર પેજ",
+      "tabPosts": "પોસ્ટ અને પ્રવૃત્તિ",
+      "tabProfile": "પ્રોફાઇલ અને સફર",
+      "tabVision": "દૃષ્ટિ અને ઘોષણાપત્ર",
+      "tabInitiatives": "ક્ષેત્રીય પહેલ",
+      "tabValues": "મૂલ્યો અને ખુલાસા",
+      "tabStudio": "નેતા વિશ્લેષણ સ્ટુડિયો",
+      "liveStatus": "લાઇવ સ્થિતિ",
+      "inFieldTour": "ક્ષેત્રીય પ્રવાસે",
+      "followers": "અનુયાયીઓ",
+      "civicScore": "નાગરિક સ્કોર",
+      "resolvedIssues": "ઉકેલાયેલાં",
+      "cleanAffidavit": "100% સ્વચ્છ સોગંદનામું",
+      "noCriminalCases": "ગુનાહિત કેસ નથી",
+      "assetDeclaration": "સંપત્તિની જાહેરાત",
+      "form26Verified": "સ્વૈચ્છિક રીતે ફોર્મ 26 જાહેર કર્યું",
+      "accountabilityCharter": "જવાબદારીના ચાર્ટરનું વચન",
+      "volunteer": "સ્વયંસેવક બનો",
+      "postUpdate": "મતદારો સાથે અપડેટ શેર કરો",
+      "postPlaceholder": "ક્ષેત્ર નિરીક્ષણ, તપાસનો અપડેટ અથવા તમારો વિચાર શેર કરો…",
+      "postBtn": "પોસ્ટ પ્રકાશિત કરો",
+      "privateAnalyticsNotice": "આ વિભાગ ગોપનીય છે — ઉમેદવાર/સંબંધિત વ્યક્તિ અને પ્લેટફોર્મના સંચાલકો જ જોઈ શકે છે.",
+      "boothCoverage": "મતવિસ્તારના મતદાન મથકોનું આવરણ",
+      "grassrootsReach": "પાયાના સ્તરે પહોંચ",
+      "avgResponseTime": "નાગરિકોને જવાબ આપવાનો સરેરાશ સમય",
+      "requestsAnswered": "ઉકેલાયેલા પ્રશ્નો",
+      "voterEngagementTrend": "30 દિવસની પ્રોફાઇલ સાથેની સંલગ્નતા",
+      "profileViews": "પ્રોફાઇલ જોવાઈ",
+      "pendingCitizenRequests": "બાકી નાગરિક અરજીઓ",
+      "citizenPoll": "નાગરિક પ્રાથમિકતા મતદાન",
+      "castVote": "મત આપો",
+      "totalVotes": "કુલ મત",
+      "agreeWithVision": "પ્રાથમિકતા સાથે સંમત",
+      "verifiedOfficialFigure": "સત્તાવાર રીતે ચકાસાયેલ નેતા"
   },
 }
 

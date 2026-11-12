@@ -5,6 +5,17 @@ import POLITICAL_SHORTS from '../data/politicalShortsData';
 import type { PoliticalShort } from '../data/politicalShortsData';
 import { fetchShorts, incrementShortView, uploadShort, approveShort as approveShortApi, flagShort as flagShortApi } from '../lib/supabaseDataService';
 import { enqueue } from '../lib/offlineSync';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
+
+const SEEDED_SHORT_IDS = new Set(POLITICAL_SHORTS.map((short) => short.id));
+
+function withoutSeedShorts(value: unknown): PoliticalShort[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter(
+    (short): short is PoliticalShort =>
+      !!short && typeof short === 'object' && typeof short.id === 'string' && !SEEDED_SHORT_IDS.has(short.id),
+  );
+}
 
 interface ApprovalRecord {
   userId: string;
@@ -40,7 +51,7 @@ interface PoliticalShortsState {
 export const usePoliticalShortsStore = create<PoliticalShortsState>()(
   persist(
     (set, get) => ({
-      shorts: POLITICAL_SHORTS,
+      shorts: IS_LIVE_ENVIRONMENT ? [] : POLITICAL_SHORTS,
       userApprovals: {},
       flaggedShorts: {},
 
@@ -215,7 +226,7 @@ export const usePoliticalShortsStore = create<PoliticalShortsState>()(
       hydrateShorts: async (stateCode?: string) => {
         try {
           const remoteShorts = await fetchShorts(stateCode);
-          if (remoteShorts && remoteShorts.length > 0) {
+          if (Array.isArray(remoteShorts) && (IS_LIVE_ENVIRONMENT || remoteShorts.length > 0)) {
             set({ shorts: remoteShorts });
           }
         } catch (err) {
@@ -225,7 +236,7 @@ export const usePoliticalShortsStore = create<PoliticalShortsState>()(
 
       resetShorts: () =>
         set({
-          shorts: POLITICAL_SHORTS,
+          shorts: IS_LIVE_ENVIRONMENT ? [] : POLITICAL_SHORTS,
           userApprovals: {},
           flaggedShorts: {},
         }),
@@ -234,13 +245,26 @@ export const usePoliticalShortsStore = create<PoliticalShortsState>()(
       name: 'kshetra-political-shorts',
       storage: createJSONStorage(() => mmkvStorage),
       // Bump when the seed catalogue changes so existing installs re-seed.
-      version: 3,
+      version: 4,
       migrate: (persisted: any) => ({
         ...(persisted ?? {}),
-        shorts: POLITICAL_SHORTS,
+        shorts: IS_LIVE_ENVIRONMENT
+          ? withoutSeedShorts(persisted?.shorts)
+          : POLITICAL_SHORTS,
         userApprovals: {},
         flaggedShorts: {},
       }),
+      merge: (persistedState, currentState) => {
+        const persisted = (persistedState ?? {}) as Partial<PoliticalShortsState>;
+        return {
+          ...currentState,
+          ...persisted,
+          // Cached fixture content from older releases must never appear in live builds.
+          shorts: IS_LIVE_ENVIRONMENT
+            ? withoutSeedShorts(persisted.shorts)
+            : persisted.shorts ?? currentState.shorts,
+        };
+      },
     }
   )
 );

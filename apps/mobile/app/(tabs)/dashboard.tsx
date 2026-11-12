@@ -19,14 +19,13 @@ import { ISSUE_CATEGORY_CONFIG } from '../../lib/civicTypes';
 import AIDashboardSummary from '../../components/AIDashboardSummary';
 import { useResponsive } from '../../lib/responsive';
 import PromiseCard from '../../components/PromiseCard';
-import GovernmentReportCard from '../../components/GovernmentReportCard';
 import type { IssueCategory, IssueStatus, CivicScope } from '../../lib/civicTypes';
 import { useTranslation } from 'react-i18next';
 import { useActiveStateStore } from '../../stores/activeState';
 import { useMyConstituencyStore } from '../../stores/myConstituency';
 import { usePromiseStore } from '../../stores/promises';
-import { PROMISE_STATUS_CONFIG, type PromiseStatus as PStatus } from '../../lib/promiseTypes';
 import { STATES } from '@kshetra/shared';
+import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
 import i18n from '../../i18n';
 import { useTheme } from '../../lib/theme';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
@@ -119,8 +118,9 @@ function DashboardContent() {
 
   // Promise store — select raw arrays, derive in useMemo
   const allPromises = usePromiseStore((s) => s.promises);
+  const promiseLoadStatus = usePromiseStore((s) => s.promiseLoadStatus);
   const toggleFollowPromise = usePromiseStore((s) => s.toggleFollowPromise);
-  const getReportCard = usePromiseStore((s) => s.getReportCard);
+  const loadPromisesForState = usePromiseStore((s) => s.loadForState);
 
   const constituencyId = myHome ? `${stateCode}-AC-${myHome.acNo}` : undefined;
 
@@ -131,6 +131,13 @@ function DashboardContent() {
       }
     }
   }, [stateCode, scopeFilter, setScopeFilter]);
+
+  const promiseQueryState = scopeFilter === 'national' ? 'NATIONAL' : stateCode;
+
+  useEffect(() => {
+    if (!IS_LIVE_ENVIRONMENT || activeTab !== 'promises' || !promiseQueryState) return;
+    void loadPromisesForState(promiseQueryState);
+  }, [activeTab, promiseQueryState, loadPromisesForState]);
 
   // Strict scope demarcation for promises: each level shows ONLY its own content.
   const scopedPromises = useMemo(() => {
@@ -144,17 +151,6 @@ function DashboardContent() {
     }
     return allPromises.filter((p) => p.stateCode === stateCode && p.constituencyAcNo == null);
   }, [allPromises, scopeFilter, stateCode, myHome]);
-
-  const reportCard = useMemo(() => {
-    const rulingParty = stateCode === 'AP' ? 'TDP' : stateCode === 'KA' ? 'INC' : stateCode === 'MH' ? 'BJP' : 'INC';
-    if (scopeFilter === 'constituency' && myHome) {
-      return getReportCard(stateCode, myHome.party || rulingParty, 2023);
-    }
-    if (scopeFilter === 'state' && stateCode !== 'IN') {
-      return getReportCard(stateCode, rulingParty, 2023);
-    }
-    return getReportCard('TS', 'INC', 2023);
-  }, [getReportCard, scopeFilter, stateCode, myHome]);
 
   // Scope-filtered data — derive in useMemo from raw arrays
   const { issues, headlines, sentiment } = useMemo(() => {
@@ -488,21 +484,23 @@ function DashboardContent() {
 
         {activeTab === 'promises' && (
           <View style={styles.tabContent}>
-            {/* Report Card (top party) — only at state scope where aggregation is meaningful */}
-            {scopeFilter === 'state' && scopedPromises.length > 0 && (() => {
-              const topParty = scopedPromises.reduce((acc, p) => {
-                acc[p.party] = (acc[p.party] ?? 0) + 1;
-                return acc;
-              }, {} as Record<string, number>);
-              const party = Object.entries(topParty).sort((a, b) => b[1] - a[1])[0]?.[0];
-              if (!party) return null;
-              const year = scopedPromises.find((p) => p.party === party)?.electionYear ?? 2023;
-              const card = getReportCard(stateCode, party, year);
-              return <GovernmentReportCard data={card} />;
-            })()}
-
             {/* Promise list */}
-            {scopedPromises.length === 0 ? (
+            {IS_LIVE_ENVIRONMENT && promiseLoadStatus === 'loading' ? (
+              <View style={styles.emptyState}>
+                <Text style={[styles.emptyTitle, { color: colors.textMuted }]}>{t('common.loading')}</Text>
+              </View>
+            ) : IS_LIVE_ENVIRONMENT && promiseLoadStatus === 'error' ? (
+              <View style={styles.emptyState}>
+                <Text style={[styles.emptyTitle, { color: colors.textMuted }]}>{t('common.error')}</Text>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => void loadPromisesForState(promiseQueryState, true)}
+                  style={[styles.retryButton, { backgroundColor: colors.primary }]}
+                >
+                  <Text style={{ color: '#FFFFFF', fontWeight: '700' }}>{t('common.retry')}</Text>
+                </Pressable>
+              </View>
+            ) : scopedPromises.length === 0 ? (
               <View style={styles.emptyState}>
                 <Ionicons name="ribbon-outline" size={48} color="#1F2937" />
                 <Text style={styles.emptyTitle}>{t('dashboardExtended.noPromisesTracked')}</Text>
@@ -762,6 +760,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#6D5549',
     marginTop: 8,
+  },
+  retryButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginTop: 12,
   },
   sentimentItem: {
     marginHorizontal: 16,

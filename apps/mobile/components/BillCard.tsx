@@ -13,8 +13,17 @@ interface BillCardProps {
 
 export default function BillCard({ bill, onPress, onSupport, onOppose }: BillCardProps) {
   const { t } = useTranslation();
-  const totalOpinion = bill.publicOpinion.support + bill.publicOpinion.oppose + bill.publicOpinion.neutral;
-  const supportPct = totalOpinion > 0 ? Math.round((bill.publicOpinion.support / totalOpinion) * 100) : 0;
+  const unavailable = t('common.dataUnavailable');
+  const opinionKnown = [bill.publicOpinion.support, bill.publicOpinion.oppose, bill.publicOpinion.neutral]
+    .every((value) => value !== null);
+  const totalOpinion = opinionKnown
+    ? bill.publicOpinion.support! + bill.publicOpinion.oppose! + bill.publicOpinion.neutral!
+    : null;
+  const supportPct = totalOpinion === null
+    ? null
+    : totalOpinion > 0
+      ? Math.round((bill.publicOpinion.support! / totalOpinion) * 100)
+      : 0;
 
   const statusColor = bill.status === 'enacted' ? '#10B981' : bill.status === 'lapsed' || bill.status === 'withdrawn' ? '#EF4444' : '#3B82F6';
 
@@ -30,7 +39,10 @@ export default function BillCard({ bill, onPress, onSupport, onOppose }: BillCar
       </View>
 
       <Text style={styles.title} numberOfLines={2}>{bill.title}</Text>
-      <Text style={styles.meta}>{t('civicMetrics.introducedBy')} {bill.introducedBy} ({bill.introducedByParty}) · {bill.houseIntroduced.replace('_', ' ')}</Text>
+      <Text style={styles.meta}>
+        {t('civicMetrics.introducedBy')} {bill.introducedBy}
+        {bill.introducedByParty ? ` (${bill.introducedByParty})` : ''} · {bill.houseIntroduced.replace('_', ' ')}
+      </Text>
 
       <Text style={styles.summary} numberOfLines={3}>{bill.summary}</Text>
 
@@ -44,20 +56,30 @@ export default function BillCard({ bill, onPress, onSupport, onOppose }: BillCar
 
       {/* Public Opinion */}
       <View style={styles.opinionSection}>
-        <Text style={styles.opinionLabel}>{t('civicMetrics.publicOpinion')} ({totalOpinion.toLocaleString()} {t('common.votes')})</Text>
-        <View style={styles.opinionBar}>
-          <View style={[styles.opinionFill, { width: `${supportPct}%`, backgroundColor: '#10B981' }]} />
-        </View>
+        <Text style={styles.opinionLabel}>
+          {t('civicMetrics.publicOpinion')} ({totalOpinion === null
+            ? unavailable
+            : `${totalOpinion.toLocaleString()} ${t('common.votes')}`})
+        </Text>
+        {supportPct !== null && (
+          <View style={styles.opinionBar}>
+            <View style={[styles.opinionFill, { width: `${supportPct}%`, backgroundColor: '#10B981' }]} />
+          </View>
+        )}
         <View style={styles.opinionActions}>
-          <Pressable style={styles.opinionButton} onPress={onSupport}>
-            <Ionicons name="thumbs-up" size={14} color="#10B981" />
-            <Text style={[styles.opinionCount, { color: '#10B981' }]}>{bill.publicOpinion.support}</Text>
-          </Pressable>
-          <Text style={styles.opinionPct}>{supportPct}% {t('civicMetrics.support')}</Text>
-          <Pressable style={styles.opinionButton} onPress={onOppose}>
-            <Ionicons name="thumbs-down" size={14} color="#EF4444" />
-            <Text style={[styles.opinionCount, { color: '#EF4444' }]}>{bill.publicOpinion.oppose}</Text>
-          </Pressable>
+          {opinionKnown ? (
+            <>
+              <Pressable style={styles.opinionButton} onPress={onSupport}>
+                <Ionicons name="thumbs-up" size={14} color="#10B981" />
+                <Text style={[styles.opinionCount, { color: '#10B981' }]}>{bill.publicOpinion.support}</Text>
+              </Pressable>
+              <Text style={styles.opinionPct}>{supportPct}% {t('civicMetrics.support')}</Text>
+              <Pressable style={styles.opinionButton} onPress={onOppose}>
+                <Ionicons name="thumbs-down" size={14} color="#EF4444" />
+                <Text style={[styles.opinionCount, { color: '#EF4444' }]}>{bill.publicOpinion.oppose}</Text>
+              </Pressable>
+            </>
+          ) : <Text style={styles.opinionPct}>{unavailable}</Text>}
         </View>
       </View>
     </Pressable>

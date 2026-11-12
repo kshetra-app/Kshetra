@@ -123,7 +123,7 @@ Every field in the template is mapped to exactly which source fills it.
 | Section | Primary Source | Key Fields |
 |---------|---------------|------------|
 | **Education** | MyNeta (100%) | level, category, detail, profession, spouse profession |
-| **Performance** | PRS India (MLAs), Sansad.in (MPs) | questions, debates, bills, attendance |
+| **Performance** | PRS India (MLAs), Sansad.in (MPs) | questions, debates, bills; attendance excluded because coverage is inconsistent across state legislatures |
 | **Constituency** | Census 2011 + ECI delimitation | population, area, literacy, SC/ST %, electors |
 | **Dynasty** | Wikipedia family section + cross-ref | isDynast, family members, generation |
 | **Key Dates** | Legislature sites, ECI, Wikipedia | oath, term start/end, timeline |
@@ -257,7 +257,6 @@ CREATE TABLE legislator_profiles (
   questions_asked INTEGER DEFAULT 0,
   debates_participated INTEGER DEFAULT 0,
   private_member_bills INTEGER DEFAULT 0,
-  attendance_percent NUMERIC(5,2) DEFAULT 0,
   performance_score NUMERIC(5,2) DEFAULT 0,
 
   -- Dynasty
@@ -441,7 +440,7 @@ CREATE TABLE scraper_runs (
 | **Death** | Wikipedia edit monitor + news RSS | Daily | Set `isCurrentMember=false`, create event |
 | **New ministry** | Government gazette RSS + Wikipedia | Weekly | Update `isCabinetMinister`, `ministerialPortfolio` |
 | **Court verdict** | IndiaKanoon RSS + news | Weekly | Update case status in `legislator_criminal_cases` |
-| **New session data** | PRS India session pages | After each session | Update attendance, questions, debates |
+| **New session data** | PRS India session pages | After each session | Update questions and debates; do not infer attendance where official coverage is absent |
 | **Resignation** | News + legislature website | Daily | Set `isCurrentMember=false`, create event |
 | **Disqualification** | ECI notifications + news | Daily | Set `isCurrentMember=false`, create event |
 | **Asset re-declaration** | MyNeta (annual for some) | Monthly | Update financial record |

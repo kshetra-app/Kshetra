@@ -34,9 +34,7 @@ export type DataCorrectionRequestInput = z.infer<typeof dataCorrectionRequestSch
 export const dataErasureRequestSchema = z
   .object({
     confirmation: z.literal('DELETE_MY_PERSONAL_DATA', {
-      errorMap: () => ({
-        message: "Must explicitly provide confirmation phrase 'DELETE_MY_PERSONAL_DATA'",
-      }),
+      error: () => "Must explicitly provide confirmation phrase 'DELETE_MY_PERSONAL_DATA'",
     }),
     reason: z.string().max(500).optional(),
   })
@@ -74,7 +72,7 @@ export type PrivacyNoticeQueryInput = z.infer<typeof privacyNoticeQuerySchema>;
 
 export const breachIncidentReportSchema = z.object({
   severity: z.enum(['low', 'medium', 'high', 'critical']),
-  affectedCategories: z.array(z.string()).min(1),
+  affectedCategories: z.array(z.string()).min(1).max(50),
   estimatedPrincipalsAffected: z.number().int().min(1),
   summary: z.string().min(10),
   rootCauseAnalysis: z.string().optional(),

@@ -165,7 +165,10 @@ const tenantBudgetBodySchema = z.object({
 });
 
 const configureProviderSchema = z.object({
-  priorityOrder: z.array(z.enum(['gemini', 'openai', 'custom', 'offline_heuristic'])).optional(),
+  priorityOrder: z
+    .array(z.enum(['gemini', 'openai', 'custom', 'offline_heuristic']))
+    .max(4, 'At most four providers can be prioritized')
+    .optional(),
   customConfig: z
     .object({
       baseUrl: z.string().url(),

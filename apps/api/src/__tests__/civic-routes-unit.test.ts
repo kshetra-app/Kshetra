@@ -41,6 +41,10 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
         }),
       } as any;
     }) as any);
+    jest.spyOn(supabase, 'rpc').mockResolvedValue({
+      data: null,
+      error: { message: 'RPC not configured for this test' },
+    } as any);
   });
 
   describe('1. State Budget Summary (/api/v1/civic/budget/:stateCode)', () => {
@@ -86,18 +90,118 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
   });
 
   describe('3. Bills and Legislation (/api/v1/civic/bills)', () => {
-    it('returns bills listing with filters', async () => {
+    it('returns stored bills with filters and pagination', async () => {
+      const queryCalls: Array<[string, unknown]> = [];
+      const query: any = {
+        eq: (field: string, value: unknown) => {
+          queryCalls.push([field, value]);
+          return query;
+        },
+        order: () => query,
+        range: async (from: number, to: number) => ({
+          data: [{ id: 'bill-1', state_code: 'TS', status: 'introduced', type: 'ordinary' }],
+          count: 1,
+          error: null,
+          range: [from, to],
+        }),
+      };
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        if (table !== 'bills') return {} as any;
+        return { select: () => query } as any;
+      }) as any);
+
       const res = await app.inject({
         method: 'GET',
-        url: '/api/v1/civic/bills?state=TS&status=passed&type=government',
+        url: '/api/v1/civic/bills?state=TS&status=introduced&type=ordinary&page=2&limit=10',
       });
 
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
-      expect(Array.isArray(body.bills)).toBe(true);
+      expect(body.bills).toHaveLength(1);
+      expect(body.total).toBe(1);
       expect(body.filters.state).toBe('TS');
-      expect(body.filters.status).toBe('passed');
-      expect(body.filters.type).toBe('government');
+      expect(body.filters.status).toBe('introduced');
+      expect(body.filters.type).toBe('ordinary');
+      expect(queryCalls).toEqual([
+        ['state_code', 'TS'],
+        ['status', 'introduced'],
+        ['type', 'ordinary'],
+      ]);
+    });
+
+    it('replaces legacy opinion JSON with counts derived from unique opinion records', async () => {
+      const query: any = {
+        eq: () => query,
+        order: () => query,
+        range: async () => ({
+          data: [
+            {
+              id: 'bill-1',
+              state_code: 'TS',
+              public_opinion: { support: 999, oppose: 0, neutral: 0 },
+            },
+          ],
+          count: 1,
+          error: null,
+        }),
+      };
+      jest
+        .spyOn(supabase, 'from')
+        .mockImplementation(((table: string) =>
+          table === 'bills' ? ({ select: () => query } as any) : ({} as any)) as any);
+      const rpc = jest.spyOn(supabase, 'rpc').mockResolvedValue({
+        data: [{ bill_id: 'bill-1', support: 3, oppose: 1, neutral: 0 }],
+        error: null,
+      } as any);
+
+      const res = await app.inject({ method: 'GET', url: '/api/v1/civic/bills?state=TS' });
+
+      expect(res.statusCode).toBe(200);
+      expect(JSON.parse(res.payload).bills[0].public_opinion).toEqual({
+        support: 3,
+        oppose: 1,
+        neutral: 0,
+      });
+      expect(rpc).toHaveBeenCalledWith('get_bill_opinion_counts', { p_bill_ids: ['bill-1'] });
+    });
+
+    it('marks opinion counts unknown when the count source is unavailable', async () => {
+      const query: any = {
+        eq: () => query,
+        order: () => query,
+        range: async () => ({ data: [{ id: 'bill-1', state_code: 'TS' }], count: 1, error: null }),
+      };
+      jest
+        .spyOn(supabase, 'from')
+        .mockImplementation(((table: string) =>
+          table === 'bills' ? ({ select: () => query } as any) : ({} as any)) as any);
+      jest
+        .spyOn(supabase, 'rpc')
+        .mockResolvedValue({ data: null, error: { message: 'Missing migration' } } as any);
+
+      const res = await app.inject({ method: 'GET', url: '/api/v1/civic/bills?state=TS' });
+
+      expect(res.statusCode).toBe(200);
+      expect(JSON.parse(res.payload).bills[0].public_opinion).toEqual({
+        support: null,
+        oppose: null,
+        neutral: null,
+      });
+    });
+
+    it('returns 503 rather than a false empty list when production storage is unavailable', async () => {
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+      setSupabaseConfiguredForTesting(false);
+
+      try {
+        const res = await app.inject({ method: 'GET', url: '/api/v1/civic/bills?state=TS' });
+        expect(res.statusCode).toBe(503);
+        expect(JSON.parse(res.payload).code).toBe('CIVIC_BILLS_UNAVAILABLE');
+      } finally {
+        process.env.NODE_ENV = originalEnv;
+        setSupabaseConfiguredForTesting(true);
+      }
     });
   });
 
@@ -139,33 +243,15 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
       expect(res.statusCode).toBe(400);
     });
 
-    it('records support opinion successfully in production mode', async () => {
+    it('records support through the idempotent RPC and returns its authoritative totals', async () => {
       const originalEnv = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
 
       try {
-        let updatePayload: any = null;
-        jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
-          if (table === 'bills') {
-            return {
-              select: () => ({
-                eq: () => ({
-                  maybeSingle: async () => ({
-                    data: { public_opinion: { support: 5, oppose: 2, neutral: 0 } },
-                    error: null,
-                  }),
-                }),
-              }),
-              update: (payload: any) => {
-                updatePayload = payload;
-                return {
-                  eq: async () => ({ error: null }),
-                };
-              },
-            } as any;
-          }
-          return {} as any;
-        }) as any);
+        const rpc = jest.spyOn(supabase, 'rpc').mockResolvedValue({
+          data: [{ bill_id: 'bill-001', support: 6, oppose: 2, neutral: 0 }],
+          error: null,
+        } as any);
 
         const res = await app.inject({
           method: 'POST',
@@ -179,40 +265,26 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
         expect(body.success).toBe(true);
         expect(body.billId).toBe('bill-001');
         expect(body.support).toBe(true);
-        expect(updatePayload.public_opinion.support).toBe(6);
-        expect(updatePayload.public_opinion.oppose).toBe(2);
+        expect(body.publicOpinion).toEqual({ support: 6, oppose: 2, neutral: 0 });
+        expect(rpc).toHaveBeenCalledWith('record_bill_opinion', {
+          p_bill_id: 'bill-001',
+          p_user_id: 'user-1',
+          p_support: true,
+        });
       } finally {
         process.env.NODE_ENV = originalEnv;
       }
     });
 
-    it('records oppose opinion with null initial opinion in production mode', async () => {
+    it('returns authoritative oppose totals in production mode', async () => {
       const originalEnv = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
 
       try {
-        let updatePayload: any = null;
-        jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
-          if (table === 'bills') {
-            return {
-              select: () => ({
-                eq: () => ({
-                  maybeSingle: async () => ({
-                    data: { public_opinion: null },
-                    error: null,
-                  }),
-                }),
-              }),
-              update: (payload: any) => {
-                updatePayload = payload;
-                return {
-                  eq: async () => ({ error: null }),
-                };
-              },
-            } as any;
-          }
-          return {} as any;
-        }) as any);
+        jest.spyOn(supabase, 'rpc').mockResolvedValue({
+          data: [{ bill_id: 'bill-001', support: 0, oppose: 1, neutral: 0 }],
+          error: null,
+        } as any);
 
         const res = await app.inject({
           method: 'POST',
@@ -225,8 +297,7 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
         const body = JSON.parse(res.payload);
         expect(body.success).toBe(true);
         expect(body.support).toBe(false);
-        expect(updatePayload.public_opinion.oppose).toBe(1);
-        expect(updatePayload.public_opinion.support).toBe(0);
+        expect(body.publicOpinion).toEqual({ support: 0, oppose: 1, neutral: 0 });
       } finally {
         process.env.NODE_ENV = originalEnv;
       }
@@ -237,18 +308,10 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
       process.env.NODE_ENV = 'production';
 
       try {
-        jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
-          if (table === 'bills') {
-            return {
-              select: () => ({
-                eq: () => ({
-                  maybeSingle: async () => ({ data: null, error: null }),
-                }),
-              }),
-            } as any;
-          }
-          return {} as any;
-        }) as any);
+        jest.spyOn(supabase, 'rpc').mockResolvedValue({
+          data: null,
+          error: { code: '23503', message: 'Bill does not exist' },
+        } as any);
 
         const res = await app.inject({
           method: 'POST',
@@ -265,26 +328,15 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
       }
     });
 
-    it('returns 500 in production mode on fetch error', async () => {
+    it('returns 503 in production mode when opinion storage is unavailable', async () => {
       const originalEnv = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
 
       try {
-        jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
-          if (table === 'bills') {
-            return {
-              select: () => ({
-                eq: () => ({
-                  maybeSingle: async () => ({
-                    data: null,
-                    error: { message: 'DB connection failure' },
-                  }),
-                }),
-              }),
-            } as any;
-          }
-          return {} as any;
-        }) as any);
+        jest.spyOn(supabase, 'rpc').mockResolvedValue({
+          data: null,
+          error: { message: 'DB connection failure' },
+        } as any);
 
         const res = await app.inject({
           method: 'POST',
@@ -293,37 +345,20 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
           payload: { support: true },
         });
 
-        expect(res.statusCode).toBe(500);
+        expect(res.statusCode).toBe(503);
         const body = JSON.parse(res.payload);
-        expect(body.code).toBe('DATABASE_ERROR');
+        expect(body.code).toBe('CIVIC_BILL_OPINION_UNAVAILABLE');
       } finally {
         process.env.NODE_ENV = originalEnv;
       }
     });
 
-    it('returns 500 in production mode on update error', async () => {
+    it('returns 503 in production mode when an RPC response has no valid totals', async () => {
       const originalEnv = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
 
       try {
-        jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
-          if (table === 'bills') {
-            return {
-              select: () => ({
-                eq: () => ({
-                  maybeSingle: async () => ({
-                    data: { public_opinion: { support: 1, oppose: 0 } },
-                    error: null,
-                  }),
-                }),
-              }),
-              update: () => ({
-                eq: async () => ({ error: { message: 'Update failed' } }),
-              }),
-            } as any;
-          }
-          return {} as any;
-        }) as any);
+        jest.spyOn(supabase, 'rpc').mockResolvedValue({ data: [], error: null } as any);
 
         const res = await app.inject({
           method: 'POST',
@@ -332,9 +367,9 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
           payload: { support: true },
         });
 
-        expect(res.statusCode).toBe(500);
+        expect(res.statusCode).toBe(503);
         const body = JSON.parse(res.payload);
-        expect(body.code).toBe('DATABASE_ERROR');
+        expect(body.code).toBe('CIVIC_BILL_OPINION_UNAVAILABLE');
       } finally {
         process.env.NODE_ENV = originalEnv;
       }
@@ -424,51 +459,267 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
   });
 
   describe('5. Government Schemes (/api/v1/civic/schemes)', () => {
-    it('returns schemes listing and echoes query filters', async () => {
+    it('applies state, category, and level filters with exact paginated totals', async () => {
+      const calls: Array<[string, unknown]> = [];
+      const query: any = {
+        or: (value: string) => {
+          calls.push(['or', value]);
+          return query;
+        },
+        eq: (field: string, value: unknown) => {
+          calls.push([field, value]);
+          return query;
+        },
+        order: () => query,
+        range: async (from: number, to: number) => ({
+          data: [{ id: 'scheme-1', name: 'Test scheme', state_code: 'TS', level: 'state' }],
+          count: 31,
+          error: null,
+          range: [from, to],
+        }),
+      };
+      jest
+        .spyOn(supabase, 'from')
+        .mockImplementation(((table: string) =>
+          table === 'government_schemes' ? ({ select: () => query } as any) : ({} as any)) as any);
       const res = await app.inject({
         method: 'GET',
-        url: '/api/v1/civic/schemes?state=TS&category=agriculture&level=state',
+        url: '/api/v1/civic/schemes?state=TS&category=agriculture&level=state&page=2&limit=10',
       });
 
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
-      expect(Array.isArray(body.schemes)).toBe(true);
+      expect(body.schemes).toHaveLength(1);
+      expect(body.total).toBe(31);
       expect(body.filters.state).toBe('TS');
       expect(body.filters.category).toBe('agriculture');
       expect(body.filters.level).toBe('state');
+      expect(calls).toEqual([
+        ['or', 'state_code.eq.TS,state_code.is.null'],
+        ['category', 'agriculture'],
+        ['level', 'state'],
+      ]);
+    });
+
+    it('returns 503 instead of development fallback when production storage is unavailable', async () => {
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+      setSupabaseConfiguredForTesting(false);
+
+      try {
+        const res = await app.inject({ method: 'GET', url: '/api/v1/civic/schemes?state=TS' });
+        expect(res.statusCode).toBe(503);
+        expect(JSON.parse(res.payload).code).toBe('CIVIC_SCHEMES_UNAVAILABLE');
+      } finally {
+        process.env.NODE_ENV = originalEnv;
+        setSupabaseConfiguredForTesting(true);
+      }
     });
   });
 
   describe('6. Development Projects (/api/v1/civic/projects)', () => {
-    it('returns development projects listing with filters', async () => {
+    it('applies state, phase, category, and AC number filters with exact paginated totals', async () => {
+      const calls: Array<[string, unknown]> = [];
+      const query: any = {
+        eq: (field: string, value: unknown) => {
+          calls.push([field, value]);
+          return query;
+        },
+        order: () => query,
+        range: async (from: number, to: number) => ({
+          data: [
+            { id: 'project-1', state_code: 'TS', phase: 'under_construction', category: 'road' },
+          ],
+          count: 21,
+          error: null,
+          range: [from, to],
+        }),
+      };
+      jest
+        .spyOn(supabase, 'from')
+        .mockImplementation(((table: string) =>
+          table === 'development_projects'
+            ? ({ select: () => query } as any)
+            : ({} as any)) as any);
       const res = await app.inject({
         method: 'GET',
-        url: '/api/v1/civic/projects?state=TS&phase=under_construction&category=roads&constituency=AC-065',
+        url: '/api/v1/civic/projects?state=TS&phase=under_construction&category=road&constituency=AC-065&page=2&limit=10',
       });
 
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
-      expect(Array.isArray(body.projects)).toBe(true);
+      expect(body.projects).toHaveLength(1);
+      expect(body.total).toBe(21);
       expect(body.filters.state).toBe('TS');
       expect(body.filters.phase).toBe('under_construction');
-      expect(body.filters.category).toBe('roads');
+      expect(body.filters.category).toBe('road');
       expect(body.filters.constituency).toBe('AC-065');
+      expect(calls).toEqual([
+        ['state_code', 'TS'],
+        ['constituency_ac_no', 65],
+        ['category', 'road'],
+        ['phase', 'under_construction'],
+      ]);
+    });
+
+    it('returns 503 instead of development fallback when production storage is unavailable', async () => {
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+      setSupabaseConfiguredForTesting(false);
+
+      try {
+        const res = await app.inject({ method: 'GET', url: '/api/v1/civic/projects?state=TS' });
+        expect(res.statusCode).toBe(503);
+        expect(JSON.parse(res.payload).code).toBe('CIVIC_PROJECTS_UNAVAILABLE');
+      } finally {
+        process.env.NODE_ENV = originalEnv;
+        setSupabaseConfiguredForTesting(true);
+      }
     });
   });
 
   describe('7. Public RTI Requests Listing (/api/v1/civic/rti)', () => {
-    it('returns RTI listing and echoes query filters', async () => {
+    it('returns 503 instead of pretending the public listing is empty when production storage is unavailable', async () => {
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+      setSupabaseConfiguredForTesting(false);
+
+      try {
+        const res = await app.inject({ method: 'GET', url: '/api/v1/civic/rti?state=TS' });
+        expect(res.statusCode).toBe(503);
+        expect(JSON.parse(res.payload).code).toBe('CIVIC_RTI_UNAVAILABLE');
+      } finally {
+        process.env.NODE_ENV = originalEnv;
+        setSupabaseConfiguredForTesting(true);
+      }
+    });
+
+    it('returns stored public requests, excludes drafts and account identifiers, and echoes query filters', async () => {
+      const calls: {
+        select?: string;
+        filters: Array<[string, unknown]>;
+        order?: string;
+        range?: [number, number];
+      } = {
+        filters: [],
+      };
+      const rows = [
+        {
+          id: 'rti-public-1',
+          status: 'filed',
+          subject: 'Road repair expenditure',
+          state_code: 'TS',
+          upvotes: 2,
+        },
+      ];
+      const query: any = {
+        eq: (field: string, value: unknown) => {
+          calls.filters.push([field, value]);
+          return query;
+        },
+        neq: (field: string, value: unknown) => {
+          calls.filters.push([`not:${field}`, value]);
+          return query;
+        },
+        order: (field: string) => {
+          calls.order = field;
+          return query;
+        },
+        range: async (from: number, to: number) => {
+          calls.range = [from, to];
+          return { data: rows, count: 1, error: null };
+        },
+      };
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        if (table !== 'rti_requests') return {} as any;
+        return {
+          select: (columns: string) => {
+            calls.select = columns;
+            return query;
+          },
+        } as any;
+      }) as any);
+
       const res = await app.inject({
         method: 'GET',
-        url: '/api/v1/civic/rti?state=TS&status=replied&department=Irrigation',
+        url: '/api/v1/civic/rti?state=TS&status=information_received&department=Irrigation',
       });
 
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
       expect(Array.isArray(body.rtiRequests)).toBe(true);
       expect(body.filters.state).toBe('TS');
-      expect(body.filters.status).toBe('replied');
+      expect(body.filters.status).toBe('information_received');
       expect(body.filters.department).toBe('Irrigation');
+      expect(body.rtiRequests).toEqual(rows);
+      expect(calls.filters).toContainEqual(['is_public', true]);
+      expect(calls.filters).toContainEqual(['not:status', 'draft']);
+      expect(calls.filters).toContainEqual(['state_code', 'TS']);
+      expect(calls.filters).toContainEqual(['status', 'information_received']);
+      expect(calls.select).not.toContain('user_id');
+      expect(calls.range).toEqual([0, 49]);
+    });
+
+    it.each([
+      ['/api/v1/civic/bills?state=TS', 'bills', 'CIVIC_BILLS_UNAVAILABLE'],
+      ['/api/v1/civic/schemes?state=TS', 'government_schemes', 'CIVIC_SCHEMES_UNAVAILABLE'],
+      ['/api/v1/civic/projects?state=TS', 'development_projects', 'CIVIC_PROJECTS_UNAVAILABLE'],
+      ['/api/v1/civic/rti?state=TS', 'rti_requests', 'CIVIC_RTI_UNAVAILABLE'],
+    ])('does not turn a missing exact count into zero for %s', async (url, table, code) => {
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+      setSupabaseConfiguredForTesting(true);
+
+      const query: any = {
+        eq: () => query,
+        neq: () => query,
+        or: () => query,
+        order: () => query,
+        range: async () => ({ data: [], count: null, error: null }),
+      };
+      jest
+        .spyOn(supabase, 'from')
+        .mockImplementation(((requestedTable: string) =>
+          requestedTable === table ? ({ select: () => query } as any) : ({} as any)) as any);
+
+      try {
+        const res = await app.inject({ method: 'GET', url });
+        expect(res.statusCode).toBe(503);
+        expect(JSON.parse(res.payload).code).toBe(code);
+      } finally {
+        process.env.NODE_ENV = originalEnv;
+      }
+    });
+
+    it.each([
+      ['/api/v1/civic/bills?state=TS', 'bills'],
+      ['/api/v1/civic/schemes?state=TS', 'government_schemes'],
+      ['/api/v1/civic/projects?state=TS', 'development_projects'],
+      ['/api/v1/civic/rti?state=TS', 'rti_requests'],
+    ])('preserves a confirmed empty result for %s', async (url, table) => {
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+      setSupabaseConfiguredForTesting(true);
+
+      const query: any = {
+        eq: () => query,
+        neq: () => query,
+        or: () => query,
+        order: () => query,
+        range: async () => ({ data: [], count: 0, error: null }),
+      };
+      jest
+        .spyOn(supabase, 'from')
+        .mockImplementation(((requestedTable: string) =>
+          requestedTable === table ? ({ select: () => query } as any) : ({} as any)) as any);
+
+      try {
+        const res = await app.inject({ method: 'GET', url });
+        expect(res.statusCode).toBe(200);
+        expect(JSON.parse(res.payload).total).toBe(0);
+      } finally {
+        process.env.NODE_ENV = originalEnv;
+      }
     });
   });
 
@@ -859,18 +1110,92 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
   });
 
   describe('10. Public Hearings (/api/v1/civic/hearings)', () => {
-    it('returns public hearings listing with filters', async () => {
+    it('returns persisted upcoming hearings with validated filters, exact totals, and pagination', async () => {
+      const filters: Array<[string, unknown]> = [];
+      let selectedColumns = '';
+      const query: any = {
+        eq: (column: string, value: unknown) => {
+          filters.push([column, value]);
+          return query;
+        },
+        gte: (column: string, value: unknown) => {
+          filters.push([column, value]);
+          return query;
+        },
+        order: () => query,
+        range: jest.fn(async (from: number, to: number) => ({
+          data: [{ id: 'hearing-1', type: 'environment_clearance' }],
+          count: 21,
+          error: null,
+          range: [from, to],
+        })),
+      };
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        if (table !== 'public_hearings') return {} as any;
+        return {
+          select: (columns: string) => {
+            selectedColumns = columns;
+            return query;
+          },
+        } as any;
+      }) as any);
+
       const res = await app.inject({
         method: 'GET',
-        url: '/api/v1/civic/hearings?state=TS&type=assembly&upcoming=true',
+        url: '/api/v1/civic/hearings?state=TS&type=environment_clearance&upcoming=true&page=2&limit=10',
       });
 
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
-      expect(Array.isArray(body.hearings)).toBe(true);
+      expect(body.hearings).toHaveLength(1);
+      expect(selectedColumns).not.toContain('attendee_count');
+      expect(body.total).toBe(21);
       expect(body.filters.state).toBe('TS');
-      expect(body.filters.type).toBe('assembly');
+      expect(body.filters.type).toBe('environment_clearance');
       expect(body.filters.upcoming).toBe('true');
+      expect(filters).toEqual([
+        ['state_code', 'TS'],
+        ['type', 'environment_clearance'],
+        ['date', expect.any(String)],
+      ]);
+      expect(query.range).toHaveBeenCalledWith(10, 19);
+    });
+
+    it('returns 503 rather than an empty success when production storage is not configured', async () => {
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+      setSupabaseConfiguredForTesting(false);
+
+      try {
+        const res = await app.inject({ method: 'GET', url: '/api/v1/civic/hearings?state=TS' });
+        expect(res.statusCode).toBe(503);
+        expect(JSON.parse(res.payload).code).toBe('CIVIC_HEARINGS_UNAVAILABLE');
+      } finally {
+        if (originalEnv === undefined) delete process.env.NODE_ENV;
+        else process.env.NODE_ENV = originalEnv;
+        setSupabaseConfiguredForTesting(true);
+      }
+    });
+
+    it('rejects an unsupported hearing type', async () => {
+      const res = await app.inject({ method: 'GET', url: '/api/v1/civic/hearings?type=assembly' });
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('returns 503 when storage cannot provide an exact hearing count', async () => {
+      const query: any = {
+        eq: () => query,
+        order: () => query,
+        range: async () => ({ data: [], count: null, error: null }),
+      };
+      jest
+        .spyOn(supabase, 'from')
+        .mockImplementation(((table: string) =>
+          table === 'public_hearings' ? ({ select: () => query } as any) : ({} as any)) as any);
+
+      const res = await app.inject({ method: 'GET', url: '/api/v1/civic/hearings?state=TS' });
+      expect(res.statusCode).toBe(503);
+      expect(JSON.parse(res.payload).code).toBe('CIVIC_HEARINGS_UNAVAILABLE');
     });
   });
 

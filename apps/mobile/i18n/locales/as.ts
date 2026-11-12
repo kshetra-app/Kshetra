@@ -196,6 +196,7 @@ const as = {
     "votes": "ভোট",
     "voteShare": "ভোটৰ অংশ",
     "demographics": "জনগাঁথনি",
+    "dataUnavailable": "উপলব্ধ নহয়",
     "population": "জনসংখ্যা",
     "literacy": "সাক্ষৰতাৰ হাৰ",
     "urbanRural": "নগৰীয়া / গ্ৰাম্য",
@@ -234,7 +235,13 @@ const as = {
     "male": "পুৰুষ",
     "female": "মহিলা",
     "socialComposition": "সামাজিক গঠন",
-    "demoDisclaimer": "উৎস: ২০১১ চনৰ লোকপিয়ল · ২০২৩ চনৰ নিৰ্বাচন আয়োগৰ ভোটাৰ তালিকা"
+    "demoDisclaimer": "উৎস: ২০১১ চনৰ লোকপিয়ল · ২০২৩ চনৰ নিৰ্বাচন আয়োগৰ ভোটাৰ তালিকা",
+    "demographicReferenceTitle": "সমষ্টিৰ জনবিন্যাসৰ প্ৰসংগ তথ্য",
+    "noDemographicData": "এই সমষ্টিৰ যাচাইকৃত জনবিন্যাসৰ তথ্য কোনো সংযুক্ত উৎসত উপলব্ধ নহয়।",
+    "resultUnavailable": "সংযুক্ত উৎসৰ পৰা নিৰ্বাচনৰ ফলাফল উপলব্ধ নহয়।",
+    "noAffidavitYear": "নিৰ্বাচনৰ বছৰ উপলব্ধ নহয়, সেয়েহে শপতনামাৰ সৈতে কোনো নথি মিলাব নোৱাৰি।",
+    "demographicDataNoteTitle": "এই পৰিসংখ্যাবোৰৰ বিষয়ে",
+    "demographicDataNote": "একত্ৰিত জনবিন্যাসৰ মানসমূহ অনুমান হ’ব পাৰে বা পুৰণি উৎস-বছৰৰ হ’ব পাৰে। প্ৰতিটো মানৰ অনুসৰণযোগ্য উৎস, বছৰ আৰু সমষ্টিৰ পৰিসৰ নিশ্চিত নোহোৱালৈকে সেইবোৰ প্ৰডাকশ্যন দৃশ্যত দেখুওৱা নহ’ব।"
   },
   "feed": {
     "votes": "ৱোট",
@@ -1342,7 +1349,13 @@ const as = {
       "grassrootsCampaign": "তৃণমূল পৰ্যায়ত প্ৰচাৰ গঠন",
       "fundraising": "নিৰ্দলীয় প্ৰাৰ্থীৰ পুঁজি সংগ্ৰহ",
       "rpaAct": "জনপ্ৰতিনিধিত্ব আইনৰ নিয়ম"
-    }
+    },
+    "loadingChallenges": "সক্ৰিয় প্ৰত্যাহ্বানসমূহ লোড হৈ আছে…",
+    "challengesUnavailable": "প্ৰত্যাহ্বানৰ তথ্য এতিয়া উপলব্ধ নহয়।",
+    "loadingBadges": "অৰ্জন কৰা বেজসমূহ লোড হৈ আছে…",
+    "badgesUnavailable": "বেজৰ তথ্য এতিয়া উপলব্ধ নহয়।",
+    "loadingAspirants": "সৰ্বসাধাৰণৰ প্ৰাৰ্থীসকল লোড হৈ আছে…",
+    "aspirantsUnavailable": "সৰ্বসাধাৰণৰ প্ৰাৰ্থীৰ তালিকা এতিয়া উপলব্ধ নহয়।"
   },
   "becomeAspirant": {
     "title": "উম্মীদৱাৰ ৱনেং",
@@ -1637,7 +1650,20 @@ const as = {
       "tsReportCard": "তেলেংগানা বিকাশ ৰিপোৰ্ট কাৰ্ড",
       "youthConnect": "ইউথ কানেক্ট ২০২৬",
       "guaranteesImpact": "৫ গেৰাণ্টি প্ৰভাৱ ৰিপোৰ্ট"
-    }
+    },
+    "createAdDraft": "বিজ্ঞাপনৰ খচৰা তৈয়াৰ কৰক",
+    "saveAdDraft": "খচৰা সংৰক্ষণ কৰক",
+    "adDraftsTitle": "বিজ্ঞাপনৰ সৃজনশীল খচৰা",
+    "adDraftOnlyNote": "খচৰাবোৰ এই অভিযানত সংৰক্ষণ কৰা হয়। পৰ্যালোচনা, দৰ্শকৰ লক্ষ্য নিৰ্ধাৰণ, বিলিং আৰু বিজ্ঞাপন বিতৰণ এতিয়াও সংযুক্ত হোৱা নাই।",
+    "noCampaignForAds": "প্ৰথমে এটা অভিযান তৈয়াৰ কৰক বা বাছনি কৰক।",
+    "noAdDrafts": "এই অভিযানৰ বাবে এতিয়াও কোনো বিজ্ঞাপনৰ খচৰা নাই।",
+    "adDraftRequired": "নাম, শিৰোনাম, পৃষ্ঠপোষক আৰু প্ৰকাশৰ বিৱৰণ দিয়ক।",
+    "adName": "খচৰাৰ নাম",
+    "adHeadline": "শিৰোনাম",
+    "adBody": "বাৰ্তা (ঐচ্ছিক)",
+    "adDisclosure": "প্ৰকাশৰ লিখনী",
+    "noVerifiedAdMetrics": "যাচাইকৃত বিজ্ঞাপন বিতৰণ সংযুক্ত নোহোৱালৈকে বিতৰণৰ পৰিসংখ্যা উপলব্ধ নহ’ব।",
+    "adComplianceNotReviewed": "নীতি-নিয়ম মানি চলাৰ পৰ্যালোচনা এতিয়াও হোৱা নাই"
   },
   "outreach": {
     "sentiment": "জনভাৱনা",
@@ -1666,10 +1692,9 @@ const as = {
   },
   "civicMetrics": {
     "screenTitle": "নাগৰিক প্ৰদৰ্শন আৰু মেট্ৰিক্স",
-    "screenSubtitle": "বাজেট, বিধেয়ক আৰু আঁচনি",
+    "screenSubtitle": "বাজেট, বিধেয়ক, আঁচনি আৰু শুনানি",
     "stateBudgetOverview": "ৰাজ্যিক বাজেট পৰ্যালোচনা",
     "noBudgetData": "এই ৰাজ্যৰ বাবে কোনো বাজেট তথ্য উপলব্ধ নহয়",
-    "legislatorAttendance": "বিধায়কসকলৰ উপস্থিতি ({{count}})",
     "activeBills": "সক্ৰিয় বিধেয়ক ({{count}})",
     "governmentSchemes": "চৰকাৰী কল্যাণমূলক আঁচনি ({{count}})",
     "developmentProjects": "উন্নয়নমূলক প্ৰকল্প ({{count}})",
@@ -1677,15 +1702,18 @@ const as = {
     "response": "প্রতিক্রিযা: {{text}}",
     "views": "{{count}} বার দেখা গযা",
     "filed": "{{date}} কো দাখিল",
+    "publicHearings": "ৰাজহুৱা শুনানি ({{count}})",
+    "noUpcomingHearings": "এই ৰাজ্যৰ বাবে আগন্তুক কোনো ৰাজহুৱা শুনানি নথিভুক্ত হোৱা নাই।",
+    "registerForHearing": "শুনানিৰ বাবে পঞ্জীয়ন",
     "title": "নাগৰিক মেট্ৰিক্স",
-    "subtitle": "ৱজট, উপস্থিতি, ৱিধেযক ঔৰ যোজনাএঁ",
+    "subtitle": "বাজেট, বিধেয়ক, আঁচনি আৰু শুনানি",
     "tabs": {
       "budget": "ৱজট",
-      "attendance": "উপস্থিতি",
       "bills": "ৱিধেযক",
       "schemes": "যোজনাএঁ",
       "projects": "পৰিযোজনাএঁ",
-      "rti": "RTI"
+      "rti": "RTI",
+      "hearings": "শুনানি"
     },
     "stateBudget": "ৰাজ্য ৱজট",
     "totalBudget": "কুল",
@@ -1693,7 +1721,6 @@ const as = {
     "fiscalDeficit": "ৰাজকোষীয ঘাটা",
     "revenueDeficit": "ৰাজস্ৱ ঘাটা",
     "debtGDP": "ঋণ/GDP",
-    "assemblyAttendance": "ৱিধানসভা উপস্থিতি",
     "sessions": "সত্ৰ",
     "questionsRaised": "প্ৰশ্ন",
     "debatesParticipated": "ৱহসেং",
@@ -1712,7 +1739,9 @@ const as = {
     "revised": "সংশোধিত",
     "amountSpent": "খ़ৰ্চ",
     "dueDate": "নিযত তিথি",
-    "daysDelayed": "{{n}} দিন বিলংবিত"
+    "delayLabel": "বিলম্ব",
+    "daysDelayed": "{{n}} দিন বিলংবিত",
+    "noConnectedData": "সংযুক্ত উৎসৰ পৰা যাচাইকৃত নথি এতিয়াও উপলব্ধ নহয়।"
   },
   "lmx": {
     "screenTitle": "পলিগ্ৰাম লাইভ",
@@ -2321,7 +2350,8 @@ const as = {
     "male": "পুৰুষ",
     "female": "মহিলা",
     "terms": "কাৰ্যকাল",
-    "historical": "ঐতিহাসিক তুলনা"
+    "historical": "ঐতিহাসিক তুলনা",
+    "demographicsUnavailable": "নিৰ্বাচিত এটা বা দুয়োটা সমষ্টিৰ বাবে উৎস-সমৰ্থিত যাচাইকৃত জনবিন্যাসৰ তথ্য নথকাৰ বাবে তুলনা উপলব্ধ নহয়।"
   },
   "export": {
     "title": "ৰপ্তানি ডেছব'ৰ্ড",
@@ -2861,7 +2891,7 @@ const as = {
     "decline": "নাকচ কৰক",
     "accept": "গ্ৰহণ কৰক",
     "safetyOptions": "সুৰক্ষা আৰু নিয়ন্ত্ৰণ",
-    "safetyDesc": "কথোপকথন বিকল্প:",
+    "safetyDesc": "{{name}}-ৰ সৈতে কথোপকথনৰ বিকল্প:",
     "blockUser": "ব্লক কৰক",
     "blockTitle": "ব্লক নিশ্চিত কৰক",
     "blockConfirm": "ব্লক কৰা ব্যৱহাৰকাৰীয়ে বাৰ্তা প্ৰেৰণ কৰিব নোৱাৰে।",
@@ -3106,7 +3136,40 @@ const as = {
       "citizenAccount": "নাগৰিক প্ৰফাইল",
       "citizenAccountDesc": "পৃষ্ঠা সৃষ্টি প্ৰাৰ্থীসকলৰ বাবে উপলব্ধ।",
       "registerAsAspirantBtn": "নাগৰিক প্ৰাৰ্থী হিচাপে পঞ্জীয়ন কৰক",
-      "candidateProfile": "নাগৰিক প্ৰাৰ্থী পৃষ্ঠা"
+      "candidateProfile": "নাগৰিক প্ৰাৰ্থী পৃষ্ঠা",
+      "tabPosts": "পোষ্ট আৰু কাৰ্যকলাপ",
+      "tabProfile": "প্ৰ’ফাইল আৰু যাত্ৰা",
+      "tabVision": "দৃষ্টিভংগী আৰু ইস্তাহাৰ",
+      "tabInitiatives": "ক্ষেত্ৰীয় পদক্ষেপ",
+      "tabValues": "মূল্যবোধ আৰু প্ৰকাশ",
+      "tabStudio": "নেতা বিশ্লেষণ ষ্টুডিঅ’",
+      "liveStatus": "লাইভ অৱস্থা",
+      "inFieldTour": "ক্ষেত্ৰ ভ্ৰমণত",
+      "followers": "অনুসৰণকাৰী",
+      "civicScore": "নাগৰিক স্ক’ৰ",
+      "resolvedIssues": "সমাধান কৰা হৈছে",
+      "cleanAffidavit": "100% স্বচ্ছ শপতনামা",
+      "noCriminalCases": "কোনো ফৌজদাৰী গোচৰ নাই",
+      "assetDeclaration": "সম্পত্তিৰ ঘোষণা",
+      "form26Verified": "স্বেচ্ছাই ফৰ্ম 26 প্ৰকাশ কৰা হৈছে",
+      "accountabilityCharter": "জবাবদিহিতাৰ অংগীকাৰ",
+      "volunteer": "স্বেচ্ছাসেৱক হওক",
+      "postUpdate": "ভোটাৰৰ সৈতে আপডেট ভাগ-বতৰা কৰক",
+      "postPlaceholder": "ক্ষেত্ৰ পৰ্যবেক্ষণ, পৰিদৰ্শনৰ আপডেট বা আপোনাৰ মতামত ভাগ-বতৰা কৰক…",
+      "postBtn": "পোষ্ট প্ৰকাশ কৰক",
+      "privateAnalyticsNotice": "এই অংশটো গোপনীয় — কেৱল প্ৰাৰ্থী/নিজে আৰু প্লেটফৰ্ম প্ৰশাসকসকলে চাব পাৰে।",
+      "boothCoverage": "সমষ্টিৰ ভোটকেন্দ্ৰৰ পৰিসৰ",
+      "grassrootsReach": "তৃণমূল পৰ্যায়লৈ প্ৰসাৰ",
+      "avgResponseTime": "নাগৰিকক উত্তৰ দিয়াৰ গড় সময়",
+      "requestsAnswered": "সমাধান কৰা প্ৰশ্ন",
+      "voterEngagementTrend": "30 দিনৰ প্ৰ’ফাইল সম্পৃক্ততা",
+      "profileViews": "প্ৰ’ফাইল দৰ্শন",
+      "pendingCitizenRequests": "বিচাৰাধীন নাগৰিকৰ অনুৰোধ",
+      "citizenPoll": "নাগৰিকৰ অগ্ৰাধিকাৰ ভোট",
+      "castVote": "ভোট দিয়ক",
+      "totalVotes": "মুঠ ভোট",
+      "agreeWithVision": "অগ্ৰাধিকাৰৰ সৈতে একমত",
+      "verifiedOfficialFigure": "আনুষ্ঠানিকভাৱে যাচাইকৃত নেতা"
   },
 }
 

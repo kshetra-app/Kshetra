@@ -196,6 +196,7 @@ const ne = {
     "votes": "मत",
     "voteShare": "मत प्रतिशत",
     "demographics": "जनसांख्यिकी",
+    "dataUnavailable": "उपलब्ध छैन",
     "population": "जनसंख्या",
     "literacy": "साक्षरता दर",
     "urbanRural": "सहरी / ग्रामीण",
@@ -234,7 +235,13 @@ const ne = {
     "male": "पुरुष",
     "female": "female",
     "socialComposition": "सामाजिक संरचना",
-    "demoDisclaimer": "स्रोत: जनगणना २०११ · ECI २०२३ मतदाता नामावली"
+    "demoDisclaimer": "स्रोत: जनगणना २०११ · ECI २०२३ मतदाता नामावली",
+    "demographicReferenceTitle": "निर्वाचन क्षेत्रको जनसाङ्ख्यिक सन्दर्भ विवरण",
+    "noDemographicData": "यस निर्वाचन क्षेत्रका प्रमाणित जनसाङ्ख्यिक तथ्याङ्क कुनै जोडिएको स्रोतमा उपलब्ध छैनन्।",
+    "resultUnavailable": "जोडिएको स्रोतबाट निर्वाचन परिणामको विवरण उपलब्ध छैन।",
+    "noAffidavitYear": "निर्वाचन वर्ष उपलब्ध नभएकाले शपथपत्रको कुनै अभिलेखसँग मिलान गर्न सकिँदैन।",
+    "demographicDataNoteTitle": "यी तथ्याङ्कबारे",
+    "demographicDataNote": "एकीकृत जनसाङ्ख्यिक मानहरू अनुमानित हुन सक्छन् वा पुरानो स्रोत-वर्षका हुन सक्छन्। प्रत्येक मानको पत्ता लगाउन सकिने स्रोत, वर्ष र निर्वाचन क्षेत्रको दायरा पुष्टि नहुँदासम्म तिनलाई उत्पादन दृश्यमा देखाइने छैन।"
   },
   "feed": {
     "votes": "वोट",
@@ -1342,7 +1349,13 @@ const ne = {
       "grassrootsCampaign": "जमीनी तहको प्रचार संरचना",
       "fundraising": "स्वतन्त्र उम्मेदवारका लागि कोष संकलन",
       "rpaAct": "जनप्रतिनिधित्व ऐनका नियमहरू"
-    }
+    },
+    "loadingChallenges": "सक्रिय चुनौतीहरू लोड हुँदैछन्…",
+    "challengesUnavailable": "चुनौतीसम्बन्धी विवरण अहिले उपलब्ध छैन।",
+    "loadingBadges": "अर्जित ब्याजहरू लोड हुँदैछन्…",
+    "badgesUnavailable": "ब्याजसम्बन्धी विवरण अहिले उपलब्ध छैन।",
+    "loadingAspirants": "सार्वजनिक आकांक्षीहरू लोड हुँदैछन्…",
+    "aspirantsUnavailable": "सार्वजनिक आकांक्षी निर्देशिका अहिले उपलब्ध छैन।"
   },
   "becomeAspirant": {
     "title": "उम्मीदवार बनें",
@@ -1637,7 +1650,20 @@ const ne = {
       "tsReportCard": "तेलंगाना विकास रिपोर्ट कार्ड",
       "youthConnect": "युथ कनेक्ट २०२६",
       "guaranteesImpact": "५ ग्यारेन्टी प्रभाव रिपोर्ट"
-    }
+    },
+    "createAdDraft": "विज्ञापनको मस्यौदा बनाउनुहोस्",
+    "saveAdDraft": "मस्यौदा सुरक्षित गर्नुहोस्",
+    "adDraftsTitle": "विज्ञापन सिर्जनाका मस्यौदाहरू",
+    "adDraftOnlyNote": "मस्यौदाहरू यस अभियानमा सुरक्षित हुन्छन्। समीक्षा, दर्शक लक्षित गर्ने सुविधा, बिलिङ र विज्ञापन वितरण अझै जोडिएको छैन।",
+    "noCampaignForAds": "पहिले अभियान बनाउनुहोस् वा छान्नुहोस्।",
+    "noAdDrafts": "यस अभियानका लागि अहिलेसम्म विज्ञापनको मस्यौदा छैन।",
+    "adDraftRequired": "नाम, शीर्षक, प्रायोजक र खुलासाको विवरण लेख्नुहोस्।",
+    "adName": "मस्यौदाको नाम",
+    "adHeadline": "शीर्षक",
+    "adBody": "सन्देश (ऐच्छिक)",
+    "adDisclosure": "खुलासाको पाठ",
+    "noVerifiedAdMetrics": "प्रमाणित विज्ञापन वितरण नजोडिएसम्म वितरणका मेट्रिक्स उपलब्ध हुँदैनन्।",
+    "adComplianceNotReviewed": "नियमपालनको समीक्षा अझै भएको छैन"
   },
   "outreach": {
     "sentiment": "जनभावना",
@@ -1666,10 +1692,9 @@ const ne = {
   },
   "civicMetrics": {
     "screenTitle": "नागरिक प्रदर्शन र मेट्रिक्स",
-    "screenSubtitle": "बजेट, विधेयक र योजनाहरू",
+    "screenSubtitle": "बजेट, विधेयक, योजना र सुनुवाइ",
     "stateBudgetOverview": "राज्य बजेट अवलोकन",
     "noBudgetData": "यस राज्यको लागि कुनै बजेट डेटा उपलब्ध छैन",
-    "legislatorAttendance": "सांसद/विधायकको उपस्थिति ({{count}})",
     "activeBills": "सक्रिय विधेयकहरू ({{count}})",
     "governmentSchemes": "सरकारी कल्याणकारी योजनाहरू ({{count}})",
     "developmentProjects": "विकास परियोजनाहरू ({{count}})",
@@ -1677,15 +1702,18 @@ const ne = {
     "response": "प्रतिक्रिया: {{text}}",
     "views": "{{count}} बार देखा गया",
     "filed": "{{date}} को दाखिल",
+    "publicHearings": "सार्वजनिक सुनुवाइ ({{count}})",
+    "noUpcomingHearings": "यस राज्यका लागि आगामी सार्वजनिक सुनुवाइ दर्ता गरिएको छैन।",
+    "registerForHearing": "सुनुवाइका लागि दर्ता गर्नुहोस्",
     "title": "नागरिक मेट्रिक्स",
-    "subtitle": "बजट, उपस्थिति, विधेयक और योजनाएँ",
+    "subtitle": "बजेट, विधेयक, योजना र सुनुवाइ",
     "tabs": {
       "budget": "बजट",
-      "attendance": "उपस्थिति",
       "bills": "विधेयक",
       "schemes": "योजनाएँ",
       "projects": "परियोजनाएँ",
-      "rti": "RTI"
+      "rti": "RTI",
+      "hearings": "सुनुवाइ"
     },
     "stateBudget": "राज्य बजट",
     "totalBudget": "कुल",
@@ -1693,7 +1721,6 @@ const ne = {
     "fiscalDeficit": "राजकोषीय घाटा",
     "revenueDeficit": "राजस्व घाटा",
     "debtGDP": "ऋण/GDP",
-    "assemblyAttendance": "विधानसभा उपस्थिति",
     "sessions": "सत्र",
     "questionsRaised": "प्रश्न",
     "debatesParticipated": "बहसें",
@@ -1712,7 +1739,9 @@ const ne = {
     "revised": "संशोधित",
     "amountSpent": "ख़र्च",
     "dueDate": "नियत तिथि",
-    "daysDelayed": "{{n}} दिन विलंबित"
+    "delayLabel": "विलंब",
+    "daysDelayed": "{{n}} दिन विलंबित",
+    "noConnectedData": "जोडिएको स्रोतबाट प्रमाणित अभिलेखहरू अझै उपलब्ध छैनन्।"
   },
   "lmx": {
     "screenTitle": "पोलिग्राम लाइभ",
@@ -2321,7 +2350,8 @@ const ne = {
     "male": "पुरुष",
     "female": "महिला",
     "terms": "कार्यकाल",
-    "historical": "ऐतिहासिक तुलना"
+    "historical": "ऐतिहासिक तुलना",
+    "demographicsUnavailable": "छानिएका एक वा दुवै निर्वाचन क्षेत्रका लागि स्रोतसहित प्रमाणित जनसाङ्ख्यिक तथ्याङ्क नभएकाले तुलना उपलब्ध छैन।"
   },
   "export": {
     "title": "निर्यात ड्यासबोर्ड",
@@ -2861,7 +2891,7 @@ const ne = {
     "decline": "अस्वीकार गर्नुहोस्",
     "accept": "स्वीकार गर्नुहोस्",
     "safetyOptions": "सुरक्षा र नियमन",
-    "safetyDesc": "कुराकानी विकल्पहरू:",
+    "safetyDesc": "{{name}} सँगको कुराकानीका विकल्पहरू:",
     "blockUser": "प्रयोगकर्ता ब्लक गर्नुहोस्",
     "blockTitle": "ब्लक पुष्टि गर्नुहोस्",
     "blockConfirm": "ब्लक गरिएका प्रयोगकर्ताले सन्देश पठाउन सक्दैनन्।",
@@ -3106,7 +3136,40 @@ const ne = {
       "citizenAccount": "नागरिक प्रोफाइल",
       "citizenAccountDesc": "पृष्ठ सिर्जना उम्मेदवारहरूका लागि उपलब्ध छ।",
       "registerAsAspirantBtn": "नागरिक उम्मेदवारको रूपमा दर्ता गर्नुहोस्",
-      "candidateProfile": "नागरिक उम्मेदवार पृष्ठ"
+      "candidateProfile": "नागरिक उम्मेदवार पृष्ठ",
+      "tabPosts": "पोस्ट र गतिविधि",
+      "tabProfile": "प्रोफाइल र यात्रा",
+      "tabVision": "दृष्टिकोण र घोषणापत्र",
+      "tabInitiatives": "मैदानी पहलहरू",
+      "tabValues": "मूल्य र खुलासाहरू",
+      "tabStudio": "नेता विश्लेषण स्टुडियो",
+      "liveStatus": "लाइभ अवस्था",
+      "inFieldTour": "मैदानी भ्रमणमा",
+      "followers": "अनुयायीहरू",
+      "civicScore": "नागरिक स्कोर",
+      "resolvedIssues": "समाधान भएका",
+      "cleanAffidavit": "१००% स्वच्छ शपथपत्र",
+      "noCriminalCases": "कुनै आपराधिक मुद्दा छैन",
+      "assetDeclaration": "सम्पत्ति विवरण",
+      "form26Verified": "स्वेच्छाले फाराम २६ सार्वजनिक",
+      "accountabilityCharter": "जवाफदेहिता प्रतिज्ञापत्र",
+      "volunteer": "स्वयंसेवक बन्नुहोस्",
+      "postUpdate": "मतदातासँग अपडेट साझा गर्नुहोस्",
+      "postPlaceholder": "मैदानी अवलोकन, निरीक्षण अपडेट वा आफ्नो विचार साझा गर्नुहोस्…",
+      "postBtn": "पोस्ट प्रकाशित गर्नुहोस्",
+      "privateAnalyticsNotice": "यो खण्ड गोप्य छ — उम्मेदवार/सम्बन्धित व्यक्ति र प्लेटफर्म प्रशासकले मात्र हेर्न सक्छन्।",
+      "boothCoverage": "निर्वाचन क्षेत्रका मतदान केन्द्रको पहुँच",
+      "grassrootsReach": "तल्लो तहसम्मको पहुँच",
+      "avgResponseTime": "नागरिकलाई जवाफ दिने औसत समय",
+      "requestsAnswered": "समाधान गरिएका प्रश्नहरू",
+      "voterEngagementTrend": "३०-दिने प्रोफाइल सहभागिता",
+      "profileViews": "प्रोफाइल हेराइ",
+      "pendingCitizenRequests": "बाँकी नागरिक अनुरोधहरू",
+      "citizenPoll": "नागरिक प्राथमिकता मतदान",
+      "castVote": "मत दिनुहोस्",
+      "totalVotes": "कुल मत",
+      "agreeWithVision": "प्राथमिकतासँग सहमत",
+      "verifiedOfficialFigure": "आधिकारिक रूपमा प्रमाणित नेता"
   },
 }
 

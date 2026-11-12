@@ -9,6 +9,7 @@ import {
   ScrollView,
   Image,
   Keyboard,
+  ActivityIndicator,
 } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,7 +20,9 @@ import { useFavoritesStore } from '../../stores/favorites';
 import { useActiveStateStore } from '../../stores/activeState';
 import StateSwitcher from '../../components/StateSwitcher';
 import AISmartSearch from '../../components/AISmartSearch';
-import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '../../lib/stateDataAdapter';
+import type { UnifiedConstituency } from '../../lib/stateDataAdapter';
+import { useConstituencyDirectory } from '../../lib/useConstituencyDirectory';
+import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
 import { useTranslation } from 'react-i18next';
 import { useResponsive } from '../../lib/responsive';
 import PhotoViewerModal from '../../components/PhotoViewerModal';
@@ -64,10 +67,11 @@ export default function ExploreScreen() {
   const isFavorite = useFavoritesStore((s) => s.isFavorite);
   const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
   const stateCode = useActiveStateStore((s) => s.stateCode);
-  const allConstituencies = useMemo(
-    () => getUnifiedConstituenciesForState(stateCode),
-    [stateCode],
-  );
+  const {
+    constituencies: allConstituencies,
+    status: directoryStatus,
+    refresh: refreshDirectory,
+  } = useConstituencyDirectory(stateCode);
 
   /** Reset filters and search when switching state to avoid phantom empty results */
   useEffect(() => {
@@ -83,7 +87,8 @@ export default function ExploreScreen() {
     const pSet = new Set<string>();
     const dSet = new Set<string>();
     for (const c of allConstituencies) {
-      pSet.add(c.winnerParty);
+      const party = IS_LIVE_ENVIRONMENT ? c.currentParty : c.winnerParty;
+      if (party) pSet.add(party);
       dSet.add(c.district);
     }
     return {
@@ -119,16 +124,18 @@ export default function ExploreScreen() {
           c.localName,
         );
         const locDist = getLocalizedDistrictName(c.district, i18n.language) || c.district;
-        const locWinner = getLocalizedCandidateName(c.winnerName, i18n.language) || c.winnerName;
+        const representativeName = IS_LIVE_ENVIRONMENT ? c.currentMLA || '' : c.winnerName;
+        const representativeParty = IS_LIVE_ENVIRONMENT ? c.currentParty : c.winnerParty;
+        const locWinner = getLocalizedCandidateName(representativeName, i18n.language) || representativeName;
         return (
           c.name.toLowerCase().includes(q) ||
           locName.toLowerCase().includes(q) ||
           (c.localName && c.localName.toLowerCase().includes(q)) ||
           c.district.toLowerCase().includes(q) ||
           locDist.toLowerCase().includes(q) ||
-          c.winnerName.toLowerCase().includes(q) ||
+          representativeName.toLowerCase().includes(q) ||
           locWinner.toLowerCase().includes(q) ||
-          c.winnerParty.toLowerCase().includes(q) ||
+          representativeParty.toLowerCase().includes(q) ||
           (c.runnerUp && c.runnerUp.toLowerCase().includes(q)) ||
           c.type.toLowerCase() === q ||
           String(c.acNo) === q ||
@@ -138,7 +145,7 @@ export default function ExploreScreen() {
     }
 
     if (partyFilter) {
-      results = results.filter((c) => c.winnerParty === partyFilter);
+      results = results.filter((c) => (IS_LIVE_ENVIRONMENT ? c.currentParty : c.winnerParty) === partyFilter);
     }
     if (districtFilter) {
       results = results.filter((c) => c.district === districtFilter);
@@ -163,8 +170,10 @@ export default function ExploreScreen() {
         if (aDistStarts && !bDistStarts) return -1;
         if (!aDistStarts && bDistStarts) return 1;
 
-        const aMlaStarts = a.winnerName.toLowerCase().startsWith(q);
-        const bMlaStarts = b.winnerName.toLowerCase().startsWith(q);
+        const aRepresentative = IS_LIVE_ENVIRONMENT ? a.currentMLA || '' : a.winnerName;
+        const bRepresentative = IS_LIVE_ENVIRONMENT ? b.currentMLA || '' : b.winnerName;
+        const aMlaStarts = aRepresentative.toLowerCase().startsWith(q);
+        const bMlaStarts = bRepresentative.toLowerCase().startsWith(q);
         if (aMlaStarts && !bMlaStarts) return -1;
         if (!aMlaStarts && bMlaStarts) return 1;
 
@@ -437,6 +446,54 @@ export default function ExploreScreen() {
           </View>
         </View>
 
+        {IS_LIVE_ENVIRONMENT && directoryStatus !== 'NOT_APPLICABLE' && (
+          <View style={{
+            marginHorizontal: 16,
+            marginTop: 8,
+            marginBottom: 10,
+            paddingHorizontal: 10,
+            paddingVertical: 8,
+            minHeight: 36,
+            borderRadius: 10,
+            borderWidth: 1,
+            borderColor: colors.border,
+            backgroundColor: colors.surface,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 8,
+          }}>
+            {directoryStatus === 'LOADING' ? (
+              <ActivityIndicator size="small" color={colors.primary} />
+            ) : (
+              <Ionicons
+                name={directoryStatus === 'DATABASE_RECORDS' ? 'server-outline' : 'information-circle-outline'}
+                size={16}
+                color={directoryStatus === 'DATABASE_RECORDS' ? colors.teal : colors.textMuted}
+              />
+            )}
+            <Text style={{ flex: 1, fontSize: 11, lineHeight: 15, color: colors.textSecondary }}>
+              {directoryStatus === 'LOADING'
+                ? t('constituencyDirectory.loading', { defaultValue: 'Loading constituency records…' })
+                : directoryStatus === 'DATABASE_RECORDS'
+                  ? t('constituencyDirectory.databaseRecords', { defaultValue: 'Representative details are Poligram database records. Historical election results are not included in this directory.' })
+                  : directoryStatus === 'STALE_DATABASE_RECORDS'
+                    ? t('constituencyDirectory.staleRecords', { defaultValue: 'Showing previously loaded representative records; refresh to check for updates.' })
+                    : directoryStatus === 'DATABASE_EMPTY'
+                      ? t('constituencyDirectory.empty', { defaultValue: 'No representative records are available for this state yet.' })
+                      : t('constituencyDirectory.unavailable', { defaultValue: 'Live representative records are unavailable. Constituency geography remains available.' })}
+            </Text>
+            {(directoryStatus === 'UNAVAILABLE' || directoryStatus === 'STALE_DATABASE_RECORDS') && (
+              <Pressable
+                onPress={refreshDirectory}
+                accessibilityRole="button"
+                accessibilityLabel={t('common.retry', { defaultValue: 'Retry' })}
+              >
+                <Ionicons name="refresh" size={17} color={colors.primary} />
+              </Pressable>
+            )}
+          </View>
+        )}
+
         {/* Platform Discovery & Directory Card */}
         <Pressable
           style={{
@@ -581,7 +638,7 @@ export default function ExploreScreen() {
               <Text style={styles.filterLabel}>{t('explore.sortBy')}</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <View style={styles.chipRow}>
-                  {SORT_OPTION_KEYS.map((opt) => (
+                  {SORT_OPTION_KEYS.filter((opt) => !IS_LIVE_ENVIRONMENT || opt.key === 'acNo' || opt.key === 'name').map((opt) => (
                     <Pressable
                       key={opt.key}
                       style={[styles.chip, sortKey === opt.key && styles.chipActive]}
@@ -733,7 +790,9 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
   onAvatarPress?: (uri: string | null, name: string, party: string) => void;
   onToggleFav?: () => void;
 }) {
-  const partyColor = getPartyColor(item.winnerParty);
+  const representativeParty = IS_LIVE_ENVIRONMENT ? item.currentParty : item.winnerParty;
+  const representativeName = IS_LIVE_ENVIRONMENT ? item.currentMLA || '' : item.winnerName;
+  const partyColor = getPartyColor(representativeParty);
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
 
@@ -746,8 +805,8 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
   );
   const localizedDistrict = getLocalizedDistrictName(item.district, i18n.language) || item.district;
   const localizedType = getLocalizedReservation(item.type || '', i18n.language) || item.type;
-  const localizedWinnerParty = getLocalizedPartyName(item.winnerParty, i18n.language) || item.winnerParty;
-  const localizedWinnerName = getLocalizedCandidateName(item.winnerName, i18n.language) || item.winnerName;
+  const localizedWinnerParty = getLocalizedPartyName(representativeParty, i18n.language) || representativeParty;
+  const localizedWinnerName = getLocalizedCandidateName(representativeName, i18n.language) || representativeName;
 
   // Rich data badges from affidavit store
   const winnerAffidavit = item.stateCode && item.electionYear != null
@@ -760,13 +819,19 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
   return (
     <Pressable style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]} onPress={onPress}>
       <View style={styles.cardLeft}>
-        <CandidateAvatar
-          key={`${item.stateCode || ''}-${item.winnerName}`}
-          name={item.winnerName}
-          party={item.winnerParty}
-          size={48}
-          onPress={onAvatarPress ? (uri) => { onAvatarPress(uri, item.winnerName, item.winnerParty); } : undefined}
-        />
+        {representativeName ? (
+          <CandidateAvatar
+            key={`${item.stateCode || ''}-${representativeName}`}
+            name={representativeName}
+            party={representativeParty}
+            size={48}
+            onPress={onAvatarPress ? (uri) => { onAvatarPress(uri, representativeName, representativeParty); } : undefined}
+          />
+        ) : (
+          <View style={[styles.unknownCandidate, { backgroundColor: colors.surfaceElevated || colors.surface, borderColor: colors.border }]}>
+            <Ionicons name="person-outline" size={20} color={colors.textMuted} />
+          </View>
+        )}
       </View>
       <View style={styles.cardContent}>
         <Text style={[styles.cardName, { color: colors.text }]}>{localizedName}</Text>
@@ -774,11 +839,17 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
           #{item.acNo} · {localizedDistrict} · {localizedType}
         </Text>
         <View style={styles.cardWinnerRow}>
-          <View style={[styles.partyBadge, { backgroundColor: partyColor }]}>
-            <Text style={styles.partyBadgeText}>{localizedWinnerParty}</Text>
-          </View>
+          {representativeParty ? (
+            <View style={[styles.partyBadge, { backgroundColor: partyColor }]}>
+              <Text style={styles.partyBadgeText}>{localizedWinnerParty}</Text>
+            </View>
+          ) : null}
           <Text style={[styles.cardWinner, { color: colors.textSecondary }]} numberOfLines={1}>
-            {localizedWinnerName} · {item.margin != null ? item.margin.toLocaleString() : '—'}
+            {representativeName
+              ? IS_LIVE_ENVIRONMENT
+                ? localizedWinnerName
+                : `${localizedWinnerName} · ${item.margin != null ? item.margin.toLocaleString() : '—'}`
+              : t('constituencyDirectory.officeholderUnavailable', { defaultValue: 'Representative details unavailable' })}
           </Text>
         </View>
         {/* Transparency badges row */}
@@ -1088,6 +1159,14 @@ const styles = StyleSheet.create({
   },
   cardLeft: {
     marginRight: 12,
+  },
+  unknownCandidate: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   candidateAvatarWrap: {
     width: 44,

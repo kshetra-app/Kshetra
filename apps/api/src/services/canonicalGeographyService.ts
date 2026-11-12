@@ -311,6 +311,17 @@ export function resolveByElectionOverride(
   };
 }
 
+/** Bundled election overrides are local reference data, never a production source of current officeholders. */
+function resolveRuntimeByElectionOverride(
+  stateCode: string,
+  acNo: number,
+  constituencyName?: string,
+) {
+  return isProductionLikeRuntime()
+    ? null
+    : resolveByElectionOverride(stateCode, acNo, constituencyName);
+}
+
 // ─── CANONICAL GEOGRAPHY SERVICE IMPLEMENTATION ───
 
 export class CanonicalGeographyService {
@@ -383,6 +394,65 @@ export class CanonicalGeographyService {
       censusCode2011: data.census_code_2011 ?? null,
       internalId: data.internal_id ?? null,
     };
+  }
+
+  /**
+   * Resolve current officeholders from the normalized tenure registry.
+   * Legacy constituency.current_mla values are deprecated and are only used
+   * by non-production compatibility paths when no canonical tenure exists.
+   */
+  private async getCurrentTenureMap(
+    constituencyIds: string[],
+  ): Promise<Map<string, { currentParty: string; currentMLA: string; gender: 'M' | 'F' | null }>> {
+    const result = new Map<
+      string,
+      { currentParty: string; currentMLA: string; gender: 'M' | 'F' | null }
+    >();
+    const ids = [...new Set(constituencyIds.filter((id) => typeof id === 'string' && id.trim()))];
+    if (!ids.length) return result;
+
+    try {
+      const { data, error } = await supabase
+        .from('elected_tenures')
+        .select(
+          'jurisdiction_id, current_party, canonical_persons(canonical_name, gender), party:political_organizations!elected_tenures_current_party_fkey(ec_party_code, short_name)',
+        )
+        .eq('jurisdiction_type', 'assembly_constituency')
+        .eq('office_type', 'mla')
+        .eq('is_current', true)
+        .in('jurisdiction_id', ids);
+
+      if (error || !Array.isArray(data)) return result;
+
+      const candidates = new Map<
+        string,
+        Array<{ currentParty: string; currentMLA: string; gender: 'M' | 'F' | null }>
+      >();
+      for (const row of data as any[]) {
+        if (!row || typeof row.jurisdiction_id !== 'string') continue;
+        const party = Array.isArray(row.party) ? row.party[0] : row.party;
+        const person = Array.isArray(row.canonical_persons)
+          ? row.canonical_persons[0]
+          : row.canonical_persons;
+        const value: { currentParty: string; currentMLA: string; gender: 'M' | 'F' | null } = {
+          currentParty: party?.ec_party_code || party?.short_name || '',
+          currentMLA: person?.canonical_name || '',
+          gender: person?.gender === 'male' ? 'M' : person?.gender === 'female' ? 'F' : null,
+        };
+        const entries = candidates.get(row.jurisdiction_id) || [];
+        entries.push(value);
+        candidates.set(row.jurisdiction_id, entries);
+      }
+
+      // Ambiguous active tenures must not be resolved by whichever row Postgres returns first.
+      for (const [jurisdictionId, entries] of candidates) {
+        if (entries.length === 1) result.set(jurisdictionId, entries[0]);
+      }
+    } catch {
+      // A missing or not-yet-migrated tenure registry yields no canonical officeholder.
+    }
+
+    return result;
   }
 
   /**
@@ -468,6 +538,7 @@ export class CanonicalGeographyService {
       .eq('state_code', code)
       .order('ac_no');
 
+    if (error && isProductionLikeRuntime()) throw error;
     if (error || !data || !Array.isArray(data) || data.length === 0) {
       return [];
     }
@@ -477,40 +548,19 @@ export class CanonicalGeographyService {
       return [];
     }
 
-    // Enrich with elected_tenures if available
-    const tenureMap = new Map<string, { currentParty: string; currentMLA: string }>();
-    try {
-      const { data: tenures } = await supabase
-        .from('elected_tenures')
-        .select('jurisdiction_id, current_party, canonical_persons(name)')
-        .eq('jurisdiction_type', 'assembly_constituency')
-        .eq('is_current', true);
-
-      if (tenures && Array.isArray(tenures)) {
-        for (const t of tenures as any[]) {
-          if (t && t.jurisdiction_id) {
-            tenureMap.set(t.jurisdiction_id, {
-              currentParty: t.current_party || '',
-              currentMLA: t.canonical_persons?.name || '',
-            });
-          }
-        }
-      }
-    } catch {
-      // Graceful fallback if elected_tenures is unmigrated or unpopulated
-    }
+    const tenureMap = await this.getCurrentTenureMap(
+      validRows
+        .map((row: any) => row.id)
+        .filter((id: unknown): id is string => typeof id === 'string'),
+    );
 
     return validRows.map((row: any) => {
-      let currentParty = row.current_party || '';
-      let currentMLA = row.current_mla || '';
-
       const tenure = tenureMap.get(row.id);
-      if (tenure) {
-        if (!currentParty && tenure.currentParty) currentParty = tenure.currentParty;
-        if (!currentMLA && tenure.currentMLA) currentMLA = tenure.currentMLA;
-      }
+      let currentParty = tenure?.currentParty || row.current_party || '';
+      let currentMLA =
+        tenure?.currentMLA || (isProductionLikeRuntime() ? '' : row.current_mla || '');
 
-      const override = resolveByElectionOverride(code, row.ac_no, row.name);
+      const override = resolveRuntimeByElectionOverride(code, row.ac_no, row.name);
       if (override) {
         currentParty = override.currentParty;
         currentMLA = override.currentMLA;
@@ -545,14 +595,17 @@ export class CanonicalGeographyService {
       .eq('ac_no', acNo)
       .maybeSingle();
 
+    if (error && isProductionLikeRuntime()) throw error;
     if (error || !data || !data.name || typeof data.ac_no !== 'number') {
       return null;
     }
 
-    let currentParty = data.current_party || '';
-    let currentMLA = data.current_mla || '';
+    const tenure = await this.getCurrentTenureMap([data.id]).then((map) => map.get(data.id));
+    let currentParty = tenure?.currentParty || data.current_party || '';
+    let currentMLA =
+      tenure?.currentMLA || (isProductionLikeRuntime() ? '' : data.current_mla || '');
 
-    const override = resolveByElectionOverride(code, data.ac_no, data.name);
+    const override = resolveRuntimeByElectionOverride(code, data.ac_no, data.name);
     if (override) {
       currentParty = override.currentParty;
       currentMLA = override.currentMLA;
@@ -594,12 +647,19 @@ export class CanonicalGeographyService {
     }
 
     const validRows = data.filter((row: any) => row && row.name && typeof row.ac_no === 'number');
+    const tenureMap = await this.getCurrentTenureMap(
+      validRows
+        .map((row: any) => row.id)
+        .filter((id: unknown): id is string => typeof id === 'string'),
+    );
 
     return validRows.map((row: any) => {
-      let currentParty = row.current_party || '';
-      let currentMLA = row.current_mla || '';
+      const tenure = tenureMap.get(row.id);
+      let currentParty = tenure?.currentParty || row.current_party || '';
+      let currentMLA =
+        tenure?.currentMLA || (isProductionLikeRuntime() ? '' : row.current_mla || '');
 
-      const override = resolveByElectionOverride(code, row.ac_no, row.name);
+      const override = resolveRuntimeByElectionOverride(code, row.ac_no, row.name);
       if (override) {
         currentParty = override.currentParty;
         currentMLA = override.currentMLA;
@@ -655,6 +715,7 @@ export class CanonicalGeographyService {
       )
       .eq('constituency_id', constituencyId);
 
+    if (error && isProductionLikeRuntime()) throw error;
     if (error || !contests || contests.length === 0) {
       return null;
     }
@@ -738,12 +799,16 @@ export class CanonicalGeographyService {
         .eq('ac_no', acNo)
         .maybeSingle();
 
+      if (error && isProductionLikeRuntime()) throw error;
       if (error || !data || !data.name) return null;
 
-      let name = data.current_mla || 'UNKNOWN';
-      let party = data.current_party || 'UNKNOWN';
+      const tenure = (await this.getCurrentTenureMap([data.id])).get(data.id);
+      if (isProductionLikeRuntime() && !tenure?.currentMLA) return null;
 
-      const override = resolveByElectionOverride(code, data.ac_no, data.name);
+      let name = tenure?.currentMLA || data.current_mla || 'UNKNOWN';
+      let party = tenure?.currentParty || data.current_party || 'UNKNOWN';
+
+      const override = resolveRuntimeByElectionOverride(code, data.ac_no, data.name);
       if (override) {
         name = override.currentMLA;
         party = override.currentParty;
@@ -756,10 +821,15 @@ export class CanonicalGeographyService {
         constituencyName: data.name,
         district: data.district || '',
         stateCode: code,
-        gender: 'M',
-        terms: 1,
+        ...(tenure?.gender
+          ? { gender: tenure.gender }
+          : isProductionLikeRuntime()
+            ? {}
+            : { gender: 'M' }),
+        ...(!isProductionLikeRuntime() ? { terms: 1 } : {}),
       };
-    } catch {
+    } catch (error) {
+      if (isProductionLikeRuntime()) throw error;
       return null;
     }
   }
@@ -780,15 +850,25 @@ export class CanonicalGeographyService {
         .eq('state_code', code)
         .order('ac_no');
 
+      if (error && isProductionLikeRuntime()) throw error;
       if (error || !data || !Array.isArray(data) || data.length === 0) return [];
+
+      const tenureMap = await this.getCurrentTenureMap(
+        data
+          .map((row: any) => row?.id)
+          .filter((id: unknown): id is string => typeof id === 'string'),
+      );
 
       return data
         .filter((c: any) => c && typeof c.ac_no === 'number')
         .map((c: any) => {
-          let name = c.current_mla || 'UNKNOWN';
-          let party = c.current_party || 'UNKNOWN';
+          const tenure = tenureMap.get(c.id);
+          if (isProductionLikeRuntime() && !tenure?.currentMLA) return null;
 
-          const override = resolveByElectionOverride(code, c.ac_no, c.name);
+          let name = tenure?.currentMLA || c.current_mla || 'UNKNOWN';
+          let party = tenure?.currentParty || c.current_party || 'UNKNOWN';
+
+          const override = resolveRuntimeByElectionOverride(code, c.ac_no, c.name);
           if (override) {
             name = override.currentMLA;
             party = override.currentParty;
@@ -801,11 +881,17 @@ export class CanonicalGeographyService {
             constituencyName: c.name,
             district: c.district || '',
             stateCode: code,
-            gender: 'M',
-            terms: 1,
+            ...(tenure?.gender
+              ? { gender: tenure.gender }
+              : isProductionLikeRuntime()
+                ? {}
+                : { gender: 'M' }),
+            ...(!isProductionLikeRuntime() ? { terms: 1 } : {}),
           };
-        });
-    } catch {
+        })
+        .filter((profile: any) => profile !== null);
+    } catch (error) {
+      if (isProductionLikeRuntime()) throw error;
       return [];
     }
   }
@@ -1096,34 +1182,119 @@ export class CanonicalGeographyService {
       );
     }
 
-    // 1. Query PostGIS via Supabase when configured
-    if (this.isAvailable()) {
+    // Production uses only the versioned DB lookup. It returns geography fields
+    // separately from the tenure registry so deprecated officeholder columns
+    // cannot leak through this endpoint.
+    if (isProductionLikeRuntime()) {
+      if (!this.isAvailable()) {
+        return {
+          latitude: lat,
+          longitude: lng,
+          constituency: null,
+          message:
+            'Constituency lookup is unavailable because the live database is not configured.',
+          source: 'unavailable',
+        };
+      }
+
       try {
-        const { data, error } = await supabase.rpc('locate_constituency_point', {
+        const { data, error } = await supabase.rpc('locate_constituency_point_truthful', {
           p_lat: lat,
           p_lng: lng,
         });
-        if (!error && data && data.length > 0) {
-          const row = data[0];
+        if (error) {
+          return {
+            latitude: lat,
+            longitude: lng,
+            constituency: null,
+            message: 'Constituency lookup is temporarily unavailable.',
+            source: 'unavailable',
+          };
+        }
+
+        if (!Array.isArray(data) || data.length === 0) {
+          return {
+            latitude: lat,
+            longitude: lng,
+            constituency: null,
+            message: 'No constituency boundary matches this location.',
+            source: 'postgis_spatial',
+          };
+        }
+
+        if (data.length !== 1) {
+          return {
+            latitude: lat,
+            longitude: lng,
+            constituency: null,
+            message:
+              'More than one constituency boundary matches this location; the result was withheld.',
+            source: 'postgis_spatial',
+          };
+        }
+
+        const row = data[0] as any;
+        const tenure = (await this.getCurrentTenureMap([row.id])).get(row.id);
+        return {
+          latitude: lat,
+          longitude: lng,
+          constituency: {
+            id: row.id,
+            ...(row.internal_id ? { internalId: row.internal_id } : {}),
+            name: row.name,
+            acNo: row.ac_no,
+            stateCode: row.state_code,
+            district: row.district || '',
+            reservationStatus: row.reservation_status || 'GEN',
+            currentParty: tenure?.currentParty || '',
+            currentMLA: tenure?.currentMLA || '',
+            officeholderStatus: tenure?.currentMLA ? 'INCUMBENT_ACTIVE' : 'UNRESOLVED',
+          },
+          message: 'Constituency located',
+          source: 'postgis_spatial',
+        };
+      } catch {
+        return {
+          latitude: lat,
+          longitude: lng,
+          constituency: null,
+          message: 'Constituency lookup is temporarily unavailable.',
+          source: 'unavailable',
+        };
+      }
+    }
+
+    // Development may use the local geography file while the DB function is
+    // being configured. It is never used as a production political data source.
+    if (this.isAvailable()) {
+      try {
+        const { data, error } = await supabase.rpc('locate_constituency_point_truthful', {
+          p_lat: lat,
+          p_lng: lng,
+        });
+        if (!error && Array.isArray(data) && data.length === 1) {
+          const row = data[0] as any;
           return {
             latitude: lat,
             longitude: lng,
             constituency: {
               id: row.id,
+              ...(row.internal_id ? { internalId: row.internal_id } : {}),
               name: row.name,
               acNo: row.ac_no,
               stateCode: row.state_code,
               district: row.district || '',
               reservationStatus: row.reservation_status || 'GEN',
-              currentParty: row.current_party || 'UNKNOWN',
-              currentMLA: row.current_mla || 'UNKNOWN',
+              currentParty: '',
+              currentMLA: '',
+              officeholderStatus: 'UNRESOLVED',
             },
             message: 'Constituency located',
             source: 'postgis_spatial',
           };
         }
       } catch {
-        // Fallback to geometric check
+        // Development can continue to the local boundary file below.
       }
     }
 
@@ -1155,7 +1326,7 @@ export class CanonicalGeographyService {
       // Continue to known coordinate boundaries
     }
 
-    // 3. Known high-precision landmark coordinates (verified boundary centroids)
+    // 3. Known landmark coordinates are a development convenience only.
     const landmarks = [
       { name: 'Kodangal', lat: 17.1105, lng: 77.6253, stateCode: 'TS', acNo: 72 },
       { name: 'Gajwel', lat: 17.8505, lng: 78.6833, stateCode: 'TS', acNo: 33 },
@@ -1189,7 +1360,7 @@ export class CanonicalGeographyService {
       longitude: lng,
       constituency: null,
       message: 'No constituency found at this location',
-      source: 'postgis_spatial',
+      source: 'canonical_database',
     };
   }
 
@@ -1209,69 +1380,56 @@ export class CanonicalGeographyService {
         singleMatch: false,
         primaryConstituency: null,
         candidates: [],
-        message: `PIN code ${pinCode} is not yet mapped in the authoritative electoral concordance directory.`,
-        source: 'authoritative_pincode_directory',
+        message: `No curated constituency reference is available for PIN code ${pinCode}.`,
+        source: 'curated_provisional_directory',
       };
     }
 
-    // Subcase 1: Multi-AC intersection (e.g. 500001, 500028, 500034)
-    if (
-      item.spatialRelationship === 'INTERSECTS_MULTIPLE_ACS' &&
-      Array.isArray(item.candidateAcNos) &&
-      item.candidateAcNos.length > 0
-    ) {
-      const candidates: PinCodeCandidate[] = [];
-      const weight = 1 / item.candidateAcNos.length;
+    const verificationStatus = item.verificationStatus;
+    const canAssertSingleMatch = verificationStatus === 'AUTHORITATIVE_RELATIONSHIP_ESTABLISHED';
+    const candidateAcNos =
+      verificationStatus === 'DOCUMENTED_MULTI_AC_AMBIGUITY'
+        ? item.candidateAcNos || []
+        : typeof item.canonicalAcNo === 'number'
+          ? [item.canonicalAcNo]
+          : item.candidateAcNos || [];
 
-      for (const acNo of item.candidateAcNos) {
-        const c = getStateConstituency(item.stateCode, acNo);
-        if (c) {
-          candidates.push({
-            constituency: c,
-            overlapWeight: Number(weight.toFixed(4)),
-            localityNote: `${item.locality} (${item.knownLimitations || ''})`.trim(),
-          });
-        }
-      }
-
-      return {
-        pinCode,
-        singleMatch: false,
-        primaryConstituency: candidates[0]?.constituency ?? null,
-        candidates,
-        message: item.knownLimitations || 'PIN code intersects multiple assembly constituencies.',
-        source: 'authoritative_pincode_directory',
-      };
+    const candidates: PinCodeCandidate[] = [];
+    for (const acNo of candidateAcNos) {
+      const constituency = isProductionLikeRuntime()
+        ? await this.getConstituency(item.stateCode, acNo)
+        : getStateConstituency(item.stateCode, acNo);
+      if (!constituency) continue;
+      candidates.push({
+        constituency,
+        // The reviewed PIN sources establish candidates or ambiguity, not
+        // population-area proportions. Never turn equal splitting into a probability.
+        overlapWeight: null,
+        verificationStatus,
+        localityNote: `${item.locality} (${item.knownLimitations || ''})`.trim(),
+      });
     }
 
-    // Subcase 2: Single canonical AC mapping
-    if (typeof item.canonicalAcNo === 'number') {
-      const c = getStateConstituency(item.stateCode, item.canonicalAcNo);
-      if (c) {
-        return {
-          pinCode,
-          singleMatch: true,
-          primaryConstituency: c,
-          candidates: [
-            {
-              constituency: c,
-              overlapWeight: 1.0,
-              localityNote: item.locality,
-            },
-          ],
-          message: 'Constituency resolved from authoritative postal directory',
-          source: 'authoritative_pincode_directory',
-        };
-      }
-    }
+    const exactCandidate = canAssertSingleMatch ? (candidates[0]?.constituency ?? null) : null;
+    const singleMatch = canAssertSingleMatch && candidates.length === 1;
 
     return {
       pinCode,
-      singleMatch: false,
-      primaryConstituency: null,
-      candidates: [],
-      message: `PIN code ${pinCode} mapping resolution failed due to missing electoral concordance data.`,
-      source: 'authoritative_pincode_directory',
+      singleMatch,
+      primaryConstituency: singleMatch ? exactCandidate : null,
+      candidates: singleMatch
+        ? candidates.map((candidate) => ({ ...candidate, overlapWeight: 1 }))
+        : candidates,
+      verificationStatus,
+      message:
+        verificationStatus === 'DOCUMENTED_MULTI_AC_AMBIGUITY'
+          ? item.knownLimitations
+          : singleMatch
+            ? 'PIN code is linked to one constituency by verified source evidence.'
+            : candidates.length > 0
+              ? `Provisional reference only; a one-to-one PIN-to-constituency match is not established. ${item.knownLimitations}`
+              : 'The curated PIN reference has no matching canonical constituency record available.',
+      source: 'curated_provisional_directory',
     };
   }
 }

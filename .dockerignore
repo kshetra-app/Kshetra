@@ -4,6 +4,8 @@ apps/mobile
 .expo
 .git
 .turbo
+**/.env
+**/.env.*
 android
 ios
 scrapers/output

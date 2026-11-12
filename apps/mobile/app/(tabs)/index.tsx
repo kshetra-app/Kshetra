@@ -66,10 +66,10 @@ import PhotoViewerModal from '../../components/PhotoViewerModal';
 import { useFavoritesStore } from '../../stores/favorites';
 import { useMyConstituencyStore } from '../../stores/myConstituency';
 import {
-  getUnifiedConstituenciesForState,
   getAvailableYearsForState,
   type UnifiedConstituency,
 } from '../../lib/stateDataAdapter';
+import { useConstituencyDirectory } from '../../lib/useConstituencyDirectory';
 import { getTriviaForConstituencyInState, getAllTriviaForState } from '../../lib/stateTriviaAdapter';
 import { getHistoryForState, getMLAProfileForState } from '../../lib/stateDataDispatcher';
 import { selectFreshTrivia } from '../../lib/triviaSelector';
@@ -109,6 +109,7 @@ interface SelectedConstituency {
   type: string | null;
   localName?: string;
   currentParty?: string;
+  currentMLA?: string;
   electionYear: number | null;
 }
 
@@ -320,10 +321,11 @@ function FullMapScreen() {
   );
 
   /** Unified constituency list + lookup map for the active state */
-  const stateConstituencies = useMemo(
-    () => getUnifiedConstituenciesForState(stateCode),
-    [stateCode],
-  );
+  const {
+    constituencies: stateConstituencies,
+    status: constituencyDirectoryStatus,
+    refresh: refreshConstituencyDirectory,
+  } = useConstituencyDirectory(stateCode);
   const seedMap = useMemo(
     () => new Map<number, UnifiedConstituency>(stateConstituencies.map((c) => [c.acNo, c])),
     [stateConstituencies],
@@ -361,13 +363,38 @@ function FullMapScreen() {
             props.DISTRICT_LOCAL = localized || distName;
           }
         }
+        if (IS_LIVE_ENVIRONMENT) {
+          if (stateCode === 'IN') {
+            props.WINNER_PARTY = '';
+            props.CURRENT_PARTY = '';
+          } else {
+            const acNo = Number(props.AC_NO);
+            const record = Number.isInteger(acNo) ? seedMap.get(acNo) : undefined;
+            props.CURRENT_PARTY = record?.currentParty || '';
+            props.CURRENT_MLA = record?.currentMLA || '';
+            props.RESERVATION = record?.type || '';
+            props.WINNER_PARTY = '';
+            props.WINNER_NAME = '';
+            props.WINNER_VOTES = null;
+            props.RUNNER_UP = '';
+            props.RUNNER_UP_NAME = '';
+            props.RUNNER_UP_VOTES = null;
+            props.TOTAL_VOTES = null;
+            props.MARGIN = null;
+            props.BATTLEGROUND = 'unknown';
+            props.IS_SWING = 'unknown';
+            for (const key of Object.keys(props)) {
+              if (key.startsWith('WINNER_PARTY_') || key.startsWith('WINNER_NAME_')) props[key] = '';
+            }
+          }
+        }
         return {
           ...f,
           properties: props,
         };
       }),
     };
-  }, [rawEnriched, stateCode, i18n.language]);
+  }, [rawEnriched, stateCode, i18n.language, seedMap]);
 
   /** Deduped GeoJSON for map labels (STATE_NAME or DISTRICT) */
   const labelGeoJSON = useMemo(() => {
@@ -500,7 +527,7 @@ function FullMapScreen() {
       case 'turnout': return turnoutFillColor;
       case 'battleground': return battlegroundFillColor;
       case 'swing': return swingFillColor;
-      default: return getPartyFillColorExpression(selectedYear, stateCode === 'IN');
+      default: return getPartyFillColorExpression(selectedYear, stateCode === 'IN', IS_LIVE_ENVIRONMENT);
     }
   }, [colorMode, selectedYear, stateCode]);
 
@@ -535,6 +562,7 @@ function FullMapScreen() {
         type: seed?.type ?? null,
         localName: seed?.localName,
         currentParty: seed?.currentParty,
+        currentMLA: seed?.currentMLA,
         electionYear: seed?.electionYear ?? null,
       };
     },
@@ -921,7 +949,7 @@ function FullMapScreen() {
     bottomSheetRef.current?.close();
 
     const years = getAvailableYearsForState(stateCode);
-    setSelectedYear(years[years.length - 1]);
+    setSelectedYear(years.at(-1) ?? 0);
     setSelectedBooth(null);
 
     const cam = getDynamicStateCamera(stateCode, activeGeoJSON);
@@ -1616,7 +1644,59 @@ function FullMapScreen() {
           }}
           pointerEvents="box-none"
         >
-          <MapColorToggle mode={colorMode} onModeChange={setColorMode} />
+          <MapColorToggle
+            mode={colorMode}
+            onModeChange={setColorMode}
+            allowedModes={IS_LIVE_ENVIRONMENT ? ['party', 'reservation'] : undefined}
+          />
+          {IS_LIVE_ENVIRONMENT && (
+            <View
+              style={{
+                marginTop: 5,
+                marginRight: 4,
+                paddingHorizontal: 9,
+                paddingVertical: 7,
+                borderRadius: 9,
+                borderWidth: 1,
+                borderColor: colors.border,
+                backgroundColor: colors.surface,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 7,
+              }}
+            >
+              {constituencyDirectoryStatus === 'LOADING' ? (
+                <ActivityIndicator size="small" color={colors.primary} />
+              ) : (
+                <Ionicons
+                  name={constituencyDirectoryStatus === 'DATABASE_RECORDS' ? 'server-outline' : 'information-circle-outline'}
+                  size={15}
+                  color={constituencyDirectoryStatus === 'DATABASE_RECORDS' ? colors.teal : colors.textMuted}
+                />
+              )}
+              <Text style={{ flex: 1, color: colors.textSecondary, fontSize: 10, lineHeight: 14 }}>
+                {constituencyDirectoryStatus === 'LOADING'
+                  ? t('constituencyDirectory.loading', { defaultValue: 'Checking live constituency records…' })
+                  : constituencyDirectoryStatus === 'DATABASE_RECORDS'
+                    ? t('constituencyDirectory.databaseRecords', { defaultValue: 'Party and representative details come from Poligram database records. Seats without a record remain unclassified; historical election results are not included.' })
+                    : constituencyDirectoryStatus === 'STALE_DATABASE_RECORDS'
+                      ? t('constituencyDirectory.staleRecords', { defaultValue: 'Showing previously loaded records; current database data could not be confirmed.' })
+                      : constituencyDirectoryStatus === 'DATABASE_EMPTY'
+                        ? t('constituencyDirectory.empty', { defaultValue: 'No representative records are available for this state yet.' })
+                        : t('constituencyDirectory.unavailable', { defaultValue: 'Live representative records are unavailable. Constituency geography remains available.' })}
+              </Text>
+              {(constituencyDirectoryStatus === 'UNAVAILABLE' || constituencyDirectoryStatus === 'STALE_DATABASE_RECORDS' || constituencyDirectoryStatus === 'DATABASE_EMPTY') && (
+                <Pressable
+                  onPress={refreshConstituencyDirectory}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('common.retry', { defaultValue: 'Retry' })}
+                  hitSlop={8}
+                >
+                  <Ionicons name="refresh" size={16} color={colors.primary} />
+                </Pressable>
+              )}
+            </View>
+          )}
         </View>
       )}
 
@@ -1625,6 +1705,8 @@ function FullMapScreen() {
         <MapLegend
           colorMode={colorMode}
           stateCode={stateCode}
+          records={stateConstituencies}
+          liveMode={IS_LIVE_ENVIRONMENT}
           initialTop={mapTopOffset + (isScreenImmersive ? 54 : (!hideOverlays && !selected && stateCode !== 'IN' ? 148 : 98))}
         />
       )}
@@ -2253,6 +2335,13 @@ function FullMapScreen() {
                     <Text style={styles.sheetSubtitle} numberOfLines={1}>
                       {getLocalizedDistrictName(selected.district, i18n.language)}, {getLocalizedStateName(stateCode, i18n.language)}
                     </Text>
+                    {IS_LIVE_ENVIRONMENT && (
+                      <Text style={styles.sheetSubtitle} numberOfLines={1}>
+                        {selected.currentMLA
+                          ? `${t('constituencyDirectory.currentRepresentative', { defaultValue: 'Current representative' })}: ${getLocalizedCandidateName(selected.currentMLA, i18n.language) || selected.currentMLA}${selected.currentParty ? ` · ${getLocalizedPartyName(selected.currentParty, i18n.language) || selected.currentParty}` : ''}`
+                          : t('constituencyDirectory.officeholderUnavailable', { defaultValue: 'Representative details unavailable' })}
+                      </Text>
+                    )}
                   </View>
                   <View style={styles.sheetLatestTag}>
                     <Text style={styles.sheetLatestTagLabel}>

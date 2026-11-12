@@ -1241,8 +1241,8 @@ export async function endSession(sessionId: string, screensViewed: string[], act
 
 // ─── Political Shorts ─────────────────────────────────────────────────────────
 
-export async function fetchShorts(stateCode?: string): Promise<any[]> {
-  if (!guard()) return [];
+export async function fetchShorts(stateCode?: string): Promise<any[] | null> {
+  if (!guard()) return null;
   try {
     let query = supabase
       .from('political_shorts')
@@ -1281,7 +1281,7 @@ export async function fetchShorts(stateCode?: string): Promise<any[]> {
     }));
   } catch (err) {
     captureException(err as Error, { op: 'fetch_shorts' });
-    return [];
+    return null;
   }
 }
 

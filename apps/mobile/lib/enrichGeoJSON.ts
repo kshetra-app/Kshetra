@@ -1,6 +1,7 @@
 import { TELANGANA_CONSTITUENCIES, type ConstituencySeed } from './data';
 import { getUnifiedConstituenciesForState, type UnifiedConstituency } from './stateDataAdapter';
 import { getDemographicsForState, getHistoryForState } from './stateDataDispatcher';
+import { IS_LIVE_ENVIRONMENT } from './environment';
 import { STATES } from '@kshetra/shared';
 
 /** Lookup map from AC_NO to seed data for O(1) access */
@@ -23,7 +24,7 @@ export function enrichGeoJSON(
     ...geojson,
     features: geojson.features.map((feature) => {
       const acNo = feature.properties?.AC_NO;
-      const seed = acNo != null ? seedByAcNo.get(acNo) : undefined;
+      const seed = !IS_LIVE_ENVIRONMENT && acNo != null ? seedByAcNo.get(acNo) : undefined;
       const demo = acNo != null ? getDemographicsForState('TS', acNo) : undefined;
 
       const history = acNo != null ? getHistoryForState('TS', acNo) : [];
@@ -66,11 +67,11 @@ export function enrichGeoJSON(
           ...feature.properties,
           WINNER_PARTY: seed?.winner2023 ?? '',
           WINNER_NAME: seed?.winnerName2023 ?? '',
-          WINNER_VOTES: seed?.winnerVotes2023 ?? feature.properties?.WINNER_VOTES ?? null,
+          WINNER_VOTES: IS_LIVE_ENVIRONMENT ? null : seed?.winnerVotes2023 ?? feature.properties?.WINNER_VOTES ?? null,
           RUNNER_UP: seed?.runnerUp2023 ?? '',
-          RUNNER_UP_NAME: seed?.runnerUpName2023 ?? feature.properties?.RUNNER_UP_NAME ?? '',
-          RUNNER_UP_VOTES: (seed as any)?.runnerUpVotes2023 ?? feature.properties?.RUNNER_UP_VOTES ?? null,
-          TOTAL_VOTES: (seed as any)?.totalValidVotes2023 ?? (seed as any)?.totalVotes2023 ?? feature.properties?.TOTAL_VOTES ?? null,
+          RUNNER_UP_NAME: IS_LIVE_ENVIRONMENT ? '' : seed?.runnerUpName2023 ?? feature.properties?.RUNNER_UP_NAME ?? '',
+          RUNNER_UP_VOTES: IS_LIVE_ENVIRONMENT ? null : (seed as any)?.runnerUpVotes2023 ?? feature.properties?.RUNNER_UP_VOTES ?? null,
+          TOTAL_VOTES: IS_LIVE_ENVIRONMENT ? null : (seed as any)?.totalValidVotes2023 ?? (seed as any)?.totalVotes2023 ?? feature.properties?.TOTAL_VOTES ?? null,
           MARGIN: seed?.margin2023 ?? null,
           RESERVATION: seed?.type ?? '',
           DISTRICT: seed?.district ?? '',
@@ -249,11 +250,11 @@ export function enrichGeoJSONForState(
           AC_NAME: c?.name ?? geoName,
           WINNER_PARTY: c?.winnerParty ?? '',
           WINNER_NAME: c?.winnerName ?? '',
-          WINNER_VOTES: c?.winnerVotes ?? feature.properties?.WINNER_VOTES ?? null,
+          WINNER_VOTES: IS_LIVE_ENVIRONMENT ? null : c?.winnerVotes ?? feature.properties?.WINNER_VOTES ?? null,
           RUNNER_UP: c?.runnerUp ?? '',
-          RUNNER_UP_NAME: c?.runnerUpName ?? feature.properties?.RUNNER_UP_NAME ?? '',
-          RUNNER_UP_VOTES: c?.runnerUpVotes ?? feature.properties?.RUNNER_UP_VOTES ?? null,
-          TOTAL_VOTES: (c as any)?.totalValidVotes ?? (c as any)?.totalVotes ?? feature.properties?.TOTAL_VOTES ?? null,
+          RUNNER_UP_NAME: IS_LIVE_ENVIRONMENT ? '' : c?.runnerUpName ?? feature.properties?.RUNNER_UP_NAME ?? '',
+          RUNNER_UP_VOTES: IS_LIVE_ENVIRONMENT ? null : c?.runnerUpVotes ?? feature.properties?.RUNNER_UP_VOTES ?? null,
+          TOTAL_VOTES: IS_LIVE_ENVIRONMENT ? null : (c as any)?.totalValidVotes ?? (c as any)?.totalVotes ?? feature.properties?.TOTAL_VOTES ?? null,
           RESERVATION: c?.type ?? '',
           MARGIN: c?.margin ?? null,
           DISTRICT: c?.district ?? feature.properties?.DIST_NAME ?? '',

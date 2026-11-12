@@ -43,6 +43,7 @@ function containsNonAsciiCharacters(value: string): boolean {
 
 import { API_BASE_URL } from './constants';
 import { stripHonorifics, getCanonicalCandidateName } from './candidatePhotos';
+import { IS_LIVE_ENVIRONMENT } from './environment';
 
 // In-memory cache for parsed state podium files (hydrated on demand from API or local cache)
 const stateCache = new Map<string, Record<string, HistoricalPodiumContest[]>>();
@@ -166,8 +167,8 @@ export async function fetchHistoricalPodiumForConstituency(
     console.warn(`[historicalPodiumStore] Failed to fetch AC podium for ${code} ${acNoOrName}:`, err);
   }
 
-  // Offline / fallback from SQLite prebuilt database
-  try {
+  // Offline / fallback from SQLite prebuilt database is development-only.
+  if (!IS_LIVE_ENVIRONMENT) try {
     const { loadHistoricalResultsForState, getHistoricalResults } = require('./seedDataLoader');
     await loadHistoricalResultsForState(code);
     const acNum = typeof acNoOrName === 'number' ? acNoOrName : parseInt(String(acNoOrName), 10);
@@ -287,6 +288,13 @@ export function getHistoricalPodiumForConstituency(
   acNoOrName: number | string,
 ): HistoricalPodiumContest[] {
   const code = (stateCode || 'TS').toUpperCase();
+  if (IS_LIVE_ENVIRONMENT) {
+    const apiData = stateCache.get(code);
+    const apiContests = apiData?.[String(acNoOrName)] || apiData?.[Number(acNoOrName) as any] || [];
+    return Array.isArray(apiContests)
+      ? [...apiContests].sort((a, b) => (b.year ?? 0) - (a.year ?? 0))
+      : [];
+  }
   if (code === 'IN' || code === 'LOK_SABHA') {
     buildLokSabhaIndexes();
     if (typeof acNoOrName === 'number') {

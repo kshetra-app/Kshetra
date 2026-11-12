@@ -69,6 +69,7 @@ import {
 import { SequenceGuard } from '../../lib/staleResponseGuard';
 import { apiClient } from '../../lib/api';
 import type { ConstituencyDetailDTO } from '../../lib/api/endpoints/constituencies';
+import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
 
 
 export default function ConstituencyDetailScreen() {
@@ -116,9 +117,12 @@ export default function ConstituencyDetailScreen() {
 
   // ─── Phase W021.5 / Directive 084: Canonical Data Path with SequenceGuard ───
   const [apiDetail, setApiDetail] = useState<ConstituencyDetailDTO | null>(null);
-  const [dataSource, setDataSource] = useState<'LIVE_API' | 'OFFLINE_SEED' | 'UNAVAILABLE'>('OFFLINE_SEED');
+  const [dataSource, setDataSource] = useState<'LIVE_API' | 'OFFLINE_SEED' | 'GEOGRAPHY_ONLY' | 'UNAVAILABLE'>(
+    IS_LIVE_ENVIRONMENT ? 'UNAVAILABLE' : 'OFFLINE_SEED',
+  );
   const [apiLoading, setApiLoading] = useState<boolean>(true);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [apiRetryRevision, setApiRetryRevision] = useState(0);
   const sequenceGuardRef = useRef(new SequenceGuard<string>());
 
   useEffect(() => {
@@ -128,6 +132,8 @@ export default function ConstituencyDetailScreen() {
     }
 
     const token = sequenceGuardRef.current.startRequest(`${stateCode}-${acNo}`);
+    setApiDetail(null);
+    setDataSource(IS_LIVE_ENVIRONMENT ? 'UNAVAILABLE' : 'OFFLINE_SEED');
     setApiLoading(true);
     setApiError(null);
 
@@ -142,7 +148,7 @@ export default function ConstituencyDetailScreen() {
         if (token.isStale()) return;
         const localFound = stateConstituencies.find((c) => c.acNo === acNo);
         if (localFound) {
-          setDataSource('OFFLINE_SEED');
+          setDataSource(IS_LIVE_ENVIRONMENT ? 'GEOGRAPHY_ONLY' : 'OFFLINE_SEED');
         } else {
           setDataSource('UNAVAILABLE');
           setApiError(err?.message || 'Constituency unavailable');
@@ -153,13 +159,19 @@ export default function ConstituencyDetailScreen() {
     return () => {
       sequenceGuardRef.current.reset();
     };
-  }, [stateCode, acNo, stateConstituencies]);
+  }, [stateCode, acNo, stateConstituencies, apiRetryRevision]);
+
+  const retryApiDetail = useCallback(() => {
+    setApiRetryRevision((revision) => revision + 1);
+  }, []);
 
   const effectiveConstituencyName = apiDetail?.name || constituency?.name || '';
   const effectiveDistrict = apiDetail?.district || constituency?.district || '';
   const effectiveReservation = apiDetail?.reservationStatus || constituency?.type || '';
-  const effectiveWinnerParty = (constituency?.winnerParty && constituency.winnerParty.trim()) || apiDetail?.recentElection?.winner || apiDetail?.currentParty || '';
-  const effectiveWinnerName = (constituency?.winnerName && constituency.winnerName.trim()) || apiDetail?.recentElection?.winnerName || apiDetail?.currentMLA || '';
+  const currentRepresentativeName = apiDetail?.currentMLA?.trim() || constituency?.currentMLA?.trim() || '';
+  const currentRepresentativeParty = apiDetail?.currentParty?.trim() || constituency?.currentParty?.trim() || '';
+  const effectiveWinnerParty = (constituency?.winnerParty && constituency.winnerParty.trim()) || apiDetail?.recentElection?.winner || '';
+  const effectiveWinnerName = (constituency?.winnerName && constituency.winnerName.trim()) || apiDetail?.recentElection?.winnerName || '';
   const effectiveWinnerVotes = constituency?.winnerVotes ?? apiDetail?.recentElection?.winnerVotes ?? null;
   const effectiveMargin = constituency?.margin ?? apiDetail?.recentElection?.margin ?? null;
   const effectiveRunnerUp = (constituency?.runnerUp && constituency.runnerUp.trim()) || apiDetail?.recentElection?.runnerUp || '';
@@ -347,7 +359,9 @@ export default function ConstituencyDetailScreen() {
 
     setLoadingHistory(true);
     Promise.all([
-      loadHistoricalResultsForState(stateCode).catch(() => {}),
+      IS_LIVE_ENVIRONMENT
+        ? Promise.resolve()
+        : loadHistoricalResultsForState(stateCode).catch(() => {}),
       fetchHistoricalPodiumForConstituency(stateCode, acNo).catch(() => []),
     ]).then(([_, apiContests]) => {
       if (!isMounted) return;
@@ -355,7 +369,7 @@ export default function ConstituencyDetailScreen() {
         ? apiContests
         : getHistoricalPodiumForConstituency(stateCode, acNo);
 
-      if (!contests || contests.length === 0) {
+      if (!IS_LIVE_ENVIRONMENT && (!contests || contests.length === 0)) {
         const sqliteRows = getHistoricalResults(stateCode, acNo);
         if (sqliteRows && sqliteRows.length > 0) {
           contests = sqliteRows.map((r: any) => ({
@@ -473,11 +487,11 @@ export default function ConstituencyDetailScreen() {
         acNo: constituency.acNo,
         name: constituency.name,
         district: constituency.district,
-        party: constituency.winnerParty,
+        party: IS_LIVE_ENVIRONMENT ? currentRepresentativeParty : constituency.winnerParty,
         stateCode: stateCode,
       });
     }
-  }, [constituency, addRecent, stateCode]);
+  }, [constituency, addRecent, stateCode, currentRepresentativeParty]);
 
   if (!constituency && !apiDetail && apiLoading) {
     return (
@@ -557,19 +571,25 @@ export default function ConstituencyDetailScreen() {
               <View style={[
                 styles.provenancePill,
                 {
-                  backgroundColor: dataSource === 'LIVE_API' ? '#10B98115' : '#3B82F615',
-                  borderColor: dataSource === 'LIVE_API' ? '#10B98140' : '#3B82F640',
+                  backgroundColor: dataSource === 'LIVE_API' ? '#10B98115' : dataSource === 'UNAVAILABLE' ? '#64748B15' : '#3B82F615',
+                  borderColor: dataSource === 'LIVE_API' ? '#10B98140' : dataSource === 'UNAVAILABLE' ? '#64748B40' : '#3B82F640',
                 }
               ]}>
                 <View style={[
                   styles.provenanceDot,
-                  { backgroundColor: dataSource === 'LIVE_API' ? '#10B981' : '#3B82F6' }
+                  { backgroundColor: dataSource === 'LIVE_API' ? '#10B981' : dataSource === 'UNAVAILABLE' ? '#64748B' : '#3B82F6' }
                 ]} />
                 <Text style={[
                   styles.provenanceText,
-                  { color: dataSource === 'LIVE_API' ? '#10B981' : '#3B82F6' }
+                  { color: dataSource === 'LIVE_API' ? '#10B981' : dataSource === 'UNAVAILABLE' ? '#64748B' : '#3B82F6' }
                 ]} numberOfLines={1}>
-                  {dataSource === 'LIVE_API' ? 'Live API + Seed' : (dataSource === 'OFFLINE_SEED' ? 'Offline Seed' : 'Unavailable')}
+                  {dataSource === 'LIVE_API'
+                    ? t('constituencyDirectory.databaseRecord', { defaultValue: 'Poligram database record' })
+                    : dataSource === 'GEOGRAPHY_ONLY'
+                      ? t('constituencyDirectory.geographyOnly', { defaultValue: 'Constituency geography only' })
+                      : dataSource === 'OFFLINE_SEED'
+                        ? t('constituencyDirectory.localPreviewData', { defaultValue: 'Local preview data' })
+                        : t('constituencyDirectory.unavailable', { defaultValue: 'Live records unavailable' })}
                 </Text>
               </View>
             </View>
@@ -598,6 +618,54 @@ export default function ConstituencyDetailScreen() {
           </View>
         </View>
 
+        {IS_LIVE_ENVIRONMENT && (
+          <View style={[styles.section, { paddingTop: 12, paddingBottom: 12 }]}>
+            <Text style={styles.sectionTitle}>
+              {t('constituencyDirectory.currentRepresentative', { defaultValue: 'Current representative' })}
+            </Text>
+            {currentRepresentativeName || currentRepresentativeParty ? (
+              <View style={[styles.resultCard, { marginTop: 8 }]}>
+                <View style={styles.resultRow}>
+                  <View style={styles.resultLeft}>
+                    <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.surfaceElevated, alignItems: 'center', justifyContent: 'center' }}>
+                      <Ionicons name="person-outline" size={21} color={colors.textMuted} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.resultCandidate}>
+                        {currentRepresentativeName
+                          ? getLocalizedCandidateName(currentRepresentativeName, i18n.language) || currentRepresentativeName
+                          : t('constituencyDirectory.nameUnavailable', { defaultValue: 'Name unavailable' })}
+                      </Text>
+                      <Text style={styles.resultParty}>
+                        {currentRepresentativeParty
+                          ? getLocalizedPartyName(currentRepresentativeParty, i18n.language) || currentRepresentativeParty
+                          : t('constituencyDirectory.partyUnavailable', { defaultValue: 'Party unavailable' })}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                <Text style={{ marginTop: 8, color: colors.textMuted, fontSize: 11 }}>
+                  {t('constituencyDirectory.databaseRecord', { defaultValue: 'Poligram database record' })}
+                </Text>
+              </View>
+            ) : (
+              <View style={[styles.resultCard, { marginTop: 8 }]}>
+                <Text style={{ color: colors.textSecondary, fontSize: 13 }}>
+                  {apiLoading
+                    ? t('constituencyDirectory.loading', { defaultValue: 'Checking live constituency records…' })
+                    : t('constituencyDirectory.officeholderUnavailable', { defaultValue: 'Representative details are not available from the connected database.' })}
+                </Text>
+                {!apiLoading && (!apiDetail || (!currentRepresentativeName && !currentRepresentativeParty)) && (
+                  <Pressable onPress={retryApiDetail} style={[styles.fullProfileBtn, { marginTop: 10 }]} accessibilityRole="button">
+                    <Ionicons name="refresh" size={15} color="#4F8EF7" />
+                    <Text style={styles.fullProfileBtnText}>{t('common.retry', { defaultValue: 'Retry' })}</Text>
+                  </Pressable>
+                )}
+              </View>
+            )}
+          </View>
+        )}
+
         {/* ── Unified Action Row: Set as Home Constituency + Follow ── */}
         <View style={styles.actionRow}>
           <Pressable
@@ -613,7 +681,7 @@ export default function ConstituencyDetailScreen() {
                   acNo: acNo,
                   name: effectiveConstituencyName,
                   district: effectiveDistrict,
-                  party: effectiveWinnerParty,
+                  party: currentRepresentativeParty || effectiveWinnerParty,
                 });
                 if (!isFavorite) {
                   toggleFavorite(acNo);
@@ -678,12 +746,12 @@ export default function ConstituencyDetailScreen() {
                 ? t('constituency.electionResult', { year: canonicalPodium.year })
                 : (effectiveElectionYear ? t('constituency.electionResult', { year: effectiveElectionYear }) : t('constituency.recentElectionResult', { defaultValue: 'Recent Election Result' }))}
             </Text>
-            <View style={[styles.provenancePill, { backgroundColor: '#10B98115', borderColor: '#10B98140', paddingVertical: 2, paddingHorizontal: 6 }]}>
+            {canonicalPodium && <View style={[styles.provenancePill, { backgroundColor: '#10B98115', borderColor: '#10B98140', paddingVertical: 2, paddingHorizontal: 6 }]}>
               <View style={[styles.provenanceDot, { backgroundColor: '#10B981', width: 5, height: 5 }]} />
               <Text style={[styles.provenanceText, { color: '#10B981', fontSize: 10 }]}>
-                Official Podium Results
+                {t('constituencyDirectory.connectedElectionRecord', { defaultValue: 'Connected election record' })}
               </Text>
-            </View>
+            </View>}
           </View>
 
           {canonicalPodium ? (
@@ -728,7 +796,7 @@ export default function ConstituencyDetailScreen() {
               } as any}
               isLatest={true}
             />
-          ) : (
+          ) : effectiveWinnerName && effectiveWinnerParty ? (
             <View style={styles.resultCard}>
               <View style={styles.resultRow}>
                 <View style={styles.resultLeft}>
@@ -781,11 +849,23 @@ export default function ConstituencyDetailScreen() {
                 </View>
               </View>
             </View>
+          ) : (
+            <View style={styles.resultCard}>
+              <Text style={{ color: colors.textSecondary, fontSize: 13 }}>
+                {apiLoading
+                  ? t('constituencyDirectory.loading', { defaultValue: 'Checking live constituency records…' })
+                  : t('constituency.resultUnavailable', { defaultValue: 'Election result data is not available from a connected source.' })}
+              </Text>
+            </View>
           )}
         </View>
 
         {/* MLA Profile */}
         {(() => {
+          // Production current officeholder details are shown from the database record above.
+          // Election winners and local profile fixtures must not be relabeled as the sitting MLA.
+          if (IS_LIVE_ENVIRONMENT) return null;
+
           const mla = getMLAProfileForState(stateCode, acNo);
           const winnerName = canonicalPodium?.winner?.name || effectiveWinnerName || mla?.name;
           const winnerParty = canonicalPodium?.winner?.party || effectiveWinnerParty || mla?.party;

@@ -65,10 +65,10 @@ export const saasOnboardingRoutes: FastifyPluginAsync = async (app) => {
         request,
         400,
         'Bad Request',
-        parseResult.error.errors[0]?.message || 'Invalid signup parameters',
+        parseResult.error.issues[0]?.message || 'Invalid signup parameters',
         {
           code: 'VALIDATION_ERROR',
-          details: parseResult.error.errors.map((e) => ({
+          details: parseResult.error.issues.map((e) => ({
             path: e.path.join('.'),
             message: e.message,
           })),
@@ -132,10 +132,10 @@ export const saasOnboardingRoutes: FastifyPluginAsync = async (app) => {
         request,
         400,
         'Bad Request',
-        parseResult.error.errors[0]?.message || 'Invalid API key parameters',
+        parseResult.error.issues[0]?.message || 'Invalid API key parameters',
         {
           code: 'VALIDATION_ERROR',
-          details: parseResult.error.errors.map((e) => ({
+          details: parseResult.error.issues.map((e) => ({
             path: e.path.join('.'),
             message: e.message,
           })),
@@ -225,7 +225,7 @@ export const saasOnboardingRoutes: FastifyPluginAsync = async (app) => {
         request,
         400,
         'Bad Request',
-        parseResult.error.errors[0]?.message || 'Invalid checkout parameters',
+        parseResult.error.issues[0]?.message || 'Invalid checkout parameters',
       );
     }
 
@@ -258,7 +258,7 @@ export const saasOnboardingRoutes: FastifyPluginAsync = async (app) => {
         request,
         400,
         'Bad Request',
-        parseResult.error.errors[0]?.message || 'Invalid payment verification parameters',
+        parseResult.error.issues[0]?.message || 'Invalid payment verification parameters',
       );
     }
 

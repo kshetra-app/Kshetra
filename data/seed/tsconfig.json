@@ -2,14 +2,14 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "commonjs",
+    "isolatedModules": true,
     "strict": true,
     "esModuleInterop": true,
     "paths": {
       "@kshetra/shared": ["../../packages/shared/src"]
     },
     "skipLibCheck": true,
-    "outDir": "./dist",
-    "rootDir": "."
+    "outDir": "./dist"
   },
   "include": ["./**/*.ts"],
   "exclude": ["dist", "node_modules"]

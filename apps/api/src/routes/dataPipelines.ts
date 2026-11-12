@@ -91,7 +91,7 @@ export const dataPipelineRoutes: FastifyPluginAsync = async (app) => {
         request,
         400,
         'Bad Request',
-        parsed.error.errors[0]?.message || 'Invalid ingestion payload',
+        parsed.error.issues[0]?.message || 'Invalid ingestion payload',
         { code: 'VALIDATION_ERROR' },
       );
     }
@@ -178,7 +178,7 @@ export const dataPipelineRoutes: FastifyPluginAsync = async (app) => {
         request,
         400,
         'Bad Request',
-        parsed.error.errors[0]?.message || 'Invalid delimitation payload',
+        parsed.error.issues[0]?.message || 'Invalid delimitation payload',
         { code: 'VALIDATION_ERROR' },
       );
     }

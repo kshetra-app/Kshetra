@@ -49,7 +49,12 @@ jest.mock('../stores/notifications', () => ({
   },
 }));
 jest.mock('../stores/politicalShorts', () => ({
-  usePoliticalShortsStore: { getState: () => ({ hydrateShorts: jest.fn() }) },
+  __hydrateShorts: jest.fn(),
+  usePoliticalShortsStore: {
+    getState: () => ({
+      hydrateShorts: jest.requireMock('../stores/politicalShorts').__hydrateShorts,
+    }),
+  },
 }));
 jest.mock('../stores/liveExchange', () => ({
   useLiveExchangeStore: { getState: () => ({ hydrate: jest.fn() }) },
@@ -100,6 +105,8 @@ describe('Supabase foreground refresh', () => {
     expect(dataService.fetchFeedForState).toHaveBeenCalledTimes(1);
     expect(dataService.fetchIssuesForConstituency).toHaveBeenCalledTimes(1);
     expect(dataService.fetchPromisesForState).toHaveBeenCalledTimes(1);
+    expect(jest.requireMock('../stores/politicalShorts').__hydrateShorts).toHaveBeenCalledWith('TS');
+    expect(jest.requireMock('../stores/politicalShorts').__hydrateShorts).toHaveBeenCalledTimes(1);
   });
 
   it('runs user-specific bootstrap after a guest bootstrap when a user signs in', async () => {

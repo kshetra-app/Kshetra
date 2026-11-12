@@ -1,4 +1,4 @@
-import type { ZodSchema } from 'zod';
+import type { ZodType } from 'zod';
 
 /**
  * Result of a boundary validation: either parsed, typed data or a
@@ -11,7 +11,7 @@ export type ValidationResult<T> = { ok: true; data: T } | { ok: false; error: st
  * Returns the first issue as `field: message` so clients get actionable,
  * non-leaky feedback (Gold Standard Ch. 6 — defensive code at boundaries).
  */
-export function validate<T>(schema: ZodSchema<T>, data: unknown): ValidationResult<T> {
+export function validate<T>(schema: ZodType<T>, data: unknown): ValidationResult<T> {
   const result = schema.safeParse(data);
   if (result.success) {
     return { ok: true, data: result.data };

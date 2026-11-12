@@ -196,6 +196,7 @@ const or = {
     "votes": "ଭୋଟ୍",
     "voteShare": "ଭୋଟ୍ ପ୍ରତିଶତ",
     "demographics": "ଜନସଂଖ୍ୟା ତଥ୍ୟ",
+    "dataUnavailable": "ଉପଲବ୍ଧ ନାହିଁ",
     "population": "ଜନସଂଖ୍ୟା",
     "literacy": "ସାକ୍ଷରତା ହାର",
     "urbanRural": "ସହରୀ / ଗ୍ରାମୀଣ",
@@ -234,7 +235,13 @@ const or = {
     "male": "ପୁରୁଷ",
     "female": "ମହିଳା",
     "socialComposition": "ସାମାଜିକ ଗଠନ",
-    "demoDisclaimer": "ସ୍ରୋତ: ଜନଗଣନା 2011 · ECI 2023 ମତଦାତା ସୂଚୀ"
+    "demoDisclaimer": "ସ୍ରୋତ: ଜନଗଣନା 2011 · ECI 2023 ମତଦାତା ସୂଚୀ",
+    "demographicReferenceTitle": "ନିର୍ବାଚନମଣ୍ଡଳୀ ଜନସାଂଖ୍ୟିକ ସନ୍ଦର୍ଭ ତଥ୍ୟ",
+    "noDemographicData": "ଏହି ନିର୍ବାଚନମଣ୍ଡଳୀ ପାଇଁ ଯାଞ୍ଚ ହୋଇଥିବା ଜନସାଂଖ୍ୟିକ ତଥ୍ୟ କୌଣସି ସଂଯୁକ୍ତ ଉତ୍ସରେ ଉପଲବ୍ଧ ନାହିଁ।",
+    "resultUnavailable": "ସଂଯୁକ୍ତ ଉତ୍ସରୁ ନିର୍ବାଚନ ଫଳାଫଳ ଉପଲବ୍ଧ ନାହିଁ।",
+    "noAffidavitYear": "ନିର୍ବାଚନ ବର୍ଷ ଉପଲବ୍ଧ ନଥିବାରୁ ଶପଥପତ୍ର ରେକର୍ଡ ସହ ମେଳ କରାଯାଇପାରିବ ନାହିଁ।",
+    "demographicDataNoteTitle": "ଏହି ସଂଖ୍ୟାଗୁଡ଼ିକ ବିଷୟରେ",
+    "demographicDataNote": "ଏକତ୍ରିତ ଜନସାଂଖ୍ୟିକ ମୂଲ୍ୟଗୁଡ଼ିକ ଆନୁମାନିକ ହୋଇପାରେ କିମ୍ବା ପୁରୁଣା ଉତ୍ସ ବର୍ଷର ହୋଇପାରେ। ପ୍ରତ୍ୟେକ ମୂଲ୍ୟ ପାଇଁ ଚିହ୍ନଟଯୋଗ୍ୟ ଉତ୍ସ, ବର୍ଷ ଓ ନିର୍ବାଚନମଣ୍ଡଳୀ ସୀମା ଯାଞ୍ଚ ନହେବା ପର୍ଯ୍ୟନ୍ତ ଉତ୍ପାଦନ ଦୃଶ୍ୟରେ ଏଗୁଡ଼ିକ ଦେଖାଯିବ ନାହିଁ।"
   },
   "feed": {
     "votes": "ୱୋଟ",
@@ -1342,7 +1349,13 @@ const or = {
       "grassrootsCampaign": "ତୃଣମୂଳ ସ୍ତରର ପ୍ରଚାର ପରିକଳ୍ପନା",
       "fundraising": "ସ୍ୱାଧୀନ ପ୍ରାର୍ଥୀଙ୍କ ପାଇଁ ପାଣ୍ଠି ସଂଗ୍ରହ",
       "rpaAct": "ଲୋକ ପ୍ରତିନିଧିତ୍ୱ ଆଇନ"
-    }
+    },
+    "loadingChallenges": "ସକ୍ରିୟ ଆହ୍ୱାନ ଲୋଡ୍ ହେଉଛି…",
+    "challengesUnavailable": "ଆହ୍ୱାନ ସମ୍ବନ୍ଧୀୟ ତଥ୍ୟ ଏବେ ଉପଲବ୍ଧ ନାହିଁ।",
+    "loadingBadges": "ଅର୍ଜିତ ବ୍ୟାଜ୍ ଲୋଡ୍ ହେଉଛି…",
+    "badgesUnavailable": "ବ୍ୟାଜ୍ ସମ୍ବନ୍ଧୀୟ ତଥ୍ୟ ଏବେ ଉପଲବ୍ଧ ନାହିଁ।",
+    "loadingAspirants": "ସାର୍ବଜନୀନ ଆଶାୟୀମାନେ ଲୋଡ୍ ହେଉଛନ୍ତି…",
+    "aspirantsUnavailable": "ସାର୍ବଜନୀନ ଆଶାୟୀ ତାଲିକା ଏବେ ଉପଲବ୍ଧ ନାହିଁ।"
   },
   "becomeAspirant": {
     "title": "ଉମ୍ମୀଦୱାର ବନେଂ",
@@ -1637,7 +1650,20 @@ const or = {
       "tsReportCard": "ତେଲେଙ୍ଗାନା ବିକାଶ ରିପୋର୍ଟ କାର୍ଡ",
       "youthConnect": "ୟୁଥ୍ କନେକ୍ଟ ୨୦୨୬",
       "guaranteesImpact": "୫ ଗ୍ୟାରେଣ୍ଟି ପ୍ରଭାବ ରିପୋର୍ଟ"
-    }
+    },
+    "createAdDraft": "ବିଜ୍ଞାପନ ଖସଡ଼ା ତିଆରି କରନ୍ତୁ",
+    "saveAdDraft": "ଖସଡ଼ା ସଞ୍ଚୟ କରନ୍ତୁ",
+    "adDraftsTitle": "ବିଜ୍ଞାପନ ସୃଜନଶୀଳ ଖସଡ଼ା",
+    "adDraftOnlyNote": "ଖସଡ଼ାଗୁଡ଼ିକ ଏହି ଅଭିଯାନରେ ସଞ୍ଚୟ ହୁଏ। ସମୀକ୍ଷା, ଦର୍ଶକ ଲକ୍ଷ୍ୟ ନିର୍ଦ୍ଧାରଣ, ବିଲିଂ ଓ ବିଜ୍ଞାପନ ବିତରଣ ଏଯାଏଁ ସଂଯୁକ୍ତ ହୋଇନାହିଁ।",
+    "noCampaignForAds": "ପ୍ରଥମେ ଏକ ଅଭିଯାନ ତିଆରି କରନ୍ତୁ କିମ୍ବା ବାଛନ୍ତୁ।",
+    "noAdDrafts": "ଏହି ଅଭିଯାନ ପାଇଁ ଏଯାଏଁ କୌଣସି ବିଜ୍ଞାପନ ଖସଡ଼ା ନାହିଁ।",
+    "adDraftRequired": "ନାମ, ଶୀର୍ଷକ, ପ୍ରାୟୋଜକ ଓ ପ୍ରକାଶ ସୂଚନା ଦିଅନ୍ତୁ।",
+    "adName": "ଖସଡ଼ାର ନାମ",
+    "adHeadline": "ଶୀର୍ଷକ",
+    "adBody": "ବାର୍ତ୍ତା (ଇଚ୍ଛାଧୀନ)",
+    "adDisclosure": "ପ୍ରକାଶ ସୂଚନାର ଲେଖା",
+    "noVerifiedAdMetrics": "ଯାଞ୍ଚ ହୋଇଥିବା ବିଜ୍ଞାପନ ବିତରଣ ସଂଯୁକ୍ତ ହେବା ପର୍ଯ୍ୟନ୍ତ ବିତରଣ ମାପ ଉପଲବ୍ଧ ନାହିଁ।",
+    "adComplianceNotReviewed": "ନିୟମ ପାଳନ ଏଯାଏଁ ସମୀକ୍ଷା ହୋଇନାହିଁ"
   },
   "outreach": {
     "sentiment": "ଜନଭାୱନା",
@@ -1666,10 +1692,9 @@ const or = {
   },
   "civicMetrics": {
     "screenTitle": "ନାଗରିକ ପ୍ରଦର୍ଶନ ଓ ମେଟ୍ରିକ୍ସ",
-    "screenSubtitle": "ବଜେଟ୍, ବିଲ୍ ଏବଂ ଯୋଜନା",
+    "screenSubtitle": "ବଜେଟ୍, ବିଲ୍, ଯୋଜନା ଏବଂ ଶୁଣାଣି",
     "stateBudgetOverview": "ରାଜ୍ୟ ବଜେଟ୍ ସମୀକ୍ଷା",
     "noBudgetData": "ଏହି ରାଜ୍ୟ ପାଇଁ କୌଣସି ବଜେଟ୍ ତଥ୍ୟ ଉପଲବ୍ଧ ନାହିଁ",
-    "legislatorAttendance": "ବିଧାୟକଙ୍କ ଉପସ୍ଥିତି ({{count}})",
     "activeBills": "ସକ୍ରିୟ ବିଲ୍ ({{count}})",
     "governmentSchemes": "ସରକାରୀ କଲ୍ୟାଣ ଯୋଜନା ({{count}})",
     "developmentProjects": "ବିକାଶ ପ୍ରକଳ୍ପ ({{count}})",
@@ -1677,15 +1702,18 @@ const or = {
     "response": "ପ୍ରତିକ୍ରିଯା: {{text}}",
     "views": "{{count}} ବାର ଦେଖା ଗଯା",
     "filed": "{{date}} କୋ ଦାଖିଲ",
+    "publicHearings": "ଜନଶୁଣାଣି ({{count}})",
+    "noUpcomingHearings": "ଏହି ରାଜ୍ୟ ପାଇଁ ଆଗାମୀ ଜନଶୁଣାଣି ରେକର୍ଡ ହୋଇନାହିଁ।",
+    "registerForHearing": "ଶୁଣାଣି ପାଇଁ ପଞ୍ଜୀକରଣ",
     "title": "ନାଗରିକ ମେଟ୍ରିକ୍ସ",
-    "subtitle": "ବଜଟ, ଉପସ୍ଥିତି, ୱିଧେଯକ ଔର ଯୋଜନାଏଁ",
+    "subtitle": "ବଜେଟ୍, ବିଲ୍, ଯୋଜନା ଏବଂ ଶୁଣାଣି",
     "tabs": {
       "budget": "ବଜଟ",
-      "attendance": "ଉପସ୍ଥିତି",
       "bills": "ୱିଧେଯକ",
       "schemes": "ଯୋଜନାଏଁ",
       "projects": "ପରିଯୋଜନାଏଁ",
-      "rti": "RTI"
+      "rti": "RTI",
+      "hearings": "ଶୁଣାଣି"
     },
     "stateBudget": "ରାଜ୍ଯ ବଜଟ",
     "totalBudget": "କୁଲ",
@@ -1693,7 +1721,6 @@ const or = {
     "fiscalDeficit": "ରାଜକୋଷୀଯ ଘାଟା",
     "revenueDeficit": "ରାଜସ୍ୱ ଘାଟା",
     "debtGDP": "ଋଣ/GDP",
-    "assemblyAttendance": "ୱିଧାନସଭା ଉପସ୍ଥିତି",
     "sessions": "ସତ୍ର",
     "questionsRaised": "ପ୍ରଶ୍ନ",
     "debatesParticipated": "ବହସେଂ",
@@ -1712,7 +1739,9 @@ const or = {
     "revised": "ସଂଶୋଧିତ",
     "amountSpent": "ଖ़ର୍ଚ",
     "dueDate": "ନିଯତ ତିଥି",
-    "daysDelayed": "{{n}} ଦିନ ୱିଲଂବିତ"
+    "delayLabel": "ବିଳମ୍ବ",
+    "daysDelayed": "{{n}} ଦିନ ୱିଲଂବିତ",
+    "noConnectedData": "ସଂଯୁକ୍ତ ଉତ୍ସରୁ ଯାଞ୍ଚ ହୋଇଥିବା ରେକର୍ଡ ଏଯାଏଁ ଉପଲବ୍ଧ ନାହିଁ।"
   },
   "lmx": {
     "screenTitle": "ପୋଲିଗ୍ରାମ୍ ଲାଇଭ୍",
@@ -2321,7 +2350,8 @@ const or = {
     "male": "ପୁରୁଷ",
     "female": "ମହିଳା",
     "terms": "କାର୍ଯ୍ୟକାଳ",
-    "historical": "ଐତିହାସିକ ତୁଳନା"
+    "historical": "ଐତିହାସିକ ତୁଳନା",
+    "demographicsUnavailable": "ବାଛିଥିବା ଗୋଟିଏ କିମ୍ବା ଉଭୟ ନିର୍ବାଚନମଣ୍ଡଳୀ ପାଇଁ ଉତ୍ସ-ସମର୍ଥିତ ଜନସାଂଖ୍ୟିକ ତଥ୍ୟ ନଥିବାରୁ ତୁଳନା ଉପଲବ୍ଧ ନାହିଁ।"
   },
   "export": {
     "title": "ରପ୍ତାନି ଡ୍ୟାସବୋର୍ଡ",
@@ -2861,7 +2891,7 @@ const or = {
     "decline": "ପ୍ରତ୍ୟାଖ୍ୟାନ କରନ୍ତୁ",
     "accept": "ଗ୍ରହଣ କରନ୍ତୁ",
     "safetyOptions": "ସୁରକ୍ଷା ଏବଂ ନିୟନ୍ତ୍ରଣ",
-    "safetyDesc": "ବାର୍ତ୍ତାଳାପ ବିକଳ୍ପ:",
+    "safetyDesc": "{{name}}ଙ୍କ ସହ କଥୋପକଥନର ବିକଳ୍ପ:",
     "blockUser": "ବ୍ଲକ୍ କରନ୍ତୁ",
     "blockTitle": "ବ୍ଲକ୍ ନିଶ୍ଚିତ କରନ୍ତୁ",
     "blockConfirm": "ବ୍ଲକ୍ ହୋଇଥିବା ବ୍ୟବହାରକାରୀ ବାର୍ତ୍ତା ପଠାଇ ପାରିବେ ନାହିଁ।",
@@ -3106,7 +3136,40 @@ const or = {
       "citizenAccount": "ନାଗରିକ ପ୍ରୋଫାଇଲ୍",
       "citizenAccountDesc": "ପୃଷ୍ଠା ତିଆରି ସୁବିଧା ପ୍ରାର୍ଥୀମାନଙ୍କ ପାଇଁ ଉପଲବ୍ଧ।",
       "registerAsAspirantBtn": "ନାଗରିକ ଆଶାୟୀ ଭାବେ ପଞ୍ଜୀକରଣ କରନ୍ତୁ",
-      "candidateProfile": "ନାଗରିକ ପ୍ରାର୍ଥୀ ପୃଷ୍ଠା"
+      "candidateProfile": "ନାଗରିକ ପ୍ରାର୍ଥୀ ପୃଷ୍ଠା",
+      "tabPosts": "ପୋଷ୍ଟ ଓ କାର୍ଯ୍ୟକଳାପ",
+      "tabProfile": "ପ୍ରୋଫାଇଲ୍ ଓ ଯାତ୍ରା",
+      "tabVision": "ଦୃଷ୍ଟିକୋଣ ଓ ଘୋଷଣାପତ୍ର",
+      "tabInitiatives": "କ୍ଷେତ୍ରୀୟ ପଦକ୍ଷେପ",
+      "tabValues": "ମୂଲ୍ୟବୋଧ ଓ ପ୍ରକାଶ",
+      "tabStudio": "ନେତା ବିଶ୍ଳେଷଣ ଷ୍ଟୁଡିଓ",
+      "liveStatus": "ଲାଇଭ୍ ସ୍ଥିତି",
+      "inFieldTour": "କ୍ଷେତ୍ର ଗସ୍ତରେ",
+      "followers": "ଅନୁସରଣକାରୀ",
+      "civicScore": "ନାଗରିକ ସ୍କୋର",
+      "resolvedIssues": "ସମାଧାନ ହୋଇଛି",
+      "cleanAffidavit": "100% ସ୍ୱଚ୍ଛ ଶପଥପତ୍ର",
+      "noCriminalCases": "କୌଣସି ଅପରାଧିକ ମାମଲା ନାହିଁ",
+      "assetDeclaration": "ସମ୍ପତ୍ତି ଘୋଷଣା",
+      "form26Verified": "ସ୍ୱେଚ୍ଛାରେ ଫର୍ମ 26 ପ୍ରକାଶ କରାଯାଇଛି",
+      "accountabilityCharter": "ଉତ୍ତରଦାୟିତ୍ୱ ଚାର୍ଟର ପ୍ରତିଶ୍ରୁତି",
+      "volunteer": "ସ୍ୱେଚ୍ଛାସେବୀ ହୁଅନ୍ତୁ",
+      "postUpdate": "ଭୋଟରଙ୍କ ସହ ଅଦ୍ୟତନ ସେୟାର୍ କରନ୍ତୁ",
+      "postPlaceholder": "କ୍ଷେତ୍ର ପର୍ଯ୍ୟବେକ୍ଷଣ, ଯାଞ୍ଚ ଅଦ୍ୟତନ କିମ୍ବା ଆପଣଙ୍କ ମତ ସେୟାର୍ କରନ୍ତୁ…",
+      "postBtn": "ପୋଷ୍ଟ ପ୍ରକାଶ କରନ୍ତୁ",
+      "privateAnalyticsNotice": "ଏହି ଅଂଶଟି ଗୋପନୀୟ — କେବଳ ପ୍ରାର୍ଥୀ/ନିଜେ ଓ ପ୍ଲାଟଫର୍ମ ପ୍ରଶାସକମାନେ ଦେଖିପାରିବେ।",
+      "boothCoverage": "ନିର୍ବାଚନମଣ୍ଡଳୀ ବୁଥ୍ କଭରେଜ୍",
+      "grassrootsReach": "ତୃଣମୂଳ ସ୍ତରରେ ପହଞ୍ଚ",
+      "avgResponseTime": "ନାଗରିକଙ୍କୁ ଉତ୍ତର ଦେବାର ହାରାହାରି ସମୟ",
+      "requestsAnswered": "ସମାଧାନ ହୋଇଥିବା ପ୍ରଶ୍ନ",
+      "voterEngagementTrend": "30 ଦିନର ପ୍ରୋଫାଇଲ୍ ଯୋଗଦାନ",
+      "profileViews": "ପ୍ରୋଫାଇଲ୍ ଦର୍ଶନ",
+      "pendingCitizenRequests": "ବିଚାରାଧୀନ ନାଗରିକ ଅନୁରୋଧ",
+      "citizenPoll": "ନାଗରିକ ପ୍ରାଥମିକତା ମତଦାନ",
+      "castVote": "ଭୋଟ୍ ଦିଅନ୍ତୁ",
+      "totalVotes": "ମୋଟ ଭୋଟ୍",
+      "agreeWithVision": "ଏହି ପ୍ରାଥମିକତା ସହ ସହମତ",
+      "verifiedOfficialFigure": "ଆଧିକାରିକ ଭାବେ ଯାଞ୍ଚ ହୋଇଥିବା ନେତା"
   },
 }
 

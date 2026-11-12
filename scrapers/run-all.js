@@ -132,7 +132,6 @@ function mergeAllData() {
           education: r.education,
           questionsAsked: r.questionsAsked,
           debates: r.debates,
-          attendance: r.attendance,
           privateBills: r.privateBills,
           profileUrl: r.profileUrl,
         };

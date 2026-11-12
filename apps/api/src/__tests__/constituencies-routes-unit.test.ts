@@ -47,6 +47,41 @@ describe('Constituencies Routes Unit Tests (Exhaustive Branch Coverage)', () => 
       const json = JSON.parse(res.payload);
       expect(json.code).toBe('NOT_FOUND');
     });
+
+    it('does not return bundled constituency records in production when the live source has none', async () => {
+      const originalAppEnv = process.env.APP_ENV;
+      const originalExpoEnv = process.env.EXPO_PUBLIC_APP_ENV;
+      const originalConfigured = isSupabaseConfigured;
+      process.env.APP_ENV = 'production';
+      process.env.EXPO_PUBLIC_APP_ENV = 'production';
+      setSupabaseConfiguredForTesting(true);
+      jest.spyOn(stateData.canonicalGeographyService, 'getConstituencies').mockResolvedValue([]);
+      jest.spyOn(stateData.canonicalGeographyService, 'getConstituency').mockResolvedValue(null);
+
+      try {
+        const list = await app.inject({ method: 'GET', url: '/states/TS/constituencies' });
+        expect(list.statusCode).toBe(404);
+
+        const search = await app.inject({
+          method: 'GET',
+          url: '/states/TS/constituencies/search?q=Sirpur',
+        });
+        expect(search.statusCode).toBe(200);
+        expect(JSON.parse(search.payload).data).toEqual([]);
+
+        const detail = await app.inject({
+          method: 'GET',
+          url: '/states/TS/constituencies/1',
+        });
+        expect(detail.statusCode).toBe(404);
+      } finally {
+        if (originalAppEnv === undefined) delete process.env.APP_ENV;
+        else process.env.APP_ENV = originalAppEnv;
+        if (originalExpoEnv === undefined) delete process.env.EXPO_PUBLIC_APP_ENV;
+        else process.env.EXPO_PUBLIC_APP_ENV = originalExpoEnv;
+        setSupabaseConfiguredForTesting(originalConfigured);
+      }
+    });
   });
 
   describe('2. GET /states/:stateCode/constituencies/:constituencyId', () => {

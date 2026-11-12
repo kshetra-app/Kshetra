@@ -26,6 +26,7 @@ import {
 import type { ConstituencyElectionSummary } from '../services/stateData';
 import { sendApiError } from '../lib/replyHelper';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 
 /** Preserve the legacy response field while keeping unavailable figures explicit. */
 function toLegacyElection2023(recentElection: ConstituencyElectionSummary | null) {
@@ -443,7 +444,7 @@ export async function constituencyRoutes(app: FastifyInstance) {
       const code = stateCode.toUpperCase();
 
       // Strangler pattern: Query canonical geography when Supabase is configured (fail-closed on error)
-      if (isSupabaseConfigured) {
+      if (isSupabaseConfigured || isProductionLikeRuntime()) {
         try {
           const dbConstituencies = await canonicalGeographyService.getConstituencies(code);
           if (dbConstituencies && dbConstituencies.length > 0) {
@@ -452,6 +453,18 @@ export async function constituencyRoutes(app: FastifyInstance) {
               count: dbConstituencies.length,
               data: dbConstituencies,
             };
+          }
+          if (isProductionLikeRuntime()) {
+            return sendApiError(
+              reply,
+              request,
+              isSupabaseConfigured ? 404 : 503,
+              isSupabaseConfigured ? 'Not Found' : 'Service Unavailable',
+              isSupabaseConfigured
+                ? `State ${code} has no constituency data available`
+                : 'Live constituency data is unavailable because the database is not configured.',
+              { code: isSupabaseConfigured ? 'NOT_FOUND' : 'DATA_SOURCE_UNAVAILABLE' },
+            );
           }
         } catch (err: any) {
           app.log.error(
@@ -512,11 +525,17 @@ export async function constituencyRoutes(app: FastifyInstance) {
       }
 
       // Strangler pattern: Query canonical geography when Supabase is configured (fail-closed on error)
-      if (isSupabaseConfigured && !isNaN(acNo)) {
+      if (isSupabaseConfigured || isProductionLikeRuntime()) {
         try {
-          const row = await canonicalGeographyService.getConstituency(code, acNo);
+          const row = !isNaN(acNo)
+            ? await canonicalGeographyService.getConstituency(code, acNo)
+            : ((await canonicalGeographyService.getConstituencies(code)).find(
+                (candidate) =>
+                  candidate.name.toLowerCase() === constituencyId.toLowerCase() ||
+                  candidate.id.toLowerCase() === constituencyId.toLowerCase(),
+              ) ?? null);
           if (row) {
-            const electionData = await getCanonicalConstituencyElectionData(code, acNo);
+            const electionData = await getCanonicalConstituencyElectionData(code, row.acNo);
             const electionRows = electionData?.elections ?? [];
             const recentElection = electionData?.recentElection ?? electionRows[0] ?? null;
             const elections = electionRows.length
@@ -532,6 +551,18 @@ export async function constituencyRoutes(app: FastifyInstance) {
               elections,
               election2023,
             };
+          }
+          if (isProductionLikeRuntime()) {
+            return sendApiError(
+              reply,
+              request,
+              isSupabaseConfigured ? 404 : 503,
+              isSupabaseConfigured ? 'Not Found' : 'Service Unavailable',
+              isSupabaseConfigured
+                ? `Constituency ${constituencyId} in ${code} not found`
+                : 'Live constituency data is unavailable because the database is not configured.',
+              { code: isSupabaseConfigured ? 'NOT_FOUND' : 'DATA_SOURCE_UNAVAILABLE' },
+            );
           }
         } catch (err: any) {
           app.log.error(
@@ -549,6 +580,17 @@ export async function constituencyRoutes(app: FastifyInstance) {
             },
           );
         }
+      }
+
+      if (isProductionLikeRuntime()) {
+        return sendApiError(
+          reply,
+          request,
+          404,
+          'Not Found',
+          `Constituency ${constituencyId} in ${code} not found`,
+          { code: 'NOT_FOUND' },
+        );
       }
 
       const brief = !isNaN(acNo)
@@ -607,19 +649,40 @@ export async function constituencyRoutes(app: FastifyInstance) {
     {
       schema: searchConstituenciesSchema,
     },
-    async (request) => {
+    async (request, reply) => {
       const { stateCode } = request.params;
       const { q, party, district, type, minMargin, maxMargin, sort } = request.query;
       const code = stateCode.toUpperCase();
       let allBriefs = getConstituencies(code);
-      if (isSupabaseConfigured) {
+      if (isSupabaseConfigured || isProductionLikeRuntime()) {
         try {
           const dbAcs = await canonicalGeographyService.getConstituencies(code);
           if (dbAcs && dbAcs.length > 0) {
             allBriefs = dbAcs;
+          } else if (isProductionLikeRuntime()) {
+            if (!isSupabaseConfigured) {
+              return sendApiError(
+                reply,
+                request,
+                503,
+                'Service Unavailable',
+                'Live constituency data is unavailable because the database is not configured.',
+                { code: 'DATA_SOURCE_UNAVAILABLE' },
+              );
+            }
+            allBriefs = [];
           }
-        } catch {
-          // Fall back to seed data
+        } catch (err: any) {
+          if (isProductionLikeRuntime()) {
+            return sendApiError(
+              reply,
+              request,
+              500,
+              'Internal Server Error',
+              'Database error retrieving constituencies',
+              { code: 'DATABASE_ERROR' },
+            );
+          }
         }
       }
 
@@ -751,6 +814,17 @@ export async function constituencyRoutes(app: FastifyInstance) {
         );
       }
 
+      if (isProductionLikeRuntime()) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Election analytics are unavailable until the production election-results dataset is complete and verified.',
+          { code: 'ELECTION_ANALYTICS_UNAVAILABLE' },
+        );
+      }
+
       const constituencies = getConstituencies('TS');
       const records = constituencies
         .map(constituencyToRecord)
@@ -822,7 +896,9 @@ export async function constituencyRoutes(app: FastifyInstance) {
         });
       }
 
-      const profile = getMLAProfile(num);
+      const profile = isProductionLikeRuntime()
+        ? await getCanonicalMLAProfile(code, num)
+        : getMLAProfile(num);
       if (!profile) {
         return sendApiError(
           reply,

@@ -45,6 +45,9 @@ import {
   getConstituencies,
   getConstituency,
 } from '../services/stateData';
+import { canonicalGeographyService } from '../services/canonicalGeographyService';
+import { isSupabaseConfigured } from '../lib/supabase';
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import { electionService } from '../services/electionService';
 import { politicalEntityService } from '../services/politicalEntityService';
 import {
@@ -294,7 +297,43 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
         );
       }
 
-      const list = getConstituencies(stateCode).map((c) => ({
+      let constituencyRows = getConstituencies(stateCode);
+      if (isProductionLikeRuntime()) {
+        if (!isSupabaseConfigured) {
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Live constituency data is unavailable because the database is not configured.',
+            { code: 'DATA_SOURCE_UNAVAILABLE' },
+          );
+        }
+        try {
+          constituencyRows = await canonicalGeographyService.getConstituencies(stateCode);
+        } catch {
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            'Database error retrieving constituency data',
+            { code: 'DATABASE_ERROR' },
+          );
+        }
+        if (constituencyRows.length === 0) {
+          return sendApiError(
+            reply,
+            request,
+            404,
+            'Not Found',
+            `No live constituency records are available for state '${stateCode}'.`,
+            { code: 'CONSTITUENCY_DATA_UNAVAILABLE' },
+          );
+        }
+      }
+
+      const list = constituencyRows.map((c) => ({
         id: c.id,
         acNo: c.acNo,
         name: c.name,
@@ -307,6 +346,11 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
           authorityLayer: 'STATUTORY_FACT',
           dataStatus: 'OFFICIAL',
           sourceReference: 'Delimitation Order, 2008 & State Gazette',
+        },
+        officeholderProvenance: {
+          dataStatus: c.currentParty || c.currentMLA ? 'DATABASE_RECORDED' : 'UNAVAILABLE',
+          sourceReference:
+            'Canonical constituency record; the underlying source and verification date are not recorded.',
         },
       }));
 
@@ -344,7 +388,31 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
         );
       }
 
-      const c = getConstituency(stateCode, acNo);
+      let c = getConstituency(stateCode, acNo);
+      if (isProductionLikeRuntime()) {
+        if (!isSupabaseConfigured) {
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Live constituency data is unavailable because the database is not configured.',
+            { code: 'DATA_SOURCE_UNAVAILABLE' },
+          );
+        }
+        try {
+          c = await canonicalGeographyService.getConstituency(stateCode, acNo);
+        } catch {
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            'Database error retrieving constituency data',
+            { code: 'DATABASE_ERROR' },
+          );
+        }
+      }
       if (!c) {
         return sendApiError(
           reply,
@@ -369,6 +437,11 @@ export async function saasV1Routes(app: FastifyInstance): Promise<void> {
           authorityLayer: 'STATUTORY_FACT',
           dataStatus: 'OFFICIAL',
           sourceReference: 'ECI Official Gazette & Delimitation Order, 2008',
+        },
+        officeholderProvenance: {
+          dataStatus: c.currentParty || c.currentMLA ? 'DATABASE_RECORDED' : 'UNAVAILABLE',
+          sourceReference:
+            'Canonical constituency record; the underlying source and verification date are not recorded.',
         },
       };
 

@@ -6,6 +6,7 @@
  */
 
 import { useEffect, useState, useCallback } from 'react';
+import { IS_LIVE_ENVIRONMENT } from './environment';
 import {
   loadAllSeedDataForState,
   isSeedDataLoadedForState,
@@ -27,11 +28,13 @@ export interface SeedDataLoadingState {
  * Returns loading and error flags for UI feedback.
  */
 export function useSeedDataWithLoading(stateCode: string): SeedDataLoadingState {
-  const [loading, setLoading] = useState(!isSeedDataLoadedForState(stateCode));
+  const [loading, setLoading] = useState(
+    !IS_LIVE_ENVIRONMENT && !isSeedDataLoadedForState(stateCode),
+  );
   const [error, setError] = useState<Error | null>(null);
 
   const load = useCallback(async () => {
-    if (isSeedDataLoadedForState(stateCode)) {
+    if (IS_LIVE_ENVIRONMENT || isSeedDataLoadedForState(stateCode)) {
       setLoading(false);
       return;
     }
@@ -66,7 +69,7 @@ export function useSeedDataWithLoading(stateCode: string): SeedDataLoadingState 
 export function useMLAProfile(stateCode: string, acNo: number) {
   const { loading } = useSeedDataWithLoading(stateCode);
   
-  if (loading) return null;
+  if (loading || IS_LIVE_ENVIRONMENT) return null;
   return getMLAProfile(stateCode, acNo);
 }
 
@@ -77,7 +80,7 @@ export function useMLAProfile(stateCode: string, acNo: number) {
 export function useDemographics(stateCode: string, acNo: number) {
   const { loading } = useSeedDataWithLoading(stateCode);
   
-  if (loading) return null;
+  if (loading || IS_LIVE_ENVIRONMENT) return null;
   return getDemographics(stateCode, acNo);
 }
 
@@ -88,7 +91,7 @@ export function useDemographics(stateCode: string, acNo: number) {
 export function useHistoricalResults(stateCode: string, acNo: number) {
   const { loading } = useSeedDataWithLoading(stateCode);
   
-  if (loading) return [];
+  if (loading || IS_LIVE_ENVIRONMENT) return [];
   return getHistoricalResults(stateCode, acNo);
 }
 
@@ -99,7 +102,7 @@ export function useHistoricalResults(stateCode: string, acNo: number) {
 export function usePoliticalTimeline(stateCode: string, acNo?: number) {
   const { loading } = useSeedDataWithLoading(stateCode);
   
-  if (loading) return [];
+  if (loading || IS_LIVE_ENVIRONMENT) return [];
   return getPoliticalTimeline(stateCode, acNo);
 }
 
@@ -110,6 +113,6 @@ export function usePoliticalTimeline(stateCode: string, acNo?: number) {
 export function useElectionHistory(stateCode: string) {
   const { loading } = useSeedDataWithLoading(stateCode);
   
-  if (loading) return [];
+  if (loading || IS_LIVE_ENVIRONMENT) return [];
   return getElectionHistory(stateCode);
 }

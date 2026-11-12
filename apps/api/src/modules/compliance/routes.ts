@@ -109,7 +109,7 @@ export const complianceRoutes: FastifyPluginAsync = async (app) => {
         request,
         400,
         'Bad Request',
-        parseResult.error.errors[0]?.message || 'Invalid data export parameters',
+        parseResult.error.issues[0]?.message || 'Invalid data export parameters',
         { code: 'VALIDATION_ERROR' },
       );
     }
@@ -141,7 +141,7 @@ export const complianceRoutes: FastifyPluginAsync = async (app) => {
         request,
         400,
         'Bad Request',
-        parseResult.error.errors[0]?.message || 'Invalid correction parameters',
+        parseResult.error.issues[0]?.message || 'Invalid correction parameters',
         { code: 'VALIDATION_ERROR' },
       );
     }
@@ -173,7 +173,7 @@ export const complianceRoutes: FastifyPluginAsync = async (app) => {
         request,
         400,
         'Bad Request',
-        parseResult.error.errors[0]?.message ||
+        parseResult.error.issues[0]?.message ||
           'Explicit confirmation phrase required for account erasure',
         { code: 'INVALID_CONFIRMATION' },
       );
@@ -206,7 +206,7 @@ export const complianceRoutes: FastifyPluginAsync = async (app) => {
         request,
         400,
         'Bad Request',
-        parseResult.error.errors[0]?.message || 'Invalid grievance parameters',
+        parseResult.error.issues[0]?.message || 'Invalid grievance parameters',
         { code: 'VALIDATION_ERROR' },
       );
     }
@@ -289,7 +289,7 @@ export const complianceRoutes: FastifyPluginAsync = async (app) => {
         request,
         400,
         'Bad Request',
-        parseResult.error.errors[0]?.message || 'Invalid incident parameters',
+        parseResult.error.issues[0]?.message || 'Invalid incident parameters',
       );
     }
 

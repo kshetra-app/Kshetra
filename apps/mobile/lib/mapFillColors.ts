@@ -165,8 +165,10 @@ export const swingFillColor: any = [
 
 /** Get dynamic party fill color expression based on selected year */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getPartyFillColorExpression(year?: number, isIndia?: boolean): any {
-  const propertyName = (year && !isIndia) ? `WINNER_PARTY_${year}` : 'WINNER_PARTY';
+export function getPartyFillColorExpression(year?: number, isIndia?: boolean, useCurrentParty = false): any {
+  const propertyName = useCurrentParty
+    ? 'CURRENT_PARTY'
+    : (year && !isIndia) ? `WINNER_PARTY_${year}` : 'WINNER_PARTY';
   return [
     'match',
     ['get', propertyName],

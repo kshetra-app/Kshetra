@@ -93,6 +93,20 @@ export interface AggregationValidation {
 
 // ─── SYNTHETIC WARD GENERATION ───
 
+/** Create a repeatable pseudo-random sequence for model-only unit allocation. */
+function createDeterministicRandom(seed: string): () => number {
+  let state = 2166136261;
+  for (let index = 0; index < seed.length; index++) {
+    state ^= seed.charCodeAt(index);
+    state = Math.imul(state, 16777619);
+  }
+
+  return () => {
+    state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+    return state / 0x1_0000_0000;
+  };
+}
+
 /**
  * Generate synthetic ward units for a district based on Census 2011 data.
  * Since we don't have actual ward boundaries, we create sub-district units
@@ -116,17 +130,20 @@ export function generateSyntheticWards(
 
   const units: WardUnit[] = [];
   const basePop = Math.floor(district.totalPopulation / unitCount);
+  const nextRandom = createDeterministicRandom(
+    `${district.stateCode}|${district.districtName}|${unitCount}|${district.totalPopulation}`,
+  );
   let remainingPop = district.totalPopulation;
 
   for (let i = 0; i < unitCount; i++) {
     const isLast = i === unitCount - 1;
-    const pop = isLast ? remainingPop : basePop + Math.round((Math.random() - 0.5) * basePop * 0.3);
+    const pop = isLast ? remainingPop : basePop + Math.round((nextRandom() - 0.5) * basePop * 0.3);
     const actualPop = isLast ? remainingPop : Math.min(pop, remainingPop);
     remainingPop -= actualPop;
 
     const fraction = district.totalPopulation > 0 ? actualPop / district.totalPopulation : 0;
 
-    // Create adjacency: linear chain + random cross-links
+    // Create adjacency: linear chain with extra links for dense urban areas.
     const adjacentIds: string[] = [];
     if (i > 0) adjacentIds.push(`${district.stateCode}-${district.districtName}-W${i - 1}`);
     if (i < unitCount - 1) adjacentIds.push(`${district.stateCode}-${district.districtName}-W${i + 1}`);

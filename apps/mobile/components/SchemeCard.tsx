@@ -12,6 +12,9 @@ interface SchemeCardProps {
 export default function SchemeCard({ scheme, onPress }: SchemeCardProps) {
   const { t } = useTranslation();
   const catConfig = SCHEME_CATEGORY_CONFIG[scheme.category];
+  const unavailable = t('common.dataUnavailable');
+  const coveragePercent = typeof scheme.coveragePercent === 'number' ? scheme.coveragePercent : null;
+  const hasBeneficiaryCounts = scheme.beneficiariesActual !== null && scheme.beneficiariesTarget !== null;
 
   return (
     <Pressable style={styles.card} onPress={onPress}>
@@ -32,13 +35,19 @@ export default function SchemeCard({ scheme, onPress }: SchemeCardProps) {
       <View style={styles.coverageSection}>
         <View style={styles.coverageHeader}>
           <Text style={styles.coverageLabel}>{t('civicMetrics.coverage')}</Text>
-          <Text style={[styles.coveragePct, { color: scheme.coveragePercent >= 80 ? '#10B981' : '#F59E0B' }]}>{scheme.coveragePercent}%</Text>
+          <Text style={[styles.coveragePct, { color: coveragePercent !== null && coveragePercent >= 80 ? '#10B981' : '#F59E0B' }]}>
+            {coveragePercent !== null ? `${coveragePercent}%` : unavailable}
+          </Text>
         </View>
-        <View style={styles.coverageBar}>
-          <View style={[styles.coverageBarFill, { width: `${scheme.coveragePercent}%`, backgroundColor: scheme.coveragePercent >= 80 ? '#10B981' : '#F59E0B' }]} />
-        </View>
+        {coveragePercent !== null && (
+          <View style={styles.coverageBar}>
+            <View style={[styles.coverageBarFill, { width: `${coveragePercent}%`, backgroundColor: coveragePercent >= 80 ? '#10B981' : '#F59E0B' }]} />
+          </View>
+        )}
         <Text style={styles.coverageDetail}>
-          {(scheme.beneficiariesActual / 1000000).toFixed(1)}M / {(scheme.beneficiariesTarget / 1000000).toFixed(1)}M {t('civicMetrics.beneficiaries')}
+          {hasBeneficiaryCounts
+            ? `${(scheme.beneficiariesActual! / 1000000).toFixed(1)}M / ${(scheme.beneficiariesTarget! / 1000000).toFixed(1)}M ${t('civicMetrics.beneficiaries')}`
+            : unavailable}
         </Text>
       </View>
 
@@ -46,7 +55,9 @@ export default function SchemeCard({ scheme, onPress }: SchemeCardProps) {
       <View style={styles.metaRow}>
         <View style={styles.metaItem}>
           <Ionicons name="wallet" size={12} color="#6B7280" />
-          <Text style={styles.metaText}>{t('civicMetrics.tabs.budget')}: {formatCrores(scheme.budgetCrores)}</Text>
+          <Text style={styles.metaText}>
+            {t('civicMetrics.tabs.budget')}: {scheme.budgetCrores === null ? unavailable : formatCrores(scheme.budgetCrores)}
+          </Text>
         </View>
         <View style={styles.metaItem}>
           <Ionicons name="business" size={12} color="#6B7280" />

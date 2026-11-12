@@ -234,6 +234,9 @@ export function getMLAProfileForState(
   stateCode: string,
   acNo: number,
 ): MLAProfile | undefined {
+  // Bundled candidate/profile records are not current-officeholder evidence in live builds.
+  if (IS_LIVE_ENVIRONMENT) return undefined;
+
   const rawProfile = getRawMLAProfile(stateCode, acNo);
   const constituency = getUnifiedConstituenciesForState(stateCode).find(c => c.acNo === acNo);
 
@@ -421,6 +424,10 @@ export function getHistoryForState(
   stateCode: string,
   acNo: number,
 ): ConstituencyHistoryEntry[] {
+  // Historical results are withheld from live seed paths until they are loaded
+  // through the canonical elections API.
+  if (IS_LIVE_ENVIRONMENT) return [];
+
   // 1. First priority: Pre-indexed, offline-verified podium store (1999–2024)
   const podiumList = getHistoricalPodiumForConstituency(stateCode, acNo);
   if (podiumList && podiumList.length > 0) {
@@ -581,6 +588,9 @@ export function isStrongholdForState(
   acNo: number,
   currentParty: string,
 ): boolean {
+  // This helper compares bundled history; it is not a production evidence source.
+  if (IS_LIVE_ENVIRONMENT) return false;
+
   switch (stateCode) {
     case 'TS':
       return isTSStronghold(acNo, currentParty);
@@ -644,6 +654,9 @@ function adaptElectionHistory(entries: any[]): ElectionHistoryEntry[] {
 export function getElectionHistoryForState(
   stateCode: string,
 ): ElectionHistoryEntry[] {
+  // Historical party totals are served only when backed by the elections API.
+  if (IS_LIVE_ENVIRONMENT) return [];
+
   switch (stateCode) {
     case 'TS': return TELANGANA_ELECTION_HISTORY;
     case 'AP': return AP_ELECTION_HISTORY;
@@ -742,6 +755,9 @@ export function getTimelineForState(
   stateCode: string,
   acNo: number,
 ): PoliticalLedgerEntry[] {
+  // Bundled political event records do not have production provenance metadata.
+  if (IS_LIVE_ENVIRONMENT) return [];
+
   switch (stateCode) {
     case 'TS': return getTSTimeline(acNo);
     case 'AP': return getAPConstituencyTimeline(acNo);
@@ -780,6 +796,8 @@ export function getTimelineForState(
 
 /** Whether a state has full data (MLA profiles, demographics, history, trivia) */
 export function hasFullDataForState(stateCode: string): boolean {
+  if (IS_LIVE_ENVIRONMENT) return false;
+
   return [
     'TS', 'AP', 'KA', 'MH', 'TN', 'KL', 'WB', 'UP',
     'RJ', 'GJ', 'JH', 'OD', 'DL', 'PB', 'HR', 'CG',

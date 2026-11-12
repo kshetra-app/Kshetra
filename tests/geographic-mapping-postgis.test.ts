@@ -1,15 +1,12 @@
 /**
- * Real Geographic Mapping Test Suite (JOB 016)
+ * Geographic Lookup Contract Checks (JOB 016 evidence refresh)
  *
  * Authority: Master Product Blueprint, docs/GEOGRAPHIC_PIPELINE.md,
  *            and PLAN-DOMAIN-1-FOUNDATIONAL-GEOGRAPHY-AND-DELIMITATION-REV-1.0
  *
- * Verifies:
- * 1. PostGIS point-in-polygon spatial resolution [lat, lng] -> AC
- * 2. Deterministic postal crosswalk PIN -> AC (single-AC and multi-AC candidates)
- * 3. Fail-closed boundaries & invalid input rejection (no heuristic hallucinations)
- * 4. API endpoints /constituencies/locate and /constituencies/locate/pin/:pinCode
- * 5. Generation of evidence dossier at reports/w016_geographic_mapping_report.*
+ * Verifies local development lookup behavior, postal-reference semantics, input
+ * validation, and a PostgreSQL bbox-query example. This script does not call the
+ * production PostGIS RPC or exercise HTTP endpoints; its report states that scope.
  */
 
 import assert from 'node:assert/strict';
@@ -19,10 +16,10 @@ import { PGlite } from '@electric-sql/pglite';
 import { canonicalGeographyService } from '../apps/api/src/services/canonicalGeographyService';
 
 async function main() {
-  console.log('=== RUNNING JOB 016 REAL GEOGRAPHIC MAPPING TEST SUITE ===\n');
+  console.log('=== RUNNING JOB 016 GEOGRAPHIC LOOKUP CONTRACT CHECKS ===\n');
 
   // ─── PART 1: POINT-IN-POLYGON & COORDINATE BOUNDS ──────────────────────────────
-  console.log('[CHECK 1] Testing canonicalGeographyService.locatePoint()...');
+  console.log('[CHECK 1] Testing local development lookup behavior...');
 
   // 1.1 Valid point: Kodangal (centroid 17.1105, 77.6253) -> AC 72
   const kodangalLoc = await canonicalGeographyService.locatePoint({ lat: 17.1105, lng: 77.6253 });
@@ -49,7 +46,11 @@ async function main() {
   // 1.4 Unmapped location: Gulf of Guinea (0.0, 0.0) -> Fail-closed: null, no hallucination
   const oceanLoc = await canonicalGeographyService.locatePoint({ lat: 0.0, lng: 0.0 });
   assert.ok(oceanLoc);
-  assert.strictEqual(oceanLoc.constituency, null, 'Unmapped point must fail closed with null constituency');
+  assert.strictEqual(
+    oceanLoc.constituency,
+    null,
+    'Unmapped point must fail closed with null constituency',
+  );
   console.log('  [PASS] Unmapped coordinate [0, 0] failed closed cleanly without hallucination.');
 
   // 1.5 Adversarial inputs: Out of bounds latitude / longitude
@@ -79,17 +80,20 @@ async function main() {
   // ─── PART 2: DETERMINISTIC POSTAL CROSSWALK (PIN -> AC) ────────────────────────
   console.log('\n[CHECK 2] Testing canonicalGeographyService.locateByPinCode()...');
 
-  // 2.1 Single-AC PIN code: 504208 (Mancherial)
-  const mancherialPin = await canonicalGeographyService.locateByPinCode('504208');
-  assert.ok(mancherialPin, 'PIN 504208 must resolve');
-  assert.strictEqual(mancherialPin.pinCode, '504208');
-  assert.strictEqual(mancherialPin.singleMatch, true);
-  assert.ok(mancherialPin.primaryConstituency);
-  assert.strictEqual(mancherialPin.primaryConstituency.acNo, 4);
-  assert.strictEqual(mancherialPin.primaryConstituency.name, 'Mancherial');
-  assert.strictEqual(mancherialPin.candidates.length, 1);
-  assert.strictEqual(mancherialPin.candidates[0].overlapWeight, 1.0);
-  console.log('  [PASS] Single-AC PIN 504208 mapped deterministically to AC 4 with weight 1.0.');
+  // 2.1 Provisional PIN code: 500002 (Charminar)
+  const charminarPin = await canonicalGeographyService.locateByPinCode('500002');
+  assert.ok(charminarPin, 'PIN 500002 must return its reviewed provisional reference');
+  assert.strictEqual(charminarPin.pinCode, '500002');
+  assert.strictEqual(charminarPin.singleMatch, false);
+  assert.strictEqual(charminarPin.primaryConstituency, null);
+  assert.strictEqual(charminarPin.verificationStatus, 'PROVISIONAL_APPROXIMATION');
+  assert.strictEqual(charminarPin.candidates.length, 1);
+  assert.strictEqual(charminarPin.candidates[0].constituency.acNo, 66);
+  assert.strictEqual(charminarPin.candidates[0].constituency.name, 'Charminar');
+  assert.strictEqual(charminarPin.candidates[0].overlapWeight, null);
+  console.log(
+    '  [PASS] PIN 500002 remains a provisional Charminar candidate without an exact-match or weight claim.',
+  );
 
   // 2.2 Multi-AC PIN code: 500001 (Hyderabad GPO / Abids)
   // Intersects Goshamahal (65), Nampally (63), Malakpet (58)
@@ -98,17 +102,18 @@ async function main() {
   assert.strictEqual(gpoPin.pinCode, '500001');
   assert.strictEqual(gpoPin.singleMatch, false, 'Multi-AC PIN must indicate singleMatch = false');
   assert.ok(gpoPin.candidates.length >= 3, '500001 must have 3 candidate ACs');
-  
+
   const acNos = gpoPin.candidates.map((c) => c.constituency.acNo);
   assert.ok(acNos.includes(65), 'Candidates must include Goshamahal AC 65');
   assert.ok(acNos.includes(63), 'Candidates must include Nampally AC 63');
   assert.ok(acNos.includes(58), 'Candidates must include Malakpet AC 58');
 
-  // Verify weights sum approximately to 1.0
-  const totalWeight = gpoPin.candidates.reduce((sum, c) => sum + c.overlapWeight, 0);
-  assert.ok(Math.abs(totalWeight - 1.0) < 0.05, `Candidate weights must sum to 1.0 (got ${totalWeight})`);
+  assert.ok(gpoPin.candidates.every((candidate) => candidate.overlapWeight === null));
+  assert.strictEqual(gpoPin.verificationStatus, 'DOCUMENTED_MULTI_AC_AMBIGUITY');
   assert.ok(gpoPin.candidates[0].localityNote.length > 0, 'Candidates must include locality notes');
-  console.log('  [PASS] Multi-AC PIN 500001 resolved with candidate distribution and overlap weights.');
+  console.log(
+    '  [PASS] Multi-AC PIN 500001 returns documented candidates without invented overlap weights.',
+  );
 
   // 2.3 Unregistered PIN: 999999
   const unregPin = await canonicalGeographyService.locateByPinCode('999999');
@@ -142,11 +147,11 @@ async function main() {
   );
   console.log('  [PASS] Invalid PIN code formats rejected fail-closed.');
 
-  // ─── PART 3: PGLITE POSTGIS DATABASE RUNTIME EMULATION ────────────────────────
-  console.log('\n[CHECK 3] Verifying PostGIS locate_constituency_point RPC procedure logic...');
+  // ─── PART 3: POSTGRESQL BOUNDING-BOX QUERY EXAMPLE ─────────────────────────────
+  console.log('\n[CHECK 3] Verifying a PostgreSQL bounding-box query example (not PostGIS)...');
   const db = new PGlite();
   try {
-    // Test spatial point-in-bbox query logic
+    // PGlite here does not load PostGIS; this only checks the example bbox SQL.
     await db.exec(`
       CREATE TABLE test_constituencies (
         id TEXT PRIMARY KEY,
@@ -184,7 +189,7 @@ async function main() {
 
     const rpcEmpty = await db.query(`SELECT * FROM locate_test_point(0.0, 0.0);`);
     assert.strictEqual(rpcEmpty.rows.length, 0);
-    console.log('  [PASS] Spatial point resolution procedure verified in PostgreSQL.');
+    console.log('  [PASS] Bounding-box SQL example returned the expected row in PGlite.');
   } finally {
     await db.close();
   }
@@ -192,12 +197,19 @@ async function main() {
   // ─── PART 4: GENERATE EVIDENCE DOSSIER ─────────────────────────────────────────
   const reportData = {
     milestone: 'W016',
-    title: 'Real Geographic Mapping — Spatial Point-in-Polygon & Postal Crosswalk',
-    status: 'ACCEPTED / COMPLETE',
+    title: 'Geographic Lookup Contract Checks — Development Behavior and Postal References',
+    status: 'LIMITED / LOCAL CHECKS ONLY',
     verified_at: new Date().toISOString(),
-    git_baseline: '09ebac686462ce94a8c6b1d13d1a856c32fa05fb',
+    verification_scope: {
+      local_lookup:
+        'Development service behavior using local geography data when no database RPC is available.',
+      database_example:
+        'PGlite PostgreSQL emulation of a bounding-box query; PostGIS extension is not loaded.',
+      production_postgis_rpc: 'NOT TESTED BY THIS SCRIPT',
+      http_endpoints: 'NOT TESTED BY THIS SCRIPT',
+    },
     components_verified: {
-      postgis_locate_point: {
+      local_development_lookup: {
         tested_points: [
           { lat: 17.1105, lng: 77.6253, expected_ac: 72, resolved_ac: 72, status: 'PASS' },
           { lat: 18.8714, lng: 79.4637, expected_ac: 4, resolved_ac: 4, status: 'PASS' },
@@ -206,21 +218,31 @@ async function main() {
         ],
         boundary_validation: 'PASS (Strict -90..90, -180..180 & NaN rejection)',
       },
+      pglite_bbox_example: {
+        status: 'PASS',
+        runtime: 'PGlite PostgreSQL emulation; no PostGIS extension',
+      },
       postal_crosswalk: {
         single_ac_pins: [
-          { pin: '504208', ac: 4, weight: 1.0, status: 'PASS' },
+          { pin: '500002', candidates: [66], weight: null, status: 'PROVISIONAL_ONLY' },
         ],
         multi_ac_pins: [
-          { pin: '500001', candidate_count: 3, acs: [65, 63, 58], weight_sum: 0.9999, status: 'PASS' },
+          {
+            pin: '500001',
+            candidate_count: 3,
+            acs: [65, 63, 58],
+            overlap_weights: null,
+            status: 'DOCUMENTED_AMBIGUITY',
+          },
         ],
-        unregistered_pins: [
-          { pin: '999999', candidates: 0, status: 'PASS' },
-        ],
+        unregistered_pins: [{ pin: '999999', candidates: 0, status: 'PASS' }],
         format_validation: 'PASS (Strict 6-digit regex /^[1-9][0-9]{5}$/)',
       },
-      fail_closed_adherence: 'PASS (Zero heuristic fallbacks to default states)',
+      fail_closed_adherence:
+        'PASS (Invalid and unmapped inputs do not resolve to a fabricated constituency)',
     },
-    summary: 'JOB 016 verified without local file heuristics. Coordinate -> AC mapping and deterministic PIN -> AC crosswalk resolve with mathematically sound candidate distributions and strict fail-closed boundary enforcement.',
+    summary:
+      'Local development lookup, PIN reference semantics, and input validation checks passed. This script does not verify the production PostGIS RPC, live constituency coverage, or HTTP endpoints.',
   };
 
   fs.writeFileSync(
@@ -228,38 +250,38 @@ async function main() {
     JSON.stringify(reportData, null, 2),
   );
 
-  const reportMd = `# W016: Real Geographic Mapping Verification Report
+  const reportMd = `# W016: Geographic Lookup Contract Checks
 
 - **Milestone:** W016
-- **Title:** Real Geographic Mapping — Coordinate Spatial & Postal Crosswalk Integration
-- **Verification Authority:** Amendment v1.5-A & Rule IV-001 Non-Self-Acceptance
+- **Title:** Development Lookup Behavior, PIN Reference Semantics, and Input Validation
 - **Executed At:** ${reportData.verified_at}
-- **Baseline Git SHA:** \`${reportData.git_baseline}\`
-- **Result:** **100% PASS**
+- **Result:** **LIMITED — LOCAL CHECKS PASSED; PRODUCTION POSTGIS NOT VERIFIED BY THIS SCRIPT**
+- **Scope:** This script uses local development lookup behavior and a PGlite PostgreSQL emulation. It does not call the production PostGIS RPC or HTTP endpoints.
 
 ---
 
-## 1. Spatial Resolution ([lat, lng] -> AC)
-- **Centroid Resolution:** Verified against known assembly constituencies (Kodangal AC 72, Mancherial AC 4, Charminar AC 66).
-- **Out of Boundary:** Coordinates outside Indian territorial boundaries ([0, 0]) fail closed cleanly with \`constituency: null\` and \`confidence: 0\`.
-- **Adversarial Checks:** Inputs exceeding \`[-90, 90]\` or \`[-180, 180]\` and non-numeric values are rejected immediately with \`INVALID_COORDINATES\`.
+## 1. Local Development Lookup and Input Validation
+- **Local reference checks:** Development lookup resolves the checked-in Telangana examples for Kodangal AC 72, Mancherial AC 4, and Charminar AC 66.
+- **Unmapped coordinate:** [0, 0] returns no constituency.
+- **Adversarial inputs:** Out-of-range and non-numeric coordinates are rejected with \`INVALID_COORDINATES\`.
+- **PGlite example:** A bounding-box query returns its expected row in PGlite. This is not a PostGIS test and does not verify polygon containment.
 
 ---
 
 ## 2. Postal Crosswalk (PIN -> AC)
-- **Single-AC Determinism:** Valid 6-digit postal codes mapping unambiguously to a single AC (e.g. 504208 -> Mancherial) return \`singleMatch: true\` and weight \`1.0\`.
-- **Multi-AC Concordance:** Multi-constituency postal zones (e.g. 500001 Hyderabad GPO) return all candidate ACs (Goshamahal AC 65, Nampally AC 63, Malakpet AC 58) with overlap weights summing to 1.0 and locality descriptions, preventing heuristic misrepresentation.
+- **Provisional PIN references:** PIN 500002 points to one reviewed candidate (Charminar AC 66), but remains provisional with no exact-match or probability claim.
+- **Multi-AC ambiguity:** PIN 500001 returns the documented candidates (Goshamahal AC 65, Nampally AC 63, Malakpet AC 58) without invented overlap weights.
 - **Fail-Closed Format:** Alphanumeric, 5-digit, and 7-digit inputs fail closed with \`INVALID_PIN_CODE\`. Unmapped PINs return zero candidate entities.
+
+## Not Verified Here
+- The production \`locate_constituency_point_truthful\` PostGIS RPC, its deployed migration, live database boundaries, and API endpoint behavior are outside this script's checks.
 `;
 
-  fs.writeFileSync(
-    path.resolve('reports/w016_geographic_mapping_report.md'),
-    reportMd,
-  );
+  fs.writeFileSync(path.resolve('reports/w016_geographic_mapping_report.md'), reportMd);
 
   console.log('\n[PASS] Evidence generated at reports/w016_geographic_mapping_report.*');
   console.log('===============================================================');
-  console.log('   ALL W016 REAL GEOGRAPHIC MAPPING CHECKS PASSED (100%)!      ');
+  console.log('   LOCAL LOOKUP CONTRACT CHECKS PASSED; LIVE POSTGIS NOT TESTED.  ');
   console.log('===============================================================\n');
 }
 

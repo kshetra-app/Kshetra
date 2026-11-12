@@ -3,11 +3,11 @@
     "job": "W008",
     "title": "Fastify API Route Contract Inventory",
     "specification": "Master Execution Framework Amendment v1.5-A / DEC-041",
-    "timestamp": "2026-11-11T05:42:01.903Z"
+    "timestamp": "2026-11-12T00:02:21.485Z"
   },
   "summary": {
-    "totalRoutesRegistered": 393,
-    "pioneerAndPhase1Routes": 94,
+    "totalRoutesRegistered": 392,
+    "pioneerAndPhase1Routes": 93,
     "schemaCoveredRoutes": 221
   },
   "routes": [
@@ -725,15 +725,6 @@
     {
       "method": "GET",
       "path": "/api/v1/civic/budget/:stateCode",
-      "file": "civic.ts",
-      "phase": "Phase 1 (Standardized)",
-      "schemaDefined": true,
-      "preValidationDefined": false,
-      "standardizedEnvelope": true
-    },
-    {
-      "method": "GET",
-      "path": "/api/v1/civic/attendance",
       "file": "civic.ts",
       "phase": "Phase 1 (Standardized)",
       "schemaDefined": true,
@@ -2725,9 +2716,9 @@
       "path": "/political-ads/library/view",
       "file": "politicalAds.ts",
       "phase": "Phase 2-4",
-      "schemaDefined": false,
+      "schemaDefined": true,
       "preValidationDefined": false,
-      "standardizedEnvelope": false
+      "standardizedEnvelope": true
     },
     {
       "method": "POST",

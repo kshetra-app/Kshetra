@@ -169,6 +169,12 @@ jobs:
         run: npx tsc --noEmit
         working-directory: apps/mobile
 
+      - name: Typecheck seed data
+        run: npx tsc --noEmit -p data/seed/tsconfig.json
+
+      - name: Typecheck census data
+        run: npx tsc --noEmit -p data/census/tsconfig.json
+
   lint:
     name: Lint
     runs-on: ubuntu-latest

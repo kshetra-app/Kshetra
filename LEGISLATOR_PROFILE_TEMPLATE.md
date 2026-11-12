@@ -163,7 +163,6 @@ interface CriminalCase {
 | `questionsAsked` | number | PRS | Total questions raised in house |
 | `debatesParticipated` | number | PRS | Debates participated in |
 | `privateMemberBills` | number | PRS | Private member bills introduced |
-| `attendancePercent` | number | PRS | Session attendance (%) |
 | `nregsQuestions` | number | PRS | Questions on NREGS/rural employment |
 | `womenIssueQuestions` | number | PRS | Questions on women's issues |
 | `localIssueQuestions` | number | PRS | Questions on own constituency |
@@ -224,7 +223,6 @@ interface CriminalCase {
 | `wealthRank` | number | Computed | Rank among all MLAs/MPs by assets |
 | `criminalRank` | number | Computed | Rank by criminal cases |
 | `performanceRank` | number | Computed | Rank by legislative performance score |
-| `attendanceRank` | number | Computed | Rank by attendance |
 | `incumbencyAdvantage` | boolean | Computed | Won from same seat in consecutive elections |
 | `voteShareTrend` | string | Computed | `increasing`, `decreasing`, `stable` |
 | `assetGrowthTrend` | string | Computed | `normal`, `high`, `suspicious` |
@@ -373,8 +371,7 @@ interface CriminalCase {
   },
   "legislativePerformance": {
     "questionsAsked": 45,
-    "debatesParticipated": 12,
-    "attendancePercent": 78
+    "debatesParticipated": 12
   },
   "dynasty": {
     "isDynast": false,

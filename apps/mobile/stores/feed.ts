@@ -16,7 +16,6 @@ import * as dataService from '../lib/supabaseDataService';
 import { enqueue, getPendingOps, type SyncStatus, retryFailedOp } from '../lib/offlineSync';
 import { rankPostsV1 } from '../lib/feedRanking';
 import { isOnline } from '../lib/networkStatus';
-import { isSupabaseConfigured } from '../lib/supabase';
 import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 import { logContentAction } from '../lib/contentAccountability';
 import { useAuthStore } from './auth';
@@ -1337,8 +1336,8 @@ interface FeedState {
   // Follow Graph (Ticket 0.3)
   followedUserIds: string[];
   followedUserOwnerId: string | null;
-  followUser: (userId: string) => Promise<boolean>;
-  unfollowUser: (userId: string) => Promise<boolean>;
+  followUser: (userId: string, stateCode?: string, constituencyId?: string | null) => Promise<boolean>;
+  unfollowUser: (userId: string, stateCode?: string, constituencyId?: string | null) => Promise<boolean>;
   isFollowing: (userId: string) => boolean;
 
   // Sync & Realtime
@@ -1870,7 +1869,7 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
   },
 
   // Follow Graph (Ticket 0.3)
-  followUser: async (userId: string) => {
+  followUser: async (userId: string, stateCode?: string, constituencyId?: string | null) => {
     if (!userId) return false;
     const authUserId = useAuthStore.getState().user?.id;
     if (IS_LIVE_ENVIRONMENT && !authUserId) {
@@ -1892,11 +1891,11 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
       followedUserOwnerId: authUserId ?? null,
       lastError: null,
     }));
-    await get().refreshFeed();
+    await get().refreshFeed(stateCode, constituencyId);
     return true;
   },
 
-  unfollowUser: async (userId: string) => {
+  unfollowUser: async (userId: string, stateCode?: string, constituencyId?: string | null) => {
     if (!userId) return false;
     const authUserId = useAuthStore.getState().user?.id;
     if (IS_LIVE_ENVIRONMENT && !authUserId) {
@@ -1914,7 +1913,7 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
       followedUserOwnerId: authUserId ?? null,
       lastError: null,
     }));
-    await get().refreshFeed();
+    await get().refreshFeed(stateCode, constituencyId);
     return true;
   },
 

@@ -4,7 +4,7 @@
  * ══════════════════════════════════════════════════════════════════════
  * Source: prsindia.org (PRS Legislative Research)
  * Data:   Photos (100% coverage), age, constituency, party, gender, education,
- *         questions asked, debates, attendance, bills
+ *         questions asked, debates, bills
  *
  * Usage:
  *   node scrapers/prs-scraper.js                   # All states
@@ -105,9 +105,6 @@ async function parseProfile(profileUrl, isMP = false) {
 
   const dText = $('[class*="field-mla-debates"] .field-item, [class*="field-mp-debates"] .field-item').first().text().trim();
   if (dText) data.debates = parseInt(dText) || 0;
-
-  const aText = $('[class*="field-mla-attendance"] .field-item, [class*="field-mp-attendance"] .field-item').first().text().trim();
-  if (aText) data.attendance = parseInt(aText) || 0;
 
   const bText = $('[class*="field-mla-bills"] .field-item, [class*="field-mp-private-member"] .field-item').first().text().trim();
   if (bText) data.privateBills = parseInt(bText) || 0;
