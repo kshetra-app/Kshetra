@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { AppState } from 'react-native';
 import type { ConstituencyBrief } from '@kshetra/shared';
 import { apiClient } from './api';
 import { IS_LIVE_ENVIRONMENT } from './environment';
@@ -9,6 +10,7 @@ import {
 } from './stateDataAdapter';
 
 const DIRECTORY_TTL_MS = 5 * 60 * 1000;
+const AUTO_REFRESH_CHECK_INTERVAL_MS = 60 * 1000;
 const MAX_STALE_MS = 24 * 60 * 60 * 1000;
 
 export type ConstituencyDirectoryStatus =
@@ -213,6 +215,32 @@ export function useConstituencyDirectory(stateCode: string) {
   }, [code, revision]);
 
   const refresh = useCallback(() => setRevision((current) => current + 1), []);
+
+  useEffect(() => {
+    if (!IS_LIVE_ENVIRONMENT || code === 'IN') return;
+
+    let wasActive = AppState.currentState === 'active';
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      const isActive = nextState === 'active';
+      if (isActive && !wasActive) refresh();
+      wasActive = isActive;
+    });
+    const refreshInterval = setInterval(() => {
+      const cached = directoryCache.get(code);
+      if (
+        AppState.currentState === 'active' &&
+        (!cached || Date.now() - cached.fetchedAt >= DIRECTORY_TTL_MS)
+      ) {
+        refresh();
+      }
+    }, AUTO_REFRESH_CHECK_INTERVAL_MS);
+
+    return () => {
+      subscription.remove();
+      clearInterval(refreshInterval);
+    };
+  }, [code, refresh]);
+
   const currentSnapshot = snapshot.stateCode === code ? snapshot : {
     stateCode: code,
     status: IS_LIVE_ENVIRONMENT ? (code === 'IN' ? 'NOT_APPLICABLE' as const : 'LOADING' as const) : 'LOCAL_REFERENCE' as const,
