@@ -466,6 +466,48 @@ describe('Phase 1: Ticket 1.2 - Feed Write Hardening & Throttling', () => {
     expect(useFeedStore.getState().followedUserIds).not.toContain('target-user');
   });
 
+  it('keeps the newest feed when overlapping refreshes finish out of order', async () => {
+    const deferred = <T,>() => {
+      let resolve!: (value: T) => void;
+      const promise = new Promise<T>((done) => {
+        resolve = done;
+      });
+      return { promise, resolve };
+    };
+    const olderResponse = deferred<unknown[] | null>();
+    const newerResponse = deferred<unknown[] | null>();
+    (dataService.fetchFollowedUserIds as jest.Mock).mockResolvedValue([]);
+    (dataService.fetchBlendedFeed as jest.Mock)
+      .mockImplementationOnce(() => olderResponse.promise)
+      .mockImplementationOnce(() => newerResponse.promise);
+
+    const olderRefresh = useFeedStore.getState().refreshFeed('TS', 'TS-OLD');
+    await Promise.resolve();
+    expect(dataService.fetchBlendedFeed).toHaveBeenCalledTimes(1);
+    const newerRefresh = useFeedStore.getState().refreshFeed('MH', 'MH-NEW');
+    await Promise.resolve();
+    expect(dataService.fetchBlendedFeed).toHaveBeenCalledTimes(2);
+
+    const makeServerPost = (id: string, stateCode: string) => ({
+      id,
+      author_id: `${id}-author`,
+      author_display_name: 'Citizen',
+      state_code: stateCode,
+      content: id,
+      created_at: '2026-11-12T10:00:00.000Z',
+      updated_at: '2026-11-12T10:00:00.000Z',
+    });
+    newerResponse.resolve([makeServerPost('new-post', 'MH')]);
+    await newerRefresh;
+    expect(useFeedStore.getState().posts.map((post) => post.id)).toEqual(['new-post']);
+
+    olderResponse.resolve([makeServerPost('old-post', 'TS')]);
+    await olderRefresh;
+
+    expect(useFeedStore.getState().posts.map((post) => post.id)).toEqual(['new-post']);
+    expect(useFeedStore.getState().loading).toBe(false);
+  });
+
   it('keeps a follow when the API rejects unfollow', async () => {
     useFeedStore.setState({ followedUserIds: ['target-user'] });
     (dataService.unfollowUser as jest.Mock).mockResolvedValue(false);

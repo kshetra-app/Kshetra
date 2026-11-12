@@ -18,7 +18,10 @@ import { rankPostsV1 } from '../lib/feedRanking';
 import { isOnline } from '../lib/networkStatus';
 import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 import { logContentAction } from '../lib/contentAccountability';
+import { SequenceGuard } from '../lib/staleResponseGuard';
 import { useAuthStore } from './auth';
+
+const feedRefreshGuard = new SequenceGuard<string>();
 
 /**
  * Development-only synthetic posts for offline-first UI previews.
@@ -1921,13 +1924,19 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
   },
 
   refreshFeed: async (stateCode = 'TS', constituencyId = null) => {
+    const authUser = useAuthStore.getState().user;
+    const requestOwnerId = authUser?.id ?? null;
+    const refreshToken = feedRefreshGuard.startRequest(
+      JSON.stringify([requestOwnerId, stateCode, constituencyId]),
+    );
+    const isStale = () =>
+      refreshToken.isStale() || (useAuthStore.getState().user?.id ?? null) !== requestOwnerId;
     set({ loading: true });
     try {
-      const authUser = useAuthStore.getState().user;
-      const requestOwnerId = authUser?.id ?? null;
       const serverFollowedIds = authUser?.id
         ? await dataService.fetchFollowedUserIds(authUser.id)
         : null;
+      if (isStale()) return;
       const currentOwnerId = get().followedUserOwnerId;
       const cachedFollowedIds = currentOwnerId === requestOwnerId ? get().followedUserIds : [];
       const followedIds = Array.isArray(serverFollowedIds) ? serverFollowedIds : cachedFollowedIds;
@@ -1945,6 +1954,7 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
         50,
         followedIds,
       );
+      if (isStale()) return;
       if (livePosts && livePosts.length > 0) {
         const transformed: Post[] = livePosts.map((p: any) => ({
           id: p.id,
@@ -2014,6 +2024,7 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
         set({ posts: deduped });
       }
     } catch (_) {
+      if (isStale()) return;
       if (IS_LIVE_ENVIRONMENT) {
         set({ isLive: false, lastError: 'Feed refresh failed. Showing previously loaded posts.' });
         return;
@@ -2044,7 +2055,7 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
       });
       set({ posts: deduped });
     } finally {
-      set({ loading: false });
+      if (!refreshToken.isStale()) set({ loading: false });
     }
   },
 
