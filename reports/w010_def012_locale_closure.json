@@ -2,16 +2,16 @@
   "evidenceMetadata": {
     "mandate": "DEF-012 Locale Closure: 100% semantic parity & bidirectional token integrity across all 13 official languages",
     "verifiedBy": "SEMANTIC_TOKEN_INTEGRITY_VALIDATOR",
-    "timestamp": "2026-11-12T03:02:14.369Z"
+    "timestamp": "2026-11-12T15:20:05.036Z"
   },
-  "canonicalKeyCount": 2620,
+  "canonicalKeyCount": 2619,
   "keysWithTokensCount": 150,
   "allPassed100Percent": true,
   "results": [
     {
       "lang": "en",
-      "totalKeys": 2620,
-      "canonicalKeys": 2620,
+      "totalKeys": 2619,
+      "canonicalKeys": 2619,
       "missingCount": 0,
       "extraCount": 0,
       "tokenMismatchCount": 0,
@@ -22,8 +22,8 @@
     },
     {
       "lang": "te",
-      "totalKeys": 2620,
-      "canonicalKeys": 2620,
+      "totalKeys": 2619,
+      "canonicalKeys": 2619,
       "missingCount": 0,
       "extraCount": 0,
       "tokenMismatchCount": 0,
@@ -34,8 +34,8 @@
     },
     {
       "lang": "hi",
-      "totalKeys": 2620,
-      "canonicalKeys": 2620,
+      "totalKeys": 2619,
+      "canonicalKeys": 2619,
       "missingCount": 0,
       "extraCount": 0,
       "tokenMismatchCount": 0,
@@ -46,8 +46,8 @@
     },
     {
       "lang": "ta",
-      "totalKeys": 2620,
-      "canonicalKeys": 2620,
+      "totalKeys": 2619,
+      "canonicalKeys": 2619,
       "missingCount": 0,
       "extraCount": 0,
       "tokenMismatchCount": 0,
@@ -58,8 +58,8 @@
     },
     {
       "lang": "kn",
-      "totalKeys": 2620,
-      "canonicalKeys": 2620,
+      "totalKeys": 2619,
+      "canonicalKeys": 2619,
       "missingCount": 0,
       "extraCount": 0,
       "tokenMismatchCount": 0,
@@ -70,8 +70,8 @@
     },
     {
       "lang": "ml",
-      "totalKeys": 2620,
-      "canonicalKeys": 2620,
+      "totalKeys": 2619,
+      "canonicalKeys": 2619,
       "missingCount": 0,
       "extraCount": 0,
       "tokenMismatchCount": 0,
@@ -82,8 +82,8 @@
     },
     {
       "lang": "mr",
-      "totalKeys": 2620,
-      "canonicalKeys": 2620,
+      "totalKeys": 2619,
+      "canonicalKeys": 2619,
       "missingCount": 0,
       "extraCount": 0,
       "tokenMismatchCount": 0,
@@ -94,8 +94,8 @@
     },
     {
       "lang": "bn",
-      "totalKeys": 2620,
-      "canonicalKeys": 2620,
+      "totalKeys": 2619,
+      "canonicalKeys": 2619,
       "missingCount": 0,
       "extraCount": 0,
       "tokenMismatchCount": 0,
@@ -106,8 +106,8 @@
     },
     {
       "lang": "gu",
-      "totalKeys": 2620,
-      "canonicalKeys": 2620,
+      "totalKeys": 2619,
+      "canonicalKeys": 2619,
       "missingCount": 0,
       "extraCount": 0,
       "tokenMismatchCount": 0,
@@ -118,8 +118,8 @@
     },
     {
       "lang": "or",
-      "totalKeys": 2620,
-      "canonicalKeys": 2620,
+      "totalKeys": 2619,
+      "canonicalKeys": 2619,
       "missingCount": 0,
       "extraCount": 0,
       "tokenMismatchCount": 0,
@@ -130,8 +130,8 @@
     },
     {
       "lang": "pa",
-      "totalKeys": 2620,
-      "canonicalKeys": 2620,
+      "totalKeys": 2619,
+      "canonicalKeys": 2619,
       "missingCount": 0,
       "extraCount": 0,
       "tokenMismatchCount": 0,
@@ -142,8 +142,8 @@
     },
     {
       "lang": "as",
-      "totalKeys": 2620,
-      "canonicalKeys": 2620,
+      "totalKeys": 2619,
+      "canonicalKeys": 2619,
       "missingCount": 0,
       "extraCount": 0,
       "tokenMismatchCount": 0,
@@ -154,8 +154,8 @@
     },
     {
       "lang": "ne",
-      "totalKeys": 2620,
-      "canonicalKeys": 2620,
+      "totalKeys": 2619,
+      "canonicalKeys": 2619,
       "missingCount": 0,
       "extraCount": 0,
       "tokenMismatchCount": 0,

@@ -515,7 +515,7 @@ export default function ParliamentScreen() {
           <>
             <View style={styles.sectionHeaderRow}>
               <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                {isNational ? t('parliament.rajyaSabhaMPsCount', { count: filteredRajyaSabhaMPs.length, total: rajyaSabhaProfileCount, defaultValue: `Rajya Sabha profiles (${filteredRajyaSabhaMPs.length} of ${rajyaSabhaProfileCount}; ${MP_PROFILES_SNAPSHOT.rajyaSabhaSeatCount} seats total)` }) : t('parliament.stateRajyaSabhaCount', { state: stateSummary?.stateName || selectedScope, count: filteredRajyaSabhaMPs.length, defaultValue: `Rajya Sabha profiles — ${stateSummary?.stateName || selectedScope} (${filteredRajyaSabhaMPs.length})`})}
+                {isNational ? t('parliament.rajyaSabhaMPsCount', { count: filteredRajyaSabhaMPs.length, total: rajyaSabhaProfileCount, seatTotal: MP_PROFILES_SNAPSHOT.rajyaSabhaSeatCount, defaultValue: `Rajya Sabha profiles (${filteredRajyaSabhaMPs.length} listed of ${rajyaSabhaProfileCount}; ${MP_PROFILES_SNAPSHOT.rajyaSabhaSeatCount} seats total)` }) : t('parliament.stateRajyaSabhaCount', { state: stateSummary?.stateName || selectedScope, count: filteredRajyaSabhaMPs.length, defaultValue: `Rajya Sabha profiles — ${stateSummary?.stateName || selectedScope} (${filteredRajyaSabhaMPs.length})`})}
               </Text>
             </View>
 
