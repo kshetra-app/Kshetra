@@ -361,4 +361,3 @@ export class PrivacyLocaleService {
 }
 
 export const privacyLocaleService = new PrivacyLocaleService();
-
