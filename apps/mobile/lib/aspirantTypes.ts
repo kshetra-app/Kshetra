@@ -2,6 +2,7 @@
  * Aspiring Leaders & Civic Participation types.
  * Mirrors Supabase schema from 010_aspiring_leaders.sql.
  */
+import type { AspirantMetricAvailability, AspirantProfileMetric } from '@kshetra/shared';
 
 // ─── BADGE SYSTEM ───
 
@@ -152,6 +153,8 @@ export interface AspirantProfile {
   communityEndorsements: number;
   modulesCompleted: number;
   challengesCompleted: number;
+  /** False means the server did not provide a valid persisted value. */
+  metricAvailability?: AspirantMetricAvailability;
 
   isPublic: boolean;
 
@@ -176,6 +179,28 @@ export interface AspirantProfile {
     profileViews30Days: number;
     pendingRequestsCount: number;
   };
+}
+
+export function isAspirantMetricAvailable(
+  profile: AspirantProfile,
+  metric: AspirantProfileMetric,
+): boolean {
+  const explicitAvailability = profile.metricAvailability?.[metric];
+  if (explicitAvailability !== undefined) return explicitAvailability;
+  return Number.isSafeInteger(profile[metric]) && profile[metric] >= 0;
+}
+
+export function hasCompleteCivicMetrics(profile: AspirantProfile): boolean {
+  return (
+    isAspirantMetricAvailable(profile, 'issuesReported') &&
+    isAspirantMetricAvailable(profile, 'issuesResolved') &&
+    isAspirantMetricAvailable(profile, 'commentsCount') &&
+    isAspirantMetricAvailable(profile, 'evidenceSubmitted') &&
+    isAspirantMetricAvailable(profile, 'promisesTracked') &&
+    isAspirantMetricAvailable(profile, 'communityEndorsements') &&
+    isAspirantMetricAvailable(profile, 'modulesCompleted') &&
+    isAspirantMetricAvailable(profile, 'challengesCompleted')
+  );
 }
 
 // ─── CIVIC SCORE BREAKDOWN ───

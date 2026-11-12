@@ -28,6 +28,7 @@ import {
   type CommunityChallenge,
   type ChallengeParticipation,
 } from '../lib/aspirantTypes';
+import { isAspirantMetricAvailable } from '../lib/aspirantTypes';
 
 type AcademyTab = 'modules' | 'challenges' | 'badges' | 'community';
 
@@ -71,6 +72,7 @@ export default function LeadershipAcademyScreen() {
   const endorsedIds = useAspirantStore((s: any) => s.endorsedIds) as string[];
 
   const civicScore = getCivicScore();
+  const unavailableLabel = t('constituency.dataUnavailable', { defaultValue: 'Unavailable' });
   const completedModuleIds = getCompletedModules();
   const activeChallenges = getActiveChallenges();
 
@@ -130,6 +132,10 @@ export default function LeadershipAcademyScreen() {
       {civicScore ? (
         <View style={styles.scoreSection}>
           <CivicScoreCard score={civicScore} displayName={profile?.displayName} />
+        </View>
+      ) : profile ? (
+        <View style={styles.scoreSection}>
+          <Text style={styles.emptyText}>{unavailableLabel}</Text>
         </View>
       ) : (
         <Pressable style={styles.registerCta} onPress={() => setRegisterVisible(true)}>
@@ -302,7 +308,9 @@ export default function LeadershipAcademyScreen() {
               </View>
             ) : (
               publicAspirants.map((asp) => {
+                const scoreAvailable = isAspirantMetricAvailable(asp, 'civicScore');
                 const levelConfig = CIVIC_LEVEL_CONFIG[
+                  !scoreAvailable ? 'observer' :
                   asp.civicScore >= 1000 ? 'champion' :
                   asp.civicScore >= 600 ? 'leader' :
                   asp.civicScore >= 300 ? 'advocate' :
@@ -324,16 +332,18 @@ export default function LeadershipAcademyScreen() {
                               {asp.targetConstituencyName} · {asp.targetElectionYear}
                             </Text>
                           )}
-                          <View style={[styles.levelTag, { backgroundColor: levelConfig.color + '20' }]}>
-                            <Text style={[styles.levelTagText, { color: levelConfig.color }]}>
-                              {levelConfig.label}
-                            </Text>
-                          </View>
+                          {scoreAvailable ? (
+                            <View style={[styles.levelTag, { backgroundColor: levelConfig.color + '20' }]}>
+                              <Text style={[styles.levelTagText, { color: levelConfig.color }]}>
+                                {levelConfig.label}
+                              </Text>
+                            </View>
+                          ) : null}
                         </View>
                       </View>
                       <View style={styles.aspirantScore}>
                         <Text style={[styles.aspirantScoreValue, { color: levelConfig.color }]}>
-                          {asp.civicScore}
+                          {scoreAvailable ? asp.civicScore : unavailableLabel}
                         </Text>
                         <Text style={styles.aspirantScoreLabel}>{t('leadershipAcademy.civicScore')}</Text>
                       </View>
@@ -351,7 +361,11 @@ export default function LeadershipAcademyScreen() {
                       <Text style={[styles.endorseText, isEndorsed && { color: '#EF4444' }]}>
                         {isEndorsed ? t('leadershipAcademy.endorsed') : t('leadershipAcademy.endorse')}
                       </Text>
-                      <Text style={styles.endorseCount}>· {asp.communityEndorsements}</Text>
+                      <Text style={styles.endorseCount}>
+                        · {isAspirantMetricAvailable(asp, 'communityEndorsements')
+                          ? asp.communityEndorsements
+                          : unavailableLabel}
+                      </Text>
                     </Pressable>
                   </View>
                 );

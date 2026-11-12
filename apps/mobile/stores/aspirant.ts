@@ -13,7 +13,8 @@ import type {
   ChallengeParticipation,
   CivicScoreBreakdown,
 } from '../lib/aspirantTypes';
-import { computeCivicScore } from '../lib/aspirantTypes';
+import { computeCivicScore, hasCompleteCivicMetrics } from '../lib/aspirantTypes';
+import { getAspirantMetricAvailability } from '@kshetra/shared';
 import { MODULE_CONTENT } from '../data/leadershipContent';
 import * as dataService from '../lib/supabaseDataService';
 import { enqueue } from '../lib/offlineSync';
@@ -429,7 +430,7 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
 
   getCivicScore: () => {
     const p = get().profile;
-    if (!p) return null;
+    if (!p || !hasCompleteCivicMetrics(p)) return null;
     return computeCivicScore(p);
   },
 
@@ -499,6 +500,7 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
       communityEndorsements: row.communityEndorsements,
       modulesCompleted: row.modulesCompleted,
       challengesCompleted: row.challengesCompleted,
+      metricAvailability: getAspirantMetricAvailability(row),
       isPublic: row.isPublic,
     };
     set({ profile, profileStatus: 'ready' });
@@ -859,6 +861,7 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
           communityEndorsements: r.community_endorsements || 0,
           modulesCompleted: r.modules_completed || 0,
           challengesCompleted: r.challenges_completed || 0,
+          metricAvailability: getAspirantMetricAvailability(r),
           isPublic: r.is_public ?? true,
         }));
         set({ publicAspirants: mapped, publicAspirantsStatus: 'ready' });

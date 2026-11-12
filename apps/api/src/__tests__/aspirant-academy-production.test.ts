@@ -205,6 +205,21 @@ describe('Leadership Academy production persistence', () => {
     expect(profile.partyAffiliation).toBeUndefined();
   });
 
+  it('keeps a real zero distinct from an unavailable stored metric', () => {
+    const profile = service.mapProfileRow({
+      id: aspirantProfileRow.id,
+      user_id: 'user-1',
+      civic_score: 0,
+      issues_reported: null,
+    });
+
+    expect(profile.civicScore).toBe(0);
+    expect(profile.metricAvailability).toMatchObject({
+      civicScore: true,
+      issuesReported: false,
+    });
+  });
+
   it('lists national and matching-state challenges with persisted participation', async () => {
     const result = await service.listAcademyChallenges('user-1');
 

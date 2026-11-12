@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { AspirantProfile } from '../lib/aspirantTypes';
+import { isAspirantMetricAvailable } from '../lib/aspirantTypes';
 import { useFeedStore } from '../stores/feed';
 import { useAuthStore } from '../stores/auth';
 import { useAspirantStore } from '../stores/aspirant';
@@ -570,19 +571,30 @@ export default function LeaderProfileModal({
               <View style={styles.metricCard}>
                 <Text style={styles.metricCardLabel}>{t('civicScoreCard.endorsements')}</Text>
                 <Text style={[styles.metricCardValue, { color: '#047857' }]}>
-                  {aspirant.communityEndorsements.toLocaleString('en-IN')}
+                  {isAspirantMetricAvailable(aspirant, 'communityEndorsements')
+                    ? aspirant.communityEndorsements.toLocaleString('en-IN')
+                    : unavailableLabel}
                 </Text>
               </View>
               <View style={styles.metricCard}>
                 <Text style={styles.metricCardLabel}>{t('civicScoreCard.title')}</Text>
                 <Text style={[styles.metricCardValue, { color: '#002B7F' }]}>
-                  {aspirant.civicScore} <Text style={{ fontSize: 11, color: '#D97706' }}>★</Text>
+                  {isAspirantMetricAvailable(aspirant, 'civicScore') ? (
+                    <>
+                      {aspirant.civicScore}{' '}
+                      <Text style={{ fontSize: 11, color: '#D97706' }}>★</Text>
+                    </>
+                  ) : (
+                    unavailableLabel
+                  )}
                 </Text>
               </View>
               <View style={styles.metricCard}>
                 <Text style={styles.metricCardLabel}>{t('civicScoreCard.resolved')}</Text>
                 <Text style={[styles.metricCardValue, { color: '#4F46E5' }]}>
-                  {aspirant.issuesResolved}
+                  {isAspirantMetricAvailable(aspirant, 'issuesResolved')
+                    ? aspirant.issuesResolved
+                    : unavailableLabel}
                 </Text>
               </View>
             </View>

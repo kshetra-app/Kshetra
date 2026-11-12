@@ -14,6 +14,7 @@ import { getUnifiedConstituenciesForState } from '../../lib/stateDataAdapter';
 import { useActiveStateStore } from '../../stores/activeState';
 import StateSwitcher from '../../components/StateSwitcher';
 import type { AspirantProfile } from '../../lib/aspirantTypes';
+import { isAspirantMetricAvailable } from '../../lib/aspirantTypes';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +35,7 @@ type PageTab = 'aspirants' | 'politicians' | 'my_page';
 
 export default function PagesScreen() {
   const { t } = useTranslation();
+  const unavailableLabel = t('constituency.dataUnavailable', { defaultValue: 'Unavailable' });
   const { colors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -274,7 +276,11 @@ export default function PagesScreen() {
                     </View>
                     <View style={[styles.scoreBadge, { backgroundColor: '#F0FDF4' }]}>
                       <Ionicons name="trophy" size={12} color="#16A34A" />
-                      <Text style={styles.scoreText}>{asp.civicScore} {t('pages.pts', { defaultValue: 'pts' })}</Text>
+                      <Text style={styles.scoreText}>
+                        {isAspirantMetricAvailable(asp, 'civicScore')
+                          ? `${asp.civicScore} ${t('pages.pts', { defaultValue: 'pts' })}`
+                          : unavailableLabel}
+                      </Text>
                     </View>
                   </View>
 
@@ -286,19 +292,27 @@ export default function PagesScreen() {
 
                   <View style={styles.aspirantStatsRow}>
                     <View style={styles.statItem}>
-                      <Text style={[styles.statValue, { color: colors.text }]}>{asp.issuesReported}</Text>
+                      <Text style={[styles.statValue, { color: colors.text }]}>
+                        {isAspirantMetricAvailable(asp, 'issuesReported') ? asp.issuesReported : unavailableLabel}
+                      </Text>
                       <Text style={[styles.statLabel, { color: colors.textMuted }]}>
                         {t('pages.issues', { defaultValue: 'Issues' })}
                       </Text>
                     </View>
                     <View style={styles.statItem}>
-                      <Text style={[styles.statValue, { color: colors.text }]}>{asp.communityEndorsements}</Text>
+                      <Text style={[styles.statValue, { color: colors.text }]}>
+                        {isAspirantMetricAvailable(asp, 'communityEndorsements')
+                          ? asp.communityEndorsements
+                          : unavailableLabel}
+                      </Text>
                       <Text style={[styles.statLabel, { color: colors.textMuted }]}>
                         {t('pages.endorsements', { defaultValue: 'Endorsements' })}
                       </Text>
                     </View>
                     <View style={styles.statItem}>
-                      <Text style={[styles.statValue, { color: colors.text }]}>{asp.modulesCompleted}</Text>
+                      <Text style={[styles.statValue, { color: colors.text }]}>
+                        {isAspirantMetricAvailable(asp, 'modulesCompleted') ? asp.modulesCompleted : unavailableLabel}
+                      </Text>
                       <Text style={[styles.statLabel, { color: colors.textMuted }]}>
                         {t('pages.modules', { defaultValue: 'Modules' })}
                       </Text>
@@ -489,7 +503,9 @@ export default function PagesScreen() {
                   <>
                     {civicScore ? (
                       <CivicScoreCard score={civicScore} displayName={aspirantProfile.displayName} />
-                    ) : null}
+                    ) : (
+                      <Text style={{ color: colors.textMuted, marginBottom: 12 }}>{unavailableLabel}</Text>
+                    )}
                     <View style={[styles.profileMetaCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                       <Ionicons name="rocket" size={20} color="#002B7F" />
                       <View style={{ flex: 1, marginLeft: 12 }}>

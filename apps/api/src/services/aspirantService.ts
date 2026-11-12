@@ -23,6 +23,7 @@ import type {
   QuizSubmissionRequest,
   QuizResultDTO,
 } from '@kshetra/shared';
+import { getAspirantMetricAvailability } from '@kshetra/shared';
 
 // Authoritative Academy Curriculum and Quiz Registry
 export interface AcademyModuleData extends LeadershipModuleDTO {
@@ -229,6 +230,7 @@ export class AspirantService {
 
   static mapProfileRow(row: any): any {
     if (!row) return null;
+    const metricAvailability = getAspirantMetricAvailability(row);
     return {
       id: String(row.id),
       userId: row.user_id || row.userId,
@@ -259,6 +261,7 @@ export class AspirantService {
       communityEndorsements: row.community_endorsements ?? row.communityEndorsements ?? 0,
       modulesCompleted: row.modules_completed ?? row.modulesCompleted ?? 0,
       challengesCompleted: row.challenges_completed ?? row.challengesCompleted ?? 0,
+      metricAvailability,
       isPublic: row.is_public ?? row.isPublic ?? true,
       badges: row.badges ?? [],
       upcomingEvents: row.upcomingEvents ?? [],
@@ -577,6 +580,7 @@ export class AspirantService {
         issuesResolved: profile.issues_resolved || 0,
         communityEndorsements: profile.community_endorsements || 0,
         modulesCompleted: profile.modules_completed || 0,
+        metricAvailability: getAspirantMetricAvailability(profile),
         badges,
         upcomingEvents,
         createdAt: profile.created_at,
