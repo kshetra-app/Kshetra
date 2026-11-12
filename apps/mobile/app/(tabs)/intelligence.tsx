@@ -5,16 +5,16 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  Platform,
   Pressable,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import StateSwitcher from '../../components/StateSwitcher';
-import { PARTY_COLORS, getPartyColor } from '../../lib/constants';
+import { getPartyColor } from '../../lib/constants';
 import { getElectionHistoryForState, hasFullDataForState, getTimelineForState } from '../../lib/stateDataDispatcher';
 import { getUnifiedConstituenciesForState, type UnifiedConstituency } from '../../lib/stateDataAdapter';
 import { useConstituencyDirectory } from '../../lib/useConstituencyDirectory';
+import { formatIntelligenceDirectoryCount } from '../../lib/intelligencePresentation';
 import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
 import { useActiveStateStore } from '../../stores/activeState';
 import { STATES } from '@kshetra/shared';
@@ -24,7 +24,7 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../lib/theme';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
-/** Compute analytics from seed data — recomputed when state changes */
+/** Compute analytics from live database records or local reference data. */
 function useElectionAnalytics(
   stateCode: string,
   directoryRecords: UnifiedConstituency[],
@@ -264,18 +264,18 @@ export default function IntelligenceScreen() {
       <View style={styles.summaryRow}>
         <View style={[styles.summaryCard, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
           <Ionicons name="people" size={20} color={colors.primary} />
-          <Text style={[styles.summaryValue, { color: colors.text }]}>{analytics.totalConstituencies}</Text>
+          <Text style={[styles.summaryValue, { color: colors.text }]}>{formatIntelligenceDirectoryCount(analytics.totalConstituencies, directoryStatus, IS_LIVE_ENVIRONMENT)}</Text>
           <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>{IS_LIVE_ENVIRONMENT ? t('intelligence.databaseRecords', { defaultValue: 'Database records' }) : t('intelligence.constituencies', { defaultValue: 'Constituencies' })}</Text>
         </View>
         <View style={[styles.summaryCard, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
           <Ionicons name="location" size={20} color={colors.teal} />
-          <Text style={[styles.summaryValue, { color: colors.text }]}>{analytics.districtCount}</Text>
+          <Text style={[styles.summaryValue, { color: colors.text }]}>{formatIntelligenceDirectoryCount(analytics.districtCount, directoryStatus, IS_LIVE_ENVIRONMENT)}</Text>
           <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>{t('intelligence.districts', { defaultValue: 'Districts' })}</Text>
         </View>
         <View style={[styles.summaryCard, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
           <Ionicons name="flag" size={20} color={colors.gold} />
           <Text style={[styles.summaryValue, { color: colors.text }]}>
-            {analytics.partyBreakdown.length}
+            {formatIntelligenceDirectoryCount(analytics.partyBreakdown.length, directoryStatus, IS_LIVE_ENVIRONMENT)}
           </Text>
           <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>{IS_LIVE_ENVIRONMENT ? t('intelligence.partiesRecorded', { defaultValue: 'Parties recorded' }) : t('intelligence.partiesWon', { defaultValue: 'Parties Won' })}</Text>
         </View>
@@ -321,7 +321,10 @@ export default function IntelligenceScreen() {
 
       {/* Reservation Breakdown */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('intelligence.reservationStatus', { defaultValue: 'Reservation Status' })}</Text>
+        <Text style={styles.sectionTitle}>
+          {t('intelligence.reservationStatus', { defaultValue: 'Reservation Status' })}
+          {IS_LIVE_ENVIRONMENT ? ` · ${t('intelligence.databaseRecords', { defaultValue: 'database records' })}` : ''}
+        </Text>
         <View style={styles.reservationRow}>
           {(
             [
@@ -332,9 +335,13 @@ export default function IntelligenceScreen() {
           ).map(([key, label, color]) => (
             <View key={key} style={styles.reservationCard}>
               <Text style={[styles.reservationValue, { color }]}>
-                {analytics.reservationCounts[key]}
+                {formatIntelligenceDirectoryCount(analytics.reservationCounts[key], directoryStatus, IS_LIVE_ENVIRONMENT)}
               </Text>
-              <Text style={styles.reservationLabel}>{label}</Text>
+              <Text style={styles.reservationLabel}>
+                {IS_LIVE_ENVIRONMENT
+                  ? `${label} ${t('intelligence.records', { defaultValue: 'records' })}`
+                  : label}
+              </Text>
             </View>
           ))}
         </View>
@@ -342,13 +349,18 @@ export default function IntelligenceScreen() {
 
       {/* District Breakdown — Top 10 */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('intelligence.districtBreakdown', { defaultValue: 'District Breakdown' })}</Text>
+        <Text style={styles.sectionTitle}>
+          {t('intelligence.districtBreakdown', { defaultValue: 'District Breakdown' })}
+          {IS_LIVE_ENVIRONMENT ? ` · ${t('intelligence.databaseRecords', { defaultValue: 'database records' })}` : ''}
+        </Text>
         {(showAllDistricts ? analytics.districtBreakdown : analytics.districtBreakdown.slice(0, 5)).map((d) => (
           <View key={d.district} style={styles.districtRow}>
             <View style={styles.districtInfo}>
               <Text style={styles.districtName}>{d.district}</Text>
               <Text style={styles.districtSeats}>
-                {d.totalSeats} seat{d.totalSeats !== 1 ? 's' : ''}
+                {IS_LIVE_ENVIRONMENT
+                  ? `${d.totalSeats} ${t('intelligence.records', { defaultValue: 'records' })}`
+                  : `${d.totalSeats} seat${d.totalSeats !== 1 ? 's' : ''}`}
               </Text>
             </View>
             <View style={styles.districtParties}>

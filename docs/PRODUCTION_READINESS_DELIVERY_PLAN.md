@@ -220,6 +220,12 @@ The current working-tree changes have also removed or gated several more product
 
 These are targeted safeguards, not proof that every production flow is complete. Source quality and freshness for bundled election, legislator, affidavit, demographic, and historical datasets remain unverified at the individual-record level; the project needs a source/date/scope manifest and automated validation before it can label those records authoritative. Production migrations, RLS, credentials, media host reachability, provider accounts, and live end-to-end flows still require deployment-level evidence. Do not describe Gate 0 or the platform as fully production-ready until those checks and the remaining repository-wide fallback/authorization audit pass.
 
+### Follow-up completed in this pass — live Intelligence count truth
+
+- Live Intelligence summaries now show an em dash while a directory lookup is pending, failed, or not applicable. They show `0` only after the live directory confirms an empty result; confirmed stale rows remain visible alongside the existing stale-data notice.
+- Live district and reservation breakdowns label counts as database records, and development reference mode retains seat wording. Historical election/timeline helpers were inspected and already return no bundled values in live mode.
+- The focused regression suite passed 6/6, mobile TypeScript checking passed, and the touched files passed Prettier. Targeted ESLint reported no errors and one remaining warning for the existing `any` route cast. This is a UI truthfulness correction, not a claim that a full production data source or complete state coverage is available.
+
 ### Follow-up completed in this pass — demographic and map context
 
 - The production demographics gate is centralized in `getDemographicsForState`, the adapter used by constituency profile, comparison, and choropleth enrichment. Missing production values stay `null` for map rendering and are explained in the profile and comparison UI. Reservation status remains visible because it comes from constituency geography, not the withheld demographic table.
