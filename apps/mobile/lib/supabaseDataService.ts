@@ -932,6 +932,19 @@ export async function fetchFollowedUserIds(_followerId: string): Promise<string[
   }
 }
 
+export async function fetchUserFollowerCount(userId: string): Promise<number | null> {
+  if (!userId || !guard()) return null;
+  try {
+    const result = await apiClient.users.getFollowerCount(userId);
+    return result.success && Number.isSafeInteger(result.followerCount) && result.followerCount >= 0
+      ? result.followerCount
+      : null;
+  } catch (err) {
+    captureException(err as Error, { op: 'fetch_user_follower_count', userId });
+    return null;
+  }
+}
+
 export async function fetchUserProfile(userId: string): Promise<any | null> {
   if (!guard()) return null;
   try {

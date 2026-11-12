@@ -11,6 +11,86 @@ import { resolveAuthenticatedUser, assertActingUserMatch } from '../lib/userAuth
 
 export async function userRoutes(app: FastifyInstance) {
   /**
+   * GET /api/v1/users/:id/followers/count
+   * Return only the public aggregate count. The user_follows table is a public
+   * graph, but its individual political-interest relationships are not exposed
+   * by this endpoint.
+   */
+  app.get<{
+    Params: { id: string };
+  }>(
+    '/api/v1/users/:id/followers/count',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          required: ['id'],
+          properties: {
+            id: {
+              type: 'string',
+              pattern:
+                '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      if (!isSupabaseConfigured) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Database service is not configured',
+          { code: 'SERVICE_UNAVAILABLE' },
+        );
+      }
+
+      try {
+        const { count, error } = await supabase
+          .from('user_follows')
+          .select('id', { count: 'exact', head: true })
+          .eq('followed_id', request.params.id);
+
+        if (error || count === null) {
+          app.log.error(
+            { err: error?.message, followedUserId: request.params.id },
+            'Failed to load public follower count',
+          );
+          return sendApiError(
+            reply,
+            request,
+            500,
+            'Internal Server Error',
+            'Database error loading follower count',
+            { code: 'DATABASE_ERROR' },
+          );
+        }
+
+        return reply.send({
+          success: true,
+          userId: request.params.id,
+          followerCount: count,
+        });
+      } catch (err: any) {
+        app.log.error(
+          { err: err?.message, followedUserId: request.params.id },
+          'Exception loading public follower count',
+        );
+        return sendApiError(
+          reply,
+          request,
+          500,
+          'Internal Server Error',
+          'Database error loading follower count',
+          { code: 'DATABASE_ERROR' },
+        );
+      }
+    },
+  );
+
+  /**
    * GET /api/v1/users/me/following
    * Return the signed-in user's own follow graph. This list can expose sensitive
    * political interests, so it is never addressable by a caller-supplied user ID.

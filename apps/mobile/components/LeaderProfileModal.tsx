@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -23,6 +23,7 @@ import { useDMStore } from '../stores/dmStore';
 import PostCard from './PostCard';
 import type { Post } from '../lib/feedTypes';
 import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
+import { fetchUserFollowerCount } from '../lib/supabaseDataService';
 import {
   canManageLeaderProfile,
   getLeaderProfilePosts,
@@ -54,6 +55,7 @@ export default function LeaderProfileModal({
   const [votedPolls, setVotedPolls] = useState<Record<string, number>>({});
   const [visionVotes, setVisionVotes] = useState<Record<string, number>>({});
   const [volunteerJoined, setVolunteerJoined] = useState(false);
+  const [liveFollowerCount, setLiveFollowerCount] = useState<number | null>(null);
 
   const authUser = useAuthStore((s) => s.user);
   const feedPosts = useFeedStore((s) => s.posts);
@@ -72,6 +74,25 @@ export default function LeaderProfileModal({
   );
 
   const isEndorsed = aspirant ? endorsedIds.includes(aspirant.id) : false;
+
+  useEffect(() => {
+    let active = true;
+    setLiveFollowerCount(null);
+
+    if (!IS_LIVE_ENVIRONMENT || !visible || !aspirant?.userId) {
+      return () => {
+        active = false;
+      };
+    }
+
+    void fetchUserFollowerCount(aspirant.userId).then((count) => {
+      if (active) setLiveFollowerCount(count);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [aspirant?.userId, isFollowing, visible]);
 
   // Filter posts created by this aspirant/leader
   const leaderPosts = useMemo(
@@ -539,7 +560,11 @@ export default function LeaderProfileModal({
               <View style={styles.metricCard}>
                 <Text style={styles.metricCardLabel}>{t('common.followers')}</Text>
                 <Text style={styles.metricCardValue}>
-                  {IS_LIVE_ENVIRONMENT ? unavailableLabel : (aspirant.communityEndorsements > 1000 ? `${(aspirant.communityEndorsements * 9).toLocaleString('en-IN')}` : '38.4K')}
+                  {IS_LIVE_ENVIRONMENT
+                    ? (liveFollowerCount?.toLocaleString('en-IN') ?? unavailableLabel)
+                    : (aspirant.communityEndorsements > 1000
+                      ? `${(aspirant.communityEndorsements * 9).toLocaleString('en-IN')}`
+                      : '38.4K')}
                 </Text>
               </View>
               <View style={styles.metricCard}>

@@ -80,4 +80,17 @@ export class UsersEndpoint {
     );
     return res.data;
   }
+
+  /** Load the public aggregate count for a user's followers. */
+  async getFollowerCount(userId: string): Promise<{ success: boolean; userId: string; followerCount: number }> {
+    if (!userId) {
+      throw new ApiValidationError('Invalid follower count request: userId is required');
+    }
+    const res = await this.client.get<{
+      success: boolean;
+      userId: string;
+      followerCount: number;
+    }>(`/api/v1/users/${encodeURIComponent(userId)}/followers/count`, { authPolicy: 'public' });
+    return res.data;
+  }
 }
