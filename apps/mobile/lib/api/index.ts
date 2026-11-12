@@ -29,6 +29,7 @@ export * from './endpoints/politician';
 export * from './endpoints/spatial';
 export * from './endpoints/constituencies';
 export * from './endpoints/elections';
+export * from './endpoints/delimitation';
 export * from './endpoints/feed';
 export * from './endpoints/promises';
 export * from './endpoints/shorts';

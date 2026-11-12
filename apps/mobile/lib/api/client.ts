@@ -42,6 +42,7 @@ import { PoliticianEndpoint } from './endpoints/politician';
 import { SpatialEndpoint } from './endpoints/spatial';
 import { ConstituenciesEndpoint } from './endpoints/constituencies';
 import { ElectionsEndpoint } from './endpoints/elections';
+import { DelimitationEndpoint } from './endpoints/delimitation';
 import { FeedEndpoint } from './endpoints/feed';
 import { PromisesEndpoint } from './endpoints/promises';
 import { ShortsEndpoint } from './endpoints/shorts';
@@ -65,6 +66,7 @@ export class ApiClient {
   readonly spatial: SpatialEndpoint;
   readonly constituencies: ConstituenciesEndpoint;
   readonly elections: ElectionsEndpoint;
+  readonly delimitation: DelimitationEndpoint;
   readonly feed: FeedEndpoint;
   readonly promises: PromisesEndpoint;
   readonly shorts: ShortsEndpoint;
@@ -88,6 +90,7 @@ export class ApiClient {
     this.spatial = new SpatialEndpoint(this);
     this.constituencies = new ConstituenciesEndpoint(this);
     this.elections = new ElectionsEndpoint(this);
+    this.delimitation = new DelimitationEndpoint(this);
     this.feed = new FeedEndpoint(this);
     this.promises = new PromisesEndpoint(this);
     this.shorts = new ShortsEndpoint(this);

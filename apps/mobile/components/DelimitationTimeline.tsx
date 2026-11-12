@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, Linking } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import type { DelimitationEvent } from '../lib/delimitationTypes';
@@ -12,6 +12,10 @@ function formatDate(dateStr: string): string {
 
 function isPastEvent(dateStr: string): boolean {
   return new Date(dateStr).getTime() <= Date.now();
+}
+
+function openSource(url: string): void {
+  void Linking.openURL(url).catch(() => undefined);
 }
 
 interface DelimitationTimelineProps {
@@ -61,6 +65,19 @@ export default function DelimitationTimeline({
               <Text style={[styles.compactTitle, { color: colors.text }]} numberOfLines={2}>
                 {event.title}
               </Text>
+              {event.sourceUrl && (
+                <Pressable
+                  accessibilityRole="link"
+                  accessibilityLabel={t('common.openSource', { defaultValue: 'Open official source' })}
+                  onPress={() => openSource(event.sourceUrl!)}
+                  style={styles.sourceLink}
+                >
+                  <Ionicons name="open-outline" size={12} color={colors.primary} />
+                  <Text style={[styles.sourceLinkText, { color: colors.primary }]}>
+                    {t('common.openSource', { defaultValue: 'Open source' })}
+                  </Text>
+                </Pressable>
+              )}
             </Pressable>
           );
         })}
@@ -155,6 +172,19 @@ export default function DelimitationTimeline({
                 <Text style={[styles.sourceLabel, { color: colors.textMuted }]}>
                   {config.label}
                 </Text>
+                {event.sourceUrl && (
+                  <Pressable
+                    accessibilityRole="link"
+                    accessibilityLabel={t('common.openSource', { defaultValue: 'Open official source' })}
+                    onPress={() => openSource(event.sourceUrl!)}
+                    style={styles.sourceLink}
+                  >
+                    <Ionicons name="open-outline" size={12} color={colors.primary} />
+                    <Text style={[styles.sourceLinkText, { color: colors.primary }]}>
+                      {t('common.openSource', { defaultValue: 'Open source' })}
+                    </Text>
+                  </Pressable>
+                )}
               </View>
             </View>
           </Pressable>
@@ -263,6 +293,16 @@ const styles = StyleSheet.create({
   sourceLabel: {
     fontSize: 10,
     marginLeft: 'auto',
+  },
+  sourceLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 8,
+    gap: 3,
+  },
+  sourceLinkText: {
+    fontSize: 10,
+    fontWeight: '600',
   },
   // ─── Compact mode ───
   compactRow: {

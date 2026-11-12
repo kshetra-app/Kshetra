@@ -2,14 +2,14 @@
  * tests/delimitation-g5-invariants.test.mjs
  *
  * Milestone W020-G5 — Delimitation Engine Foundation
- * Master Invariant Verification Battery (30 Checks across 4 Planes)
+ * Master Invariant Verification Battery (34 Checks across 4 Planes)
  * Specification: PLAN-W020-G5-REV-1.2.md
  *
  * Test Planes:
  * 1. Legal & Succession Invariants (W020-G5-LEG-01..06)
  * 2. Demographic & Scenario Taxonomy Invariants (W020-G5-TAX-01..06)
  * 3. Apportionment & Mathematical Invariants (W020-G5-MTH-01..08)
- * 4. API Contract & Security Hardening Invariants (W020-G5-API-01..10)
+ * 4. API Contract & Security Hardening Invariants (W020-G5-API-01..13)
  */
 
 import fs from 'node:fs';
@@ -28,21 +28,20 @@ if (!process.execArgv.some((arg) => arg.includes('tsx'))) {
     {
       stdio: 'inherit',
       env: process.env,
-    }
+    },
   );
   process.exit(result.status ?? 0);
 }
 
 // ─── IMPORT ENGINE SERVICES & CENSUS DATA ───
-const { delimitationService, MAX_SAFE_REQUESTED_SEATS, MIN_SAFE_REQUESTED_SEATS } = await import(
-  '../apps/api/src/services/delimitationService.ts'
-);
+const { delimitationService, MAX_SAFE_REQUESTED_SEATS, MIN_SAFE_REQUESTED_SEATS } =
+  await import('../apps/api/src/services/delimitationService.ts');
 const { buildApp } = await import('../apps/api/src/server.ts');
 const { CENSUS_2011_STATES } = await import('../data/census/india-district-population-2011.ts');
 
 console.log('================================================================');
 console.log('W020-G5: DELIMITATION ENGINE FOUNDATION');
-console.log('MASTER INVARIANT & VERIFICATION BATTERY (33 CHECKS / 4 PLANES)');
+console.log('MASTER INVARIANT & VERIFICATION BATTERY (34 CHECKS / 4 PLANES)');
 console.log(`Execution Timestamp: ${new Date().toISOString()}`);
 console.log('Staging Project: panIN-staging (fkpigozcqnmcvofuksar)');
 console.log('Production: ehfafcnimmjusyvplbah (STRICTLY AIR-GAPPED & UNTOUCHED)');
@@ -93,47 +92,49 @@ console.log('\n--- PLANE 1: LEGAL & SUCCESSION INVARIANTS ---');
 const timeline = delimitationService.getTimeline();
 const events = timeline.events;
 
-// W020-G5-LEG-01: 2008 Delimitation Order Baseline
+// W020-G5-LEG-01: 2008 Delimitation Order is linked to the ECI source document.
 const leg01Event = events.find((e) => e.id === 'LEG-2008-01');
 const leg01Pass =
   leg01Event &&
   leg01Event.verified === true &&
   leg01Event.date === '2008-02-19' &&
-  leg01Event.instrument.includes('Delimitation Order 2008');
+  leg01Event.instrument.includes('Delimitation Order, 2008') &&
+  leg01Event.sourceUrl.startsWith('https://www.eci.gov.in/');
 recordCheck(
   'W020-G5-LEG-01',
-  '2008 Delimitation Order baseline (119 ACs Telangana, 175 ACs AP under Schedule II)',
+  '2008 Delimitation Order baseline links to the official ECI document',
   Boolean(leg01Pass),
-  leg01Event ? `Date: ${leg01Event.date}, Instrument: ${leg01Event.instrument}` : 'Missing event'
+  leg01Event ? `Date: ${leg01Event.date}, Instrument: ${leg01Event.instrument}` : 'Missing event',
 );
 
-// W020-G5-LEG-02: APRA 2014 Sec 15, Schedule XXXI & Schedule II statutory succession
+// W020-G5-LEG-02: APRA 2014 remains visible but unverified until its primary document is retained.
 const leg02Event = events.find((e) => e.id === 'LEG-2014-02');
 const leg02Pass =
   leg02Event &&
-  leg02Event.verified === true &&
+  leg02Event.verified === false &&
   leg02Event.date === '2014-06-02' &&
-  leg02Event.instrument.includes('Schedule XXXI');
+  leg02Event.description.includes('primary notification is not yet retained');
 recordCheck(
   'W020-G5-LEG-02',
-  'APRA 2014 Sec 15, Schedule XXXI & Schedule II statutory succession',
+  'APRA 2014 appointed-day event is explicitly unverified without its primary notification',
   Boolean(leg02Pass),
-  leg02Event ? `Date: ${leg02Event.date}, Authority: ${leg02Event.authority}` : 'Missing event'
+  leg02Event ? `Date: ${leg02Event.date}, Authority: ${leg02Event.authority}` : 'Missing event',
 );
 
-// W020-G5-LEG-03: AP Reorganisation Order 2015: G.S.R. 311(E), dated 23 April 2015
+// W020-G5-LEG-03: G.S.R. 311(E) is not marked verified while its Gazette artifact is absent.
 const leg03Event = events.find((e) => e.id === 'LEG-2015-01');
 const leg03Pass =
   leg03Event &&
-  leg03Event.verified === true &&
+  leg03Event.verified === false &&
   leg03Event.date === '2015-04-23' &&
   leg03Event.instrument.includes('G.S.R. 311(E)') &&
-  leg03Event.instrument.includes('23 April 2015');
+  leg03Event.instrument.includes('23 April 2015') &&
+  leg03Event.description.includes('primary Gazette document is not retained');
 recordCheck(
   'W020-G5-LEG-03',
-  'AP Reorganisation (Removal of Difficulties) Order 2015: G.S.R. 311(E), 23 April 2015 (comes into force at once)',
+  'G.S.R. 311(E) remains an unverified repository reference pending primary Gazette review',
   Boolean(leg03Pass),
-  leg03Event ? `Instrument: ${leg03Event.instrument}` : 'Missing event'
+  leg03Event ? `Instrument: ${leg03Event.instrument}` : 'Missing event',
 );
 
 // W020-G5-LEG-04: ECI Notification No. 282/AP/2018(DEL), dated 22 September 2018
@@ -147,35 +148,39 @@ recordCheck(
   'W020-G5-LEG-04',
   'ECI Statutory Notification No. 282/AP/2018(DEL), dated 22 September 2018 (published 24 Sept 2018)',
   Boolean(leg04Pass),
-  leg04Event ? `Instrument: ${leg04Event.instrument}` : 'Missing event'
+  leg04Event ? `Instrument: ${leg04Event.instrument}` : 'Missing event',
 );
 
-// W020-G5-LEG-05: Census 2027 Active Tracking Record
-const leg05Event = events.find((e) => e.id === 'LEG-CENSUS-2027');
+// W020-G5-LEG-05: Census 2027 operations are source-backed and final population is unavailable.
+const leg05Event = events.find((e) => e.id === 'LEG-CENSUS-2026-11-02-POPULATION-ENUMERATION');
 const statusResult = delimitationService.getStatus();
 const leg05Pass =
   leg05Event &&
-  leg05Event.verified === false &&
+  leg05Event.verified === true &&
+  Boolean(leg05Event.sourceUrl) &&
+  statusResult.nationalStatus === 'census_underway' &&
   statusResult.censusTracking.finalPopulationAvailable === false &&
-  statusResult.censusTracking.currentExpectedCensusOperation === 'Census 2027';
+  statusResult.censusTracking.currentExpectedCensusOperation.includes(
+    'December 2026 to January 2027',
+  ) &&
+  timeline.provenance.dataStatus === 'UNVERIFIED';
 recordCheck(
   'W020-G5-LEG-05',
-  'Census 2027 tracking record exists with final population marked UNAVAILABLE',
+  'Current Census 2027 Phase-II schedule is source-linked and final population is unavailable',
   Boolean(leg05Pass),
-  `Operation: ${statusResult.censusTracking.currentExpectedCensusOperation}, PopulationAvailable: ${statusResult.censusTracking.finalPopulationAvailable}`
+  `Status: ${statusResult.nationalStatus}, Operation: ${statusResult.censusTracking.currentExpectedCensusOperation}, PopulationAvailable: ${statusResult.censusTracking.finalPopulationAvailable}, TimelineStatus: ${timeline.provenance.dataStatus}`,
 );
 
-// W020-G5-LEG-06: Future Anticipated Delimitation Regime
-const leg06Event = events.find((e) => e.id === 'LEG-FUTURE-DELIM');
+// W020-G5-LEG-06: No speculative future delimitation date or stale product-name duplicate.
 const leg06Pass =
-  leg06Event &&
-  leg06Event.verified === false &&
-  statusResult.censusTracking.paninFutureAnticipatedRegime === 'Post-Census 2027 Operation';
+  !events.some((e) => e.id === 'LEG-FUTURE-DELIM') &&
+  !Object.hasOwn(statusResult.censusTracking, 'paninFutureAnticipatedRegime') &&
+  !events.some((e) => /2028/.test(e.date));
 recordCheck(
   'W020-G5-LEG-06',
-  'Future Anticipated Delimitation regime exists with active tracking and zero fabricated boundaries',
+  'No speculative future delimitation date or duplicate legacy brand status remains',
   Boolean(leg06Pass),
-  `Regime: ${statusResult.censusTracking.paninFutureAnticipatedRegime}`
+  'Future delimitation timing remains unavailable until an official schedule is issued',
 );
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -196,7 +201,7 @@ recordCheck(
   'W020-G5-TAX-01',
   'Orthogonal taxonomy model: outputClassification (7 values) and W012 dataStatus (8 values) are independent fields',
   Boolean(tax01Pass),
-  `OutputClassification: ${prov1?.outputClassification}, DataStatus: ${prov1?.dataStatus}`
+  `OutputClassification: ${prov1?.outputClassification}, DataStatus: ${prov1?.dataStatus}`,
 );
 
 // W020-G5-TAX-02: Anti-derivation rule: unavailable Census 2027 population yields UNKNOWN_UNAVAILABLE + UNKNOWN
@@ -207,7 +212,7 @@ recordCheck(
   'W020-G5-TAX-02',
   'Anti-derivation rule: unavailable Census 2027 population yields UNKNOWN_UNAVAILABLE without synthetic zero-fills',
   Boolean(tax02Pass),
-  'Zero speculative population values fabricated for Census 2027'
+  'Zero speculative population values fabricated for Census 2027',
 );
 
 // W020-G5-TAX-03: Scenario enclosure contains all 10 mandatory metadata fields
@@ -231,11 +236,15 @@ recordCheck(
   'W020-G5-TAX-03',
   'Scenario enclosure contains all 10 mandatory metadata fields',
   Boolean(tax03Pass),
-  tax03Pass ? 'All 10 mandatory scenario fields verified' : `Missing: ${missingFields.join(', ')}`
+  tax03Pass ? 'All 10 mandatory scenario fields verified' : `Missing: ${missingFields.join(', ')}`,
 );
 
 // W020-G5-TAX-04: isScenario is derived-only from legalStatus === 'SCENARIO_PROPOSED_REGIME'
-const nonScenarioRegimes = ['CURRENT_LEGAL_REGIME', 'HISTORICAL_LEGAL_REGIME', 'FUTURE_ANTICIPATED_REGIME'];
+const nonScenarioRegimes = [
+  'CURRENT_LEGAL_REGIME',
+  'HISTORICAL_LEGAL_REGIME',
+  'FUTURE_ANTICIPATED_REGIME',
+];
 let nonScenarioAllFalse = true;
 for (const regime of nonScenarioRegimes) {
   const testProv = delimitationService.buildProvenance(
@@ -243,9 +252,16 @@ for (const regime of nonScenarioRegimes) {
     'DETERMINISTIC_DERIVED',
     'DERIVED',
     undefined,
-    regime
+    regime,
   );
-  const testEnc = delimitationService.buildScenarioEnclosure('test-id', 'Test', 'Desc', {}, testProv, {});
+  const testEnc = delimitationService.buildScenarioEnclosure(
+    'test-id',
+    'Test',
+    'Desc',
+    {},
+    testProv,
+    {},
+  );
   if (testEnc.isScenario !== false) {
     nonScenarioAllFalse = false;
   }
@@ -260,7 +276,7 @@ recordCheck(
   'W020-G5-TAX-04',
   'isScenario is derived-only from legalStatus === SCENARIO_PROPOSED_REGIME (zero persistent db column, false for non-scenario canonical regimes)',
   Boolean(tax04Pass),
-  `isScenario: ${enc.isScenario}, legalStatus: ${enc.provenance.legalStatus}, nonScenarioAllFalse: ${nonScenarioAllFalse}`
+  `isScenario: ${enc.isScenario}, legalStatus: ${enc.provenance.legalStatus}, nonScenarioAllFalse: ${nonScenarioAllFalse}`,
 );
 
 // W020-G5-TAX-05: Sitting MLA vulnerability heuristic has POLITICAL_HEURISTIC + INFERRED
@@ -273,21 +289,24 @@ recordCheck(
   'W020-G5-TAX-05',
   'Sitting MLA vulnerability heuristic is classified as POLITICAL_HEURISTIC + INFERRED',
   Boolean(tax05Pass),
-  `Classification: ${mlaImpact?.provenance.outputClassification}, DataStatus: ${mlaImpact?.provenance.dataStatus}`
+  `Classification: ${mlaImpact?.provenance.outputClassification}, DataStatus: ${mlaImpact?.provenance.dataStatus}`,
 );
 
-// W020-G5-TAX-06: PIN code impact lookup has GEOGRAPHIC_APPROXIMATION + ESTIMATE with spatial caveat
+// W020-G5-TAX-06: Ambiguous PIN-code area remains a candidate set with no fabricated exact impact.
 const citizenImpact = delimitationService.getCitizenImpact('500001');
 const tax06Pass =
   citizenImpact &&
   citizenImpact.provenance.outputClassification === 'GEOGRAPHIC_APPROXIMATION' &&
   citizenImpact.provenance.dataStatus === 'ESTIMATE' &&
-  citizenImpact.impactAnalysis.spatialCaveat.includes('approximate centroid');
+  citizenImpact.status === 'AMBIGUOUS_CANDIDATES' &&
+  !citizenImpact.impactAnalysis &&
+  (citizenImpact.candidateConstituencies?.length ?? 0) > 0 &&
+  citizenImpact.linkageNotice.includes('cannot be established');
 recordCheck(
   'W020-G5-TAX-06',
-  'PIN code impact lookup has GEOGRAPHIC_APPROXIMATION + ESTIMATE and discloses spatial caveat',
+  'Ambiguous PIN code returns candidate constituencies and withholds unsupported exact impact',
   Boolean(tax06Pass),
-  `Caveat: "${citizenImpact?.impactAnalysis.spatialCaveat?.slice(0, 60)}..."`
+  `Status: ${citizenImpact?.status}, Candidates: ${citizenImpact?.candidateConstituencies?.length ?? 0}`,
 );
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -304,9 +323,9 @@ const mth01Pass =
   !algoText.includes('mandates');
 recordCheck(
   'W020-G5-MTH-01',
-  'Article 332 supplies constitutional proportionality principle; Hamilton is PANIN deterministic allocation applied to it (not mandated by it)',
+  'Article 332 supplies constitutional proportionality principle; Hamilton is POLIGRAM deterministic allocation applied to it (not mandated by it)',
   Boolean(mth01Pass),
-  `Algorithm: "${algoText}"`
+  `Algorithm: "${algoText}"`,
 );
 
 // W020-G5-MTH-02: Article 332 8-Step Execution Sequence (Census 2011 Mathematical Derivation)
@@ -315,7 +334,7 @@ const quotaResult = delimitationService.allocateArticle332(
   119,
   tsState.totalPopulation,
   tsState.scPopulation,
-  tsState.stPopulation
+  tsState.stPopulation,
 );
 const mth02Pass =
   quotaResult.scReserved === 18 &&
@@ -326,7 +345,7 @@ recordCheck(
   'W020-G5-MTH-02',
   'Article 332 8-step sequence produces exact deterministic mathematical derivation for Telangana demographics (18 SC, 10 ST, 91 General; derived from Census 2011)',
   Boolean(mth02Pass),
-  `Census 2011 Derivation: SC: ${quotaResult.scReserved}, ST: ${quotaResult.stReserved}, General: ${quotaResult.general} (Sum = 119)`
+  `Census 2011 Derivation: SC: ${quotaResult.scReserved}, ST: ${quotaResult.stReserved}, General: ${quotaResult.general} (Sum = 119)`,
 );
 
 // W020-G5-MTH-03: Seat Conservation Law across all Census 2011 states with assemblies: SC + ST + General === S
@@ -339,7 +358,7 @@ for (const state of statesWithAssemblies) {
     seats,
     state.totalPopulation,
     state.scPopulation,
-    state.stPopulation
+    state.stPopulation,
   );
   if (alloc.scReserved + alloc.stReserved + alloc.general !== seats) {
     allStatesConserved = false;
@@ -350,17 +369,20 @@ recordCheck(
   'W020-G5-MTH-03',
   'Seat conservation law: S_SC + S_ST + S_General === S holds bitwise across all 31 assembly states in Census 2011',
   allStatesConserved,
-  allStatesConserved ? '31/31 states strictly conserved' : `Failed states: ${stateFailures.join(', ')}`
+  allStatesConserved
+    ? '31/31 states strictly conserved'
+    : `Failed states: ${stateFailures.join(', ')}`,
 );
 
 // W020-G5-MTH-04: District Hare-Niemeyer seat allocation conservation: sum(s_d) === S_target
 const districtSum = simResult.districtBreakdown.reduce((sum, d) => sum + d.projectedSeats, 0);
-const mth04Pass = districtSum === 119 && simResult.districtBreakdown.length === tsState.districts.length;
+const mth04Pass =
+  districtSum === 119 && simResult.districtBreakdown.length === tsState.districts.length;
 recordCheck(
   'W020-G5-MTH-04',
   'District Hare-Niemeyer seat allocation conservation: sum(s_d) === S_target (119 seats across 33 districts)',
   Boolean(mth04Pass),
-  `Total allocated: ${districtSum}, Districts: ${simResult.districtBreakdown.length}`
+  `Total allocated: ${districtSum}, Districts: ${simResult.districtBreakdown.length}`,
 );
 
 // W020-G5-MTH-05: Hamilton district allocation domain bound guard: requires S >= N
@@ -374,7 +396,7 @@ try {
       scPopulation: d.scPopulation,
       stPopulation: d.stPopulation,
     })),
-    5
+    5,
   );
 } catch (err) {
   mth05Pass = err.message.includes('must be >= district count');
@@ -383,7 +405,7 @@ recordCheck(
   'W020-G5-MTH-05',
   'Hamilton district allocation domain bound guard: requires S >= N (11 districts), fails closed if S < N',
   Boolean(mth05Pass),
-  mth05Pass ? 'Correctly rejected S < N with domain error' : 'Failed to enforce S >= N guard'
+  mth05Pass ? 'Correctly rejected S < N with domain error' : 'Failed to enforce S >= N guard',
 );
 
 // W020-G5-MTH-06: Ingress computational safety limit: MAX_SAFE_REQUESTED_SEATS = 10000 enforced
@@ -403,7 +425,7 @@ recordCheck(
   'W020-G5-MTH-06',
   'Ingress computational safety limit: MAX_SAFE_REQUESTED_SEATS = 10000 enforced against overflow',
   mth06PassLow && mth06PassHigh,
-  `Floor (0 rejected): ${mth06PassLow}, Ceiling (10001 rejected): ${mth06PassHigh}`
+  `Floor (0 rejected): ${mth06PassLow}, Ceiling (10001 rejected): ${mth06PassHigh}`,
 );
 
 // W020-G5-MTH-07: MAX_SAFE_REQUESTED_SEATS has NO constitutional, statutory, electoral, geographic, or legal meaning
@@ -415,7 +437,7 @@ recordCheck(
   'W020-G5-MTH-07',
   'MAX_SAFE_REQUESTED_SEATS explicitly documented as solely computational protection with zero legal meaning',
   Boolean(mth07Pass),
-  `Policy: "${policyStmt.slice(0, 80)}..."`
+  `Policy: "${policyStmt.slice(0, 80)}..."`,
 );
 
 // W020-G5-MTH-08: Deterministic tie-breaking: larger absolute population wins, lexicographic SC before ST fallback
@@ -425,12 +447,13 @@ recordCheck(
 const allocTied = delimitationService.allocateArticle332(3, 10000, 1500, 1500);
 // Sum quotas = 0.90 -> rTarget = 1, base = 0 -> surplus K = 1.
 // Both tied at r = 0.45, Pop = 1500 -> SC gets surplus seat.
-const mth08Pass = allocTied.scReserved === 1 && allocTied.stReserved === 0 && allocTied.general === 2;
+const mth08Pass =
+  allocTied.scReserved === 1 && allocTied.stReserved === 0 && allocTied.general === 2;
 recordCheck(
   'W020-G5-MTH-08',
   'Synthetic tie-breaking verification: deterministic tie-break allocates to SC before ST lexicographically',
   Boolean(mth08Pass),
-  `SC: ${allocTied.scReserved}, ST: ${allocTied.stReserved}, General: ${allocTied.general}`
+  `SC: ${allocTied.scReserved}, ST: ${allocTied.stReserved}, General: ${allocTied.general}`,
 );
 
 // W020-G5-MTH-09: 100-run stability, input permutation invariance, and floating-point safety
@@ -438,10 +461,24 @@ let mth09Pass = true;
 let mth09Failure = '';
 
 // Check 1: 100-run repeat stability
-const firstAlloc = delimitationService.allocateArticle332(119, tsState.totalPopulation, tsState.scPopulation, tsState.stPopulation);
+const firstAlloc = delimitationService.allocateArticle332(
+  119,
+  tsState.totalPopulation,
+  tsState.scPopulation,
+  tsState.stPopulation,
+);
 for (let i = 0; i < 100; i++) {
-  const run = delimitationService.allocateArticle332(119, tsState.totalPopulation, tsState.scPopulation, tsState.stPopulation);
-  if (run.scReserved !== firstAlloc.scReserved || run.stReserved !== firstAlloc.stReserved || run.general !== firstAlloc.general) {
+  const run = delimitationService.allocateArticle332(
+    119,
+    tsState.totalPopulation,
+    tsState.scPopulation,
+    tsState.stPopulation,
+  );
+  if (
+    run.scReserved !== firstAlloc.scReserved ||
+    run.stReserved !== firstAlloc.stReserved ||
+    run.general !== firstAlloc.general
+  ) {
     mth09Pass = false;
     mth09Failure = `Non-deterministic result at run ${i}`;
     break;
@@ -457,10 +494,10 @@ if (mth09Pass) {
     stPopulation: d.stPopulation,
   }));
   const baseAlloc = delimitationService.allocateHamiltonHareNiemeyer(baseDistricts, 119);
-  
+
   const reversedDistricts = [...baseDistricts].reverse();
   const reversedAlloc = delimitationService.allocateHamiltonHareNiemeyer(reversedDistricts, 119);
-  
+
   for (const b of baseAlloc) {
     const matching = reversedAlloc.find((r) => r.districtName === b.districtName);
     if (!matching || matching.projectedSeats !== b.projectedSeats) {
@@ -475,7 +512,7 @@ recordCheck(
   'W020-G5-MTH-09',
   'Mathematical determinism: 100-run repeat stability, input permutation invariance, and floating-point safety',
   Boolean(mth09Pass),
-  mth09Pass ? '100 runs identical, permutation invariant, zero floating-point drift' : mth09Failure
+  mth09Pass ? '100 runs identical, permutation invariant, zero floating-point drift' : mth09Failure,
 );
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -494,7 +531,7 @@ recordCheck(
   'W020-G5-API-01',
   'All 14 routes return standardized ECC-001 ApiSuccessEnvelope<T>',
   Boolean(api01Pass),
-  'sendSuccess helper serializes success, data, requestId, timestamp'
+  'sendSuccess helper serializes success, data, requestId, timestamp',
 );
 
 // W020-G5-API-02: Route 1 (/projections) executes generic multi-state algorithm over benchmark data
@@ -508,7 +545,7 @@ recordCheck(
   'W020-G5-API-02',
   'Route 1 (/projections) executes generic multi-jurisdiction apportionment algorithm across Census 2011 benchmark records without claiming national statutory coverage',
   Boolean(api02Pass),
-  `States analyzed: ${projResult?.projections.length}, CensusYear: ${projResult?.censusYear}`
+  `States analyzed: ${projResult?.projections.length}, CensusYear: ${projResult?.censusYear}`,
 );
 
 // W020-G5-API-03: Route 2 (/projections/:stateCode) returns structured 404 UNSUPPORTED_GEOGRAPHY on invalid state
@@ -519,33 +556,36 @@ recordCheck(
   'W020-G5-API-03',
   'Route 2 (/projections/:stateCode) returns projection for TS and null (UNSUPPORTED_GEOGRAPHY) for ZZ',
   Boolean(api03Pass),
-  `TS seats: ${stateProjTS?.projection.currentSeats}, ZZ result: ${stateProjZZ}`
+  `TS seats: ${stateProjTS?.projection.currentSeats}, ZZ result: ${stateProjZZ}`,
 );
 
-// W020-G5-API-04: Route 3 (/timeline) exposes the 5-stage legal succession chain
+// W020-G5-API-04: Route 3 exposes source-backed events without speculative future claims.
 const api04Pass =
   timeline.events.some((e) => e.id === 'LEG-2008-01') &&
   timeline.events.some((e) => e.id === 'LEG-2014-01') &&
   timeline.events.some((e) => e.id === 'LEG-2015-01') &&
   timeline.events.some((e) => e.id === 'LEG-2018-01') &&
-  timeline.events.some((e) => e.id === 'LEG-FUTURE-DELIM');
+  timeline.events.some((e) => e.id === 'LEG-2026-04-17-BILLS-NOT-PASSED') &&
+  !timeline.events.some((e) => e.id === 'LEG-FUTURE-DELIM') &&
+  !timeline.events.some((e) => e.divisionAyes === 298 || e.divisionNoes === 230);
 recordCheck(
   'W020-G5-API-04',
-  'Route 3 (/timeline) exposes the complete 5-stage legal succession chain',
+  'Route 3 (/timeline) exposes the source-backed timeline without unsupported vote totals or speculative dates',
   Boolean(api04Pass),
-  `Verified statutory events: ${timeline.verifiedEvents} of ${timeline.totalEvents}`
+  `Verified statutory events: ${timeline.verifiedEvents} of ${timeline.totalEvents}`,
 );
 
-// W020-G5-API-05: Route 4 (/status) returns constitutional freeze status and Census 2027 tracking
+// W020-G5-API-05: Route 4 (/status) returns current Census 2027 operations and population availability.
 const api05Pass =
-  statusResult.nationalStatus === 'pre_census' &&
+  statusResult.nationalStatus === 'census_underway' &&
   statusResult.constitutionalFramework.includes('Articles 81, 82, 170') &&
-  statusResult.censusTracking.currentExpectedCensusOperation === 'Census 2027';
+  statusResult.censusTracking.currentExpectedCensusOperation.includes('Census of India 2027') &&
+  statusResult.censusTracking.finalPopulationAvailable === false;
 recordCheck(
   'W020-G5-API-05',
-  'Route 4 (/status) returns constitutional freeze status and Census 2027 tracking',
+  'Route 4 (/status) returns phased Census 2027 status and unavailable final population',
   Boolean(api05Pass),
-  `Status: ${statusResult.nationalStatus}, Framework: ${statusResult.constitutionalFramework}`
+  `Status: ${statusResult.nationalStatus}, Framework: ${statusResult.constitutionalFramework}`,
 );
 
 // W020-G5-API-06: Route 6 (/monitor-webhook) rejects unauthenticated requests with HTTP 401 UNAUTHORIZED (fail-closed)
@@ -562,7 +602,9 @@ recordCheck(
   'W020-G5-API-06',
   'Route 6 (/monitor-webhook) rejects unauthenticated access with HTTP 401 UNAUTHORIZED (fail-closed)',
   Boolean(api06Pass),
-  api06Pass ? 'Correctly threw 401 UNAUTHORIZED on invalid token' : 'Failed to reject invalid token'
+  api06Pass
+    ? 'Correctly threw 401 UNAUTHORIZED on invalid token'
+    : 'Failed to reject invalid token',
 );
 
 // W020-G5-API-07: Route 6 (/monitor-webhook) accepts valid Bearer secret tokens
@@ -574,7 +616,7 @@ try {
       type: 'test_alert',
       entries: [{ id: '1', title: 'Alert 1', date: '2026-09-30', relevanceScore: 60 }],
     },
-    'Bearer secret123'
+    'Bearer secret123',
   );
   api07Pass = whRes.received === true && whRes.processed === 1 && whRes.highRelevance === 1;
 } finally {
@@ -584,7 +626,7 @@ recordCheck(
   'W020-G5-API-07',
   'Route 6 (/monitor-webhook) accepts valid Bearer secret tokens and processes alerts',
   Boolean(api07Pass),
-  api07Pass ? 'Processed: 1, highRelevance: 1' : 'Failed to process valid webhook'
+  api07Pass ? 'Processed: 1, highRelevance: 1' : 'Failed to process valid webhook',
 );
 
 // W020-G5-API-08: Route 7 (/impact/:pinCode) rejects malformed PIN codes (< 6 digits) with 400
@@ -598,7 +640,9 @@ recordCheck(
   'W020-G5-API-08',
   'Route 7 (/impact/:pinCode) rejects malformed PIN codes (< 6 digits) with 400 FST_ERR_VALIDATION',
   Boolean(api08Pass),
-  api08Pass ? 'Correctly rejected 3-digit PIN with validation error' : 'Failed to reject invalid PIN'
+  api08Pass
+    ? 'Correctly rejected 3-digit PIN with validation error'
+    : 'Failed to reject invalid PIN',
 );
 
 // W020-G5-API-09: Route 8 (/simulate/:stateCode) rejects seats > 10000 with 400 VALIDATION_ERROR
@@ -612,7 +656,9 @@ recordCheck(
   'W020-G5-API-09',
   'Route 8 (/simulate/:stateCode) rejects seats > 10000 with computational overflow guard',
   Boolean(api09Pass),
-  api09Pass ? 'Correctly rejected seats = 10001 exceeding MAX_SAFE_REQUESTED_SEATS' : 'Failed to reject seats > 10000'
+  api09Pass
+    ? 'Correctly rejected seats = 10001 exceeding MAX_SAFE_REQUESTED_SEATS'
+    : 'Failed to reject seats > 10000',
 );
 
 // W020-G5-API-10: Production air-gap + Staging PostGIS 589 geometry baseline
@@ -692,7 +738,7 @@ recordCheck(
   'W020-G5-API-10',
   'Production ehfafcnimmjusyvplbah air-gapped; PostGIS geometry strictly frozen (589 rows, exact SHA-256 match)',
   Boolean(api10Pass),
-  geomDetails
+  geomDetails,
 );
 
 // W020-G5-API-11: Route 10 (/reservation/:stateCode) separation of statutory baseline from derived model
@@ -724,7 +770,7 @@ recordCheck(
   Boolean(api11Pass),
   tsResDetail
     ? `Statutory: ${tsResDetail.current.scReserved} SC, ${tsResDetail.current.stReserved} ST | Derived: ${tsResDetail.census2011MathematicalDerivation.scReserved} SC, ${tsResDetail.census2011MathematicalDerivation.stReserved} ST | ZZ: ${zzResDetail}`
-    : 'Failed to retrieve TS reservation detail'
+    : 'Failed to retrieve TS reservation detail',
 );
 
 // W020-G5-API-12: Client cannot supply or override isScenario or simulation parameters (400 SCENARIO_INPUT_FORBIDDEN)
@@ -766,7 +812,7 @@ recordCheck(
   'W020-G5-API-12',
   'Fail-closed rejection of client-supplied isScenario/simulation parameters (400 SCENARIO_INPUT_FORBIDDEN; zero second source of truth)',
   Boolean(api12Pass),
-  api12Details
+  api12Details,
 );
 
 // W020-G5-API-13: Canonical Legal Regime Vocabulary: zero SIMULATION_PROPOSED, all legalStatus in W014 canonical regimes
@@ -792,23 +838,28 @@ const allRegimes = [
 ];
 
 const forbiddenFound = allRegimes.some(
-  (r) => r === 'SIMULATION_PROPOSED' || r === 'SIMULATION_PROPOSED_REGIME'
+  (r) => r === 'SIMULATION_PROPOSED' || r === 'SIMULATION_PROPOSED_REGIME',
 );
 const allCanonical = allRegimes.every((r) => CANONICAL_REGIMES.has(r));
-const api13Pass = !forbiddenFound && allCanonical && simTs.scenarioEnclosure.provenance.legalStatus === 'SCENARIO_PROPOSED_REGIME';
+const api13Pass =
+  !forbiddenFound &&
+  allCanonical &&
+  simTs.scenarioEnclosure.provenance.legalStatus === 'SCENARIO_PROPOSED_REGIME';
 
 recordCheck(
   'W020-G5-API-13',
   'Canonical W014 Legal Regime Vocabulary enforced across all engine outputs (zero SIMULATION_PROPOSED, valid canonical set)',
   Boolean(api13Pass),
-  `Regimes: [${allRegimes.join(', ')}], Forbidden: ${forbiddenFound}`
+  `Regimes: [${allRegimes.join(', ')}], Forbidden: ${forbiddenFound}`,
 );
 
 // ═════════════════════════════════════════════════════════════════════════════
 // FINAL REPORT & SUMMARY
 // ═════════════════════════════════════════════════════════════════════════════
 console.log('\n================================================================');
-console.log(`FINAL RESULT: ${passedChecks}/${results.length} CHECKS PASSED (${failedChecks} FAILED)`);
+console.log(
+  `FINAL RESULT: ${passedChecks}/${results.length} CHECKS PASSED (${failedChecks} FAILED)`,
+);
 console.log('================================================================');
 
 if (failedChecks > 0) {

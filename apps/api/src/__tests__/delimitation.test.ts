@@ -109,7 +109,7 @@ describe('Delimitation Engine Foundation Routes (W020-G5)', () => {
   });
 
   describe('Route 3: GET /api/v1/delimitation/timeline', () => {
-    it('returns 200 with the 5-stage verified legal chain in events', async () => {
+    it('returns 200 with source links and explicit confidence for timeline events', async () => {
       const res = await app.inject({
         method: 'GET',
         url: '/api/v1/delimitation/timeline',
@@ -121,18 +121,29 @@ describe('Delimitation Engine Foundation Routes (W020-G5)', () => {
       expect(json.data.totalEvents).toBeGreaterThanOrEqual(8);
       expect(json.data.events).toBeDefined();
       expect(json.data.events.length).toBeGreaterThanOrEqual(8);
+      expect(json.data.provenance.dataStatus).toBe('UNVERIFIED');
 
-      // Verify Stage 3: G.S.R. 311(E), 23 April 2015
+      // The source dossier has not retained the primary Gazette publication yet.
       const gsr = json.data.events.find((s: any) => s.id === 'LEG-2015-01');
       expect(gsr).toBeDefined();
       expect(gsr.instrument).toContain('G.S.R. 311(E)');
       expect(gsr.date).toBe('2015-04-23');
+      expect(gsr.verified).toBe(false);
 
-      // Verify Stage 4: Notification 282/AP/2018(DEL), 22 Sept 2018
+      // The linked ECI notification is source-verified; its separate Gazette counterpart is not.
       const notif = json.data.events.find((s: any) => s.id === 'LEG-2018-01');
       expect(notif).toBeDefined();
       expect(notif.instrument).toContain('282/AP/2018(DEL)');
       expect(notif.date).toBe('2018-09-22');
+      expect(notif.verified).toBe(true);
+      expect(notif.sourceUrl).toMatch(/^https:\/\//);
+
+      const phaseTwo = json.data.events.find(
+        (event: any) => event.id === 'LEG-CENSUS-2026-11-02-POPULATION-ENUMERATION',
+      );
+      expect(phaseTwo).toBeDefined();
+      expect(phaseTwo.verified).toBe(true);
+      expect(phaseTwo.description).toContain('16 to 30 November 2026');
     });
   });
 
@@ -146,11 +157,12 @@ describe('Delimitation Engine Foundation Routes (W020-G5)', () => {
       expect(res.statusCode).toBe(200);
       const json = JSON.parse(res.payload);
       expect(json.success).toBe(true);
-      expect(json.data.nationalStatus).toBe('pre_census');
+      expect(json.data.nationalStatus).toBe('census_underway');
       expect(json.data.censusTracking).toBeDefined();
       expect(json.data.censusTracking.finalPopulationAvailable).toBe(false);
       expect(json.data.provenance.outputClassification).toBe('STATUTORY_FACT');
       expect(json.data.provenance.dataStatus).toBe('OFFICIAL');
+      expect(json.data.censusTracking.paninFutureAnticipatedRegime).toBeUndefined();
     });
   });
 

@@ -4,6 +4,7 @@ import {
   delimitationQueryService,
   resolveLegalApplicability,
 } from '../services/delimitationQueryService';
+import { delimitationService } from '../services/delimitationService';
 import { supabase } from '../lib/supabase';
 
 describe('Delimitation Query Service & Legal Applicability (W020-G8/G9) Unit Tests', () => {
@@ -445,29 +446,20 @@ describe('Delimitation Query Service & Legal Applicability (W020-G8/G9) Unit Tes
         const events = await delimitationQueryService.getTimelineEvents();
         expect(events.length).toBeGreaterThan(5);
         expect(events[0].id).toBe('LEG-2002-01');
+        expect(events).toEqual(delimitationService.getTimeline().events);
         expect(events[1].verified).toBe(true);
+        expect(events.some((event) => event.id === 'LEG-FUTURE-DELIM')).toBe(false);
+        expect(
+          events.some((event) => event.divisionAyes === 298 || event.divisionNoes === 230),
+        ).toBe(false);
       });
 
       it('getDelimitationStatus returns national status DTO and provenance', async () => {
-        jest.spyOn(delimitationQueryService, 'getRegimes').mockResolvedValue([
-          {
-            id: 'regime-future-001',
-            name: 'Post-Census 2027 Operation',
-            regimeType: 'FUTURE_ANTICIPATED_REGIME' as const,
-            description: 'Post freeze',
-            effectiveFrom: '2028-01-01',
-            effectiveTo: null,
-            authority: 'ECI',
-            isActive: false,
-            metadata: {},
-            createdAt: '2024-01-01',
-          },
-        ]);
-
         const status = await delimitationQueryService.getDelimitationStatus();
-        expect(status.nationalStatus).toBe('pre_census');
+        expect(status.nationalStatus).toBe('census_underway');
         expect(status.censusTracking.finalPopulationAvailable).toBe(false);
-        expect(status.provenance.methodology).toBe('CONSTITUTIONAL_STATUS_AUDIT');
+        expect(status.censusTracking).not.toHaveProperty('paninFutureAnticipatedRegime');
+        expect(status.provenance.methodology).toBe('CURATED_PRIMARY_SOURCE_STATUS_REVIEW');
       });
     });
   });
