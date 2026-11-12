@@ -45,7 +45,14 @@ jest.mock('../stores/civic', () => ({
   },
 }));
 jest.mock('../stores/promises', () => ({
-  usePromiseStore: { getState: () => ({ hydrateFromServer: jest.fn() }) },
+  __loadForState: jest.fn(async () => undefined),
+  usePromiseStore: {
+    getState: () => ({
+      loadForState: jest.requireMock('../stores/promises').__loadForState,
+      promises: [],
+      promiseLoadStatus: 'loaded',
+    }),
+  },
 }));
 jest.mock('../stores/favorites', () => ({
   useFavoritesStore: { getState: () => ({ favoriteIds: [] }) },
@@ -107,6 +114,7 @@ describe('Supabase foreground refresh', () => {
     const dataService = jest.requireMock('../lib/supabaseDataService');
     const feedStore = jest.requireMock('../stores/feed');
     const civicStore = jest.requireMock('../stores/civic');
+    const promiseStore = jest.requireMock('../stores/promises');
 
     await Promise.all([
       refreshSupabaseDataOnForeground(),
@@ -117,9 +125,10 @@ describe('Supabase foreground refresh', () => {
     expect(feedStore.__refreshFeed).toHaveBeenCalledTimes(1);
     expect(dataService.fetchFeedForState).not.toHaveBeenCalled();
     expect(civicStore.__loadIssuesForScope).toHaveBeenCalledWith('constituency', 'TS', 'TS-AC-61', true);
-    expect(dataService.fetchPromisesForState).toHaveBeenCalledWith('TS');
+    expect(promiseStore.__loadForState).toHaveBeenCalledWith('TS', true, true);
+    expect(promiseStore.__loadForState).toHaveBeenCalledTimes(1);
+    expect(dataService.fetchPromisesForState).not.toHaveBeenCalled();
     expect(civicStore.__loadIssuesForScope).toHaveBeenCalledTimes(1);
-    expect(dataService.fetchPromisesForState).toHaveBeenCalledTimes(1);
     expect(jest.requireMock('../stores/politicalShorts').__hydrateShorts).toHaveBeenCalledWith('TS');
     expect(jest.requireMock('../stores/politicalShorts').__hydrateShorts).toHaveBeenCalledTimes(1);
   });

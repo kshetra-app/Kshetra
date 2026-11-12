@@ -17,7 +17,6 @@ import { useFeedStore } from '../stores/feed';
 import { usePromiseStore } from '../stores/promises';
 import { useActiveStateStore } from '../stores/activeState';
 import { useMyConstituencyStore } from '../stores/myConstituency';
-import * as dataService from './supabaseDataService';
 import {
   notifyCivicIssueNearYou,
   notifyCivicIssueStatusChange,
@@ -178,8 +177,7 @@ export function subscribeToPromises(): () => void {
 function schedulePromiseRefresh(): void {
   scheduleRefresh('promises', async () => {
     const stateCode = useActiveStateStore.getState().stateCode;
-    const promises = await dataService.fetchPromisesForState(stateCode);
-    if (promises !== null) usePromiseStore.getState().hydrateFromServer(promises);
+    await usePromiseStore.getState().loadForState(stateCode, true, true);
   });
 }
 

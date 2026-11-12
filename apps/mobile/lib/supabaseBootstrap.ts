@@ -229,12 +229,12 @@ async function hydrateStoresFromServer(): Promise<void> {
   const civicStore = useCivicStore.getState();
 
   // Fetch in parallel
-  const [feedRefresh, issuesData, promisesData] = await Promise.allSettled([
+  const [feedRefresh, issuesData, promisesRefresh] = await Promise.allSettled([
     useFeedStore.getState().refreshFeed(stateCode, constituencyId),
     civicStore.scopeFilter === 'constituency' && !constituencyId
       ? Promise.resolve()
       : civicStore.loadIssuesForScope(civicStore.scopeFilter, stateCode, constituencyId, true),
-    dataService.fetchPromisesForState(stateCode),
+    usePromiseStore.getState().loadForState(stateCode, true, true),
   ]);
 
   // Refresh the feed through its canonical filtering, ranking, and stale-data path.
@@ -256,9 +256,14 @@ async function hydrateStoresFromServer(): Promise<void> {
     captureException(issuesData.reason as Error, { op: 'hydrate_civic_issues' });
   }
 
-  if (promisesData.status === 'fulfilled' && promisesData.value !== null) {
-    usePromiseStore.getState().hydrateFromServer(promisesData.value);
-    addBreadcrumb('bootstrap', 'promises_hydrated', { count: promisesData.value.length });
+  if (promisesRefresh.status === 'fulfilled') {
+    const promiseState = usePromiseStore.getState();
+    addBreadcrumb('bootstrap', 'promises_refreshed', {
+      count: promiseState.promises.length,
+      status: promiseState.promiseLoadStatus,
+    });
+  } else {
+    captureException(promisesRefresh.reason as Error, { op: 'hydrate_promises' });
   }
 
   // Hydrate shorts store

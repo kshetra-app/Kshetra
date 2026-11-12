@@ -27,10 +27,10 @@ jest.mock('../stores/feed', () => ({
   useFeedStore: { getState: () => ({}) },
 }));
 jest.mock('../stores/promises', () => {
-  const hydrateFromServer = jest.fn();
+  const loadForState = jest.fn(async () => undefined);
   return {
-    __hydrateFromServer: hydrateFromServer,
-    usePromiseStore: { getState: () => ({ hydrateFromServer }) },
+    __loadForState: loadForState,
+    usePromiseStore: { getState: () => ({ loadForState }) },
   };
 });
 jest.mock('../stores/activeState', () => ({
@@ -38,9 +38,6 @@ jest.mock('../stores/activeState', () => ({
 }));
 jest.mock('../stores/myConstituency', () => ({
   useMyConstituencyStore: { getState: () => ({ home: { acNo: 61 } }) },
-}));
-jest.mock('../lib/supabaseDataService', () => ({
-  fetchPromisesForState: jest.fn(async () => [{ id: 'promise-1' }]),
 }));
 jest.mock('../lib/notificationTriggers', () => ({
   notifyCivicIssueNearYou: jest.fn(),
@@ -118,7 +115,7 @@ describe('Realtime snapshot refresh', () => {
 
   it('refreshes promise records when promises or their updates change', async () => {
     const supabaseMock = jest.requireMock('../lib/supabase');
-    const dataService = jest.requireMock('../lib/supabaseDataService');
+    const promiseStore = jest.requireMock('../stores/promises');
     const notifications = jest.requireMock('../lib/notificationTriggers');
     const unsubscribe = subscribeToPromises();
     const changedPromise = supabaseMock.__handlers.find(
@@ -141,11 +138,8 @@ describe('Realtime snapshot refresh', () => {
       'completed',
       'Party',
     );
-    expect(dataService.fetchPromisesForState).toHaveBeenCalledWith('TS');
-    expect(dataService.fetchPromisesForState).toHaveBeenCalledTimes(1);
-    expect(jest.requireMock('../stores/promises').__hydrateFromServer).toHaveBeenCalledWith([
-      { id: 'promise-1' },
-    ]);
+    expect(promiseStore.__loadForState).toHaveBeenCalledWith('TS', true, true);
+    expect(promiseStore.__loadForState).toHaveBeenCalledTimes(1);
     unsubscribe();
   });
 });

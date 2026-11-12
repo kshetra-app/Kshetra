@@ -39,10 +39,9 @@ interface PromiseState {
   getStatusBreakdown: (stateCode: string) => Record<PromiseStatus, number>;
 
   // Actions
-  loadForState: (stateCode: string, force?: boolean) => Promise<void>;
+  loadForState: (stateCode: string, force?: boolean, preserveLoadedData?: boolean) => Promise<void>;
   toggleFollowPromise: (promiseId: string) => Promise<void>;
   submitEvidence: (evidence: Omit<PromiseEvidence, 'id' | 'upvotes' | 'createdAt'>) => Promise<void>;
-  hydrateFromServer: (serverPromises: any[] | null) => void;
 }
 
 // ─── SEED: INC Telangana 2023 "6 Guarantees" + key promises ───
@@ -553,19 +552,7 @@ export const usePromiseStore = create<PromiseState>()((set, get) => ({
   promiseLoadStatus: 'idle',
   promiseLoadStateCode: null,
 
-  hydrateFromServer: (serverPromises) => {
-    if (!serverPromises) return;
-    const { promises, updates } = mapServerPromiseRows(serverPromises);
-    set((state) => ({
-      promises,
-      updates,
-      evidence: IS_LIVE_ENVIRONMENT
-        ? state.evidence.filter((entry) => entry.syncStatus && entry.syncStatus !== 'SYNCED')
-        : state.evidence,
-    }));
-  },
-
-  loadForState: async (stateCode, force = false) => {
+  loadForState: async (stateCode, force = false, preserveLoadedData = false) => {
     const code = stateCode.trim().toUpperCase();
     if (!code) return;
 
@@ -579,12 +566,15 @@ export const usePromiseStore = create<PromiseState>()((set, get) => ({
     }
 
     const requestSequence = ++promiseLoadRequestSequence;
-    const previewPromises = IS_LIVE_ENVIRONMENT ? [] : current.promises;
-    const previewUpdates = IS_LIVE_ENVIRONMENT ? [] : current.updates;
+    const keepCurrentData = preserveLoadedData &&
+      current.promiseLoadStateCode === code &&
+      current.promiseLoadStatus === 'loaded';
+    const previewPromises = IS_LIVE_ENVIRONMENT && !keepCurrentData ? [] : current.promises;
+    const previewUpdates = IS_LIVE_ENVIRONMENT && !keepCurrentData ? [] : current.updates;
     set({
       promises: previewPromises,
       updates: previewUpdates,
-      promiseLoadStatus: 'loading',
+      promiseLoadStatus: keepCurrentData ? 'loaded' : 'loading',
       promiseLoadStateCode: code,
     });
 

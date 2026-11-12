@@ -134,4 +134,46 @@ describe('production promise dashboard data', () => {
       promises: [{ id: 'latest', stateCode: 'KA' }],
     });
   });
+
+  it('preserves loaded data while a same-state background refresh is pending', async () => {
+    type PromiseRow = ReturnType<typeof promiseRow>;
+    fetchPromisesForState.mockResolvedValueOnce([promiseRow('TS', 'existing')]);
+    await usePromiseStore.getState().loadForState('TS');
+
+    let resolveRefresh!: (rows: PromiseRow[] | null) => void;
+    fetchPromisesForState.mockImplementationOnce(
+      () => new Promise((resolve) => { resolveRefresh = resolve; }),
+    );
+    const refresh = usePromiseStore.getState().loadForState('TS', true, true);
+
+    expect(usePromiseStore.getState()).toMatchObject({
+      promiseLoadStatus: 'loaded',
+      promises: [{ id: 'existing' }],
+    });
+    resolveRefresh([promiseRow('TS', 'latest')]);
+    await refresh;
+    expect(usePromiseStore.getState().promises.map((promise: { id: string }) => promise.id)).toEqual(['latest']);
+  });
+
+  it('keeps the latest same-state refresh when realtime overlaps startup loading', async () => {
+    type PromiseRow = ReturnType<typeof promiseRow>;
+    let resolveStartup!: (rows: PromiseRow[] | null) => void;
+    let resolveRealtime!: (rows: PromiseRow[] | null) => void;
+    fetchPromisesForState
+      .mockImplementationOnce(() => new Promise((resolve) => { resolveStartup = resolve; }))
+      .mockImplementationOnce(() => new Promise((resolve) => { resolveRealtime = resolve; }));
+
+    const startupRefresh = usePromiseStore.getState().loadForState('TS', true);
+    const realtimeRefresh = usePromiseStore.getState().loadForState('TS', true);
+    resolveRealtime([promiseRow('TS', 'latest')]);
+    await realtimeRefresh;
+    resolveStartup([promiseRow('TS', 'old')]);
+    await startupRefresh;
+
+    expect(usePromiseStore.getState()).toMatchObject({
+      promiseLoadStatus: 'loaded',
+      promiseLoadStateCode: 'TS',
+      promises: [{ id: 'latest', stateCode: 'TS' }],
+    });
+  });
 });
