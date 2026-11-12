@@ -150,4 +150,3 @@ describe('POST /api/v1/moderation/report persistence', () => {
     expect(JSON.parse(response.payload).data.queue[0].reported_user).toEqual(profile);
   });
 });
-

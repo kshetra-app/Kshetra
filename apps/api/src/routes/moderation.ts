@@ -1331,4 +1331,3 @@ export async function moderationRoutes(app: FastifyInstance) {
     },
   );
 }
-
