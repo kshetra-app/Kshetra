@@ -229,18 +229,22 @@ async function hydrateStoresFromServer(): Promise<void> {
   const civicStore = useCivicStore.getState();
 
   // Fetch in parallel
-  const [feedData, issuesData, promisesData] = await Promise.allSettled([
-    dataService.fetchFeedForState(stateCode, 50),
+  const [feedRefresh, issuesData, promisesData] = await Promise.allSettled([
+    useFeedStore.getState().refreshFeed(stateCode, constituencyId),
     civicStore.scopeFilter === 'constituency' && !constituencyId
       ? Promise.resolve()
       : civicStore.loadIssuesForScope(civicStore.scopeFilter, stateCode, constituencyId, true),
     dataService.fetchPromisesForState(stateCode),
   ]);
 
-  // Hydrate feed store if server returned data
-  if (feedData.status === 'fulfilled' && feedData.value !== null) {
-    useFeedStore.getState().hydrateFromServer(feedData.value);
-    addBreadcrumb('bootstrap', 'feed_hydrated', { count: feedData.value.length });
+  // Refresh the feed through its canonical filtering, ranking, and stale-data path.
+  if (feedRefresh.status === 'fulfilled') {
+    addBreadcrumb('bootstrap', 'feed_refreshed', {
+      count: useFeedStore.getState().posts.length,
+      isLive: useFeedStore.getState().isLive,
+    });
+  } else {
+    captureException(feedRefresh.reason as Error, { op: 'hydrate_feed' });
   }
 
   // Civic issues are loaded through the canonical API for the selected scope.

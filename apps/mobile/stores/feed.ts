@@ -1342,7 +1342,6 @@ interface FeedState {
 
   // Sync & Realtime
   refreshFeed: (stateCode?: string, constituencyId?: string | null) => Promise<void>;
-  hydrateFromServer: (serverPosts: any[]) => void;
   receiveRealtimePost: (serverPost: any) => void;
   receiveRealtimeComment: (serverComment: any) => void;
   receiveRealtimeReaction: (payload: any) => void;
@@ -2047,58 +2046,6 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
     } finally {
       set({ loading: false });
     }
-  },
-
-  hydrateFromServer: (serverPosts) => {
-    if (!serverPosts) return;
-    const serverIds = new Set(serverPosts.map((p: any) => p.id));
-    const localOnly = get().posts.filter((p) =>
-      !serverIds.has(p.id) && (!IS_LIVE_ENVIRONMENT || (p.syncStatus && p.syncStatus !== 'SYNCED')),
-    );
-    const transformed: Post[] = serverPosts.map((p: any) => ({
-      id: p.id,
-      author: {
-        id: p.author_id ?? p.author_display_name ?? 'unknown',
-        displayName: p.author_display_name ?? 'Anonymous',
-        avatarUrl: p.author_avatar_url,
-        isVerified: p.author_is_verified ?? false,
-      },
-      stateCode: p.state_code,
-      constituencyId: p.constituency_id,
-      constituencyName: p.constituency_name,
-      content: p.content,
-      type: p.type ?? 'discussion',
-      replyCount: p.reply_count ?? 0,
-      reactionCount: p.reaction_count ?? 0,
-      isPinned: p.is_pinned ?? false,
-      isDeleted: p.is_deleted ?? false,
-      language: p.language ?? 'en',
-      createdAt: p.created_at,
-      updatedAt: p.updated_at,
-      hashtags: p.hashtags ?? [],
-      userReaction: p.user_reaction,
-      poll: p.poll_id
-        ? {
-            id: p.poll_id,
-            question: p.poll_question,
-            totalVotes: p.poll_total_votes ?? 0,
-            isClosed: p.poll_is_closed ?? false,
-            options: (p.poll_options ?? []).map((o: any) => ({
-              id: o.id,
-              label: o.label,
-              voteCount: o.vote_count ?? 0,
-              sortOrder: o.sort_order ?? 0,
-            })),
-          }
-        : undefined,
-      media: (p.media ?? []).map((m: any) => ({
-        id: m.id,
-        mediaType: m.media_type,
-        url: m.url,
-        altText: m.alt_text,
-      })),
-    }));
-    set({ posts: [...transformed, ...localOnly], isLive: true });
   },
 
   // ─── Realtime Event Handlers for Live Feed ───
