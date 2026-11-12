@@ -38,6 +38,21 @@ export interface ReportIssueRequestDTO {
   mediaUrls?: string[];
 }
 
+export interface CivicIssueListFilters {
+  scope: 'constituency' | 'state' | 'national';
+  stateCode: string;
+  constituencyId?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface CivicIssueListResponse {
+  issues: Record<string, unknown>[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 function readPublicRtiNumber(value: unknown): number | null {
   if (typeof value === 'number') return Number.isFinite(value) ? value : null;
   if (typeof value !== 'string' || value.trim() === '') return null;
@@ -489,6 +504,76 @@ function parsePublicHearing(value: unknown): PublicHearing | null {
 
 export class CivicEndpoint {
   constructor(private readonly client: ApiClient) {}
+
+  /** Load a bounded, newest-first page of civic issues for the selected dashboard scope. */
+  async listIssues(filters: CivicIssueListFilters): Promise<CivicIssueListResponse> {
+    const { scope, stateCode, constituencyId } = filters;
+    const page = filters.page ?? 1;
+    const limit = filters.limit ?? 50;
+
+    if (scope !== 'national' && !/^[A-Z]{2}$/.test(stateCode)) {
+      throw new ApiValidationError('Invalid stateCode: expected a two-letter uppercase code');
+    }
+    if (scope === 'constituency' && (!constituencyId || constituencyId.trim() === '')) {
+      throw new ApiValidationError('A constituencyId is required for constituency civic issues');
+    }
+    if (!Number.isInteger(page) || page < 1) {
+      throw new ApiValidationError('Invalid page: expected a positive integer');
+    }
+    if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
+      throw new ApiValidationError('Invalid limit: expected an integer between 1 and 100');
+    }
+
+    const response = await this.client.get<{
+      issues: unknown[];
+      total: number;
+      page: number;
+      limit: number;
+    }>('/api/v1/civic/issues', {
+      authPolicy: 'public',
+      query: {
+        stateCode: scope === 'national' ? undefined : stateCode,
+        constituencyId: scope === 'constituency' ? constituencyId : undefined,
+        page,
+        limit,
+      },
+    });
+
+    const { issues, total: resultTotal, page: resultPage, limit: resultLimit } = response.data;
+    if (
+      !Array.isArray(issues) ||
+      !Number.isInteger(resultTotal) || resultTotal < 0 ||
+      resultPage !== page || resultLimit !== limit
+    ) {
+      throw new ApiValidationError('Invalid civic issue list response from the server');
+    }
+
+    const validIssues = issues.every((issue) => {
+      if (!issue || typeof issue !== 'object' || Array.isArray(issue)) return false;
+      const row = issue as Record<string, unknown>;
+      const rowStateCode = row.state_code ?? row.stateCode;
+      const rowConstituencyId = row.constituency_id ?? row.constituencyId;
+      return (
+        typeof row.id === 'string' &&
+        typeof row.title === 'string' &&
+        typeof row.status === 'string' &&
+        typeof row.category === 'string' &&
+        typeof rowStateCode === 'string' &&
+        (scope === 'national' || rowStateCode === stateCode) &&
+        (scope !== 'constituency' || rowConstituencyId === constituencyId)
+      );
+    });
+    if (!validIssues) {
+      throw new ApiValidationError('A civic issue record does not match the requested scope or contains invalid fields');
+    }
+
+    return {
+      issues: issues as Record<string, unknown>[],
+      total: resultTotal,
+      page: resultPage,
+      limit: resultLimit,
+    };
+  }
 
   /** Load a state budget only from the API's persisted record. */
   async getStateBudgetSummary(stateCode: string): Promise<StateBudgetSummary | null> {

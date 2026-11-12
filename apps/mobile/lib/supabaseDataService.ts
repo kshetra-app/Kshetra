@@ -874,27 +874,6 @@ export async function globalSearch(
 }
 
 
-export async function fetchIssuesForConstituency(
-  constituencyId: string,
-  stateCode: string,
-): Promise<any[] | null> {
-  if (!guard()) return null;
-  try {
-    const { data, error } = await supabase
-      .from('civic_issues')
-      .select('*')
-      .eq('constituency_id', constituencyId)
-      .eq('state_code', stateCode)
-      .order('created_at', { ascending: false })
-      .limit(50);
-    if (error) throw error;
-    return data;
-  } catch (err) {
-    captureException(err as Error, { op: 'fetch_issues', constituencyId });
-    return null;
-  }
-}
-
 // ─── User & Page Follow Graph (Ticket 0.3) ──────────────────────────
 
 export async function followUser(followerId: string, followedId: string): Promise<boolean> {
@@ -945,24 +924,35 @@ export async function fetchUserFollowerCount(userId: string): Promise<number | n
   }
 }
 
-export async function fetchUserProfile(userId: string): Promise<any | null> {
-  if (!guard()) return null;
+export type UserProfileLookup =
+  | { status: 'found'; profile: Record<string, unknown> }
+  | { status: 'not_found' }
+  | { status: 'unavailable' };
+
+export type UserPostsLookup =
+  | { status: 'loaded'; posts: Record<string, unknown>[] }
+  | { status: 'unavailable' };
+
+export async function fetchUserProfile(userId: string): Promise<UserProfileLookup> {
+  if (!userId || !guard()) return { status: 'unavailable' };
   try {
     const { data, error } = await supabase
       .from('user_profiles')
-      .select('*')
+      .select('user_id, display_name, bio, avatar_url, constituency_id, state_code, role, verification_status')
       .eq('user_id', userId)
       .maybeSingle();
     if (error) throw error;
-    return data;
+    return data
+      ? { status: 'found', profile: data as Record<string, unknown> }
+      : { status: 'not_found' };
   } catch (err) {
     captureException(err as Error, { op: 'fetch_user_profile', userId });
-    return null;
+    return { status: 'unavailable' };
   }
 }
 
-export async function fetchPostsByAuthor(authorId: string, limit = 30): Promise<any[] | null> {
-  if (!guard()) return null;
+export async function fetchPostsByAuthor(authorId: string, limit = 30): Promise<UserPostsLookup> {
+  if (!authorId || !guard()) return { status: 'unavailable' };
   try {
     const { data, error } = await supabase
       .from('posts')
@@ -972,10 +962,10 @@ export async function fetchPostsByAuthor(authorId: string, limit = 30): Promise<
       .order('created_at', { ascending: false })
       .limit(limit);
     if (error) throw error;
-    return data;
+    return { status: 'loaded', posts: (data ?? []) as Record<string, unknown>[] };
   } catch (err) {
     captureException(err as Error, { op: 'fetch_posts_by_author', authorId });
-    return null;
+    return { status: 'unavailable' };
   }
 }
 

@@ -531,8 +531,10 @@ const listIssuesSchema = {
       properties: {
         issues: { type: 'array' },
         total: { type: 'number' },
+        page: { type: 'integer' },
+        limit: { type: 'integer' },
       },
-      required: ['issues', 'total'],
+      required: ['issues', 'total', 'page', 'limit'],
       additionalProperties: true,
     },
   },
@@ -2273,14 +2275,19 @@ export async function civicRoutes(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { constituencyId, stateCode, category, status } = request.query;
+      const page = request.query.page ?? 1;
+      const limit = request.query.limit ?? 50;
+      const offset = (page - 1) * limit;
       if (isSupabaseConfigured) {
         try {
-          let q = supabase.from('civic_issues').select('*');
+          let q = supabase.from('civic_issues').select('*', { count: 'exact' });
           if (constituencyId) q = q.eq('constituency_id', constituencyId);
           if (stateCode) q = q.eq('state_code', stateCode);
           if (category && category !== 'all') q = q.eq('category', category);
           if (status && status !== 'all') q = q.eq('status', status);
-          const { data, error } = await q.order('created_at', { ascending: false });
+          const { data, count, error } = await q
+            .order('created_at', { ascending: false })
+            .range(offset, offset + limit - 1);
           if (error) {
             if (isProductionRuntime()) {
               request.log.error({ err: error.message }, 'Failed to load civic issues');
@@ -2298,7 +2305,18 @@ export async function civicRoutes(app: FastifyInstance) {
               'Civic issue query failed; using isolated nonproduction store',
             );
           } else {
-            return { issues: data ?? [], total: data?.length ?? 0 };
+            if (typeof count !== 'number' || !Number.isInteger(count) || count < 0) {
+              request.log.error('Civic issue query returned no exact count');
+              return sendApiError(
+                reply,
+                request,
+                503,
+                'Service Unavailable',
+                'Civic issue totals are currently unavailable',
+                { code: 'CIVIC_ISSUE_COUNT_UNAVAILABLE' },
+              );
+            }
+            return { issues: data ?? [], total: count, page, limit };
           }
         } catch (error: any) {
           if (isProductionRuntime()) {
@@ -2330,7 +2348,12 @@ export async function civicRoutes(app: FastifyInstance) {
         category,
         status,
       });
-      return { issues: issuesList, total: issuesList.length };
+      return {
+        issues: issuesList.slice(offset, offset + limit),
+        total: issuesList.length,
+        page,
+        limit,
+      };
     },
   );
 

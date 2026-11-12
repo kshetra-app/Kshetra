@@ -17,10 +17,10 @@ jest.mock('../lib/supabase', () => {
   };
 });
 jest.mock('../stores/civic', () => {
-  const hydrateFromServer = jest.fn();
+  const loadIssuesForScope = jest.fn(async () => undefined);
   return {
-    __hydrateFromServer: hydrateFromServer,
-    useCivicStore: { getState: () => ({ hydrateFromServer }) },
+    __loadIssuesForScope: loadIssuesForScope,
+    useCivicStore: { getState: () => ({ scopeFilter: 'constituency', loadIssuesForScope }) },
   };
 });
 jest.mock('../stores/feed', () => ({
@@ -36,8 +36,10 @@ jest.mock('../stores/promises', () => {
 jest.mock('../stores/activeState', () => ({
   useActiveStateStore: { getState: () => ({ stateCode: 'TS' }) },
 }));
+jest.mock('../stores/myConstituency', () => ({
+  useMyConstituencyStore: { getState: () => ({ home: { acNo: 61 } }) },
+}));
 jest.mock('../lib/supabaseDataService', () => ({
-  fetchIssuesForConstituency: jest.fn(async () => [{ id: 'issue-1' }]),
   fetchPromisesForState: jest.fn(async () => [{ id: 'promise-1' }]),
 }));
 jest.mock('../lib/notificationTriggers', () => ({
@@ -51,6 +53,7 @@ jest.mock('../lib/notificationTriggers', () => ({
 import {
   subscribeToCivicIssues,
   subscribeToPromises,
+  setCivicIssueRealtimeScope,
   unsubscribeAll,
 } from '../lib/realtimeService';
 
@@ -70,7 +73,7 @@ describe('Realtime snapshot refresh', () => {
 
   it('refreshes scoped civic issues in the store after a database update', async () => {
     const supabaseMock = jest.requireMock('../lib/supabase');
-    const dataService = jest.requireMock('../lib/supabaseDataService');
+    const civicStore = jest.requireMock('../stores/civic');
     const notifications = jest.requireMock('../lib/notificationTriggers');
     const unsubscribe = subscribeToCivicIssues('TS-AC-61');
     const update = supabaseMock.__handlers.find(
@@ -85,11 +88,32 @@ describe('Realtime snapshot refresh', () => {
       'Road repair',
       'resolved',
     );
-    expect(dataService.fetchIssuesForConstituency).toHaveBeenCalledWith('TS-AC-61', 'TS');
-    expect(jest.requireMock('../stores/civic').__hydrateFromServer).toHaveBeenCalledWith([
-      { id: 'issue-1' },
-    ]);
+    expect(civicStore.__loadIssuesForScope).toHaveBeenCalledWith('constituency', 'TS', 'TS-AC-61', true);
     unsubscribe();
+  });
+
+  it('switches civic realtime filters with constituency, state, and national dashboard scopes', () => {
+    const supabaseMock = jest.requireMock('../lib/supabase');
+
+    setCivicIssueRealtimeScope('state', 'TS');
+    const stateInsert = supabaseMock.__handlers.find(
+      (handler: any) => handler.filter.table === 'civic_issues' && handler.filter.event === 'INSERT',
+    );
+    expect(stateInsert.filter.filter).toBe('state_code=eq.TS');
+
+    setCivicIssueRealtimeScope('constituency', 'TS', 'TS-AC-61');
+    const constituencyInserts = supabaseMock.__handlers.filter(
+      (handler: any) => handler.filter.table === 'civic_issues' && handler.filter.event === 'INSERT',
+    );
+    const constituencyInsert = constituencyInserts[constituencyInserts.length - 1];
+    expect(constituencyInsert.filter.filter).toBe('constituency_id=eq.TS-AC-61');
+
+    setCivicIssueRealtimeScope('national', 'TS');
+    const nationalInserts = supabaseMock.__handlers.filter(
+      (handler: any) => handler.filter.table === 'civic_issues' && handler.filter.event === 'INSERT',
+    );
+    const nationalInsert = nationalInserts[nationalInserts.length - 1];
+    expect(nationalInsert.filter.filter).toBeUndefined();
   });
 
   it('refreshes promise records when promises or their updates change', async () => {

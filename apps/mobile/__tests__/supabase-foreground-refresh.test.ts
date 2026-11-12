@@ -29,7 +29,13 @@ jest.mock('../stores/feed', () => ({
   useFeedStore: { getState: () => ({ hydrateFromServer: jest.fn() }) },
 }));
 jest.mock('../stores/civic', () => ({
-  useCivicStore: { getState: () => ({ hydrateFromServer: jest.fn() }) },
+  __loadIssuesForScope: jest.fn(async () => undefined),
+  useCivicStore: {
+    getState: () => ({
+      scopeFilter: 'constituency',
+      loadIssuesForScope: jest.requireMock('../stores/civic').__loadIssuesForScope,
+    }),
+  },
 }));
 jest.mock('../stores/promises', () => ({
   usePromiseStore: { getState: () => ({ hydrateFromServer: jest.fn() }) },
@@ -78,7 +84,6 @@ jest.mock('../lib/errorReporting', () => ({
 }));
 jest.mock('../lib/supabaseDataService', () => ({
   fetchFeedForState: jest.fn(async () => [{ id: 'post-1' }]),
-  fetchIssuesForConstituency: jest.fn(async () => [{ id: 'issue-1' }]),
   fetchPromisesForState: jest.fn(async () => [{ id: 'promise-1' }]),
   toggleFavorite: jest.fn(),
 }));
@@ -91,8 +96,9 @@ beforeEach(() => {
 });
 
 describe('Supabase foreground refresh', () => {
-  it('refreshes current-state feed, constituency issues, and promises once for concurrent requests', async () => {
+  it('refreshes current-state feed, selected-scope civic issues, and promises once for concurrent requests', async () => {
     const dataService = jest.requireMock('../lib/supabaseDataService');
+    const civicStore = jest.requireMock('../stores/civic');
 
     await Promise.all([
       refreshSupabaseDataOnForeground(),
@@ -100,10 +106,10 @@ describe('Supabase foreground refresh', () => {
     ]);
 
     expect(dataService.fetchFeedForState).toHaveBeenCalledWith('TS', 50);
-    expect(dataService.fetchIssuesForConstituency).toHaveBeenCalledWith('TS-AC-61', 'TS');
+    expect(civicStore.__loadIssuesForScope).toHaveBeenCalledWith('constituency', 'TS', 'TS-AC-61', true);
     expect(dataService.fetchPromisesForState).toHaveBeenCalledWith('TS');
     expect(dataService.fetchFeedForState).toHaveBeenCalledTimes(1);
-    expect(dataService.fetchIssuesForConstituency).toHaveBeenCalledTimes(1);
+    expect(civicStore.__loadIssuesForScope).toHaveBeenCalledTimes(1);
     expect(dataService.fetchPromisesForState).toHaveBeenCalledTimes(1);
     expect(jest.requireMock('../stores/politicalShorts').__hydrateShorts).toHaveBeenCalledWith('TS');
     expect(jest.requireMock('../stores/politicalShorts').__hydrateShorts).toHaveBeenCalledTimes(1);

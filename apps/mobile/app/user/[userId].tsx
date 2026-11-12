@@ -23,6 +23,7 @@ import PostCard from '../../components/PostCard';
 import type { Post } from '../../lib/feedTypes';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import i18n from '../../i18n';
+import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
 
 export default function UserProfileScreen() {
   const { userId } = useLocalSearchParams<{ userId: string }>();
@@ -40,34 +41,52 @@ export default function UserProfileScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [userProfile, setUserProfile] = useState<any | null>(null);
   const [userPosts, setUserPosts] = useState<Post[]>([]);
+  const [profileAvailability, setProfileAvailability] = useState<'available' | 'cached' | 'not_found' | 'unavailable'>('unavailable');
+  const [postsAvailability, setPostsAvailability] = useState<'loaded' | 'cached' | 'unavailable'>('loaded');
   const [followLoading, setFollowLoading] = useState(false);
   const [helpVisible, setHelpVisible] = useState(false);
 
   const isSelf = currentUserId && currentUserId === userId;
 
   const loadData = async () => {
-    if (!userId) return;
+    if (!userId) {
+      setProfileAvailability('not_found');
+      setLoading(false);
+      setRefreshing(false);
+      return;
+    }
     try {
-      // 1. Fetch user profile from Supabase or fallback
-      const profile = await fetchUserProfile(userId);
-      if (profile) {
-        setUserProfile(profile);
-      } else {
-        // Fallback demo profile derived from posts if not in DB
+      // 1. Distinguish a real profile from an empty result and a failed lookup.
+      const profileLookup = await fetchUserProfile(userId);
+      if (profileLookup.status === 'found') {
+        setUserProfile(profileLookup.profile);
+        setProfileAvailability('available');
+      } else if (profileLookup.status === 'not_found' && !IS_LIVE_ENVIRONMENT) {
         const matchPost = localPosts.find((p) => p.author.id === userId);
-        setUserProfile({
-          user_id: userId,
-          display_name: matchPost?.author.displayName || 'Citizen',
-          role: 'citizen',
-          verification_status: matchPost?.author.isVerified ? 'verified' : 'unverified',
-          constituency_id: matchPost?.constituencyId,
-        });
+        if (matchPost) {
+          setUserProfile({
+            user_id: userId,
+            display_name: matchPost.author.displayName,
+            role: 'citizen',
+            verification_status: matchPost.author.isVerified ? 'verified' : 'unverified',
+            constituency_id: matchPost.constituencyId,
+          });
+          setProfileAvailability('available');
+        } else {
+          setUserProfile(null);
+          setProfileAvailability('not_found');
+        }
+      } else if (profileLookup.status === 'not_found') {
+        setUserProfile(null);
+        setProfileAvailability('not_found');
+      } else {
+        setProfileAvailability(userProfile?.user_id === userId ? 'cached' : 'unavailable');
       }
 
       // 2. Fetch posts by this author
-      const serverPosts = await fetchPostsByAuthor(userId);
-      if (serverPosts && serverPosts.length > 0) {
-        const transformed: Post[] = serverPosts.map((p: any) => ({
+      const postsLookup = await fetchPostsByAuthor(userId);
+      if (postsLookup.status === 'loaded') {
+        const transformed: Post[] = postsLookup.posts.map((p: any) => ({
           id: p.id,
           author: {
             id: p.author_id,
@@ -90,13 +109,20 @@ export default function UserProfileScreen() {
           hashtags: p.hashtags ?? [],
         }));
         setUserPosts(transformed);
+        setPostsAvailability('loaded');
       } else {
-        // Filter local posts by this author
+        // A matching feed-cache entry is useful offline data, but it is not a
+        // successful refresh and must not be described as the complete post list.
         const matched = localPosts.filter((p) => p.author.id === userId);
         setUserPosts(matched);
+        setPostsAvailability(matched.length > 0 ? 'cached' : 'unavailable');
       }
     } catch (err) {
       console.warn('Error loading user profile:', err);
+      setProfileAvailability(userProfile?.user_id === userId ? 'cached' : 'unavailable');
+      const matched = localPosts.filter((p) => p.author.id === userId);
+      setUserPosts(matched);
+      setPostsAvailability(matched.length > 0 ? 'cached' : 'unavailable');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -104,7 +130,12 @@ export default function UserProfileScreen() {
   };
 
   useEffect(() => {
-    loadData();
+    setLoading(true);
+    setUserProfile(null);
+    setUserPosts([]);
+    setProfileAvailability('unavailable');
+    setPostsAvailability('loaded');
+    void loadData();
   }, [userId]);
 
   const handleToggleFollow = async () => {
@@ -166,11 +197,38 @@ export default function UserProfileScreen() {
           <ActivityIndicator size="large" color={colors.primary} />
           <Text style={{ marginTop: 12, color: colors.textMuted }}>Loading profile...</Text>
         </View>
+      ) : profileAvailability === 'not_found' ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+          <Ionicons name="person-remove-outline" size={44} color={colors.textMuted} />
+          <Text style={{ marginTop: 12, color: colors.text, fontSize: 16, fontWeight: '700', textAlign: 'center' }}>
+            {i18n.t('profile.notFound', { defaultValue: 'This profile could not be found.' })}
+          </Text>
+        </View>
+      ) : profileAvailability === 'unavailable' ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+          <Ionicons name="cloud-offline-outline" size={44} color={colors.textMuted} />
+          <Text style={{ marginTop: 12, color: colors.textMuted, fontSize: 14, textAlign: 'center' }}>
+            {i18n.t('profile.unavailable', { defaultValue: 'This profile could not be loaded. Check your connection and try again.' })}
+          </Text>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => { setRefreshing(true); void loadData(); }}
+            style={[styles.followBtn, { backgroundColor: colors.primary, marginTop: 16 }]}
+          >
+            <Text style={[styles.followBtnText, { color: '#FFFFFF' }]}>{i18n.t('common.retry', { defaultValue: 'Retry' })}</Text>
+          </Pressable>
+        </View>
       ) : (
         <ScrollView
           contentContainerStyle={{ paddingBottom: 40 }}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); loadData(); }} />}
         >
+          {profileAvailability === 'cached' && (
+            <Text style={{ color: colors.textMuted, fontSize: 12, paddingHorizontal: 16, paddingTop: 12 }}>
+              {i18n.t('profile.cachedProfile', { defaultValue: 'Showing saved profile details. The latest profile data could not be refreshed.' })}
+            </Text>
+          )}
+
           {/* Profile Card */}
           <View style={[styles.profileCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
@@ -278,7 +336,20 @@ export default function UserProfileScreen() {
               Posts ({userPosts.length})
             </Text>
 
-            {userPosts.length === 0 ? (
+            {postsAvailability === 'cached' && (
+              <Text style={{ color: colors.textMuted, fontSize: 12, marginBottom: 8 }}>
+                {i18n.t('profile.cachedPosts', { defaultValue: 'Showing saved posts. The full post list could not be refreshed.' })}
+              </Text>
+            )}
+
+            {postsAvailability === 'unavailable' ? (
+              <View style={[styles.emptyContainer, { borderColor: colors.border }]}>
+                <Ionicons name="cloud-offline-outline" size={40} color={colors.textMuted} />
+                <Text style={{ marginTop: 8, color: colors.textMuted, textAlign: 'center' }}>
+                  {i18n.t('profile.postsUnavailable', { defaultValue: 'Posts could not be loaded. Their absence has not been confirmed.' })}
+                </Text>
+              </View>
+            ) : userPosts.length === 0 ? (
               <View style={[styles.emptyContainer, { borderColor: colors.border }]}>
                 <Ionicons name="chatbox-outline" size={40} color={colors.textMuted} />
                 <Text style={{ marginTop: 8, color: colors.textMuted }}>No public posts yet.</Text>

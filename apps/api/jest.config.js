@@ -16,6 +16,9 @@ module.exports = {
   transform: {
     '^.+\\.tsx?$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.jest.json' }],
   },
+  // V8 coverage avoids the high memory cost of Babel/Istanbul instrumentation
+  // on the API's large route and data modules while retaining the same gates.
+  coverageProvider: 'v8',
   testEnvironment: 'node',
   testTimeout: 30000,
   forceExit: true,

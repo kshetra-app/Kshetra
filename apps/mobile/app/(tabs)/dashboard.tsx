@@ -7,10 +7,11 @@ import {
   Pressable,
   Platform,
   Share,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useCivicStore } from '../../stores/civic';
+import { getCivicIssueScopeKey, useCivicStore } from '../../stores/civic';
 import IssueCard from '../../components/IssueCard';
 import ReportIssueSheet from '../../components/ReportIssueSheet';
 import ExportSheet from '../../components/ExportSheet';
@@ -30,6 +31,7 @@ import i18n from '../../i18n';
 import { useTheme } from '../../lib/theme';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import { gateContentAction, logContentAction } from '../../lib/contentAccountability';
+import { setCivicIssueRealtimeScope } from '../../lib/realtimeService';
 
 const SCOPE_OPTIONS: { key: CivicScope; icon: string; tKey: string }[] = [
   { key: 'constituency', icon: 'location', tKey: 'common.scopes.myConstituency' },
@@ -115,6 +117,14 @@ function DashboardContent() {
   const addIssue = useCivicStore((s) => s.addIssue);
   const setIssueFilter = useCivicStore((s) => s.setIssueFilter);
   const setStatusFilter = useCivicStore((s) => s.setStatusFilter);
+  const issueLoadStatus = useCivicStore((s) => s.issueLoadStatus);
+  const issueLoadScopeKey = useCivicStore((s) => s.issueLoadScopeKey);
+  const issueLoadTotal = useCivicStore((s) => s.issueLoadTotal);
+  const issueLoadPage = useCivicStore((s) => s.issueLoadPage);
+  const issueLoadLimit = useCivicStore((s) => s.issueLoadLimit);
+  const issueLoadMoreError = useCivicStore((s) => s.issueLoadMoreError);
+  const loadIssuesForScope = useCivicStore((s) => s.loadIssuesForScope);
+  const loadMoreIssuesForScope = useCivicStore((s) => s.loadMoreIssuesForScope);
 
   // Promise store — select raw arrays, derive in useMemo
   const allPromises = usePromiseStore((s) => s.promises);
@@ -123,6 +133,21 @@ function DashboardContent() {
   const loadPromisesForState = usePromiseStore((s) => s.loadForState);
 
   const constituencyId = myHome ? `${stateCode}-AC-${myHome.acNo}` : undefined;
+  const issueScopeKey = getCivicIssueScopeKey(scopeFilter, stateCode, constituencyId);
+  const issueScopeReady = !IS_LIVE_ENVIRONMENT || (
+    issueLoadScopeKey === issueScopeKey &&
+    (issueLoadStatus === 'loaded' || issueLoadStatus === 'loading_more')
+  );
+  const issueScopeLoading = issueLoadStatus === 'loading' ||
+    issueLoadStatus === 'idle' || issueLoadScopeKey !== issueScopeKey;
+  const hasMoreIssues = IS_LIVE_ENVIRONMENT && issueLoadTotal !== null &&
+    issueLoadPage * issueLoadLimit < issueLoadTotal;
+
+  useEffect(() => {
+    setCivicIssueRealtimeScope(scopeFilter, stateCode, constituencyId);
+    if (!IS_LIVE_ENVIRONMENT || (scopeFilter === 'constituency' && !constituencyId)) return;
+    void loadIssuesForScope(scopeFilter, stateCode, constituencyId).catch(() => undefined);
+  }, [scopeFilter, stateCode, constituencyId, loadIssuesForScope]);
 
   useEffect(() => {
     if (stateCode === 'IN') {
@@ -219,7 +244,11 @@ function DashboardContent() {
           <View style={styles.scopeIndicator}>
             <Ionicons name="funnel" size={10} color={colors.textMuted} />
             <Text style={[styles.scopeIndicatorText, { color: colors.textMuted }]}>
-              {scopeLabel} · {issues.length} {issues.length !== 1 ? t('common.items') : t('common.item')}
+              {scopeLabel} · {IS_LIVE_ENVIRONMENT
+                ? issueScopeReady ? issueLoadTotal ?? 0 : '…'
+                : issues.length} {IS_LIVE_ENVIRONMENT || issues.length !== 1
+                  ? t('common.items')
+                  : t('common.item')}
             </Text>
           </View>
         </View>
@@ -330,6 +359,37 @@ function DashboardContent() {
 
         {activeTab === 'issues' && (
           <View style={styles.tabContent}>
+            {IS_LIVE_ENVIRONMENT && scopeFilter === 'constituency' && !constituencyId ? (
+              <View style={styles.emptyState}>
+                <Ionicons name="location-outline" size={40} color={colors.textMuted} />
+                <Text style={[styles.emptyTitle, { color: colors.text }]}>
+                  {t('dashboard.selectConstituency', { defaultValue: 'Set your home constituency to view local issues, or choose State or National.' })}
+                </Text>
+              </View>
+            ) : IS_LIVE_ENVIRONMENT && !issueScopeReady ? (
+              <View style={styles.emptyState}>
+                {issueScopeLoading ? (
+                  <ActivityIndicator size="large" color={colors.primary} />
+                ) : (
+                  <Ionicons name="cloud-offline-outline" size={40} color={colors.textMuted} />
+                )}
+                <Text style={[styles.emptyTitle, { color: colors.text, marginTop: 10 }]}>
+                  {issueScopeLoading
+                    ? t('common.loading')
+                    : t('dashboard.issuesUnavailable', { defaultValue: 'Civic issues could not be loaded. The empty state is not being treated as zero issues.' })}
+                </Text>
+                {!issueScopeLoading && (
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => void loadIssuesForScope(scopeFilter, stateCode, constituencyId, true).catch(() => undefined)}
+                    style={[styles.retryButton, { backgroundColor: colors.primary }]}
+                  >
+                    <Text style={{ color: '#FFFFFF', fontWeight: '700' }}>{t('common.retry')}</Text>
+                  </Pressable>
+                )}
+              </View>
+            ) : (
+              <>
             {/* Compact stats row */}
             <View style={styles.statsRow}>
               {[
@@ -344,6 +404,12 @@ function DashboardContent() {
                 </View>
               ))}
             </View>
+
+            {IS_LIVE_ENVIRONMENT && issueLoadTotal !== null && (
+              <Text style={{ color: colors.textMuted, fontSize: 11, marginHorizontal: 4, marginBottom: 8 }}>
+                Showing the latest {allIssues.length} loaded records of {issueLoadTotal}. Counts and category filters summarize loaded records; load more to include older reports.
+              </Text>
+            )}
 
             {/* Category + Status filters (single scrollable row) */}
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll} contentContainerStyle={styles.filterScrollContent}>
@@ -416,7 +482,15 @@ function DashboardContent() {
             )}
 
             {/* Issue list */}
-            {issues.length === 0 ? (
+            {issues.length === 0 && IS_LIVE_ENVIRONMENT && hasMoreIssues &&
+              (statusFilter !== 'all' || (issueFilter && issueFilter !== 'all')) ? (
+              <View style={styles.emptyState}>
+                <Ionicons name="search-outline" size={42} color={colors.textMuted} />
+                <Text style={[styles.emptyTitle, { color: colors.text }]}>
+                  No loaded reports match these filters. More reports are available to search.
+                </Text>
+              </View>
+            ) : issues.length === 0 ? (
               <View style={styles.emptyState}>
                 <Ionicons name="checkmark-circle-outline" size={48} color={colors.textMuted} />
                 <Text style={[styles.emptyTitle, { color: colors.text }]}>{t('dashboard.noIssues')}</Text>
@@ -479,6 +553,33 @@ function DashboardContent() {
                 />
               ))
             )}
+            {hasMoreIssues && (
+              <View style={{ alignItems: 'center', marginVertical: 12 }}>
+                {issueLoadMoreError && (
+                  <Text style={{ color: colors.textMuted, fontSize: 12, marginBottom: 8 }}>
+                    Could not load the next page. The reports already shown are unchanged.
+                  </Text>
+                )}
+                <Pressable
+                  accessibilityRole="button"
+                  disabled={issueLoadStatus === 'loading_more'}
+                  onPress={() => void loadMoreIssuesForScope(scopeFilter, stateCode, constituencyId).catch(() => undefined)}
+                  style={[styles.retryButton, { backgroundColor: colors.primary, opacity: issueLoadStatus === 'loading_more' ? 0.7 : 1 }]}
+                >
+                  {issueLoadStatus === 'loading_more' ? (
+                    <ActivityIndicator size="small" color="#FFFFFF" />
+                  ) : (
+                    <Text style={{ color: '#FFFFFF', fontWeight: '700' }}>
+                      {issueLoadMoreError
+                        ? t('common.retry', { defaultValue: 'Retry' })
+                        : t('common.loadMore', { defaultValue: 'Load more issues' })}
+                    </Text>
+                  )}
+                </Pressable>
+              </View>
+            )}
+              </>
+            )}
           </View>
         )}
 
@@ -519,16 +620,26 @@ function DashboardContent() {
 
         {activeTab === 'sentiment' && (
           <View style={styles.tabContent}>
-            {sentimentSorted.map((item) => (
-              <View key={item.constituencyId} style={styles.sentimentItem}>
-                <SentimentBar item={item} />
+            {IS_LIVE_ENVIRONMENT && sentimentSorted.length === 0 ? (
+              <View style={styles.emptyState}>
+                <Ionicons name="pulse-outline" size={42} color={colors.textMuted} />
+                <Text style={[styles.emptyTitle, { color: colors.text }]}>
+                  {t('dashboard.sentimentUnavailable', { defaultValue: 'Verified sentiment analytics are not available for this scope yet. Civic issue reports remain available in the Issues tab.' })}
+                </Text>
               </View>
-            ))}
-
-            <AIDashboardSummary
-              constituencyName={sentimentSorted[0]?.constituencyName}
-              issues={issues.map((i) => `${i.title} (${i.category}, ${i.severity})`)}
-            />
+            ) : (
+              <>
+                {sentimentSorted.map((item) => (
+                  <View key={item.constituencyId} style={styles.sentimentItem}>
+                    <SentimentBar item={item} />
+                  </View>
+                ))}
+                <AIDashboardSummary
+                  constituencyName={sentimentSorted[0]?.constituencyName}
+                  issues={issues.map((i) => `${i.title} (${i.category}, ${i.severity})`)}
+                />
+              </>
+            )}
           </View>
         )}
 

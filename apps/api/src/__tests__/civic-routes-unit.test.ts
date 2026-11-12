@@ -1635,6 +1635,101 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
     });
   });
 
+  describe('15a. List Civic Issues (GET /api/v1/civic/issues)', () => {
+    it('applies scope filters and page bounds while returning the exact filtered total', async () => {
+      const appliedFilters: Array<[string, unknown]> = [];
+      const query: any = {
+        eq: (field: string, value: unknown) => {
+          appliedFilters.push([field, value]);
+          return query;
+        },
+        order: jest.fn(() => query),
+        range: jest.fn(async (from: number, to: number) => ({
+          data: [
+            {
+              id: 'issue-26',
+              state_code: 'TS',
+              constituency_id: 'TS-AC-67',
+              title: 'Water pipeline needs repair',
+              category: 'water',
+              status: 'open',
+              created_at: '2026-11-01T00:00:00.000Z',
+            },
+          ],
+          count: 61,
+          error: null,
+          requestedRange: [from, to],
+        })),
+      };
+      const select = jest.fn((_columns: string, options: { count?: string }) => {
+        expect(options).toEqual({ count: 'exact' });
+        return query;
+      });
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        expect(table).toBe('civic_issues');
+        return { select } as any;
+      }) as any);
+
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/civic/issues?stateCode=TS&constituencyId=TS-AC-67&page=2&limit=25',
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(appliedFilters).toEqual([
+        ['constituency_id', 'TS-AC-67'],
+        ['state_code', 'TS'],
+      ]);
+      expect(query.range).toHaveBeenCalledWith(25, 49);
+      expect(query.order).toHaveBeenCalledWith('created_at', { ascending: false });
+      expect(JSON.parse(res.payload)).toMatchObject({
+        total: 61,
+        page: 2,
+        limit: 25,
+        issues: [{ id: 'issue-26' }],
+      });
+    });
+
+    it('rejects page limits above the supported maximum', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: '/api/v1/civic/issues?page=1&limit=101',
+      });
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('does not report an unknown total as zero', async () => {
+      const query: any = {
+        order: () => query,
+        range: async () => ({ data: [], count: null, error: null }),
+      };
+      jest.spyOn(supabase, 'from').mockImplementation((() => ({
+        select: () => query,
+      })) as any);
+
+      const res = await app.inject({ method: 'GET', url: '/api/v1/civic/issues' });
+
+      expect(res.statusCode).toBe(503);
+      expect(JSON.parse(res.payload).code).toBe('CIVIC_ISSUE_COUNT_UNAVAILABLE');
+    });
+
+    it('preserves a confirmed empty result as a zero total', async () => {
+      const query: any = {
+        order: () => query,
+        range: async () => ({ data: [], count: 0, error: null }),
+      };
+      jest.spyOn(supabase, 'from').mockImplementation((() => ({
+        select: () => query,
+      })) as any);
+
+      const res = await app.inject({ method: 'GET', url: '/api/v1/civic/issues' });
+
+      expect(res.statusCode).toBe(200);
+      expect(JSON.parse(res.payload)).toMatchObject({ issues: [], total: 0, page: 1, limit: 50 });
+    });
+  });
+
   describe('16. Update Civic Issue Status (PATCH /api/v1/civic/issues/:id/status)', () => {
     it('rejects unauthenticated request with 401', async () => {
       const res = await app.inject({

@@ -11,6 +11,7 @@ import SchemeCard from '../../components/SchemeCard';
 import ProjectCard from '../../components/ProjectCard';
 import { useActiveStateStore } from '../../stores/activeState';
 import { useTheme } from '../../lib/theme';
+import { getCivicMetricsEmptyState, type CivicMetricsLoadStatus } from '../../lib/civicMetricsDisplay';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
 type Tab = 'budget' | 'bills' | 'schemes' | 'projects' | 'rti' | 'hearings';
@@ -109,6 +110,29 @@ export default function CivicMetricsScreen() {
   const noConnectedData = t('civicMetrics.noConnectedData', {
     defaultValue: 'Verified records are not available from a connected source yet.',
   });
+  const renderListEmptyState = (
+    status: CivicMetricsLoadStatus,
+    emptyMessage: string,
+    retry: () => void,
+  ) => {
+    const emptyState = getCivicMetricsEmptyState(status);
+    return (
+      <>
+        <Text style={styles.emptyText}>
+          {emptyState === 'loading'
+            ? t('common.loading')
+            : emptyState === 'unavailable'
+              ? noConnectedData
+              : emptyMessage}
+        </Text>
+        {emptyState === 'unavailable' && (
+          <Pressable accessibilityRole="button" onPress={retry}>
+            <Text style={[styles.emptyText, { color: colors.primary }]}>{t('common.retry')}</Text>
+          </Pressable>
+        )}
+      </>
+    );
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
@@ -191,9 +215,9 @@ export default function CivicMetricsScreen() {
               </>
             ) : (
               <View style={styles.empty}>
-                <Text style={styles.emptyText}>
-                  {billLoadStatus === 'loading' ? t('common.loading') : noConnectedData}
-                </Text>
+                {renderListEmptyState(billLoadStatus, t('common.noResults'), () => {
+                  void loadBillsByState(activeState);
+                })}
               </View>
             )}
           </>
@@ -203,7 +227,7 @@ export default function CivicMetricsScreen() {
           <>
             {schemes.length ? (
               <>
-                <Text style={styles.sectionTitle}>{t('civicMetrics.governmentSchemes', { count: schemes.length })}</Text>
+                <Text style={styles.sectionTitle}>{t('civicMetrics.governmentSchemes', { count: schemeTotal })}</Text>
                 {schemes.map((s) => <SchemeCard key={s.id} scheme={s} />)}
                 {schemePage * 50 < schemeTotal && (
                   <Pressable
@@ -218,7 +242,13 @@ export default function CivicMetricsScreen() {
                   </Pressable>
                 )}
               </>
-            ) : <View style={styles.empty}><Text style={styles.emptyText}>{schemeLoadStatus === 'loading' ? t('common.loading') : noConnectedData}</Text></View>}
+            ) : (
+              <View style={styles.empty}>
+                {renderListEmptyState(schemeLoadStatus, t('common.noResults'), () => {
+                  void loadSchemesByState(activeState);
+                })}
+              </View>
+            )}
           </>
         )}
 
@@ -226,7 +256,7 @@ export default function CivicMetricsScreen() {
           <>
             {projects.length ? (
               <>
-                <Text style={styles.sectionTitle}>{t('civicMetrics.developmentProjects', { count: projects.length })}</Text>
+                <Text style={styles.sectionTitle}>{t('civicMetrics.developmentProjects', { count: projectTotal })}</Text>
                 {projects.map((p) => <ProjectCard key={p.id} project={p} />)}
                 {projectPage * 50 < projectTotal && (
                   <Pressable
@@ -241,7 +271,13 @@ export default function CivicMetricsScreen() {
                   </Pressable>
                 )}
               </>
-            ) : <View style={styles.empty}><Text style={styles.emptyText}>{projectLoadStatus === 'loading' ? t('common.loading') : noConnectedData}</Text></View>}
+            ) : (
+              <View style={styles.empty}>
+                {renderListEmptyState(projectLoadStatus, t('common.noResults'), () => {
+                  void loadProjectsByState(activeState);
+                })}
+              </View>
+            )}
           </>
         )}
 
@@ -286,9 +322,9 @@ export default function CivicMetricsScreen() {
             )}
             </> : (
               <View style={styles.empty}>
-                <Text style={styles.emptyText}>
-                  {rtiLoadStatus === 'loading' ? t('common.loading') : noConnectedData}
-                </Text>
+                {renderListEmptyState(rtiLoadStatus, t('common.noResults'), () => {
+                  void loadPublicRTIs(activeState);
+                })}
               </View>
             )}
           </>
@@ -351,12 +387,17 @@ export default function CivicMetricsScreen() {
             ) : (
               <View style={styles.empty}>
                 <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-                  {hearingLoadStatus === 'loading'
+                  {getCivicMetricsEmptyState(hearingLoadStatus) === 'loading'
                     ? t('common.loading')
-                    : hearingLoadStatus === 'error'
+                    : getCivicMetricsEmptyState(hearingLoadStatus) === 'unavailable'
                       ? noConnectedData
                       : t('civicMetrics.noUpcomingHearings')}
                 </Text>
+                {getCivicMetricsEmptyState(hearingLoadStatus) === 'unavailable' && (
+                  <Pressable accessibilityRole="button" onPress={() => void loadHearingsByState(activeState)}>
+                    <Text style={[styles.emptyText, { color: colors.primary }]}>{t('common.retry')}</Text>
+                  </Pressable>
+                )}
               </View>
             )}
           </>

@@ -15,6 +15,7 @@
  */
 
 import { buildApp } from '../server';
+import { createServer } from 'node:http';
 import {
   supabase,
   isSupabaseConfigured,
@@ -93,6 +94,46 @@ describe('CTO Directive 119: Fixture Credentials & Fail-Closed Behavior', () => 
       } finally {
         if (savedUrl !== undefined) process.env.SUPABASE_URL = savedUrl;
         else delete process.env.SUPABASE_URL;
+      }
+    });
+
+    it('does not treat a TCP listener with an unavailable Supabase API as a ready database', async () => {
+      const server = createServer((_request, response) => {
+        response.statusCode = 503;
+        response.end();
+      });
+      await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+      const address = server.address();
+      if (!address || typeof address === 'string')
+        throw new Error('Local probe server did not bind');
+
+      const previous = {
+        ci: process.env.CI,
+        integration: process.env.INTEGRATION_TESTS_ENABLED,
+        url: process.env.SUPABASE_URL,
+        serviceKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+      };
+      delete process.env.CI;
+      delete process.env.INTEGRATION_TESTS_ENABLED;
+      process.env.SUPABASE_URL = `http://127.0.0.1:${address.port}`;
+      process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-only-service-key';
+
+      try {
+        expect(isLocalDatabaseAvailable('127.0.0.1', address.port)).toBe(false);
+      } finally {
+        if (previous.ci !== undefined) process.env.CI = previous.ci;
+        else delete process.env.CI;
+        if (previous.integration !== undefined)
+          process.env.INTEGRATION_TESTS_ENABLED = previous.integration;
+        else delete process.env.INTEGRATION_TESTS_ENABLED;
+        if (previous.url !== undefined) process.env.SUPABASE_URL = previous.url;
+        else delete process.env.SUPABASE_URL;
+        if (previous.serviceKey !== undefined)
+          process.env.SUPABASE_SERVICE_ROLE_KEY = previous.serviceKey;
+        else delete process.env.SUPABASE_SERVICE_ROLE_KEY;
+        await new Promise<void>((resolve, reject) =>
+          server.close((error) => (error ? reject(error) : resolve())),
+        );
       }
     });
 

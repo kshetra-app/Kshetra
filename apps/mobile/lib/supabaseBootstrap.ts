@@ -226,13 +226,14 @@ async function hydrateStoresFromServer(): Promise<void> {
   const stateCode = useActiveStateStore.getState().stateCode;
   const myHome = useMyConstituencyStore.getState().home;
   const constituencyId = myHome ? `${stateCode}-AC-${myHome.acNo}` : undefined;
+  const civicStore = useCivicStore.getState();
 
   // Fetch in parallel
   const [feedData, issuesData, promisesData] = await Promise.allSettled([
     dataService.fetchFeedForState(stateCode, 50),
-    constituencyId
-      ? dataService.fetchIssuesForConstituency(constituencyId, stateCode)
-      : Promise.resolve(null),
+    civicStore.scopeFilter === 'constituency' && !constituencyId
+      ? Promise.resolve()
+      : civicStore.loadIssuesForScope(civicStore.scopeFilter, stateCode, constituencyId, true),
     dataService.fetchPromisesForState(stateCode),
   ]);
 
@@ -242,10 +243,13 @@ async function hydrateStoresFromServer(): Promise<void> {
     addBreadcrumb('bootstrap', 'feed_hydrated', { count: feedData.value.length });
   }
 
-  // Hydrate civic store
-  if (issuesData.status === 'fulfilled' && issuesData.value !== null) {
-    useCivicStore.getState().hydrateFromServer(issuesData.value);
-    addBreadcrumb('bootstrap', 'issues_hydrated', { count: issuesData.value.length });
+  // Civic issues are loaded through the canonical API for the selected scope.
+  if (issuesData.status === 'fulfilled') {
+    addBreadcrumb('bootstrap', 'issues_hydrated', {
+      scope: civicStore.scopeFilter,
+    });
+  } else {
+    captureException(issuesData.reason as Error, { op: 'hydrate_civic_issues' });
   }
 
   if (promisesData.status === 'fulfilled' && promisesData.value !== null) {
@@ -268,9 +272,11 @@ function startRealtimeSubscriptions(): void {
   const stateCode = useActiveStateStore.getState().stateCode;
   const myHome = useMyConstituencyStore.getState().home;
   const constituencyId = myHome ? `${stateCode}-AC-${myHome.acNo}` : undefined;
+  const civicScope = useCivicStore.getState().scopeFilter;
   const user = useAuthStore.getState().user;
 
-  const appCleanup = subscribeAll(stateCode, constituencyId);
+  // Realtime follows the active civic scope, while data refreshes use the API.
+  const appCleanup = subscribeAll(stateCode, civicScope, constituencyId);
   const notifCleanup = user ? useNotificationsStore.getState().subscribeToUserNotifications(user.id) : () => {};
 
   realtimeCleanup = () => {

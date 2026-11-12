@@ -16,6 +16,7 @@ import { useCivicStore } from '../stores/civic';
 import { useFeedStore } from '../stores/feed';
 import { usePromiseStore } from '../stores/promises';
 import { useActiveStateStore } from '../stores/activeState';
+import { useMyConstituencyStore } from '../stores/myConstituency';
 import * as dataService from './supabaseDataService';
 import {
   notifyCivicIssueNearYou,
@@ -30,23 +31,27 @@ type RealtimeChannel = ReturnType<typeof supabase.channel>;
 const channels: Map<string, RealtimeChannel> = new Map();
 const refreshTimers = new Map<string, ReturnType<typeof setTimeout>>();
 const REALTIME_REFRESH_DEBOUNCE_MS = 150;
+let activeCivicSubscriptionCleanup: (() => void) | null = null;
+let activeCivicSubscriptionKey: string | null = null;
 
 /**
  * Subscribe to civic issue changes for a constituency.
  */
-export function subscribeToCivicIssues(constituencyId?: string): () => void {
+export function subscribeToCivicIssues(constituencyId?: string, stateCode?: string): () => void {
   if (!isSupabaseConfigured) return () => {};
 
-  const channelName = `civic-issues-${constituencyId ?? 'all'}`;
+  const channelName = `civic-issues-${constituencyId ?? stateCode ?? 'all'}`;
   if (channels.has(channelName)) return () => unsubscribe(channelName);
 
   const changeFilter = (event: 'INSERT' | 'UPDATE' | 'DELETE') => ({
     event,
     schema: 'public',
     table: 'civic_issues',
-    ...(constituencyId && event !== 'DELETE'
+    ...(event !== 'DELETE' && constituencyId
       ? { filter: `constituency_id=eq.${constituencyId}` }
-      : {}),
+      : event !== 'DELETE' && stateCode
+        ? { filter: `state_code=eq.${stateCode}` }
+        : {}),
   });
 
   const channel = supabase
@@ -54,22 +59,55 @@ export function subscribeToCivicIssues(constituencyId?: string): () => void {
     .on('postgres_changes', changeFilter('INSERT'), (payload) => {
       const issue = payload.new as any;
       notifyCivicIssueNearYou(issue.title ?? 'New issue', issue.constituency_name ?? 'your area');
-      scheduleRefresh(`civic-${constituencyId ?? 'all'}`, () => refreshCivicIssues(constituencyId));
+      scheduleRefresh(`civic-${constituencyId ?? 'all'}`, refreshCivicIssues);
     })
     .on('postgres_changes', changeFilter('UPDATE'), (payload) => {
       const issue = payload.new as any;
       if (payload.old && (payload.old as any).status !== issue.status) {
         notifyCivicIssueStatusChange(issue.title ?? 'Issue', issue.status ?? 'updated');
       }
-      scheduleRefresh(`civic-${constituencyId ?? 'all'}`, () => refreshCivicIssues(constituencyId));
+      scheduleRefresh(`civic-${constituencyId ?? 'all'}`, refreshCivicIssues);
     })
     .on('postgres_changes', changeFilter('DELETE'), () => {
-      scheduleRefresh(`civic-${constituencyId ?? 'all'}`, () => refreshCivicIssues(constituencyId));
+      scheduleRefresh(`civic-${constituencyId ?? 'all'}`, refreshCivicIssues);
     })
     .subscribe();
 
   channels.set(channelName, channel);
   return () => unsubscribe(channelName);
+}
+
+/** Keep one civic realtime channel aligned with the dashboard's active scope. */
+export function setCivicIssueRealtimeScope(
+  scope: 'constituency' | 'state' | 'national',
+  stateCode: string,
+  constituencyId?: string,
+): void {
+  const scopeKey = scope === 'national'
+    ? 'national'
+    : scope === 'state'
+      ? `state:${stateCode}`
+      : constituencyId
+        ? `constituency:${constituencyId}`
+        : 'constituency:unselected';
+  if (activeCivicSubscriptionKey === scopeKey) return;
+
+  activeCivicSubscriptionCleanup?.();
+  activeCivicSubscriptionCleanup = null;
+  activeCivicSubscriptionKey = scopeKey;
+
+  if (scope === 'constituency' && !constituencyId) return;
+  activeCivicSubscriptionCleanup = scope === 'constituency'
+    ? subscribeToCivicIssues(constituencyId)
+    : scope === 'state'
+      ? subscribeToCivicIssues(undefined, stateCode)
+      : subscribeToCivicIssues();
+}
+
+function clearCivicIssueRealtimeScope(): void {
+  activeCivicSubscriptionCleanup?.();
+  activeCivicSubscriptionCleanup = null;
+  activeCivicSubscriptionKey = null;
 }
 
 /**
@@ -145,11 +183,13 @@ function schedulePromiseRefresh(): void {
   });
 }
 
-async function refreshCivicIssues(constituencyId?: string): Promise<void> {
-  if (!constituencyId) return;
+async function refreshCivicIssues(): Promise<void> {
   const stateCode = useActiveStateStore.getState().stateCode;
-  const issues = await dataService.fetchIssuesForConstituency(constituencyId, stateCode);
-  if (issues !== null) useCivicStore.getState().hydrateFromServer(issues);
+  const civicStore = useCivicStore.getState();
+  const home = useMyConstituencyStore.getState().home;
+  const constituencyId = home ? `${stateCode}-AC-${home.acNo}` : undefined;
+  if (civicStore.scopeFilter === 'constituency' && !constituencyId) return;
+  await civicStore.loadIssuesForScope(civicStore.scopeFilter, stateCode, constituencyId, true);
 }
 
 function scheduleRefresh(key: string, refresh: () => Promise<void>): void {
@@ -212,15 +252,22 @@ export function subscribeToLmx(): () => void {
 /**
  * Subscribe to all relevant channels.
  */
-export function subscribeAll(stateCode?: string, constituencyId?: string): () => void {
+export function subscribeAll(
+  stateCode?: string,
+  civicScope: 'constituency' | 'state' | 'national' = 'national',
+  constituencyId?: string,
+): () => void {
   const unsubs = [
-    subscribeToCivicIssues(constituencyId),
     subscribeToFeed(stateCode),
     subscribeToPromises(),
     subscribeToDelimitation(),
     subscribeToLmx(),
   ];
-  return () => unsubs.forEach((fn) => fn());
+  setCivicIssueRealtimeScope(civicScope, stateCode ?? '', constituencyId);
+  return () => {
+    unsubs.forEach((fn) => fn());
+    clearCivicIssueRealtimeScope();
+  };
 }
 
 /**
@@ -238,6 +285,7 @@ function unsubscribe(channelName: string): void {
  * Unsubscribe from all channels.
  */
 export function unsubscribeAll(): void {
+  clearCivicIssueRealtimeScope();
   for (const [name] of channels) {
     unsubscribe(name);
   }
