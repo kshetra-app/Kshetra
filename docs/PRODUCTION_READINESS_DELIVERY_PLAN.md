@@ -226,6 +226,12 @@ These are targeted safeguards, not proof that every production flow is complete.
 - Live district and reservation breakdowns label counts as database records, and development reference mode retains seat wording. Historical election/timeline helpers were inspected and already return no bundled values in live mode.
 - The focused regression suite passed 6/6, mobile TypeScript checking passed, and the touched files passed Prettier. Targeted ESLint reported no errors and one remaining warning for the existing `any` route cast. This is a UI truthfulness correction, not a claim that a full production data source or complete state coverage is available.
 
+### Follow-up completed in this pass — notification inbox account isolation
+
+- The persisted mobile notification inbox now records its owner account. Switching accounts or signing out clears the previous account's locally cached inbox; notification rows and unread badges stay hidden until the authenticated account matches the persisted owner. The first persistence upgrade clears legacy unowned rows rather than assigning them to the first account that opens the updated app.
+- Notification fetch responses and realtime inserts are ignored if their account is no longer the active inbox owner. Mark-as-read writes also refuse to update an inbox after an account switch. This protects the local app inbox; it does not change server-side `notification_log` RLS or push delivery behavior.
+- Auth waits for notification persistence hydration before assigning the current account, preventing a late local-storage restore from replacing the active owner's scope. Focused tests cover account switching, same-account preservation, mismatched-owner visibility, clearing legacy rows while preserving preferences, and wiring of the store action. The complete mobile suite (72 suites, 610 tests) and mobile TypeScript check pass locally; the current changes still need remote CI validation.
+
 ### Follow-up completed in this pass — moderation audit-log reads
 
 - The admin moderation audit-log endpoint now reads actual `audit_log` rows with an exact total, newest-first ordering, optional entity-type filtering, and bounded page size/offset. Missing storage or query failures return `503 DATABASE_UNAVAILABLE` instead of a fabricated successful empty list.

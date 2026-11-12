@@ -12,6 +12,7 @@ import { useLiveExchangeStore } from '../../stores/liveExchange';
 import { useNotificationsStore } from '../../stores/notifications';
 import { useDMStore } from '../../stores/dmStore';
 import { useAuthStore } from '../../stores/auth';
+import { selectOwnedUnreadCount } from '../../lib/notificationInboxOwnership';
 import FeedScreen from './feed';
 import ShortsScreen from './shorts';
 import LiveTabScreen from './live';
@@ -37,7 +38,8 @@ export default function CommunityScreen() {
 
   const user = useAuthStore((s) => s.user);
   const session = useAuthStore((s) => s.session);
-  const notificationUnreadCount = useNotificationsStore((s) => s.unreadCount);
+  const userId = user?.id ?? null;
+  const notificationUnreadCount = useNotificationsStore((s) => selectOwnedUnreadCount(s, userId));
   const dmUnreadCount = useDMStore((s) => s.unreadCount);
   const refreshDMUnreadCount = useDMStore((s) => s.refreshUnreadCount);
 

@@ -12,6 +12,8 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNotificationsStore } from '../../stores/notifications';
+import { useAuthStore } from '../../stores/auth';
+import { selectOwnedUnreadCount } from '../../lib/notificationInboxOwnership';
 import { DevFeatureSwitcher } from '../../components/DevFeatureSwitcher';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import { useTheme } from '../../lib/theme';
@@ -31,7 +33,8 @@ export default function MoreScreen() {
   const { colors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const unread = useNotificationsStore((s) => s.unreadCount);
+  const userId = useAuthStore((s) => s.user?.id ?? null);
+  const unread = useNotificationsStore((s) => selectOwnedUnreadCount(s, userId));
   const [showDevModal, setShowDevModal] = useState(false);
   const [showDiscoveryHub, setShowDiscoveryHub] = useState(false);
 

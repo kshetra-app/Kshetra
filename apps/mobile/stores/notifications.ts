@@ -4,7 +4,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { AlertCategory } from '../lib/notifications';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { markNotificationRead, markAllNotificationsRead } from '../lib/supabaseDataService';
-import { useAuthStore } from './auth';
+import {
+  isNotificationInboxOwnedBy,
+  migrateNotificationInboxPersistence,
+  scopeNotificationInbox,
+} from '../lib/notificationInboxOwnership';
 
 export interface NotificationItem {
   id: string;
@@ -19,6 +23,8 @@ export interface NotificationItem {
 interface NotificationsState {
   /** In-app notification inbox */
   items: NotificationItem[];
+  /** Account that owns the persisted inbox rows; null represents a signed-out session. */
+  ownerUserId: string | null;
   /** Per-category enable/disable */
   categories: Record<AlertCategory, boolean>;
   /** Global notifications enabled */
@@ -30,6 +36,7 @@ interface NotificationsState {
 
   toggleEnabled: () => void;
   toggleCategory: (cat: AlertCategory) => void;
+  setOwnerUserId: (userId: string | null) => void;
   addNotification: (item: Omit<NotificationItem, 'id' | 'timestamp' | 'read'>) => void;
   fetchNotifications: (userId: string) => Promise<void>;
   markRead: (id: string, userId?: string) => Promise<void>;
@@ -62,6 +69,7 @@ export const useNotificationsStore = create<NotificationsState>()(
   persist(
     (set, get) => ({
       items: [],
+      ownerUserId: null,
       categories: {
         election_results: true,
         constituency_updates: true,
@@ -88,6 +96,9 @@ export const useNotificationsStore = create<NotificationsState>()(
           },
         })),
 
+      setOwnerUserId: (userId) =>
+        set((state) => scopeNotificationInbox(state, userId)),
+
       addNotification: (item) =>
         set((s) => {
           const newItem: NotificationItem = {
@@ -104,7 +115,11 @@ export const useNotificationsStore = create<NotificationsState>()(
         }),
 
       fetchNotifications: async (userId: string) => {
-        if (!isSupabaseConfigured || !userId) return;
+        if (
+          !isSupabaseConfigured ||
+          !userId ||
+          !isNotificationInboxOwnedBy(get(), userId)
+        ) return;
         set({ loading: true });
         try {
           const { data, error } = await supabase
@@ -125,20 +140,20 @@ export const useNotificationsStore = create<NotificationsState>()(
               read: Boolean(row.read),
               data: (row.data as Record<string, unknown>) || undefined,
             }));
-            set({
-              items: mapped,
-              unreadCount: mapped.filter((n) => !n.read).length,
-              loading: false,
-            });
+            if (!isNotificationInboxOwnedBy(get(), userId)) return;
+            set({ items: mapped, unreadCount: mapped.filter((n) => !n.read).length });
           }
+          if (isNotificationInboxOwnedBy(get(), userId)) set({ loading: false });
         } catch (err) {
           console.warn('[NotificationsStore] Failed to fetch notification_log:', err);
-          set({ loading: false });
+          if (isNotificationInboxOwnedBy(get(), userId)) set({ loading: false });
         }
       },
 
       markRead: async (id: string, userId?: string) => {
-        const effectiveUserId = userId || useAuthStore.getState().user?.id;
+        const effectiveUserId = userId ?? get().ownerUserId ?? undefined;
+        if (effectiveUserId && !isNotificationInboxOwnedBy(get(), effectiveUserId)) return;
+        if (!id.startsWith('notif-') && !effectiveUserId) return;
         if (!id.startsWith('notif-') && effectiveUserId) {
           try {
             const success = await markNotificationRead(id, effectiveUserId);
@@ -154,6 +169,7 @@ export const useNotificationsStore = create<NotificationsState>()(
 
         // Only update local state after backend succeeds
         set((s) => {
+          if (effectiveUserId && !isNotificationInboxOwnedBy(s, effectiveUserId)) return s;
           const items = s.items.map((n) =>
             n.id === id ? { ...n, read: true } : n,
           );
@@ -165,7 +181,8 @@ export const useNotificationsStore = create<NotificationsState>()(
       },
 
       markAllRead: async (userId?: string) => {
-        const effectiveUserId = userId || useAuthStore.getState().user?.id;
+        const effectiveUserId = userId ?? get().ownerUserId ?? undefined;
+        if (effectiveUserId && !isNotificationInboxOwnedBy(get(), effectiveUserId)) return;
         if (effectiveUserId) {
           try {
             const success = await markAllNotificationsRead(effectiveUserId);
@@ -180,10 +197,13 @@ export const useNotificationsStore = create<NotificationsState>()(
         }
 
         // Only update local state after backend succeeds
-        set((s) => ({
-          items: s.items.map((n) => ({ ...n, read: true })),
-          unreadCount: 0,
-        }));
+        set((s) => {
+          if (effectiveUserId && !isNotificationInboxOwnedBy(s, effectiveUserId)) return s;
+          return {
+            items: s.items.map((n) => ({ ...n, read: true })),
+            unreadCount: 0,
+          };
+        });
       },
 
       clearAll: () =>
@@ -215,6 +235,7 @@ export const useNotificationsStore = create<NotificationsState>()(
               };
 
               set((s) => {
+                if (!isNotificationInboxOwnedBy(s, userId)) return s;
                 const existing = s.items.find((i) => i.id === newItem.id);
                 if (existing) return s;
                 const items = [newItem, ...s.items].slice(0, 50);
@@ -235,6 +256,9 @@ export const useNotificationsStore = create<NotificationsState>()(
     {
       name: 'kshetra-notifications',
       storage: createJSONStorage(() => AsyncStorage),
+      version: 2,
+      migrate: (persistedState, version) =>
+        migrateNotificationInboxPersistence(persistedState, version) as unknown as NotificationsState,
     },
   ),
 );

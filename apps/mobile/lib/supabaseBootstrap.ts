@@ -152,6 +152,7 @@ async function refreshServerSnapshot(force: boolean): Promise<void> {
 export function teardownSupabase(): void {
   bootstrapGeneration += 1;
   bootstrappedUserId = undefined;
+  useNotificationsStore.getState().setOwnerUserId(null);
   if (realtimeCleanup) {
     realtimeCleanup();
     realtimeCleanup = null;

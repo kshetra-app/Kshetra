@@ -2,6 +2,8 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useNotificationsStore } from '../../stores/notifications';
+import { useAuthStore } from '../../stores/auth';
+import { selectOwnedUnreadCount } from '../../lib/notificationInboxOwnership';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { moderateScale } from '../../lib/responsive';
 import { usePreferencesStore } from '../../stores/preferences';
@@ -23,7 +25,8 @@ export default function TabLayout() {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const flags = useFeatureFlags();
-  const unreadCount = useNotificationsStore((s) => s.unreadCount);
+  const userId = useAuthStore((s) => s.user?.id ?? null);
+  const unreadCount = useNotificationsStore((s) => selectOwnedUnreadCount(s, userId));
   const insets = useSafeAreaInsets();
   const mapOnlyMode = useActiveStateStore((s) => s.mapOnlyMode);
   const isScreenImmersive = useActiveStateStore((s) => s.isScreenImmersive);

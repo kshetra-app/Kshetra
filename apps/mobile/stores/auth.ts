@@ -4,6 +4,7 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { bootstrapSupabase, teardownSupabase } from '../lib/supabaseBootstrap';
 import { apiClient } from '../lib/api';
 import { startProductAnalyticsSession, trackProductEvent } from '../lib/analytics';
+import { useNotificationsStore } from './notifications';
 
 interface AuthState {
   session: Session | null;
@@ -24,6 +25,10 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   initialized: false,
 
   initialize: async () => {
+    if (!useNotificationsStore.persist.hasHydrated()) {
+      await useNotificationsStore.persist.rehydrate();
+    }
+
     if (!isSupabaseConfigured) {
       set({ initialized: true });
       return;
@@ -39,6 +44,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
         user: session?.user ?? null,
         initialized: true,
       });
+      useNotificationsStore.getState().setOwnerUserId(session?.user.id ?? null);
 
       // Bootstrap backend connection if session exists
       if (session) {
@@ -53,6 +59,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
           session,
           user: session?.user ?? null,
         });
+        useNotificationsStore.getState().setOwnerUserId(session?.user.id ?? null);
         if (session) {
           bootstrapSupabase();
         } else {
