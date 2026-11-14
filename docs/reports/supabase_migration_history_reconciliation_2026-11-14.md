@@ -1,8 +1,8 @@
 # Supabase Migration History Reconciliation
 
-**Checked:** 2026-11-14
+**Checked:** 2026-11-15
 **Canonical schema source:** `supabase/migrations/`
-**Scope:** Read-only environment comparison plus Staging-only KYC access corrections. Production was not changed.
+**Scope:** Environment-specific migration reconciliation, Staging-only KYC and default-privilege corrections. Production was not changed.
 
 ## Environment identity
 
@@ -17,16 +17,18 @@ The Staging mapping was checked by comparing the Railway variable's Supabase hos
 
 ## Migration ledgers
 
-The repository now contains 110 migration files. On 2026-11-14, direct project-reference reads showed:
+The repository currently contains 111 migration files: versions `001`–`109`, plus two historically named files `0035` and `0231`. An isolated local Supabase replay applied all 110 repository files through `108`; it did not contact either hosted database. The new `109` file is applied only to Staging. Direct project-reference reads after that rollout show:
 
 | Environment | Recorded remote versions | Evidence |
 |---|---|---|
-| Staging | `099`–`108` | `supabase migration list --remote=fkpigozcqnmcvofuksar` |
-| Production | `099`–`104` | `supabase migration list --remote=ehfafcnimmjusyvplbah` |
+| Staging | `099`–`109` | Read-only query of `supabase_migrations.schema_migrations` on `fkpigozcqnmcvofuksar` after the reviewed SQL completed |
+| Production | `099`–`104` | Read-only query of `supabase_migrations.schema_migrations` on `ehfafcnimmjusyvplbah` on 2026-11-15 |
 
 Repository versions `001`–`098` do not appear in either remote ledger. Both databases contain existing objects and data, so the missing rows do not prove that the migrations never ran. They also do not prove which files ran or whether the deployed schema matches those files. No old migration versions were replayed or marked applied. The full-repository `db push` and `--include-all` paths remain unsafe for these databases.
 
-The history is therefore reconciled only from version `099` onward where the ledger provides evidence. The older history remains unknown pending project-specific deployment receipts plus object-by-object catalog comparison. A prior conversation referenced a roughly 130 KB / 3,977-line schema diff, but that output is not present in this workspace and was not regenerated in this pass; that figure is not treated here as current measured evidence.
+The history is therefore reconciled only from version `099` onward where the ledger provides evidence. The older history remains unknown pending project-specific deployment receipts plus object-by-object catalog comparison. The isolated replay through `108` succeeded, but it does not prove that those files ran against the hosted environments. Directional schema diffs were generated for review only: replay-to-Staging is **130,150 bytes / 3,288 lines** and includes 57 `DROP TABLE` statements; Staging-to-replay is **380,694 bytes / 7,479 lines** and includes both additive and destructive operations. Neither flattened diff is a safe migration script. They are not applied. The older remote ledgers remain unproven; no `001`–`098` version was replayed or marked applied.
+
+The replay and diff evidence demonstrates why a blanket reconciliation is unsafe: the two schemas differ materially in both directions, and a generated diff would remove objects in one direction or overwrite live structure in the other. These outputs are review evidence, not a second schema source of truth.
 
 ## KYC schema and access evidence
 
@@ -70,9 +72,23 @@ The connected SQL context is `postgres`, which is not a superuser and is not a m
 
 The local Supabase security advisor also warned about `pages` and `provenance_records`. The equivalent remote query for public tables with RLS disabled and client privileges returned only `spatial_ref_sys`; those local warnings are not evidence that the same condition exists remotely.
 
+## Staging default-privilege hardening, version 109
+
+The isolated replay identified 17 application-owned operational and ledger tables whose repository definitions lacked RLS while the broad defaults from migration `023_data_api_grants.sql` granted Data API roles direct privileges. On live Staging, 16 of those tables do not exist. `migration_conflicts` exists; it already had RLS enabled and no policies, but the `anon` and `authenticated` roles still held direct table privileges. The table contained **3 rows** before and after this change. `spatial_ref_sys` was also present with client privileges, but it is extension-owned and was explicitly excluded from migration `109`.
+
+Migration `109_restrict_future_public_client_privileges.sql` was applied to the explicit Staging project reference `fkpigozcqnmcvofuksar` as five reviewed SQL operations. No tables, columns, or application records were deleted or rewritten; the intended table access and default-privilege metadata changes were applied. After verifying the database state, version `109` was recorded in the Staging migration ledger. The checks confirmed:
+
+- `migration_conflicts` still has **3 rows**, RLS remains enabled, and there are no client `SELECT`, `INSERT`, `UPDATE`, or `DELETE` table grants for `anon` or `authenticated`.
+- `service_role` retains table access, including `SELECT` and `INSERT` (its pre-change privilege check also confirmed `UPDATE` and `DELETE`).
+- New `public` tables and sequences created by `postgres` no longer default to client-role grants; `service_role` retains its explicit defaults.
+- New functions created by `postgres` no longer default to client-role or `PUBLIC` execution. Public RPCs must receive an explicit reviewed grant.
+- `spatial_ref_sys` remains unchanged, with its existing extension-owned client grants and disabled RLS. It is a known outstanding exception, not included in the migration's success claim.
+
+These restrictions apply to the project-specific Staging database only. Production version `109` is absent and no Production SQL or Railway setting was changed.
+
 ## Application and deployment status after Staging rollout
 
-The reviewed application changes are committed on `codex/staging-schema-forward-20261114` and deployed only to Railway Staging. The API runtime fix is in commit `21ecfaa85924949eb05c130c3466c869679720f5`; deployment `eaa90c01-93ac-4daf-ba72-49b3390e0c89` completed successfully at the time of the initial rollout. A report-only follow-up commit `517f07259501783e8b75bf80cb59de3bee225356` triggered the current branch-tip deployment `e3ea53ee-e14c-4c92-a0af-78eca02d906d`, which reached **SUCCESS** as of 2026-11-14 17:43 UTC. Its effective build settings use the Dockerfile and the expected `npm run start --prefix apps/api` command. Railway's build logs show the Dockerfile build completing and the `/api/health` health check succeeding.
+The reviewed application changes are committed on `codex/staging-schema-forward-20261114` and deployed only to Railway Staging. The API runtime fix is in commit `21ecfaa85924949eb05c130c3466c869679720f5`; later changes include migration `109`. Railway Staging deployment `d23b3e0e-3b17-470f-b3e8-b20dc445ed1e` is **SUCCESS** on commit `0d44a352cfd49c8428be3006a1819a2475538df3`, the current branch tip at verification. It uses the Dockerfile and `npm run start --prefix apps/api`. Its public `/api/health` endpoint returned **HTTP 200**; `/api/v1/contributor/kyc/status` without authentication returned **HTTP 401**.
 
 The rollout includes the authenticated KYC submit/status API route, private selfie upload flow, append-only admin review, and related truthful-metrics, offline-sync, and subscription corrections. It also fixes a Railway start-command mismatch: the service's existing `npm run start --prefix apps/api` command was being run from `/app/apps/api`, duplicating the path and causing `ENOENT`. The Docker image now uses `/app` as its runtime working directory, and the Docker default and `railway.json` use the same start command.
 
@@ -83,7 +99,7 @@ Post-deployment requests to the public Staging API returned:
 
 The same start command was exercised in a local Docker image; its health endpoint returned 200 and its unauthenticated KYC status request returned 401. This verifies container startup and the unauthenticated route boundary. It does **not** verify KYC submission, selfie upload, reviewer decisions, or event creation with real Staging user credentials. Both KYC tables remain at 0 rows, so no remote test records were created.
 
-Post-deployment, read-only queries against the explicit Staging reference reconfirmed migration versions `099`–`108`; KYC record and event counts of 0; only the two intended SELECT policies on `creator_kyc_records`; no `anon` table privileges; authenticated SELECT with no client write privileges; service-role full table privileges; and a private `kyc-selfies` bucket limited to 5 MB JPEG/PNG files with its owner and restrictive storage policies. The Production project was only read; its ledger remains `099`–`104`, `creator_kyc_events` is absent, and the old client KYC write grants/policies remain. No Production schema, data, or Railway setting was changed.
+Post-deployment, read-only queries against the explicit Staging reference reconfirmed migration versions `099`–`109`; KYC record and event counts of 0; only the two intended SELECT policies on `creator_kyc_records`; no `anon` table privileges; authenticated SELECT with no client write privileges; service-role full table privileges; and a private `kyc-selfies` bucket limited to 5 MB JPEG/PNG files with its owner and restrictive storage policies. The Production project was only read; its ledger remains `099`–`104`, `creator_kyc_events` is absent, and the old client KYC write grants/policies remain. No Production schema, data, or Railway setting was changed.
 
 The Staging Railway service still needs its exposed service-role credential rotated as a separate operational follow-up. This report does not include any credential value. Rotate only the Staging service credential and update its Railway variable; do not rotate the project's JWT signing secret as part of this follow-up.
 
@@ -112,3 +128,4 @@ The local checks do not substitute for a deployed Staging request with an authen
 3. Keep `001`–`098` unmarked until execution evidence is found or a per-object adoption map proves the live object state. Build the map from exact migration definitions and live catalogs; distinguish exact-match, missing, divergent, and data-bearing objects. Avoid blanket replay and generated duplicate schema packages.
 4. After the authenticated Staging workflow passes, review Production's own catalog, data counts, and Railway mapping. Produce an explicit Production allowlist for missing KYC changes and schedule a separate reviewed release; do not promote by copying Staging's full migration history.
 5. Get a supported owner/provider path for correcting client privileges on extension-owned `spatial_ref_sys`, verify the proposed SQL against both environments, and make no change until the execution role can safely alter the extension-owned grants.
+
