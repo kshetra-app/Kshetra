@@ -70,18 +70,24 @@ The connected SQL context is `postgres`, which is not a superuser and is not a m
 
 The local Supabase security advisor also warned about `pages` and `provenance_records`. The equivalent remote query for public tables with RLS disabled and client privileges returned only `spatial_ref_sys`; those local warnings are not evidence that the same condition exists remotely.
 
-## Application and deployment status at this check
+## Application and deployment status after Staging rollout
 
-The app changes are still uncommitted in the Staging review branch. They include the authenticated KYC submit/status API route, private selfie upload flow, append-only admin review, and related truthful-metrics, offline-sync, and subscription corrections. The currently deployed Staging API returned:
+The reviewed application changes are committed on `codex/staging-schema-forward-20261114` and deployed only to Railway Staging. The latest commit is `21ecfaa85924949eb05c130c3466c869679720f5`; Railway deployment `eaa90c01-93ac-4daf-ba72-49b3390e0c89`, created at 2026-11-14 17:32 UTC, is now in **SUCCESS** status. Railway's build logs show the Dockerfile build completing and the `/api/health` deployment health check succeeding.
 
-- `/api/health`: **HTTP 200**
-- `/api/v1/contributor/kyc/status` without authentication: **HTTP 404**
+The rollout includes the authenticated KYC submit/status API route, private selfie upload flow, append-only admin review, and related truthful-metrics, offline-sync, and subscription corrections. It also fixes a Railway start-command mismatch: the service's existing `npm run start --prefix apps/api` command was being run from `/app/apps/api`, duplicating the path and causing `ENOENT`. The Docker image now uses `/app` as its runtime working directory, and the Docker default and `railway.json` use the same start command.
 
-That 404 confirms the current Staging service does not yet contain the new KYC route. No Railway deployment was triggered in this verification pass, and Production remains untouched.
+Post-deployment requests to the public Staging API returned:
 
-The Railway Staging service has `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` configured. Credentials are not included in this report, and no Railway variable was changed during this check.
+- `/api/health`: **HTTP 200**.
+- `/api/v1/contributor/kyc/status` without authentication: **HTTP 401**, confirming that the route is present and enforcing authentication.
 
-## Verification results for the pending application changes
+The same start command was exercised in a local Docker image; its health endpoint returned 200 and its unauthenticated KYC status request returned 401. This verifies container startup and the unauthenticated route boundary. It does **not** verify KYC submission, selfie upload, reviewer decisions, or event creation with real Staging user credentials. Both KYC tables remain at 0 rows, so no remote test records were created.
+
+Post-deployment, read-only queries against the explicit Staging reference reconfirmed migration versions `099`–`108`; KYC record and event counts of 0; only the two intended SELECT policies on `creator_kyc_records`; no `anon` table privileges; authenticated SELECT with no client write privileges; service-role full table privileges; and a private `kyc-selfies` bucket limited to 5 MB JPEG/PNG files with its owner and restrictive storage policies. The Production project was only read; its ledger remains `099`–`104`, `creator_kyc_events` is absent, and the old client KYC write grants/policies remain. No Production schema, data, or Railway setting was changed.
+
+The Staging Railway service still needs its exposed service-role credential rotated as a separate operational follow-up. This report does not include any credential value. Rotate only the Staging service credential and update its Railway variable; do not rotate the project's JWT signing secret as part of this follow-up.
+
+## Verification results for the reviewed application changes
 
 All checks below ran against the current local worktree:
 
@@ -92,16 +98,17 @@ All checks below ran against the current local worktree:
 - Full mobile suite: **75 suites and 623 tests passed**.
 - Shared package: **8 suites and 87 tests passed**; seed data: **19 suites and 295 tests passed**; census data: **2 suites and 60 tests passed**.
 - Environment-separation check and both PostGIS integration checks passed against a disposable local PostGIS container.
+- The Railway API Docker image built locally; running it with the repository start command returned health **200** and the unauthenticated KYC status route returned **401**. The corresponding Railway Staging Docker build and health check succeeded.
 - Locale parity and semantic/token checks passed across all 13 locales with **10 explicit English fallback keys**; those missing translations remain visible in the central fallback policy pending native-language review.
 - Full Prettier check, full ESLint check, `git diff --check`, API build, mobile typecheck, web-admin production build, seed/census typechecks, and shared package build: passed.
 - The previously reported delimitation heap failure is addressed by the current test isolation commit (`f1e4a464` is an ancestor of the current review branch); the full API coverage run now passes that suite.
 
-These are local checks. They do not substitute for a deployed Staging request with an authenticated user and reviewer account.
+The local checks do not substitute for a deployed Staging request with an authenticated user and reviewer account.
 
 ## Forward-only next steps
 
-1. Commit and push the reviewed worktree changes to the existing Staging review branch, excluding the untracked feature-audit spreadsheet in `outputs/`.
-2. Deploy only to the verified Railway Staging service. Confirm health remains 200 and the unauthenticated KYC status request changes from 404 to 401; then use an authorized test account to submit and read a KYC record and a reviewer account to record a decision. Check that exactly one KYC row and its event are written and that a client-role status update is denied.
-3. Recheck Staging migration ledger, KYC policies/grants, row counts, storage privacy, and API health after deployment. Do not mark the end-to-end workflow verified without those authenticated checks.
-4. Keep `001`–`098` unmarked until execution evidence is found or a per-object adoption map proves the live object state. Build the map from exact migration definitions and live catalogs; distinguish exact-match, missing, divergent, and data-bearing objects. Avoid blanket replay and generated duplicate schema packages.
-5. Only after Staging passes, review Production's own catalog, data counts, and Railway mapping. Produce an explicit Production allowlist for missing KYC changes and verify the privileged path for the extension-owned `spatial_ref_sys` correction before changing Production.
+1. Use an authorized Staging contributor account and reviewer account to complete the KYC workflow end to end: submit, read status, review, confirm the append-only event, and verify direct client insert/update/delete attempts are rejected. Confirm the expected record/event counts after this controlled test and clean up only through the approved retention process.
+2. Rotate the exposed Staging service-role credential and update the matching Railway Staging variable, then repeat health and authenticated API checks. Keep Production credentials and settings separate.
+3. Keep `001`–`098` unmarked until execution evidence is found or a per-object adoption map proves the live object state. Build the map from exact migration definitions and live catalogs; distinguish exact-match, missing, divergent, and data-bearing objects. Avoid blanket replay and generated duplicate schema packages.
+4. After the authenticated Staging workflow passes, review Production's own catalog, data counts, and Railway mapping. Produce an explicit Production allowlist for missing KYC changes and schedule a separate reviewed release; do not promote by copying Staging's full migration history.
+5. Get a supported owner/provider path for correcting client privileges on extension-owned `spatial_ref_sys`, verify the proposed SQL against both environments, and make no change until the execution role can safely alter the extension-owned grants.
