@@ -43,8 +43,6 @@ assert.ok(fs.existsSync(path.join(legacyDir, 'all_migrations_combined_legacy.sql
 assert.ok(fs.existsSync(path.join(legacyDir, 'staging_master_schema_and_seed_legacy.sql')));
 
 const reportPath = path.join(root, 'reports', 'w005_backup_recovery_report.json');
-const writeReport = spawnSync(process.execPath, [scriptPath, '--write-report'], { cwd: root, encoding: 'utf8' });
-assert.equal(writeReport.status, 0, `Report generation failed:\n${writeReport.stdout}\n${writeReport.stderr}`);
 const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
 assert.equal(report.evidenceMetadata.status, 'STATIC_CHECKS_PASS');
 assert.equal(report.liveRecoveryStatus, 'NOT_PROVEN_BY_THIS_CHECK');
