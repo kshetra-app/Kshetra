@@ -65,6 +65,7 @@ temp_*.txt
 # Ephemeral workspace scratch
 scratch/
 scratch_*
+outputs/
 
 # Ephemeral runtime state
 .kshetra_runtime/

@@ -4,6 +4,7 @@ apps/mobile
 .expo
 .git
 .turbo
+outputs/
 **/.env
 **/.env.*
 android
