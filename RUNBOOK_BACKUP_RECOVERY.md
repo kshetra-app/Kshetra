@@ -1,244 +1,83 @@
-# RUNBOOK: DISASTER RECOVERY & BACKUP VERIFICATION (POLIGRAM)
+# Database Change and Recovery Runbook
 
-**Authority:** Master Execution Framework Amendment v1.2 (Part 11 & Part 15), Amendment v1.4, AI Agent Master Execution Job Book (JOB W005)  
-**Classification:** Operational Security & Business Continuity Standard  
-**Scope:** PostgreSQL Database, Fastify API, Media Storage, Reference Data, and Mobile Client Caching  
-**Last Verified:** 2026-09-11  
+**Last reviewed:** 2026-11-14
+**Scope:** Supabase migration history, forward schema changes, and recovery evidence.
+**Authoritative SQL source:** `supabase/migrations/`
 
----
+## Current verified state
 
-## 1. Executive Summary & Objectives
+The repository contains 108 SQL migration files. The current remote ledgers were read directly by project reference on 2026-11-14:
 
-This runbook defines the authoritative procedures for backup management, emergency failover, cold-start reconstruction, and disaster recovery (DR) across all POLIGRAM (formerly PANIN / Kshetra) environments.
+| Environment | Supabase project reference | Ledger entries | CLI environment label |
+|---|---|---|---|
+| Staging | `fkpigozcqnmcvofuksar` | `099`–`106` | `production` |
+| Production | `ehfafcnimmjusyvplbah` | `099`–`104` | `unverified` |
 
-### Core Recovery Metrics
+The project references and Railway service configuration identify the environments. The Supabase CLI labels are retained above as observed metadata; they are not used to decide which database to change.
 
-| Objective | Target Threshold | Operational Mechanism |
-| :--- | :---: | :--- |
-| **Recovery Point Objective (RPO)** | **≤ 5 minutes** | Supabase continuous Write-Ahead Log (WAL) archiving & automated Point-in-Time Recovery (PITR) |
-| **Cloud Instance Failover RTO** | **≤ 30 minutes** | Provider-managed cloud standby restoration / snapshot replay |
-| **Cold-Start Reconstruction RTO** | **≤ 15 minutes** | Fully deterministic script-driven schema bootstrap (`supabase/all_migrations_combined.sql`) |
-| **Client Offline Degradation RTO** | **0 seconds** | Local-first MMKV and SQLite cache tier with non-blocking graceful offline degradation |
+The repository's migrations `001`–`098` are not recorded in either remote ledger. Existing database objects and data show that the databases are not empty, but they do not prove which exact historical SQL ran. The staging and production catalogs also differ. Therefore, missing ledger rows are **unreconciled historical evidence**, not permission to replay or mark the old versions applied.
 
----
+Migrations `105` and `106` were applied to Staging only after a project-ref check, preflight, and dry run limited to those exact files. The Staging ledger now records `099`–`106`; Production remains at `099`–`104`. The postflight found the new KYC objects in place and confirmed the listed source-of-truth table counts did not change. This did not reconcile the older history or make the two environments identical.
 
-## 2. Backup Topology & Architecture
+See [`reports/supabase_migration_history_reconciliation_2026-11-14.md`](reports/supabase_migration_history_reconciliation_2026-11-14.md) for the evidence, schema comparison, data-count comparison, and limitations.
 
-The platform backup strategy operates across four defensive layers:
+## One source of truth
 
-```text
-┌─────────────────────────────────────────────────────────────────────────┐
-│                    POLIGRAM BACKUP & RECOVERY LAYERS                    │
-└─────────────────────────────────────────────────────────────────────────┘
-  Layer 1: Continuous WAL Archiving (Supabase PITR - RPO ≤ 5 min)
-     │
-  Layer 2: Committed Source Migrations (36 Files, 100% Code-Managed Schema)
-     │
-  Layer 3: Bundled Cold-Start SQL (supabase/all_migrations_combined.sql)
-     │
-  Layer 4: Static Reference Seeds (Demographics, Geography, Candidates, Trivia)
-```
+1. New deployable schema changes belong in `supabase/migrations/`, each in one uniquely versioned SQL file.
+2. Migration files are append-only after application. Correct later behavior with a new forward migration; do not silently edit a migration already applied to any environment.
+3. Do not create or deploy a second combined schema script, environment-specific copy of a migration, or seed file that purports to be an alternate schema definition.
+4. Existing combined SQL, staging/production packages, and old generated recovery files are historical evidence only. They are not canonical deployment inputs and must not be pasted into SQL Editor or run with `psql` against a live database.
+5. Seed/data restoration is a separate activity from schema migration. Use only verified, versioned data sources and explicit data reconciliation; do not copy Staging wholesale into Production.
 
-1. **Continuous Physical Backups:** Managed at the PostgreSQL infrastructure layer via Supabase cloud WAL streaming, enabling point-in-time recovery to any second within the retention window.
-2. **Committed Logical Migrations:** 36 sequential, deterministic SQL migrations in `supabase/migrations/` (001 through 034, including social extensions bootstrap).
-3. **Combined Bootstrap Script:** `supabase/all_migrations_combined.sql` (360+ KB) consolidates all 36 migrations into a single idempotent script executable directly via `psql` or Supabase SQL Editor.
-4. **Deterministic Reference Seeds:** Scriptable seed generators (`scripts/build-seed-db.mjs`, `scripts/rebuild-5-states.mjs`) regenerate all baseline political geographies, assembly constituencies, and demographic distributions.
+[`supabase/README.md`](supabase/README.md) classifies the retained staging/production packages, verification files, rollback drafts, fixtures, and archived snapshots. The local Supabase seed hook is disabled because no reviewed standalone seed set currently exists.
 
----
+## Safe procedure for a future migration
 
-## 3. Disaster Scenarios & Step-by-Step Restoration Runbooks
+### Before preparing a live change
 
-### Scenario 1: Total Cloud Database Outage / Loss (Cold Reconstruction)
+1. Work from a clean, reviewed commit and identify the exact target by Supabase project reference. Confirm that reference against the intended Railway environment's `SUPABASE_URL`; do not rely on the CLI's environment label.
+2. Read the target ledger with `npx supabase migration list --remote=<project-ref>`. Save the output with the deployment record.
+3. Review the migration SQL and classify every DDL and DML operation. Record affected tables, source-of-truth data, access policies, expected row-count changes, and rollback/repair strategy.
+4. Reproduce the change on the isolated PostgreSQL 17/PostGIS replay environment. Verify the resulting catalog and relevant application paths.
+5. Take/confirm a recoverable backup for the target and agree on the exact expected migration versions before deployment.
 
-**Trigger:** Supabase project deletion, catastrophic provider outage in primary region, or irreversible schema corruption.  
-**Target RTO:** ≤ 15 minutes.
+### Staging first
 
-#### Procedure:
-1. **Provision New Database Project:**
-   - Log into Supabase Dashboard (or self-hosted PostgreSQL 15+).
-   - Create project in Mumbai (`ap-south-1`) region.
-   - Note database connection string, project reference ID, and API keys.
+1. Prepare an isolated, temporary deployment work directory containing byte-for-byte copies of only the approved migration versions plus the target's already-recorded version files needed for CLI planning. Do not add a second committed SQL copy.
+2. Compare SHA-256 hashes of the approved files against `supabase/migrations/`.
+3. Run a dry run against the explicit Staging reference and confirm the output contains only the approved versions. Stop if it lists any historical version or unexpected SQL.
+4. Apply only after the dry run matches the reviewed allowlist.
+5. Re-query the ledger, relevant catalog definitions, security behavior, and source-of-truth aggregate counts. Run the API/mobile flows that depend on the migration. Record evidence and the resulting commit.
 
-2. **Configure Environment Variables:**
-   ```powershell
-   # Update apps/api/.env and apps/mobile/.env with new project credentials
-   SUPABASE_URL=https://<new-project-ref>.supabase.co
-   SUPABASE_ANON_KEY=<new-anon-key>
-   SUPABASE_SERVICE_ROLE_KEY=<new-service-role-key>
-   ```
+### Production
 
-3. **Replay Full Schema (Cold Bootstrap):**
-   - **Option A (CLI / Fast Push):**
-     ```powershell
-     npx supabase link --project-ref <new-project-ref>
-     npx supabase db push
-     ```
-   - **Option B (Direct SQL / Cold-Start Bundle):**
-     ```powershell
-     # Execute all_migrations_combined.sql directly
-     psql "<new-db-connection-string>" -f supabase/all_migrations_combined.sql
-     ```
+Production remains at ledger `099`–`104`; no KYC migrations have been applied there. Do not send the full local migration catalog or use `--include-all`. First complete the Staging application release and behavior verification, review Production-specific schema/data differences, and produce a separate reviewed allowlist with explicit preflight and postflight checks. Reconcile older history only when project-specific execution evidence and catalog verification support each assertion.
 
-4. **Restore Reference Seeds & State Data:**
-   ```powershell
-   node scripts/rebuild-5-states.mjs
-   node scripts/build-seed-db.mjs
-   ```
+## Commands that are unsafe for the current live databases
 
-5. **Verify Database Health:**
-   ```powershell
-   node scripts/verify-backup-recovery.mjs
-   npm test --prefix apps/api -- src/__tests__/health.test.ts
-   ```
+Until historical adoption is formally resolved, do **not**:
 
----
+- run `supabase db push` or `supabase db push --include-all` from the full repository against either live reference;
+- run `supabase migration repair` for versions `001`–`098` based on object names or another environment's history;
+- execute `supabase/all_migrations_combined.sql`, `supabase/staging_master_schema_and_seed.sql`, or a copied staging/production package against a live database;
+- make Staging and Production appear equal by copying one environment's data or policies into the other without reviewed source evidence.
 
-### Scenario 2: Accidental Table Deletion or Corruption (Selective Rollback)
+The dry run with `--include-all` previously reported 102 migrations pending for each environment. Some contain data-changing SQL. That output is evidence of why the command is unsafe, not an instruction to apply it.
 
-**Trigger:** Unintended `DROP TABLE`, faulty batch migration, or rogue bulk update.  
-**Target RTO:** ≤ 20 minutes.
+## Recovery claims and limits
 
-#### Procedure:
-1. **Point-In-Time Recovery (PITR):**
-   - Open Supabase Dashboard → **Project Settings** → **Database** → **Backups**.
-   - Select timestamp immediately preceding the incident (e.g. 5 minutes prior).
-   - Initiate PITR clone to a temporary restore instance.
+- A clean isolated replay of the repository's 108 migrations completed successfully. It proves the checked-in migration chain can execute in that isolated setup; it does not restore live canonical datasets, establish live schema parity, or prove a complete production recovery.
+- The committed migration catalog is the schema change history going forward. Historical deployment receipts for `001`–`098` have not been established for either project.
+- Supabase backup/PITR availability, actual recovery point, and restore duration must be verified in the provider for each environment. The earlier RPO/RTO targets and drill summary are historical claims and are **not current proof** of a live recovery capability.
+- Staging KYC schema and API/mobile local tests have evidence in the reconciliation report. The deployed Railway Staging API still returned 404 for the new KYC status route during the recorded check, so the end-to-end KYC feature is not verified live.
 
-2. **Selective Table Dump & Extraction:**
-   ```powershell
-   # Extract the affected table from the restored clone
-   pg_dump -h <restore-host> -U postgres -d postgres -t <corrupted_table> --data-only > table_recovery.sql
-   ```
+## Verification
 
-3. **Reapply Extracted Data to Production:**
-   ```powershell
-   psql -h <prod-host> -U postgres -d postgres -f table_recovery.sql
-   ```
-
-4. **Validate Table Consistency:**
-   ```powershell
-   node scripts/audit-data-quality.js
-   ```
-
----
-
-### Scenario 3: API Container Host Failure (Railway Outage / Failover)
-
-**Trigger:** Railway container host failure, regional cloud network routing degradation.  
-**Target RTO:** ≤ 10 minutes.
-
-#### Procedure:
-1. **Verify Outage:**
-   ```powershell
-   curl -I https://kshetra-api-production-b802.up.railway.app/health
-   ```
-
-2. **Trigger Failover Deployment to Standby Provider (Fly.io / Render):**
-   ```powershell
-   # Deploy container image to standby host
-   docker build -f apps/api/Dockerfile -t kshetra-api-failover .
-   # Deploy to Fly.io or alternate cloud host
-   fly deploy --config apps/api/fly.toml
-   ```
-
-3. **Verify API Smoke Tests on Failover Endpoint:**
-   ```powershell
-   node scripts/smoke-api.mjs https://<failover-host>
-   ```
-
-4. **Update DNS / Mobile Remote API Gateway:**
-   - Update cloudflare/DNS record or push remote config update to point mobile client to failover gateway.
-
----
-
-### Scenario 4: Storage Outage & Media CDN Disruption
-
-**Trigger:** Supabase Storage bucket outage or corrupted media uploads.  
-**Target RTO:** ≤ 15 minutes.
-
-#### Procedure:
-1. **Inspect Storage Health:**
-   - Attempt `GET /storage/v1/bucket` with service-role credentials.
-2. **Rehydrate Missing Buckets:**
-   ```sql
-   INSERT INTO storage.buckets (id, name, public) 
-   VALUES ('avatars', 'avatars', true),
-          ('civic-issues', 'civic-issues', true),
-          ('election-media', 'election-media', true)
-   ON CONFLICT (id) DO NOTHING;
-   ```
-3. **Verify Asset Fallback:**
-   - The mobile application is configured with local vector/placeholder assets (`lib/maplibreCompat.tsx`, bundled icon fallback) so UI renders gracefully even when remote image CDNs are unreachable.
-
----
-
-### Scenario 5: Network Partition & Mobile Client Degradation
-
-**Trigger:** User in zero-connectivity zone, carrier network drop, or server maintenance window.  
-**Behavior:**
-1. **Local-First Rehydration:** Mobile Zustand stores rehydrate from synchronous MMKV storage immediately upon boot.
-2. **Non-Blocking Degradation:** Feeds, electoral maps, and cached civic issues display last-known data with an explicit "Offline Mode / Reconnecting" indicator.
-3. **Offline Queue:** Moderation, civic issue creation, and follow actions queue locally and synchronize idempotently when connectivity is restored.
-
----
-
-## 4. Disaster Recovery Testing & Automated CI/CD Gates
-
-The backup and disaster recovery mechanisms are continuously validated via automated scripts:
+Run the static guard and its regression test:
 
 ```powershell
-# 1. Full Backup & Recovery Audit (6 verification gates)
-node scripts/verify-backup-recovery.mjs --write-report
-
-# 2. Automated Regression Test Suite
+node scripts/verify-backup-recovery.mjs
 node tests/backup-recovery.test.mjs
-
-# 3. Static Migration Snapshot Integrity
-node scripts/audit-migration-snapshot.mjs
-
-# 4. API Health Probe & Graceful Failure Verification
-npm test --prefix apps/api -- src/__tests__/health.test.ts
 ```
 
----
-
-## 5. Incident Management & Escalation Protocol
-
-1. **Detection:** High-priority alerts triggered via Pino structured logs (`APPLICATION_ERROR_EVENT`, category `DATABASE_FAILURE`) or uptime probes.
-2. **Classification:**
-   - **SEV-1 (Critical):** Complete primary database unavailability or data loss (RTO clock active).
-   - **SEV-2 (High):** API container failure or major third-party provider outage.
-   - **SEV-3 (Moderate):** Storage CDN degradation or localized non-critical table delay.
-3. **Resolution Sign-Off:** Execution of `scripts/verify-backup-recovery.mjs` with 100% check pass rate is required before declaring any SEV-1 incident resolved.
-
----
-
-## 6. Empirical Disaster Recovery Drills & Evidence Classification (W005-R1A)
-
-Under Master Execution Framework Amendment v1.4, code inspections and runbook documentation are strictly distinguished from actual recovery capability using five standardized evidence levels:
-1. `RUNBOOK VERIFIED`: Procedures, steps, and commands are documented and reviewed.
-2. `RECOVERY ARTIFACT VERIFIED`: Migration bundles, seed scripts, and snapshot artifacts exist, are syntactically valid, and pass static integrity checks.
-3. `RECOVERY TESTED`: A recovery workflow, instance failover, or schema compilation has been executed in an isolated staging/sandbox environment.
-4. `RECOVERY PROVEN`: An actual recovery drill was executed with an actual recoverable source artifact, loss simulated, recovery executed using that source, data independently verified with matching bitwise SHA-256, and duration measured.
-5. `RECOVERY SIMULATED`: In-memory or client-side mockup not exercising actual remote infrastructure.
-
-### Summary of Drill Results (W005-R1A Empirical Audit)
-
-| Drill ID | Scenario Name | Classification | Target RTO | Measured RTO | Evidence Level | Status | Notes |
-| :--- | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
-| **DR-001** | Cold Database Reconstruction | Schema Recovery & API Bootstrap | ≤ 900s (15 min) | **7.59s** | `RECOVERY TESTED` | **PASS** | 36 migrations, 148 tables in combined bundle, 174 live staging catalog definitions, and live DB-backed API retrieval tested |
-| **DR-002** | Real Selective Data Recovery | Data Recovery | ≤ 1200s (20 min) | **3.38s** (Restore: **0.33s**) | `RECOVERY PROVEN` | **PASS** | Live Staging Supabase drill: exported live to disk artifact (`reports/w005_r1a_dr002_live_backup_artifact.json`), deleted, restored from disk artifact with 100% SHA-256 match |
-| **DR-003** | API Process Failover | Local Process Recovery Tested | ≤ 600s (10 min) | **4.53s** | `RECOVERY TESTED` | **PASS** | Local Fastify standby boot tested; multi-cloud standby honestly marked `MULTI_CLOUD_STANDBY = NOT IMPLEMENTED / HUMAN INFRASTRUCTURE REQUIRED` |
-| **DR-004** | Real Staging Storage Recovery | Storage Recovery | ≤ 900s (15 min) | **5.47s** (Restore: **0.64s**) | `RECOVERY PROVEN` | **PASS** | Real PNG asset uploaded to live Staging Supabase Storage bucket (`staging-dr-test`), disk backup artifact saved, deleted, restored from disk artifact with 100% SHA-256 match |
-| **DR-005** | Client Offline Resilience | Client Offline Resilience | 0s (Local-first) | **0.01s** | `RECOVERY PROVEN` | **PASS** | MMKV cached rehydration + idempotent queue sync with 0 duplicate writes; explicitly not classified as cloud RTO |
-| **DR-006** | Backup Inventory & Taxonomy | Inventory Audit | N/A | Completed | `RECOVERY ARTIFACT VERIFIED` | **PASS** | 5 defensive layers documented; strict distinction between Schema Recovery (migrations) and Data Recovery (PITR/dumps) |
-
-### RPO Evaluation
-- **Target RPO:** ≤ 5 minutes (via Supabase continuous WAL streaming).
-- **Actual RPO:** **NOT EMPIRICALLY VERIFIED (Target ≤ 5 min)**. Classified strictly as `RUNBOOK VERIFIED` to prevent disruption of active staging/production instances without a dedicated point-in-time rewind window.
-
-### Deliberate Negative-Path Verification (Multi-Mode)
-- Multiple failure modes tested:
-  1. Corrupted payload checksum: **CAUGHT & REJECTED (PASS)**.
-  2. Malformed backup JSON structure: **CAUGHT & REJECTED (PASS)**.
-  3. Missing recovery source artifact: **CAUGHT & REJECTED (PASS)**.
+These checks validate repository consistency and safe guidance only. They do not connect to Supabase, prove a backup can be restored, or authorize a deployment. For a live ledger read, use the explicit project reference in the command above and record its output with the change review.

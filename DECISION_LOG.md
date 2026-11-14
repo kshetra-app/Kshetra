@@ -4956,3 +4956,7 @@
   - `apps/api`: `npm run build` (0 errors)
   - `apps/web-admin`: `npm run build` (0 errors)
   - `apps/mobile`: `npx tsc --noEmit` (0 errors)
+
+## Migration source-of-truth correction — 2026-11-14
+
+Earlier entries in this log describe historical repository states and deployment plans. In particular, statements that `supabase/all_migrations_combined.sql` is the canonical or complete bootstrap are superseded. The current authoritative source for deployable schema changes is `supabase/migrations/`. The former combined bundle and staging master snapshot are preserved only under `supabase/legacy_artifacts/`; their old root paths are fail-closed stubs. Current environment ledgers are Staging `099`–`106` and Production `099`–`104`, verified by explicit project reference. The missing `001`–`098` history is unresolved and must not be replayed or repaired without project-specific evidence.

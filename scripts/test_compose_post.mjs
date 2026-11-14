@@ -15,7 +15,7 @@ async function testPost() {
       console.log('Query result:', error.message);
       if (error.message.includes('Could not find the table') || error.code === 'PGRST205') {
         console.log('\n[NOTE] The database tables have not been created yet in the live Supabase project.');
-        console.log('To provision all tables and schemas, open the Supabase Dashboard -> SQL Editor for project ehfafcnimmjusyvplbah, paste the contents of "supabase/all_migrations_combined.sql", and click Run.');
+        console.log('Do not paste an old combined SQL file into a live project. The full migration history is not reconciled for this database; use the reviewed, project-specific forward-only migration procedure in RUNBOOK_BACKUP_RECOVERY.md.');
       }
     } else {
       console.log('Successfully queried posts table! Total rows retrieved:', data.length);

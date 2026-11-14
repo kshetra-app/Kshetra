@@ -140,7 +140,8 @@ const cutoverChecklist = [
   {
     item: 'Dry-run migration replay tested',
     technicalStatus: 'VERIFIED',
-    corroboratingArtifact: 'supabase/all_migrations_combined.sql',
+    corroboratingArtifact: 'supabase/legacy_artifacts/all_migrations_combined_legacy.sql',
+    artifactStatus: 'HISTORICAL_ONLY_NOT_A_DEPLOYMENT_SOURCE',
     evidence: 'Combined migration bundle compiled and validated across 148 unique tables.',
   },
   {

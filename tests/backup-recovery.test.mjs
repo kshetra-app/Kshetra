@@ -1,56 +1,54 @@
-import assert from 'assert';
-import fs from 'fs';
-import path from 'path';
-import { spawnSync } from 'child_process';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 
-console.log('=== RUNNING BACKUP & RECOVERY REGRESSION TEST SUITE (JOB W005) ===\n');
+const root = process.cwd();
+const scriptPath = path.join(root, 'scripts', 'verify-backup-recovery.mjs');
+assert.ok(fs.existsSync(scriptPath), 'Static migration safety verifier must exist');
 
-// 1. Script Execution Test
-console.log('Test 1: Executing verify-backup-recovery.mjs script...');
-const scriptPath = path.resolve('scripts/verify-backup-recovery.mjs');
-assert.ok(fs.existsSync(scriptPath), 'verify-backup-recovery.mjs script must exist');
+const verify = spawnSync(process.execPath, [scriptPath], { cwd: root, encoding: 'utf8' });
+assert.equal(verify.status, 0, `Static verifier failed:\n${verify.stdout}\n${verify.stderr}`);
+assert.match(verify.stdout, /STATIC MIGRATION SAFETY: PASS/);
+assert.match(verify.stdout, /No live deployment or recovery claim is made/);
 
-const scriptRun = spawnSync('node', [scriptPath], { encoding: 'utf8' });
-assert.strictEqual(scriptRun.status, 0, `Script must exit with 0. Output: ${scriptRun.stderr || scriptRun.stdout}`);
-assert.ok(scriptRun.stdout.includes('BACKUP & RECOVERY VERIFICATION: PASS'), 'Script must report PASS');
-console.log('[PASS] Test 1: verify-backup-recovery.mjs executed successfully with exit code 0.');
+const migrationsDir = path.join(root, 'supabase', 'migrations');
+const migrations = fs.readdirSync(migrationsDir).filter(file => file.endsWith('.sql'));
+assert.ok(migrations.length > 0, 'Canonical migrations folder must not be empty');
+assert.ok(migrations.every(file => /^\d{3,4}_[a-z0-9_]+\.sql$/.test(file)), 'Every canonical migration needs a parseable version and filename');
+assert.ok(migrations.every(file => fs.statSync(path.join(migrationsDir, file)).size > 0), 'Canonical migrations must not be empty');
 
-// 2. Migration Catalog Integrity
-console.log('\nTest 2: Verifying 36 SQL migrations and combined bundle...');
-const migrationsDir = path.resolve('supabase/migrations');
-const files = fs.readdirSync(migrationsDir).filter(f => f.endsWith('.sql'));
-assert.strictEqual(files.length, 36, 'Must have exactly 36 SQL migration files');
+const runbook = fs.readFileSync(path.join(root, 'RUNBOOK_BACKUP_RECOVERY.md'), 'utf8');
+const config = fs.readFileSync(path.join(root, 'supabase', 'config.toml'), 'utf8');
+assert.ok(runbook.includes('**Authoritative SQL source:** `supabase/migrations/`'));
+assert.ok(runbook.includes('Staging') && runbook.includes('Production'));
+assert.ok(runbook.includes('do **not**:') && runbook.includes('supabase db push --include-all'));
+assert.ok(!/psql[^\r\n]*all_migrations_combined\.sql/i.test(runbook), 'Runbook must not tell operators to execute the stale bundle');
+assert.ok(!/paste[^\r\n]*all_migrations_combined\.sql/i.test(runbook), 'Runbook must not tell operators to paste the stale bundle');
+assert.match(config, /\[db\.seed\][\s\S]*?enabled\s*=\s*false[\s\S]*?sql_paths\s*=\s*\[\]/);
+assert.ok(!fs.existsSync(path.join(root, 'supabase', 'seed.sql')));
 
-const bundlePath = path.resolve('supabase/all_migrations_combined.sql');
-assert.ok(fs.existsSync(bundlePath), 'Combined migration file must exist');
-const bundleContent = fs.readFileSync(bundlePath, 'utf8');
+const bundler = spawnSync(process.execPath, [path.join(root, 'scripts', 'bundle_migrations.mjs')], { cwd: root, encoding: 'utf8' });
+assert.equal(bundler.status, 1, 'Retired migration bundler must fail closed');
+assert.match(bundler.stderr, /Deprecated migration bundler/);
 
-for (const f of files) {
-  assert.ok(bundleContent.includes(`START MIGRATION: ${f}`), `Bundle must contain marker for ${f}`);
+for (const stubName of ['all_migrations_combined.sql', 'staging_master_schema_and_seed.sql']) {
+  const stub = fs.readFileSync(path.join(root, 'supabase', stubName), 'utf8');
+  assert.match(stub, /RAISE EXCEPTION/);
+  assert.doesNotMatch(stub, /\b(?:CREATE|INSERT|UPDATE|DELETE|ALTER)\s+(?:TABLE|POLICY|INDEX|INTO|PUBLICATION|ROLE)\b/i);
 }
-console.log('[PASS] Test 2: All 36 migration files are accounted for in the combined bundle.');
 
-// 3. Disaster Recovery Report Validation
-console.log('\nTest 3: Validating reports/w005_backup_recovery_report.json...');
-const reportPath = path.resolve('reports/w005_backup_recovery_report.json');
-assert.ok(fs.existsSync(reportPath), 'Report file must exist');
+const legacyDir = path.join(root, 'supabase', 'legacy_artifacts');
+assert.ok(fs.existsSync(path.join(legacyDir, 'all_migrations_combined_legacy.sql')));
+assert.ok(fs.existsSync(path.join(legacyDir, 'staging_master_schema_and_seed_legacy.sql')));
+
+const reportPath = path.join(root, 'reports', 'w005_backup_recovery_report.json');
+const writeReport = spawnSync(process.execPath, [scriptPath, '--write-report'], { cwd: root, encoding: 'utf8' });
+assert.equal(writeReport.status, 0, `Report generation failed:\n${writeReport.stdout}\n${writeReport.stderr}`);
 const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+assert.equal(report.evidenceMetadata.status, 'STATIC_CHECKS_PASS');
+assert.equal(report.liveRecoveryStatus, 'NOT_PROVEN_BY_THIS_CHECK');
+assert.equal(report.migrationFileCount, migrations.length);
+assert.ok(report.checks.every(check => check.passed));
 
-assert.strictEqual(report.evidenceMetadata.status, 'PASS', 'Report status must be PASS');
-assert.strictEqual(report.checks.length, 6, 'Report must contain 6 verification checks');
-assert.ok(report.checks.every(c => c.passed), 'All checks in report must be passed');
-assert.ok(report.rtoRpoObjectives.pointInTimeRecoveryRPO, 'Must define PITR RPO');
-assert.ok(report.rtoRpoObjectives.coldStartReconstructionRTO, 'Must define Cold Start RTO');
-console.log('[PASS] Test 3: Structured report validated with 100% check compliance.');
-
-// 4. Staging Master Schema Verification
-console.log('\nTest 4: Validating staging master schema bootstrap file...');
-const stagingMasterPath = path.resolve('supabase/staging_master_schema_and_seed.sql');
-assert.ok(fs.existsSync(stagingMasterPath), 'staging_master_schema_and_seed.sql must exist');
-const masterStat = fs.statSync(stagingMasterPath);
-assert.ok(masterStat.size > 300000, 'Master schema file must exceed 300 KB');
-console.log(`[PASS] Test 4: Master staging schema verified (${(masterStat.size / 1024).toFixed(1)} KB).`);
-
-console.log('\n===============================================================');
-console.log('   BACKUP & RECOVERY REGRESSION TEST SUITE PASSED 100%!   ');
-console.log('===============================================================\n');
+console.log(`PASS: ${migrations.length} canonical migration files, static guard, retired bundler, and honest evidence report.`);
