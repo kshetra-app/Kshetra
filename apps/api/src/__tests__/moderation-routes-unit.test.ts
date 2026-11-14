@@ -741,6 +741,45 @@ describe('Moderation Routes Unit Tests (Direct Route Injection)', () => {
     });
   });
 
+  describe('Endpoint 3a: GET /api/v1/moderation/queue/summary', () => {
+    it('returns the exact persisted pending-report count for an authorized moderator', async () => {
+      const select = jest.fn().mockReturnThis();
+      const eq = jest.fn().mockResolvedValue({ count: 63, error: null });
+      jest.spyOn(supabase, 'from').mockReturnValue({ select, eq } as never);
+
+      const response = await app.inject({
+        method: 'GET',
+        url: '/api/v1/moderation/queue/summary',
+        headers: { 'x-user-id': 'moderator-1', 'x-test-role': 'moderator' },
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(select).toHaveBeenCalledWith('id', { count: 'exact', head: true });
+      expect(eq).toHaveBeenCalledWith('status', 'pending');
+      expect(JSON.parse(response.payload).data.totalPending).toBe(63);
+    });
+
+    it('rejects non-moderators and fails closed when the exact count is unavailable', async () => {
+      const forbidden = await app.inject({
+        method: 'GET',
+        url: '/api/v1/moderation/queue/summary',
+        headers: { 'x-user-id': 'citizen-1', 'x-test-role': 'citizen' },
+      });
+      expect(forbidden.statusCode).toBe(403);
+
+      const select = jest.fn().mockReturnThis();
+      const eq = jest.fn().mockResolvedValue({ count: null, error: null });
+      jest.spyOn(supabase, 'from').mockReturnValue({ select, eq } as never);
+      const unavailable = await app.inject({
+        method: 'GET',
+        url: '/api/v1/moderation/queue/summary',
+        headers: { 'x-user-id': 'moderator-1', 'x-test-role': 'moderator' },
+      });
+      expect(unavailable.statusCode).toBe(503);
+      expect(JSON.parse(unavailable.payload).code).toBe('MODERATION_UNAVAILABLE');
+    });
+  });
+
   describe('Endpoint 5: GET /api/v1/moderation/audit-log', () => {
     it('rejects unauthenticated caller with 401', async () => {
       const origEnv = process.env.NODE_ENV;

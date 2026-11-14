@@ -1,6 +1,6 @@
 /**
  * Executive product metrics. Production values come from the database RPC added
- * in migration 097; caller-provided event reconstruction is a local diagnostic
+ * in migration 098; caller-provided event reconstruction is a local diagnostic
  * only and is never presented as verified production data.
  */
 
@@ -11,7 +11,7 @@ import { isSupabaseAvailable, isUsingServiceRole, supabase } from '../lib/supaba
 export class ProductDashboardDataUnavailableError extends Error {
   constructor() {
     super(
-      'Durable product analytics are unavailable. Apply the dashboard migration and verify the database connection.',
+      'Durable product analytics are unavailable. Reconcile and apply dashboard migration 098, then verify the database connection.',
     );
     this.name = 'ProductDashboardDataUnavailableError';
   }

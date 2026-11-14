@@ -1,8 +1,15 @@
 import fs from 'fs';
 import path from 'path';
+import { execSync } from 'child_process';
 
 const localesDir = path.join(process.cwd(), 'apps', 'mobile', 'i18n', 'locales');
+const fallbackPolicyPath = path.join(process.cwd(), 'apps', 'mobile', 'i18n', 'approvedEnglishFallbacks.json');
 const languages = ['en', 'te', 'hi', 'ta', 'kn', 'ml', 'mr', 'bn', 'gu', 'or', 'pa', 'as', 'ne'];
+const fallbackPolicy = JSON.parse(fs.readFileSync(fallbackPolicyPath, 'utf8'));
+if (fallbackPolicy.fallbackLanguage !== 'en' || !Array.isArray(fallbackPolicy.keys)) {
+  throw new Error('Approved English fallback policy is missing or invalid.');
+}
+const approvedEnglishFallbacks = new Set(fallbackPolicy.keys);
 
 console.log('=== 13-LANGUAGE i18n AUDIT & KEY PARITY CANONICAL VALIDATOR ===\n');
 
@@ -39,11 +46,16 @@ if (!fs.existsSync(enFile)) {
 
 const enContent = fs.readFileSync(enFile, 'utf8');
 const enKeys = extractKeysFromSource(enContent);
+const unknownFallbackKeys = Array.from(approvedEnglishFallbacks).filter(k => !enKeys.has(k));
+if (unknownFallbackKeys.length > 0 || approvedEnglishFallbacks.size !== fallbackPolicy.keys.length) {
+  throw new Error(`Approved English fallback policy contains invalid or duplicate keys: ${unknownFallbackKeys.join(', ')}`);
+}
 
 console.log(`Canonical English Keys extracted: ${enKeys.size}\n`);
 
 const results = [];
 let totalMissingAcrossAll = 0;
+let totalApprovedFallbacksAcrossAll = 0;
 
 languages.forEach(lang => {
   const filePath = path.join(localesDir, `${lang}.ts`);
@@ -57,6 +69,7 @@ languages.forEach(lang => {
       coveragePct: 0,
       missingCount: enKeys.size,
       missingKeys: Array.from(enKeys),
+      approvedFallbackCount: 0,
       status: 'MISSING_FILE'
     });
     totalMissingAcrossAll += enKeys.size;
@@ -78,9 +91,13 @@ languages.forEach(lang => {
     }
   });
 
-  totalMissingAcrossAll += missing.length;
-  const coveragePct = Math.round((matched / enKeys.size) * 100);
-  const is100Pct = matched === enKeys.size && missing.length === 0;
+  const approvedFallbacks = missing.filter(k => approvedEnglishFallbacks.has(k));
+  const unresolvedMissing = missing.filter(k => !approvedEnglishFallbacks.has(k));
+  totalMissingAcrossAll += unresolvedMissing.length;
+  totalApprovedFallbacksAcrossAll += approvedFallbacks.length;
+  const effectiveMatched = matched + approvedFallbacks.length;
+  const coveragePct = Math.round((effectiveMatched / enKeys.size) * 100);
+  const is100Pct = effectiveMatched === enKeys.size && unresolvedMissing.length === 0;
 
   results.push({
     lang,
@@ -88,14 +105,17 @@ languages.forEach(lang => {
     fileSizeKB: Math.round(stat.size / 1024),
     totalKeys: langKeys.size,
     matchedKeys: matched,
+    approvedFallbackCount: approvedFallbacks.length,
+    effectiveMatchedKeys: effectiveMatched,
     coveragePct,
-    missingCount: missing.length,
-    missingKeys: missing,
+    missingCount: unresolvedMissing.length,
+    missingKeys: unresolvedMissing,
+    approvedFallbackKeys: approvedFallbacks,
     status: is100Pct ? 'PASS' : 'FAIL_MISSING_KEYS'
   });
 
   console.log(
-    `[i18n] ${lang.padEnd(5)}: ${String(matched).padStart(4)}/${enKeys.size} keys (${String(coveragePct).padStart(3)}% parity, ${String(missing.length).padStart(4)} missing) | File: ${String(Math.round(stat.size / 1024)).padStart(3)} KB | Status: ${is100Pct ? 'PASS' : 'FAIL'}`
+    `[i18n] ${lang.padEnd(5)}: ${String(effectiveMatched).padStart(4)}/${enKeys.size} effective keys (${String(coveragePct).padStart(3)}% | ${String(approvedFallbacks.length).padStart(2)} approved English fallbacks | ${String(unresolvedMissing.length).padStart(2)} unresolved) | File: ${String(Math.round(stat.size / 1024)).padStart(3)} KB | Status: ${is100Pct ? 'PASS' : 'FAIL'}`
   );
 });
 
@@ -107,18 +127,28 @@ const missingInIndex = languages.filter(l => !indexContent.includes(`locales/${l
 console.log(`Index file references all 13 languages: ${missingInIndex.length === 0 ? 'YES (100% wired)' : 'NO: missing ' + missingInIndex.join(', ')}`);
 
 const all100Passed = results.every(r => r.coveragePct === 100 && r.missingCount === 0);
+let currentBranch = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || '';
+if (!currentBranch) {
+  try {
+    currentBranch = execSync('git branch --show-current', { encoding: 'utf8' }).trim() || 'detached';
+  } catch {
+    currentBranch = 'unknown';
+  }
+}
 
 const report = {
   evidenceMetadata: {
     repository: 'https://github.com/kshetra-app/Kshetra.git',
-    branch: 'master',
-    targetMandate: '100% key parity across all 13 official languages',
+    branch: currentBranch,
+    targetMandate: 'Complete key coverage across all 13 official languages, with only explicit English fallback exceptions',
     verifiedBy: 'CANONICAL_VALIDATOR',
     timestamp: new Date().toISOString()
   },
   timestamp: new Date().toISOString(),
   canonicalKeyCount: enKeys.size,
   totalMissingKeysAcrossLanguages: totalMissingAcrossAll,
+  totalApprovedFallbacksAcrossLanguages: totalApprovedFallbacksAcrossAll,
+  approvedEnglishFallbacks: Array.from(approvedEnglishFallbacks),
   allPassed100Percent: all100Passed,
   indexWiringComplete: missingInIndex.length === 0,
   results: results.map(r => ({
@@ -129,6 +159,7 @@ const report = {
     matchedKeys: r.matchedKeys,
     coveragePct: r.coveragePct,
     missingCount: r.missingCount,
+    approvedFallbackCount: r.approvedFallbackCount,
     status: r.status,
     missingKeysSample: r.missingKeys.slice(0, 10),
     missingKeysTotal: r.missingKeys.length

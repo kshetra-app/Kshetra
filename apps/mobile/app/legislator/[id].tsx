@@ -23,6 +23,7 @@ import PodiumHistoryCard from '../../components/PodiumHistoryCard';
 import { useActiveStateStore } from '../../stores/activeState';
 import { getCanonicalElectionYear } from '../../lib/canonicalElections';
 import { loadHistoricalResultsForState } from '../../lib/seedDataLoader';
+import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
 import ProfileHeroCard from '../../components/legislator/ProfileHeroCard';
 import FinancialBreakdownCard from '../../components/legislator/FinancialBreakdownCard';
 import CriminalRecordCard from '../../components/legislator/CriminalRecordCard';
@@ -111,7 +112,7 @@ export default function LegislatorProfileScreen() {
     let active = true;
     if (acNo > 0) {
       Promise.all([
-        loadHistoricalResultsForState(stateCode).catch(() => {}),
+        ...(IS_LIVE_ENVIRONMENT ? [] : [loadHistoricalResultsForState(stateCode).catch(() => {})]),
         fetchHistoricalPodiumForConstituency(stateCode, acNo).catch(() => []),
       ]).then(() => {
         if (active) {

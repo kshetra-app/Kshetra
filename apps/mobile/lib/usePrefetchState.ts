@@ -8,6 +8,7 @@
  */
 
 import { useCallback, useRef } from 'react';
+import { IS_LIVE_ENVIRONMENT } from './environment';
 import { loadAllSeedDataForState } from './seedDataLoader';
 import { loadEnrichedGeoForState } from './enrichedGeoCache';
 
@@ -28,14 +29,19 @@ export function usePrefetchState() {
 
     try {
       // Prefetch in parallel
-      await Promise.all([
-        loadAllSeedDataForState(stateCode).catch(() => {
-          // Silently fail; data will load on-demand if prefetch fails
-        }),
+      const tasks = [
         loadEnrichedGeoForState(stateCode).catch(() => {
           // Silently fail; GeoJSON will load on-demand if prefetch fails
         }),
-      ]);
+      ];
+      if (!IS_LIVE_ENVIRONMENT) {
+        tasks.push(
+          loadAllSeedDataForState(stateCode).catch(() => {
+            // Silently fail; development seed data will load on demand if needed
+          }),
+        );
+      }
+      await Promise.all(tasks);
     } catch (err) {
       // Silently fail; prefetch is best-effort
       console.debug(`[usePrefetchState] Prefetch failed for ${stateCode}:`, err);

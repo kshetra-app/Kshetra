@@ -637,7 +637,71 @@ export async function moderationRoutes(app: FastifyInstance) {
     },
   );
 
-  // 3. Get pending reports queue (moderator+)
+  // 3. Read a count-only moderation queue summary for admin dashboards.
+  // This endpoint deliberately has no fixture fallback: a database error must
+  // not be represented as a zero-item queue.
+  app.get('/api/v1/moderation/queue/summary', async (request, reply) => {
+    const auth = await resolveModeratorRole(request, reply);
+    if (auth.state === 'UNAUTHENTICATED') {
+      if (!reply.sent) {
+        return sendApiError(reply, request, 401, 'Unauthorized', 'Authentication required', {
+          code: 'UNAUTHORIZED',
+        });
+      }
+      return;
+    }
+    if (auth.state === 'DB_ERROR') {
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        'Failed to verify moderator role',
+        { code: 'DATABASE_ERROR' },
+      );
+    }
+    if (!canModerate(auth.role)) {
+      return sendApiError(reply, request, 403, 'Forbidden', 'Insufficient permissions', {
+        code: 'FORBIDDEN',
+      });
+    }
+    if (!isSupabaseConfigured) {
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Moderation queue count is unavailable',
+        { code: 'MODERATION_UNAVAILABLE' },
+      );
+    }
+
+    const { count, error } = await supabase
+      .from('reports')
+      .select('id', { count: 'exact', head: true })
+      .eq('status', 'pending');
+
+    if (error || typeof count !== 'number') {
+      app.log.error(
+        { err: error?.message ?? 'Exact moderation queue count was not returned' },
+        'Failed to retrieve moderation queue summary',
+      );
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Moderation queue count is unavailable',
+        { code: 'MODERATION_UNAVAILABLE' },
+      );
+    }
+
+    return reply
+      .header('Cache-Control', 'no-store, no-cache, must-revalidate')
+      .send({ success: true, data: { totalPending: count } });
+  });
+
+  // 4. Get pending reports queue (moderator+)
   app.get(
     '/api/v1/moderation/queue',
     {

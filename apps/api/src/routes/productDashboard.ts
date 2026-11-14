@@ -41,7 +41,7 @@ export async function productDashboardRoutes(app: FastifyInstance) {
           request,
           503,
           'ServiceUnavailable',
-          'Durable product analytics are not available. Verify the database connection and apply migration 097.',
+          'Durable product analytics are not available. Reconcile and apply dashboard migration 098, then verify the database connection.',
           { code: 'DASHBOARD_DATA_UNAVAILABLE' },
         );
       }

@@ -13,9 +13,8 @@ import { Ionicons } from '@expo/vector-icons';
 import type { CivicIssue, Headline, ConstituencySentiment } from '../lib/civicTypes';
 import {
   useSubscriptionStore,
-  TIER_CONFIG,
+  getEffectiveTierConfig,
   type ExportFormat,
-  type SubscriptionTier,
 } from '../stores/subscription';
 import { exportCivicData, type ExportPayload } from '../lib/exportCivicData';
 
@@ -26,7 +25,6 @@ interface FormatOption {
   label: string;
   icon: string;
   description: string;
-  minTier: SubscriptionTier;
 }
 
 const FORMAT_OPTIONS: FormatOption[] = [
@@ -35,21 +33,18 @@ const FORMAT_OPTIONS: FormatOption[] = [
     label: 'CSV',
     icon: 'document-text',
     description: 'Spreadsheet-ready data',
-    minTier: 'free',
   },
   {
     key: 'xlsx',
     label: 'Excel',
     icon: 'grid',
     description: 'Multi-sheet workbook with analytics',
-    minTier: 'pro',
   },
   {
     key: 'pdf',
     label: 'PDF Report',
     icon: 'print',
     description: 'Formatted report with charts & summary',
-    minTier: 'pro',
   },
 ];
 
@@ -89,7 +84,7 @@ export default function ExportSheet({
   const canExport = useSubscriptionStore((s) => s.canExport);
   const recordExport = useSubscriptionStore((s) => s.recordExport);
   const exportsThisMonth = useSubscriptionStore((s) => s.exportsThisMonth);
-  const tierConfig = TIER_CONFIG[tier];
+  const tierConfig = getEffectiveTierConfig(tier);
 
   const issues = scope === 'filtered' ? filteredIssues : allIssues;
   const headlines = scope === 'filtered' ? filteredHeadlines : allHeadlines;
@@ -193,8 +188,7 @@ export default function ExportSheet({
             <View style={styles.limitNotice}>
               <Ionicons name="information-circle" size={14} color="#F59E0B" />
               <Text style={styles.limitNoticeText}>
-                Free plan exports up to {tierConfig.maxIssuesPerExport} issues. {issues.length - tierConfig.maxIssuesPerExport} will be excluded.
-                <Text style={{ color: '#4F8EF7', fontWeight: '700' }}> Upgrade to Pro →</Text>
+                Your current export includes up to {tierConfig.maxIssuesPerExport} issues. {issues.length - tierConfig.maxIssuesPerExport} will be excluded.
               </Text>
             </View>
           )}
@@ -204,7 +198,7 @@ export default function ExportSheet({
           <View style={styles.formatGrid}>
             {FORMAT_OPTIONS.map((opt) => {
               const active = format === opt.key;
-              const locked = !TIER_CONFIG[tier].exportFormats.includes(opt.key);
+              const locked = !tierConfig.exportFormats.includes(opt.key);
               return (
                 <Pressable
                   key={opt.key}
@@ -214,8 +208,8 @@ export default function ExportSheet({
                     locked && styles.formatCardLocked,
                   ]}
                   onPress={() => !locked ? setFormat(opt.key) : Alert.alert(
-                    'Pro Feature',
-                    `${opt.label} export requires a Pro or Institutional plan.\n\nUpgrade for ₹99/month to unlock Excel & PDF exports with full analytics.`,
+                    'Export unavailable',
+                    `${opt.label} export is not included in the current account entitlement. Subscription checkout is not connected in this build.`,
                   )}
                 >
                   <View style={styles.formatIconRow}>
@@ -284,27 +278,12 @@ export default function ExportSheet({
                 <Text style={styles.exportButtonText}>
                   {exportCheck.allowed
                     ? `Export ${format.toUpperCase()}`
-                    : 'Upgrade to Export'}
+                    : 'Export unavailable'}
                 </Text>
               </>
             )}
           </Pressable>
 
-          {/* Upgrade banner for free users */}
-          {tier === 'free' && (
-            <View style={styles.upgradeBanner}>
-              <View style={styles.upgradeRow}>
-                <Ionicons name="star" size={16} color="#F59E0B" />
-                <Text style={styles.upgradeTitle}>Unlock Full Exports</Text>
-              </View>
-              <Text style={styles.upgradeDesc}>
-                Pro plan (₹99/mo): Excel + PDF reports, 500 issues/export, 50 exports/month
-              </Text>
-              <Pressable style={styles.upgradeButton}>
-                <Text style={styles.upgradeButtonText}>Upgrade to Pro</Text>
-              </Pressable>
-            </View>
-          )}
         </Pressable>
       </Pressable>
     </Modal>
@@ -507,40 +486,5 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '800',
     color: '#241814',
-  },
-  upgradeBanner: {
-    backgroundColor: '#F59E0B10',
-    borderRadius: 14,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: '#F59E0B30',
-  },
-  upgradeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: 4,
-  },
-  upgradeTitle: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: '#F59E0B',
-  },
-  upgradeDesc: {
-    fontSize: 11,
-    color: '#D97706',
-    lineHeight: 16,
-    marginBottom: 10,
-  },
-  upgradeButton: {
-    backgroundColor: '#F59E0B',
-    borderRadius: 10,
-    paddingVertical: 10,
-    alignItems: 'center',
-  },
-  upgradeButtonText: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: '#0A0A1A',
   },
 });

@@ -3,12 +3,12 @@
     "job": "W008",
     "title": "Fastify API Route Contract Inventory",
     "specification": "Master Execution Framework Amendment v1.5-A / DEC-041",
-    "timestamp": "2026-11-12T03:32:51.545Z"
+    "timestamp": "2026-11-14T16:45:14.996Z"
   },
   "summary": {
-    "totalRoutesRegistered": 392,
-    "pioneerAndPhase1Routes": 93,
-    "schemaCoveredRoutes": 221
+    "totalRoutesRegistered": 398,
+    "pioneerAndPhase1Routes": 94,
+    "schemaCoveredRoutes": 224
   },
   "routes": [
     {
@@ -55,6 +55,24 @@
       "schemaDefined": false,
       "preValidationDefined": false,
       "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/contributor-verifications",
+      "file": "admin.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/contributor-verifications/:id/review",
+      "file": "admin.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
     },
     {
       "method": "POST",
@@ -1189,6 +1207,15 @@
       "schemaDefined": true,
       "preValidationDefined": false,
       "standardizedEnvelope": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/contributor/kyc/status",
+      "file": "contributor.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
     },
     {
       "method": "POST",
@@ -2371,6 +2398,15 @@
     },
     {
       "method": "GET",
+      "path": "/api/v1/moderation/queue/summary",
+      "file": "moderation.ts",
+      "phase": "Phase 1 (Standardized)",
+      "schemaDefined": false,
+      "preValidationDefined": false,
+      "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
       "path": "/api/v1/moderation/queue",
       "file": "moderation.ts",
       "phase": "Phase 1 (Standardized)",
@@ -3270,6 +3306,15 @@
       "standardizedEnvelope": true
     },
     {
+      "method": "GET",
+      "path": "/api/v1/shorts/:id/comments",
+      "file": "shorts.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
+    },
+    {
       "method": "POST",
       "path": "/api/v1/shorts/:id/comments",
       "file": "shorts.ts",
@@ -3475,6 +3520,15 @@
       "schemaDefined": false,
       "preValidationDefined": false,
       "standardizedEnvelope": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users/:id/followers/count",
+      "file": "users.ts",
+      "phase": "Phase 2-4",
+      "schemaDefined": true,
+      "preValidationDefined": false,
+      "standardizedEnvelope": true
     },
     {
       "method": "GET",

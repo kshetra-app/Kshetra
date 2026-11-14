@@ -32,6 +32,17 @@ export interface FlagResponse {
   updatedAt?: string;
 }
 
+export interface ContributorVerificationQueueItem {
+  id: string;
+  userId: string;
+  fullLegalName: string;
+  phoneNumber: string;
+  phoneVerified: boolean;
+  createdAt: string;
+  selfieSignedUrl: string | null;
+  evidenceAvailable: boolean;
+}
+
 function parseFlags(payload: unknown): AppFeatureFlags {
   const candidate = payload && typeof payload === 'object' && 'flags' in payload
     ? (payload as { flags?: unknown }).flags
@@ -166,6 +177,85 @@ export const api = {
     const res = await fetch(`${API_BASE_URL}/api/v1/moderation/queue`, { headers });
     if (!res.ok) throw new Error(`Moderation queue unavailable: ${res.status}`);
     return res.json();
+  },
+
+  async getPendingModerationCount(): Promise<number> {
+    const headers = await authenticatedHeaders();
+    const res = await fetch(`${API_BASE_URL}/api/v1/moderation/queue/summary`, { headers });
+    if (!res.ok) throw new Error(`Moderation queue count unavailable: ${res.status}`);
+    const body: unknown = await res.json();
+    if (
+      !body || typeof body !== 'object' || !('success' in body) || body.success !== true ||
+      !('data' in body) || !body.data || typeof body.data !== 'object' ||
+      !('totalPending' in body.data) || typeof body.data.totalPending !== 'number' ||
+      !Number.isInteger(body.data.totalPending) || body.data.totalPending < 0
+    ) {
+      throw new Error('Moderation queue count response is invalid.');
+    }
+    return body.data.totalPending;
+  },
+
+  async getContributorVerificationQueue(limit: number, offset: number): Promise<{
+    records: ContributorVerificationQueueItem[];
+    hasMore: boolean;
+    limit: number;
+    offset: number;
+    signedUrlExpiresInSeconds: number;
+  }> {
+    const headers = await authenticatedHeaders();
+    const params = new URLSearchParams({ limit: String(limit), offset: String(offset) });
+    const res = await fetch(`${API_BASE_URL}/api/v1/admin/contributor-verifications?${params}`, { headers });
+    if (!res.ok) throw new Error(`Contributor verification queue unavailable (${res.status}).`);
+    const body = await res.json() as { success?: boolean; data?: unknown };
+    const data = body.data as Partial<{
+      records: ContributorVerificationQueueItem[];
+      hasMore: boolean;
+      limit: number;
+      offset: number;
+      signedUrlExpiresInSeconds: number;
+    }> | undefined;
+    if (
+      body.success !== true || !data || !Array.isArray(data.records) ||
+      typeof data.hasMore !== 'boolean' || typeof data.limit !== 'number' ||
+      typeof data.offset !== 'number' || typeof data.signedUrlExpiresInSeconds !== 'number'
+    ) {
+      throw new Error('The contributor verification queue returned incomplete data.');
+    }
+    return data as {
+      records: ContributorVerificationQueueItem[];
+      hasMore: boolean;
+      limit: number;
+      offset: number;
+      signedUrlExpiresInSeconds: number;
+    };
+  },
+
+  async reviewContributorVerification(
+    recordId: string,
+    decision: 'verified' | 'rejected',
+    rejectionReason?: string,
+  ): Promise<{ id: string; userId: string; status: 'verified' | 'rejected'; updatedAt: string }> {
+    const headers = await authenticatedHeaders();
+    const res = await fetch(`${API_BASE_URL}/api/v1/admin/contributor-verifications/${encodeURIComponent(recordId)}/review`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ decision, ...(rejectionReason ? { rejectionReason } : {}) }),
+    });
+    if (!res.ok) throw new Error(`Contributor review decision was not saved (${res.status}).`);
+    const body = await res.json() as { success?: boolean; data?: unknown };
+    const data = body.data as Partial<{ id: string; userId: string; status: string; updatedAt: string }> | undefined;
+    if (
+      body.success !== true || !data || data.id !== recordId ||
+      data.status !== decision || typeof data.userId !== 'string' || typeof data.updatedAt !== 'string'
+    ) {
+      throw new Error('The contributor review API did not confirm the decision.');
+    }
+    return {
+      id: data.id,
+      userId: data.userId,
+      status: data.status,
+      updatedAt: data.updatedAt,
+    };
   },
 
   async decideModeration(action: {

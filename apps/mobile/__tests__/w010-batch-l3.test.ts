@@ -35,7 +35,8 @@ describe('W010 BATCH L3 — DEF-002 VERIFICATION', () => {
         const returnValue = gr.replace(/^if \(!guard\(\)\) return\s*/, '').replace(/;$/, '');
         const isFailClosed =
           ['false', 'null', '[]', '0', ''].includes(returnValue) ||
-          /^\{\s*id:\s*null,\s*success:\s*false(?:\s*,|\s*\})/.test(returnValue);
+          /^\{\s*id:\s*null,\s*success:\s*false(?:\s*,|\s*\})/.test(returnValue) ||
+          /^\{\s*success:\s*false(?:\s*,|\s*\})/.test(returnValue);
         expect(isFailClosed).toBe(true);
       }
     });

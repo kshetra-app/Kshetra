@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  Platform,
   Pressable,
   Switch,
   TouchableOpacity,
@@ -84,6 +83,7 @@ export default function ProfileScreen() {
   const { colors } = useTheme();
   const [showDevModal, setShowDevModal] = useState(false);
   const kycRecord = useContributorVerificationStore((s) => s.kycRecord);
+  const kycLoadState = useContributorVerificationStore((s) => s.kycLoadState);
   const setShowKYCSheet = useContributorVerificationStore((s) => s.setShowKYCSheet);
   const kycStatus = kycRecord?.status ?? null;
   const kycConfig = kycStatus ? KYC_STATUS_CONFIG[kycStatus] : null;
@@ -206,22 +206,31 @@ export default function ProfileScreen() {
         <Text style={styles.sectionTitle}>{t('profileExtended.contributorStatus')}</Text>
         <View style={styles.card}>
           {kycConfig ? (
-            <View style={styles.settingRow}>
+            <Pressable
+              style={styles.settingRow}
+              onPress={kycStatus === 'rejected' ? () => setShowKYCSheet(true) : undefined}
+              disabled={kycStatus !== 'rejected'}
+            >
               <View style={[styles.settingIcon, { backgroundColor: kycConfig.color + '20' }]}>
                 <Ionicons name={kycConfig.icon as any} size={18} color={kycConfig.color} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.settingLabel}>{kycConfig.label}</Text>
-                <Text style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>
-                  {kycRecord?.fullLegalName} · {kycRecord?.phoneNumber}
-                </Text>
+                {kycStatus === 'rejected' ? (
+                  <Text style={{ fontSize: 11, color: '#9CA3AF', marginTop: 3 }}>
+                    {t('kycSheet.rejectedResubmitHint')}
+                  </Text>
+                ) : null}
+                {kycRecord?.rejectionReason ? (
+                  <Text style={{ fontSize: 11, color: '#FCA5A5', marginTop: 3 }}>{kycRecord.rejectionReason}</Text>
+                ) : null}
               </View>
               <View style={[{ paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8, backgroundColor: kycConfig.color + '20' }]}>
                 <Text style={{ fontSize: 11, fontWeight: '700', color: kycConfig.color }}>
                   {kycStatus?.toUpperCase()}
                 </Text>
               </View>
-            </View>
+            </Pressable>
           ) : (
             <Pressable
               style={styles.settingRow}
@@ -233,7 +242,11 @@ export default function ProfileScreen() {
               <View style={{ flex: 1 }}>
                 <Text style={styles.settingLabel}>{t('profileExtended.verifyToContribute')}</Text>
                 <Text style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>
-                  {t('profileExtended.verifyDesc')}
+                  {kycLoadState === 'loading'
+                    ? t('kycSheet.checkingStatus')
+                    : kycLoadState === 'unavailable'
+                      ? t('kycSheet.statusUnavailable')
+                      : t('profileExtended.verifyDesc')}
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={16} color="#374151" />

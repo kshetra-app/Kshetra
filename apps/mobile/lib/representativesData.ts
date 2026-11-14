@@ -13,6 +13,7 @@
  * Source seed: data/seed/local-body-representatives.ts
  */
 import { useEffect, useState } from 'react';
+import { IS_LIVE_ENVIRONMENT } from './environment';
 import { getSeedDb } from './seedDataLoader';
 import {
   OFFICE_TYPE_CONFIG,
@@ -90,6 +91,7 @@ export async function getRepresentativesForJurisdiction(
   jurisdictionType: JurisdictionType,
   jurisdictionId: string,
 ): Promise<Representative[]> {
+  if (IS_LIVE_ENVIRONMENT) return [];
   const db = await getSeedDb();
   const rows = await db.getAllAsync<RepRow>(
     'SELECT * FROM representatives WHERE jurisdiction_type = ? AND jurisdiction_id = ?',
@@ -110,6 +112,7 @@ export async function getCurrentRepresentative(
 
 /** Look up a single representative by id. */
 export async function getRepresentativeById(id: string): Promise<Representative | null> {
+  if (IS_LIVE_ENVIRONMENT) return null;
   const db = await getSeedDb();
   const row = await db.getFirstAsync<RepRow>('SELECT * FROM representatives WHERE id = ?', [id]);
   return row ? rowToRepresentative(row) : null;
@@ -164,6 +167,10 @@ let repStatesPromise: Promise<void> | null = null;
 
 /** Load (once) the set of state codes that have any local-body rep data. */
 export function preloadRepStates(): Promise<void> {
+  if (IS_LIVE_ENVIRONMENT) {
+    repStatesLoaded = true;
+    return Promise.resolve();
+  }
   if (repStatesLoaded) return Promise.resolve();
   if (repStatesPromise) return repStatesPromise;
   repStatesPromise = (async () => {
@@ -183,6 +190,7 @@ export function preloadRepStates(): Promise<void> {
 
 /** Whether any verified local-body representative data exists for a state (sync; needs preload). */
 export function hasRepresentativeData(stateCode: string): boolean {
+  if (IS_LIVE_ENVIRONMENT) return false;
   return repStates.has(stateCode?.toUpperCase());
 }
 
@@ -203,6 +211,7 @@ export async function getRepresentativeCoverage(stateCode: string): Promise<{
   verified: number;
   withPhoto: number;
 }> {
+  if (IS_LIVE_ENVIRONMENT) return { total: 0, verified: 0, withPhoto: 0 };
   const db = await getSeedDb();
   const row = await db.getFirstAsync<{ total: number; verified: number }>(
     `SELECT COUNT(*) AS total, SUM(data_status = 'verified') AS verified
@@ -254,6 +263,7 @@ function groupGps(rows: RepRow[]): GpNode[] {
 
 /** Districts in a state that have rural local-body rep data (sorted). */
 export async function getLocalBodyDistricts(stateCode: string): Promise<DistrictSummary[]> {
+  if (IS_LIVE_ENVIRONMENT) return [];
   const db = await getSeedDb();
   const code = (stateCode === 'IN' || !stateCode) ? 'TS' : stateCode.toUpperCase();
   const rows = await db.getAllAsync<{ name: string; districtKey: string; gpCount: number; sarpanchCount: number; wardCount: number }>(
@@ -271,6 +281,7 @@ export async function getLocalBodyDistricts(stateCode: string): Promise<District
 
 /** Mandals within a district (sorted; "Other Gram Panchayats (Direct Listing)" bucket last). */
 export async function getLocalBodyMandals(stateCode: string, districtKey: string): Promise<MandalSummary[]> {
+  if (IS_LIVE_ENVIRONMENT) return [];
   const db = await getSeedDb();
   const rows = await db.getAllAsync<MandalSummary>(
     `SELECT COALESCE(mandal, 'Other Gram Panchayats (Direct Listing)') AS name, mandal_slug AS mandalKey, COUNT(DISTINCT gp_key) AS gpCount
@@ -284,6 +295,7 @@ export async function getLocalBodyMandals(stateCode: string, districtKey: string
 
 /** MPTC members for a district + mandal. */
 export async function getLocalBodyMptcs(stateCode: string, districtKey: string, mandalKey: string): Promise<Representative[]> {
+  if (IS_LIVE_ENVIRONMENT) return [];
   const db = await getSeedDb();
   const rows = await db.getAllAsync<RepRow>(
     `SELECT * FROM representatives
@@ -296,6 +308,7 @@ export async function getLocalBodyMptcs(stateCode: string, districtKey: string, 
 
 /** ZPTC members for a district. */
 export async function getLocalBodyZptcs(stateCode: string, districtKey: string): Promise<Representative[]> {
+  if (IS_LIVE_ENVIRONMENT) return [];
   const db = await getSeedDb();
   const rows = await db.getAllAsync<RepRow>(
     `SELECT * FROM representatives
@@ -308,6 +321,7 @@ export async function getLocalBodyZptcs(stateCode: string, districtKey: string):
 
 /** Gram panchayats within a district+mandal (sorted). */
 export async function getLocalBodyGPs(stateCode: string, districtKey: string, mandalKey: string): Promise<GpNode[]> {
+  if (IS_LIVE_ENVIRONMENT) return [];
   const db = await getSeedDb();
   const rows = await db.getAllAsync<RepRow>(
     `SELECT * FROM representatives
@@ -320,6 +334,7 @@ export async function getLocalBodyGPs(stateCode: string, districtKey: string, ma
 
 /** Full detail (sarpanch + ward members) for a single GP node key. */
 export async function getGpNode(stateCode: string, _districtKey: string, gpKey: string): Promise<GpNode | null> {
+  if (IS_LIVE_ENVIRONMENT) return null;
   const db = await getSeedDb();
   const rows = await db.getAllAsync<RepRow>(
     'SELECT * FROM representatives WHERE state_code = ? AND gp_key = ?',
@@ -338,6 +353,12 @@ export async function getUpperTierStatus(stateCode: string): Promise<{
   mptc: { available: boolean; note: string };
   zptc: { available: boolean; note: string };
 }> {
+  if (IS_LIVE_ENVIRONMENT) {
+    return {
+      mptc: { available: false, note: 'Live local-body records are not connected.' },
+      zptc: { available: false, note: 'Live local-body records are not connected.' },
+    };
+  }
   const db = await getSeedDb();
   const rows = await db.getAllAsync<{ office_type: string }>(
     `SELECT DISTINCT office_type FROM representatives WHERE state_code = ? AND office_type IN ('mptc_member','zptc_member')`,

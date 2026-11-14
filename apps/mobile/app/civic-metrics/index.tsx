@@ -11,7 +11,11 @@ import SchemeCard from '../../components/SchemeCard';
 import ProjectCard from '../../components/ProjectCard';
 import { useActiveStateStore } from '../../stores/activeState';
 import { useTheme } from '../../lib/theme';
-import { getCivicMetricsEmptyState, type CivicMetricsLoadStatus } from '../../lib/civicMetricsDisplay';
+import {
+  getCivicMetricsEmptyState,
+  getConfirmedMetricTotal,
+  type CivicMetricsLoadStatus,
+} from '../../lib/civicMetricsDisplay';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
 type Tab = 'budget' | 'bills' | 'schemes' | 'projects' | 'rti' | 'hearings';
@@ -55,28 +59,36 @@ export default function CivicMetricsScreen() {
     s.billLoadStateCode === activeState ? s.billLoadStatus : 'loading',
   );
   const billTotal = useCivicMetricsStore((s) =>
-    s.billLoadStateCode === activeState ? s.billTotal : 0,
+    s.billLoadStateCode === activeState
+      ? getConfirmedMetricTotal(s.billLoadStatus, s.billTotal)
+      : null,
   );
   const billPage = useCivicMetricsStore((s) => s.billLoadStateCode === activeState ? s.billPage : 0);
   const schemeLoadStatus = useCivicMetricsStore((s) =>
     s.schemeLoadStateCode === activeState ? s.schemeLoadStatus : 'loading',
   );
   const schemeTotal = useCivicMetricsStore((s) =>
-    s.schemeLoadStateCode === activeState ? s.schemeTotal : 0,
+    s.schemeLoadStateCode === activeState
+      ? getConfirmedMetricTotal(s.schemeLoadStatus, s.schemeTotal)
+      : null,
   );
   const schemePage = useCivicMetricsStore((s) => s.schemeLoadStateCode === activeState ? s.schemePage : 0);
   const projectLoadStatus = useCivicMetricsStore((s) =>
     s.projectLoadStateCode === activeState ? s.projectLoadStatus : 'loading',
   );
   const projectTotal = useCivicMetricsStore((s) =>
-    s.projectLoadStateCode === activeState ? s.projectTotal : 0,
+    s.projectLoadStateCode === activeState
+      ? getConfirmedMetricTotal(s.projectLoadStatus, s.projectTotal)
+      : null,
   );
   const projectPage = useCivicMetricsStore((s) => s.projectLoadStateCode === activeState ? s.projectPage : 0);
   const rtiLoadStatus = useCivicMetricsStore((s) =>
     s.rtiLoadStateCode === activeState ? s.rtiLoadStatus : 'loading',
   );
   const rtiTotal = useCivicMetricsStore((s) =>
-    s.rtiLoadStateCode === activeState ? s.rtiTotal : 0,
+    s.rtiLoadStateCode === activeState
+      ? getConfirmedMetricTotal(s.rtiLoadStatus, s.rtiTotal)
+      : null,
   );
   const budgetLoadStatus = useCivicMetricsStore((s) =>
     s.budgetLoadStateCode === activeState ? s.budgetLoadStatus : 'loading',
@@ -85,7 +97,9 @@ export default function CivicMetricsScreen() {
     s.hearingLoadStateCode === activeState ? s.hearingLoadStatus : 'loading',
   );
   const hearingTotal = useCivicMetricsStore((s) =>
-    s.hearingLoadStateCode === activeState ? s.hearingTotal : 0,
+    s.hearingLoadStateCode === activeState
+      ? getConfirmedMetricTotal(s.hearingLoadStatus, s.hearingTotal)
+      : null,
   );
   const hearingPage = useCivicMetricsStore((s) =>
     s.hearingLoadStateCode === activeState ? s.hearingPage : 0,
@@ -198,9 +212,12 @@ export default function CivicMetricsScreen() {
           <>
             {bills.length ? (
               <>
-                <Text style={styles.sectionTitle}>{t('civicMetrics.activeBills', { count: activeBills.length })}</Text>
+                <Text style={styles.sectionTitle}>
+                  {t('civicMetrics.activeBillsLabel', { defaultValue: 'Active Bills & Legislation' })}
+                </Text>
+                {billLoadStatus === 'error' && <Text style={styles.emptyText}>{noConnectedData}</Text>}
                 {activeBills.map((b) => <BillCard key={b.id} bill={b} onSupport={() => store.supportBill(b.id)} onOppose={() => store.opposeBill(b.id)} />)}
-                {billPage * 50 < billTotal && (
+                {billTotal !== null && billPage * 50 < billTotal && (
                   <Pressable
                     accessibilityRole="button"
                     disabled={billLoadStatus === 'loading'}
@@ -227,9 +244,14 @@ export default function CivicMetricsScreen() {
           <>
             {schemes.length ? (
               <>
-                <Text style={styles.sectionTitle}>{t('civicMetrics.governmentSchemes', { count: schemeTotal })}</Text>
+                <Text style={styles.sectionTitle}>
+                  {schemeTotal === null
+                    ? t('civicMetrics.governmentSchemesLabel', { defaultValue: 'Government Schemes & Welfare' })
+                    : t('civicMetrics.governmentSchemes', { count: schemeTotal })}
+                </Text>
+                {schemeLoadStatus === 'error' && <Text style={styles.emptyText}>{noConnectedData}</Text>}
                 {schemes.map((s) => <SchemeCard key={s.id} scheme={s} />)}
-                {schemePage * 50 < schemeTotal && (
+                {schemeTotal !== null && schemePage * 50 < schemeTotal && (
                   <Pressable
                     accessibilityRole="button"
                     disabled={schemeLoadStatus === 'loading'}
@@ -256,9 +278,14 @@ export default function CivicMetricsScreen() {
           <>
             {projects.length ? (
               <>
-                <Text style={styles.sectionTitle}>{t('civicMetrics.developmentProjects', { count: projectTotal })}</Text>
+                <Text style={styles.sectionTitle}>
+                  {projectTotal === null
+                    ? t('civicMetrics.developmentProjectsLabel', { defaultValue: 'Infrastructure & Development Projects' })
+                    : t('civicMetrics.developmentProjects', { count: projectTotal })}
+                </Text>
+                {projectLoadStatus === 'error' && <Text style={styles.emptyText}>{noConnectedData}</Text>}
                 {projects.map((p) => <ProjectCard key={p.id} project={p} />)}
-                {projectPage * 50 < projectTotal && (
+                {projectTotal !== null && projectPage * 50 < projectTotal && (
                   <Pressable
                     accessibilityRole="button"
                     disabled={projectLoadStatus === 'loading'}
@@ -284,7 +311,12 @@ export default function CivicMetricsScreen() {
         {activeTab === 'rti' && (
           <>
             {publicRTIs.length ? <>
-            <Text style={styles.sectionTitle}>{t('civicMetrics.publicRTIRequests', { count: rtiTotal })}</Text>
+            <Text style={styles.sectionTitle}>
+              {rtiTotal === null
+                ? t('civicMetrics.publicRTIRequestsLabel', { defaultValue: 'Public RTI Requests' })
+                : t('civicMetrics.publicRTIRequests', { count: rtiTotal })}
+            </Text>
+            {rtiLoadStatus === 'error' && <Text style={styles.emptyText}>{noConnectedData}</Text>}
             {publicRTIs.map((r) => (
               <View key={r.id} style={styles.rtiCard}>
                 <View style={styles.rtiHeader}>
@@ -308,7 +340,7 @@ export default function CivicMetricsScreen() {
                 </View>
               </View>
             ))}
-            {publicRTIs.length < rtiTotal && (
+            {rtiTotal !== null && publicRTIs.length < rtiTotal && (
               <Pressable
                 accessibilityRole="button"
                 disabled={rtiLoadStatus === 'loading'}
@@ -335,8 +367,11 @@ export default function CivicMetricsScreen() {
             {hearings.length ? (
               <>
                 <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                  {t('civicMetrics.publicHearings', { count: hearingTotal })}
+                  {hearingTotal === null
+                    ? t('civicMetrics.publicHearingsLabel', { defaultValue: 'Public hearings' })
+                    : t('civicMetrics.publicHearings', { count: hearingTotal })}
                 </Text>
+                {hearingLoadStatus === 'error' && <Text style={styles.emptyText}>{noConnectedData}</Text>}
                 {hearings.map((hearing) => {
                   const registrationUrl = hearing.isOpen ? getWebUrl(hearing.registrationUrl) : null;
                   return (
@@ -371,7 +406,7 @@ export default function CivicMetricsScreen() {
                     </View>
                   );
                 })}
-                {hearings.length < hearingTotal && (
+                {hearingTotal !== null && hearings.length < hearingTotal && (
                   <Pressable
                     accessibilityRole="button"
                     disabled={hearingLoadStatus === 'loading'}

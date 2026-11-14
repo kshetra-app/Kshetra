@@ -21,12 +21,14 @@ import { useCivicStore } from '../stores/civic';
 import { usePromiseStore } from '../stores/promises';
 import { useFavoritesStore } from '../stores/favorites';
 import { useNotificationsStore } from '../stores/notifications';
+import { useContributorVerificationStore } from '../stores/contributorVerification';
 import { usePoliticalShortsStore } from '../stores/politicalShorts';
 import { subscribeAll, unsubscribeAll } from './realtimeService';
 import { flushQueue, getQueueSize } from './offlineSync';
 import { isOnline } from './networkStatus';
 import { captureException, addBreadcrumb } from './errorReporting';
 import * as dataService from './supabaseDataService';
+import { hydrateContributorKYC } from './contributorKycService';
 
 let bootstrappedUserId: string | null | undefined;
 let bootstrapInFlight: Promise<void> | null = null;
@@ -62,6 +64,7 @@ export async function bootstrapSupabase(): Promise<void> {
     // 1. If user is authenticated, ensure profile and sync user-specific data
     if (user) {
       await ensureUserProfile(user.id, user.email ?? '');
+      await hydrateContributorKYC(user.id);
       await syncLocalToServer(user.id);
       await useNotificationsStore.getState().fetchNotifications(user.id);
     }
@@ -109,6 +112,8 @@ export async function bootstrapSupabase(): Promise<void> {
  * that do not have a mobile realtime subscription.
  */
 export async function refreshSupabaseDataOnForeground(): Promise<void> {
+  const userId = useAuthStore.getState().user?.id;
+  if (userId) await hydrateContributorKYC(userId);
   await refreshServerSnapshot(false);
 }
 
@@ -153,6 +158,7 @@ export function teardownSupabase(): void {
   bootstrapGeneration += 1;
   bootstrappedUserId = undefined;
   useNotificationsStore.getState().setOwnerUserId(null);
+  useContributorVerificationStore.getState().setOwnerUserId(null);
   if (realtimeCleanup) {
     realtimeCleanup();
     realtimeCleanup = null;

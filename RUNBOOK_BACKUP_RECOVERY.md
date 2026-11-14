@@ -6,20 +6,22 @@
 
 ## Current verified state
 
-The repository contains 108 SQL migration files. The current remote ledgers were read directly by project reference on 2026-11-14:
+The repository contains 110 SQL migration files. The current remote ledgers were read directly by project reference on 2026-11-14:
 
 | Environment | Supabase project reference | Ledger entries | CLI environment label |
 |---|---|---|---|
-| Staging | `fkpigozcqnmcvofuksar` | `099`–`106` | `production` |
+| Staging | `fkpigozcqnmcvofuksar` | `099`–`108` | `production` |
 | Production | `ehfafcnimmjusyvplbah` | `099`–`104` | `unverified` |
 
 The project references and Railway service configuration identify the environments. The Supabase CLI labels are retained above as observed metadata; they are not used to decide which database to change.
 
 The repository's migrations `001`–`098` are not recorded in either remote ledger. Existing database objects and data show that the databases are not empty, but they do not prove which exact historical SQL ran. The staging and production catalogs also differ. Therefore, missing ledger rows are **unreconciled historical evidence**, not permission to replay or mark the old versions applied.
 
-Migrations `105` and `106` were applied to Staging only after a project-ref check, preflight, and dry run limited to those exact files. The Staging ledger now records `099`–`106`; Production remains at `099`–`104`. The postflight found the new KYC objects in place and confirmed the listed source-of-truth table counts did not change. This did not reconcile the older history or make the two environments identical.
+Migrations `105` and `106` were applied to Staging only after a project-ref check, preflight, and dry run limited to those exact files. Migrations `107` and `108` were then applied only to Staging after live catalog review and isolated rollback tests. They remove client write permissions and obsolete client write policies on contributor KYC records while keeping authenticated reads and trusted API access. The KYC record and event counts were zero before and after both migrations; Production remains at `099`–`104` and was not changed. This does not reconcile the older history or make the two environments identical.
 
 See [`reports/supabase_migration_history_reconciliation_2026-11-14.md`](reports/supabase_migration_history_reconciliation_2026-11-14.md) for the evidence, schema comparison, data-count comparison, and limitations.
+
+The same report records a separate access-control exception on the extension-owned `public.spatial_ref_sys` table. Client write grants exist in both environments. The connected SQL role is not the table owner or a superuser, and the rollback-only local test showed it cannot revoke owner-issued grants. Do not treat this as resolved or add an ineffective migration; it needs an authorized owner/provider path.
 
 ## One source of truth
 
@@ -35,7 +37,7 @@ See [`reports/supabase_migration_history_reconciliation_2026-11-14.md`](reports/
 
 ### Before preparing a live change
 
-1. Work from a clean, reviewed commit and identify the exact target by Supabase project reference. Confirm that reference against the intended Railway environment's `SUPABASE_URL`; do not rely on the CLI's environment label.
+1. Work from a clean, reviewed commit and identify the exact target by Supabase project reference. Confirm that reference against the intended Railway environment's `SUPABASE_URL`; do not rely on the CLI's environment label. The Staging Railway service currently resolves to `fkpigozcqnmcvofuksar`.
 2. Read the target ledger with `npx supabase migration list --remote=<project-ref>`. Save the output with the deployment record.
 3. Review the migration SQL and classify every DDL and DML operation. Record affected tables, source-of-truth data, access policies, expected row-count changes, and rollback/repair strategy.
 4. Reproduce the change on the isolated PostgreSQL 17/PostGIS replay environment. Verify the resulting catalog and relevant application paths.
@@ -51,7 +53,7 @@ See [`reports/supabase_migration_history_reconciliation_2026-11-14.md`](reports/
 
 ### Production
 
-Production remains at ledger `099`–`104`; no KYC migrations have been applied there. Do not send the full local migration catalog or use `--include-all`. First complete the Staging application release and behavior verification, review Production-specific schema/data differences, and produce a separate reviewed allowlist with explicit preflight and postflight checks. Reconcile older history only when project-specific execution evidence and catalog verification support each assertion.
+Production remains at ledger `099`–`104`; no KYC migrations `105`–`108` have been applied there. Do not send the full local migration catalog or use `--include-all`. First complete the Staging application release and behavior verification, review Production-specific schema/data differences, and produce a separate reviewed allowlist with explicit preflight and postflight checks. Reconcile older history only when project-specific execution evidence and catalog verification support each assertion.
 
 ## Commands that are unsafe for the current live databases
 
@@ -61,15 +63,16 @@ Until historical adoption is formally resolved, do **not**:
 - run `supabase migration repair` for versions `001`–`098` based on object names or another environment's history;
 - execute `supabase/all_migrations_combined.sql`, `supabase/staging_master_schema_and_seed.sql`, or a copied staging/production package against a live database;
 - make Staging and Production appear equal by copying one environment's data or policies into the other without reviewed source evidence.
+- claim that client mutation access to extension-owned `public.spatial_ref_sys` is fixed until an owner-authorized change is applied and verified in each environment.
 
 The dry run with `--include-all` previously reported 102 migrations pending for each environment. Some contain data-changing SQL. That output is evidence of why the command is unsafe, not an instruction to apply it.
 
 ## Recovery claims and limits
 
-- A clean isolated replay of the repository's 108 migrations completed successfully. It proves the checked-in migration chain can execute in that isolated setup; it does not restore live canonical datasets, establish live schema parity, or prove a complete production recovery.
+- A clean isolated replay completed against the then-current 108-file migration snapshot, before Staging-only migrations 107 and 108 were added. The two new files were separately tested in rollback-only local transactions. Neither check proves historical live adoption, restores live canonical datasets, establishes live schema parity, or proves a complete production recovery.
 - The committed migration catalog is the schema change history going forward. Historical deployment receipts for `001`–`098` have not been established for either project.
 - Supabase backup/PITR availability, actual recovery point, and restore duration must be verified in the provider for each environment. The earlier RPO/RTO targets and drill summary are historical claims and are **not current proof** of a live recovery capability.
-- Staging KYC schema and API/mobile local tests have evidence in the reconciliation report. The deployed Railway Staging API still returned 404 for the new KYC status route during the recorded check, so the end-to-end KYC feature is not verified live.
+- Staging KYC schema and API/mobile local tests have evidence in the reconciliation report. At the latest pre-deploy check on 2026-11-14, Railway Staging health returned HTTP 200 but the new KYC status route returned HTTP 404. The app code still needs a Staging API deployment and post-deployment behavior check before the end-to-end feature is verified live.
 
 ## Verification
 

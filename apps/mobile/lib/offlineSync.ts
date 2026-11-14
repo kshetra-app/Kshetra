@@ -51,7 +51,6 @@ export type SyncOpType =
   | 'complete_module'
   | 'join_challenge'
   | 'endorse_aspirant'
-  | 'submit_kyc'
   | 'update_profile';
 
 export interface SyncOperation {
@@ -129,6 +128,15 @@ export function getPendingOps(): SyncOperation[] {
   } catch {
     return [];
   }
+}
+
+/** Delete KYC payloads left by older app builds; identity evidence is never replayed offline. */
+export function purgeLegacyKycSubmissions(): number {
+  const queue = getPendingOps();
+  const retained = queue.filter((operation) => (operation.type as string) !== 'submit_kyc');
+  const removed = queue.length - retained.length;
+  if (removed > 0) writeQueue(JSON.stringify(retained));
+  return removed;
 }
 
 /**
@@ -374,10 +382,6 @@ export async function executeOp(op: SyncOperation): Promise<{ success: boolean; 
         return { success: await getSvc().joinChallenge(p.userId as string, p.challengeId as string) };
       case 'endorse_aspirant':
         return { success: await getSvc().endorseAspirant(p.endorserId as string, p.aspirantId as string, p.message as string | undefined) };
-      case 'submit_kyc': {
-        const res = await getSvc().submitKYC(p.userId as string, p as any);
-        return { success: res.success, id: res.id };
-      }
       case 'update_profile':
         return { success: await getSvc().updateUserProfile(p.userId as string, p as any) };
       default:

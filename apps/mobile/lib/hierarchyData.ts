@@ -16,6 +16,7 @@ import type {
   MandalConstituencyOverlap,
 } from '../../../data/seed/telangana-hierarchy';
 import { STATES } from '@kshetra/shared';
+import { IS_LIVE_ENVIRONMENT } from './environment';
 
 export type {
   StateHierarchyConfig,
@@ -205,6 +206,7 @@ function buildGenericConfig(stateCode: string): StateHierarchyConfig {
  * status so the UI can render an explicit, honest "Data pending" state.
  */
 function getResolvedBundle(stateCode: string, acNo: number | null): StateHierarchyBundle | null {
+  if (IS_LIVE_ENVIRONMENT) return null;
   const official = bundle(stateCode);
 
   // Config / capability probe (no specific constituency): official seed only.
@@ -301,6 +303,7 @@ export function getBoothsForPanchayat(stateCode: string, panchayatId: string): P
  * map can plot booths statewide across TS + AP.
  */
 export function getBoothsForConstituency(stateCode: string, acNo: number): PollingBooth[] {
+  if (IS_LIVE_ENVIRONMENT) return [];
   const b = getResolvedBundle(stateCode, acNo);
   if (b) {
     const cid = constituencyId(stateCode, acNo);
@@ -319,6 +322,7 @@ export function hasCurrentBoothVoterCount(booth: PollingBooth): boolean {
 
 /** Whether a constituency has ANY booth data to plot (official pilot or 2017 historical). */
 export function hasBoothData(stateCode: string, acNo: number): boolean {
+  if (IS_LIVE_ENVIRONMENT) return false;
   const b = getResolvedBundle(stateCode, acNo);
   const cid = constituencyId(stateCode, acNo);
   if (b && b.booths.some((bo) => bo.constituencyId === cid)) return true;

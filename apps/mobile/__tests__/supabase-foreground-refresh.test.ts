@@ -68,6 +68,12 @@ jest.mock('../stores/notifications', () => ({
     }),
   },
 }));
+jest.mock('../stores/contributorVerification', () => ({
+  useContributorVerificationStore: { getState: () => ({ setOwnerUserId: jest.fn() }) },
+}));
+jest.mock('../lib/contributorKycService', () => ({
+  hydrateContributorKYC: jest.fn(async () => undefined),
+}));
 jest.mock('../stores/politicalShorts', () => ({
   __hydrateShorts: jest.fn(),
   usePoliticalShortsStore: {
@@ -148,6 +154,8 @@ describe('Supabase foreground refresh', () => {
 
     expect(notifications.__fetchNotifications).toHaveBeenCalledWith('user-1');
     expect(notifications.__subscribeToUserNotifications).toHaveBeenCalledWith('user-1');
+    expect(jest.requireMock('../lib/contributorKycService').hydrateContributorKYC)
+      .toHaveBeenCalledWith('user-1');
     expect(realtime.__subscribeAll).toHaveBeenCalledTimes(2);
   });
 });

@@ -15,7 +15,8 @@
  *   - Call `logContentAction()` AFTER successful content creation
  */
 
-import { Alert, Platform } from 'react-native';
+import { Alert } from 'react-native';
+import { File } from 'expo-file-system';
 import type {
   ContentActionType,
   ForensicSnapshot,
@@ -23,7 +24,6 @@ import type {
 } from './contentAccountabilityTypes';
 import {
   isHighSeverityAction,
-  KYC_STATUS_CONFIG,
   GATED_ACTIONS,
 } from './contentAccountabilityTypes';
 import {
@@ -34,8 +34,11 @@ import {
   useContributorVerificationStore,
   buildActionFingerprint,
 } from '../stores/contributorVerification';
+import { useAuthStore } from '../stores/auth';
+import { supabase, isSupabaseConfigured } from './supabase';
 import {
   submitKYC as submitKYCToSupabase,
+  getContributorKYCStatus,
   insertActionFingerprint,
   upsertContributorDevice,
 } from './supabaseDataService';
@@ -66,6 +69,14 @@ export function gateContentAction(actionType: ContentActionType): boolean {
   switch (result.reason) {
     case 'kyc_required':
       // KYC sheet will be shown automatically by the store
+      break;
+
+    case 'verification_loading':
+      Alert.alert('Checking Verification', 'Please wait while we check your contributor verification status.');
+      break;
+
+    case 'verification_unavailable':
+      Alert.alert('Verification Unavailable', 'We could not check your verification status. Please try again when connected.');
       break;
 
     case 'kyc_pending':
@@ -228,16 +239,8 @@ export async function logContentAction(
 // ─── KYC Submission Helper ──────────────────────────────────────────────────
 
 /**
- * Submit KYC registration. Captures device/network/location and creates
- * the KYC record.
- *
- * In production, this would:
- *   1. Upload selfie to Supabase Storage
- *   2. Create creator_kyc_records row
- *   3. Trigger OTP verification for phone
- *   4. Auto-verify or queue for manual review
- *
- * For now, auto-verifies immediately for demo purposes.
+ * Uploads a private selfie and creates a server-owned pending review record.
+ * The app keeps only the returned review status in memory.
  */
 export async function submitKYC(
   userId: string,
@@ -245,152 +248,75 @@ export async function submitKYC(
     fullLegalName: string;
     phoneNumber: string;
     selfieUri: string | null;
+    selfieMimeType?: string | null;
+    termsAccepted: boolean;
   },
 ): Promise<boolean> {
   const store = useContributorVerificationStore.getState();
+  if (
+    !userId ||
+    useAuthStore.getState().user?.id !== userId ||
+    store.ownerUserId !== userId ||
+    !isSupabaseConfigured
+  ) {
+    Alert.alert('Verification Unavailable', 'Sign in and connect to the service before submitting verification.');
+    return false;
+  }
+  if (!submission.selfieUri || submission.termsAccepted !== true) return false;
+
   store.setKYCLoading(true);
 
   try {
-    // Capture full forensic snapshot at KYC time.
-    // Wrapped with its own fallback so snapshot failures never block KYC.
-    let snapshot: Awaited<ReturnType<typeof captureForensicSnapshot>>;
-    try {
-      snapshot = await captureForensicSnapshot();
-    } catch (snapshotError) {
-      console.warn('[CCA] Forensic snapshot failed, using safe defaults:', snapshotError);
-      snapshot = {
-        device: {
-          brand: null,
-          model: null,
-          os: Platform.OS === 'ios' ? 'iOS' : 'Android',
-          osVersion: String(Platform.Version),
-          deviceUniqueId: null,
-          deviceName: null,
-          totalMemoryMb: null,
-        },
-        network: {
-          publicIp: null,
-          localIp: null,
-          networkType: 'unknown',
-          carrierName: null,
-          wifiSsid: null,
-          isConnected: true,
-        },
-        location: null,
-        app: {
-          version: '0.1.0',
-          build: null,
-          bundleId: null,
-          sessionId: `sess_${Date.now().toString(36)}_fallback`,
-        },
-        capturedAt: new Date().toISOString(),
-      };
+    const existing = await getContributorKYCStatus(userId);
+    if (!existing.success) throw new Error('Verification status could not be checked');
+    if (existing.record && existing.record.status !== 'rejected') {
+      if (useAuthStore.getState().user?.id !== userId) return false;
+      store.setKYCRecord(existing.record);
+      if (existing.record.status === 'suspended' || existing.record.status === 'revoked') {
+        throw new Error('This verification cannot be resubmitted. Please contact support if you believe this is an error.');
+      }
+      store.setShowKYCSheet(false);
+      store.setKYCLoading(false);
+      return true;
     }
 
-    const now = new Date().toISOString();
+    const contentType = submission.selfieMimeType ?? 'image/jpeg';
+    if (contentType !== 'image/jpeg' && contentType !== 'image/png') {
+      throw new Error('Choose a JPEG or PNG selfie image');
+    }
+    const extension = contentType === 'image/png' ? 'png' : 'jpg';
+    const objectPath = `${userId}/kyc-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}.${extension}`;
+    const selfieFile = new File(submission.selfieUri);
+    if (selfieFile.size <= 0 || selfieFile.size > 5 * 1024 * 1024) {
+      throw new Error('The selfie image must be smaller than 5 MB');
+    }
+    const { error: uploadError } = await supabase.storage
+      .from('kyc-selfies')
+      .upload(objectPath, await selfieFile.arrayBuffer(), {
+        contentType,
+        cacheControl: '0',
+        upsert: false,
+      });
+    if (uploadError) throw uploadError;
 
-    // Build KYC record
-    const kycRecord = {
-      id: `kyc_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`,
-      userId,
+    const result = await submitKYCToSupabase(userId, {
       fullLegalName: submission.fullLegalName.trim(),
       phoneNumber: submission.phoneNumber.trim(),
-      phoneVerified: false, // Would be true after OTP in production
-      selfieUrl: submission.selfieUri, // Would be Supabase Storage URL in production
-      selfieHash: submission.selfieUri ? `hash_${Date.now()}` : null,
-      device: snapshot.device,
-      ipAddress: snapshot.network.publicIp,
-      networkType: snapshot.network.networkType,
-      carrierName: snapshot.network.carrierName,
-      latitude: snapshot.location?.latitude ?? null,
-      longitude: snapshot.location?.longitude ?? null,
-      locationAccuracy: snapshot.location?.accuracy ?? null,
-      locationAddress: snapshot.location?.address ?? null,
-      appVersion: snapshot.app.version,
-      appBuild: snapshot.app.build,
-      // Real submission is pending verification review
-      status: 'pending' as const,
-      verifiedAt: null,
-      rejectionReason: null,
-      termsAcceptedAt: now,
-      termsVersion: '1.0',
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    // Sync KYC record to Supabase in background (non-blocking)
-    submitKYCToSupabase(userId, {
-      fullLegalName: kycRecord.fullLegalName,
-      phoneNumber: kycRecord.phoneNumber,
-      phoneVerified: kycRecord.phoneVerified,
-      selfieUrl: kycRecord.selfieUrl,
-      selfieHash: kycRecord.selfieHash,
-      deviceBrand: snapshot.device.brand,
-      deviceModel: snapshot.device.model,
-      deviceOs: snapshot.device.os,
-      deviceOsVersion: snapshot.device.osVersion,
-      deviceUniqueId: snapshot.device.deviceUniqueId,
-      deviceName: snapshot.device.deviceName,
-      ipAddress: snapshot.network.publicIp,
-      networkType: snapshot.network.networkType,
-      carrierName: snapshot.network.carrierName,
-      latitude: snapshot.location?.latitude ?? null,
-      longitude: snapshot.location?.longitude ?? null,
-      locationAccuracy: snapshot.location?.accuracy ?? null,
-      locationAddress: snapshot.location?.address ?? null,
-      appVersion: snapshot.app.version,
-      appBuild: snapshot.app.build,
-      status: 'pending',
-      termsAcceptedAt: kycRecord.termsAcceptedAt,
-      termsVersion: kycRecord.termsVersion,
-    }).catch((err) => {
-      console.warn('[CCA] Failed to persist KYC record to Supabase:', err);
+      selfiePath: objectPath,
+      termsAccepted: submission.termsAccepted,
     });
-
-    store.setKYCRecord(kycRecord);
+    if (!result.success || !result.record) throw new Error('Verification submission could not be saved');
+    if (useAuthStore.getState().user?.id !== userId || store.ownerUserId !== userId) return false;
+    store.setKYCRecord(result.record);
     store.setShowKYCSheet(false);
     store.setKYCLoading(false);
-
-    // Register this device
-    if (snapshot.device.deviceUniqueId) {
-      store.addDevice({
-        id: `dev_${Date.now().toString(36)}`,
-        userId,
-        deviceBrand: snapshot.device.brand,
-        deviceModel: snapshot.device.model,
-        deviceOs: snapshot.device.os,
-        deviceOsVersion: snapshot.device.osVersion,
-        deviceUniqueId: snapshot.device.deviceUniqueId,
-        deviceName: snapshot.device.deviceName,
-        deviceMemoryMb: snapshot.device.totalMemoryMb,
-        firstSeenAt: now,
-        lastSeenAt: now,
-        actionCount: 0,
-        isTrusted: true,
-      });
-
-      upsertContributorDevice({
-        userId,
-        deviceBrand: snapshot.device.brand,
-        deviceModel: snapshot.device.model,
-        deviceOs: snapshot.device.os,
-        deviceOsVersion: snapshot.device.osVersion,
-        deviceUniqueId: snapshot.device.deviceUniqueId,
-        deviceName: snapshot.device.deviceName,
-        deviceMemoryMb: snapshot.device.totalMemoryMb,
-        isTrusted: true,
-      }).catch((err) => {
-        console.warn('[CCA] Failed to persist device to Supabase during KYC:', err);
-      });
-    }
-
     return true;
   } catch (error) {
     console.error('[CCA] KYC submission failed:', error);
     store.setKYCLoading(false);
     Alert.alert(
-      'Verification Failed',
-      'Something went wrong. Please try again.',
+      'Submission Not Saved',
+      error instanceof Error ? error.message : 'The service could not save your submission. Please try again.',
       [{ text: 'OK' }],
     );
     return false;

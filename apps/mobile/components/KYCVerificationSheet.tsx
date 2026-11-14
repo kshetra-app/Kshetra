@@ -22,7 +22,6 @@ import { submitKYC } from '../lib/contentAccountability';
 import {
   isValidIndianPhone,
   getKYCCompleteness,
-  KYC_STATUS_CONFIG,
 } from '../lib/contentAccountabilityTypes';
 
 export default function KYCVerificationSheet() {
@@ -36,6 +35,7 @@ export default function KYCVerificationSheet() {
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [selfieUri, setSelfieUri] = useState<string | null>(null);
+  const [selfieMimeType, setSelfieMimeType] = useState<string | null>(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [step, setStep] = useState<'info' | 'selfie' | 'terms' | 'done'>('info');
 
@@ -65,6 +65,7 @@ export default function KYCVerificationSheet() {
     });
     if (!result.canceled && result.assets.length > 0) {
       setSelfieUri(result.assets[0].uri);
+      setSelfieMimeType(result.assets[0].mimeType ?? null);
     }
   }, []);
 
@@ -75,7 +76,11 @@ export default function KYCVerificationSheet() {
     }
 
     // Require verified email for KYC submission
-    if (user && !user.email_confirmed_at) {
+    if (!user?.id) {
+      Alert.alert('Sign In Required', 'Please sign in before submitting contributor verification.');
+      return;
+    }
+    if (!user.email_confirmed_at) {
       Alert.alert(
         'Email Verification Required',
         'Please verify your email address before completing account verification. Check your inbox for the confirmation link.',
@@ -83,11 +88,13 @@ export default function KYCVerificationSheet() {
       return;
     }
 
-    const userId = user?.id ?? 'anon';
+    const userId = user.id;
     const success = await submitKYC(userId, {
       fullLegalName: fullName,
       phoneNumber: phone,
       selfieUri,
+      selfieMimeType,
+      termsAccepted,
     });
 
     if (success) {
@@ -125,9 +132,9 @@ export default function KYCVerificationSheet() {
         {step === 'done' ? (
           <View style={styles.doneContainer}>
             <Ionicons name="shield-checkmark" size={64} color="#10B981" />
-            <Text style={styles.doneTitle}>{t('kycSheet.verified')}</Text>
+            <Text style={styles.doneTitle}>{t('kycSheet.submitted')}</Text>
             <Text style={styles.doneSubtitle}>
-              {t('kycSheet.verifiedMsg')}
+              {t('kycSheet.pendingReviewMsg')}
             </Text>
           </View>
         ) : (
@@ -136,9 +143,20 @@ export default function KYCVerificationSheet() {
             <View style={styles.infoBox}>
               <Ionicons name="shield-checkmark" size={20} color="#4F8EF7" />
               <View style={{ flex: 1 }}>
-                <Text style={styles.infoTitle}>{t('kycSheet.whyNeeded')}</Text>
+                <Text style={styles.infoTitle}>
+                  {kycRecord?.status === 'rejected'
+                    ? t('kycSheet.resubmitTitle')
+                    : t('kycSheet.whyNeeded')}
+                </Text>
+                {kycRecord?.status === 'rejected' && kycRecord.rejectionReason ? (
+                  <Text style={[styles.infoText, { color: '#FCA5A5', marginBottom: 4 }]}>
+                    {kycRecord.rejectionReason}
+                  </Text>
+                ) : null}
                 <Text style={styles.infoText}>
-                  {t('kycSheet.whyNeededDesc')}
+                  {kycRecord?.status === 'rejected'
+                    ? t('kycSheet.resubmitNotice')
+                    : t('kycSheet.reviewNotice')}
                 </Text>
               </View>
             </View>
@@ -209,7 +227,7 @@ export default function KYCVerificationSheet() {
               <>
                 <Text style={styles.sectionTitle}>{t('kycSheet.selfieSection')}</Text>
                 <Text style={styles.fieldHint}>
-                  {t('kycSheet.selfieDesc')}
+                  {t('kycSheet.selfieReviewNotice')}
                 </Text>
 
                 {selfieUri ? (

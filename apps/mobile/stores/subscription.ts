@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 
 // ─── Subscription Tiers ───
 
@@ -16,7 +17,6 @@ export interface TierConfig {
   pdfBranding: boolean;
   analyticsAccess: boolean;
   apiAccess: boolean;
-  monthlyPrice: number; // INR, 0 = free
 }
 
 export type ExportFormat = 'csv' | 'xlsx' | 'pdf';
@@ -32,7 +32,6 @@ export const TIER_CONFIG: Record<SubscriptionTier, TierConfig> = {
     pdfBranding: false,
     analyticsAccess: false,
     apiAccess: false,
-    monthlyPrice: 0,
   },
   pro: {
     label: 'Pro',
@@ -44,7 +43,6 @@ export const TIER_CONFIG: Record<SubscriptionTier, TierConfig> = {
     pdfBranding: true,
     analyticsAccess: true,
     apiAccess: false,
-    monthlyPrice: 99,
   },
   institutional: {
     label: 'Institutional',
@@ -56,9 +54,27 @@ export const TIER_CONFIG: Record<SubscriptionTier, TierConfig> = {
     pdfBranding: true,
     analyticsAccess: true,
     apiAccess: true,
-    monthlyPrice: 499,
   },
 };
+
+/**
+ * Production has no server-backed subscription or entitlement service yet.
+ * Export formats are local file generation, so keep them available without
+ * pretending a locally persisted tier or a checkout-backed paywall exists.
+ */
+export function getEffectiveTierConfig(
+  tier: SubscriptionTier,
+  isLive = IS_LIVE_ENVIRONMENT,
+): TierConfig {
+  if (!isLive) return TIER_CONFIG[tier];
+
+  return {
+    ...TIER_CONFIG.free,
+    exportFormats: ['csv', 'xlsx', 'pdf'],
+    maxExportsPerMonth: -1,
+    maxIssuesPerExport: -1,
+  };
+}
 
 // ─── Store ───
 
@@ -85,11 +101,11 @@ export const useSubscriptionStore = create<SubscriptionState>()(
       exportsThisMonth: 0,
       exportResetDate: getNextResetDate(),
 
-      getTierConfig: () => TIER_CONFIG[get().tier],
+      getTierConfig: () => getEffectiveTierConfig(get().tier),
 
       canExport: (format) => {
         const { tier, exportsThisMonth, exportResetDate } = get();
-        const config = TIER_CONFIG[tier];
+        const config = getEffectiveTierConfig(tier);
 
         // Reset monthly counter if past reset date
         if (new Date() >= new Date(exportResetDate)) {
@@ -117,11 +133,16 @@ export const useSubscriptionStore = create<SubscriptionState>()(
       recordExport: () =>
         set((s) => ({ exportsThisMonth: s.exportsThisMonth + 1 })),
 
-      setTier: (tier) => set({ tier }),
+      setTier: (tier) => set({ tier: IS_LIVE_ENVIRONMENT ? 'free' : tier }),
     }),
     {
       name: 'kshetra-subscription',
       storage: createJSONStorage(() => AsyncStorage),
+      partialize: (state) => IS_LIVE_ENVIRONMENT ? {} : state,
+      merge: (persistedState, currentState) => {
+        if (IS_LIVE_ENVIRONMENT) return { ...currentState, tier: 'free' };
+        return { ...currentState, ...(persistedState as Partial<SubscriptionState>) };
+      },
     },
   ),
 );

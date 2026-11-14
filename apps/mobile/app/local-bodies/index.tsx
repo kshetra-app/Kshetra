@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../lib/useTheme';
+import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
 import { getPartyColor } from '../../lib/constants';
 import { getHierarchyConfig } from '../../lib/hierarchyData';
 import { useActiveStateStore } from '../../stores/activeState';
@@ -70,6 +71,11 @@ export default function LocalBodiesScreen() {
   // Load districts + upper-tier status when the state changes.
   useEffect(() => {
     let mounted = true;
+    if (IS_LIVE_ENVIRONMENT) {
+      setDistricts([]);
+      setDistrictsLoading(false);
+      return () => { mounted = false; };
+    }
     setDistrictsLoading(true);
     setLoadError(null);
     getLocalBodyDistricts(stateCode)
@@ -143,6 +149,21 @@ export default function LocalBodiesScreen() {
   };
 
   const s = makeStyles(colors);
+
+  if (IS_LIVE_ENVIRONMENT) {
+    return (
+      <View style={s.container}>
+        <Stack.Screen options={{ title: t('localBodies.screenTitle', { defaultValue: 'Local Bodies' }) }} />
+        <View style={s.centerWrap}>
+          <Ionicons name="cloud-offline-outline" size={48} color={colors.gold} />
+          <Text style={[s.selectorTitle, { color: colors.text, marginTop: 12 }]}>Live local-body directory unavailable</Text>
+          <Text style={[s.selectorMsg, { color: colors.textSecondary }]}>
+            This directory is not yet connected to a live records service. Bundled local records are hidden in this build.
+          </Text>
+        </View>
+      </View>
+    );
+  }
 
   // ── Error state with user retry ──
   if (loadError) {

@@ -27,7 +27,6 @@ import { formatCount } from '../data/politicalShortsData';
 import { usePoliticalShortsStore } from '../stores/politicalShorts';
 import { useMyConstituencyStore } from '../stores/myConstituency';
 import { useActiveStateStore } from '../stores/activeState';
-import { useContributorVerificationStore } from '../stores/contributorVerification';
 import { useAuthStore } from '../stores/auth';
 import { useUserProfileStore } from '../stores/userProfile';
 import { gateContentAction, logContentAction } from '../lib/contentAccountability';
@@ -52,11 +51,10 @@ export default function ShortsPlayerModal({
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   
   // State from stores
-  const kycRecord = useContributorVerificationStore((s) => s.kycRecord);
   const authUser = useAuthStore((s) => s.user);
   const userProfile = useUserProfileStore((s) => s.profile);
-  const userId = authUser?.id || kycRecord?.userId || 'anon-user';
-  const authorName = userProfile?.displayName || kycRecord?.fullLegalName || authUser?.email?.split('@')[0] || 'Verified Citizen';
+  const userId = authUser?.id || 'anon-user';
+  const authorName = userProfile?.displayName || authUser?.email?.split('@')[0] || 'Citizen';
   const myHome = useMyConstituencyStore((s) => s.home);
   const activeStateCode = useActiveStateStore((s) => s.stateCode);
   const userConstituencyId = myHome ? `${activeStateCode}-AC-${myHome.acNo}` : undefined;

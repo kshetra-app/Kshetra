@@ -29,11 +29,13 @@ jest.mock('../lib/networkStatus', () => ({
 
 import {
   enqueue,
+  enqueueLocalMutation,
   flushQueue,
   clearQueue,
   getPendingOps,
   addSyncListener,
   retryFailedOp,
+  purgeLegacyKycSubmissions,
   type SyncEvent,
 } from '../lib/offlineSync';
 import * as dataService from '../lib/supabaseDataService';
@@ -173,6 +175,30 @@ describe('Track 2: Four-State Offline Mutation Sync Lifecycle', () => {
       expect(persistedPost.poll?.options[0].id).toBe('persisted-option-1');
       expect(dataService.composePost).toHaveBeenCalledWith(expect.objectContaining({ pollOptions: ['Yes', 'No'] }));
     });
+  });
+
+  it('purges legacy queued KYC identity payloads while retaining other pending work', async () => {
+    mockIsOnline = false;
+    await enqueueLocalMutation({
+      id: 'legacy-kyc-op',
+      type: 'submit_kyc' as any,
+      payload: { fullLegalName: 'Private Applicant', selfieUri: 'file://private-selfie.jpg' },
+      createdAt: Date.now(),
+      retries: 0,
+      status: 'QUEUED',
+    });
+    await enqueueLocalMutation({
+      id: 'normal-op',
+      type: 'compose_post',
+      payload: { content: 'Keep this queued post' },
+      createdAt: Date.now(),
+      retries: 0,
+      status: 'QUEUED',
+    });
+
+    expect(purgeLegacyKycSubmissions()).toBe(1);
+    expect(getPendingOps().map((op) => op.id)).toEqual(['normal-op']);
+    expect(JSON.stringify(getPendingOps())).not.toContain('Private Applicant');
   });
 
   describe('2. Queue Replay & Store Reconciliation on flushQueue', () => {

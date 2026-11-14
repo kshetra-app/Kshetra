@@ -78,6 +78,258 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ success: true, data: result });
   });
 
+  // Contributor identity evidence is more sensitive than ordinary moderation data.
+  // Restrict its review to administrators and compliance officers.
+  app.get<{
+    Querystring: { limit?: string; offset?: string };
+  }>('/api/v1/admin/contributor-verifications', async (request, reply) => {
+    const actor = request.adminActor!;
+    if (!['admin', 'super_admin', 'compliance_officer'].includes(actor.role)) {
+      return sendApiError(
+        reply,
+        request,
+        403,
+        'INSUFFICIENT_PERMISSIONS',
+        'A compliance reviewer role is required.',
+      );
+    }
+    if (!isSupabaseConfigured) {
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'SERVICE_UNAVAILABLE',
+        'Contributor review storage is unavailable.',
+      );
+    }
+
+    const limit = Number(request.query.limit ?? 20);
+    const offset = Number(request.query.offset ?? 0);
+    if (
+      !Number.isInteger(limit) ||
+      limit < 1 ||
+      limit > 50 ||
+      !Number.isInteger(offset) ||
+      offset < 0
+    ) {
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'INVALID_PAGINATION',
+        'Use a limit from 1 to 50 and a non-negative offset.',
+      );
+    }
+
+    const { data, error } = await supabase
+      .from('creator_kyc_records')
+      .select('id,user_id,full_legal_name,phone_number,phone_verified,selfie_url,status,created_at')
+      .eq('status', 'pending')
+      .order('created_at', { ascending: true })
+      .range(offset, offset + limit);
+
+    if (error) {
+      app.log.error(
+        { err: error.message, reviewerId: actor.id },
+        'Failed to load contributor verification queue',
+      );
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'SERVICE_UNAVAILABLE',
+        'Contributor verification queue is unavailable.',
+      );
+    }
+
+    const rows = data ?? [];
+    const hasMore = rows.length > limit;
+    const page = rows.slice(0, limit);
+    let records: Array<Record<string, unknown>>;
+    try {
+      records = await Promise.all(
+        page.map(async (record) => {
+          const path = typeof record.selfie_url === 'string' ? record.selfie_url : '';
+          const belongsToApplicant = path.startsWith(`${record.user_id}/`) && !path.includes('..');
+          if (!belongsToApplicant) {
+            return {
+              id: record.id,
+              userId: record.user_id,
+              fullLegalName: record.full_legal_name,
+              phoneNumber: record.phone_number,
+              phoneVerified: record.phone_verified,
+              createdAt: record.created_at,
+              selfieSignedUrl: null,
+              evidenceAvailable: false,
+            };
+          }
+
+          const { data: signed, error: signingError } = await supabase.storage
+            .from('kyc-selfies')
+            .createSignedUrl(path, 600);
+          if (signingError || !signed?.signedUrl) {
+            throw signingError ?? new Error('Could not create a time-limited selfie review link');
+          }
+
+          return {
+            id: record.id,
+            userId: record.user_id,
+            fullLegalName: record.full_legal_name,
+            phoneNumber: record.phone_number,
+            phoneVerified: record.phone_verified,
+            createdAt: record.created_at,
+            selfieSignedUrl: signed.signedUrl,
+            evidenceAvailable: true,
+          };
+        }),
+      );
+    } catch (err: any) {
+      app.log.error(
+        { err: err?.message, reviewerId: actor.id },
+        'Failed to sign contributor verification evidence',
+      );
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'SERVICE_UNAVAILABLE',
+        'Contributor evidence could not be securely loaded.',
+      );
+    }
+
+    return reply.send({
+      success: true,
+      data: {
+        records,
+        hasMore,
+        limit,
+        offset,
+        signedUrlExpiresInSeconds: 600,
+      },
+    });
+  });
+
+  app.post<{
+    Params: { id: string };
+    Body: { decision: 'verified' | 'rejected'; rejectionReason?: string };
+  }>(
+    '/api/v1/admin/contributor-verifications/:id/review',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          required: ['id'],
+          properties: { id: { type: 'string', format: 'uuid' } },
+        },
+        body: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['decision'],
+          properties: {
+            decision: { type: 'string', enum: ['verified', 'rejected'] },
+            rejectionReason: { type: 'string', maxLength: 500 },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const actor = request.adminActor!;
+      if (!['admin', 'super_admin', 'compliance_officer'].includes(actor.role)) {
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'INSUFFICIENT_PERMISSIONS',
+          'A compliance reviewer role is required.',
+        );
+      }
+      if (!isSupabaseConfigured) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'SERVICE_UNAVAILABLE',
+          'Contributor review storage is unavailable.',
+        );
+      }
+
+      const decision = request.body.decision;
+      const rejectionReason = request.body.rejectionReason?.trim() || null;
+      if (decision === 'rejected' && (!rejectionReason || rejectionReason.length < 10)) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'INVALID_REJECTION_REASON',
+          'A rejection reason of at least 10 characters is required.',
+        );
+      }
+
+      const { data, error } = await supabase.rpc('review_creator_kyc_record', {
+        p_record_id: request.params.id,
+        p_reviewer_user_id: actor.id,
+        p_decision: decision,
+        p_rejection_reason: decision === 'rejected' ? rejectionReason : null,
+      });
+
+      if (error) {
+        if (error.code === 'P0002') {
+          return sendApiError(
+            reply,
+            request,
+            409,
+            'REVIEW_CONFLICT',
+            'This record is no longer pending review. Refresh the queue.',
+          );
+        }
+        app.log.error(
+          { err: error.message, reviewerId: actor.id },
+          'Failed to record contributor verification decision',
+        );
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'SERVICE_UNAVAILABLE',
+          'The review decision was not saved.',
+        );
+      }
+
+      const reviewed = Array.isArray(data) ? data[0] : data;
+      if (!reviewed?.id || reviewed.status !== decision) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'SERVICE_UNAVAILABLE',
+          'The database did not confirm the review decision.',
+        );
+      }
+
+      await adminService.recordAudit(
+        actor,
+        'verification',
+        `contributor_kyc_${decision}`,
+        'creator_kyc_records',
+        reviewed.id,
+        { status: 'pending' },
+        { status: decision, rejectionReason: decision === 'rejected' ? rejectionReason : null },
+      );
+
+      return reply.send({
+        success: true,
+        data: {
+          id: reviewed.id,
+          userId: reviewed.user_id,
+          status: reviewed.status,
+          verifiedAt: reviewed.verified_at,
+          rejectionReason: reviewed.rejection_reason,
+          updatedAt: reviewed.updated_at,
+        },
+      });
+    },
+  );
+
   // 4. Data Correction
   app.post('/api/v1/admin/data-correction', async (request, reply) => {
     const actor = request.adminActor!;

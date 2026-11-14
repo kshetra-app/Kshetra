@@ -5,6 +5,7 @@
  * based on the active state code.
  */
 import type { TriviaItem } from '../../../data/seed/telangana-trivia';
+import { IS_LIVE_ENVIRONMENT } from './environment';
 
 import {
   getAllTrivia,
@@ -138,6 +139,8 @@ export function getRandomTriviaSetForState(
   stateCode: string,
   count: number,
 ): TriviaItem[] {
+  if (IS_LIVE_ENVIRONMENT) return [];
+
   let all: TriviaItem[];
   switch (stateCode.toUpperCase()) {
     case 'TS':
@@ -249,6 +252,8 @@ export function getTriviaForConstituencyInState(
   stateCode: string,
   acNo: number,
 ): TriviaItem[] {
+  if (IS_LIVE_ENVIRONMENT) return [];
+
   switch (stateCode.toUpperCase()) {
     case 'TS':
       return getTriviaForConstituency(acNo);
@@ -319,6 +324,8 @@ export function getTriviaForConstituencyInState(
 
 /** Get all trivia for a state */
 export function getAllTriviaForState(stateCode: string): TriviaItem[] {
+  if (IS_LIVE_ENVIRONMENT) return [];
+
   switch (stateCode.toUpperCase()) {
     case 'TS':
       return getAllTrivia();

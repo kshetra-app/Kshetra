@@ -5,6 +5,8 @@ import { bootstrapSupabase, teardownSupabase } from '../lib/supabaseBootstrap';
 import { apiClient } from '../lib/api';
 import { startProductAnalyticsSession, trackProductEvent } from '../lib/analytics';
 import { useNotificationsStore } from './notifications';
+import { useContributorVerificationStore, clearLegacyContributorVerificationCache } from './contributorVerification';
+import { purgeLegacyKycSubmissions } from '../lib/offlineSync';
 
 interface AuthState {
   session: Session | null;
@@ -25,11 +27,13 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   initialized: false,
 
   initialize: async () => {
+    await Promise.all([clearLegacyContributorVerificationCache(), Promise.resolve(purgeLegacyKycSubmissions())]);
     if (!useNotificationsStore.persist.hasHydrated()) {
       await useNotificationsStore.persist.rehydrate();
     }
 
     if (!isSupabaseConfigured) {
+      useContributorVerificationStore.getState().setOwnerUserId(null);
       set({ initialized: true });
       return;
     }
@@ -45,6 +49,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
         initialized: true,
       });
       useNotificationsStore.getState().setOwnerUserId(session?.user.id ?? null);
+      useContributorVerificationStore.getState().setOwnerUserId(session?.user.id ?? null);
 
       // Bootstrap backend connection if session exists
       if (session) {
@@ -60,6 +65,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
           user: session?.user ?? null,
         });
         useNotificationsStore.getState().setOwnerUserId(session?.user.id ?? null);
+        useContributorVerificationStore.getState().setOwnerUserId(session?.user.id ?? null);
         if (session) {
           bootstrapSupabase();
         } else {

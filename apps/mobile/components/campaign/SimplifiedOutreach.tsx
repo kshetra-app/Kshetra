@@ -342,7 +342,7 @@ export default function SimplifiedOutreach() {
                 : pricing.whatsappOrganic.guidance.howItWorks}
             </Text>
 
-            <View style={styles.doDontRow}>
+            {!IS_LIVE_ENVIRONMENT && <View style={styles.doDontRow}>
               <View style={[styles.doCol, { backgroundColor: '#F0FDF4' }]}>
                 <Text style={styles.doHeader}>✓ {t('campaignManager.dos', { defaultValue: 'DOs' })}</Text>
                 {pricing.whatsappOrganic.guidance.dos.map((item, idx) => (
@@ -355,7 +355,7 @@ export default function SimplifiedOutreach() {
                   <Text key={idx} style={styles.bulletText}>• {item}</Text>
                 ))}
               </View>
-            </View>
+            </View>}
           </View>
 
           {/* 1-Tap Action Card */}
@@ -527,24 +527,33 @@ export default function SimplifiedOutreach() {
                 {t('campaignManager.voiceGuidanceTitle', { defaultValue: 'Voice Call Dispatch Guidance' })}
               </Text>
             </View>
-            <Text style={[styles.guidanceBody, { color: colors.textSecondary }]}>
-              {pricing.voiceObd.guidance.howItWorks}
-            </Text>
-
-            <View style={styles.doDontRow}>
-              <View style={[styles.doCol, { backgroundColor: '#F0FDF4' }]}>
-                <Text style={styles.doHeader}>✓ {t('campaignManager.dos', { defaultValue: 'DOs' })}</Text>
-                {pricing.voiceObd.guidance.dos.map((item, idx) => (
-                  <Text key={idx} style={styles.bulletText}>• {item}</Text>
-                ))}
-              </View>
-              <View style={[styles.dontCol, { backgroundColor: '#FEF2F2' }]}>
-                <Text style={styles.dontHeader}>✗ {t('campaignManager.donts', { defaultValue: "DON'Ts" })}</Text>
-                {pricing.voiceObd.guidance.donts.map((item, idx) => (
-                  <Text key={idx} style={styles.bulletText}>• {item}</Text>
-                ))}
-              </View>
-            </View>
+            {pricingAvailable ? (
+              <>
+                <Text style={[styles.guidanceBody, { color: colors.textSecondary }]}>
+                  {pricing.voiceObd.guidance.howItWorks}
+                </Text>
+                <View style={styles.doDontRow}>
+                  <View style={[styles.doCol, { backgroundColor: '#F0FDF4' }]}>
+                    <Text style={styles.doHeader}>✓ {t('campaignManager.dos', { defaultValue: 'DOs' })}</Text>
+                    {pricing.voiceObd.guidance.dos.map((item, idx) => (
+                      <Text key={idx} style={styles.bulletText}>• {item}</Text>
+                    ))}
+                  </View>
+                  <View style={[styles.dontCol, { backgroundColor: '#FEF2F2' }]}>
+                    <Text style={styles.dontHeader}>✗ {t('campaignManager.donts', { defaultValue: "DON'Ts" })}</Text>
+                    {pricing.voiceObd.guidance.donts.map((item, idx) => (
+                      <Text key={idx} style={styles.bulletText}>• {item}</Text>
+                    ))}
+                  </View>
+                </View>
+              </>
+            ) : (
+              <Text style={[styles.guidanceBody, { color: colors.textSecondary }]}>
+                {t('campaignManager.voiceGuidanceUnavailable', {
+                  defaultValue: 'Provider-specific delivery guidance will appear when verified pricing and service configuration are available.',
+                })}
+              </Text>
+            )}
           </View>
 
           {/* Record Audio & Dispatch */}

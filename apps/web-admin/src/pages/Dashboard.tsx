@@ -11,6 +11,8 @@ export function Dashboard() {
   const [flagsError, setFlagsError] = useState(false);
   const [productMetrics, setProductMetrics] = useState<ProductDashboardMetricsDTO | null>(null);
   const [productMetricsError, setProductMetricsError] = useState(false);
+  const [pendingModerationCount, setPendingModerationCount] = useState<number | null>(null);
+  const [moderationCountError, setModerationCountError] = useState(false);
 
   useEffect(() => {
     api.getHealth().then(setHealth).catch(() => setHealthError(true));
@@ -18,6 +20,9 @@ export function Dashboard() {
     api.getProductDashboardMetrics()
       .then(setProductMetrics)
       .catch(() => setProductMetricsError(true));
+    api.getPendingModerationCount()
+      .then(setPendingModerationCount)
+      .catch(() => setModerationCountError(true));
   }, []);
 
   const flagEntries = flags ? Object.entries(flags) : [];
@@ -74,7 +79,16 @@ export function Dashboard() {
             ? `${formatCount(productMetrics.liveStreams.staleReportedCount)} stale · ${formatCount(productMetrics.liveStreams.scheduledCount)} scheduled`
             : metricFailureDetail}
         />
-        <MetricCard title="Pending moderation" icon={<ShieldAlert className="w-4 h-4 text-purple-400" />} value="Unavailable" detail="Queue count requires an authenticated moderation API" />
+        <MetricCard
+          title="Pending moderation"
+          icon={<ShieldAlert className="w-4 h-4 text-purple-400" />}
+          value={formatCount(pendingModerationCount)}
+          detail={moderationCountError
+            ? 'Queue count could not be loaded for this admin session'
+            : pendingModerationCount === null
+              ? 'Loading from the authenticated moderation API'
+              : 'Pending user reports in the moderation queue'}
+        />
         <MetricCard
           title="Feature flags"
           icon={<Zap className="w-4 h-4 text-amber-400" />}

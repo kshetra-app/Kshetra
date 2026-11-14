@@ -22,7 +22,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAspirantStore } from '../stores/aspirant';
 import { useActiveStateStore } from '../stores/activeState';
 import { useMyConstituencyStore } from '../stores/myConstituency';
-import { useContributorVerificationStore } from '../stores/contributorVerification';
 import { useAuthStore } from '../stores/auth';
 import { STATES } from '@kshetra/shared';
 
@@ -43,14 +42,14 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
   const myHome = useMyConstituencyStore((s: any) => s.home) as
     | { acNo: number; name: string; district?: string }
     | null;
-  const kycRecord = useContributorVerificationStore((s: any) => s.kycRecord);
+  const authUser = useAuthStore((s) => s.user);
 
   const stateName = useMemo(
     () => (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode,
     [stateCode],
   );
 
-  const [displayName, setDisplayName] = useState(kycRecord?.fullLegalName ?? '');
+  const [displayName, setDisplayName] = useState(authUser?.email?.split('@')[0] ?? '');
   const [bio, setBio] = useState('');
   const [constituency, setConstituency] = useState(myHome?.name ?? '');
   const [year, setYear] = useState<number>(ELECTION_YEARS[1]);
@@ -73,8 +72,7 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
       return;
     }
 
-    const currentAuthUser = useAuthStore.getState().user;
-    const realUserId = kycRecord?.userId || currentAuthUser?.id;
+    const realUserId = authUser?.id;
     if (!realUserId || realUserId === 'anon') {
       Alert.alert(t('common.error', 'Authentication Required'), 'Please log in before registering as an aspirant.');
       return;
@@ -109,7 +107,7 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
     } finally {
       setIsSubmitting(false);
     }
-  }, [displayName, bio, isIndependent, party, registerAsAspirant, kycRecord, stateCode, myHome, constituency, year, isPublic, onClose, t]);
+  }, [displayName, bio, isIndependent, party, registerAsAspirant, authUser, stateCode, myHome, constituency, year, isPublic, onClose, t]);
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>

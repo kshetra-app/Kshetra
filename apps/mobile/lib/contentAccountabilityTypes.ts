@@ -187,6 +187,12 @@ export interface CreatorKYCRecord {
   updatedAt: string;
 }
 
+/** The client keeps only the review state in memory; identity evidence stays in private storage. */
+export type ContributorKYCStatusRecord = Pick<
+  CreatorKYCRecord,
+  'id' | 'userId' | 'status' | 'verifiedAt' | 'rejectionReason' | 'createdAt' | 'updatedAt'
+>;
+
 // ─── Contributor Device ─────────────────────────────────────────────────────
 
 export interface ContributorDevice {
@@ -268,12 +274,12 @@ export function normalizePhone(phone: string): string {
   return cleaned;
 }
 
-export function isKYCComplete(kyc: CreatorKYCRecord | null): boolean {
+export function isKYCComplete(kyc: Pick<CreatorKYCRecord, 'status'> | null): boolean {
   if (!kyc) return false;
   return kyc.status === 'verified';
 }
 
-export function canPerformAction(kyc: CreatorKYCRecord | null, action: ContentActionType): boolean {
+export function canPerformAction(kyc: Pick<CreatorKYCRecord, 'status'> | null, action: ContentActionType): boolean {
   if (!GATED_ACTIONS.includes(action)) return true;
   if (!kyc) return false;
   return kyc.status === 'verified';

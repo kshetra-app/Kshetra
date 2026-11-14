@@ -20,6 +20,7 @@ import { ApiNetworkError, ApiServerError, ApiTimeoutError } from './api/errors';
 import type { ShortCommentDTO, ShortCommentsResponseDTO } from './api/endpoints/shorts';
 import type { ChallengeParticipation, CivicBadge, CommunityChallenge } from './aspirantTypes';
 import type { Poll } from './feedTypes';
+import type { ContributorKYCStatusRecord } from './contentAccountabilityTypes';
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 
@@ -672,46 +673,55 @@ export async function endorseAspirant(endorserId: string, aspirantId: string, me
 export async function submitKYC(userId: string, kyc: {
   fullLegalName: string;
   phoneNumber: string;
-  phoneVerified?: boolean;
-  selfieUrl?: string | null;
-  selfieHash?: string | null;
-  deviceBrand?: string | null;
-  deviceModel?: string | null;
-  deviceOs?: string | null;
-  deviceOsVersion?: string | null;
-  deviceUniqueId?: string | null;
-  deviceName?: string | null;
-  ipAddress?: string | null;
-  networkType?: string | null;
-  carrierName?: string | null;
-  latitude?: number | null;
-  longitude?: number | null;
-  locationAccuracy?: number | null;
-  locationAddress?: string | null;
-  appVersion?: string | null;
-  appBuild?: string | null;
-  status?: 'pending' | 'verified' | 'rejected' | 'suspended' | 'revoked';
-  termsAcceptedAt?: string;
-  termsVersion?: string;
-}): Promise<{ id: string | null; success: boolean }> {
-  if (!guard()) return { id: null, success: false };
+  selfiePath?: string;
+  termsAccepted?: boolean;
+}): Promise<{ id: string | null; success: boolean; record?: ContributorKYCStatusRecord }> {
+  if (!guard() || !kyc.selfiePath || kyc.termsAccepted !== true) {
+    return { id: null, success: false };
+  }
   try {
     addBreadcrumb('kyc', 'submit', { userId });
-    const res = await fetch(`${API_BASE_URL}/api/v1/contributor/kyc`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-user-id': userId,
-        ...telemetry.getTracingHeaders(),
+    const response = await apiClient.post<{
+      success: boolean;
+      record: ContributorKYCStatusRecord;
+    }>(
+      '/api/v1/contributor/kyc',
+      {
+        userId,
+        fullLegalName: kyc.fullLegalName,
+        phoneNumber: kyc.phoneNumber,
+        selfiePath: kyc.selfiePath,
+        termsAccepted: true,
       },
-      body: JSON.stringify({ userId, ...kyc }),
-    });
-    if (!res.ok) return { id: null, success: false };
-    const data = await res.json();
-    return { id: data.kycId || null, success: true };
+      { authPolicy: 'authenticated' },
+    );
+    if (!response.data.success || response.data.record.userId !== userId) {
+      return { id: null, success: false };
+    }
+    return { id: response.data.record.id, success: true, record: response.data.record };
   } catch (err) {
     captureException(err as Error, { op: 'submit_kyc' });
     return { id: null, success: false };
+  }
+}
+
+export async function getContributorKYCStatus(userId: string): Promise<{
+  success: boolean;
+  record: ContributorKYCStatusRecord | null;
+}> {
+  if (!guard()) return { success: false, record: null };
+  try {
+    const response = await apiClient.get<{
+      success: boolean;
+      record: ContributorKYCStatusRecord | null;
+    }>('/api/v1/contributor/kyc/status', { authPolicy: 'authenticated' });
+    if (!response.data.success || (response.data.record && response.data.record.userId !== userId)) {
+      return { success: false, record: null };
+    }
+    return response.data;
+  } catch (err) {
+    captureException(err as Error, { op: 'get_contributor_kyc_status' });
+    return { success: false, record: null };
   }
 }
 

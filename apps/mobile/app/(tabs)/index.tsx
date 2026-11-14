@@ -207,7 +207,9 @@ function FullMapScreen() {
   const selectedRef = useRef<SelectedConstituency | null>(null);
 
   useEffect(() => {
-    loadHistoricalResultsForState(stateCode).catch(() => {});
+    if (!IS_LIVE_ENVIRONMENT) {
+      loadHistoricalResultsForState(stateCode).catch(() => {});
+    }
   }, [stateCode]);
 
   useEffect(() => {

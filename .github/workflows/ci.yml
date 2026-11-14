@@ -84,7 +84,7 @@ jobs:
         run: node scripts/check-api-contract-drift.mjs
 
       - name: Audit 13-Language i18n Parity (DEF-012 Monitoring)
-        run: node scripts/verify-13-locales.mjs
+        run: node scripts/verify-13-locales.mjs --strict
 
       - name: Verify 13-Language Semantic & Bidirectional Token Integrity (DEF-012 Gate)
         run: node scripts/verify-locale-semantic-integrity.mjs

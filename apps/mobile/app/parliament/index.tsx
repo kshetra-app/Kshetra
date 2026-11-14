@@ -32,6 +32,7 @@ import CandidateAvatar from '../../components/CandidateAvatar';
 import { useActiveStateStore } from '../../stores/activeState';
 import { useTheme } from '../../lib/theme';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
+import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
 
 type TabType = 'overview' | 'lok_sabha' | 'rajya_sabha';
 
@@ -212,6 +213,30 @@ export default function ParliamentScreen() {
   const { insets } = useResponsive();
 
   const displayedParties = showAllParties ? allPartiesStrength : allPartiesStrength.slice(0, 15);
+
+  if (IS_LIVE_ENVIRONMENT) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border, paddingTop: insets.top + 8 }]}>
+          <Pressable onPress={() => router.back()} style={[styles.backBtn, { backgroundColor: colors.primaryLight }]}>
+            <Ionicons name="arrow-back" size={22} color={colors.primary} />
+          </Pressable>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>{t('parliament.screenTitle')}</Text>
+            <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>Live records only</Text>
+          </View>
+        </View>
+        <View style={{ padding: 24 }}>
+          <Text style={{ color: colors.text, fontSize: 18, fontWeight: '700', marginBottom: 8 }}>
+            Live parliamentary directory unavailable
+          </Text>
+          <Text style={{ color: colors.textSecondary, fontSize: 14, lineHeight: 21 }}>
+            This screen is not yet connected to the live parliamentary records service. The bundled roster is hidden so it cannot be mistaken for current information.
+          </Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>

@@ -41,7 +41,7 @@ describe('W010 BATCH L2 — DEF-008 & DEF-012 VERIFICATION', () => {
     return keys;
   }
 
-  describe('DEF-012: 13-Locale 100% Key Parity & Authentic Localization', () => {
+  describe('DEF-012: 13-Locale Key Coverage & Authentic Localization', () => {
     it('verifies all 13 locale files exist and are valid TypeScript/JavaScript objects', () => {
       for (const lang of allLanguages) {
         const filePath = path.join(localesDir, `${lang}.ts`);
@@ -52,83 +52,27 @@ describe('W010 BATCH L2 — DEF-008 & DEF-012 VERIFICATION', () => {
       }
     });
 
-    it('verifies locale keys missing locally have an explicit English fallback (>= 2,128 canonical keys)', () => {
+    it('verifies missing locale keys use the explicit English fallback policy (>= 2,128 canonical keys)', () => {
       const enFile = path.join(localesDir, 'en.ts');
       const enContent = fs.readFileSync(enFile, 'utf8');
       const enKeys = extractKeysFromSource(enContent);
       expect(enKeys.size).toBeGreaterThanOrEqual(2128);
       const i18nConfig = fs.readFileSync(path.join(rootAppDir, 'i18n/index.ts'), 'utf8');
       expect(i18nConfig).toMatch(/fallbackLng:\s*'en'/);
-      const approvedEnglishFallbacks = new Set([
-        'constituency.demographicReferenceTitle',
-        'constituency.noDemographicData',
-        'constituency.dataUnavailable',
-        'constituency.resultUnavailable',
-        'constituency.noAffidavitYear',
-        'constituency.demographicDataNoteTitle',
-        'constituency.demographicDataNote',
-        'leadershipAcademy.loadingChallenges',
-        'leadershipAcademy.challengesUnavailable',
-        'leadershipAcademy.loadingBadges',
-        'leadershipAcademy.badgesUnavailable',
-        'leadershipAcademy.loadingAspirants',
-        'leadershipAcademy.aspirantsUnavailable',
-        'campaignManager.createAdDraft',
-        'campaignManager.saveAdDraft',
-        'campaignManager.adDraftsTitle',
-        'campaignManager.adDraftOnlyNote',
-        'campaignManager.noCampaignForAds',
-        'campaignManager.noAdDrafts',
-        'campaignManager.adDraftRequired',
-        'campaignManager.adName',
-        'campaignManager.adHeadline',
-        'campaignManager.adBody',
-        'campaignManager.adDisclosure',
-        'campaignManager.noVerifiedAdMetrics',
-        'campaignManager.adComplianceNotReviewed',
-        'civicMetrics.noConnectedData',
-        'compare.demographicsUnavailable',
-        'pages.tabPosts',
-        'pages.tabProfile',
-        'pages.tabVision',
-        'pages.tabInitiatives',
-        'pages.tabValues',
-        'pages.tabStudio',
-        'pages.liveStatus',
-        'pages.inFieldTour',
-        'pages.followers',
-        'pages.civicScore',
-        'pages.resolvedIssues',
-        'pages.cleanAffidavit',
-        'pages.noCriminalCases',
-        'pages.assetDeclaration',
-        'pages.form26Verified',
-        'pages.accountabilityCharter',
-        'pages.volunteer',
-        'pages.postUpdate',
-        'pages.postPlaceholder',
-        'pages.postBtn',
-        'pages.privateAnalyticsNotice',
-        'pages.boothCoverage',
-        'pages.grassrootsReach',
-        'pages.avgResponseTime',
-        'pages.requestsAnswered',
-        'pages.voterEngagementTrend',
-        'pages.profileViews',
-        'pages.pendingCitizenRequests',
-        'pages.citizenPoll',
-        'pages.castVote',
-        'pages.totalVotes',
-        'pages.agreeWithVision',
-        'pages.verifiedOfficialFigure',
-      ]);
+      const fallbackPolicy = JSON.parse(
+        fs.readFileSync(path.join(rootAppDir, 'i18n/approvedEnglishFallbacks.json'), 'utf8'),
+      ) as { fallbackLanguage: string; keys: string[] };
+      expect(fallbackPolicy.fallbackLanguage).toBe('en');
+      const approvedEnglishFallbacks = new Set(fallbackPolicy.keys);
+      expect(approvedEnglishFallbacks.size).toBe(fallbackPolicy.keys.length);
+      expect(fallbackPolicy.keys.every(key => enKeys.has(key))).toBe(true);
 
       for (const lang of allLanguages) {
         const filePath = path.join(localesDir, `${lang}.ts`);
         const content = fs.readFileSync(filePath, 'utf8');
         const langKeys = extractKeysFromSource(content);
 
-        // These explicitly approved keys use i18next's English fallback until locale copy is reviewed.
+        // Only centrally approved keys may use i18next's English fallback pending locale review.
         const missing = Array.from(enKeys).filter(k => !langKeys.has(k));
         expect(missing.every(key => approvedEnglishFallbacks.has(key))).toBe(true);
       }

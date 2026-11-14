@@ -1,8 +1,7 @@
 import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type {
-  CreatorKYCRecord,
+  ContributorKYCStatusRecord,
   KYCStatus,
   KYCSubmission,
   ContributorDevice,
@@ -12,15 +11,17 @@ import type {
 } from '../lib/contentAccountabilityTypes';
 import {
   canPerformAction,
-  isHighSeverityAction,
   simpleContentHash,
 } from '../lib/contentAccountabilityTypes';
 
 // ─── State Interface ────────────────────────────────────────────────────────
 
 interface ContributorVerificationState {
+  ownerUserId: string | null;
+  kycLoadState: 'idle' | 'loading' | 'ready' | 'unavailable';
+
   // KYC state
-  kycRecord: CreatorKYCRecord | null;
+  kycRecord: ContributorKYCStatusRecord | null;
   kycSubmission: KYCSubmission | null;  // In-progress KYC form data
   isKYCRequired: boolean;                // True once user attempts first action
 
@@ -42,8 +43,9 @@ interface ContributorVerificationState {
   getDeviceCount: () => number;
 
   // Actions
-  setKYCRecord: (record: CreatorKYCRecord) => void;
-  updateKYCStatus: (status: KYCStatus) => void;
+  setOwnerUserId: (userId: string | null) => void;
+  setKYCLoadState: (userId: string, state: 'loading' | 'ready' | 'unavailable') => void;
+  setKYCRecord: (record: ContributorKYCStatusRecord) => void;
   setKYCSubmission: (submission: KYCSubmission | null) => void;
   setShowKYCSheet: (show: boolean) => void;
   setKYCLoading: (loading: boolean) => void;
@@ -54,15 +56,23 @@ interface ContributorVerificationState {
   // Gate function — call before any content action
   requestAction: (action: ContentActionType) => {
     allowed: boolean;
-    reason: 'verified' | 'kyc_required' | 'kyc_pending' | 'kyc_rejected' | 'suspended';
+    reason:
+      | 'verified'
+      | 'kyc_required'
+      | 'kyc_pending'
+      | 'kyc_rejected'
+      | 'suspended'
+      | 'verification_loading'
+      | 'verification_unavailable';
   };
 }
 
 // ─── Store ──────────────────────────────────────────────────────────────────
 
 export const useContributorVerificationStore = create<ContributorVerificationState>()(
-  persist(
     (set, get) => ({
+      ownerUserId: null,
+      kycLoadState: 'idle',
       kycRecord: null,
       kycSubmission: null,
       isKYCRequired: false,
@@ -96,19 +106,30 @@ export const useContributorVerificationStore = create<ContributorVerificationSta
 
       // ─── Actions ────────────────────────────────────────────────
 
-      setKYCRecord: (record) => set({ kycRecord: record }),
+      setOwnerUserId: (userId) =>
+        set((state) => {
+          if (state.ownerUserId === userId) return {};
+          return {
+            ownerUserId: userId,
+            kycLoadState: userId ? 'loading' : 'idle',
+            kycRecord: null,
+            kycSubmission: null,
+            isKYCRequired: false,
+            devices: [],
+            recentFingerprints: [],
+            showKYCSheet: false,
+            kycLoading: false,
+          };
+        }),
 
-      updateKYCStatus: (status) =>
-        set((s) => ({
-          kycRecord: s.kycRecord
-            ? {
-                ...s.kycRecord,
-                status,
-                verifiedAt: status === 'verified' ? new Date().toISOString() : s.kycRecord.verifiedAt,
-                updatedAt: new Date().toISOString(),
-              }
-            : null,
-        })),
+      setKYCLoadState: (userId, state) => {
+        if (get().ownerUserId === userId) set({ kycLoadState: state });
+      },
+
+      setKYCRecord: (record) => {
+        if (record.userId !== get().ownerUserId) return;
+        set({ kycRecord: record, kycLoadState: 'ready' });
+      },
 
       setKYCSubmission: (submission) => set({ kycSubmission: submission }),
 
@@ -143,6 +164,7 @@ export const useContributorVerificationStore = create<ContributorVerificationSta
           kycRecord: null,
           kycSubmission: null,
           isKYCRequired: false,
+          kycLoadState: 'ready',
           devices: [],
           recentFingerprints: [],
           showKYCSheet: false,
@@ -154,7 +176,17 @@ export const useContributorVerificationStore = create<ContributorVerificationSta
         const kyc = get().kycRecord;
 
         if (!kyc) {
-          set({ isKYCRequired: true, showKYCSheet: true });
+          const loadState = get().kycLoadState;
+          set({
+            isKYCRequired: true,
+            showKYCSheet: loadState === 'ready',
+          });
+          if (loadState === 'loading') {
+            return { allowed: false, reason: 'verification_loading' as const };
+          }
+          if (loadState !== 'ready') {
+            return { allowed: false, reason: 'verification_unavailable' as const };
+          }
           return { allowed: false, reason: 'kyc_required' as const };
         }
 
@@ -173,19 +205,12 @@ export const useContributorVerificationStore = create<ContributorVerificationSta
         }
       },
     }),
-    {
-      name: 'kshetra-contributor-verification',
-      storage: createJSONStorage(() => AsyncStorage),
-      partialize: (state) => ({
-        kycRecord: state.kycRecord,
-        kycSubmission: state.kycSubmission,
-        isKYCRequired: state.isKYCRequired,
-        devices: state.devices,
-        // Don't persist recentFingerprints (too large) or UI state
-      }),
-    },
-  ),
 );
+
+/** Remove the legacy unscoped cache, which contained identity and device data. */
+export async function clearLegacyContributorVerificationCache(): Promise<void> {
+  await AsyncStorage.removeItem('kshetra-contributor-verification').catch(() => undefined);
+}
 
 // ─── Helper: Build ActionFingerprint from ForensicSnapshot ──────────────────
 
