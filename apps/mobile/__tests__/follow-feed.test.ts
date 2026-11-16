@@ -100,4 +100,23 @@ describe('Ticket 0.3: Follow Graph & Feed Blending', () => {
       useFeedStore.setState({ refreshFeed: originalRefreshFeed });
     }
   });
+
+  it('coalesces automatic refreshes for the same feed scope', async () => {
+    const originalRefreshFeed = useFeedStore.getState().refreshFeed;
+    const refreshFeed = jest.fn().mockResolvedValue(undefined);
+    const uniqueConstituencyId = `TS-AUTO-${Date.now()}`;
+    useFeedStore.setState({ refreshFeed });
+
+    try {
+      await Promise.all([
+        useFeedStore.getState().refreshFeedIfStale('TS', uniqueConstituencyId),
+        useFeedStore.getState().refreshFeedIfStale('TS', uniqueConstituencyId),
+      ]);
+
+      expect(refreshFeed).toHaveBeenCalledTimes(1);
+      expect(refreshFeed).toHaveBeenCalledWith('TS', uniqueConstituencyId);
+    } finally {
+      useFeedStore.setState({ refreshFeed: originalRefreshFeed });
+    }
+  });
 });

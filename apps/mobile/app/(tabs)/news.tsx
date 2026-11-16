@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  AppState,
   View,
   Text,
   StyleSheet,
@@ -9,6 +10,7 @@ import {
   RefreshControl,
   Modal,
 } from 'react-native';
+import { useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -41,7 +43,6 @@ export default function NewsScreen() {
 
   const items = useNewsStore((s) => s.items);
   const generatedAt = useNewsStore((s) => s.generatedAt);
-  const refreshIntervalMin = useNewsStore((s) => s.refreshIntervalMin);
   const loading = useNewsStore((s) => s.loading);
   const language = useNewsStore((s) => s.language);
   const category = useNewsStore((s) => s.category);
@@ -58,15 +59,46 @@ export default function NewsScreen() {
   const [scope, setScope] = useState<NewsScopeTab>(stateCode === 'IN' ? 'national' : 'state');
   const [showBookmarks, setShowBookmarks] = useState(false);
 
-  // Refresh on mount + hourly auto-refresh
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  useEffect(() => {
-    refresh();
-    intervalRef.current = setInterval(refresh, Math.max(15, refreshIntervalMin) * 60000);
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [refresh, refreshIntervalMin]);
+  // Revalidate when this tab is opened, when the app resumes, and periodically
+  // while visible. Respect the server's refresh interval and avoid duplicate
+  // requests from a focus + foreground event firing together.
+  const lastAutoRefreshAt = useRef(0);
+  const refreshIfStale = useCallback(() => {
+    const current = useNewsStore.getState();
+    const generatedAtMs = Date.parse(current.generatedAt);
+    const maxAgeMs = Math.max(1, current.refreshIntervalMin) * 60_000;
+    const now = Date.now();
+    const isStale =
+      !Number.isFinite(generatedAtMs) ||
+      generatedAtMs > now + 5 * 60_000 ||
+      now - generatedAtMs >= maxAgeMs;
+
+    if (
+      !isStale ||
+      current.loading ||
+      now - lastAutoRefreshAt.current < 30_000
+    ) {
+      return;
+    }
+
+    lastAutoRefreshAt.current = now;
+    void current.refresh();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      refreshIfStale();
+      const appStateSubscription = AppState.addEventListener('change', (nextState) => {
+        if (nextState === 'active') refreshIfStale();
+      });
+      const interval = setInterval(refreshIfStale, 60_000);
+
+      return () => {
+        appStateSubscription.remove();
+        clearInterval(interval);
+      };
+    }, [refreshIfStale]),
+  );
 
   // National-only mode locks scope to national.
   useEffect(() => {

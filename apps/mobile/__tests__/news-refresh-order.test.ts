@@ -1,6 +1,6 @@
 jest.mock('../lib/constants', () => ({
   API_BASE_URL: 'https://api.example.test',
-  REMOTE_API_URL: '',
+  REMOTE_API_URL: 'https://api.example.test',
 }));
 jest.mock('../lib/api', () => ({
   apiClient: { news: { getFeed: jest.fn() } },
@@ -18,6 +18,7 @@ jest.mock('../lib/storage', () => ({
 }));
 
 import type { NewsFeed } from '../lib/newsTypes';
+import { apiClient } from '../lib/api';
 import { scrapeNewsOnDevice } from '../lib/news/scrape';
 import { useNewsStore } from '../stores/news';
 
@@ -80,5 +81,22 @@ describe('news refresh ordering', () => {
     await olderRefresh;
     expect(useNewsStore.getState().items.map((item) => item.id)).toEqual(['newer-story']);
     expect(useNewsStore.getState().loading).toBe(false);
+  });
+
+  it('keeps an authoritative empty backend feed instead of showing fallback stories', async () => {
+    const emptyFeed: NewsFeed = {
+      version: 1,
+      generatedAt: '2026-11-16T10:00:00.000Z',
+      refreshIntervalMin: 60,
+      sources: [],
+      items: [],
+    };
+    (apiClient.news.getFeed as jest.Mock).mockResolvedValue(emptyFeed);
+
+    await useNewsStore.getState().refresh();
+
+    expect(useNewsStore.getState().items).toEqual([]);
+    expect(useNewsStore.getState().generatedAt).toBe(emptyFeed.generatedAt);
+    expect(scrapeNewsOnDevice).not.toHaveBeenCalled();
   });
 });

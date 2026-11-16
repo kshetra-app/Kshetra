@@ -26,6 +26,8 @@ interface PromiseState {
   evidence: PromiseEvidence[];
   promiseLoadStatus: 'idle' | 'loading' | 'loaded' | 'error';
   promiseLoadStateCode: string | null;
+  promiseRefreshing: boolean;
+  promiseRefreshError: boolean;
 
   // Queries
   getPromisesForState: (stateCode: string) => ElectionPromise[];
@@ -503,6 +505,20 @@ const SEED_EVIDENCE: PromiseEvidence[] = [
 ];
 
 let promiseLoadRequestSequence = 0;
+const PROMISE_STATE_FRESHNESS_MS = 60_000;
+const promiseStateLoadedAt = new Map<string, number>();
+
+function markPromiseStateLoaded(stateCode: string) {
+  const now = Date.now();
+  for (const [key, loadedAt] of promiseStateLoadedAt) {
+    if (now - loadedAt > 60 * 60_000) promiseStateLoadedAt.delete(key);
+  }
+  if (promiseStateLoadedAt.size >= 128) {
+    const oldestKey = promiseStateLoadedAt.keys().next().value;
+    if (oldestKey) promiseStateLoadedAt.delete(oldestKey);
+  }
+  promiseStateLoadedAt.set(stateCode, now);
+}
 
 function mapServerPromiseRows(serverPromises: any[]): {
   promises: ElectionPromise[];
@@ -551,19 +567,27 @@ export const usePromiseStore = create<PromiseState>()((set, get) => ({
   evidence: IS_LIVE_ENVIRONMENT ? [] : SEED_EVIDENCE,
   promiseLoadStatus: 'idle',
   promiseLoadStateCode: null,
+  promiseRefreshing: false,
+  promiseRefreshError: false,
 
   loadForState: async (stateCode, force = false, preserveLoadedData = false) => {
     const code = stateCode.trim().toUpperCase();
     if (!code) return;
 
     const current = get();
+    const sameLoadedState = current.promiseLoadStateCode === code && current.promiseLoadStatus === 'loaded';
     if (
       !force &&
       current.promiseLoadStateCode === code &&
-      (current.promiseLoadStatus === 'loading' || current.promiseLoadStatus === 'loaded')
+      (current.promiseLoadStatus === 'loading' || current.promiseRefreshing)
     ) {
       return;
     }
+    if (
+      !force &&
+      sameLoadedState &&
+      Date.now() - (promiseStateLoadedAt.get(code) ?? 0) < PROMISE_STATE_FRESHNESS_MS
+    ) return;
 
     const requestSequence = ++promiseLoadRequestSequence;
     const keepCurrentData = preserveLoadedData &&
@@ -576,6 +600,8 @@ export const usePromiseStore = create<PromiseState>()((set, get) => ({
       updates: previewUpdates,
       promiseLoadStatus: keepCurrentData ? 'loaded' : 'loading',
       promiseLoadStateCode: code,
+      promiseRefreshing: keepCurrentData,
+      promiseRefreshError: false,
     });
 
     try {
@@ -585,27 +611,34 @@ export const usePromiseStore = create<PromiseState>()((set, get) => ({
         set({
           promises: previewPromises,
           updates: previewUpdates,
-          promiseLoadStatus: 'error',
+          promiseLoadStatus: keepCurrentData ? 'loaded' : 'error',
           promiseLoadStateCode: code,
+          promiseRefreshing: false,
+          promiseRefreshError: keepCurrentData,
         });
         return;
       }
 
       const { promises, updates } = mapServerPromiseRows(rows);
+      markPromiseStateLoaded(code);
       set((state) => ({
         promises,
         updates,
         evidence: state.evidence.filter((entry) => entry.syncStatus && entry.syncStatus !== 'SYNCED'),
         promiseLoadStatus: 'loaded',
         promiseLoadStateCode: code,
+        promiseRefreshing: false,
+        promiseRefreshError: false,
       }));
     } catch {
       if (requestSequence !== promiseLoadRequestSequence) return;
       set({
         promises: previewPromises,
         updates: previewUpdates,
-        promiseLoadStatus: 'error',
+        promiseLoadStatus: keepCurrentData ? 'loaded' : 'error',
         promiseLoadStateCode: code,
+        promiseRefreshing: false,
+        promiseRefreshError: keepCurrentData,
       });
     }
   },

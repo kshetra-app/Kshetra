@@ -155,6 +155,43 @@ describe('production promise dashboard data', () => {
     expect(usePromiseStore.getState().promises.map((promise: { id: string }) => promise.id)).toEqual(['latest']);
   });
 
+  it('revalidates stale state data without removing the last good result during refresh', async () => {
+    const now = Date.now();
+    const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(now);
+    try {
+      fetchPromisesForState.mockResolvedValueOnce([promiseRow('TS', 'existing')]);
+      await usePromiseStore.getState().loadForState('TS');
+      await usePromiseStore.getState().loadForState('TS');
+      expect(fetchPromisesForState).toHaveBeenCalledTimes(1);
+
+      let resolveRefresh!: (rows: ReturnType<typeof promiseRow>[]) => void;
+      fetchPromisesForState.mockImplementationOnce(
+        () => new Promise((resolve) => { resolveRefresh = resolve; }),
+      );
+      nowSpy.mockReturnValue(now + 60_001);
+      const refresh = usePromiseStore.getState().loadForState('TS', false, true);
+
+      expect(usePromiseStore.getState()).toMatchObject({
+        promiseLoadStatus: 'loaded',
+        promiseRefreshing: true,
+        promises: [{ id: 'existing' }],
+      });
+
+      resolveRefresh([promiseRow('TS', 'refreshed')]);
+      await refresh;
+
+      expect(usePromiseStore.getState()).toMatchObject({
+        promiseLoadStatus: 'loaded',
+        promiseRefreshing: false,
+        promiseRefreshError: false,
+        promises: [{ id: 'refreshed' }],
+      });
+      expect(fetchPromisesForState).toHaveBeenCalledTimes(2);
+    } finally {
+      nowSpy.mockRestore();
+    }
+  });
+
   it('keeps the latest same-state refresh when realtime overlaps startup loading', async () => {
     type PromiseRow = ReturnType<typeof promiseRow>;
     let resolveStartup!: (rows: PromiseRow[] | null) => void;

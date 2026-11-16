@@ -22,6 +22,25 @@ import { SequenceGuard } from '../lib/staleResponseGuard';
 import { useAuthStore } from './auth';
 
 const feedRefreshGuard = new SequenceGuard<string>();
+const FEED_AUTO_REFRESH_COOLDOWN_MS = 15_000;
+const feedRefreshStartedAt = new Map<string, number>();
+const feedAutoRefreshInFlight = new Map<string, Promise<void>>();
+
+function getFeedRefreshKey(userId: string | null, stateCode: string, constituencyId: string | null) {
+  return JSON.stringify([userId, stateCode, constituencyId]);
+}
+
+function markFeedRefreshStarted(key: string) {
+  const now = Date.now();
+  for (const [storedKey, startedAt] of feedRefreshStartedAt) {
+    if (now - startedAt > 60 * 60_000) feedRefreshStartedAt.delete(storedKey);
+  }
+  if (feedRefreshStartedAt.size >= 128) {
+    const oldestKey = feedRefreshStartedAt.keys().next().value;
+    if (oldestKey) feedRefreshStartedAt.delete(oldestKey);
+  }
+  feedRefreshStartedAt.set(key, now);
+}
 
 /**
  * Development-only synthetic posts for offline-first UI previews.
@@ -1345,6 +1364,7 @@ interface FeedState {
 
   // Sync & Realtime
   refreshFeed: (stateCode?: string, constituencyId?: string | null) => Promise<void>;
+  refreshFeedIfStale: (stateCode?: string, constituencyId?: string | null) => Promise<void>;
   receiveRealtimePost: (serverPost: any) => void;
   receiveRealtimeComment: (serverComment: any) => void;
   receiveRealtimeReaction: (payload: any) => void;
@@ -1923,12 +1943,28 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
     return get().followedUserIds.includes(userId);
   },
 
+  refreshFeedIfStale: async (stateCode = 'TS', constituencyId = null) => {
+    const requestOwnerId = useAuthStore.getState().user?.id ?? null;
+    const key = getFeedRefreshKey(requestOwnerId, stateCode, constituencyId);
+    const inFlight = feedAutoRefreshInFlight.get(key);
+    if (inFlight) return inFlight;
+    if (Date.now() - (feedRefreshStartedAt.get(key) ?? 0) < FEED_AUTO_REFRESH_COOLDOWN_MS) return;
+
+    const refresh = get().refreshFeed(stateCode, constituencyId);
+    feedAutoRefreshInFlight.set(key, refresh);
+    try {
+      await refresh;
+    } finally {
+      if (feedAutoRefreshInFlight.get(key) === refresh) feedAutoRefreshInFlight.delete(key);
+    }
+  },
+
   refreshFeed: async (stateCode = 'TS', constituencyId = null) => {
     const authUser = useAuthStore.getState().user;
     const requestOwnerId = authUser?.id ?? null;
-    const refreshToken = feedRefreshGuard.startRequest(
-      JSON.stringify([requestOwnerId, stateCode, constituencyId]),
-    );
+    const key = getFeedRefreshKey(requestOwnerId, stateCode, constituencyId);
+    markFeedRefreshStarted(key);
+    const refreshToken = feedRefreshGuard.startRequest(key);
     const isStale = () =>
       refreshToken.isStale() || (useAuthStore.getState().user?.id ?? null) !== requestOwnerId;
     set({ loading: true });

@@ -1,4 +1,4 @@
-import { useState, useMemo, Component, useEffect, type ReactNode } from 'react';
+import { useState, useMemo, Component, useEffect, useCallback, type ReactNode } from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { getCivicIssueScopeKey, useCivicStore } from '../../stores/civic';
 import IssueCard from '../../components/IssueCard';
 import ReportIssueSheet from '../../components/ReportIssueSheet';
@@ -123,12 +123,16 @@ function DashboardContent() {
   const issueLoadPage = useCivicStore((s) => s.issueLoadPage);
   const issueLoadLimit = useCivicStore((s) => s.issueLoadLimit);
   const issueLoadMoreError = useCivicStore((s) => s.issueLoadMoreError);
+  const issueRefreshing = useCivicStore((s) => s.issueRefreshing);
+  const issueRefreshError = useCivicStore((s) => s.issueRefreshError);
   const loadIssuesForScope = useCivicStore((s) => s.loadIssuesForScope);
   const loadMoreIssuesForScope = useCivicStore((s) => s.loadMoreIssuesForScope);
 
   // Promise store — select raw arrays, derive in useMemo
   const allPromises = usePromiseStore((s) => s.promises);
   const promiseLoadStatus = usePromiseStore((s) => s.promiseLoadStatus);
+  const promiseRefreshing = usePromiseStore((s) => s.promiseRefreshing);
+  const promiseRefreshError = usePromiseStore((s) => s.promiseRefreshError);
   const toggleFollowPromise = usePromiseStore((s) => s.toggleFollowPromise);
   const loadPromisesForState = usePromiseStore((s) => s.loadForState);
 
@@ -142,12 +146,11 @@ function DashboardContent() {
     issueLoadStatus === 'idle' || issueLoadScopeKey !== issueScopeKey;
   const hasMoreIssues = IS_LIVE_ENVIRONMENT && issueLoadTotal !== null &&
     issueLoadPage * issueLoadLimit < issueLoadTotal;
+  const promiseQueryState = scopeFilter === 'national' ? 'NATIONAL' : stateCode;
 
   useEffect(() => {
     setCivicIssueRealtimeScope(scopeFilter, stateCode, constituencyId);
-    if (!IS_LIVE_ENVIRONMENT || (scopeFilter === 'constituency' && !constituencyId)) return;
-    void loadIssuesForScope(scopeFilter, stateCode, constituencyId).catch(() => undefined);
-  }, [scopeFilter, stateCode, constituencyId, loadIssuesForScope]);
+  }, [scopeFilter, stateCode, constituencyId]);
 
   useEffect(() => {
     if (stateCode === 'IN') {
@@ -157,12 +160,25 @@ function DashboardContent() {
     }
   }, [stateCode, scopeFilter, setScopeFilter]);
 
-  const promiseQueryState = scopeFilter === 'national' ? 'NATIONAL' : stateCode;
-
-  useEffect(() => {
-    if (!IS_LIVE_ENVIRONMENT || activeTab !== 'promises' || !promiseQueryState) return;
-    void loadPromisesForState(promiseQueryState);
-  }, [activeTab, promiseQueryState, loadPromisesForState]);
+  useFocusEffect(
+    useCallback(() => {
+      if (!IS_LIVE_ENVIRONMENT || (stateCode === 'IN' && scopeFilter !== 'national')) return;
+      if (!(scopeFilter === 'constituency' && !constituencyId)) {
+        void loadIssuesForScope(scopeFilter, stateCode, constituencyId).catch(() => undefined);
+      }
+      if (activeTab === 'promises' && promiseQueryState) {
+        void loadPromisesForState(promiseQueryState, false, true);
+      }
+    }, [
+      activeTab,
+      constituencyId,
+      loadIssuesForScope,
+      loadPromisesForState,
+      promiseQueryState,
+      scopeFilter,
+      stateCode,
+    ]),
+  );
 
   // Strict scope demarcation for promises: each level shows ONLY its own content.
   const scopedPromises = useMemo(() => {
@@ -359,6 +375,23 @@ function DashboardContent() {
 
         {activeTab === 'issues' && (
           <View style={styles.tabContent}>
+            {(issueRefreshing || issueRefreshError) && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8 }}>
+                {issueRefreshing && <ActivityIndicator size="small" color={colors.primary} />}
+                <Text style={{ color: issueRefreshError ? colors.textMuted : colors.text, fontSize: 12 }}>
+                  {issueRefreshing
+                    ? t('common.updating', { defaultValue: 'Updating issues…' })
+                    : t('dashboard.showingPreviousIssues', { defaultValue: 'Could not refresh. Showing previously loaded issues.' })}
+                </Text>
+                {issueRefreshError && (
+                  <Pressable onPress={() => void loadIssuesForScope(scopeFilter, stateCode, constituencyId, true).catch(() => undefined)}>
+                    <Text style={{ color: colors.primary, fontSize: 12, fontWeight: '700' }}>
+                      {t('common.retry', { defaultValue: 'Retry' })}
+                    </Text>
+                  </Pressable>
+                )}
+              </View>
+            )}
             {IS_LIVE_ENVIRONMENT && scopeFilter === 'constituency' && !constituencyId ? (
               <View style={styles.emptyState}>
                 <Ionicons name="location-outline" size={40} color={colors.textMuted} />
@@ -585,6 +618,23 @@ function DashboardContent() {
 
         {activeTab === 'promises' && (
           <View style={styles.tabContent}>
+            {(promiseRefreshing || promiseRefreshError) && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8 }}>
+                {promiseRefreshing && <ActivityIndicator size="small" color={colors.primary} />}
+                <Text style={{ color: promiseRefreshError ? colors.textMuted : colors.text, fontSize: 12 }}>
+                  {promiseRefreshing
+                    ? t('common.updating', { defaultValue: 'Updating promises…' })
+                    : t('dashboard.showingPreviousPromises', { defaultValue: 'Could not refresh. Showing previously loaded promises.' })}
+                </Text>
+                {promiseRefreshError && (
+                  <Pressable onPress={() => void loadPromisesForState(promiseQueryState, true, true)}>
+                    <Text style={{ color: colors.primary, fontSize: 12, fontWeight: '700' }}>
+                      {t('common.retry', { defaultValue: 'Retry' })}
+                    </Text>
+                  </Pressable>
+                )}
+              </View>
+            )}
             {/* Promise list */}
             {IS_LIVE_ENVIRONMENT && promiseLoadStatus === 'loading' ? (
               <View style={styles.emptyState}>

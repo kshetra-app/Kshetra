@@ -22,6 +22,20 @@ import { useAuthStore } from './auth';
 import { apiClient } from '../lib/api';
 
 let issueLoadRequestSequence = 0;
+const ISSUE_SCOPE_FRESHNESS_MS = 60_000;
+const issueScopeLoadedAt = new Map<string, number>();
+
+function markIssueScopeLoaded(scopeKey: string) {
+  const now = Date.now();
+  for (const [key, loadedAt] of issueScopeLoadedAt) {
+    if (now - loadedAt > 60 * 60_000) issueScopeLoadedAt.delete(key);
+  }
+  if (issueScopeLoadedAt.size >= 128) {
+    const oldestKey = issueScopeLoadedAt.keys().next().value;
+    if (oldestKey) issueScopeLoadedAt.delete(oldestKey);
+  }
+  issueScopeLoadedAt.set(scopeKey, now);
+}
 
 export function getCivicIssueScopeKey(
   scope: CivicScope,
@@ -746,6 +760,8 @@ interface CivicState {
   issueLoadPage: number;
   issueLoadLimit: number;
   issueLoadMoreError: boolean;
+  issueRefreshing: boolean;
+  issueRefreshError: boolean;
   headlines: Headline[];
   sentiment: ConstituencySentiment[];
   comments: IssueComment[];
@@ -800,6 +816,8 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
   issueLoadPage: 0,
   issueLoadLimit: 50,
   issueLoadMoreError: false,
+  issueRefreshing: false,
+  issueRefreshError: false,
   headlines: IS_LIVE_ENVIRONMENT ? [] : SEED_HEADLINES,
   sentiment: IS_LIVE_ENVIRONMENT ? [] : SEED_SENTIMENT,
   comments: IS_LIVE_ENVIRONMENT ? [] : SEED_COMMENTS,
@@ -1136,18 +1154,29 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
 
     const scopeKey = getCivicIssueScopeKey(scope, stateCode, constituencyId);
     const current = get();
-    if (!force && current.issueLoadScopeKey === scopeKey &&
-      (current.issueLoadStatus === 'loading' || current.issueLoadStatus === 'loaded')) return;
+    const sameLoadedScope = current.issueLoadScopeKey === scopeKey && current.issueLoadStatus === 'loaded';
+    if (
+      !force &&
+      current.issueLoadScopeKey === scopeKey &&
+      (current.issueLoadStatus === 'loading' || current.issueLoadStatus === 'loading_more' || current.issueRefreshing)
+    ) return;
+    if (
+      !force &&
+      sameLoadedScope &&
+      Date.now() - (issueScopeLoadedAt.get(scopeKey) ?? 0) < ISSUE_SCOPE_FRESHNESS_MS
+    ) return;
 
     const requestSequence = ++issueLoadRequestSequence;
     const limit = 50;
     set({
-      issueLoadStatus: 'loading',
+      issueLoadStatus: sameLoadedScope ? 'loaded' : 'loading',
       issueLoadScopeKey: scopeKey,
-      issueLoadTotal: null,
-      issueLoadPage: 0,
+      issueLoadTotal: sameLoadedScope ? current.issueLoadTotal : null,
+      issueLoadPage: sameLoadedScope ? current.issueLoadPage : 0,
       issueLoadLimit: limit,
       issueLoadMoreError: false,
+      issueRefreshing: sameLoadedScope,
+      issueRefreshError: false,
     });
 
     try {
@@ -1160,21 +1189,35 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
       });
       if (requestSequence !== issueLoadRequestSequence) return;
       get().hydrateFromServer(result.issues);
+      markIssueScopeLoaded(scopeKey);
       set({
         issueLoadStatus: 'loaded',
         issueLoadScopeKey: scopeKey,
         issueLoadTotal: result.total,
         issueLoadPage: result.page,
         issueLoadLimit: result.limit,
+        issueRefreshing: false,
+        issueRefreshError: false,
       });
     } catch (error) {
       if (requestSequence !== issueLoadRequestSequence) return;
-      set({
-        issueLoadStatus: 'error',
-        issueLoadScopeKey: scopeKey,
-        issueLoadTotal: null,
-        issueLoadPage: 0,
-      });
+      if (sameLoadedScope) {
+        set({
+          issueLoadStatus: 'loaded',
+          issueLoadScopeKey: scopeKey,
+          issueRefreshing: false,
+          issueRefreshError: true,
+        });
+      } else {
+        set({
+          issueLoadStatus: 'error',
+          issueLoadScopeKey: scopeKey,
+          issueLoadTotal: null,
+          issueLoadPage: 0,
+          issueRefreshing: false,
+          issueRefreshError: false,
+        });
+      }
       throw error;
     }
   },
@@ -1182,6 +1225,7 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
   loadMoreIssuesForScope: async (scope, stateCode, constituencyId) => {
     const current = get();
     if (!IS_LIVE_ENVIRONMENT || current.issueLoadStatus !== 'loaded' || current.issueLoadTotal === null) return;
+    if (current.issueRefreshing) return;
     if (current.issueLoadScopeKey !== getCivicIssueScopeKey(scope, stateCode, constituencyId)) return;
     if (current.issueLoadPage * current.issueLoadLimit >= current.issueLoadTotal) return;
 
@@ -1197,6 +1241,7 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
         limit: current.issueLoadLimit,
       });
       if (requestSequence !== issueLoadRequestSequence) return;
+      markIssueScopeLoaded(getCivicIssueScopeKey(scope, stateCode, constituencyId));
       set((state) => {
         const merged = new Map(state.issues.map((issue) => [issue.id, issue]));
         for (const row of result.issues) merged.set(String(row.id), mapServerIssue(row));

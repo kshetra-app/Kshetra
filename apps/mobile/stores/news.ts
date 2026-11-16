@@ -51,7 +51,9 @@ async function fetchBackendFeed(lang: NewsLanguageCode | null): Promise<NewsFeed
   if (!REMOTE_API_URL) return null;
   try {
     const feed = await apiClient.news.getFeed(lang ? { lang } : undefined);
-    if (feed?.items?.length) return feed;
+    // An empty response is still authoritative: it means the server currently
+    // has no matching stories. Falling back here would resurrect stale/local data.
+    if (feed) return feed;
   } catch {
     // fall through
   }

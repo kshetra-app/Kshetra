@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
+  AppState,
   View,
   Text,
   StyleSheet,
@@ -13,7 +14,7 @@ import {
   Modal,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { tapLight } from '../../lib/haptics';
 import { useFeedStore } from '../../stores/feed';
 import { useAuthStore } from '../../stores/auth';
@@ -109,6 +110,7 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
   const toggleReaction = useFeedStore((s) => s.toggleReaction);
   const votePoll = useFeedStore((s) => s.votePoll);
   const refreshFeed = useFeedStore((s) => s.refreshFeed);
+  const refreshFeedIfStale = useFeedStore((s) => s.refreshFeedIfStale);
 
   const user = useAuthStore((s) => s.user);
   const userId = user?.id ?? 'anon';
@@ -130,6 +132,20 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
     : myHome?.name;
 
   const getContentVisibilityLevel = useContentPromotionStore((s) => s.getContentVisibilityLevel);
+
+  useFocusEffect(
+    useCallback(() => {
+      const refreshCurrentFeed = () => {
+        void refreshFeedIfStale(stateCode, effectiveConstituencyId ?? null);
+      };
+      refreshCurrentFeed();
+      const appStateSubscription = AppState.addEventListener('change', (nextState) => {
+        if (nextState === 'active') refreshCurrentFeed();
+      });
+
+      return () => appStateSubscription.remove();
+    }, [effectiveConstituencyId, refreshFeedIfStale, stateCode]),
+  );
 
   useEffect(() => {
     if (stateCode === 'IN') {
@@ -258,9 +274,12 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
-    await refreshFeed(stateCode);
-    setRefreshing(false);
-  }, [refreshFeed, stateCode]);
+    try {
+      await refreshFeed(stateCode, effectiveConstituencyId ?? null);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [effectiveConstituencyId, refreshFeed, stateCode]);
 
   const handleShare = useCallback(async (post: Post) => {
     try {
