@@ -62,7 +62,15 @@ function SignIn() {
     setError(null);
     try {
       const { error: signInError } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
-      if (signInError) setError(signInError.message);
+      if (signInError) {
+        const isInvalidCredentials =
+          signInError.code === 'invalid_credentials' || /invalid login credentials/i.test(signInError.message);
+        setError(
+          isInvalidCredentials
+            ? 'These details do not match a Poligram app account in this environment. Supabase and Railway dashboard logins are separate.'
+            : signInError.message,
+        );
+      }
     } catch {
       setError('Administrator sign-in could not be completed. Check the connection and try again.');
     } finally {
@@ -75,7 +83,7 @@ function SignIn() {
       <form onSubmit={submit} className="w-full max-w-md rounded-2xl border border-slate-800 bg-[#111827] p-8 space-y-5">
         <div>
           <h1 className="text-2xl font-bold text-white">Poligram Admin</h1>
-          <p className="text-sm text-slate-400 mt-2">Sign in with your Supabase account. The API checks administrator permissions for protected actions.</p>
+          <p className="text-sm text-slate-400 mt-2">Sign in with your Poligram app account for this environment. Your Supabase and Railway dashboard logins are separate. If you do not have a Poligram login yet, create one in the mobile app; reviewer access is granted separately.</p>
         </div>
         <label className="block text-sm text-slate-300">Email
           <input autoComplete="username" type="email" required value={email} onChange={(event) => setEmail(event.target.value)} className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-white" />

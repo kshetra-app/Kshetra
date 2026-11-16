@@ -205,6 +205,12 @@ export const api = {
     const headers = await authenticatedHeaders();
     const params = new URLSearchParams({ limit: String(limit), offset: String(offset) });
     const res = await fetch(`${API_BASE_URL}/api/v1/admin/contributor-verifications?${params}`, { headers });
+    if (res.status === 401) {
+      throw new Error('Please sign in with a Poligram app account for this environment.');
+    }
+    if (res.status === 403) {
+      throw new Error('Your Poligram account is signed in, but contributor-review access has not been assigned.');
+    }
     if (!res.ok) throw new Error(`Contributor verification queue unavailable (${res.status}).`);
     const body = await res.json() as { success?: boolean; data?: unknown };
     const data = body.data as Partial<{
