@@ -2,16 +2,16 @@
   "evidenceMetadata": {
     "title": "Static migration safety verification",
     "scope": "Repository files and operator guidance only; no remote database or backup was queried.",
-    "verifiedAt": "2026-11-14T15:06:40.702Z",
+    "verifiedAt": "2026-11-16T07:18:04.588Z",
     "status": "STATIC_CHECKS_PASS"
   },
   "liveRecoveryStatus": "NOT_PROVEN_BY_THIS_CHECK",
-  "migrationFileCount": 108,
+  "migrationFileCount": 111,
   "checks": [
     {
       "name": "Canonical migration catalog is non-empty, uniquely versioned, and has no empty/invalid SQL files",
       "passed": true,
-      "details": "108 repository SQL files; 0 duplicate version(s); 0 invalid/empty file(s)."
+      "details": "111 repository SQL files; 0 duplicate version(s); 0 invalid/empty file(s)."
     },
     {
       "name": "Recovery guidance names one canonical SQL source and blocks stale live-deployment paths",

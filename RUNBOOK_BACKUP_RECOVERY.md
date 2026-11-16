@@ -1,23 +1,29 @@
 # Database Change and Recovery Runbook
 
-**Last reviewed:** 2026-11-14
+**Last reviewed:** 2026-11-16
 **Scope:** Supabase migration history, forward schema changes, and recovery evidence.
 **Authoritative SQL source:** `supabase/migrations/`
 
 ## Current verified state
 
-The repository contains 110 SQL migration files. The current remote ledgers were read directly by project reference on 2026-11-14:
+The repository contains 111 SQL migration files: versions `001`–`109` plus the historical prefixes `0035` and `0231`. Read-only checks were run against both explicit project references on 2026-11-16:
 
 | Environment | Supabase project reference | Ledger entries | CLI environment label |
-|---|---|---|---|
-| Staging | `fkpigozcqnmcvofuksar` | `099`–`108` | `production` |
-| Production | `ehfafcnimmjusyvplbah` | `099`–`104` | `unverified` |
+| ----------- | -------------------------- | -------------- | --------------------- |
+| Staging     | `fkpigozcqnmcvofuksar`     | `099`–`109`    | `production`          |
+| Production  | `ehfafcnimmjusyvplbah`     | `099`–`104`    | `unverified`          |
 
-The project references and Railway service configuration identify the environments. The Supabase CLI labels are retained above as observed metadata; they are not used to decide which database to change.
+The project references identify the environments: `fkpigozcqnmcvofuksar` is the Staging project named `panIN-staging`, and `ehfafcnimmjusyvplbah` is the Production project named `kshetra-app's Project`. The Supabase CLI labels are retained above as observed metadata; they are not used to decide which database to change.
+
+Supabase CLI 3.1.0's read-only `migration list` output shows versions `099`–`109` (Staging) and `099`–`104` (Production) as remote-only while also showing the same displayed versions as local-only. A separate read-only query of the ledger's raw `(version, name)` pairs confirms they match the corresponding repository filenames for every recorded version. The cause of the CLI duplication is unresolved. Do not use that output as a pending-migration allowlist or run a full-repository push.
 
 The repository's migrations `001`–`098` are not recorded in either remote ledger. Existing database objects and data show that the databases are not empty, but they do not prove which exact historical SQL ran. The staging and production catalogs also differ. Therefore, missing ledger rows are **unreconciled historical evidence**, not permission to replay or mark the old versions applied.
 
-Migrations `105` and `106` were applied to Staging only after a project-ref check, preflight, and dry run limited to those exact files. Migrations `107` and `108` were then applied only to Staging after live catalog review and isolated rollback tests. They remove client write permissions and obsolete client write policies on contributor KYC records while keeping authenticated reads and trusted API access. The KYC record and event counts were zero before and after both migrations; Production remains at `099`–`104` and was not changed. This does not reconcile the older history or make the two environments identical.
+Migrations `105` and `106` were applied to Staging only after a project-ref check, preflight, and dry run limited to those exact files. Migrations `107` and `108` were then applied only to Staging after live catalog review and isolated rollback tests. They remove client write permissions and obsolete client write policies on contributor KYC records while keeping authenticated reads and trusted API access. Migration `109` was subsequently applied to Staging to revoke broad client grants on a reviewed list of operational tables and tighten default privileges for future objects. The KYC record and event counts remain zero in Staging; Production has zero KYC records and does not have the KYC events table.
+
+The 2026-11-16 read-only postflight confirmed the existing `migration_conflicts` table still contains 3 rows in each environment. In Staging it has RLS enabled and no direct `anon` or `authenticated` table grants; the checked default privileges for future public tables, sequences, and functions also omit those client roles. Production has the same 3 rows, but still grants those roles table privileges on `migration_conflicts` and includes them in default privileges. These are observed differences, not an assertion that every RLS policy permits row access. No data, schema, or migration ledger was changed during this read-only check. Production changes remain gated on a separate reviewed release after the Staging application checks pass.
+
+The same day's Supabase backup-list checks returned `pitr_enabled: false` and no listed physical backups for either project. WALG was reported enabled, but that alone does not prove a recoverable restore point. Do not apply additional Production DDL until a recoverable backup or restore point is confirmed through the provider.
 
 See [`reports/supabase_migration_history_reconciliation_2026-11-14.md`](reports/supabase_migration_history_reconciliation_2026-11-14.md) for the evidence, schema comparison, data-count comparison, and limitations.
 
