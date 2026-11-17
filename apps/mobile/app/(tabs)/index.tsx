@@ -323,6 +323,7 @@ function FullMapScreen() {
   const [currentZoom, setCurrentZoom] = useState<number>(() => getStateZoom(stateCode));
   const [selectedBooth, setSelectedBooth] = useState<any | null>(null);
   const [hideOverlays, setHideOverlays] = useState(false);
+  const [headerOverlayHeight, setHeaderOverlayHeight] = useState(0);
 
   /** Delimitation seat projections (computed once) */
   const delimitationProjections = useMemo(() => computeAllSeatAllocations(), []);
@@ -1526,6 +1527,10 @@ function FullMapScreen() {
         <Animated.View
           style={[styles.header, { top: mapTopOffset, opacity: immersiveAnim }]}
           pointerEvents={isScreenImmersive ? 'none' : 'box-none'}
+          onLayout={(event) => {
+            const nextHeight = event.nativeEvent.layout.height;
+            setHeaderOverlayHeight((currentHeight) => currentHeight === nextHeight ? currentHeight : nextHeight);
+          }}
         >
           <View style={styles.headerTop}>
             <View style={{ flex: 1, minWidth: 0, marginRight: 6, justifyContent: 'center' }}>
@@ -1687,7 +1692,9 @@ function FullMapScreen() {
         <View
           style={{
             position: 'absolute',
-            top: isScreenImmersive ? mapTopOffset + 8 : mapTopOffset + (!hideOverlays ? 94 : 52),
+            top: isScreenImmersive
+              ? mapTopOffset + 8
+              : mapTopOffset + (!hideOverlays ? Math.max(headerOverlayHeight, 94) + 8 : 52),
             left: 14,
             right: 74,
             zIndex: 1000,

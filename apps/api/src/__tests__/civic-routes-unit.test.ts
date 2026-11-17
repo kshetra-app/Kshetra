@@ -1,6 +1,7 @@
 import Fastify, { FastifyInstance } from 'fastify';
 import { civicRoutes } from '../routes/civic';
 import { supabase, setSupabaseConfiguredForTesting } from '../lib/supabase';
+import { LEGACY_SYNTHETIC_CIVIC_ISSUE_IDS } from '@kshetra/shared';
 
 const mockProductionAuth = (userId: string) => {
   setSupabaseConfiguredForTesting(true);
@@ -1643,6 +1644,10 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
           appliedFilters.push([field, value]);
           return query;
         },
+        not: (field: string, operator: string, value: unknown) => {
+          appliedFilters.push([`${field}_${operator}`, value]);
+          return query;
+        },
         order: jest.fn(() => query),
         range: jest.fn(async (from: number, to: number) => ({
           data: [
@@ -1677,6 +1682,7 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
 
       expect(res.statusCode).toBe(200);
       expect(appliedFilters).toEqual([
+        ['id_in', `(${LEGACY_SYNTHETIC_CIVIC_ISSUE_IDS.join(',')})`],
         ['constituency_id', 'TS-AC-67'],
         ['state_code', 'TS'],
       ]);
@@ -1699,8 +1705,32 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
       expect(res.statusCode).toBe(400);
     });
 
+    it('keeps known legacy synthetic civic issues out of the authoritative result query', async () => {
+      const appliedFilters: Array<[string, unknown]> = [];
+      const query: any = {
+        not: (field: string, operator: string, value: unknown) => {
+          appliedFilters.push([`${field}_${operator}`, value]);
+          return query;
+        },
+        order: () => query,
+        range: async () => ({ data: [], count: 0, error: null }),
+      };
+      jest.spyOn(supabase, 'from').mockImplementation((() => ({
+        select: () => query,
+      })) as any);
+
+      const res = await app.inject({ method: 'GET', url: '/api/v1/civic/issues' });
+
+      expect(res.statusCode).toBe(200);
+      expect(appliedFilters).toEqual([
+        ['id_in', `(${LEGACY_SYNTHETIC_CIVIC_ISSUE_IDS.join(',')})`],
+      ]);
+      expect(JSON.parse(res.payload)).toMatchObject({ issues: [], total: 0 });
+    });
+
     it('does not report an unknown total as zero', async () => {
       const query: any = {
+        not: () => query,
         order: () => query,
         range: async () => ({ data: [], count: null, error: null }),
       };
@@ -1716,6 +1746,7 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
 
     it('preserves a confirmed empty result as a zero total', async () => {
       const query: any = {
+        not: () => query,
         order: () => query,
         range: async () => ({ data: [], count: 0, error: null }),
       };
@@ -1727,6 +1758,16 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
 
       expect(res.statusCode).toBe(200);
       expect(JSON.parse(res.payload)).toMatchObject({ issues: [], total: 0, page: 1, limit: 50 });
+    });
+
+    it('does not expose known synthetic civic issues through direct detail lookup', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: `/api/v1/civic/issues/${LEGACY_SYNTHETIC_CIVIC_ISSUE_IDS[0]}`,
+      });
+
+      expect(res.statusCode).toBe(404);
+      expect(JSON.parse(res.payload).code).toBe('NOT_FOUND');
     });
   });
 

@@ -572,26 +572,34 @@ export default function DelimitationHub() {
 
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border, borderBottomWidth: 1, paddingTop: insets.top + 8 }]}>
-        <Pressable onPress={() => router.back()} style={[styles.backBtn, { backgroundColor: colors.primaryLight }]}>
-          <Ionicons name="arrow-back" size={22} color={colors.primary} />
-        </Pressable>
-        <View style={{ flex: 1 }}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>{t('delimitation.hubTitle')}</Text>
-          <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>{t('delimitationExtended.headerSubtitle')}</Text>
+        <View style={styles.headerMainRow}>
+          <Pressable onPress={() => router.back()} style={[styles.backBtn, { backgroundColor: colors.primaryLight }]}>
+            <Ionicons name="arrow-back" size={22} color={colors.primary} />
+          </Pressable>
+          <View style={styles.headerText}>
+            <Text style={[styles.headerTitle, { color: colors.text }]} numberOfLines={1} ellipsizeMode="tail">
+              {t('delimitation.hubTitle')}
+            </Text>
+            <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]} numberOfLines={2} ellipsizeMode="tail">
+              {t('delimitationExtended.headerSubtitle')}
+            </Text>
+          </View>
+          <Pressable
+            accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
+            style={[styles.backBtn, { backgroundColor: colors.surfaceElevated }]}
+            onPress={() => setHelpVisible(true)}
+          >
+            <Ionicons name="help-circle-outline" size={20} color={colors.textSecondary} />
+          </Pressable>
         </View>
-        <View style={[styles.liveBadge, { backgroundColor: statusConfig.color + '20' }]}>
-          <View style={[styles.liveDot, { backgroundColor: statusConfig.color }]} />
-          <Text style={[styles.liveText, { color: statusConfig.color }]}>
-            {statusAvailable && statusLabel ? statusLabel : t('common.dataUnavailable')}
-          </Text>
+        <View style={styles.headerStatusRow}>
+          <View style={[styles.liveBadge, { backgroundColor: statusConfig.color + '20' }]}>
+            <View style={[styles.liveDot, { backgroundColor: statusConfig.color }]} />
+            <Text style={[styles.liveText, { color: statusConfig.color }]} numberOfLines={1}>
+              {statusAvailable && statusLabel ? statusLabel : t('common.dataUnavailable')}
+            </Text>
+          </View>
         </View>
-        <Pressable
-          accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
-          style={[styles.backBtn, { backgroundColor: colors.surfaceElevated, marginLeft: 6 }]}
-          onPress={() => setHelpVisible(true)}
-        >
-          <Ionicons name="help-circle-outline" size={20} color={colors.textSecondary} />
-        </Pressable>
       </View>
 
       {/* Tabs */}
@@ -655,12 +663,22 @@ export default function DelimitationHub() {
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   header: {
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+  },
+  headerMainRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 10,
     gap: 10,
+  },
+  headerText: {
+    flex: 1,
+    minWidth: 0,
+  },
+  headerStatusRow: {
+    marginTop: 7,
+    marginLeft: 46,
+    alignItems: 'flex-start',
   },
   backBtn: {
     width: 36, height: 36, borderRadius: 18,

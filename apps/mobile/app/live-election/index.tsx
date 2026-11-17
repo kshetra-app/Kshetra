@@ -14,10 +14,16 @@ import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 type Tab = 'overview' | 'constituencies' | 'pipeline';
 
 const TAB_KEYS: { key: Tab; i18nKey: string; icon: string }[] = [
-  { key: 'overview', i18nKey: 'liveElection.tabOverview', icon: 'bar-chart' },
-  { key: 'constituencies', i18nKey: 'liveElection.tabConstituencies', icon: 'list' },
-  { key: 'pipeline', i18nKey: 'liveElection.tabPipeline', icon: 'git-network' },
+  { key: 'overview', i18nKey: 'liveElection.tabs.overview', icon: 'bar-chart' },
+  { key: 'constituencies', i18nKey: 'liveElection.tabs.constituencies', icon: 'list' },
+  { key: 'pipeline', i18nKey: 'liveElection.tabs.pipeline', icon: 'git-network' },
 ];
+
+const TAB_LABELS: Record<Tab, string> = {
+  overview: 'Overview',
+  constituencies: 'Constituencies',
+  pipeline: 'Data pipeline',
+};
 
 export default function LiveElectionScreen() {
   const { t } = useTranslation();
@@ -80,7 +86,12 @@ export default function LiveElectionScreen() {
             onPress={() => setActiveTab(tab.key)}
           >
             <Ionicons name={(activeTab === tab.key ? tab.icon : `${tab.icon}-outline`) as any} size={15} color={activeTab === tab.key ? '#FFFFFF' : colors.textMuted} />
-            <Text style={[styles.tabLabel, { color: colors.textSecondary }, activeTab === tab.key && { color: '#FFFFFF', fontWeight: '700' }]}>{t(tab.i18nKey)}</Text>
+            <Text
+              style={[styles.tabLabel, { color: colors.textSecondary }, activeTab === tab.key && { color: '#FFFFFF', fontWeight: '700' }]}
+              numberOfLines={1}
+            >
+              {t(tab.i18nKey, { defaultValue: TAB_LABELS[tab.key] })}
+            </Text>
           </Pressable>
         ))}
       </ScrollView>

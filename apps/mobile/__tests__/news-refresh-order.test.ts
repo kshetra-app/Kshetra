@@ -58,6 +58,7 @@ describe('news refresh ordering', () => {
       items: [],
       generatedAt: '',
       loading: false,
+      loaded: false,
       language: null,
     });
   });
@@ -71,11 +72,14 @@ describe('news refresh ordering', () => {
 
     const olderRefresh = useNewsStore.getState().refresh();
     const newerRefresh = useNewsStore.getState().refresh();
+    expect(useNewsStore.getState().loaded).toBe(false);
+    expect(useNewsStore.getState().loading).toBe(true);
     await Promise.resolve();
 
     newer.resolve(makeFeed('newer-story'));
     await newerRefresh;
     expect(useNewsStore.getState().items.map((item) => item.id)).toEqual(['newer-story']);
+    expect(useNewsStore.getState().loaded).toBe(true);
 
     older.resolve(makeFeed('older-story'));
     await olderRefresh;

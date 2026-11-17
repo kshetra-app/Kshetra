@@ -11,6 +11,7 @@ import {
 } from '../services/civicService';
 import { canonicalGeographyService } from '../services/canonicalGeographyService';
 import { checkContentModeration } from '../services/contentModeration';
+import { LEGACY_SYNTHETIC_CIVIC_ISSUE_IDS } from '@kshetra/shared';
 
 const isProductionRuntime = () => isProductionLikeRuntime();
 
@@ -2281,6 +2282,7 @@ export async function civicRoutes(app: FastifyInstance) {
       if (isSupabaseConfigured) {
         try {
           let q = supabase.from('civic_issues').select('*', { count: 'exact' });
+          q = q.not('id', 'in', `(${LEGACY_SYNTHETIC_CIVIC_ISSUE_IDS.join(',')})`);
           if (constituencyId) q = q.eq('constituency_id', constituencyId);
           if (stateCode) q = q.eq('state_code', stateCode);
           if (category && category !== 'all') q = q.eq('category', category);
@@ -2367,6 +2369,11 @@ export async function civicRoutes(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { id } = request.params;
+      if ((LEGACY_SYNTHETIC_CIVIC_ISSUE_IDS as readonly string[]).includes(id)) {
+        return sendApiError(reply, request, 404, 'Not Found', `Civic issue ${id} not found`, {
+          code: 'NOT_FOUND',
+        });
+      }
       const issue = await civicService.getIssue(id);
       if (!issue) {
         return sendApiError(reply, request, 404, 'Not Found', `Civic issue ${id} not found`, {

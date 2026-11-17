@@ -157,6 +157,8 @@ export default function PagesScreen() {
               styles.tabLabel,
               { color: activeTab === 'aspirants' ? '#002B7F' : '#64748B', fontWeight: activeTab === 'aspirants' ? '900' : '600' },
             ]}
+            numberOfLines={1}
+            ellipsizeMode="tail"
           >
             {t('pages.tabAspirants', { defaultValue: 'Civic Aspirants' })}
           </Text>
@@ -179,6 +181,8 @@ export default function PagesScreen() {
               styles.tabLabel,
               { color: activeTab === 'politicians' ? '#002B7F' : '#64748B', fontWeight: activeTab === 'politicians' ? '900' : '600' },
             ]}
+            numberOfLines={1}
+            ellipsizeMode="tail"
           >
             {t('pages.tabPoliticians', { defaultValue: 'Representatives' })}
           </Text>
@@ -201,6 +205,8 @@ export default function PagesScreen() {
               styles.tabLabel,
               { color: activeTab === 'my_page' ? '#002B7F' : '#64748B', fontWeight: activeTab === 'my_page' ? '900' : '600' },
             ]}
+            numberOfLines={1}
+            ellipsizeMode="tail"
           >
             {t('pages.tabMyPage', { defaultValue: 'My Page' })}
           </Text>
@@ -701,15 +707,20 @@ const styles = StyleSheet.create({
   },
   tab: {
     flex: 1,
-    paddingVertical: 12,
+    minWidth: 0,
+    paddingVertical: 10,
+    paddingHorizontal: 2,
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 6,
   },
   tabLabel: {
-    fontSize: 13,
+    minWidth: 0,
+    flexShrink: 1,
+    fontSize: 11,
     fontWeight: '700',
+    textAlign: 'center',
   },
   content: { flex: 1 },
   tabContent: { padding: 16 },

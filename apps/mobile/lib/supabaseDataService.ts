@@ -22,6 +22,7 @@ import type { ChallengeParticipation, CivicBadge, CommunityChallenge } from './a
 import type { Poll } from './feedTypes';
 import type { ContributorKYCStatusRecord } from './contentAccountabilityTypes';
 import { CONTENT_PAGE_SIZE, getContentArchiveCutoff, type ContentPeriod } from '@kshetra/shared';
+import { LEGACY_SYNTHETIC_POSTS_FILTER } from './legacySyntheticPosts';
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 
@@ -970,6 +971,7 @@ export async function fetchPostsByAuthor(authorId: string, limit = 30): Promise<
       .select('*')
       .eq('author_id', authorId)
       .eq('is_deleted', false)
+      .not('id', 'in', LEGACY_SYNTHETIC_POSTS_FILTER)
       .order('created_at', { ascending: false })
       .limit(limit);
     if (error) throw error;
@@ -1023,7 +1025,11 @@ export async function fetchBlendedFeed(
       followedIds = (await fetchFollowedUserIds(viewerId)) ?? [];
     }
 
-    let query = supabase.from('posts').select('*').eq('is_deleted', false);
+    let query = supabase
+      .from('posts')
+      .select('*')
+      .eq('is_deleted', false)
+      .not('id', 'in', LEGACY_SYNTHETIC_POSTS_FILTER);
 
     if (followedIds.length > 0 && constituencyId) {
       const orFilter = `author_id.in.(${followedIds.join(',')}),constituency_id.eq.${constituencyId}`;
@@ -1066,6 +1072,7 @@ export async function fetchFeedForState(
       .select('*')
       .eq('state_code', stateCode)
       .eq('is_deleted', false)
+      .not('id', 'in', LEGACY_SYNTHETIC_POSTS_FILTER)
       .order('created_at', { ascending: false })
       .limit(limit);
     if (error) throw error;

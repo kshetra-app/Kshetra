@@ -39,6 +39,7 @@ export default function MapColorToggle({ mode, onModeChange, allowedModes }: Map
       <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
         <ScrollView
           horizontal
+          style={styles.modeScroll}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
@@ -118,7 +119,9 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 10,
     padding: 2,
+    height: 36,
     maxWidth: '100%',
+    justifyContent: 'center',
     shadowColor: '#2C1810',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -128,6 +131,10 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  modeScroll: {
+    height: 30,
+    flexGrow: 0,
   },
   dataRow: {
     flexDirection: 'row',

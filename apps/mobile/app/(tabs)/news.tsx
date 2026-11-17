@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   AppState,
+  ActivityIndicator,
   View,
   Text,
   StyleSheet,
@@ -44,6 +45,7 @@ export default function NewsScreen() {
   const items = useNewsStore((s) => s.items);
   const generatedAt = useNewsStore((s) => s.generatedAt);
   const loading = useNewsStore((s) => s.loading);
+  const loaded = useNewsStore((s) => s.loaded);
   const language = useNewsStore((s) => s.language);
   const category = useNewsStore((s) => s.category);
   const bookmarks = useNewsStore((s) => s.bookmarks);
@@ -336,26 +338,33 @@ export default function NewsScreen() {
         refreshControl={<RefreshControl refreshing={loading} onRefresh={refresh} tintColor={colors.primary} />}
         contentContainerStyle={{ paddingBottom: 100 }}
         ListEmptyComponent={
-          <View style={styles.empty}>
-            <Ionicons name={showBookmarks ? 'bookmark-outline' : 'newspaper-outline'} size={48} color={colors.textMuted} />
-            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-              {showBookmarks ? 'No saved stories yet' : 'No stories match these filters'}
-            </Text>
-            {(language !== null || showBookmarks || category !== 'top') && (
-              <Pressable
-                style={[styles.resetEmptyBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
-                onPress={() => {
-                  tapLight();
-                  setLanguage(null);
-                  setCategory('top');
-                  setShowBookmarks(false);
-                  if (stateCode !== 'IN') setScope('state');
-                }}
-              >
-                <Text style={[styles.resetEmptyBtnText, { color: colors.primary }]}>Show all news</Text>
-              </Pressable>
-            )}
-          </View>
+          !showBookmarks && (loading || !loaded) ? (
+            <View style={styles.empty}>
+              <ActivityIndicator size="large" color={colors.primary} />
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>{t('common.loading')}</Text>
+            </View>
+          ) : (
+            <View style={styles.empty}>
+              <Ionicons name={showBookmarks ? 'bookmark-outline' : 'newspaper-outline'} size={48} color={colors.textMuted} />
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                {showBookmarks ? 'No saved stories yet' : 'No stories match these filters'}
+              </Text>
+              {(language !== null || showBookmarks || category !== 'top') && (
+                <Pressable
+                  style={[styles.resetEmptyBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                  onPress={() => {
+                    tapLight();
+                    setLanguage(null);
+                    setCategory('top');
+                    setShowBookmarks(false);
+                    if (stateCode !== 'IN') setScope('state');
+                  }}
+                >
+                  <Text style={[styles.resetEmptyBtnText, { color: colors.primary }]}>Show all news</Text>
+                </Pressable>
+              )}
+            </View>
+          )
         }
       />
 

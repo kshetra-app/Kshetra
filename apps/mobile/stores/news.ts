@@ -130,6 +130,7 @@ interface NewsState {
   generatedAt: string;
   refreshIntervalMin: number;
   loading: boolean;
+  loaded: boolean;
 
   /** User-chosen consumption language (null = show all languages). */
   language: NewsLanguageCode | null;
@@ -150,6 +151,7 @@ export const useNewsStore = create<NewsState>()(
       generatedAt: IS_LIVE_ENVIRONMENT ? '' : SEED_NEWS_FEED.generatedAt,
       refreshIntervalMin: SEED_NEWS_FEED.refreshIntervalMin,
       loading: false,
+      loaded: false,
 
       language: null,
       category: 'top',
@@ -185,7 +187,7 @@ export const useNewsStore = create<NewsState>()(
             refreshIntervalMin: feed.refreshIntervalMin,
           });
         } finally {
-          if (requestSequence === newsRefreshSequence) set({ loading: false });
+          if (requestSequence === newsRefreshSequence) set({ loading: false, loaded: true });
         }
       },
     }),
