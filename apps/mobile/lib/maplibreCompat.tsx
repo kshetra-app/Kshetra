@@ -156,14 +156,29 @@ try {
     const { defaultSettings, minZoomLevel, maxZoomLevel, ...rest } = props;
     const innerRef = React.useRef<any>(null);
 
+    const normalizePadding = (padding: any) => {
+      if (!padding || typeof padding !== 'object') return undefined;
+      if ('paddingTop' in padding || 'paddingRight' in padding || 'paddingBottom' in padding || 'paddingLeft' in padding) {
+        return {
+          top: padding.paddingTop ?? 0,
+          right: padding.paddingRight ?? 0,
+          bottom: padding.paddingBottom ?? 0,
+          left: padding.paddingLeft ?? 0,
+        };
+      }
+      return padding;
+    };
+
     React.useImperativeHandle(outerRef, () => ({
       setCamera: (opts: any) => {
-        const { centerCoordinate, zoomLevel, pitch, bearing, animationDuration = 600 } = opts || {};
+        const { centerCoordinate, zoomLevel, pitch, bearing, heading, padding, animationDuration = 600 } = opts || {};
         const stopOpts: any = {};
         if (centerCoordinate !== undefined) stopOpts.center = centerCoordinate;
         if (zoomLevel !== undefined) stopOpts.zoom = zoomLevel;
         if (pitch !== undefined) stopOpts.pitch = pitch;
-        if (bearing !== undefined) stopOpts.bearing = bearing;
+        if (bearing !== undefined || heading !== undefined) stopOpts.bearing = bearing ?? heading;
+        const nativePadding = normalizePadding(padding);
+        if (nativePadding) stopOpts.padding = nativePadding;
         stopOpts.duration = animationDuration;
         stopOpts.easing = centerCoordinate !== undefined ? 'fly' : 'ease';
         innerRef.current?.setStop(stopOpts);
@@ -173,7 +188,7 @@ try {
     const initialViewState = defaultSettings ? {
       center: defaultSettings.centerCoordinate,
       zoom: defaultSettings.zoomLevel,
-      padding: defaultSettings.padding,
+      padding: normalizePadding(defaultSettings.padding),
     } : undefined;
 
     return (
