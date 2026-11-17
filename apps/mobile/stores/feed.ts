@@ -20,14 +20,46 @@ import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 import { logContentAction } from '../lib/contentAccountability';
 import { SequenceGuard } from '../lib/staleResponseGuard';
 import { useAuthStore } from './auth';
+import { CONTENT_PAGE_SIZE, isInContentPeriod, type ContentPeriod } from '@kshetra/shared';
 
 const feedRefreshGuard = new SequenceGuard<string>();
 const FEED_AUTO_REFRESH_COOLDOWN_MS = 15_000;
 const feedRefreshStartedAt = new Map<string, number>();
 const feedAutoRefreshInFlight = new Map<string, Promise<void>>();
 
-function getFeedRefreshKey(userId: string | null, stateCode: string, constituencyId: string | null) {
-  return JSON.stringify([userId, stateCode, constituencyId]);
+function getFeedRefreshKey(
+  userId: string | null,
+  stateCode: string,
+  constituencyId: string | null,
+  period: ContentPeriod,
+) {
+  return JSON.stringify([userId, stateCode, constituencyId, period]);
+}
+
+function mapSupabasePost(post: any): Post {
+  return {
+    id: post.id,
+    author: {
+      id: post.author_id,
+      displayName: post.author_display_name || post.author_name || 'Citizen',
+      isVerified: post.author_is_verified ?? false,
+      avatarUrl: post.author_avatar_url,
+    },
+    stateCode: post.state_code,
+    constituencyId: post.constituency_id,
+    constituencyName: post.constituency_name,
+    content: post.content,
+    type: (post.type as PostType) ?? 'discussion',
+    replyCount: post.reply_count ?? 0,
+    reactionCount: post.reaction_count ?? 0,
+    isPinned: post.is_pinned ?? false,
+    isDeleted: post.is_deleted ?? false,
+    language: post.language ?? 'en',
+    createdAt: post.created_at,
+    updatedAt: post.updated_at,
+    hashtags: post.hashtags ?? [],
+    userReaction: post.user_reaction,
+  };
 }
 
 function markFeedRefreshStarted(key: string) {
@@ -1321,6 +1353,10 @@ export type CommentSubmissionOutcome = 'synced' | 'queued' | 'local' | 'failed';
 
 interface FeedState {
   posts: Post[];
+  feedPeriod: ContentPeriod;
+  feedOffset: number;
+  feedHasMore: boolean;
+  feedLoadingMore: boolean;
   comments: Record<string, Comment[]>;
   feedFilter: PostType | 'all';
   scopeFilter: FeedScope;
@@ -1340,6 +1376,7 @@ interface FeedState {
   setSearchQuery: (query: string) => void;
   setSortBy: (sort: SortOrder) => void;
   setVerifiedOnly: (val: boolean) => void;
+  setFeedPeriod: (period: ContentPeriod) => void;
   clearAllFilters: () => void;
 
   // Post Actions
@@ -1363,8 +1400,17 @@ interface FeedState {
   isFollowing: (userId: string) => boolean;
 
   // Sync & Realtime
-  refreshFeed: (stateCode?: string, constituencyId?: string | null) => Promise<void>;
-  refreshFeedIfStale: (stateCode?: string, constituencyId?: string | null) => Promise<void>;
+  refreshFeed: (
+    stateCode?: string,
+    constituencyId?: string | null,
+    period?: ContentPeriod,
+  ) => Promise<void>;
+  refreshFeedIfStale: (
+    stateCode?: string,
+    constituencyId?: string | null,
+    period?: ContentPeriod,
+  ) => Promise<void>;
+  loadMoreFeed: (stateCode?: string, constituencyId?: string | null) => Promise<void>;
   receiveRealtimePost: (serverPost: any) => void;
   receiveRealtimeComment: (serverComment: any) => void;
   receiveRealtimeReaction: (payload: any) => void;
@@ -1390,6 +1436,10 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
   clearError: () => set({ lastError: null }),
   lastPostTime: 0,
   lastCommentTime: 0,
+  feedPeriod: 'recent',
+  feedOffset: 0,
+  feedHasMore: true,
+  feedLoadingMore: false,
   feedFilter: 'all',
   scopeFilter: 'state' as FeedScope,
   selectedConstituency: null,
@@ -1407,6 +1457,21 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
   setSearchQuery: (query) => set({ searchQuery: query }),
   setSortBy: (sort) => set({ sortBy: sort }),
   setVerifiedOnly: (val) => set({ verifiedOnly: val }),
+  setFeedPeriod: (period) => {
+    if (get().feedPeriod === period) return;
+    const localPending = get().posts.filter(
+      (post) => post.syncStatus && post.syncStatus !== 'SYNCED' && isInContentPeriod(post.createdAt, period),
+    );
+    set({
+      feedPeriod: period,
+      posts: localPending,
+      feedOffset: 0,
+      feedHasMore: true,
+      feedLoadingMore: false,
+      isLive: false,
+      lastError: null,
+    });
+  },
 
   clearAllFilters: () =>
     set({
@@ -1943,14 +2008,17 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
     return get().followedUserIds.includes(userId);
   },
 
-  refreshFeedIfStale: async (stateCode = 'TS', constituencyId = null) => {
+  refreshFeedIfStale: async (stateCode = 'TS', constituencyId = null, requestedPeriod) => {
+    const period = requestedPeriod ?? get().feedPeriod;
     const requestOwnerId = useAuthStore.getState().user?.id ?? null;
-    const key = getFeedRefreshKey(requestOwnerId, stateCode, constituencyId);
+    const key = getFeedRefreshKey(requestOwnerId, stateCode, constituencyId, period);
     const inFlight = feedAutoRefreshInFlight.get(key);
     if (inFlight) return inFlight;
     if (Date.now() - (feedRefreshStartedAt.get(key) ?? 0) < FEED_AUTO_REFRESH_COOLDOWN_MS) return;
 
-    const refresh = get().refreshFeed(stateCode, constituencyId);
+    const refresh = period === 'recent'
+      ? get().refreshFeed(stateCode, constituencyId)
+      : get().refreshFeed(stateCode, constituencyId, period);
     feedAutoRefreshInFlight.set(key, refresh);
     try {
       await refresh;
@@ -1959,14 +2027,17 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
     }
   },
 
-  refreshFeed: async (stateCode = 'TS', constituencyId = null) => {
+  refreshFeed: async (stateCode = 'TS', constituencyId = null, requestedPeriod) => {
+    const period = requestedPeriod ?? get().feedPeriod;
     const authUser = useAuthStore.getState().user;
     const requestOwnerId = authUser?.id ?? null;
-    const key = getFeedRefreshKey(requestOwnerId, stateCode, constituencyId);
+    const key = getFeedRefreshKey(requestOwnerId, stateCode, constituencyId, period);
     markFeedRefreshStarted(key);
     const refreshToken = feedRefreshGuard.startRequest(key);
     const isStale = () =>
-      refreshToken.isStale() || (useAuthStore.getState().user?.id ?? null) !== requestOwnerId;
+      refreshToken.isStale() ||
+      (useAuthStore.getState().user?.id ?? null) !== requestOwnerId ||
+      get().feedPeriod !== period;
     set({ loading: true });
     try {
       const serverFollowedIds = authUser?.id
@@ -1987,50 +2058,40 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
         authUser?.id,
         constituencyId,
         stateCode,
-        50,
+        CONTENT_PAGE_SIZE,
         followedIds,
+        period,
+        0,
       );
       if (isStale()) return;
       if (livePosts && livePosts.length > 0) {
-        const transformed: Post[] = livePosts.map((p: any) => ({
-          id: p.id,
-          author: {
-            id: p.author_id,
-            displayName: p.author_display_name || p.author_name || 'Citizen',
-            isVerified: p.author_is_verified ?? false,
-            avatarUrl: p.author_avatar_url,
-          },
-          stateCode: p.state_code,
-          constituencyId: p.constituency_id,
-          constituencyName: p.constituency_name,
-          content: p.content,
-          type: (p.type as PostType) ?? 'discussion',
-          replyCount: p.reply_count ?? 0,
-          reactionCount: p.reaction_count ?? 0,
-          isPinned: p.is_pinned ?? false,
-          isDeleted: p.is_deleted ?? false,
-          language: p.language ?? 'en',
-          createdAt: p.created_at,
-          updatedAt: p.updated_at,
-          hashtags: p.hashtags ?? [],
-          userReaction: p.user_reaction,
-        }));
+        const transformed: Post[] = livePosts.map(mapSupabasePost);
         const ranked = rankPostsV1(transformed, { constituencyId, stateCode });
-        const localPending = get().posts.filter((p) => p.syncStatus && p.syncStatus !== 'SYNCED');
+        const localPending = get().posts.filter(
+          (p) => p.syncStatus && p.syncStatus !== 'SYNCED' && isInContentPeriod(p.createdAt, period),
+        );
         const seen = new Set<string>();
         const deduped = [...localPending, ...ranked].filter((p) => {
           if (seen.has(p.id)) return false;
           seen.add(p.id);
           return true;
         });
-        set({ posts: deduped, isLive: true, lastError: null });
+        set({
+          posts: deduped,
+          feedOffset: livePosts.length,
+          feedHasMore: livePosts.length === CONTENT_PAGE_SIZE,
+          isLive: true,
+          lastError: null,
+        });
       } else if (IS_LIVE_ENVIRONMENT) {
         if (livePosts === null) {
           // Keep the last server-backed feed on transient failures; never add demo posts.
           set({ isLive: false, lastError: 'Feed refresh failed. Showing previously loaded posts.' });
         } else {
-          const localPending = get().posts.filter((p) => p.syncStatus && p.syncStatus !== 'SYNCED');
-          set({ posts: localPending, isLive: true, lastError: null });
+          const localPending = get().posts.filter(
+            (p) => p.syncStatus && p.syncStatus !== 'SYNCED' && isInContentPeriod(p.createdAt, period),
+          );
+          set({ posts: localPending, feedOffset: 0, feedHasMore: false, isLive: true, lastError: null });
         }
       } else {
         // Offline / demo fallback: blend followed authors + constituency posts, ranked by Feed Ranking V1
@@ -2050,14 +2111,16 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
         });
         const ranked = rankPostsV1(filteredCandidates, { constituencyId, stateCode });
 
-        const localPending = get().posts.filter((p) => p.syncStatus && p.syncStatus !== 'SYNCED');
+        const localPending = get().posts.filter(
+          (p) => p.syncStatus && p.syncStatus !== 'SYNCED' && isInContentPeriod(p.createdAt, period),
+        );
         const seen = new Set<string>();
         const deduped = [...localPending, ...ranked].filter((p) => {
           if (seen.has(p.id)) return false;
           seen.add(p.id);
           return true;
         });
-        set({ posts: deduped });
+        set({ posts: deduped, feedOffset: 0, feedHasMore: false });
       }
     } catch (_) {
       if (isStale()) return;
@@ -2082,16 +2145,68 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
       });
       const ranked = rankPostsV1(filteredCandidates, { constituencyId, stateCode });
 
-      const localPending = get().posts.filter((p) => p.syncStatus && p.syncStatus !== 'SYNCED');
+      const localPending = get().posts.filter(
+        (p) => p.syncStatus && p.syncStatus !== 'SYNCED' && isInContentPeriod(p.createdAt, period),
+      );
       const seen = new Set<string>();
       const deduped = [...localPending, ...ranked].filter((p) => {
         if (seen.has(p.id)) return false;
         seen.add(p.id);
         return true;
       });
-      set({ posts: deduped });
+      set({ posts: deduped, feedOffset: 0, feedHasMore: false });
     } finally {
-      if (!refreshToken.isStale()) set({ loading: false });
+      if (!refreshToken.isStale() && get().feedPeriod === period) set({ loading: false });
+    }
+  },
+
+  loadMoreFeed: async (stateCode = 'TS', constituencyId = null) => {
+    const current = get();
+    if (current.feedLoadingMore || !current.feedHasMore || !IS_LIVE_ENVIRONMENT) return;
+
+    const period = current.feedPeriod;
+    const offset = current.feedOffset;
+    const authUser = useAuthStore.getState().user;
+    const requestOwnerId = authUser?.id ?? null;
+    set({ feedLoadingMore: true });
+    try {
+      const serverFollowedIds = authUser?.id
+        ? await dataService.fetchFollowedUserIds(authUser.id)
+        : null;
+      const followedIds = Array.isArray(serverFollowedIds)
+        ? serverFollowedIds
+        : get().followedUserOwnerId === requestOwnerId
+          ? get().followedUserIds
+          : [];
+      const rows = await dataService.fetchBlendedFeed(
+        authUser?.id,
+        constituencyId,
+        stateCode,
+        CONTENT_PAGE_SIZE,
+        followedIds,
+        period,
+        offset,
+      );
+      if (
+        rows === null ||
+        get().feedPeriod !== period ||
+        (useAuthStore.getState().user?.id ?? null) !== requestOwnerId
+      ) {
+        return;
+      }
+      const page = rows.map(mapSupabasePost);
+      const seen = new Set(get().posts.map((post) => post.id));
+      const appended = page.filter((post) => !seen.has(post.id));
+      set((state) => ({
+        posts: [...state.posts, ...appended],
+        feedOffset: offset + rows.length,
+        feedHasMore: rows.length === CONTENT_PAGE_SIZE,
+        lastError: null,
+      }));
+    } catch {
+      set({ lastError: 'Could not load more posts. Please try again.' });
+    } finally {
+      set({ feedLoadingMore: false });
     }
   },
 

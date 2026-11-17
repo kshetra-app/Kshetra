@@ -45,7 +45,7 @@ function makeFeed(id: string): NewsFeed {
         language: 'en',
         category: 'top',
         scope: 'national',
-        publishedAt: '2026-11-12T10:00:00.000Z',
+        publishedAt: new Date(Date.now() - 60_000).toISOString(),
       },
     ],
   };
@@ -98,5 +98,37 @@ describe('news refresh ordering', () => {
     expect(useNewsStore.getState().items).toEqual([]);
     expect(useNewsStore.getState().generatedAt).toBe(emptyFeed.generatedAt);
     expect(scrapeNewsOnDevice).not.toHaveBeenCalled();
+  });
+
+  it('removes expired on-device news cache instead of reviving stale headlines', async () => {
+    const storage = jest.requireMock('../lib/storage').mmkvStorage;
+    const expiredCache = JSON.stringify({
+      version: 1,
+      generatedAt: '2026-10-01T00:00:00.000Z',
+      refreshIntervalMin: 60,
+      sources: [],
+      items: [
+        {
+          id: 'expired-story',
+          title: 'Expired story',
+          sourceUrl: 'https://example.test/expired',
+          source: { id: 'test', name: 'Test', domain: 'example.test', language: 'en' },
+          language: 'en',
+          category: 'top',
+          scope: 'national',
+          publishedAt: '2026-10-01T00:00:00.000Z',
+        },
+      ],
+    });
+    storage.getItem.mockImplementation((key: string) =>
+      key === 'poligram-news-cache:all' ? expiredCache : null,
+    );
+    (apiClient.news.getFeed as jest.Mock).mockRejectedValue(new Error('network offline'));
+    (scrapeNewsOnDevice as jest.Mock).mockResolvedValue(null);
+
+    await useNewsStore.getState().refresh();
+
+    expect(storage.removeItem).toHaveBeenCalledWith('poligram-news-cache:all');
+    expect(useNewsStore.getState().items).toEqual([]);
   });
 });

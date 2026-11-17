@@ -6,6 +6,7 @@ import type { PoliticalShort } from '../data/politicalShortsData';
 import { fetchShorts, incrementShortView, approveShort as approveShortApi, flagShort as flagShortApi } from '../lib/supabaseDataService';
 import { enqueue } from '../lib/offlineSync';
 import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
+import { CONTENT_PAGE_SIZE, type ContentPeriod } from '@kshetra/shared';
 
 const SEEDED_SHORT_IDS = new Set(POLITICAL_SHORTS.map((short) => short.id));
 
@@ -24,6 +25,9 @@ interface ApprovalRecord {
 
 interface PoliticalShortsState {
   shorts: PoliticalShort[];
+  archivedShorts: PoliticalShort[];
+  shortsHasMore: Record<ContentPeriod, boolean>;
+  shortsLoadingMore: ContentPeriod | null;
   userApprovals: Record<string, ApprovalRecord[]>; // shortId -> approvals
   flaggedShorts: Record<string, string[]>; // shortId -> userIds who flagged
 
@@ -35,7 +39,8 @@ interface PoliticalShortsState {
   approveShort: (shortId: string, userId: string, userConstituencyId: string) => Promise<void>;
   flagShort: (shortId: string, userId: string) => Promise<void>;
   incrementViews: (shortId: string) => void;
-  hydrateShorts: (stateCode?: string) => Promise<void>;
+  hydrateShorts: (stateCode?: string, period?: ContentPeriod) => Promise<void>;
+  loadMoreShorts: (stateCode?: string, period?: ContentPeriod) => Promise<void>;
   resetShorts: () => void;
 }
 
@@ -43,6 +48,9 @@ export const usePoliticalShortsStore = create<PoliticalShortsState>()(
   persist(
     (set, get) => ({
       shorts: IS_LIVE_ENVIRONMENT ? [] : POLITICAL_SHORTS,
+      archivedShorts: [],
+      shortsHasMore: { recent: true, archive: true },
+      shortsLoadingMore: null,
       userApprovals: {},
       flaggedShorts: {},
 
@@ -73,10 +81,12 @@ export const usePoliticalShortsStore = create<PoliticalShortsState>()(
           const updatedApprovals = [...currentApprovals, { userId, constituencyId: userConstituencyId }];
           
           // Find the short to update
-          const shortIndex = state.shorts.findIndex((s) => s.id === shortId);
+          const isArchived = state.archivedShorts.some((s) => s.id === shortId);
+          const source = isArchived ? state.archivedShorts : state.shorts;
+          const shortIndex = source.findIndex((s) => s.id === shortId);
           if (shortIndex === -1) return {};
 
-          const updatedShorts = [...state.shorts];
+          const updatedShorts = [...source];
           const short = { ...updatedShorts[shortIndex] };
 
           // Curation logic based on current visibility level
@@ -113,7 +123,7 @@ export const usePoliticalShortsStore = create<PoliticalShortsState>()(
               ...state.userApprovals,
               [shortId]: updatedApprovals,
             },
-            shorts: updatedShorts,
+            ...(isArchived ? { archivedShorts: updatedShorts } : { shorts: updatedShorts }),
           };
         });
 
@@ -135,10 +145,12 @@ export const usePoliticalShortsStore = create<PoliticalShortsState>()(
           }
 
           const updatedFlags = [...currentFlags, userId];
-          const shortIndex = state.shorts.findIndex((s) => s.id === shortId);
+          const isArchived = state.archivedShorts.some((s) => s.id === shortId);
+          const source = isArchived ? state.archivedShorts : state.shorts;
+          const shortIndex = source.findIndex((s) => s.id === shortId);
           if (shortIndex === -1) return {};
 
-          const updatedShorts = [...state.shorts];
+          const updatedShorts = [...source];
           const short = { ...updatedShorts[shortIndex] };
 
           // If flags exceed 5, hide the short from all visibility (essentially soft-delete / suspend)
@@ -153,7 +165,7 @@ export const usePoliticalShortsStore = create<PoliticalShortsState>()(
               ...state.flaggedShorts,
               [shortId]: updatedFlags,
             },
-            shorts: updatedShorts,
+            ...(isArchived ? { archivedShorts: updatedShorts } : { shorts: updatedShorts }),
           };
         });
 
@@ -173,24 +185,59 @@ export const usePoliticalShortsStore = create<PoliticalShortsState>()(
           const updatedShorts = state.shorts.map((s) =>
             s.id === shortId ? { ...s, viewCount: s.viewCount + 1 } : s
           );
-          return { shorts: updatedShorts };
+          const updatedArchivedShorts = state.archivedShorts.map((s) =>
+            s.id === shortId ? { ...s, viewCount: s.viewCount + 1 } : s
+          );
+          return { shorts: updatedShorts, archivedShorts: updatedArchivedShorts };
         });
       },
 
-      hydrateShorts: async (stateCode?: string) => {
+      hydrateShorts: async (stateCode?: string, period: ContentPeriod = 'recent') => {
         try {
-          const remoteShorts = await fetchShorts(stateCode);
+          const remoteShorts = await fetchShorts(stateCode, period, 0, CONTENT_PAGE_SIZE);
           if (Array.isArray(remoteShorts) && (IS_LIVE_ENVIRONMENT || remoteShorts.length > 0)) {
-            set({ shorts: remoteShorts });
+            set((state) => ({
+              ...(period === 'archive' ? { archivedShorts: remoteShorts } : { shorts: remoteShorts }),
+              shortsHasMore: { ...state.shortsHasMore, [period]: remoteShorts.length === CONTENT_PAGE_SIZE },
+            }));
           }
         } catch (err) {
           console.warn('[PoliticalShortsStore] Failed to hydrate shorts, using cache:', err);
         }
       },
 
+      loadMoreShorts: async (stateCode?: string, period: ContentPeriod = 'recent') => {
+        const state = get();
+        if (!IS_LIVE_ENVIRONMENT || state.shortsLoadingMore || !state.shortsHasMore[period]) return;
+        const offset = period === 'archive' ? state.archivedShorts.length : state.shorts.length;
+        set({ shortsLoadingMore: period });
+        try {
+          const nextPage = await fetchShorts(stateCode, period, offset, CONTENT_PAGE_SIZE);
+          if (!Array.isArray(nextPage)) return;
+          set((current) => {
+            const existing = period === 'archive' ? current.archivedShorts : current.shorts;
+            const seen = new Set(existing.map((short) => short.id));
+            const additions = nextPage.filter((short: PoliticalShort) => !seen.has(short.id));
+            return {
+              ...(period === 'archive'
+                ? { archivedShorts: [...current.archivedShorts, ...additions] }
+                : { shorts: [...current.shorts, ...additions] }),
+              shortsHasMore: { ...current.shortsHasMore, [period]: nextPage.length === CONTENT_PAGE_SIZE },
+            };
+          });
+        } catch (err) {
+          console.warn('[PoliticalShortsStore] Failed to load more shorts:', err);
+        } finally {
+          set({ shortsLoadingMore: null });
+        }
+      },
+
       resetShorts: () =>
         set({
           shorts: IS_LIVE_ENVIRONMENT ? [] : POLITICAL_SHORTS,
+          archivedShorts: [],
+          shortsHasMore: { recent: true, archive: true },
+          shortsLoadingMore: null,
           userApprovals: {},
           flaggedShorts: {},
         }),
@@ -199,12 +246,15 @@ export const usePoliticalShortsStore = create<PoliticalShortsState>()(
       name: 'kshetra-political-shorts',
       storage: createJSONStorage(() => mmkvStorage),
       // Bump when the seed catalogue changes so existing installs re-seed.
-      version: 4,
+      version: 5,
       migrate: (persisted: any) => ({
         ...(persisted ?? {}),
         shorts: IS_LIVE_ENVIRONMENT
           ? withoutSeedShorts(persisted?.shorts)
           : POLITICAL_SHORTS,
+        archivedShorts: IS_LIVE_ENVIRONMENT ? withoutSeedShorts(persisted?.archivedShorts) : [],
+        shortsHasMore: { recent: true, archive: true },
+        shortsLoadingMore: null,
         userApprovals: {},
         flaggedShorts: {},
       }),
@@ -217,6 +267,11 @@ export const usePoliticalShortsStore = create<PoliticalShortsState>()(
           shorts: IS_LIVE_ENVIRONMENT
             ? withoutSeedShorts(persisted.shorts)
             : persisted.shorts ?? currentState.shorts,
+          archivedShorts: IS_LIVE_ENVIRONMENT
+            ? withoutSeedShorts(persisted.archivedShorts)
+            : persisted.archivedShorts ?? currentState.archivedShorts,
+          shortsHasMore: persisted.shortsHasMore ?? currentState.shortsHasMore,
+          shortsLoadingMore: null,
         };
       },
     }

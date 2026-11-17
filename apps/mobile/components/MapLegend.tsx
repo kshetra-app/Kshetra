@@ -24,14 +24,22 @@ export function buildPartyLegend(
   stateCode: string,
   records?: UnifiedConstituency[],
   liveMode = false,
+  electionRecords?: Array<{ winnerParty: string }>,
 ): { party: string; label: string; seats: number }[] {
   if (liveMode) {
     if (stateCode.toUpperCase() === 'IN' || !records) return [];
 
     const counts = new Map<string, number>();
-    for (const record of records) {
-      const party = record.currentParty.trim();
-      if (party) counts.set(party, (counts.get(party) ?? 0) + 1);
+    if (electionRecords && electionRecords.length > 0) {
+      for (const record of electionRecords) {
+        const party = record.winnerParty.trim();
+        if (party) counts.set(party, (counts.get(party) ?? 0) + 1);
+      }
+    } else {
+      for (const record of records) {
+        const party = record.currentParty.trim();
+        if (party) counts.set(party, (counts.get(party) ?? 0) + 1);
+      }
     }
 
     return Array.from(counts.entries())
@@ -152,6 +160,7 @@ interface MapLegendProps {
   colorMode?: MapColorMode;
   stateCode?: string;
   records?: UnifiedConstituency[];
+  electionRecords?: Array<{ winnerParty: string }>;
   liveMode?: boolean;
   initialX?: number;
   initialTop?: number;
@@ -161,6 +170,7 @@ export default function MapLegend({
   colorMode = 'party',
   stateCode = 'TS',
   records,
+  electionRecords,
   liveMode = false,
   initialX = 16,
   initialTop = 160,
@@ -169,8 +179,8 @@ export default function MapLegend({
   const { colors } = useTheme();
   const [expanded, setExpanded] = useState(false);
   const partyLegend = useMemo(
-    () => buildPartyLegend(stateCode, records, liveMode),
-    [stateCode, records, liveMode],
+    () => buildPartyLegend(stateCode, records, liveMode, electionRecords),
+    [stateCode, records, liveMode, electionRecords],
   );
 
   // Floating Draggable Pan State
@@ -321,7 +331,11 @@ export default function MapLegend({
     return (
       <>
         <Text style={[styles.panelTitle, { color: colors.textMuted }]}>
-          {stateCode === 'IN' ? t('mapLegend.stateParties') : t('mapLegend.parties')}
+          {stateCode === 'IN'
+            ? t('mapLegend.stateParties')
+            : liveMode
+              ? t('mapLegend.latestElectionResults', { defaultValue: 'Latest available election results' })
+              : t('mapLegend.parties')}
         </Text>
         {partyLegend.map((item) => {
           const color = getPartyColor(item.party);
@@ -343,7 +357,7 @@ export default function MapLegend({
         {partyLegend.length === 0 && (
           <Text style={[styles.partyName, { color: colors.textSecondary }]}>
             {liveMode
-              ? t('constituencyDirectory.partyRecordsUnavailable', { defaultValue: 'Current party records are unavailable for this view.' })
+              ? t('constituencyDirectory.partyRecordsUnavailable', { defaultValue: 'Election party records are unavailable for this view.' })
               : t('constituencyDirectory.noPartyRecords', { defaultValue: 'No party records are available.' })}
           </Text>
         )}

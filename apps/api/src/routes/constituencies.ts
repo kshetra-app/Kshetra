@@ -1010,6 +1010,44 @@ export async function constituencyRoutes(app: FastifyInstance) {
     },
   );
 
+  /** Compact, derived party-color data from the same historical podium source. */
+  app.get<{ Params: { stateCode: string } }>(
+    '/states/:stateCode/podium-summary',
+    async (request, reply) => {
+      const code = request.params.stateCode.toUpperCase();
+      const podiumByConstituency = loadServerPodium(code);
+
+      if (!podiumByConstituency) {
+        return sendApiError(
+          reply,
+          request,
+          404,
+          'Not Found',
+          `Podium records not found for state ${code}`,
+          { code: 'NOT_FOUND' },
+        );
+      }
+
+      const data = Object.entries(podiumByConstituency).flatMap(
+        ([rawAcNo, contests]: [string, any]) => {
+          const acNo = Number(rawAcNo);
+          if (!Number.isInteger(acNo) || acNo <= 0 || !Array.isArray(contests)) return [];
+
+          const latest = contests
+            .filter(
+              (contest: any) => Number.isInteger(contest?.year) && contest?.winner?.party?.trim(),
+            )
+            .sort((left: any, right: any) => right.year - left.year)[0];
+          if (!latest) return [];
+
+          return [{ acNo, year: latest.year, winnerParty: latest.winner.party.trim() }];
+        },
+      );
+
+      return { state: code, count: data.length, data };
+    },
+  );
+
   /** 6d. GET /states/:stateCode/constituencies/:acNo/podium */
   app.get<{ Params: { stateCode: string; acNo: string } }>(
     '/states/:stateCode/constituencies/:acNo/podium',

@@ -21,6 +21,7 @@ import type { ShortCommentDTO, ShortCommentsResponseDTO } from './api/endpoints/
 import type { ChallengeParticipation, CivicBadge, CommunityChallenge } from './aspirantTypes';
 import type { Poll } from './feedTypes';
 import type { ContributorKYCStatusRecord } from './contentAccountabilityTypes';
+import { CONTENT_PAGE_SIZE, getContentArchiveCutoff, type ContentPeriod } from '@kshetra/shared';
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 
@@ -1008,8 +1009,10 @@ export async function fetchBlendedFeed(
   viewerId?: string | null,
   constituencyId?: string | null,
   stateCode?: string | null,
-  limit = 50,
+  limit = CONTENT_PAGE_SIZE,
   followedIdsOverride?: string[],
+  period: ContentPeriod = 'recent',
+  offset = 0,
 ): Promise<any[] | null> {
   if (!guard()) return null;
   try {
@@ -1037,9 +1040,12 @@ export async function fetchBlendedFeed(
       query = query.eq('state_code', stateCode);
     }
 
+    const cutoff = getContentArchiveCutoff();
+    query = period === 'archive' ? query.lt('created_at', cutoff) : query.gte('created_at', cutoff);
+
     const { data, error } = await query
       .order('created_at', { ascending: false })
-      .limit(limit);
+      .range(offset, offset + limit - 1);
 
     if (error) throw error;
     return data;
@@ -1257,15 +1263,23 @@ export async function endSession(sessionId: string, screensViewed: string[], act
 
 // ─── Political Shorts ─────────────────────────────────────────────────────────
 
-export async function fetchShorts(stateCode?: string): Promise<any[] | null> {
+export async function fetchShorts(
+  stateCode?: string,
+  period: ContentPeriod = 'recent',
+  offset = 0,
+  limit = CONTENT_PAGE_SIZE,
+): Promise<any[] | null> {
   if (!guard()) return null;
   try {
     let query = supabase
       .from('political_shorts')
       .select('*')
-      .in('status', ['approved', 'pending'])
+      .eq('status', 'approved')
       .order('created_at', { ascending: false })
-      .limit(50);
+      .range(offset, offset + limit - 1);
+
+    const cutoff = getContentArchiveCutoff();
+    query = period === 'archive' ? query.lt('created_at', cutoff) : query.gte('created_at', cutoff);
 
     if (stateCode) {
       query = query.eq('state_code', stateCode);
@@ -1369,7 +1383,7 @@ export async function fetchLiveEvents(filters?: {
       .select('*, live_event_ai(*)')
       .in('buffer_state', ['cleared', 'bypassed'])
       .in('visibility_mode', ['public'])
-      .order('status', { ascending: true })
+      .order('started_at', { ascending: false })
       .order('priority_score', { ascending: false });
     if (filters?.category && filters.category !== 'all') {
       query = query.eq('issue_category', filters.category);

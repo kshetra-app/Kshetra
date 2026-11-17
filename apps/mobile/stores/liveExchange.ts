@@ -406,7 +406,7 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
           .events.filter(
             (e) =>
               e.visibilityMode === 'public' &&
-              (e.status === 'live' || e.status === 'ended') &&
+              (e.status === 'live' || e.status === 'ended' || e.status === 'archived') &&
               (e.bufferState === 'cleared' || e.bufferState === 'bypassed'),
           )
           .sort((a, b) => {

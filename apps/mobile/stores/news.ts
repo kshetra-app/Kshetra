@@ -7,6 +7,7 @@ import { apiClient } from '../lib/api';
 import { scrapeNewsOnDevice } from '../lib/news/scrape';
 import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 import type { NewsFeed, NewsItem, NewsCategory, NewsLanguageCode } from '../lib/newsTypes';
+import { isFreshNewsTimestamp } from '@kshetra/shared';
 
 /**
  * News store — layered, language-aware feed loader.
@@ -30,7 +31,14 @@ function readCache(lang: NewsLanguageCode | null): NewsFeed | null {
     const raw = mmkvStorage.getItem(cacheKey(lang));
     if (typeof raw === 'string' && raw) {
       const feed = JSON.parse(raw) as NewsFeed;
-      if (feed?.items?.length) return feed;
+      if (Array.isArray(feed?.items)) {
+        const freshFeed = { ...feed, items: feed.items.filter((item) => isFreshNewsTimestamp(item.publishedAt)) };
+        if (freshFeed.items.length > 0) {
+          if (freshFeed.items.length !== feed.items.length) writeCache(lang, freshFeed);
+          return freshFeed;
+        }
+        mmkvStorage.removeItem(cacheKey(lang));
+      }
     }
   } catch {
     // ignore corrupt cache
@@ -76,7 +84,7 @@ const EMPTY_FEED: NewsFeed = {
   version: 1,
   generatedAt: '',
   refreshIntervalMin: 60,
-  sources: SEED_NEWS_FEED.sources,
+  sources: [],
   items: [],
 };
 
@@ -86,15 +94,25 @@ async function loadFeed(lang: NewsLanguageCode | null): Promise<NewsFeed> {
   // 1. Hosted backend (server path, if deployed).
   const backend = await fetchBackendFeed(lang);
   if (backend) {
-    writeCache(lang, backend);
-    return backend;
+    const freshBackend = {
+      ...backend,
+      items: backend.items.filter((item) => isFreshNewsTimestamp(item.publishedAt)),
+    };
+    writeCache(lang, freshBackend);
+    return freshBackend;
   }
   // 2. On-device scrape of the chosen language.
   try {
     const scraped = await scrapeNewsOnDevice(lang);
     if (scraped?.items?.length) {
-      writeCache(lang, scraped);
-      return scraped;
+      const freshScraped = {
+        ...scraped,
+        items: scraped.items.filter((item) => isFreshNewsTimestamp(item.publishedAt)),
+      };
+      if (freshScraped.items.length > 0) {
+        writeCache(lang, freshScraped);
+        return freshScraped;
+      }
     }
   } catch {
     // fall through to cache/seed

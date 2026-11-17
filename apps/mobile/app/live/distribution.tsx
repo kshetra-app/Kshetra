@@ -31,7 +31,7 @@ export default function DistributionScreen() {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
-  const events = useLiveExchangeStore(useShallow((s) => s.getLiveTabFeed()));
+  const events = useLiveExchangeStore(useShallow((s) => s.getLiveTabFeed().filter((event) => event.status === 'live')));
   const addDistribution = useLiveExchangeStore((s) => s.addDistribution);
 
   const [selectedId, setSelectedId] = useState<string>(events[0]?.id ?? '');

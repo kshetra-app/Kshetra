@@ -2,6 +2,7 @@ import { createHash } from 'crypto';
 import { FEED_SOURCES } from './sources';
 import type { FeedSource, NewsCategory, NewsLanguageCode, NewsScope } from './sources';
 import { fetchFeedXml, parseFeed } from './rssParser';
+import { isFreshNewsTimestamp } from '@kshetra/shared';
 
 export interface NewsItem {
   id: string;
@@ -68,7 +69,9 @@ function detectYouTube(link: string): { provider: 'youtube'; embedId: string } |
 async function scrapeSource(src: FeedSource): Promise<NewsItem[]> {
   const xml = await fetchFeedXml(src.rssUrl);
   if (!xml) return [];
-  const parsed = parseFeed(xml).slice(0, PER_SOURCE_CAP);
+  const parsed = parseFeed(xml)
+    .filter((item) => isFreshNewsTimestamp(item.publishedAt))
+    .slice(0, PER_SOURCE_CAP);
   return parsed.map((p) => {
     const video = detectYouTube(p.link);
     return {
@@ -89,7 +92,7 @@ async function scrapeSource(src: FeedSource): Promise<NewsItem[]> {
       category: video ? 'video' : src.category,
       scope: src.scope,
       stateCode: src.stateCode,
-      publishedAt: p.publishedAt ?? new Date().toISOString(),
+      publishedAt: p.publishedAt!,
       video,
     } satisfies NewsItem;
   });
@@ -133,7 +136,7 @@ export async function refreshNews(): Promise<NewsFeed> {
 }
 
 export function getFeed(filters: FeedFilters = {}): NewsFeed {
-  let items = cache.items;
+  let items = cache.items.filter((item) => isFreshNewsTimestamp(item.publishedAt));
   if (filters.lang) items = items.filter((i) => i.language === filters.lang);
   if (filters.category && filters.category !== 'top') {
     items =

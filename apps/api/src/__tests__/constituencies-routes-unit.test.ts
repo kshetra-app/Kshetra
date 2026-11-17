@@ -425,6 +425,57 @@ describe('Constituencies Routes Unit Tests (Exhaustive Branch Coverage)', () => 
     });
   });
 
+  describe('GET /states/:stateCode/podium-summary', () => {
+    it('derives a compact summary from the existing historical podium records', async () => {
+      const summaryResponse = await app.inject({
+        method: 'GET',
+        url: '/states/TS/podium-summary',
+      });
+      expect(summaryResponse.statusCode).toBe(200);
+
+      const summary = JSON.parse(summaryResponse.payload);
+      expect(summary.state).toBe('TS');
+      expect(summary.count).toBeGreaterThan(0);
+      expect(Array.isArray(summary.data)).toBe(true);
+      expect(
+        summary.data.every(
+          (row: any) =>
+            Number.isInteger(row.acNo) &&
+            Number.isInteger(row.year) &&
+            typeof row.winnerParty === 'string' &&
+            row.winnerParty.length > 0,
+        ),
+      ).toBe(true);
+
+      const podiumResponse = await app.inject({
+        method: 'GET',
+        url: '/states/TS/podium',
+      });
+      expect(podiumResponse.statusCode).toBe(200);
+      const podium = JSON.parse(podiumResponse.payload);
+      const firstRow = summary.data[0];
+      const contests = podium[String(firstRow.acNo)];
+      const expected = contests
+        .filter((contest: any) => Number.isInteger(contest?.year) && contest?.winner?.party?.trim())
+        .sort((left: any, right: any) => right.year - left.year)[0];
+
+      expect(firstRow).toEqual({
+        acNo: firstRow.acNo,
+        year: expected.year,
+        winnerParty: expected.winner.party.trim(),
+      });
+    });
+
+    it('returns not found when the historical source has no matching state file', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: '/states/ZZ/podium-summary',
+      });
+      expect(response.statusCode).toBe(404);
+      expect(JSON.parse(response.payload).code).toBe('NOT_FOUND');
+    });
+  });
+
   describe('8. GET /constituencies/locate', () => {
     it('returns 400 when lat or lng is not a valid number', async () => {
       const resLat = await app.inject({

@@ -3,6 +3,7 @@ import type { FastifyInstance } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
 import { getMediaHosts, isMediaPipelineConfigured, selectPipeline } from '../lib/mediaPipeline';
+import { getContentArchiveCutoff } from '@kshetra/shared';
 
 const isProductionRuntime = () => isProductionLikeRuntime();
 
@@ -14,7 +15,7 @@ const lmxLiveQuerySchema = {
     properties: {
       category: { type: 'string', maxLength: 100 },
       state: { type: 'string', pattern: '^[A-Z]{2}$' },
-      status: { type: 'string', enum: ['live', 'ended', 'all'] },
+      status: { type: 'string', enum: ['live', 'ended', 'archive', 'all'] },
     },
   },
 };
@@ -207,7 +208,11 @@ export async function lmxRoutes(app: FastifyInstance) {
 
   /** 2. GET /api/v1/lmx/live — public Live tab feed */
   app.get<{
-    Querystring: { category?: string; state?: string; status?: 'live' | 'ended' | 'all' };
+    Querystring: {
+      category?: string;
+      state?: string;
+      status?: 'live' | 'ended' | 'archive' | 'all';
+    };
   }>('/api/v1/lmx/live', { schema: lmxLiveQuerySchema }, async (request, reply) => {
     if (!isSupabaseConfigured) {
       return reply.send([]);
@@ -220,14 +225,22 @@ export async function lmxRoutes(app: FastifyInstance) {
         .select('*, live_event_ai(*)')
         .in('buffer_state', ['cleared', 'bypassed'])
         .eq('visibility_mode', 'public')
-        .order('status', { ascending: true })
+        .order(status === 'archive' ? 'ended_at' : 'started_at', { ascending: false })
         .order('priority_score', { ascending: false })
         .limit(50);
 
       if (category && category !== 'all') query = query.eq('issue_category', category);
       if (state) query = query.eq('state_code', state);
-      if (status && status !== 'all')
-        query = query.eq('status', status === 'live' ? 'live' : 'ended');
+      if (status === 'live') {
+        query = query.eq('status', 'live');
+      } else if (status === 'ended') {
+        query = query.eq('status', 'ended');
+      } else if (status === 'archive') {
+        const cutoff = getContentArchiveCutoff();
+        query = query.or(
+          `status.eq.archived,and(status.eq.ended,ended_at.lt.${cutoff}),and(status.eq.ended,ended_at.is.null,started_at.lt.${cutoff})`,
+        );
+      }
 
       const { data, error } = await query;
       if (error) {

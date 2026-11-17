@@ -12,7 +12,8 @@
         "APP_ENV": "development",
         "EXPO_PUBLIC_APP_ENV": "development",
         "EXPO_PUBLIC_API_URL": "http://localhost:3001",
-        "EXPO_ROUTER_APP_ROOT": "../../app"
+        "EXPO_ROUTER_APP_ROOT": "../../app",
+        "EXPO_NO_METRO_WORKSPACE_ROOT": "1"
       }
     },
     "preview": {
@@ -22,7 +23,9 @@
         "APP_ENV": "preview",
         "EXPO_PUBLIC_APP_ENV": "preview",
         "EXPO_PUBLIC_API_URL": "https://kshetra-api-staging.up.railway.app",
-        "EXPO_ROUTER_APP_ROOT": "../../app"
+        "EXPO_PUBLIC_SUPABASE_URL": "https://fkpigozcqnmcvofuksar.supabase.co",
+        "EXPO_ROUTER_APP_ROOT": "../../app",
+        "EXPO_NO_METRO_WORKSPACE_ROOT": "1"
       }
     },
     "production": {
@@ -32,7 +35,8 @@
         "APP_ENV": "production",
         "EXPO_PUBLIC_APP_ENV": "production",
         "EXPO_PUBLIC_API_URL": "https://kshetra-api-production-b802.up.railway.app",
-        "EXPO_ROUTER_APP_ROOT": "../../app"
+        "EXPO_ROUTER_APP_ROOT": "../../app",
+        "EXPO_NO_METRO_WORKSPACE_ROOT": "1"
       }
     }
   },

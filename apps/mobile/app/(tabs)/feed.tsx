@@ -37,6 +37,7 @@ import {
   getLocalizedHashtag,
 } from '../../lib/seedTranslations';
 import type { Post, PostType, FeedScope, SortOrder } from '../../lib/feedTypes';
+import { isInContentPeriod, type ContentPeriod } from '@kshetra/shared';
 import { rankPostsV1 } from '../../lib/feedRanking';
 import { useTranslation } from 'react-i18next';
 import { STATES } from '@kshetra/shared';
@@ -94,6 +95,9 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
   const searchQuery = useFeedStore((s) => s.searchQuery);
   const sortBy = useFeedStore((s) => s.sortBy);
   const verifiedOnly = useFeedStore((s) => s.verifiedOnly);
+  const feedPeriod = useFeedStore((s) => s.feedPeriod);
+  const feedHasMore = useFeedStore((s) => s.feedHasMore);
+  const feedLoadingMore = useFeedStore((s) => s.feedLoadingMore);
 
   const setFilter = useFeedStore((s) => s.setFilter);
   const setScopeFilter = useFeedStore((s) => s.setScopeFilter);
@@ -102,6 +106,7 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
   const setSearchQuery = useFeedStore((s) => s.setSearchQuery);
   const setSortBy = useFeedStore((s) => s.setSortBy);
   const setVerifiedOnly = useFeedStore((s) => s.setVerifiedOnly);
+  const setFeedPeriod = useFeedStore((s) => s.setFeedPeriod);
   const clearAllFilters = useFeedStore((s) => s.clearAllFilters);
 
   const addPost = useFeedStore((s) => s.addPost);
@@ -111,6 +116,7 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
   const votePoll = useFeedStore((s) => s.votePoll);
   const refreshFeed = useFeedStore((s) => s.refreshFeed);
   const refreshFeedIfStale = useFeedStore((s) => s.refreshFeedIfStale);
+  const loadMoreFeed = useFeedStore((s) => s.loadMoreFeed);
 
   const user = useAuthStore((s) => s.user);
   const userId = user?.id ?? 'anon';
@@ -136,7 +142,7 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
   useFocusEffect(
     useCallback(() => {
       const refreshCurrentFeed = () => {
-        void refreshFeedIfStale(stateCode, effectiveConstituencyId ?? null);
+        void refreshFeedIfStale(stateCode, effectiveConstituencyId ?? null, feedPeriod);
       };
       refreshCurrentFeed();
       const appStateSubscription = AppState.addEventListener('change', (nextState) => {
@@ -144,7 +150,7 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
       });
 
       return () => appStateSubscription.remove();
-    }, [effectiveConstituencyId, refreshFeedIfStale, stateCode]),
+    }, [effectiveConstituencyId, feedPeriod, refreshFeedIfStale, stateCode]),
   );
 
   useEffect(() => {
@@ -157,7 +163,9 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
 
   // Derive filtered and sorted posts
   const posts = useMemo(() => {
-    let filtered = allPosts.filter((p) => !p.isDeleted);
+    let filtered = allPosts.filter(
+      (p) => !p.isDeleted && isInContentPeriod(p.createdAt, feedPeriod),
+    );
 
     const promoLevel = (p: Post) => {
       if (p.id.startsWith('seed-') || p.isPinned) return null;
@@ -258,6 +266,7 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
     searchQuery,
     sortBy,
     getContentVisibilityLevel,
+    feedPeriod,
     i18n.language,
   ]);
 
@@ -275,11 +284,18 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      await refreshFeed(stateCode, effectiveConstituencyId ?? null);
+      await refreshFeed(stateCode, effectiveConstituencyId ?? null, feedPeriod);
     } finally {
       setRefreshing(false);
     }
-  }, [effectiveConstituencyId, refreshFeed, stateCode]);
+  }, [effectiveConstituencyId, feedPeriod, refreshFeed, stateCode]);
+
+  const changeFeedPeriod = (period: ContentPeriod) => {
+    if (period === feedPeriod) return;
+    tapLight();
+    setFeedPeriod(period);
+    void refreshFeed(stateCode, effectiveConstituencyId ?? null, period);
+  };
 
   const handleShare = useCallback(async (post: Post) => {
     try {
@@ -541,6 +557,41 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
         </ScrollView>
       </View>
 
+      <View style={[styles.archiveRail, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+        {(['recent', 'archive'] as ContentPeriod[]).map((period) => {
+          const active = feedPeriod === period;
+          return (
+            <Pressable
+              key={period}
+              accessibilityRole="button"
+              accessibilityState={{ selected: active }}
+              onPress={() => changeFeedPeriod(period)}
+              style={[
+                styles.archiveTab,
+                { backgroundColor: colors.background, borderColor: colors.border },
+                active && { backgroundColor: colors.primary, borderColor: colors.primary },
+              ]}
+            >
+              <Ionicons
+                name={period === 'recent' ? 'time-outline' : 'archive-outline'}
+                size={13}
+                color={active ? '#FFFFFF' : colors.textSecondary}
+              />
+              <Text style={[styles.archiveTabText, { color: colors.textSecondary }, active && styles.filterLabelActive]}>
+                {period === 'recent'
+                  ? t('feed.sort.latest', { defaultValue: 'Recent' })
+                  : t('common.archive', { defaultValue: 'Archive' })}
+              </Text>
+            </Pressable>
+          );
+        })}
+        <Text style={[styles.archiveHint, { color: colors.textMuted }]}>
+          {feedPeriod === 'recent'
+            ? t('feed.archiveRecentHint', { defaultValue: 'Last 30 days' })
+            : t('feed.archiveOlderHint', { defaultValue: 'Older posts' })}
+        </Text>
+      </View>
+
       {/* Active Custom Filter Feedback Banner */}
       {hasActiveCustomFilters && (
         <View style={[styles.activeFilterBanner, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
@@ -638,6 +689,13 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
         }}
         style={styles.list}
         contentContainerStyle={styles.listContent}
+        onEndReached={() => {
+          if (feedHasMore && !feedLoadingMore) {
+            void loadMoreFeed(stateCode, effectiveConstituencyId ?? null);
+          }
+        }}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={feedLoadingMore ? <Text style={[styles.archiveFooter, { color: colors.textMuted }]}>{t('common.loading', { defaultValue: 'Loading…' })}</Text> : null}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -1167,6 +1225,37 @@ const styles = StyleSheet.create({
   },
   filterLabelActive: {
     color: '#FFFFFF',
+  },
+  archiveRail: {
+    minHeight: 42,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 16,
+    borderBottomWidth: 0.5,
+  },
+  archiveTab: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 11,
+    paddingVertical: 6,
+    borderRadius: 15,
+    borderWidth: 1,
+  },
+  archiveTabText: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  archiveHint: {
+    marginLeft: 'auto',
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  archiveFooter: {
+    paddingVertical: 14,
+    textAlign: 'center',
+    fontSize: 12,
   },
   subMenuBar: {
     borderBottomWidth: 0.5,

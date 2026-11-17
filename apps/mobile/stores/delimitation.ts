@@ -230,15 +230,9 @@ export const useDelimitationStore = create<DelimitationState>((set, get) => ({
 
   refreshOfficialData: async () => {
     const requestId = ++latestOfficialDataRequest;
-    set({
-      nationalStatus: null,
-      statusAvailable: false,
-      statusLabel: null,
-      statusDescription: null,
-      events: [],
-      timelineAvailable: false,
-      isLoadingEvents: true,
-    });
+    // Keep the last successful official response visible while refreshing or
+    // during a transient network failure; only replace it with server data.
+    set({ isLoadingEvents: true });
 
     const [timelineResult, statusResult] = await Promise.allSettled([
       apiClient.delimitation.getTimeline(),

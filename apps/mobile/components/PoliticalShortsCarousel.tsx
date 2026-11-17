@@ -17,6 +17,7 @@ import { usePoliticalShortsStore } from '../stores/politicalShorts';
 import { useFeedStore } from '../stores/feed';
 import { useActiveStateStore } from '../stores/activeState';
 import { useMyConstituencyStore } from '../stores/myConstituency';
+import { isInContentPeriod } from '@kshetra/shared';
 
 export default function PoliticalShortsCarousel() {
   const { t } = useTranslation();
@@ -33,7 +34,7 @@ export default function PoliticalShortsCarousel() {
 
   // Filter shorts based on active scope and targeting rules
   const filteredShorts = useMemo(() => {
-    let list = [...allShorts];
+    let list = allShorts.filter((short) => isInContentPeriod(short.createdAt, 'recent'));
 
     if (scopeFilter === 'constituency') {
       if (!userConstituencyId) return [];

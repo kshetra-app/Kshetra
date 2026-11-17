@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -19,6 +19,7 @@ import { usePoliticalShortsStore } from '../../stores/politicalShorts';
 import { useActiveStateStore } from '../../stores/activeState';
 import { useMyConstituencyStore } from '../../stores/myConstituency';
 import { useTheme } from '../../lib/theme';
+import { isInContentPeriod, type ContentPeriod } from '@kshetra/shared';
 
 type ShortsScope = 'constituency' | 'state' | 'national';
 
@@ -33,19 +34,37 @@ export default function ShortsScreen({ hideHeader = false, searchQuery = '' }: S
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
 
-  const allShorts = usePoliticalShortsStore((s) => s.shorts);
+  const recentShorts = usePoliticalShortsStore((s) => s.shorts);
+  const archivedShorts = usePoliticalShortsStore((s) => s.archivedShorts);
+  const shortsHasMore = usePoliticalShortsStore((s) => s.shortsHasMore);
+  const shortsLoadingMore = usePoliticalShortsStore((s) => s.shortsLoadingMore);
+  const hydrateShorts = usePoliticalShortsStore((s) => s.hydrateShorts);
+  const loadMoreShorts = usePoliticalShortsStore((s) => s.loadMoreShorts);
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const myHome = useMyConstituencyStore((s) => s.home);
   const userConstituencyId = myHome ? `${stateCode}-AC-${myHome.acNo}` : undefined;
 
   const [scope, setScope] = useState<ShortsScope>(stateCode === 'IN' ? 'national' : 'state');
+  const [period, setPeriod] = useState<ContentPeriod>('recent');
   const [playerVisible, setPlayerVisible] = useState(false);
   const [uploadVisible, setUploadVisible] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
+  useEffect(() => {
+    void hydrateShorts(stateCode, period);
+  }, [hydrateShorts, period, stateCode]);
+
   // Preserve the original targeting/visibility logic from the feed carousel.
   const shorts = useMemo(() => {
-    let list = [...allShorts];
+    const source = period === 'archive'
+      ? [...archivedShorts, ...recentShorts.filter((short) => isInContentPeriod(short.createdAt, 'archive'))]
+      : recentShorts.filter((short) => isInContentPeriod(short.createdAt, 'recent'));
+    const seenIds = new Set<string>();
+    let list = source.filter((short) => {
+      if (seenIds.has(short.id)) return false;
+      seenIds.add(short.id);
+      return true;
+    });
     if (scope === 'constituency') {
       if (!userConstituencyId) return [];
       list = list.filter((s) => s.constituencyId === userConstituencyId);
@@ -66,7 +85,7 @@ export default function ShortsScreen({ hideHeader = false, searchQuery = '' }: S
       );
     }
     return list;
-  }, [allShorts, scope, stateCode, userConstituencyId, searchQuery]);
+  }, [archivedShorts, recentShorts, scope, stateCode, userConstituencyId, searchQuery, period]);
 
   const openShort = useCallback((index: number) => {
     setSelectedIndex(index);
@@ -135,6 +154,33 @@ export default function ShortsScreen({ hideHeader = false, searchQuery = '' }: S
         ))}
       </ScrollView>
 
+      <View style={styles.periodRail}>
+        {(['recent', 'archive'] as ContentPeriod[]).map((value) => {
+          const active = period === value;
+          return (
+            <Pressable
+              key={value}
+              accessibilityRole="button"
+              accessibilityState={{ selected: active }}
+              onPress={() => setPeriod(value)}
+              style={[
+                styles.periodChip,
+                { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border },
+                active && { backgroundColor: colors.primary, borderColor: colors.primary },
+              ]}
+            >
+              <Ionicons name={value === 'recent' ? 'time-outline' : 'archive-outline'} size={12} color={active ? '#FFF' : colors.textSecondary} />
+              <Text style={[styles.chipText, { color: colors.textSecondary }, active && styles.chipTextActive]}>
+                {value === 'recent' ? t('feed.sort.latest', { defaultValue: 'Recent' }) : t('common.archive', { defaultValue: 'Archive' })}
+              </Text>
+            </Pressable>
+          );
+        })}
+        <Text style={[styles.periodHint, { color: colors.textMuted }]}>
+          {period === 'recent' ? t('feed.archiveRecentHint', { defaultValue: 'Last 30 days' }) : t('feed.archiveOlderHint', { defaultValue: 'Older shorts' })}
+        </Text>
+      </View>
+
       {/* Grid */}
       <FlatList
         data={shorts}
@@ -142,6 +188,13 @@ export default function ShortsScreen({ hideHeader = false, searchQuery = '' }: S
         numColumns={2}
         columnWrapperStyle={{ gap: 10, paddingHorizontal: 16 }}
         contentContainerStyle={{ gap: 10, paddingBottom: 100, paddingTop: 4 }}
+        onEndReached={() => {
+          if (shortsHasMore[period] && shortsLoadingMore === null) {
+            void loadMoreShorts(stateCode, period);
+          }
+        }}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={shortsLoadingMore === period ? <Text style={[styles.periodHint, { color: colors.textMuted }]}>{t('common.loading', { defaultValue: 'Loading…' })}</Text> : null}
         renderItem={({ item, index }) => (
           <ShortCard item={item} width={cardWidth} height={cardHeight} onPress={() => openShort(index)} />
         )}
@@ -220,6 +273,9 @@ const styles = StyleSheet.create({
   uploadText: { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
   railWrap: { maxHeight: 40, marginBottom: 6 },
   railContent: { paddingHorizontal: 16, gap: 6, alignItems: 'center' },
+  periodRail: { minHeight: 40, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16, marginBottom: 4 },
+  periodChip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 11, paddingVertical: 6, borderRadius: 18, borderWidth: 1 },
+  periodHint: { marginLeft: 'auto', fontSize: 11, fontWeight: '600', textAlign: 'center' },
   chip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 18, borderWidth: 1 },
   chipActive: {},
   chipDisabled: { opacity: 0.4 },

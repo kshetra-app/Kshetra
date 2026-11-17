@@ -12,6 +12,7 @@
  */
 import type { NewsCategory, NewsFeed, NewsItem, NewsLanguageCode } from '../newsTypes';
 import { fetchFeedXml, parseFeed } from './rssParser';
+import { isFreshNewsTimestamp } from '@kshetra/shared';
 import {
   FEED_SOURCES,
   primarySources,
@@ -99,7 +100,9 @@ export function classifyNewsCategory(
 async function scrapeSource(src: FeedSource): Promise<NewsItem[]> {
   const xml = await fetchFeedXml(src.rssUrl);
   if (!xml) return [];
-  const parsed = parseFeed(xml).slice(0, PER_SOURCE_CAP);
+  const parsed = parseFeed(xml)
+    .filter((item) => isFreshNewsTimestamp(item.publishedAt))
+    .slice(0, PER_SOURCE_CAP);
   return parsed.map((p) => {
     const video = detectYouTube(p.link);
     const category = classifyNewsCategory(
@@ -127,7 +130,7 @@ async function scrapeSource(src: FeedSource): Promise<NewsItem[]> {
       category,
       scope: src.scope,
       stateCode: src.stateCode,
-      publishedAt: p.publishedAt ?? new Date().toISOString(),
+      publishedAt: p.publishedAt!,
       video,
     } satisfies NewsItem;
   });

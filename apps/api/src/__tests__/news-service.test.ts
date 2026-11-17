@@ -22,6 +22,8 @@ describe('News Service (newsService.ts)', () => {
 
   describe('refreshNews and feed scraping', () => {
     it('scrapes feeds, deduplicates items, extracts YouTube video metadata, and updates cache', async () => {
+      const recentDate = new Date(Date.now() - 2 * 60 * 60 * 1000).toUTCString();
+      const staleDate = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toUTCString();
       jest.spyOn(rssParser, 'fetchFeedXml').mockImplementation(async (url: string) => {
         if (url.includes('ndtv') || url.includes('thehindu')) {
           return `
@@ -31,13 +33,22 @@ describe('News Service (newsService.ts)', () => {
                 <title>Political Development in Hyderabad</title>
                 <link>https://example.com/news/hyd-1</link>
                 <description>Key updates on state policy.</description>
-                <pubDate>2026-10-20T08:00:00Z</pubDate>
+                <pubDate>${recentDate}</pubDate>
               </item>
               <item>
                 <title>Live Video Coverage</title>
                 <link>https://www.youtube.com/watch?v=dQw4w9WgXcQ</link>
                 <description>Watch the address live.</description>
-                <pubDate>2026-10-20T09:00:00Z</pubDate>
+                <pubDate>${recentDate}</pubDate>
+              </item>
+              <item>
+                <title>Old Story Outside the Current Feed Window</title>
+                <link>https://example.com/news/old-1</link>
+                <pubDate>${staleDate}</pubDate>
+              </item>
+              <item>
+                <title>Undated Story Must Not Be Given a Made-Up Date</title>
+                <link>https://example.com/news/undated-1</link>
               </item>
             </channel>
           </rss>`;
@@ -59,6 +70,8 @@ describe('News Service (newsService.ts)', () => {
       // Verify deduplication and sorting
       const uniqueIds = new Set(feed.items.map((i) => i.id));
       expect(uniqueIds.size).toBe(feed.items.length);
+      expect(feed.items.some((item) => item.sourceUrl.endsWith('/old-1'))).toBe(false);
+      expect(feed.items.some((item) => item.sourceUrl.endsWith('/undated-1'))).toBe(false);
     });
 
     it('returns existing cache when refresh is already in progress', async () => {

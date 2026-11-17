@@ -37,6 +37,12 @@ export interface HistoricalPodiumContest {
   secondRunnerUp: CandidatePodiumDetail | null;
 }
 
+export interface HistoricalPodiumSummaryRecord {
+  acNo: number;
+  year: number;
+  winnerParty: string;
+}
+
 function containsNonAsciiCharacters(value: string): boolean {
   return Array.from(value).some((character) => character.codePointAt(0)! > 0x7f);
 }
@@ -47,6 +53,7 @@ import { IS_LIVE_ENVIRONMENT } from './environment';
 
 // In-memory cache for parsed state podium files (hydrated on demand from API or local cache)
 const stateCache = new Map<string, Record<string, HistoricalPodiumContest[]>>();
+const stateSummaryCache = new Map<string, HistoricalPodiumSummaryRecord[]>();
 let lokSabhaNameIndex: Map<string, HistoricalPodiumContest[]> | null = null;
 let lokSabhaNoIndex: Map<number, HistoricalPodiumContest[]> | null = null;
 
@@ -71,7 +78,7 @@ export function sanitizeContestWithSeed(
   acNoOrName: number | string,
   contest: HistoricalPodiumContest,
 ): HistoricalPodiumContest {
-  if (!contest) return contest;
+  if (!contest || IS_LIVE_ENVIRONMENT) return contest;
   try {
     const { getUnifiedConstituenciesForState } = require('./stateDataAdapter');
     const consts = getUnifiedConstituenciesForState(stateCode);
@@ -133,6 +140,52 @@ export async function fetchStatePodium(stateCode: string): Promise<Record<string
     console.warn(`[historicalPodiumStore] Failed to fetch state podium for ${code}:`, err);
   }
   return {};
+}
+
+/** Fetch the compact, derived party summary used to color a live state map. */
+export async function fetchStatePodiumSummary(
+  stateCode: string,
+): Promise<HistoricalPodiumSummaryRecord[]> {
+  const code = (stateCode || 'TS').toUpperCase();
+  const cached = stateSummaryCache.get(code);
+  if (cached) return cached;
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/v1/states/${code}/podium-summary`);
+    if (!res.ok) return [];
+
+    const response = await res.json();
+    if (
+      response?.state?.toUpperCase() !== code ||
+      !Array.isArray(response.data) ||
+      response.count !== response.data.length
+    ) {
+      throw new Error(`Invalid podium summary response for ${code}`);
+    }
+
+    const seenAcNumbers = new Set<number>();
+    const records = response.data.filter((record: unknown): record is HistoricalPodiumSummaryRecord => {
+      if (!record || typeof record !== 'object') return false;
+      const candidate = record as HistoricalPodiumSummaryRecord;
+      if (
+        !Number.isInteger(candidate.acNo) || candidate.acNo <= 0 ||
+        !Number.isInteger(candidate.year) || candidate.year <= 0 ||
+        typeof candidate.winnerParty !== 'string' || !candidate.winnerParty.trim() ||
+        seenAcNumbers.has(candidate.acNo)
+      ) return false;
+      seenAcNumbers.add(candidate.acNo);
+      return true;
+    });
+
+    if (records.length !== response.data.length) {
+      throw new Error(`Invalid constituency record in podium summary for ${code}`);
+    }
+    stateSummaryCache.set(code, records);
+    return records;
+  } catch (err) {
+    console.warn(`[historicalPodiumStore] Failed to fetch podium summary for ${code}:`, err);
+    return [];
+  }
 }
 
 /**
@@ -387,6 +440,7 @@ export function getLatestPodiumForConstituency(
     }
     return contest;
   }
+  if (IS_LIVE_ENVIRONMENT) return null;
   // Use fields that the adapter actually carries. Do not infer runner-up votes,
   // totals, shares, or an election year from partial records.
   try {

@@ -88,7 +88,9 @@ import {
   getLocalizedCandidateName,
   getLatestPodiumForConstituency,
   fetchHistoricalPodiumForConstituency,
+  fetchStatePodiumSummary,
   sanitizeContestWithSeed,
+  type HistoricalPodiumSummaryRecord,
   type HistoricalPodiumContest,
 } from '../../lib/historicalPodiumStore';
 import { useAffidavitStore } from '../../stores/affidavits';
@@ -203,7 +205,13 @@ function FullMapScreen() {
   const bottomSheetRef = useRef<BottomSheet>(null);
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const [selected, setSelected] = useState<SelectedConstituency | null>(null);
-  const [selectedPodium, setSelectedPodium] = useState<HistoricalPodiumContest | null>(null);
+  const [selectedPodium, setSelectedPodium] = useState<{
+    stateCode: string;
+    acNo: number;
+    contest: HistoricalPodiumContest;
+  } | null>(null);
+  const [podiumLoadingForAcNo, setPodiumLoadingForAcNo] = useState<number | null>(null);
+  const [podiumRetry, setPodiumRetry] = useState(0);
   const selectedRef = useRef<SelectedConstituency | null>(null);
 
   useEffect(() => {
@@ -215,19 +223,33 @@ function FullMapScreen() {
   useEffect(() => {
     if (!selected) {
       setSelectedPodium(null);
+      setPodiumLoadingForAcNo(null);
       return;
     }
-    const sync = getLatestPodiumForConstituency(stateCode, selected.acNo);
-    if (sync) setSelectedPodium(sanitizeContestWithSeed(stateCode, selected.acNo, sync));
+    const acNo = selected.acNo;
+    const sync = getLatestPodiumForConstituency(stateCode, acNo);
+    setSelectedPodium(sync
+      ? { stateCode, acNo, contest: sanitizeContestWithSeed(stateCode, acNo, sync) }
+      : null);
+    setPodiumLoadingForAcNo(sync ? null : acNo);
 
     let active = true;
-    fetchHistoricalPodiumForConstituency(stateCode, selected.acNo).then((contests) => {
-      if (active && contests && contests.length > 0) {
-        setSelectedPodium(sanitizeContestWithSeed(stateCode, selected.acNo, contests[0]));
+    fetchHistoricalPodiumForConstituency(stateCode, acNo).then((contests) => {
+      if (active) {
+        const latest = contests?.[0];
+        setSelectedPodium(latest
+          ? { stateCode, acNo, contest: sanitizeContestWithSeed(stateCode, acNo, latest) }
+          : null);
+        setPodiumLoadingForAcNo(null);
+      }
+    }).catch(() => {
+      if (active) {
+        setSelectedPodium(null);
+        setPodiumLoadingForAcNo(null);
       }
     });
     return () => { active = false; };
-  }, [selected?.acNo, stateCode]);
+  }, [selected?.acNo, stateCode, podiumRetry]);
   const [spatialProvenance, setSpatialProvenance] = useState<SpatialProvenance>('NONE');
   const [userMarker, setUserMarker] = useState<[number, number] | null>(null);
   const [colorMode, setColorMode] = useState<MapColorMode>('party');
@@ -332,6 +354,26 @@ function FullMapScreen() {
     () => new Map<number, UnifiedConstituency>(stateConstituencies.map((c) => [c.acNo, c])),
     [stateConstituencies],
   );
+  const [historicalPartySummary, setHistoricalPartySummary] = useState<HistoricalPodiumSummaryRecord[]>([]);
+
+  useEffect(() => {
+    if (!IS_LIVE_ENVIRONMENT || stateCode === 'IN') {
+      setHistoricalPartySummary([]);
+      return;
+    }
+
+    let active = true;
+    setHistoricalPartySummary([]);
+    fetchStatePodiumSummary(stateCode).then((records) => {
+      if (active) setHistoricalPartySummary(records);
+    });
+    return () => { active = false; };
+  }, [stateCode]);
+
+  const historicalPartyByAcNo = useMemo(
+    () => new Map(historicalPartySummary.map((record) => [record.acNo, record])),
+    [historicalPartySummary],
+  );
 
   /** Streamed + cached boundary GeoJSON for the active state (Phase 3).
    *  Bundled / already-viewed states resolve instantly; others stream once
@@ -372,11 +414,13 @@ function FullMapScreen() {
           } else {
             const acNo = Number(props.AC_NO);
             const record = Number.isInteger(acNo) ? seedMap.get(acNo) : undefined;
+            const election = Number.isInteger(acNo) ? historicalPartyByAcNo.get(acNo) : undefined;
             props.CURRENT_PARTY = record?.currentParty || '';
             props.CURRENT_MLA = record?.currentMLA || '';
             props.RESERVATION = record?.type || '';
-            props.WINNER_PARTY = '';
+            props.WINNER_PARTY = election?.winnerParty || '';
             props.WINNER_NAME = '';
+            props.ELECTION_YEAR = election?.year ?? null;
             props.WINNER_VOTES = null;
             props.RUNNER_UP = '';
             props.RUNNER_UP_NAME = '';
@@ -396,7 +440,7 @@ function FullMapScreen() {
         };
       }),
     };
-  }, [rawEnriched, stateCode, i18n.language, seedMap]);
+  }, [rawEnriched, stateCode, i18n.language, seedMap, historicalPartyByAcNo]);
 
   /** Deduped GeoJSON for map labels (STATE_NAME or DISTRICT) */
   const labelGeoJSON = useMemo(() => {
@@ -529,7 +573,9 @@ function FullMapScreen() {
       case 'turnout': return turnoutFillColor;
       case 'battleground': return battlegroundFillColor;
       case 'swing': return swingFillColor;
-      default: return getPartyFillColorExpression(selectedYear, stateCode === 'IN', IS_LIVE_ENVIRONMENT);
+      default: return IS_LIVE_ENVIRONMENT
+        ? getPartyFillColorExpression(undefined, stateCode === 'IN')
+        : getPartyFillColorExpression(selectedYear, stateCode === 'IN');
     }
   }, [colorMode, selectedYear, stateCode]);
 
@@ -576,6 +622,8 @@ function FullMapScreen() {
       if (Number.isNaN(acNo) || acNo == null) return;
       tapLight();
       const obj = getSelectedConstituencyObject(acNo, acName, distName);
+      setSelectedPodium(null);
+      setPodiumLoadingForAcNo(acNo);
       setSelected(obj);
       setSheetTab('mla');
       if (!broadcastMode) {
@@ -1680,7 +1728,7 @@ function FullMapScreen() {
                 {constituencyDirectoryStatus === 'LOADING'
                   ? t('constituencyDirectory.loading', { defaultValue: 'Checking live constituency records…' })
                   : constituencyDirectoryStatus === 'DATABASE_RECORDS'
-                    ? t('constituencyDirectory.databaseRecords', { defaultValue: 'Party and representative details come from Poligram database records. Seats without a record remain unclassified; historical election results are not included.' })
+                    ? t('constituencyDirectory.databaseRecords', { defaultValue: 'Map colors show the latest available election result. Current representative details appear only when a database record is available.' })
                     : constituencyDirectoryStatus === 'STALE_DATABASE_RECORDS'
                       ? t('constituencyDirectory.staleRecords', { defaultValue: 'Showing previously loaded records; current database data could not be confirmed.' })
                       : constituencyDirectoryStatus === 'DATABASE_EMPTY'
@@ -1708,6 +1756,7 @@ function FullMapScreen() {
           colorMode={colorMode}
           stateCode={stateCode}
           records={stateConstituencies}
+          electionRecords={historicalPartySummary}
           liveMode={IS_LIVE_ENVIRONMENT}
           initialTop={mapTopOffset + (isScreenImmersive ? 54 : (!hideOverlays && !selected && stateCode !== 'IN' ? 148 : 98))}
         />
@@ -2245,14 +2294,25 @@ function FullMapScreen() {
         }}
       >
         {selected && (() => {
-          const rawPodium = selectedPodium || getLatestPodiumForConstituency(stateCode, selected.acNo);
+          const selectedContest = selectedPodium?.stateCode === stateCode && selectedPodium.acNo === selected.acNo
+            ? selectedPodium.contest
+            : null;
+          const rawPodium = selectedContest || getLatestPodiumForConstituency(stateCode, selected.acNo);
           const podium = rawPodium ? sanitizeContestWithSeed(stateCode, selected.acNo, rawPodium) : null;
           const seed = seedMap.get(selected.acNo);
 
-          const electionYear = podium?.year ?? seed?.electionYear ?? selected.electionYear;
-          const winnerName = (seed?.winnerName && seed.winnerName.trim()) || podium?.winner?.name || selected.winnerName || null;
-          const winnerParty = seed?.winnerParty || podium?.winner?.party || selected.winner || null;
-          const winnerVotes = seed?.winnerVotes ?? podium?.winner?.votes ?? selected.votes;
+          const electionYear = IS_LIVE_ENVIRONMENT
+            ? podium?.year ?? selected.electionYear
+            : podium?.year ?? seed?.electionYear ?? selected.electionYear;
+          const winnerName = IS_LIVE_ENVIRONMENT
+            ? podium?.winner?.name || selected.winnerName || null
+            : (seed?.winnerName && seed.winnerName.trim()) || podium?.winner?.name || selected.winnerName || null;
+          const winnerParty = IS_LIVE_ENVIRONMENT
+            ? podium?.winner?.party || selected.winner || null
+            : seed?.winnerParty || podium?.winner?.party || selected.winner || null;
+          const winnerVotes = IS_LIVE_ENVIRONMENT
+            ? podium?.winner?.votes ?? selected.votes
+            : seed?.winnerVotes ?? podium?.winner?.votes ?? selected.votes;
           const winnerColor = getPartyColor(winnerParty || '');
 
           const isGenericCand = (n?: string | null) => {
@@ -2260,16 +2320,24 @@ function FullMapScreen() {
             const l = n.trim().toLowerCase();
             return l.includes('candidate') || l.includes('runner up') || l === 'winner' || l === 'ind' || l === 'nota' || l === 'none of the above';
           };
-          let rawRuName = (seed?.runnerUpName && !isGenericCand(seed.runnerUpName) ? seed.runnerUpName : null) ||
-                          (!isGenericCand(podium?.firstRunnerUp?.name) ? podium?.firstRunnerUp?.name : null) ||
-                          (!isGenericCand(selected.runnerUpName) ? selected.runnerUpName : null) ||
-                          seed?.runnerUpName || podium?.firstRunnerUp?.name || selected.runnerUpName || selected.runnerUp || null;
+          let rawRuName = IS_LIVE_ENVIRONMENT
+            ? (!isGenericCand(podium?.firstRunnerUp?.name) ? podium?.firstRunnerUp?.name : null) ||
+              (!isGenericCand(selected.runnerUpName) ? selected.runnerUpName : null) ||
+              podium?.firstRunnerUp?.name || selected.runnerUpName || selected.runnerUp || null
+            : (seed?.runnerUpName && !isGenericCand(seed.runnerUpName) ? seed.runnerUpName : null) ||
+              (!isGenericCand(podium?.firstRunnerUp?.name) ? podium?.firstRunnerUp?.name : null) ||
+              (!isGenericCand(selected.runnerUpName) ? selected.runnerUpName : null) ||
+              seed?.runnerUpName || podium?.firstRunnerUp?.name || selected.runnerUpName || selected.runnerUp || null;
           if (isGenericCand(rawRuName) && selected.runnerUpName && !isGenericCand(selected.runnerUpName)) {
             rawRuName = selected.runnerUpName;
           }
           const runnerUpName = rawRuName;
-          const runnerUpParty = seed?.runnerUp || podium?.firstRunnerUp?.party || selected.runnerUp || null;
-          const runnerUpVotes = seed?.runnerUpVotes ?? podium?.firstRunnerUp?.votes ?? null;
+          const runnerUpParty = IS_LIVE_ENVIRONMENT
+            ? podium?.firstRunnerUp?.party || selected.runnerUp || null
+            : seed?.runnerUp || podium?.firstRunnerUp?.party || selected.runnerUp || null;
+          const runnerUpVotes = IS_LIVE_ENVIRONMENT
+            ? podium?.firstRunnerUp?.votes ?? null
+            : seed?.runnerUpVotes ?? podium?.firstRunnerUp?.votes ?? null;
           const runnerUpColor = getPartyColor(runnerUpParty || '');
 
           const ru2Name = podium?.secondRunnerUp?.name;
@@ -2277,8 +2345,12 @@ function FullMapScreen() {
           const ru2Votes = podium?.secondRunnerUp?.votes ?? null;
           const ru2Color = ru2Party ? getPartyColor(ru2Party) : '#B45309';
 
-          const margin = seed?.margin ?? podium?.marginWinnerToRunnerUp1 ?? selected.margin;
-          const totalValidVotesRaw = (seed as any)?.totalValidVotes ?? podium?.totalValidVotes;
+          const margin = IS_LIVE_ENVIRONMENT
+            ? podium?.marginWinnerToRunnerUp1 ?? selected.margin
+            : seed?.margin ?? podium?.marginWinnerToRunnerUp1 ?? selected.margin;
+          const totalValidVotesRaw = IS_LIVE_ENVIRONMENT
+            ? podium?.totalValidVotes
+            : (seed as any)?.totalValidVotes ?? podium?.totalValidVotes;
           const totalValidVotes = typeof totalValidVotesRaw === 'number' && totalValidVotesRaw > 0 ? totalValidVotesRaw : null;
           const winnerShare = totalValidVotes && winnerVotes != null && winnerVotes > 0
             ? (winnerVotes / totalValidVotes) * 100
@@ -2298,18 +2370,30 @@ function FullMapScreen() {
             : (winnerVotes != null && winnerVotes > 0 && ru2Votes != null && ru2Votes > 0 ? winnerVotes - ru2Votes : null);
           const hasElectionResult = Boolean(winnerName && winnerParty);
 
-          const mla = getMLAProfileForState(stateCode, selected.acNo);
+          const mla = IS_LIVE_ENVIRONMENT ? null : getMLAProfileForState(stateCode, selected.acNo);
           const affidavit = electionYear != null
             ? useAffidavitStore.getState().getWinnerAffidavit(stateCode, selected.acNo, electionYear)
             : null;
-          const totalAssets = affidavit?.totalAssets || mla?.totalAssets || podium?.winner?.totalAssets;
-          const totalLiabilities = affidavit?.totalLiabilities || mla?.totalLiabilities || podium?.winner?.totalLiabilities;
+          const totalAssets = IS_LIVE_ENVIRONMENT
+            ? affidavit?.totalAssets ?? podium?.winner?.totalAssets
+            : affidavit?.totalAssets || mla?.totalAssets || podium?.winner?.totalAssets;
+          const totalLiabilities = IS_LIVE_ENVIRONMENT
+            ? affidavit?.totalLiabilities ?? podium?.winner?.totalLiabilities
+            : affidavit?.totalLiabilities || mla?.totalLiabilities || podium?.winner?.totalLiabilities;
           const netWorth = (totalAssets != null && totalLiabilities != null) ? totalAssets - totalLiabilities : totalAssets;
-          const age = affidavit?.age || mla?.age || podium?.winner?.age;
-          const criminalCases = affidavit?.criminalCases ?? mla?.criminalCases ?? podium?.winner?.criminalCases ?? null;
-          const education = affidavit?.education || mla?.education || podium?.winner?.education || null;
-          const profession = affidavit?.profession || mla?.profession || podium?.winner?.profession || null;
-          const turnoutValue = (seed as any)?.turnout;
+          const age = IS_LIVE_ENVIRONMENT
+            ? affidavit?.age ?? podium?.winner?.age
+            : affidavit?.age || mla?.age || podium?.winner?.age;
+          const criminalCases = IS_LIVE_ENVIRONMENT
+            ? affidavit?.criminalCases ?? podium?.winner?.criminalCases ?? null
+            : mla?.criminalCases ?? podium?.winner?.criminalCases ?? null;
+          const education = IS_LIVE_ENVIRONMENT
+            ? affidavit?.education ?? podium?.winner?.education ?? null
+            : affidavit?.education || mla?.education || podium?.winner?.education || null;
+          const profession = IS_LIVE_ENVIRONMENT
+            ? affidavit?.profession ?? podium?.winner?.profession ?? null
+            : affidavit?.profession || mla?.profession || podium?.winner?.profession || null;
+          const turnoutValue = IS_LIVE_ENVIRONMENT ? undefined : (seed as any)?.turnout;
           const turnout = typeof turnoutValue === 'number' && Number.isFinite(turnoutValue) ? turnoutValue : null;
 
           return (
@@ -2608,9 +2692,28 @@ function FullMapScreen() {
                     </View>
                     </>
                     ) : (
-                      <Text style={{ color: '#64748B', fontSize: 13, paddingVertical: 8 }}>
-                        {t('constituency.resultUnavailable', { defaultValue: 'Election result data is not available from a connected source.' })}
-                      </Text>
+                      <View style={{ paddingVertical: 8 }}>
+                        <Text style={{ color: '#64748B', fontSize: 13 }}>
+                          {podiumLoadingForAcNo === selected.acNo
+                            ? t('constituency.resultsLoading', { defaultValue: 'Loading election results…' })
+                            : t('constituency.resultUnavailable', { defaultValue: 'Election result data is not available from a connected source.' })}
+                        </Text>
+                        {podiumLoadingForAcNo !== selected.acNo && (
+                          <Pressable
+                            onPress={() => {
+                              setSelectedPodium(null);
+                              setPodiumLoadingForAcNo(selected.acNo);
+                              setPodiumRetry((revision) => revision + 1);
+                            }}
+                            accessibilityRole="button"
+                            style={{ alignSelf: 'flex-start', paddingVertical: 8 }}
+                          >
+                            <Text style={{ color: colors.primary, fontSize: 13, fontWeight: '700' }}>
+                              {t('common.retry', { defaultValue: 'Retry' })}
+                            </Text>
+                          </Pressable>
+                        )}
+                      </View>
                     )}
                   </View>
 

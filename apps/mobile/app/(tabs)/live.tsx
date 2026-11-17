@@ -17,8 +17,9 @@ import { LiveStreamCard } from '../../components/LiveStreamCard';
 import type { IssueCategory, LiveEvent } from '../../lib/lmxTypes';
 import { ISSUE_CATEGORY_CONFIG } from '../../lib/lmxTypes';
 import { useTheme } from '../../lib/theme';
+import { isInContentPeriod } from '@kshetra/shared';
 
-type FreshnessFilter = 'all' | 'live' | 'replay';
+type FreshnessFilter = 'recent' | 'live' | 'replay' | 'archive';
 type CategoryFilter = IssueCategory | 'all';
 
 const CATEGORY_ORDER: CategoryFilter[] = [
@@ -48,14 +49,18 @@ export default function LiveTabScreen({ hideHeader = false, searchQuery = '' }: 
   const aiServiceEnabled = useLiveExchangeStore((s) => s.aiServiceEnabled);
 
   const [category, setCategory] = useState<CategoryFilter>('all');
-  const [freshness, setFreshness] = useState<FreshnessFilter>('all');
+  const [freshness, setFreshness] = useState<FreshnessFilter>('recent');
   const [verifiedOnly, setVerifiedOnly] = useState(false);
 
   const filtered = useMemo(() => {
-    return events.filter((e) => {
+    const matches = events.filter((e) => {
       if (category !== 'all' && e.issueCategory !== category) return false;
+      const archived = e.status === 'archived' ||
+        (e.status === 'ended' && !isInContentPeriod(e.endedAt ?? e.startedAt, 'recent'));
+      if (freshness === 'recent' && archived) return false;
       if (freshness === 'live' && e.status !== 'live') return false;
-      if (freshness === 'replay' && e.status === 'live') return false;
+      if (freshness === 'replay' && (e.status !== 'ended' || archived)) return false;
+      if (freshness === 'archive' && !archived) return false;
       if (verifiedOnly && e.accreditationTier === 'citizen') return false;
       if (searchQuery && searchQuery.trim().length > 0) {
         const q = searchQuery.trim().toLowerCase();
@@ -67,6 +72,17 @@ export default function LiveTabScreen({ hideHeader = false, searchQuery = '' }: 
         if (!matchesReporter && !matchesOrg && !matchesLoc && !matchesTag && !matchesHeadline) return false;
       }
       return true;
+    });
+
+    return matches.sort((a, b) => {
+      const aDate = Date.parse(a.endedAt ?? a.startedAt) || 0;
+      const bDate = Date.parse(b.endedAt ?? b.startedAt) || 0;
+      if (freshness !== 'archive' && a.status === 'live' && b.status !== 'live') return -1;
+      if (freshness !== 'archive' && b.status === 'live' && a.status !== 'live') return 1;
+      if (freshness === 'recent' && a.status !== b.status) {
+        return a.status === 'live' ? -1 : 1;
+      }
+      return bDate - aDate;
     });
   }, [events, category, freshness, verifiedOnly, searchQuery]);
 
@@ -133,7 +149,7 @@ export default function LiveTabScreen({ hideHeader = false, searchQuery = '' }: 
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.chipRow}
         >
-          {(['all', 'live', 'replay'] as FreshnessFilter[]).map((f) => (
+          {(['recent', 'live', 'replay', 'archive'] as FreshnessFilter[]).map((f) => (
             <Pressable
               key={f}
               onPress={() => setFreshness(f)}
@@ -144,7 +160,13 @@ export default function LiveTabScreen({ hideHeader = false, searchQuery = '' }: 
               ]}
             >
               <Text style={[styles.chipText, { color: colors.textSecondary }, freshness === f && styles.chipTextActive]}>
-                {f === 'all' ? t('lmx.filters.all') : f === 'live' ? t('lmx.filters.liveNow') : t('lmx.filters.replays')}
+                {f === 'recent'
+                  ? t('feed.sort.latest', { defaultValue: 'Recent' })
+                  : f === 'live'
+                    ? t('lmx.filters.liveNow')
+                    : f === 'replay'
+                      ? t('lmx.filters.replays')
+                      : t('common.archive', { defaultValue: 'Archive' })}
               </Text>
             </Pressable>
           ))}
