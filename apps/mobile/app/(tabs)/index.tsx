@@ -197,6 +197,7 @@ function FullMapScreen() {
   const { t, i18n } = useTranslation();
   const cameraRef = useRef<any>(null);
   const bottomSheetRef = useRef<BottomSheet>(null);
+  const [bottomSheetIndex, setBottomSheetIndex] = useState(-1);
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const [selected, setSelected] = useState<SelectedConstituency | null>(null);
   const [selectedPodium, setSelectedPodium] = useState<{
@@ -588,6 +589,7 @@ function FullMapScreen() {
 
   const selectedAcNo = selected && !Number.isNaN(selected.acNo) ? selected.acNo : -1;
   const compareSelectedAcNo = compareSelected && !Number.isNaN(compareSelected.acNo) ? compareSelected.acNo : -1;
+  const mapChromeVisible = !(selected && bottomSheetIndex > 0);
 
   const getSelectedConstituencyObject = useCallback(
     (acNo: number, acName: string, distName: string): SelectedConstituency => {
@@ -1519,7 +1521,7 @@ function FullMapScreen() {
       )}
 
       {/* Header overlay with Poligram Logo and Immersion Fade */}
-      {!broadcastMode && (
+      {!broadcastMode && mapChromeVisible && (
         <Animated.View
           style={[styles.header, { top: mapTopOffset, opacity: immersiveAnim }]}
           pointerEvents={isScreenImmersive ? 'none' : 'box-none'}
@@ -1754,7 +1756,7 @@ function FullMapScreen() {
       )}
 
       {/* Floating Draggable Map Legend (Moved downwards, fully movable anywhere on screen) */}
-      {!broadcastMode && !selectedBooth && (
+      {!broadcastMode && mapChromeVisible && !selectedBooth && (
         <MapLegend
           colorMode={colorMode}
           stateCode={stateCode}
@@ -1876,7 +1878,7 @@ function FullMapScreen() {
       )}
 
       {/* Adaptive Floating Action Controls (Consolidated Draggable Unit with Dynamic Orientation) */}
-      {!broadcastMode && (
+      {!broadcastMode && mapChromeVisible && (
         <AdaptiveFloatingControls
           initialX={Dimensions.get('window').width - 60}
           initialY={mapTopOffset + 50}
@@ -1906,7 +1908,7 @@ function FullMapScreen() {
       )}
 
       {/* Delimitation overlay info bar */}
-      {!broadcastMode && showDelimitation && stateProjection && (
+      {!broadcastMode && mapChromeVisible && showDelimitation && stateProjection && (
         <Animated.View style={[styles.delimBar, { opacity: immersiveAnim }]} pointerEvents={isScreenImmersive ? 'none' : 'box-none'}>
           <View style={styles.delimBarTop}>
             <Ionicons name="layers" size={14} color="#FCD34D" />
@@ -2290,7 +2292,9 @@ function FullMapScreen() {
         enablePanDownToClose
         backgroundStyle={styles.sheetBackground}
         handleIndicatorStyle={styles.sheetHandle}
+        onChange={setBottomSheetIndex}
         onClose={() => {
+          setBottomSheetIndex(-1);
           if (!mapCompareActiveRef.current) {
             setSelected(null);
           }
@@ -2518,13 +2522,13 @@ function FullMapScreen() {
                           <Text style={styles.s1CandidateName} numberOfLines={1}>
                             {getLocalizedCandidateName(winnerName || '', i18n.language) || winnerName}
                           </Text>
-                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 }}>
+                          <View style={styles.s1CandidatePartyDetails}>
                             <View style={[styles.s1CandidatePartyPill, { backgroundColor: winnerColor }]}>
                               <Text style={[styles.s1CandidatePartyPillText, { color: '#FFFFFF' }]}>
                                 {winnerParty || '—'}
                               </Text>
                             </View>
-                            <Text style={styles.s1CandidatePartyFullName} numberOfLines={1}>
+                            <Text style={styles.s1CandidatePartyFullName} numberOfLines={2} ellipsizeMode="tail">
                               {winnerParty ? getLocalizedPartyName(winnerParty, i18n.language) || winnerParty : '—'}
                             </Text>
                           </View>
@@ -2565,13 +2569,13 @@ function FullMapScreen() {
                           <Text style={styles.s1CandidateName} numberOfLines={1}>
                             {getLocalizedCandidateName(runnerUpName || '', i18n.language) || runnerUpName || '—'}
                           </Text>
-                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 }}>
+                          <View style={styles.s1CandidatePartyDetails}>
                             <View style={[styles.s1CandidatePartyPill, { backgroundColor: runnerUpColor }]}>
                               <Text style={[styles.s1CandidatePartyPillText, { color: '#FFFFFF' }]}>
                                 {runnerUpParty || '—'}
                               </Text>
                             </View>
-                            <Text style={styles.s1CandidatePartyFullName} numberOfLines={1}>
+                            <Text style={styles.s1CandidatePartyFullName} numberOfLines={2} ellipsizeMode="tail">
                               {runnerUpParty ? getLocalizedPartyName(runnerUpParty, i18n.language) || runnerUpParty : '—'}
                             </Text>
                           </View>
@@ -2613,13 +2617,13 @@ function FullMapScreen() {
                             <Text style={styles.s1CandidateName} numberOfLines={1}>
                               {getLocalizedCandidateName(ru2Name || '', i18n.language) || ru2Name || '—'}
                             </Text>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 }}>
+                            <View style={styles.s1CandidatePartyDetails}>
                               <View style={[styles.s1CandidatePartyPill, { backgroundColor: ru2Color }]}>
                                 <Text style={[styles.s1CandidatePartyPillText, { color: '#FFFFFF' }]}>
                                   {ru2Party || '—'}
                                 </Text>
                               </View>
-                              <Text style={styles.s1CandidatePartyFullName} numberOfLines={1}>
+                              <Text style={styles.s1CandidatePartyFullName} numberOfLines={2} ellipsizeMode="tail">
                                 {ru2Party ? getLocalizedPartyName(ru2Party, i18n.language) || ru2Party : '—'}
                               </Text>
                             </View>
@@ -2636,21 +2640,37 @@ function FullMapScreen() {
 
                     {/* Vote Share Tug-of-War Bar */}
                     <View style={{ marginTop: 6 }}>
-                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
-                        {winnerShare != null && <Text style={{ fontSize: 10, fontWeight: '800', color: '#0F172A' }}>
-                          {winnerParty || '—'}: {winnerShare.toFixed(1)}%
-                        </Text>}
-                        {runnerUpShare != null && <Text style={{ fontSize: 10, fontWeight: '800', color: '#475569' }}>
-                          {runnerUpParty || '—'}: {runnerUpShare.toFixed(1)}%
-                        </Text>}
-                        {ru2Share != null && ru2Share > 0 && (
-                          <Text style={{ fontSize: 10, fontWeight: '800', color: '#9A3412' }}>
-                            {ru2Party}: {ru2Share.toFixed(1)}%
-                          </Text>
+                      <View style={styles.s1ShareLegend}>
+                        {winnerShare != null && (
+                          <View style={styles.s1ShareLegendItem} accessibilityLabel={`${winnerParty || '—'}: ${winnerShare.toFixed(1)}%`}>
+                            <Text style={[styles.s1ShareLegendLabel, { color: '#0F172A' }]} numberOfLines={1} ellipsizeMode="tail">
+                              {winnerParty || '—'}
+                            </Text>
+                            <Text style={[styles.s1ShareLegendValue, { color: '#0F172A' }]}>{winnerShare.toFixed(1)}%</Text>
+                          </View>
                         )}
-                        {othersShare != null && <Text style={{ fontSize: 10, fontWeight: '700', color: '#64748B' }}>
-                          Others: {othersShare.toFixed(1)}%
-                        </Text>}
+                        {runnerUpShare != null && (
+                          <View style={styles.s1ShareLegendItem} accessibilityLabel={`${runnerUpParty || '—'}: ${runnerUpShare.toFixed(1)}%`}>
+                            <Text style={[styles.s1ShareLegendLabel, { color: '#475569' }]} numberOfLines={1} ellipsizeMode="tail">
+                              {runnerUpParty || '—'}
+                            </Text>
+                            <Text style={[styles.s1ShareLegendValue, { color: '#475569' }]}>{runnerUpShare.toFixed(1)}%</Text>
+                          </View>
+                        )}
+                        {ru2Share != null && ru2Share > 0 && (
+                          <View style={styles.s1ShareLegendItem} accessibilityLabel={`${ru2Party || '—'}: ${ru2Share.toFixed(1)}%`}>
+                            <Text style={[styles.s1ShareLegendLabel, { color: '#9A3412' }]} numberOfLines={1} ellipsizeMode="tail">
+                              {ru2Party || '—'}
+                            </Text>
+                            <Text style={[styles.s1ShareLegendValue, { color: '#9A3412' }]}>{ru2Share.toFixed(1)}%</Text>
+                          </View>
+                        )}
+                        {othersShare != null && (
+                          <View style={styles.s1ShareLegendItem} accessibilityLabel={`Others: ${othersShare.toFixed(1)}%`}>
+                            <Text style={[styles.s1ShareLegendLabel, { color: '#64748B' }]} numberOfLines={1}>Others</Text>
+                            <Text style={[styles.s1ShareLegendValue, { color: '#64748B' }]}>{othersShare.toFixed(1)}%</Text>
+                          </View>
+                        )}
                       </View>
                       {winnerShare != null && runnerUpShare != null && othersShare != null && (
                       <View style={styles.s1TugBarTrack}>

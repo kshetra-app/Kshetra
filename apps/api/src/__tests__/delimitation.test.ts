@@ -144,6 +144,15 @@ describe('Delimitation Engine Foundation Routes (W020-G5)', () => {
       expect(phaseTwo).toBeDefined();
       expect(phaseTwo.verified).toBe(true);
       expect(phaseTwo.description).toContain('16 to 30 November 2026');
+
+      const currentPhaseTwoSchedule = json.data.events.find(
+        (event: any) => event.id === 'LEG-CENSUS-2026-11-16-PHASE-II-SELF-ENUMERATION',
+      );
+      expect(currentPhaseTwoSchedule).toBeDefined();
+      expect(currentPhaseTwoSchedule.date).toBe('2026-11-16');
+      expect(currentPhaseTwoSchedule.verified).toBe(true);
+      expect(currentPhaseTwoSchedule.sourceUrl).toContain('PRID=2337054');
+      expect(currentPhaseTwoSchedule.description).toContain('25 January to 28 February');
     });
   });
 
@@ -160,6 +169,8 @@ describe('Delimitation Engine Foundation Routes (W020-G5)', () => {
       expect(json.data.nationalStatus).toBe('census_underway');
       expect(json.data.censusTracking).toBeDefined();
       expect(json.data.censusTracking.finalPopulationAvailable).toBe(false);
+      expect(json.data.lastUpdated).toBe('2026-11-18T00:00:00.000Z');
+      expect(json.data.description).toContain('Official sources reviewed on 18 November 2026');
       expect(json.data.provenance.outputClassification).toBe('STATUTORY_FACT');
       expect(json.data.provenance.dataStatus).toBe('OFFICIAL');
       expect(json.data.censusTracking.paninFutureAnticipatedRegime).toBeUndefined();

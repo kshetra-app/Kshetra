@@ -171,6 +171,21 @@ const CANONICAL_TIMELINE: TimelineEventItem[] = [
     sourceReference:
       'ORGI Digital Library GAZ_NOTIFICATION_20 (published 2026-11-02); Census of India official homepage, accessed 2026-11-12',
   },
+  {
+    id: 'LEG-CENSUS-2026-11-16-PHASE-II-SELF-ENUMERATION',
+    date: '2026-11-16',
+    title: 'Census 2027 Phase-II self-enumeration begins',
+    significance: 'high',
+    verified: true,
+    category: 'census_notification',
+    sourceUrl: 'https://www.pib.gov.in/PressReleasePage.aspx?PRID=2337054&lang=1&reg=1',
+    instrument: 'Ministry of Home Affairs / PIB release PRID 2337054',
+    authority: 'Ministry of Home Affairs',
+    description:
+      'Self-enumeration began on 16 November 2026 and is open through 30 November in Goa, Punjab, Uttar Pradesh, and non-snow-bound areas of Uttarakhand. House-to-house population enumeration is scheduled for 1 December 2026 to 4 January 2027, followed by a revisional round from 5 to 9 January. In the remaining States and Union Territories, self-enumeration is scheduled for 10 to 24 January 2027, population enumeration from 25 January to 28 February, and a revisional round from 1 to 5 March. Final population results have not been published.',
+    sourceReference:
+      'Press Information Bureau, Ministry of Home Affairs, release PRID 2337054, published 2026-11-16',
+  },
 ];
 
 export function getCanonicalDelimitationTimeline(): TimelineEventItem[] {
@@ -193,20 +208,20 @@ export function getCanonicalDelimitationTimelineProvenance(): MathematicalProven
 
 export function getCanonicalDelimitationStatus(): DelimitationStatusDTO {
   const now = new Date().toISOString();
-  const lastReviewedAt = '2026-11-12T00:00:00.000Z';
+  const lastReviewedAt = '2026-11-18T00:00:00.000Z';
 
   return {
     nationalStatus: 'census_underway',
     statusLabel: 'Census 2027 operations',
     description:
-      'The current constituency framework remains under the constitutional freeze until the first census taken after 2026 has been completed and its relevant figures officially published. Census 2027 is proceeding under phased official notifications. The current published schedule covers population enumeration in Uttar Pradesh, Punjab, Goa, and non-snow-bound areas of Uttarakhand from December 2026 through January 2027; final population results have not been published.',
+      'The current constituency framework remains under the constitutional freeze until the first census taken after 2026 has been completed and its relevant figures officially published. Official sources reviewed on 18 November 2026: Census 2027 Phase-II self-enumeration is open through 30 November in Goa, Punjab, Uttar Pradesh, and non-snow-bound Uttarakhand. House-to-house population enumeration in those areas is scheduled for 1 December 2026–4 January 2027, followed by a revisional round on 5–9 January. The remaining States and Union Territories are scheduled for self-enumeration on 10–24 January 2027, population enumeration on 25 January–28 February, and a revisional round on 1–5 March. Final population results have not been published.',
     constitutionalFramework: 'Constitution of India Articles 81, 82, 170, 330, and 332',
     nextMilestone:
       'Completion of Census 2027 population enumeration and official publication of final results',
     censusTracking: {
       constitutionalTrigger: 'First census taken after 2026 (Articles 82 and 170)',
       currentExpectedCensusOperation:
-        'Phased Census of India 2027; population enumeration is scheduled in Uttar Pradesh, Punjab, Goa, and non-snow-bound Uttarakhand from December 2026 to January 2027',
+        'Census of India 2027 Phase II; self-enumeration and population-enumeration schedules were announced for all States and Union Territories by the Ministry of Home Affairs on 16 November 2026',
       finalPopulationAvailable: false,
     },
     lastUpdated: lastReviewedAt,
@@ -214,10 +229,10 @@ export function getCanonicalDelimitationStatus(): DelimitationStatusDTO {
       inputDatasetVersions: [
         {
           datasetId: 'official_delimitation_census_and_parliamentary_records',
-          versionTag: 'source-review-2026-11-12',
+          versionTag: 'source-review-2026-11-18',
           sourceAuthority:
-            'Election Commission of India; Legislative Department; Census of India; Lok Sabha Secretariat',
-          publicationDate: '2026-11-12',
+            'Election Commission of India; Legislative Department; Census of India; Lok Sabha Secretariat; Ministry of Home Affairs',
+          publicationDate: '2026-11-18',
           evidenceStatus:
             'Linked claims use official publications; repository-only items are explicitly marked unverified.',
         },
