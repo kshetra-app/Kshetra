@@ -2,15 +2,15 @@
   "evidenceMetadata": {
     "mandate": "DEF-008 Static Localization Closure: 236 hardcoded user-facing strings remediated, classified technical exclusions",
     "verifiedBy": "STATIC_LOCALIZATION_CLOSURE_SCANNER",
-    "timestamp": "2026-09-21T09:07:20.191Z"
+    "timestamp": "2026-11-18T05:59:37.470Z"
   },
   "baselineRemediatedCount": 236,
   "scannedFilesCount": 50,
-  "totalJsxTextNodesScanned": 149,
+  "totalJsxTextNodesScanned": 170,
   "unauthorizedUserFacingStringsRemaining": 0,
   "technicalExclusionsSummary": {
-    "brandAndSystem": 2,
-    "unitsAndSymbols": 144,
+    "brandAndSystem": 0,
+    "unitsAndSymbols": 167,
     "urlsAndPaths": 2,
     "internalDevTooling": 1
   },

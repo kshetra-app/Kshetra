@@ -5,6 +5,7 @@ import { bootstrapSupabase, teardownSupabase } from '../lib/supabaseBootstrap';
 import { apiClient } from '../lib/api';
 import { startProductAnalyticsSession, trackProductEvent } from '../lib/analytics';
 import { useNotificationsStore } from './notifications';
+import { useUserProfileStore } from './userProfile';
 import { useContributorVerificationStore, clearLegacyContributorVerificationCache } from './contributorVerification';
 import { purgeLegacyKycSubmissions } from '../lib/offlineSync';
 
@@ -31,9 +32,13 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     if (!useNotificationsStore.persist.hasHydrated()) {
       await useNotificationsStore.persist.rehydrate();
     }
+    if (!useUserProfileStore.persist.hasHydrated()) {
+      await useUserProfileStore.persist.rehydrate();
+    }
 
     if (!isSupabaseConfigured) {
       useContributorVerificationStore.getState().setOwnerUserId(null);
+      useUserProfileStore.getState().clearProfile();
       set({ initialized: true });
       return;
     }
@@ -48,6 +53,10 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
         user: session?.user ?? null,
         initialized: true,
       });
+      const cachedProfile = useUserProfileStore.getState().profile;
+      if (!session || (cachedProfile && cachedProfile.id !== session.user.id)) {
+        useUserProfileStore.getState().clearProfile();
+      }
       useNotificationsStore.getState().setOwnerUserId(session?.user.id ?? null);
       useContributorVerificationStore.getState().setOwnerUserId(session?.user.id ?? null);
 
@@ -64,6 +73,10 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
           session,
           user: session?.user ?? null,
         });
+        const cachedProfile = useUserProfileStore.getState().profile;
+        if (!session || (cachedProfile && cachedProfile.id !== session.user.id)) {
+          useUserProfileStore.getState().clearProfile();
+        }
         useNotificationsStore.getState().setOwnerUserId(session?.user.id ?? null);
         useContributorVerificationStore.getState().setOwnerUserId(session?.user.id ?? null);
         if (session) {

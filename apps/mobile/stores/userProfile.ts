@@ -21,6 +21,13 @@ export interface UserProfile {
   followingCount: number;
 }
 
+export function selectUserProfileForAccount(
+  profile: UserProfile | null,
+  userId: string | null,
+): UserProfile | null {
+  return userId && profile?.id === userId ? profile : null;
+}
+
 interface UserProfileState {
   profile: UserProfile | null;
   onboarded: boolean;

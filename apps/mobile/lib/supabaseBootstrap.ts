@@ -159,6 +159,7 @@ export function teardownSupabase(): void {
   bootstrappedUserId = undefined;
   useNotificationsStore.getState().setOwnerUserId(null);
   useContributorVerificationStore.getState().setOwnerUserId(null);
+  useUserProfileStore.getState().clearProfile();
   if (realtimeCleanup) {
     realtimeCleanup();
     realtimeCleanup = null;
@@ -182,7 +183,8 @@ async function ensureUserProfile(userId: string, email: string): Promise<void> {
 
     if (!data) {
       // Profile doesn't exist (trigger may not have fired, or pre-existing user)
-      const localProfile = useUserProfileStore.getState().profile;
+      const storedProfile = useUserProfileStore.getState().profile;
+      const localProfile = storedProfile?.id === userId ? storedProfile : null;
       const displayName = localProfile?.displayName || email.split('@')[0] || 'User';
       const stateCode = useActiveStateStore.getState().stateCode;
       const home = useMyConstituencyStore.getState().home;
@@ -198,10 +200,16 @@ async function ensureUserProfile(userId: string, email: string): Promise<void> {
         }, { onConflict: 'user_id' });
 
       if (insertErr) throw insertErr;
+      useUserProfileStore.getState().updateProfile({
+        id: userId,
+        displayName,
+        role: localProfile?.role || 'citizen',
+      });
       addBreadcrumb('bootstrap', 'profile_created');
     } else {
       // Merge server profile into local store
       useUserProfileStore.getState().updateProfile({
+        id: userId,
         displayName: data.display_name,
         role: data.role,
       });

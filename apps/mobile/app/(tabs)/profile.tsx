@@ -7,6 +7,7 @@ import {
   Pressable,
   Switch,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -16,7 +17,7 @@ import { useRecentsStore } from '../../stores/recents';
 import { useAuthStore } from '../../stores/auth';
 import { useNotificationsStore } from '../../stores/notifications';
 import { selectOwnedUnreadCount } from '../../lib/notificationInboxOwnership';
-import { useUserProfileStore } from '../../stores/userProfile';
+import { selectUserProfileForAccount, useUserProfileStore } from '../../stores/userProfile';
 import { getPartyColor } from '../../lib/constants';
 import UserProfileCard from '../../components/UserProfileCard';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
@@ -27,6 +28,7 @@ import { getUnifiedConstituenciesForState } from '../../lib/stateDataAdapter';
 import { useResponsive } from '../../lib/responsive';
 import { useContributorVerificationStore } from '../../stores/contributorVerification';
 import { KYC_STATUS_CONFIG } from '../../lib/contentAccountabilityTypes';
+import { hydrateContributorKYC } from '../../lib/contributorKycService';
 import { useTheme } from '../../lib/theme';
 import { DevFeatureSwitcher } from '../../components/DevFeatureSwitcher';
 
@@ -73,6 +75,7 @@ export default function ProfileScreen() {
   const notifEnabled = useNotificationsStore((s) => s.enabled);
   const toggleNotif = useNotificationsStore((s) => s.toggleEnabled);
   const userProfile = useUserProfileStore((s) => s.profile);
+  const activeUserProfile = selectUserProfileForAccount(userProfile, userId);
   const activeStateCode = useActiveStateStore((s) => s.stateCode);
   const latestElectionYear = (() => {
     const cs = getUnifiedConstituenciesForState(activeStateCode);
@@ -87,6 +90,35 @@ export default function ProfileScreen() {
   const setShowKYCSheet = useContributorVerificationStore((s) => s.setShowKYCSheet);
   const kycStatus = kycRecord?.status ?? null;
   const kycConfig = kycStatus ? KYC_STATUS_CONFIG[kycStatus] : null;
+
+  const handleContributorStatusPress = async () => {
+    if (!userId) {
+      router.push('/auth/sign-in');
+      return;
+    }
+
+    if (kycLoadState === 'loading') return;
+
+    if (kycLoadState === 'unavailable') {
+      await hydrateContributorKYC(userId);
+      if (useAuthStore.getState().user?.id !== userId) return;
+
+      const refreshed = useContributorVerificationStore.getState();
+      if (refreshed.kycLoadState !== 'ready') {
+        Alert.alert(t('kycSheet.title'), t('kycSheet.statusUnavailable'), [
+          { text: t('common.ok') },
+        ]);
+        return;
+      }
+
+      if (!refreshed.kycRecord || refreshed.kycRecord.status === 'rejected') {
+        setShowKYCSheet(true);
+      }
+      return;
+    }
+
+    setShowKYCSheet(true);
+  };
 
   return (
     <ScrollView
@@ -177,19 +209,19 @@ export default function ProfileScreen() {
       </View>
 
       {/* User Profile Card */}
-      {userProfile && (
+      {activeUserProfile && (
         <View style={styles.section}>
           <UserProfileCard
-            displayName={userProfile.displayName}
-            role={userProfile.role}
-            isVerified={userProfile.isVerified}
-            avatarUrl={userProfile.avatarUrl}
-            bio={userProfile.bio}
-            reputation={userProfile.reputation}
-            constituencyName={userProfile.homeConstituencyName}
-            postsCount={userProfile.postsCount}
-            followersCount={userProfile.followersCount}
-            followingCount={userProfile.followingCount}
+            displayName={activeUserProfile.displayName}
+            role={activeUserProfile.role}
+            isVerified={activeUserProfile.isVerified}
+            avatarUrl={activeUserProfile.avatarUrl}
+            bio={activeUserProfile.bio}
+            reputation={activeUserProfile.reputation}
+            constituencyName={activeUserProfile.homeConstituencyName}
+            postsCount={activeUserProfile.postsCount}
+            followersCount={activeUserProfile.followersCount}
+            followingCount={activeUserProfile.followingCount}
           />
           <Pressable
             style={styles.editProfileButton}
@@ -234,7 +266,7 @@ export default function ProfileScreen() {
           ) : (
             <Pressable
               style={styles.settingRow}
-              onPress={() => setShowKYCSheet(true)}
+              onPress={handleContributorStatusPress}
             >
               <View style={[styles.settingIcon, { backgroundColor: '#F59E0B20' }]}>
                 <Ionicons name="finger-print" size={18} color="#F59E0B" />
@@ -466,7 +498,7 @@ export default function ProfileScreen() {
             onPress={() => setShowDevModal(true)}
             color="#8B5CF6"
           />
-          {(userProfile?.role === 'moderator' || userProfile?.role === 'admin') && (
+          {(activeUserProfile?.role === 'moderator' || activeUserProfile?.role === 'admin') && (
             <SettingRow
               icon="shield-half"
               label="Content Moderation Queue"

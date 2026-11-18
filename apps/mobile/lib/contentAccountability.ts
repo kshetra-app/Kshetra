@@ -17,6 +17,7 @@
 
 import { Alert } from 'react-native';
 import { File } from 'expo-file-system';
+import i18n from '../i18n';
 import type {
   ContentActionType,
   ForensicSnapshot,
@@ -35,6 +36,7 @@ import {
   buildActionFingerprint,
 } from '../stores/contributorVerification';
 import { useAuthStore } from '../stores/auth';
+import { hydrateContributorKYC } from './contributorKycService';
 import { supabase, isSupabaseConfigured } from './supabase';
 import {
   submitKYC as submitKYCToSupabase,
@@ -76,7 +78,16 @@ export function gateContentAction(actionType: ContentActionType): boolean {
       break;
 
     case 'verification_unavailable':
-      Alert.alert('Verification Unavailable', 'We could not check your verification status. Please try again when connected.');
+      Alert.alert(i18n.t('kycSheet.title'), i18n.t('kycSheet.statusUnavailable'), [
+        { text: i18n.t('common.cancel'), style: 'cancel' },
+        {
+          text: i18n.t('common.retry'),
+          onPress: () => {
+            const userId = useAuthStore.getState().user?.id;
+            if (userId) void retryContributorStatus(userId, actionType);
+          },
+        },
+      ]);
       break;
 
     case 'kyc_pending':
@@ -105,6 +116,33 @@ export function gateContentAction(actionType: ContentActionType): boolean {
   }
 
   return false;
+}
+
+async function retryContributorStatus(userId: string, actionType: ContentActionType): Promise<void> {
+  await hydrateContributorKYC(userId);
+  if (useAuthStore.getState().user?.id !== userId) return;
+
+  const store = useContributorVerificationStore.getState();
+  if (store.kycLoadState !== 'ready') {
+    Alert.alert(i18n.t('kycSheet.title'), i18n.t('kycSheet.statusUnavailable'), [
+      { text: i18n.t('common.ok') },
+    ]);
+    return;
+  }
+
+  if (!store.kycRecord || store.kycRecord.status === 'rejected') {
+    store.setShowKYCSheet(true);
+    return;
+  }
+
+  if (store.kycRecord.status === 'verified') {
+    Alert.alert(i18n.t('kycSheet.verified'), i18n.t('kycSheet.verifiedMsg'), [
+      { text: i18n.t('common.ok') },
+    ]);
+    return;
+  }
+
+  gateContentAction(actionType);
 }
 
 // ─── Forensic Logging ───────────────────────────────────────────────────────

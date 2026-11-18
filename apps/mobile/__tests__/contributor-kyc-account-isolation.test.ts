@@ -94,4 +94,23 @@ describe('Contributor verification account isolation', () => {
     });
     expect(useContributorVerificationStore.getState().showKYCSheet).toBe(false);
   });
+
+  it('recovers from a temporary status failure on an explicit retry', async () => {
+    useAuthStore.setState({ user: { id: 'account-a' } as any });
+    useContributorVerificationStore.getState().setOwnerUserId('account-a');
+    const getStatus = jest.spyOn(dataService, 'getContributorKYCStatus');
+    getStatus
+      .mockResolvedValueOnce({ success: false, record: null })
+      .mockResolvedValueOnce({ success: true, record: null });
+
+    await hydrateContributorKYC('account-a');
+    expect(useContributorVerificationStore.getState().kycLoadState).toBe('unavailable');
+
+    await hydrateContributorKYC('account-a');
+
+    const store = useContributorVerificationStore.getState();
+    expect(store.kycLoadState).toBe('ready');
+    expect(store.requestAction('create_post')).toEqual({ allowed: false, reason: 'kyc_required' });
+    expect(useContributorVerificationStore.getState().showKYCSheet).toBe(true);
+  });
 });
