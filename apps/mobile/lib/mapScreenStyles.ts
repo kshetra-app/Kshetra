@@ -28,7 +28,8 @@ export const styles = StyleSheet.create({
     marginHorizontal: -14,
     paddingHorizontal: 14,
     paddingVertical: 6,
-    backgroundColor: 'rgba(10, 10, 26, 0.94)',
+    // Keep the native map labels from bleeding through this fixed toolbar.
+    backgroundColor: '#0A0A1A',
   },
   headerTitle: {
     fontSize: 17,

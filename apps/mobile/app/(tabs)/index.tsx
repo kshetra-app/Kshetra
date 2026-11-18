@@ -1897,7 +1897,7 @@ function FullMapScreen() {
       {!broadcastMode && mapChromeVisible && (
         <AdaptiveFloatingControls
           initialX={Dimensions.get('window').width - 60}
-          initialY={mapTopOffset + 50}
+          initialY={mapTopOffset + 126}
           stateCode={stateCode}
           selectedConstituency={selected}
           mapCompareActive={mapCompareActive}

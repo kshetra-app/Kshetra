@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -20,7 +20,7 @@ import { useTheme } from '../lib/theme';
 import type { PostType, Post, PostMedia, FeedScope } from '../lib/feedTypes';
 import { useAuthStore } from '../stores/auth';
 import { useActiveStateStore } from '../stores/activeState';
-import { useMyConstituencyStore } from '../stores/myConstituency';
+import { resolveConstituencyForState, useMyConstituencyStore } from '../stores/myConstituency';
 import { useFeedStore } from '../stores/feed';
 import type { PostSubmissionOutcome } from '../stores/feed';
 import { STATES } from '@kshetra/shared';
@@ -28,6 +28,7 @@ import { gateContentAction, logContentAction } from '../lib/contentAccountabilit
 import { useContentPromotionStore } from '../stores/contentPromotion';
 import { useUserProfileStore } from '../stores/userProfile';
 import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
+import { getUnifiedConstituenciesForState } from '../lib/stateDataAdapter';
 
 interface ComposeSheetProps {
   visible: boolean;
@@ -94,9 +95,24 @@ export default function ComposeSheet({
   const myHome = useMyConstituencyStore((s) => s.home);
   const selectedConstituency = useFeedStore((s) => s.selectedConstituency);
 
-  const activeConstituency = selectedConstituency
-    ? { acNo: parseInt(selectedConstituency.id.split('-AC-')[1] || '0', 10), name: selectedConstituency.name }
-    : myHome;
+  const stateConstituencies = useMemo(
+    () => (stateCode === 'IN' ? [] : getUnifiedConstituenciesForState(stateCode)),
+    [stateCode],
+  );
+  const activeConstituency = useMemo(
+    () => resolveConstituencyForState(stateCode, selectedConstituency, myHome, stateConstituencies),
+    [stateCode, selectedConstituency, myHome, stateConstituencies],
+  );
+  const effectiveTargetScope: FeedScope =
+    stateCode === 'IN'
+      ? 'national'
+      : targetScope === 'constituency' && !activeConstituency
+        ? 'state'
+        : targetScope;
+
+  useEffect(() => {
+    if (targetScope !== effectiveTargetScope) setTargetScope(effectiveTargetScope);
+  }, [effectiveTargetScope, targetScope]);
 
   const isEditMode = !!editPost;
 
@@ -243,9 +259,9 @@ export default function ComposeSheet({
     let constituencyId: string | undefined = undefined;
     let constituencyName: string | undefined = undefined;
 
-    if (targetScope === 'national') {
+    if (effectiveTargetScope === 'national') {
       targetState = 'NATIONAL';
-    } else if (targetScope === 'constituency' && activeConstituency) {
+    } else if (effectiveTargetScope === 'constituency' && activeConstituency) {
       constituencyId = `${targetState}-AC-${activeConstituency.acNo}`;
       constituencyName = activeConstituency.name;
     }
@@ -385,20 +401,20 @@ export default function ComposeSheet({
                     style={[
                       styles.scopeChip,
                       { backgroundColor: colors.surface, borderColor: colors.border },
-                      targetScope === 'national' && { backgroundColor: colors.primary, borderColor: colors.primary },
+                      effectiveTargetScope === 'national' && { backgroundColor: colors.primary, borderColor: colors.primary },
                     ]}
                     onPress={() => setTargetScope('national')}
                   >
                     <Ionicons
                       name="globe"
                       size={12}
-                      color={targetScope === 'national' ? '#FFF' : colors.textSecondary}
+                      color={effectiveTargetScope === 'national' ? '#FFF' : colors.textSecondary}
                     />
                     <Text
                       style={[
                         styles.scopeChipText,
                         { color: colors.textSecondary },
-                        targetScope === 'national' && styles.scopeChipTextActive,
+                        effectiveTargetScope === 'national' && styles.scopeChipTextActive,
                       ]}
                     >
                       {t('common.scopes.national')}
@@ -410,20 +426,20 @@ export default function ComposeSheet({
                       style={[
                         styles.scopeChip,
                         { backgroundColor: colors.surface, borderColor: colors.border },
-                        targetScope === 'state' && { backgroundColor: colors.primary, borderColor: colors.primary },
+                        effectiveTargetScope === 'state' && { backgroundColor: colors.primary, borderColor: colors.primary },
                       ]}
                       onPress={() => setTargetScope('state')}
                     >
                       <Ionicons
                         name="map"
                         size={12}
-                        color={targetScope === 'state' ? '#FFF' : colors.textSecondary}
+                        color={effectiveTargetScope === 'state' ? '#FFF' : colors.textSecondary}
                       />
                       <Text
                         style={[
                           styles.scopeChipText,
                           { color: colors.textSecondary },
-                          targetScope === 'state' && styles.scopeChipTextActive,
+                          effectiveTargetScope === 'state' && styles.scopeChipTextActive,
                         ]}
                       >
                         {stateName}
@@ -436,20 +452,20 @@ export default function ComposeSheet({
                       style={[
                         styles.scopeChip,
                         { backgroundColor: colors.surface, borderColor: colors.border },
-                        targetScope === 'constituency' && { backgroundColor: colors.primary, borderColor: colors.primary },
+                        effectiveTargetScope === 'constituency' && { backgroundColor: colors.primary, borderColor: colors.primary },
                       ]}
                       onPress={() => setTargetScope('constituency')}
                     >
                       <Ionicons
                         name="location"
                         size={12}
-                        color={targetScope === 'constituency' ? '#FFF' : colors.textSecondary}
+                        color={effectiveTargetScope === 'constituency' ? '#FFF' : colors.textSecondary}
                       />
                       <Text
                         style={[
                           styles.scopeChipText,
                           { color: colors.textSecondary },
-                          targetScope === 'constituency' && styles.scopeChipTextActive,
+                          effectiveTargetScope === 'constituency' && styles.scopeChipTextActive,
                         ]}
                         numberOfLines={1}
                       >
@@ -551,7 +567,7 @@ export default function ComposeSheet({
                   ? t('compose.pollPlaceholder')
                   : replyTo
                     ? t('compose.replyPlaceholder')
-                    : targetScope === 'constituency' && activeConstituency
+                  : effectiveTargetScope === 'constituency' && activeConstituency
                       ? t('compose.constituencyPlaceholder')
                       : t('compose.placeholder')
               }
