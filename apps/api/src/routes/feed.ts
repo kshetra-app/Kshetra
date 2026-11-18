@@ -110,6 +110,37 @@ export async function feedRoutes(app: FastifyInstance) {
         );
       }
 
+      const { data: verification, error: verificationError } = await supabase
+        .from('creator_kyc_records')
+        .select('status')
+        .eq('user_id', auth.userId)
+        .maybeSingle();
+
+      if (verificationError) {
+        request.log.error(
+          { err: verificationError.message, userId: auth.userId },
+          'Failed to verify feed post author eligibility',
+        );
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Contributor verification could not be checked. Please try again.',
+          { code: 'VERIFICATION_UNAVAILABLE' },
+        );
+      }
+      if (verification?.status !== 'verified') {
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          'Verified contributor status is required to create a post.',
+          { code: 'CONTRIBUTOR_VERIFICATION_REQUIRED' },
+        );
+      }
+
       const normalizedHashtags = [
         ...new Set(
           (hashtags ?? []).map((tag) => tag.replace(/^#/, '').toLowerCase().trim()).filter(Boolean),

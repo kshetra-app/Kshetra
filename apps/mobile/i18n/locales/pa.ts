@@ -2015,6 +2015,8 @@ const pa = {
     "orContinueWith": "ਯਾ ਇਸਸੇ ਜਾਰੀ ਰਖੇਂ",
     "signedIn": "ਸਾਇਨ ਇਨ ਹੋ ਗਯਾ",
     "signInToSync": "ਪਸਂਦੀਦਾ ਸਿਂਕ ਕਰਨੇ ਕੇ ਲਿਏ ਸਾਇਨ ਇਨ ਕਰੇਂ",
+    "credentialsRequired": "ਆਪਣਾ ਈਮੇਲ ਪਤਾ ਅਤੇ ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ।",
+    "confirmationSent": "ਪੁਸ਼ਟੀਕਰਨ ਲਿੰਕ ਲਈ ਆਪਣੀ ਈਮੇਲ ਵੇਖੋ।",
     "guestUser": "ਅਤਿਥਿ ਉਪਯੋਗਕਰ੍ਤਾ"
   },
   "profileExtended": {
@@ -2583,7 +2585,15 @@ const pa = {
     "agreement": "ਜ਼ਿੰਮੇਵਾਰੀ ਇਕਰਾਰ",
     "agreementText": "ਮੈਂ ਪੁਸ਼੍ਟਿ ਕਰਤਾ ਹੂਁ ਕਿ ਦੀ ਗਈ ਸਭੀ ਜਾਨਕਾਰੀ ਸਟੀਕ ਹੈ। ਮੇਰੀ ਪੋਸ੍ਟ ਮੇਰੀ ਸਤ੍ਯਾਪਿਤ ਪਹਚਾਨ ਸੇ ਜੁਡ़ੀ ਹੈਂ।",
     "submitting": "ਸਤ੍ਯਾਪਿਤ ਕਿਯਾ ਜਾ ਰਹਾ ਹੈ...",
-    "step": "ਚਰਣ {{current}} / {{total}}"
+    "step": "ਚਰਣ {{current}} / {{total}}",
+    "cameraRequired": "ਕੈਮਰਾ ਲੋੜੀਂਦਾ ਹੈ",
+    "cameraPermissionRequired": "ਪੁਸ਼ਟੀ ਵਾਲੀ ਸੈਲਫੀ ਲੈਣ ਲਈ ਡਿਵਾਈਸ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਕੈਮਰੇ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ।",
+    "incomplete": "ਸਬਮਿਸ਼ਨ ਅਧੂਰੀ ਹੈ",
+    "completeAllFields": "ਜਮ੍ਹਾਂ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਸਾਰੇ ਲੋੜੀਂਦੇ ਪੜਾਅ ਪੂਰੇ ਕਰੋ ਅਤੇ ਸਮਝੌਤਾ ਸਵੀਕਾਰ ਕਰੋ।",
+    "signInRequired": "ਸਾਈਨ ਇਨ ਲੋੜੀਂਦਾ ਹੈ",
+    "signInToSubmit": "ਯੋਗਦਾਨਕਰਤਾ ਦੀ ਪੁਸ਼ਟੀ ਜਮ੍ਹਾਂ ਕਰਨ ਲਈ ਸਾਈਨ ਇਨ ਕਰੋ।",
+    "emailVerificationRequired": "ਆਪਣੀ ਈਮੇਲ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ",
+    "verifyEmailBeforeSubmit": "ਪੁਸ਼ਟੀ ਜਮ੍ਹਾਂ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਇਨਬਾਕਸ ਵਿੱਚ ਭੇਜੇ ਲਿੰਕ ਰਾਹੀਂ ਆਪਣਾ ਈਮੇਲ ਪਤਾ ਪੱਕਾ ਕਰੋ।",
   },
   "contentGate": {
     "promote": "ਪ੍ਰਚਾਰ ਕਰੇਂ",

@@ -2015,6 +2015,8 @@ const hi = {
     "orContinueWith": "या इससे जारी रखें",
     "signedIn": "साइन इन हो गया",
     "signInToSync": "पसंदीदा सिंक करने के लिए साइन इन करें",
+    "credentialsRequired": "अपना ईमेल पता और पासवर्ड दर्ज करें।",
+    "confirmationSent": "पुष्टि लिंक के लिए अपना ईमेल देखें।",
     "guestUser": "अतिथि उपयोगकर्ता"
   },
   "profileExtended": {
@@ -2583,7 +2585,15 @@ const hi = {
     "agreement": "जवाबदेही समझौता",
     "agreementText": "मैं पुष्टि करता हूँ कि दी गई सभी जानकारी सटीक है। मेरी पोस्ट मेरी सत्यापित पहचान से जुड़ी हैं।",
     "submitting": "सत्यापित किया जा रहा है...",
-    "step": "चरण {{current}} / {{total}}"
+    "step": "चरण {{current}} / {{total}}",
+    "cameraRequired": "कैमरा आवश्यक है",
+    "cameraPermissionRequired": "सत्यापन सेल्फ़ी लेने के लिए डिवाइस सेटिंग्स में कैमरे की अनुमति दें।",
+    "incomplete": "सबमिशन अधूरा है",
+    "completeAllFields": "सबमिट करने से पहले सभी आवश्यक चरण पूरे करें और सहमति स्वीकार करें।",
+    "signInRequired": "साइन इन आवश्यक है",
+    "signInToSubmit": "योगदानकर्ता सत्यापन सबमिट करने के लिए साइन इन करें।",
+    "emailVerificationRequired": "ईमेल सत्यापित करें",
+    "verifyEmailBeforeSubmit": "सत्यापन सबमिट करने से पहले, इनबॉक्स में भेजे गए लिंक से अपने ईमेल पते की पुष्टि करें।",
   },
   "contentGate": {
     "promote": "प्रचार करें",

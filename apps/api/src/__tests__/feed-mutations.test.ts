@@ -9,7 +9,7 @@
  */
 
 import { buildApp } from '../server';
-import { isSupabaseConfigured, setSupabaseConfiguredForTesting } from '../lib/supabase';
+import { isSupabaseConfigured, setSupabaseConfiguredForTesting, supabase } from '../lib/supabase';
 import type { FastifyInstance } from 'fastify';
 
 describe('Track 3: Fastify Strangler Mutations API', () => {
@@ -308,6 +308,61 @@ describe('Track 3: Fastify Strangler Mutations API', () => {
         headers: { 'x-user-id': 'usr-1' },
       });
       expect(res.statusCode).toBe(503);
+    });
+  });
+
+  describe('5. Contributor Verification Enforcement', () => {
+    let fromSpy: jest.SpyInstance | undefined;
+
+    afterEach(() => {
+      fromSpy?.mockRestore();
+      setSupabaseConfiguredForTesting(originalConfigured);
+    });
+
+    it('rejects feed posts unless the authenticated contributor is verified', async () => {
+      setSupabaseConfiguredForTesting(true);
+      const query = {
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        maybeSingle: jest.fn().mockResolvedValue({ data: { status: 'pending' }, error: null }),
+      };
+      fromSpy = jest.spyOn(supabase, 'from').mockReturnValue(query as never);
+
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/v1/feed/posts',
+        headers: { 'x-user-id': 'qa-citizen' },
+        payload: { content: 'A test post that must not be stored', stateCode: 'TS' },
+      });
+
+      expect(res.statusCode).toBe(403);
+      expect(res.json().code).toBe('CONTRIBUTOR_VERIFICATION_REQUIRED');
+      expect(fromSpy).toHaveBeenCalledTimes(1);
+      expect(fromSpy).toHaveBeenCalledWith('creator_kyc_records');
+    });
+
+    it('fails closed when contributor verification cannot be checked', async () => {
+      setSupabaseConfiguredForTesting(true);
+      const query = {
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        maybeSingle: jest.fn().mockResolvedValue({
+          data: null,
+          error: { message: 'temporary database error' },
+        }),
+      };
+      fromSpy = jest.spyOn(supabase, 'from').mockReturnValue(query as never);
+
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/v1/feed/posts',
+        headers: { 'x-user-id': 'qa-citizen' },
+        payload: { content: 'A test post that must not be stored', stateCode: 'TS' },
+      });
+
+      expect(res.statusCode).toBe(503);
+      expect(res.json().code).toBe('VERIFICATION_UNAVAILABLE');
+      expect(fromSpy).toHaveBeenCalledTimes(1);
     });
   });
 });

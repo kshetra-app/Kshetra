@@ -2015,6 +2015,8 @@ const as = {
     "orContinueWith": "যা ইসসে জাৰী ৰখেং",
     "signedIn": "সাইন ইন হো গযা",
     "signInToSync": "পসংদীদা সিংক কৰনে কে লিএ সাইন ইন কৰেং",
+    "credentialsRequired": "আপোনাৰ ইমেইল ঠিকনা আৰু পাছৱৰ্ড লিখক।",
+    "confirmationSent": "নিশ্চিতকৰণ লিংকৰ বাবে আপোনাৰ ইমেইল চাওক।",
     "guestUser": "অতিথি উপযোগকৰ্তা"
   },
   "profileExtended": {
@@ -2583,7 +2585,15 @@ const as = {
     "agreement": "দায়িত্ব চুক্তি",
     "agreementText": "মৈং পুষ্টি কৰতা হূঁ কি দী গঈ সভী জানকাৰী সটীক হৈ। মেৰী পোস্ট মেৰী সত্যাপিত পহচান সে জুড़ী হৈং।",
     "submitting": "সত্যাপিত কিযা জা ৰহা হৈ...",
-    "step": "চরণ {{current}} / {{total}}"
+    "step": "চরণ {{current}} / {{total}}",
+    "cameraRequired": "কেমেৰা প্ৰয়োজন",
+    "cameraPermissionRequired": "যাচাইকৰণৰ চেলফি তুলিবলৈ ডিভাইচৰ ছেটিংছত কেমেৰাৰ অনুমতি দিয়ক।",
+    "incomplete": "দাখিল অসম্পূৰ্ণ",
+    "completeAllFields": "দাখিল কৰাৰ আগতে সকলো প্ৰয়োজনীয় পদক্ষেপ সম্পূৰ্ণ কৰক আৰু চুক্তিত সন্মতি দিয়ক।",
+    "signInRequired": "ছাইন ইন প্ৰয়োজন",
+    "signInToSubmit": "অৱদানকাৰীৰ যাচাইকৰণ দাখিল কৰিবলৈ ছাইন ইন কৰক।",
+    "emailVerificationRequired": "ইমেইল যাচাই কৰক",
+    "verifyEmailBeforeSubmit": "যাচাইকৰণ দাখিল কৰাৰ আগতে ইনবক্সলৈ পঠোৱা লিংক ব্যৱহাৰ কৰি ইমেইল ঠিকনা নিশ্চিত কৰক।",
   },
   "contentGate": {
     "promote": "প্ৰচাৰ কৰেং",

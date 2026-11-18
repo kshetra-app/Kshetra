@@ -2015,6 +2015,8 @@ const bn = {
     "orContinueWith": "যা ইসসে জারী রখেং",
     "signedIn": "সাইন ইন হো গযা",
     "signInToSync": "পসংদীদা সিংক করনে কে লিএ সাইন ইন করেং",
+    "credentialsRequired": "আপনার ইমেল ঠিকানা এবং পাসওয়ার্ড লিখুন।",
+    "confirmationSent": "নিশ্চিতকরণ লিঙ্কের জন্য আপনার ইমেল দেখুন।",
     "guestUser": "অতিথি উপযোগকর্তা"
   },
   "profileExtended": {
@@ -2583,7 +2585,15 @@ const bn = {
     "agreement": "দায়বদ্ধতা চুক্তি",
     "agreementText": "মৈং পুষ্টি করতা হূঁ কি দী গঈ সভী জানকারী সটীক হৈ। মেরী পোস্ট মেরী সত্যাপিত পহচান সে জুড़ী হৈং।",
     "submitting": "সত্যাপিত কিযা জা রহা হৈ...",
-    "step": "চরণ {{current}} / {{total}}"
+    "step": "চরণ {{current}} / {{total}}",
+    "cameraRequired": "ক্যামেরা প্রয়োজন",
+    "cameraPermissionRequired": "যাচাইকরণের সেলফি তুলতে ডিভাইস সেটিংসে ক্যামেরার অনুমতি দিন।",
+    "incomplete": "জমা অসম্পূর্ণ",
+    "completeAllFields": "জমা দেওয়ার আগে সব প্রয়োজনীয় ধাপ সম্পূর্ণ করুন এবং চুক্তিতে সম্মতি দিন।",
+    "signInRequired": "সাইন ইন প্রয়োজন",
+    "signInToSubmit": "অবদানকারী যাচাইকরণ জমা দিতে সাইন ইন করুন।",
+    "emailVerificationRequired": "ইমেল যাচাই করুন",
+    "verifyEmailBeforeSubmit": "যাচাইকরণ জমা দেওয়ার আগে ইনবক্সে পাঠানো লিঙ্ক ব্যবহার করে আপনার ইমেল ঠিকানা নিশ্চিত করুন।",
   },
   "contentGate": {
     "promote": "প্রচার করেং",

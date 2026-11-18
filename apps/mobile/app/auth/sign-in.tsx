@@ -32,7 +32,7 @@ export default function SignInScreen() {
 
   const handleSubmit = async () => {
     if (!email.trim() || !password.trim()) {
-      Alert.alert('Error', 'Please enter email and password');
+      Alert.alert(i18n.t('common.error'), i18n.t('auth.credentialsRequired'));
       return;
     }
 
@@ -41,10 +41,10 @@ export default function SignInScreen() {
       : await signInWithEmail(email.trim(), password);
 
     if (error) {
-      Alert.alert('Error', error);
+      Alert.alert(i18n.t('common.error'), error);
     } else {
       if (isSignUp) {
-        Alert.alert('Success', 'Check your email for a confirmation link!');
+        Alert.alert(i18n.t('auth.signUp'), i18n.t('auth.confirmationSent'));
       }
       router.back();
     }
@@ -54,7 +54,7 @@ export default function SignInScreen() {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
-          title: isSignUp ? 'Create Account' : 'Sign In',
+          title: i18n.t(isSignUp ? 'auth.signUp' : 'auth.signIn'),
           headerStyle: { backgroundColor: colors.surface },
           headerTintColor: colors.primary,
           headerRight: () => (
@@ -77,8 +77,8 @@ export default function SignInScreen() {
           <Text style={[styles.brand, { color: colors.primary }]}>POLIGRAM</Text>
           <Text style={[styles.tagline, { color: colors.textMuted }]}>
             {isSignUp
-              ? 'Create your account'
-              : 'Sign in to sync your data'}
+              ? i18n.t('auth.signUp')
+              : i18n.t('auth.signInToSync')}
           </Text>
         </View>
 
@@ -92,7 +92,7 @@ export default function SignInScreen() {
             />
             <TextInput
               style={[styles.input, { color: colors.text }]}
-              placeholder="Email"
+              placeholder={i18n.t('auth.email')}
               placeholderTextColor={colors.textMuted}
               value={email}
               onChangeText={setEmail}
@@ -111,7 +111,7 @@ export default function SignInScreen() {
             />
             <TextInput
               style={[styles.input, { color: colors.text }]}
-              placeholder="Password"
+              placeholder={i18n.t('auth.password')}
               placeholderTextColor={colors.textMuted}
               value={password}
               onChangeText={setPassword}
@@ -127,10 +127,10 @@ export default function SignInScreen() {
           >
             <Text style={styles.submitText}>
               {loading
-                ? 'Please wait...'
+                ? i18n.t('common.loading')
                 : isSignUp
-                  ? 'Create Account'
-                  : 'Sign In'}
+                  ? i18n.t('auth.signUp')
+                  : i18n.t('auth.signIn')}
             </Text>
           </Pressable>
 
@@ -140,8 +140,8 @@ export default function SignInScreen() {
           >
             <Text style={[styles.toggleText, { color: colors.teal }]}>
               {isSignUp
-                ? 'Already have an account? Sign In'
-                : "Don't have an account? Sign Up"}
+                ? `${i18n.t('auth.hasAccount')} ${i18n.t('auth.signIn')}`
+                : `${i18n.t('auth.noAccount')} ${i18n.t('auth.signUp')}`}
             </Text>
           </Pressable>
         </View>

@@ -2015,6 +2015,8 @@ const gu = {
     "orContinueWith": "યા ઇસસે જારી રખેં",
     "signedIn": "સાઇન ઇન હો ગયા",
     "signInToSync": "પસંદીદા સિંક કરને કે લિએ સાઇન ઇન કરેં",
+    "credentialsRequired": "તમારું ઇમેઇલ સરનામું અને પાસવર્ડ દાખલ કરો.",
+    "confirmationSent": "પુષ્ટિ લિંક માટે તમારું ઇમેઇલ તપાસો.",
     "guestUser": "અતિથિ ઉપયોગકર્તા"
   },
   "profileExtended": {
@@ -2583,7 +2585,15 @@ const gu = {
     "agreement": "જવાબદારી કરાર",
     "agreementText": "મૈં પુષ્ટિ કરતા હૂઁ કિ દી ગઈ સભી જાનકારી સટીક હૈ। મેરી પોસ્ટ મેરી સત્યાપિત પહચાન સે જુડ़ી હૈં।",
     "submitting": "સત્યાપિત કિયા જા રહા હૈ...",
-    "step": "ચરણ {{current}} / {{total}}"
+    "step": "ચરણ {{current}} / {{total}}",
+    "cameraRequired": "કેમેરા જરૂરી છે",
+    "cameraPermissionRequired": "ચકાસણી સેલ્ફી લેવા માટે ઉપકરણની સેટિંગ્સમાં કેમેરાની મંજૂરી આપો.",
+    "incomplete": "સબમિશન અધૂરું છે",
+    "completeAllFields": "સબમિટ કરતા પહેલાં બધા જરૂરી પગલાં પૂર્ણ કરો અને કરાર સ્વીકારો.",
+    "signInRequired": "સાઇન ઇન જરૂરી છે",
+    "signInToSubmit": "યોગદાનકર્તાની ચકાસણી સબમિટ કરવા સાઇન ઇન કરો.",
+    "emailVerificationRequired": "તમારું ઇમેઇલ ચકાસો",
+    "verifyEmailBeforeSubmit": "ચકાસણી સબમિટ કરતાં પહેલાં ઇનબૉક્સમાં મોકલેલી લિંકથી તમારા ઇમેઇલ સરનામાની પુષ્ટિ કરો.",
   },
   "contentGate": {
     "promote": "પ્રચાર કરેં",

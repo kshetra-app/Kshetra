@@ -47,6 +47,15 @@ describe('Feed post idempotency', () => {
     };
     const insert = jest.fn();
     jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+      if (table === 'creator_kyc_records') {
+        return {
+          select: () => ({
+            eq: () => ({
+              maybeSingle: async () => ({ data: { status: 'verified' }, error: null }),
+            }),
+          }),
+        } as any;
+      }
       if (table !== 'posts') throw new Error(`Unexpected table: ${table}`);
       return {
         select: () => ({
@@ -79,13 +88,24 @@ describe('Feed post idempotency', () => {
       content: 'A durable post',
       type: 'discussion',
     };
-    jest.spyOn(supabase, 'from').mockImplementation((() => ({
-      select: () => ({
-        eq: () => ({
-          eq: () => ({ maybeSingle: async () => ({ data: existing, error: null }) }),
+    jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+      if (table === 'creator_kyc_records') {
+        return {
+          select: () => ({
+            eq: () => ({
+              maybeSingle: async () => ({ data: { status: 'verified' }, error: null }),
+            }),
+          }),
+        } as any;
+      }
+      return {
+        select: () => ({
+          eq: () => ({
+            eq: () => ({ maybeSingle: async () => ({ data: existing, error: null }) }),
+          }),
         }),
-      }),
-    })) as any);
+      } as any;
+    }) as any);
 
     const response = await app.inject({
       method: 'POST',

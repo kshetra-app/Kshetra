@@ -2015,6 +2015,8 @@ const en =  {
     "orContinueWith": "or continue with",
     "signedIn": "Signed in",
     "signInToSync": "Sign in to sync favourites across devices",
+    "credentialsRequired": "Enter your email address and password.",
+    "confirmationSent": "Check your email for a confirmation link.",
     "guestUser": "Guest User"
   },
   "profileExtended": {
@@ -2593,7 +2595,15 @@ const en =  {
     "agreementText": "I confirm that all information provided is accurate. I understand my posts are linked to my verified identity.",
     "agreeAndVerify": "Agree & submit for review",
     "submitting": "Verifying...",
-    "step": "Step {{current}} of {{total}}"
+    "step": "Step {{current}} of {{total}}",
+    "cameraRequired": "Camera required",
+    "cameraPermissionRequired": "Allow camera access in device settings to take the verification selfie.",
+    "incomplete": "Incomplete submission",
+    "completeAllFields": "Complete all required steps and accept the agreement before submitting.",
+    "signInRequired": "Sign in required",
+    "signInToSubmit": "Sign in to submit contributor verification.",
+    "emailVerificationRequired": "Verify your email",
+    "verifyEmailBeforeSubmit": "Confirm your email address using the link sent to your inbox before submitting verification.",
   },
   "contentGate": {
     "promote": "Promote",

@@ -13,6 +13,7 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
@@ -26,6 +27,7 @@ import {
 
 export default function KYCVerificationSheet() {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const visible = useContributorVerificationStore((s) => s.showKYCSheet);
   const kycLoading = useContributorVerificationStore((s) => s.kycLoading);
   const setShowKYCSheet = useContributorVerificationStore((s) => s.setShowKYCSheet);
@@ -55,7 +57,7 @@ export default function KYCVerificationSheet() {
   const takeSelfie = useCallback(async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Camera Required', 'Camera access is required for identity verification. Please grant camera permission in your device settings.');
+      Alert.alert(t('kycSheet.cameraRequired'), t('kycSheet.cameraPermissionRequired'));
       return;
     }
     const result = await ImagePicker.launchCameraAsync({
@@ -67,23 +69,23 @@ export default function KYCVerificationSheet() {
       setSelfieUri(result.assets[0].uri);
       setSelfieMimeType(result.assets[0].mimeType ?? null);
     }
-  }, []);
+  }, [t]);
 
   const handleSubmit = async () => {
     if (completeness.percent < 100) {
-      Alert.alert('Incomplete', `Please complete: ${completeness.missing.join(', ')}`);
+      Alert.alert(t('kycSheet.incomplete'), t('kycSheet.completeAllFields'));
       return;
     }
 
     // Require verified email for KYC submission
     if (!user?.id) {
-      Alert.alert('Sign In Required', 'Please sign in before submitting contributor verification.');
+      Alert.alert(t('kycSheet.signInRequired'), t('kycSheet.signInToSubmit'));
       return;
     }
     if (!user.email_confirmed_at) {
       Alert.alert(
-        'Email Verification Required',
-        'Please verify your email address before completing account verification. Check your inbox for the confirmation link.',
+        t('kycSheet.emailVerificationRequired'),
+        t('kycSheet.verifyEmailBeforeSubmit'),
       );
       return;
     }
@@ -115,14 +117,25 @@ export default function KYCVerificationSheet() {
   }
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      onRequestClose={onClose}
+    >
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         {/* Header */}
-        <View style={styles.header}>
-          <Pressable onPress={onClose} hitSlop={8} disabled={kycLoading}>
+        <View style={[styles.header, { paddingTop: Math.max(insets.top, 16) }]}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('common.close')}
+            onPress={onClose}
+            hitSlop={10}
+            disabled={kycLoading}
+          >
             <Ionicons name="close" size={24} color={kycLoading ? '#374151' : '#9CA3AF'} />
           </Pressable>
           <Text style={styles.headerTitle}>{t('kycSheet.title')}</Text>
