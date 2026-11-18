@@ -16,14 +16,14 @@
  *    - Wikipedia: article title must fuzzy-match our candidate name (score > 0.6)
  *    - MyNeta: candidate name from page must fuzzy-match (score > 0.7)
  *
- * 3. IMAGE VERIFICATION: Is the URL a valid, renderable image?
+ * 3. IMAGE URL CHECKS (not identity verification): Is the URL a valid image?
  *    - HEAD request returns HTTP 200
  *    - Content-Type is image/* (not text/html)
  *    - Content-Length > 3KB (reject tiny placeholder icons)
  *    - Not an SVG file (React Native can't render SVG in <Image>)
  *    - Not a known garbage pattern (logos, buildings, maps)
  *
- * 4. CONTENT VERIFICATION: Is this likely a person's photo?
+ * 4. URL-BASED CONTENT HEURISTICS (not visual identity verification):
  *    - Wikipedia: page type is not "disambiguation" or "no-extract"
  *    - Image URL path doesn't contain logo/flag/map/building keywords
  *    - Image is from a known good domain (upload.wikimedia.org, myneta.info)
@@ -33,7 +33,8 @@
  *   scripts/output/photo-scrape-report.json       — Full audit trail
  *
  * USAGE:
- *   npx ts-node scripts/scrape-candidate-photos-v2.ts
+ *   npx ts-node scripts/scrape-candidate-photos-v2.ts                 # preview only
+ *   npx ts-node scripts/scrape-candidate-photos-v2.ts --write          # update name-keyed URL map
  *   npx ts-node scripts/scrape-candidate-photos-v2.ts --state TS
  *   npx ts-node scripts/scrape-candidate-photos-v2.ts --curated-only
  */
@@ -50,7 +51,7 @@ const REPORT_PATH = path.resolve(__dirname, 'output/photo-scrape-report.json');
 const ARGS = process.argv.slice(2);
 const STATE_FILTER = ARGS.includes('--state') ? ARGS[ARGS.indexOf('--state') + 1] : null;
 const CURATED_ONLY = ARGS.includes('--curated-only');
-const DRY_RUN = ARGS.includes('--dry-run');
+const DRY_RUN = !ARGS.includes('--write') || ARGS.includes('--dry-run');
 
 // ── Curated Wikipedia Articles (known-good article titles) ────────────
 
@@ -91,7 +92,7 @@ const WIKIPEDIA_ARTICLES: Record<string, string> = {
   'Botcha Satyanarayana': 'Botcha_Satyanarayana',
 
   // ── Karnataka ──
-  'Siddaramaiah': 'Siddaramaiah',
+  Siddaramaiah: 'Siddaramaiah',
   'D.K. Shivakumar': 'D._K._Shivakumar',
   'B.S. Yediyurappa': 'B._S._Yediyurappa',
   'H.D. Kumaraswamy': 'H._D._Kumaraswamy',
@@ -115,7 +116,7 @@ const WIKIPEDIA_ARTICLES: Record<string, string> = {
   'K. Annamalai': 'K._Annamalai',
   'Udhayanidhi Stalin': 'Udhayanidhi_Stalin',
   'O. Panneerselvam': 'O._Panneerselvam',
-  'Kanimozhi': 'Kanimozhi',
+  Kanimozhi: 'Kanimozhi',
   'Dayanidhi Maran': 'Dayanidhi_Maran',
 
   // ── Kerala ──
@@ -134,7 +135,7 @@ const WIKIPEDIA_ARTICLES: Record<string, string> = {
   // ── Uttar Pradesh ──
   'Yogi Adityanath': 'Yogi_Adityanath',
   'Akhilesh Yadav': 'Akhilesh_Yadav',
-  'Mayawati': 'Mayawati',
+  Mayawati: 'Mayawati',
   'Keshav Prasad Maurya': 'Keshav_Prasad_Maurya',
   'Brajesh Pathak': 'Brajesh_Pathak',
   'Azam Khan': 'Azam_Khan_(politician)',
@@ -154,23 +155,46 @@ const MYNETA_ELECTIONS: Record<string, string[]> = {
 
 // State name mapping for Wikipedia search context
 const STATE_NAMES: Record<string, string> = {
-  TS: 'Telangana', AP: 'Andhra Pradesh', KA: 'Karnataka', MH: 'Maharashtra',
-  TN: 'Tamil Nadu', KL: 'Kerala', WB: 'West Bengal', UP: 'Uttar Pradesh',
+  TS: 'Telangana',
+  AP: 'Andhra Pradesh',
+  KA: 'Karnataka',
+  MH: 'Maharashtra',
+  TN: 'Tamil Nadu',
+  KL: 'Kerala',
+  WB: 'West Bengal',
+  UP: 'Uttar Pradesh',
 };
 
 // ── Garbage image detection patterns ──────────────────────────────────
 
 const GARBAGE_URL_PATTERNS = [
-  /logo/i, /flag/i, /emblem/i, /seal_of/i, /coat_of_arms/i,
-  /map/i, /temple/i, /mandir/i, /masjid/i, /church/i, /mosque/i,
-  /assembly.*building/i, /parliament.*house/i, /legislature.*building/i,
-  /deewali/i, /festival/i, /meeting_of_members/i,
-  /serial\.jpg/i, /stamp/i, /\.svg/i,
-  /market\.jpg/i, /sanchi/i, /gateway/i,
+  /logo/i,
+  /flag/i,
+  /emblem/i,
+  /seal_of/i,
+  /coat_of_arms/i,
+  /map/i,
+  /temple/i,
+  /mandir/i,
+  /masjid/i,
+  /church/i,
+  /mosque/i,
+  /assembly.*building/i,
+  /parliament.*house/i,
+  /legislature.*building/i,
+  /deewali/i,
+  /festival/i,
+  /meeting_of_members/i,
+  /serial\.jpg/i,
+  /stamp/i,
+  /\.svg/i,
+  /market\.jpg/i,
+  /sanchi/i,
+  /gateway/i,
 ];
 
 function isGarbageUrl(url: string): boolean {
-  return GARBAGE_URL_PATTERNS.some(p => p.test(url));
+  return GARBAGE_URL_PATTERNS.some((p) => p.test(url));
 }
 
 // ── Types ─────────────────────────────────────────────────────────────
@@ -189,71 +213,112 @@ interface PhotoResult {
 
 function fetchJSON(url: string): Promise<any> {
   return new Promise((resolve, reject) => {
-    const req = https.get(url, {
-      headers: {
-        'User-Agent': 'KshetraApp/2.0 (https://kshetra.app; political-transparency-app)',
-        'Accept': 'application/json',
+    const req = https.get(
+      url,
+      {
+        headers: {
+          'User-Agent': 'KshetraApp/2.0 (https://kshetra.app; political-transparency-app)',
+          Accept: 'application/json',
+        },
       },
-    }, (res) => {
-      if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-        return fetchJSON(res.headers.location).then(resolve).catch(reject);
-      }
-      if (res.statusCode !== 200) {
-        res.resume();
-        reject(new Error(`HTTP ${res.statusCode}`));
-        return;
-      }
-      let data = '';
-      res.on('data', (chunk) => (data += chunk));
-      res.on('end', () => {
-        try { resolve(JSON.parse(data)); }
-        catch { reject(new Error('Invalid JSON')); }
-      });
-    });
+      (res) => {
+        if (
+          res.statusCode &&
+          res.statusCode >= 300 &&
+          res.statusCode < 400 &&
+          res.headers.location
+        ) {
+          return fetchJSON(res.headers.location).then(resolve).catch(reject);
+        }
+        if (res.statusCode !== 200) {
+          res.resume();
+          reject(new Error(`HTTP ${res.statusCode}`));
+          return;
+        }
+        let data = '';
+        res.on('data', (chunk) => (data += chunk));
+        res.on('end', () => {
+          try {
+            resolve(JSON.parse(data));
+          } catch {
+            reject(new Error('Invalid JSON'));
+          }
+        });
+      },
+    );
     req.on('error', reject);
-    req.setTimeout(15000, () => { req.destroy(); reject(new Error('Timeout')); });
+    req.setTimeout(15000, () => {
+      req.destroy();
+      reject(new Error('Timeout'));
+    });
   });
 }
 
 function fetchHTML(url: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const client = url.startsWith('https') ? https : require('http');
-    const req = client.get(url, {
-      headers: { 'User-Agent': 'KshetraApp/2.0 (https://kshetra.app)' },
-    }, (res: any) => {
-      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-        return fetchHTML(res.headers.location).then(resolve).catch(reject);
-      }
-      if (res.statusCode !== 200) { res.resume(); reject(new Error(`HTTP ${res.statusCode}`)); return; }
-      let data = '';
-      res.on('data', (chunk: string) => (data += chunk));
-      res.on('end', () => resolve(data));
-    });
+    const req = client.get(
+      url,
+      {
+        headers: { 'User-Agent': 'KshetraApp/2.0 (https://kshetra.app)' },
+      },
+      (res: any) => {
+        if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+          return fetchHTML(res.headers.location).then(resolve).catch(reject);
+        }
+        if (res.statusCode !== 200) {
+          res.resume();
+          reject(new Error(`HTTP ${res.statusCode}`));
+          return;
+        }
+        let data = '';
+        res.on('data', (chunk: string) => (data += chunk));
+        res.on('end', () => resolve(data));
+      },
+    );
     req.on('error', reject);
-    req.setTimeout(15000, () => { req.destroy(); reject(new Error('Timeout')); });
+    req.setTimeout(15000, () => {
+      req.destroy();
+      reject(new Error('Timeout'));
+    });
   });
 }
 
-function headCheck(url: string): Promise<{ ok: boolean; contentType: string; contentLength: number }> {
+function headCheck(
+  url: string,
+): Promise<{ ok: boolean; contentType: string; contentLength: number }> {
   return new Promise((resolve) => {
-    const req = https.request(url, { method: 'HEAD', headers: { 'User-Agent': 'KshetraApp/2.0' } }, (res) => {
-      const ct = res.headers['content-type'] || '';
-      const cl = parseInt(res.headers['content-length'] || '0', 10);
-      resolve({ ok: res.statusCode === 200, contentType: ct, contentLength: cl });
-      res.resume();
-    });
+    const req = https.request(
+      url,
+      { method: 'HEAD', headers: { 'User-Agent': 'KshetraApp/2.0' } },
+      (res) => {
+        const ct = res.headers['content-type'] || '';
+        const cl = parseInt(res.headers['content-length'] || '0', 10);
+        resolve({ ok: res.statusCode === 200, contentType: ct, contentLength: cl });
+        res.resume();
+      },
+    );
     req.on('error', () => resolve({ ok: false, contentType: '', contentLength: 0 }));
-    req.setTimeout(10000, () => { req.destroy(); resolve({ ok: false, contentType: '', contentLength: 0 }); });
+    req.setTimeout(10000, () => {
+      req.destroy();
+      resolve({ ok: false, contentType: '', contentLength: 0 });
+    });
     req.end();
   });
 }
 
-function sleep(ms: number) { return new Promise(r => setTimeout(r, ms)); }
+function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms));
+}
 
 // ── Name matching ─────────────────────────────────────────────────────
 
 function normalise(name: string): string {
-  return name.toLowerCase().replace(/[.,'"]/g, '').replace(/\s+/g, ' ').trim();
+  return name
+    .toLowerCase()
+    .replace(/[.,'"]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 /** Simple Jaccard similarity on word sets */
@@ -261,7 +326,9 @@ function nameSimilarity(a: string, b: string): number {
   const wa = new Set(normalise(a).split(' '));
   const wb = new Set(normalise(b).split(' '));
   let intersection = 0;
-  for (const w of wa) { if (wb.has(w)) intersection++; }
+  for (const w of wa) {
+    if (wb.has(w)) intersection++;
+  }
   const union = new Set([...wa, ...wb]).size;
   return union === 0 ? 0 : intersection / union;
 }
@@ -278,7 +345,12 @@ async function verifyImageUrl(url: string): Promise<{ valid: boolean; reasons: s
 
   // Layer 3b: Garbage URL pattern check
   if (isGarbageUrl(url)) {
-    return { valid: false, reasons: [`Garbage URL pattern detected: ${url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('/') + 40)}`] };
+    return {
+      valid: false,
+      reasons: [
+        `Garbage URL pattern detected: ${url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('/') + 40)}`,
+      ],
+    };
   }
 
   // Layer 3c: HEAD check
@@ -290,7 +362,10 @@ async function verifyImageUrl(url: string): Promise<{ valid: boolean; reasons: s
     return { valid: false, reasons: [`Not an image: Content-Type=${head.contentType}`] };
   }
   if (head.contentLength > 0 && head.contentLength < 3000) {
-    return { valid: false, reasons: [`Image too small (${head.contentLength} bytes) — likely a placeholder`] };
+    return {
+      valid: false,
+      reasons: [`Image too small (${head.contentLength} bytes) — likely a placeholder`],
+    };
   }
 
   reasons.push(`✓ HEAD 200, type=${head.contentType}, size=${head.contentLength}`);
@@ -301,9 +376,13 @@ async function verifyImageUrl(url: string): Promise<{ valid: boolean; reasons: s
 
 async function fetchWikipediaCurated(name: string, articleTitle: string): Promise<PhotoResult> {
   const result: PhotoResult = {
-    name, state: '', url: null,
-    source: 'wikipedia-curated', confidence: 'none',
-    verifications: [], rejections: [],
+    name,
+    state: '',
+    url: null,
+    source: 'wikipedia-curated',
+    confidence: 'none',
+    verifications: [],
+    rejections: [],
   };
 
   try {
@@ -319,7 +398,8 @@ async function fetchWikipediaCurated(name: string, articleTitle: string): Promis
 
     // Verify 2: Description suggests politician
     const desc = (data.description || '').toLowerCase();
-    const isPolitician = /politician|minister|chief minister|mla|mp|legislat|member of|governor/i.test(desc);
+    const isPolitician =
+      /politician|minister|chief minister|mla|mp|legislat|member of|governor/i.test(desc);
     if (isPolitician) {
       result.verifications.push(`✓ Description confirms politician: "${data.description}"`);
     } else {
@@ -358,9 +438,13 @@ async function fetchWikipediaCurated(name: string, articleTitle: string): Promis
 
 async function fetchWikipediaSearch(name: string, stateName: string): Promise<PhotoResult> {
   const result: PhotoResult = {
-    name, state: stateName, url: null,
-    source: 'wikipedia-search', confidence: 'none',
-    verifications: [], rejections: [],
+    name,
+    state: stateName,
+    url: null,
+    source: 'wikipedia-search',
+    confidence: 'none',
+    verifications: [],
+    rejections: [],
   };
 
   try {
@@ -397,7 +481,8 @@ async function fetchWikipediaSearch(name: string, stateName: string): Promise<Ph
 
       // Verify 2: Description must indicate politician
       const desc = (data.description || '').toLowerCase();
-      const isPolitician = /politician|minister|chief minister|mla|mp|legislat|member of|governor/i.test(desc);
+      const isPolitician =
+        /politician|minister|chief minister|mla|mp|legislat|member of|governor/i.test(desc);
       if (!isPolitician) {
         result.rejections.push(`"${title}" description: "${data.description}" — not a politician`);
         continue;
@@ -448,7 +533,8 @@ async function scrapeMyNetaCandidates(electionSlug: string): Promise<Map<string,
     let match;
     while ((match = regex.exec(html)) !== null) {
       const candidateId = match[1];
-      const name = match[2].trim()
+      const name = match[2]
+        .trim()
         .replace(/&amp;/g, '&')
         .replace(/&#39;/g, "'")
         .replace(/&quot;/g, '"');
@@ -468,9 +554,13 @@ async function fetchMyNetaPhoto(
   mynetaCandidates: Map<string, string>,
 ): Promise<PhotoResult> {
   const result: PhotoResult = {
-    name: candidateName, state: '', url: null,
-    source: 'myneta', confidence: 'none',
-    verifications: [], rejections: [],
+    name: candidateName,
+    state: '',
+    url: null,
+    source: 'myneta',
+    confidence: 'none',
+    verifications: [],
+    rejections: [],
   };
 
   // Try exact match first
@@ -489,7 +579,9 @@ async function fetchMyNetaPhoto(
       }
     }
     if (photoUrl) {
-      result.verifications.push(`✓ Fuzzy matched: "${candidateName}" → "${matchedName}" (${bestScore.toFixed(2)})`);
+      result.verifications.push(
+        `✓ Fuzzy matched: "${candidateName}" → "${matchedName}" (${bestScore.toFixed(2)})`,
+      );
     }
   } else {
     result.verifications.push(`✓ Exact name match on MyNeta`);
@@ -509,7 +601,8 @@ async function fetchMyNetaPhoto(
   result.verifications.push(...imgCheck.reasons);
 
   result.url = photoUrl;
-  result.confidence = 'high'; // MyNeta photos are affidavit photos — very reliable
+  // Image reachability and source-page association do not confirm the face.
+  result.confidence = 'medium';
   return result;
 }
 
@@ -522,13 +615,29 @@ function loadAllCandidates(): { name: string; state: string }[] {
   // Helper to extract winner names from seed data files
   const seedFiles: { state: string; file: string; nameField: string }[] = [
     { state: 'TS', file: '../data/seed/telangana-constituencies.ts', nameField: 'winnerName2023' },
-    { state: 'AP', file: '../data/seed/andhra-pradesh-constituencies.ts', nameField: 'winnerName2024' },
+    {
+      state: 'AP',
+      file: '../data/seed/andhra-pradesh-constituencies.ts',
+      nameField: 'winnerName2024',
+    },
     { state: 'KA', file: '../data/seed/karnataka-constituencies.ts', nameField: 'winnerName2023' },
-    { state: 'MH', file: '../data/seed/maharashtra-constituencies.ts', nameField: 'winnerName2024' },
+    {
+      state: 'MH',
+      file: '../data/seed/maharashtra-constituencies.ts',
+      nameField: 'winnerName2024',
+    },
     { state: 'TN', file: '../data/seed/tamil-nadu-constituencies.ts', nameField: 'winnerName2021' },
     { state: 'KL', file: '../data/seed/kerala-constituencies.ts', nameField: 'winnerName2021' },
-    { state: 'WB', file: '../data/seed/west-bengal-constituencies.ts', nameField: 'winnerName2021' },
-    { state: 'UP', file: '../data/seed/uttar-pradesh-constituencies.ts', nameField: 'winnerName2022' },
+    {
+      state: 'WB',
+      file: '../data/seed/west-bengal-constituencies.ts',
+      nameField: 'winnerName2021',
+    },
+    {
+      state: 'UP',
+      file: '../data/seed/uttar-pradesh-constituencies.ts',
+      nameField: 'winnerName2022',
+    },
   ];
 
   for (const { state, file, nameField } of seedFiles) {
@@ -602,7 +711,7 @@ async function main() {
 
   // ── Phase B: Wikipedia Search (for remaining candidates) ──
   console.log('━━━ Phase B: Wikipedia (Search API) ━━━');
-  const remainingCandidates = candidates.filter(c => !photoMap[c.name]);
+  const remainingCandidates = candidates.filter((c) => !photoMap[c.name]);
   let searchFound = 0;
 
   for (let i = 0; i < remainingCandidates.length; i++) {
@@ -633,7 +742,7 @@ async function main() {
 
   // ── Phase C: MyNeta (for still-missing candidates) ──
   console.log('━━━ Phase C: MyNeta.info (Affidavit Photos) ━━━');
-  const stillMissing = candidates.filter(c => !photoMap[c.name]);
+  const stillMissing = candidates.filter((c) => !photoMap[c.name]);
   let mynetaFound = 0;
 
   // Group missing candidates by state

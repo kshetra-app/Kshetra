@@ -14,6 +14,7 @@ export interface CandidatePodiumDetail {
   localizedNames?: Record<string, string>;
   localizedParties?: Record<string, string>;
   photoUrl?: string | null;
+  photoVerified?: boolean;
   affidavitUrl?: string | null;
   age?: number | null;
   education?: string | null;

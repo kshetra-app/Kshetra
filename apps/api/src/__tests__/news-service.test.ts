@@ -102,9 +102,20 @@ describe('News Service (newsService.ts)', () => {
       expect(nationalFeed.items.every((i) => i.scope === 'national')).toBe(true);
 
       const stateFeed = getFeed({ scope: 'state', state: 'TS' });
-      expect(stateFeed.items.every((i) => i.scope === 'national' || i.stateCode === 'TS')).toBe(
-        true,
-      );
+      expect(stateFeed.items.every((i) => i.scope === 'state' && i.stateCode === 'TS')).toBe(true);
+
+      const constituencyFeed = getFeed({
+        scope: 'constituency',
+        state: 'TS',
+        constituencyId: 'TS-AC-65',
+      });
+      expect(
+        constituencyFeed.items.every(
+          (i) =>
+            (i.scope === 'state' && i.stateCode === 'TS') ||
+            (i.scope === 'constituency' && i.constituencyId === 'TS-AC-65'),
+        ),
+      ).toBe(true);
 
       const limitedFeed = getFeed({ limit: 1 });
       expect(limitedFeed.items.length).toBeLessThanOrEqual(1);

@@ -86,26 +86,37 @@ export default function MapSearch({ constituencies, onSelect, onClose }: MapSear
             keyExtractor={(item) => String(item.acNo)}
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="on-drag"
-            renderItem={({ item }) => (
-              <Pressable
-                style={styles.resultItem}
-                onPress={() => handleSelect(item)}
-              >
-                <View
-                  style={[
-                    styles.partyDot,
-                    { backgroundColor: getPartyColor(item.winnerParty) },
-                  ]}
-                />
-                <View style={styles.resultText}>
-                  <Text style={styles.resultName}>{item.name}</Text>
-                  <Text style={styles.resultMeta}>
-                    AC #{item.acNo} · {item.district} · {item.winnerName} ({item.winnerParty})
-                  </Text>
-                </View>
-                <Ionicons name="navigate" size={16} color="#4F8EF7" />
-              </Pressable>
-            )}
+            renderItem={({ item }) => {
+              const winnerName = item.winnerName?.trim();
+              const winnerParty = item.winnerParty?.trim();
+              const resultDetails = winnerName
+                ? `${winnerName}${winnerParty ? ` (${winnerParty})` : ''}`
+                : winnerParty
+                  ? `Party ${winnerParty}`
+                  : '';
+              const resultMeta = [`AC #${item.acNo}`, item.district?.trim(), resultDetails]
+                .filter(Boolean)
+                .join(' · ');
+
+              return (
+                <Pressable
+                  style={styles.resultItem}
+                  onPress={() => handleSelect(item)}
+                >
+                  <View
+                    style={[
+                      styles.partyDot,
+                      { backgroundColor: getPartyColor(winnerParty ?? '') },
+                    ]}
+                  />
+                  <View style={styles.resultText}>
+                    <Text style={styles.resultName}>{item.name}</Text>
+                    <Text style={styles.resultMeta}>{resultMeta}</Text>
+                  </View>
+                  <Ionicons name="navigate" size={16} color="#4F8EF7" />
+                </Pressable>
+              );
+            }}
           />
         </View>
       )}
@@ -128,7 +139,10 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: 'rgba(10, 10, 26, 0.95)',
-    zIndex: 100,
+    // This overlay must cover the map's filters and floating controls while
+    // results are open; those siblings use higher stacking levels.
+    zIndex: 10000,
+    elevation: 10000,
     paddingTop: 56,
   },
   searchBar: {

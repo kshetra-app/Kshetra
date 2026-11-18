@@ -4,6 +4,9 @@ node_modules
 apps/mobile
 .expo
 .git
+.env
+.env.*
+!.env.example
 .turbo
 android
 ios
@@ -11,4 +14,6 @@ scrapers/output
 dist
 *.log
 *.tmp
+*.apk
+tmp-*
 Logo

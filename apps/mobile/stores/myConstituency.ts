@@ -3,10 +3,35 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { mmkvStorage } from '../lib/storage';
 
 interface MyConstituencyInfo {
+  stateCode?: string;
   acNo: number;
   name: string;
   district: string;
   party: string;
+}
+
+type ConstituencyIdentity = Pick<MyConstituencyInfo, 'acNo' | 'name' | 'district'>;
+
+/**
+ * Resolve a persisted home constituency against the selected state's directory.
+ * New records use their saved state code; older records need an exact identity
+ * match because assembly numbers are reused between states.
+ */
+export function homeConstituencyBelongsToState(
+  home: MyConstituencyInfo | null | undefined,
+  stateCode: string,
+  constituencies: readonly ConstituencyIdentity[],
+): boolean {
+  if (!home || stateCode.toUpperCase() === 'IN') return false;
+  if (home.stateCode) return home.stateCode.toUpperCase() === stateCode.toUpperCase();
+
+  const normalize = (value: string) => value.trim().toLocaleLowerCase('en');
+  return constituencies.some(
+    (constituency) =>
+      constituency.acNo === home.acNo &&
+      normalize(constituency.name) === normalize(home.name) &&
+      normalize(constituency.district) === normalize(home.district),
+  );
 }
 
 interface MyConstituencyState {
@@ -20,7 +45,7 @@ interface MyConstituencyState {
   clearHome: () => void;
 
   /** Check if a given AC is the home constituency */
-  isHome: (acNo: number) => boolean;
+  isHome: (stateCode: string, acNo: number) => boolean;
 }
 
 export const useMyConstituencyStore = create<MyConstituencyState>()(
@@ -32,7 +57,8 @@ export const useMyConstituencyStore = create<MyConstituencyState>()(
 
       clearHome: () => set({ home: null }),
 
-      isHome: (acNo) => get().home?.acNo === acNo,
+      isHome: (stateCode, acNo) =>
+        get().home?.stateCode === stateCode && get().home?.acNo === acNo,
     }),
     {
       name: 'kshetra-my-constituency',

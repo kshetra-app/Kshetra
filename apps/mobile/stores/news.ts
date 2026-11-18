@@ -5,26 +5,27 @@ import { SEED_NEWS_FEED } from '../data/newsSeed';
 import { API_BASE_URL, REMOTE_API_URL } from '../lib/constants';
 import { apiClient } from '../lib/api';
 import { scrapeNewsOnDevice } from '../lib/news/scrape';
-import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
+import { CURRENT_ENVIRONMENT, IS_LIVE_ENVIRONMENT } from '../lib/environment';
 import type { NewsFeed, NewsItem, NewsCategory, NewsLanguageCode } from '../lib/newsTypes';
 import { isFreshNewsTimestamp } from '@kshetra/shared';
 
 /**
  * News store — layered, language-aware feed loader.
  *
- * Source-of-truth order (the on-device and backend paths never clash):
- *   1. Hosted backend feed — ONLY when `EXPO_PUBLIC_API_URL` points at a real
- *      remote host (see `REMOTE_API_URL`). This is the server path kept ready
- *      for when the API is deployed.
- *   2. On-device RSS scrape of the CHOSEN language (or a multi-language default
- *      on the "All languages" view). This is the active path in a shipped APK.
- *   3. Last-good per-language cache (MMKV) so offline still shows real stories.
- *   4. Bundled seed feed (text-only, no dummy images) as the final fallback.
+ * Feed authority order:
+ *   1. Hosted backend feed in every live environment.
+ *   2. Last-good backend response for that environment and language.
+ *   3. Development-only on-device RSS scrape, then development seed data.
+ *
+ * A shipped build never substitutes its own independently scraped feed when
+ * the backend is unavailable; that would make different users see different
+ * versions of the same feed.
  */
 export const NEWS_FEED_URL = `${API_BASE_URL}/api/v1/news/feed`;
 
 const CACHE_PREFIX = 'poligram-news-cache:';
-const cacheKey = (lang: NewsLanguageCode | null) => `${CACHE_PREFIX}${lang ?? 'all'}`;
+const cacheKey = (lang: NewsLanguageCode | null) =>
+  `${CACHE_PREFIX}${CURRENT_ENVIRONMENT}:${lang ?? 'all'}`;
 
 function readCache(lang: NewsLanguageCode | null): NewsFeed | null {
   try {
@@ -101,6 +102,10 @@ async function loadFeed(lang: NewsLanguageCode | null): Promise<NewsFeed> {
     writeCache(lang, freshBackend);
     return freshBackend;
   }
+  // In staging/production, never replace the backend feed with a device-side
+  // scrape. Reuse only a fresh backend snapshot for this environment.
+  if (IS_LIVE_ENVIRONMENT) return readCache(lang) ?? EMPTY_FEED;
+
   // 2. On-device scrape of the chosen language.
   try {
     const scraped = await scrapeNewsOnDevice(lang);
@@ -117,12 +122,11 @@ async function loadFeed(lang: NewsLanguageCode | null): Promise<NewsFeed> {
   } catch {
     // fall through to cache/seed
   }
-  // 3. Last-good cache for this language.
+  // 3. Last-good cache for this development environment and language.
   const cached = readCache(lang);
   if (cached) return cached;
-  // 4. Development-only seed. Production must show an empty state when no real
-  // provider or last-good cache can supply current news.
-  return IS_LIVE_ENVIRONMENT ? EMPTY_FEED : seedFeed(lang);
+  // 4. Development-only seed.
+  return seedFeed(lang);
 }
 
 interface NewsState {

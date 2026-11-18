@@ -13,7 +13,6 @@ import type {
 } from '../lib/delimitationTypes';
 import type { DelimitationStatusDTO, TimelineEventItem } from '@kshetra/shared';
 import { apiClient } from '../lib/api';
-import { resolvePinCodeToImpact, getDelimitationImpactForAC } from '../lib/delimitation/pinCodeResolver';
 import { computeAllSeatAllocations } from '../lib/delimitation/seatCalculator';
 
 // Timeline and status come from the canonical API; production does not ship local claims.
@@ -126,7 +125,7 @@ interface DelimitationState {
   getTimelineEvents: () => DelimitationEvent[];
   getVerifiedEvents: () => DelimitationEvent[];
   getCitizenImpact: (pinCode: string) => CitizenImpact | undefined;
-  getCitizenImpactForConstituency: (stateCode: string, acNo: number) => CitizenImpact;
+  getCitizenImpactForConstituency: (stateCode: string, acNo: number) => CitizenImpact | undefined;
   getProposalForState: (stateCode: string) => DelimitationProposal | undefined;
   getSeatAllocation: (stateCode: string) => SeatAllocation | undefined;
   getGainersAndLosers: () => { gainers: SeatAllocation[]; losers: SeatAllocation[] };
@@ -178,21 +177,11 @@ export const useDelimitationStore = create<DelimitationState>((set, get) => ({
     get().events.filter((e) => e.isVerified),
 
   getCitizenImpact: (pinCode: string) => {
-    const cached = get().citizenImpacts[pinCode];
-    if (cached) return cached;
-
-    // Calculate dynamically from real PIN code resolver
-    const resolved = resolvePinCodeToImpact(pinCode);
-    if (resolved) {
-      set((s) => ({ citizenImpacts: { ...s.citizenImpacts, [pinCode]: resolved } }));
-      return resolved;
-    }
-    return undefined;
+    return get().citizenImpacts[pinCode];
   },
 
-  getCitizenImpactForConstituency: (stateCode: string, acNo: number) => {
-    return getDelimitationImpactForAC(stateCode, acNo);
-  },
+  // There is no verified proposed-boundary dataset yet, so never invent a local impact result.
+  getCitizenImpactForConstituency: (_stateCode, _acNo) => undefined,
 
   getProposalForState: (stateCode: string) =>
     get().proposals.find((p) => p.stateCode === stateCode && p.status !== 'superseded'),

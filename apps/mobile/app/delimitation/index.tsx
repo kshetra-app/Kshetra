@@ -14,19 +14,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useDelimitationStore } from '../../stores/delimitation';
-import { useActiveStateStore } from '../../stores/activeState';
 import DelimitationTimeline from '../../components/DelimitationTimeline';
 import SeatProjectionCard from '../../components/SeatProjectionCard';
 import { computeAllSeatAllocations, getGainersAndLosers } from '../../lib/delimitation/seatCalculator';
-import { computeMLARiskProfiles, computeStatePartyProjections } from '../../lib/delimitation/constituencyMapper';
 import {
   DELIMITATION_STATUS_CONFIG,
-  BOUNDARY_CHANGE_CONFIG,
-  IMPACT_SEVERITY_CONFIG,
   type SeatAllocation,
   type DelimitationEvent,
   type SeatCalculationModel,
-  type MLARiskProfile,
 } from '../../lib/delimitationTypes';
 import { useTheme } from '../../lib/theme';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
@@ -39,14 +34,6 @@ const TABS: { key: TabKey; i18nKey: string; icon: string }[] = [
   { key: 'impact', i18nKey: 'delimitation.impact', icon: 'flash' },
 ];
 
-const IMPACT_STATES = [
-  { code: 'TS', name: 'Telangana' },
-  { code: 'AP', name: 'Andhra Pradesh' },
-  { code: 'KA', name: 'Karnataka' },
-  { code: 'MH', name: 'Maharashtra' },
-  { code: 'UP', name: 'Uttar Pradesh' },
-];
-
 export default function DelimitationHub() {
   const router = useRouter();
   const { t } = useTranslation();
@@ -55,10 +42,6 @@ export default function DelimitationHub() {
   const { width: screenWidth } = useWindowDimensions();
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
   const [helpVisible, setHelpVisible] = useState(false);
-
-  const activeStateCode = useActiveStateStore((s) => s.stateCode);
-  const [impactState, setImpactState] = useState<string>(activeStateCode || 'TS');
-  const [expandedMlaId, setExpandedMlaId] = useState<number | null>(null);
 
   const {
     nationalStatus,
@@ -102,31 +85,11 @@ export default function DelimitationHub() {
     [events],
   );
 
-  // Dynamic MLA risk profiles for selected impact state
-  const mlaProfiles = useMemo(() => {
-    return computeMLARiskProfiles(impactState);
-  }, [impactState]);
-
-  // Dynamic party projections for selected impact state
-  const partyProjections = useMemo(() => {
-    return computeStatePartyProjections(impactState);
-  }, [impactState]);
-
-  const mlaSummary = useMemo(() => {
-    return {
-      total: mlaProfiles.length,
-      critical: mlaProfiles.filter((m) => m.riskRating === 'critical_risk').length,
-      high: mlaProfiles.filter((m) => m.riskRating === 'high_risk').length,
-      moderate: mlaProfiles.filter((m) => m.riskRating === 'moderate_risk').length,
-      safe: mlaProfiles.filter((m) => m.riskRating === 'safe').length,
-    };
-  }, [mlaProfiles]);
-
   const renderModelToggle = () => (
     <View style={[styles.modelToggleCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       <View style={styles.modelToggleHeader}>
         <Ionicons name="calculator-outline" size={16} color={colors.primary} />
-        <Text style={[styles.modelToggleTitle, { color: colors.text }]}>{t('delimitation.calcModel', { defaultValue: 'Constitutional Calculation Model' })}</Text>
+        <Text style={[styles.modelToggleTitle, { color: colors.text }]}>{t('delimitationExtended.scenarioModelTitle')}</Text>
       </View>
       <View style={styles.modelButtonsRow}>
         <Pressable
@@ -140,7 +103,7 @@ export default function DelimitationHub() {
           onPress={() => setSelectedModel('EXPANSION_SAFE')}
         >
           <Text style={[styles.modelBtnText, { color: selectedModel === 'EXPANSION_SAFE' ? '#FFFFFF' : colors.text }]}>
-            {t('delimitation.expansionSafe', { defaultValue: 'Expansion-Safe Protection' })}
+            {t('delimitationExtended.scenarioNoLossLabel')}
           </Text>
         </Pressable>
         <Pressable
@@ -154,13 +117,24 @@ export default function DelimitationHub() {
           onPress={() => setSelectedModel('PROPORTIONAL')}
         >
           <Text style={[styles.modelBtnText, { color: selectedModel === 'PROPORTIONAL' ? '#FFFFFF' : colors.text }]}>
-            {t('delimitation.proportional', { defaultValue: 'Proportional (Art. 170)' })}
+            {t('delimitationExtended.scenarioPopulationLabel')}
           </Text>
         </Pressable>
       </View>
-      <Text style={[styles.modelExplainText, { color: colors.textSecondary }]}>
-        {selectedModel === 'EXPANSION_SAFE' ? t('delimitation.expansionSafeDesc', { defaultValue: 'Protects states that implemented successful family planning. No state loses seats; fast-growing states gain.' }) : t('delimitation.proportionalDesc', { defaultValue: 'Strict constitutional proportional representation based on Census population. Slower-growth states see seat reductions.' })}
-      </Text>
+    </View>
+  );
+
+  const renderScenarioDisclosure = () => (
+    <View style={[styles.modelDisclosure, { backgroundColor: '#FFF7ED', borderColor: '#FDBA74' }]}>
+      <Ionicons name="information-circle" size={20} color="#C2410C" />
+      <View style={styles.modelDisclosureText}>
+        <Text style={styles.modelDisclosureTitle}>
+          {t('delimitationExtended.scenarioNoticeTitle')}
+        </Text>
+        <Text style={styles.modelDisclosureBody}>
+          {t('delimitationExtended.scenarioNoticeBody')}
+        </Text>
+      </View>
     </View>
   );
 
@@ -184,6 +158,7 @@ export default function DelimitationHub() {
 
       {/* Model Selector */}
       {renderModelToggle()}
+      {renderScenarioDisclosure()}
 
       {/* Citizen Personal Impact Banner (Clickable) */}
       <Pressable
@@ -280,7 +255,7 @@ export default function DelimitationHub() {
       <View style={[styles.disclaimer, { backgroundColor: '#F59E0B15', borderColor: '#F59E0B40' }]}>
         <Ionicons name="information-circle" size={14} color="#F59E0B" />
         <Text style={styles.disclaimerText}>
-          {t('delimitation.disclaimer')}
+          {t('delimitationExtended.scenarioNoticeBody')}
         </Text>
       </View>
     </View>
@@ -290,10 +265,10 @@ export default function DelimitationHub() {
     <View>
       {renderModelToggle()}
 
-      <Text style={[styles.sectionTitle, { color: colors.text }]}>{t('delimitation.projections')}</Text>
-      <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
-        {t('delimitationExtended.projectionsBasis')}
+      <Text style={[styles.sectionTitle, { color: colors.text }]}>
+        {t('delimitationExtended.scenarioModelTitle')}
       </Text>
+      {renderScenarioDisclosure()}
 
       {/* Summary */}
       <View style={styles.projSummary}>
@@ -357,191 +332,40 @@ export default function DelimitationHub() {
 
   const renderImpact = () => (
     <View>
-      {/* What Changes For You interactive card */}
       <Pressable
         style={[styles.impactCta, { backgroundColor: '#3B82F615', borderColor: '#3B82F640', marginBottom: 16 }]}
         onPress={() => router.push('/delimitation/my-impact')}
       >
         <Ionicons name="search" size={22} color="#3B82F6" />
         <View style={{ flex: 1, marginLeft: 10 }}>
-          <Text style={[styles.impactCtaTitle, { color: '#2563EB' }]}>{t('delimitation.lookupCitizenImpact', { defaultValue: 'Lookup Citizen Delimitation Impact' })}</Text>
+          <Text style={[styles.impactCtaTitle, { color: '#2563EB' }]}>
+            {t('delimitation.lookupCitizenImpact', { defaultValue: 'Lookup Citizen Delimitation Impact' })}
+          </Text>
           <Text style={[styles.impactCtaSub, { color: colors.textSecondary }]}>
-            {t('delimitation.lookupCitizenDesc', { defaultValue: 'Check how your PIN code or home constituency is impacted under proposed boundaries.' })}
+            {t('delimitationExtended.verifiedImpactUnavailableTitle')}
           </Text>
         </View>
         <Ionicons name="chevron-forward" size={18} color="#3B82F6" />
       </Pressable>
 
-      {/* State Switcher for MLA Risk & Party Modeling */}
-      <Text style={[styles.subHeading, { color: colors.text }]}>{t('delimitation.selectStateAnalysis', { defaultValue: 'Select State for In-Depth Political Analysis' })}</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.statePickerScroll} contentContainerStyle={styles.statePickerContent}>
-        {IMPACT_STATES.map((s) => (
-          <Pressable
-            key={s.code}
-            style={[
-              styles.stateChip,
-              {
-                backgroundColor: impactState === s.code ? colors.primary : colors.surface,
-                borderColor: impactState === s.code ? colors.primary : colors.border,
-              },
-            ]}
-            onPress={() => setImpactState(s.code)}
-          >
-            <Text style={[styles.stateChipText, { color: impactState === s.code ? '#FFFFFF' : colors.text }]}>
-              {s.name} ({s.code})
-            </Text>
-          </Pressable>
-        ))}
-      </ScrollView>
-
-      {/* Sitting MLA Risk Analyzer */}
       <View style={[styles.impactCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         <View style={styles.impactHeader}>
-          <Ionicons name="shield" size={20} color="#F59E0B" />
+          <Ionicons name="information-circle" size={20} color={colors.primary} />
           <Text style={[styles.impactTitle, { color: colors.text }]}>
-            {t('delimitation.sittingMlaAnalyzer', { state: impactState, defaultValue: `Sitting MLA Risk Analyzer (${impactState})` })}
+            {t('delimitationExtended.verifiedImpactUnavailableTitle')}
           </Text>
         </View>
         <Text style={[styles.impactBody, { color: colors.textSecondary }]}>
-          {t('delimitation.sittingMlaDesc', { total: mlaSummary.total, defaultValue: `Calculates boundary disruption, reservation displacement, and voter margin buffer for all ${mlaSummary.total} sitting legislators.` })}
+          {t('delimitationExtended.verifiedImpactUnavailableBody')}
         </Text>
-
-        <View style={styles.riskCounterRow}>
-          <View style={[styles.riskPill, { backgroundColor: '#EF444420' }]}>
-            <Text style={[styles.riskPillNumber, { color: '#EF4444' }]}>{mlaSummary.critical}</Text>
-            <Text style={[styles.riskPillLabel, { color: '#EF4444' }]}>{t('delimitation.riskCritical', { defaultValue: 'Critical' })}</Text>
-          </View>
-          <View style={[styles.riskPill, { backgroundColor: '#F9731620' }]}>
-            <Text style={[styles.riskPillNumber, { color: '#F97316' }]}>{mlaSummary.high}</Text>
-            <Text style={[styles.riskPillLabel, { color: '#F97316' }]}>{t('delimitation.riskHigh', { defaultValue: 'High Risk' })}</Text>
-          </View>
-          <View style={[styles.riskPill, { backgroundColor: '#F59E0B20' }]}>
-            <Text style={[styles.riskPillNumber, { color: '#F59E0B' }]}>{mlaSummary.moderate}</Text>
-            <Text style={[styles.riskPillLabel, { color: '#F59E0B' }]}>{t('delimitation.riskModerate', { defaultValue: 'Moderate' })}</Text>
-          </View>
-          <View style={[styles.riskPill, { backgroundColor: '#10B98120' }]}>
-            <Text style={[styles.riskPillNumber, { color: '#10B981' }]}>{mlaSummary.safe}</Text>
-            <Text style={[styles.riskPillLabel, { color: '#10B981' }]}>{t('delimitation.riskSafe', { defaultValue: 'Safe' })}</Text>
-          </View>
-        </View>
-
-        {/* Top At-Risk MLAs */}
-        <Text style={[styles.mlaListTitle, { color: colors.text }]}>{t('delimitation.highDisplacement', { defaultValue: 'High-Displacement Constituencies:' })}</Text>
-        {mlaProfiles.slice(0, 5).map((m) => {
-          const isExpanded = expandedMlaId === m.currentAcNo;
-          const ratingColor = m.riskRating === 'critical_risk' ? '#EF4444' :
-            m.riskRating === 'high_risk' ? '#F97316' :
-            m.riskRating === 'moderate_risk' ? '#F59E0B' : '#10B981';
-
-          return (
-            <Pressable
-              key={m.currentAcNo}
-              style={[styles.mlaCard, { backgroundColor: colors.surfaceElevated, borderColor: colors.border }]}
-              onPress={() => setExpandedMlaId(isExpanded ? null : m.currentAcNo)}
-            >
-              <View style={styles.mlaHeaderRow}>
-                <View style={{ flex: 1 }}>
-                  <Text style={[styles.mlaName, { color: colors.text }]}>{m.mlaName} ({m.party})</Text>
-                  <Text style={[styles.mlaSeat, { color: colors.textSecondary }]}>
-                    AC #{m.currentAcNo} {m.currentAcName} → {m.primaryNewAcName}
-                  </Text>
-                </View>
-                <View style={[styles.ratingBadge, { backgroundColor: ratingColor + '20' }]}>
-                  <Text style={[styles.ratingBadgeText, { color: ratingColor }]}>
-                    Score: {m.riskScore}/100
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.badgeRow}>
-                <View style={[styles.tagBadge, { backgroundColor: colors.primaryLight }]}>
-                  <Text style={[styles.tagBadgeText, { color: colors.primary }]}>
-                    {m.seatChangeType.replace('_', ' ').toUpperCase()}
-                  </Text>
-                </View>
-                {m.reservationChange !== 'unchanged' && (
-                  <View style={[styles.tagBadge, { backgroundColor: '#EF444420' }]}>
-                    <Text style={[styles.tagBadgeText, { color: '#EF4444' }]}>
-                      {m.reservationChange.toUpperCase()}
-                    </Text>
-                  </View>
-                )}
-                <Text style={[styles.marginText, { color: colors.textMuted }]}>
-                  Margin: {m.currentMarginPercent}% ({m.currentMarginVotes.toLocaleString()} votes)
-                </Text>
-              </View>
-
-              {isExpanded && (
-                <View style={[styles.mlaDetailBox, { borderTopColor: colors.border }]}>
-                  <Text style={[styles.mlaDetailText, { color: colors.text }]}>{m.detailedAnalysis}</Text>
-                  {m.riskFactors.map((rf, idx) => (
-                    <Text key={idx} style={[styles.factorItem, { color: '#EF4444' }]}>• {rf}</Text>
-                  ))}
-                  {m.mitigatingFactors.map((mf, idx) => (
-                    <Text key={idx} style={[styles.factorItem, { color: '#10B981' }]}>• {mf}</Text>
-                  ))}
-                </View>
-              )}
-            </Pressable>
-          );
-        })}
-      </View>
-
-      {/* Party Projections Modeler */}
-      {partyProjections && (
-        <View style={[styles.impactCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <View style={styles.impactHeader}>
-            <Ionicons name="pie-chart" size={20} color="#3B82F6" />
-            <Text style={[styles.impactTitle, { color: colors.text }]}>
-              {t('delimitation.partyProjectionsTitle', { state: partyProjections.stateName, defaultValue: `Party Seat Projections (${partyProjections.stateName})` })}
-            </Text>
-          </View>
-          <Text style={[styles.impactBody, { color: colors.textSecondary }]}>
-            {partyProjections.methodologyNotes}
-          </Text>
-
-          <View style={styles.partyTable}>
-            {partyProjections.parties.slice(0, 4).map((p) => (
-              <View key={p.party} style={[styles.partyRow, { borderBottomColor: colors.border }]}>
-                <View style={{ flex: 1 }}>
-                  <Text style={[styles.partyName, { color: colors.text }]}>{p.party}</Text>
-                  <Text style={[styles.partyShare, { color: colors.textMuted }]}>
-                    {t('delimitation.partyVoteShareStats', { share: p.currentVoteSharePercent, safe: p.safeSeats, battleground: p.battlegroundSeats, defaultValue: `Vote Share: ${p.currentVoteSharePercent}% · Safe: ${p.safeSeats} · Battleground: ${p.battlegroundSeats}` })}
-                  </Text>
-                </View>
-                <View style={{ alignItems: 'flex-end' }}>
-                  <Text style={[styles.partySeats, { color: colors.text }]}>
-                    {p.currentSeats} → {p.projectedSeats}
-                  </Text>
-                  <Text style={[styles.partyChange, { color: p.seatChange >= 0 ? '#10B981' : '#EF4444' }]}>
-                    {p.seatChange >= 0 ? `+${p.seatChange}` : p.seatChange} seats
-                  </Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        </View>
-      )}
-
-      {/* Geopolitical North vs South Analysis */}
-      <View style={[styles.impactCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-        <View style={styles.impactHeader}>
-          <Ionicons name="earth" size={20} color="#8B5CF6" />
-          <Text style={[styles.impactTitle, { color: colors.text }]}>{t('delimitationExtended.northSouthDivide')}</Text>
-        </View>
-        <Text style={[styles.impactBody, { color: colors.textSecondary }]}>
-          {t('delimitationExtended.northSouthBody')}
-        </Text>
-        <View style={styles.impactStatsRow}>
-          <View style={[styles.impactStat, { backgroundColor: '#10B98115' }]}>
-            <Text style={[styles.impactStatValue, { color: '#10B981' }]}>{t('delimitationExtended.north')}</Text>
-            <Text style={[styles.impactStatLabel, { color: colors.textMuted }]}>{t('delimitationExtended.northGains')}</Text>
-          </View>
-          <View style={[styles.impactStat, { backgroundColor: '#EF444415' }]}>
-            <Text style={[styles.impactStatValue, { color: '#EF4444' }]}>{t('delimitationExtended.south')}</Text>
-            <Text style={[styles.impactStatLabel, { color: colors.textMuted }]}>{t('delimitationExtended.southLoses')}</Text>
-          </View>
-        </View>
+        <Pressable
+          accessibilityRole="button"
+          style={[styles.timelineLink, { backgroundColor: colors.primary }]}
+          onPress={() => setActiveTab('timeline')}
+        >
+          <Ionicons name="time" size={16} color="#FFFFFF" />
+          <Text style={styles.timelineLinkText}>{t('delimitation.timeline')}</Text>
+        </Pressable>
       </View>
 
       {/* Constitutional Basis */}
@@ -721,6 +545,13 @@ const styles = StyleSheet.create({
   },
   modelBtnText: { fontSize: 11, fontWeight: '700' },
   modelExplainText: { fontSize: 11, marginTop: 8, lineHeight: 15 },
+  modelDisclosure: {
+    flexDirection: 'row', alignItems: 'flex-start', gap: 8,
+    borderRadius: 12, borderWidth: 1, padding: 12, marginBottom: 16,
+  },
+  modelDisclosureText: { flex: 1, minWidth: 0 },
+  modelDisclosureTitle: { color: '#9A3412', fontSize: 12, fontWeight: '800', marginBottom: 3 },
+  modelDisclosureBody: { color: '#7C2D12', fontSize: 11, lineHeight: 16 },
 
   // Citizen Impact CTA
   impactCta: {
@@ -785,6 +616,11 @@ const styles = StyleSheet.create({
   impactHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
   impactTitle: { fontSize: 15, fontWeight: '800' },
   impactBody: { fontSize: 12, lineHeight: 17, marginBottom: 12 },
+  timelineLink: {
+    alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center',
+    gap: 6, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8,
+  },
+  timelineLinkText: { color: '#FFFFFF', fontSize: 12, fontWeight: '700' },
   impactStatsRow: { flexDirection: 'row', gap: 10 },
   impactStat: { flex: 1, borderRadius: 8, padding: 10, alignItems: 'center' },
   impactStatValue: { fontSize: 15, fontWeight: '800' },

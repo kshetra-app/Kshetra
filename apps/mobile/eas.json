@@ -22,8 +22,6 @@
       "env": {
         "APP_ENV": "preview",
         "EXPO_PUBLIC_APP_ENV": "preview",
-        "EXPO_PUBLIC_API_URL": "https://kshetra-api-staging.up.railway.app",
-        "EXPO_PUBLIC_SUPABASE_URL": "https://fkpigozcqnmcvofuksar.supabase.co",
         "EXPO_ROUTER_APP_ROOT": "../../app",
         "EXPO_NO_METRO_WORKSPACE_ROOT": "1",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrcGlnb3pjcW5tY3ZvZnVrc2FyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5MjA3OTUsImV4cCI6MjEwNDQ5Njc5NX0.6LA0UHk2GYt7FJUdTAjYnMV6Lka1bdWjw48NJuwrAlA"
@@ -35,7 +33,7 @@
       "env": {
         "APP_ENV": "production",
         "EXPO_PUBLIC_APP_ENV": "production",
-        "EXPO_PUBLIC_API_URL": "https://kshetra-api-production-b802.up.railway.app",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_2D-tWL0NSxrUeIKBUdwHkw_8lR4s4Xu",
         "EXPO_ROUTER_APP_ROOT": "../../app",
         "EXPO_NO_METRO_WORKSPACE_ROOT": "1"
       }

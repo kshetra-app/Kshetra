@@ -2,13 +2,27 @@ import type { FastifyInstance } from 'fastify';
 import { getFeed, refreshNews, type FeedFilters } from '../services/news/newsService';
 import { sendApiError } from '../lib/replyHelper';
 
+const newsSourceSchema = {
+  type: 'object',
+  properties: {
+    id: { type: 'string' },
+    name: { type: 'string' },
+    domain: { type: 'string' },
+    language: { type: 'string' },
+    accent: { type: 'string' },
+    verified: { type: 'boolean' },
+  },
+  required: ['id', 'name', 'domain', 'language'],
+} as const;
+
 const newsFeedSchema = {
   querystring: {
     type: 'object',
     properties: {
       lang: { type: 'string', maxLength: 10 },
-      scope: { type: 'string', enum: ['all', 'national', 'state'] },
+      scope: { type: 'string', enum: ['all', 'national', 'state', 'constituency'] },
       state: { type: 'string', maxLength: 10 },
+      constituencyId: { type: 'string', maxLength: 40 },
       category: { type: 'string', maxLength: 30 },
       limit: { type: 'integer', minimum: 1, maximum: 100 },
     },
@@ -22,18 +36,7 @@ const newsFeedSchema = {
         refreshIntervalMin: { type: 'number' },
         sources: {
           type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              id: { type: 'string' },
-              name: { type: 'string' },
-              domain: { type: 'string' },
-              language: { type: 'string' },
-              accent: { type: 'string' },
-              verified: { type: 'boolean' },
-            },
-            required: ['id', 'name', 'domain', 'language'],
-          },
+          items: newsSourceSchema,
         },
         items: {
           type: 'array',
@@ -45,7 +48,7 @@ const newsFeedSchema = {
               summary: { type: 'string' },
               imageUrl: { type: 'string' },
               sourceUrl: { type: 'string' },
-              source: { type: 'object' },
+              source: newsSourceSchema,
               language: { type: 'string' },
               category: { type: 'string' },
               scope: { type: 'string' },
@@ -90,7 +93,7 @@ const newsRefreshSchema = {
  * News aggregation endpoints.
  *
  * GET /api/v1/news/feed        → the cached NewsFeed (refreshed hourly).
- *   Query: lang, scope (national|state), state, category, limit
+ *   Query: lang, scope (national|state|constituency), state, constituencyId, category, limit
  * POST /api/v1/news/refresh    → force a re-scrape (admin/manual trigger).
  */
 export async function newsRoutes(app: FastifyInstance) {
@@ -100,6 +103,7 @@ export async function newsRoutes(app: FastifyInstance) {
       lang: q.lang,
       scope: q.scope,
       state: q.state,
+      constituencyId: q.constituencyId,
       category: q.category,
       limit: q.limit ? parseInt(q.limit, 10) : undefined,
     };

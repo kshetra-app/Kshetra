@@ -1,8 +1,8 @@
 /**
- * Candidate Photo Service — 4-Tier Pipeline
+ * Candidate Photo Service — Photo URL Lookup
  * ─────────────────────────────────────────────────────────────────────
  * Priority:
- *  1. Static scraped map (MyNeta + Official Legislature sites) — bundled JSON, instant
+ *  1. Static name-keyed URL map — bundled JSON, instant
  *  2. Wikipedia REST API — runtime fetch for ~100 notable politicians, cached
  *  3. Initials with party-colored background — last resort
  *
@@ -23,7 +23,7 @@ function normaliseName(name: string): string {
   return name.toLowerCase().replace(/[.,]/g, '').replace(/\s+/g, ' ').trim();
 }
 
-// ── Dynamic photo map (pre-indexed with 4,600+ verified politician photos, cached in MMKV) ────
+// ── Imported name-keyed URL map (its entries are not identity-verified here) ──
 const PHOTO_CACHE_PREFIX = 'cand_photo:';
 const STATIC_PHOTO_MAP: Record<string, string> = {};
 
@@ -409,8 +409,8 @@ function processQueue() {
 }
 
 /**
- * Look up a photo from the static curated leaders map or scraped map.
- * Returns the photo URL or undefined if not found.
+ * Look up a photo URL by a curated leader name or name-keyed imported entry.
+ * A URL match and successful image load do not, by themselves, verify identity.
  */
 export function getStaticPhoto(name: string): string | undefined {
   if (!name) return undefined;
@@ -550,9 +550,8 @@ export async function getCandidatePhoto(
 }
 
 /**
- * Check if a candidate has any known photo source.
- * Only returns true for candidates in static map or curated Wikipedia list.
- * This prevents incorrect photos from random Wikipedia articles.
+ * Check whether a candidate name has a configured photo URL source.
+ * This does not certify that the image depicts the named person.
  */
 export function hasKnownPhoto(name: string): boolean {
   if (getStaticPhoto(name)) return true;

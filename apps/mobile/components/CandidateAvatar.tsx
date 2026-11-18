@@ -17,8 +17,10 @@ interface CandidateAvatarProps {
   name: string;
   party: string;
   size: number;
-  /** Pre-existing photo URL (highest priority — from seed data photoUrl field) */
+  /** Record-associated photo URL supplied by the caller, when available. */
   photoUrl?: string;
+  /** Disable name-based/cache/Wikipedia photos when identity is not verified for this record. */
+  allowUnverifiedFallback?: boolean;
   /** Border width (default: 2) */
   borderWidth?: number;
   /** Called when the avatar is tapped — receives the resolved image URI */
@@ -43,14 +45,15 @@ export default memo(function CandidateAvatar({
   party,
   size,
   photoUrl,
+  allowUnverifiedFallback = true,
   borderWidth = 2,
   onPress,
 }: CandidateAvatarProps) {
   // 1. Instant static resolution (e.g. Chief Ministers, PM, seed photos, MMKV cache, static map)
   const staticPhoto = useMemo(() => {
-    const raw = photoUrl || getStaticPhoto(name) || getCachedPhoto(name) || null;
+    const raw = photoUrl || (allowUnverifiedFallback ? getStaticPhoto(name) || getCachedPhoto(name) : null);
     return sanitizePhotoUrl(raw);
-  }, [name, photoUrl]);
+  }, [name, photoUrl, allowUnverifiedFallback]);
 
   const [remoteUrl, setRemoteUrl] = useState<string | null>(null);
   const [imgError, setImgError] = useState(false);
@@ -63,7 +66,7 @@ export default memo(function CandidateAvatar({
 
   // 2. Fallback to Wikipedia API only if static photo is absent and politician is known
   useEffect(() => {
-    if (staticPhoto) return;
+    if (staticPhoto || !allowUnverifiedFallback) return;
     if (!hasKnownPhoto(name)) return;
 
     let mounted = true;
@@ -76,7 +79,7 @@ export default memo(function CandidateAvatar({
     return () => {
       mounted = false;
     };
-  }, [name, staticPhoto]);
+  }, [name, staticPhoto, allowUnverifiedFallback]);
 
   const partyColor = getPartyColor(party);
   const initials = getInitials(name);
@@ -125,6 +128,7 @@ export default memo(function CandidateAvatar({
       {imageUri && (
         <Image
           key={imageUri}
+          testID="candidate-avatar-photo"
           source={{
             uri: imageUri,
             headers: {

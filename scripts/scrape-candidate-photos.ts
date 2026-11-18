@@ -6,7 +6,8 @@
  * ╚══════════════════════════════════════════════════════════════════════╝
  *
  * USAGE:
- *   npx ts-node scripts/scrape-candidate-photos.ts
+ *   npx ts-node scripts/scrape-candidate-photos.ts                 # preview only
+ *   npx ts-node scripts/scrape-candidate-photos.ts --write          # update the bundled URL map
  *
  * OUTPUT:
  *   apps/mobile/data/candidate-photo-map.json
@@ -15,8 +16,8 @@
  *  1. Loads all candidate names from seed data (all 8 states)
  *  2. Scrapes MyNeta.info election pages for candidate photo URLs
  *  3. Scrapes official state legislature sites for MLA photo URLs
- *  4. Validates each URL (HEAD request to confirm image exists)
- *  5. Writes a JSON map: { "Candidate Name": "photo_url", ... }
+ *  4. Checks whether each URL returns an image (this does not verify the face)
+ *  5. Only writes the name-keyed JSON map when explicitly run with --write
  *
  * RE-RUN periodically to pick up new photos or after election updates.
  */
@@ -41,11 +42,14 @@ const MYNETA_ELECTIONS: Record<string, string[]> = {
 };
 
 /** Official state legislature websites with known MLA photo patterns */
-const LEGISLATURE_SITES: Record<string, {
-  baseUrl: string;
-  membersPath: string;
-  description: string;
-}> = {
+const LEGISLATURE_SITES: Record<
+  string,
+  {
+    baseUrl: string;
+    membersPath: string;
+    description: string;
+  }
+> = {
   TS: {
     baseUrl: 'https://telanganalegislature.org.in',
     membersPath: '/members',
@@ -88,12 +92,10 @@ const LEGISLATURE_SITES: Record<string, {
   },
 };
 
-const OUTPUT_PATH = path.resolve(
-  __dirname,
-  '../apps/mobile/data/candidate-photo-map.json',
-);
+const OUTPUT_PATH = path.resolve(__dirname, '../apps/mobile/data/candidate-photo-map.json');
 
 const photoMap: Record<string, string> = {};
+const WRITE_OUTPUT = process.argv.includes('--write');
 let successCount = 0;
 let failCount = 0;
 
@@ -102,34 +104,53 @@ let failCount = 0;
 function fetchPage(url: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const client = url.startsWith('https') ? https : http;
-    const req = client.get(url, { headers: { 'User-Agent': 'Kshetra-Photo-Scraper/1.0' } }, (res) => {
-      if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-        return fetchPage(res.headers.location).then(resolve).catch(reject);
-      }
-      if (res.statusCode !== 200) {
-        reject(new Error(`HTTP ${res.statusCode} for ${url}`));
-        res.resume();
-        return;
-      }
-      let data = '';
-      res.on('data', (chunk) => (data += chunk));
-      res.on('end', () => resolve(data));
-    });
+    const req = client.get(
+      url,
+      { headers: { 'User-Agent': 'Kshetra-Photo-Scraper/1.0' } },
+      (res) => {
+        if (
+          res.statusCode &&
+          res.statusCode >= 300 &&
+          res.statusCode < 400 &&
+          res.headers.location
+        ) {
+          return fetchPage(res.headers.location).then(resolve).catch(reject);
+        }
+        if (res.statusCode !== 200) {
+          reject(new Error(`HTTP ${res.statusCode} for ${url}`));
+          res.resume();
+          return;
+        }
+        let data = '';
+        res.on('data', (chunk) => (data += chunk));
+        res.on('end', () => resolve(data));
+      },
+    );
     req.on('error', reject);
-    req.setTimeout(15000, () => { req.destroy(); reject(new Error('Timeout')); });
+    req.setTimeout(15000, () => {
+      req.destroy();
+      reject(new Error('Timeout'));
+    });
   });
 }
 
 function checkImageExists(url: string): Promise<boolean> {
   return new Promise((resolve) => {
     const client = url.startsWith('https') ? https : http;
-    const req = client.request(url, { method: 'HEAD', headers: { 'User-Agent': 'Kshetra-Photo-Scraper/1.0' } }, (res) => {
-      const ct = res.headers['content-type'] || '';
-      resolve(res.statusCode === 200 && ct.includes('image'));
-      res.resume();
-    });
+    const req = client.request(
+      url,
+      { method: 'HEAD', headers: { 'User-Agent': 'Kshetra-Photo-Scraper/1.0' } },
+      (res) => {
+        const ct = res.headers['content-type'] || '';
+        resolve(res.statusCode === 200 && ct.includes('image'));
+        res.resume();
+      },
+    );
     req.on('error', () => resolve(false));
-    req.setTimeout(10000, () => { req.destroy(); resolve(false); });
+    req.setTimeout(10000, () => {
+      req.destroy();
+      resolve(false);
+    });
     req.end();
   });
 }
@@ -178,16 +199,37 @@ async function scrapeMyNeta(electionSlug: string): Promise<Record<string, string
 
 // ── Legislature Site Scraper ──────────────────────────────────────────
 
+function normalizeCandidateName(name: string): string {
+  return name
+    .replace(/&amp;/gi, '&')
+    .replace(/&#39;|&apos;/gi, "'")
+    .toLocaleLowerCase('en-IN')
+    .replace(/[.,]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 /**
- * Attempt to scrape MLA photos from official state legislature websites.
- * Each site has a different structure, so this uses heuristic parsing.
+ * Match photos only when the official page labels an image with a name that
+ * exactly matches a candidate from the election source. Never pair separate
+ * name and image lists by their position in page markup.
  */
 async function scrapeLegislatureSite(
   stateCode: string,
+  expectedCandidateNames: string[],
 ): Promise<Record<string, string>> {
   const results: Record<string, string> = {};
   const site = LEGISLATURE_SITES[stateCode];
-  if (!site) return results;
+  if (!site || expectedCandidateNames.length === 0) return results;
+
+  const candidatesByNormalizedName = new Map<string, string>();
+  const ambiguousNames = new Set<string>();
+  for (const candidateName of expectedCandidateNames) {
+    const normalized = normalizeCandidateName(candidateName);
+    const existing = candidatesByNormalizedName.get(normalized);
+    if (existing && existing !== candidateName) ambiguousNames.add(normalized);
+    else candidatesByNormalizedName.set(normalized, candidateName);
+  }
 
   const url = `${site.baseUrl}${site.membersPath}`;
   console.log(`  [Legislature] Fetching ${site.description}: ${url}`);
@@ -195,36 +237,26 @@ async function scrapeLegislatureSite(
   try {
     const html = await fetchPage(url);
 
-    // Heuristic: find <img> tags near member names
-    // Common patterns:
-    //   <img src="/uploads/members/XXXX.jpg" ... />
-    //   <img src="/images/mla/XXXX.jpg" ... />
-    const imgRegex = /<img[^>]*src=["']([^"']*(?:member|mla|photo|pic|image)[^"']*)["'][^>]*>/gi;
-    const nameRegex = /<(?:h[1-6]|td|span|div|a)[^>]*class=["'][^"']*(?:name|member|title)[^"']*["'][^>]*>([^<]+)</gi;
-
-    const images: string[] = [];
+    const imgRegex = /<img\b[^>]*>/gi;
     let m;
     while ((m = imgRegex.exec(html)) !== null) {
-      let imgUrl = m[1];
-      if (!imgUrl.startsWith('http')) {
-        imgUrl = `${site.baseUrl}${imgUrl.startsWith('/') ? '' : '/'}${imgUrl}`;
-      }
-      images.push(imgUrl);
+      const tag = m[0];
+      const src = tag.match(/\bsrc=["']([^"']+)["']/i)?.[1];
+      const label =
+        tag.match(/\balt=["']([^"']+)["']/i)?.[1] ?? tag.match(/\btitle=["']([^"']+)["']/i)?.[1];
+      if (!src || !label) continue;
+
+      const normalizedLabel = normalizeCandidateName(label);
+      if (ambiguousNames.has(normalizedLabel)) continue;
+      const matchedCandidate = candidatesByNormalizedName.get(normalizedLabel);
+      if (!matchedCandidate) continue;
+
+      results[matchedCandidate] = new URL(src.replace(/&amp;/gi, '&'), site.baseUrl).toString();
     }
 
-    const names: string[] = [];
-    while ((m = nameRegex.exec(html)) !== null) {
-      names.push(m[1].trim());
-    }
-
-    // Match names to images (1:1 if counts match)
-    if (names.length > 0 && names.length === images.length) {
-      for (let i = 0; i < names.length; i++) {
-        results[names[i]] = images[i];
-      }
-    }
-
-    console.log(`  [Legislature] Found ${Object.keys(results).length} photos from ${site.description}`);
+    console.log(
+      `  [Legislature] Found ${Object.keys(results).length} photos from ${site.description}`,
+    );
   } catch (err: any) {
     console.warn(`  [Legislature] Failed to scrape ${site.description}: ${err.message}`);
   }
@@ -288,9 +320,12 @@ async function main() {
 
   // ── Phase 1: MyNeta scraping ──
   console.log('Phase 1: Scraping MyNeta.info (ADR election data)...');
+  const candidateNamesByState: Record<string, Set<string>> = {};
   for (const [stateCode, slugs] of Object.entries(MYNETA_ELECTIONS)) {
     for (const slug of slugs) {
       const candidates = await scrapeMyNeta(slug);
+      candidateNamesByState[stateCode] ??= new Set<string>();
+      Object.keys(candidates).forEach((name) => candidateNamesByState[stateCode].add(name));
       // Validate photos in batches
       const valid = await validatePhotos(candidates);
       Object.assign(photoMap, valid);
@@ -304,7 +339,9 @@ async function main() {
   // ── Phase 2: Legislature site scraping ──
   console.log('Phase 2: Scraping official state legislature websites...');
   for (const stateCode of Object.keys(LEGISLATURE_SITES)) {
-    const candidates = await scrapeLegislatureSite(stateCode);
+    const candidates = await scrapeLegislatureSite(stateCode, [
+      ...(candidateNamesByState[stateCode] ?? []),
+    ]);
     if (Object.keys(candidates).length > 0) {
       const valid = await validatePhotos(candidates);
       // Only add if not already in map (MyNeta takes priority)
@@ -325,6 +362,14 @@ async function main() {
   const sorted = Object.fromEntries(
     Object.entries(photoMap).sort(([a], [b]) => a.localeCompare(b)),
   );
+
+  if (!WRITE_OUTPUT) {
+    console.log(
+      'Preview only: no files written. Add --write to update the bundled name-keyed URL map.',
+    );
+    console.log(`Potential map size after this run: ${Object.keys(sorted).length}`);
+    return;
+  }
 
   fs.writeFileSync(OUTPUT_PATH, JSON.stringify(sorted, null, 2), 'utf-8');
 

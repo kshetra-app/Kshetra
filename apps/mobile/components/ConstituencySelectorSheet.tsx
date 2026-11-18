@@ -77,6 +77,7 @@ export default function ConstituencySelectorSheet({
   const handleSetHome = (item: ConstituencyBrief) => {
     Keyboard.dismiss();
     setHome({
+      stateCode,
       acNo: item.acNo,
       name: item.name,
       district: item.district,

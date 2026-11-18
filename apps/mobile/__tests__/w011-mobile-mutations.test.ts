@@ -43,6 +43,17 @@ describe('W011 Mobile Mutations & Lifecycle Audit', () => {
       expect(regModal).not.toMatch(/me-\$\{Date\.now\(\)\}/);
     });
 
+    it('requires explicit aspirant intent and public-directory consent', () => {
+      const regModal = fs.readFileSync(path.join(mobileRoot, 'components/RegisterAspirantModal.tsx'), 'utf-8');
+      expect(regModal).toContain("useState<number | null>(null)");
+      expect(regModal).toContain("useState<'independent' | 'party' | null>(null)");
+      expect(regModal).toContain('const [isPublic, setIsPublic] = useState(false)');
+      expect(regModal).toContain("const [displayName, setDisplayName] = useState('')");
+      expect(regModal).toContain('if (!myHome?.acNo || !myHome.name.trim())');
+      expect(regModal).toContain('if (year === null)');
+      expect(regModal).toContain('if (affiliation === null)');
+    });
+
     it('verifies zero synthetic ID patterns in stores', () => {
       const promisesStore = fs.readFileSync(path.join(mobileRoot, 'stores/promises.ts'), 'utf-8');
       expect(promisesStore).not.toMatch(/pe-\$\{Date\.now\(\)\}/);

@@ -112,7 +112,7 @@ export default function SimulatorScreen() {
       `State: ${currentAlloc.stateName}`,
       `Mode: ${modeLabel}`,
       `Current Seats: ${currentSeats}`,
-      `Simulated Seats: ${targetSeats}`,
+      `Scenario Seats: ${targetSeats}`,
       `Change: ${targetSeats - currentSeats > 0 ? '+' : ''}${targetSeats - currentSeats}`,
       ``,
       `District Breakdown:`,
@@ -123,7 +123,7 @@ export default function SimulatorScreen() {
       `Reservation:`,
       `  SC: ${quickSim.totals.scReserved} | ST: ${quickSim.totals.stReserved} | General: ${quickSim.totals.general}`,
       ``,
-      `Based on Census 2011 | Powered by POLIGRAM`,
+      `Illustrative scenario using Census 2011 data. Not an official seat count or Commission proposal.`,
     ].join('\n');
 
     await Share.share({ message: text });
@@ -164,6 +164,18 @@ export default function SimulatorScreen() {
       </View>
 
       <ScrollView style={styles.scroll} contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 60 }]} showsVerticalScrollIndicator={false}>
+
+        <View style={[styles.scenarioNotice, { backgroundColor: '#FFF7ED', borderColor: '#FDBA74' }]}>
+          <Ionicons name="information-circle" size={20} color="#C2410C" />
+          <View style={{ flex: 1 }}>
+            <Text style={styles.scenarioNoticeTitle}>
+              {t('delimitationExtended.scenarioNoticeTitle')}
+            </Text>
+            <Text style={styles.scenarioNoticeBody}>
+              {t('delimitationExtended.scenarioNoticeBody')}
+            </Text>
+          </View>
+        </View>
 
         {/* State Picker */}
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
@@ -478,13 +490,6 @@ export default function SimulatorScreen() {
               </Pressable>
             </View>
 
-            {/* Disclaimer */}
-            <View style={[styles.disclaimer, { backgroundColor: '#F59E0B15', borderColor: '#F59E0B40' }]}>
-              <Ionicons name="information-circle" size={14} color="#F59E0B" />
-              <Text style={styles.disclaimerText}>
-                {t('delimitationExtended.simulatorDisclaimer', { mode: t(MODE_CONFIG[mode].labelKey, { defaultValue: MODE_CONFIG[mode].defaultLabel }), defaultValue: `Based on Census 2011 data using ${MODE_CONFIG[mode].defaultLabel} mode. Actual delimitation will use Census 2026 data.` })}
-              </Text>
-            </View>
           </View>
         )}
       </ScrollView>
@@ -508,6 +513,12 @@ const styles = StyleSheet.create({
   shareBtn: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
   scroll: { flex: 1 },
   scrollContent: { paddingHorizontal: 16, paddingTop: 16 },
+  scenarioNotice: {
+    flexDirection: 'row', alignItems: 'flex-start', gap: 8,
+    borderRadius: 12, borderWidth: 1, padding: 12, marginBottom: 16,
+  },
+  scenarioNoticeTitle: { color: '#9A3412', fontSize: 12, fontWeight: '800', marginBottom: 3 },
+  scenarioNoticeBody: { color: '#7C2D12', fontSize: 11, lineHeight: 16 },
 
   sectionTitle: { fontSize: 15, fontWeight: '800', marginTop: 16, marginBottom: 8 },
   sectionSub: { fontSize: 11, marginBottom: 8, fontWeight: '600' },

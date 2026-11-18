@@ -8,7 +8,10 @@ jest.mock('../lib/api', () => ({
 jest.mock('../lib/news/scrape', () => ({
   scrapeNewsOnDevice: jest.fn(),
 }));
-jest.mock('../lib/environment', () => ({ IS_LIVE_ENVIRONMENT: true }));
+jest.mock('../lib/environment', () => ({
+  IS_LIVE_ENVIRONMENT: true,
+  CURRENT_ENVIRONMENT: 'production',
+}));
 jest.mock('../lib/storage', () => ({
   mmkvStorage: {
     getItem: jest.fn(() => null),
@@ -66,7 +69,7 @@ describe('news refresh ordering', () => {
   it('keeps a newer feed when an older same-language refresh finishes later', async () => {
     const older = deferred<NewsFeed>();
     const newer = deferred<NewsFeed>();
-    (scrapeNewsOnDevice as jest.Mock)
+    (apiClient.news.getFeed as jest.Mock)
       .mockImplementationOnce(() => older.promise)
       .mockImplementationOnce(() => newer.promise);
 
@@ -125,14 +128,27 @@ describe('news refresh ordering', () => {
       ],
     });
     storage.getItem.mockImplementation((key: string) =>
-      key === 'poligram-news-cache:all' ? expiredCache : null,
+      key === 'poligram-news-cache:production:all' ? expiredCache : null,
     );
     (apiClient.news.getFeed as jest.Mock).mockRejectedValue(new Error('network offline'));
     (scrapeNewsOnDevice as jest.Mock).mockResolvedValue(null);
 
     await useNewsStore.getState().refresh();
 
-    expect(storage.removeItem).toHaveBeenCalledWith('poligram-news-cache:all');
+    expect(storage.removeItem).toHaveBeenCalledWith('poligram-news-cache:production:all');
     expect(useNewsStore.getState().items).toEqual([]);
+    expect(scrapeNewsOnDevice).not.toHaveBeenCalled();
+  });
+
+  it('keeps live news empty when the authoritative backend fails and there is no fresh backend cache', async () => {
+    (apiClient.news.getFeed as jest.Mock).mockRejectedValue(new Error('backend unavailable'));
+    (scrapeNewsOnDevice as jest.Mock).mockResolvedValue(makeFeed('device-only-story'));
+
+    await useNewsStore.getState().refresh();
+
+    expect(useNewsStore.getState().items).toEqual([]);
+    expect(useNewsStore.getState().generatedAt).toBe('');
+    expect(useNewsStore.getState().loaded).toBe(true);
+    expect(scrapeNewsOnDevice).not.toHaveBeenCalled();
   });
 });

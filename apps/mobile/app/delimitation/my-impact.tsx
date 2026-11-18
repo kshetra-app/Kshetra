@@ -1,33 +1,21 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import {
+  Alert,
   View,
   Text,
   StyleSheet,
   ScrollView,
   Pressable,
-  TextInput,
   StatusBar,
-  ActivityIndicator,
+  Linking,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useFocusEffect } from 'expo-router';
-import { useMyConstituencyStore } from '../../stores/myConstituency';
-import { useActiveStateStore } from '../../stores/activeState';
 import { useDelimitationStore } from '../../stores/delimitation';
-import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
-import { computeStateSeatAllocation } from '../../lib/delimitation/seatCalculator';
-import {
-  DELIMITATION_STATUS_CONFIG,
-  BOUNDARY_CHANGE_CONFIG,
-  IMPACT_SEVERITY_CONFIG,
-  buildCitizenImpactSummary,
-  formatPopulation,
-} from '../../lib/delimitationTypes';
-import type { CitizenImpact } from '../../lib/delimitationTypes';
-import { DelimitationShareCard } from '../../components/DelimitationShareCard';
+import { DELIMITATION_STATUS_CONFIG } from '../../lib/delimitationTypes';
 import { useTheme } from '../../lib/theme';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
@@ -36,25 +24,13 @@ export default function MyImpactScreen() {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
-  const [pinCode, setPinCode] = useState('');
-  const [searching, setSearching] = useState(false);
-  const [result, setResult] = useState<CitizenImpact | null>(null);
-  const [showSubscribe, setShowSubscribe] = useState(false);
   const [helpVisible, setHelpVisible] = useState(false);
 
-  const myHome = useMyConstituencyStore((s) => s.home);
-  const activeState = useActiveStateStore((s) => s.stateCode);
   const nationalStatus = useDelimitationStore((s) => s.nationalStatus);
   const statusAvailable = useDelimitationStore((s) => s.statusAvailable);
   const statusLabel = useDelimitationStore((s) => s.statusLabel);
+  const statusDescription = useDelimitationStore((s) => s.statusDescription);
   const refreshOfficialData = useDelimitationStore((s) => s.refreshOfficialData);
-  const getCitizenImpact = useDelimitationStore((s) => s.getCitizenImpact);
-  const getCitizenImpactForConstituency = useDelimitationStore((s) => s.getCitizenImpactForConstituency);
-
-  const stateProjection = useMemo(
-    () => computeStateSeatAllocation(activeState),
-    [activeState],
-  );
 
   const statusConfig = nationalStatus
     ? DELIMITATION_STATUS_CONFIG[nationalStatus]
@@ -66,30 +42,13 @@ export default function MyImpactScreen() {
     }, [refreshOfficialData]),
   );
 
-  const handleSearch = (overridePin?: string) => {
-    const targetPin = overridePin ?? pinCode;
-    if (targetPin.length !== 6 || !/^\d{6}$/.test(targetPin)) return;
-
-    if (overridePin) setPinCode(overridePin);
-    setSearching(true);
-
-    const impact = getCitizenImpact(targetPin);
-    if (impact) {
-      setResult(impact);
-      setShowSubscribe(false);
-    } else {
-      setShowSubscribe(true);
-    }
-    setSearching(false);
-  };
-
-  const handleUseMyLocation = () => {
-    if (myHome) {
-      const impact = getCitizenImpactForConstituency(activeState, myHome.acNo);
-      setResult(impact);
-      setPinCode(impact.pinCode);
-      setShowSubscribe(false);
-    }
+  const openOfficialCensus = () => {
+    void Linking.openURL('https://censusindia.gov.in/census.website/en').catch(() => {
+      Alert.alert(
+        t('common.error', { defaultValue: 'Unable to open link' }),
+        t('delimitationExtended.officialSourceOpenError', { defaultValue: 'Open the Census of India website in your browser to view its latest official updates.' }),
+      );
+    });
   };
 
   return (
@@ -123,248 +82,49 @@ export default function MyImpactScreen() {
         contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 60 }]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Hero explanation */}
         <View style={[styles.heroCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <Ionicons name="person-circle" size={40} color={colors.primary} />
+          <Ionicons name="map-outline" size={40} color={colors.primary} />
           <Text style={[styles.heroTitle, { color: colors.text }]}>
-            {t('delimitationExtended.heroImpactTitle', { defaultValue: 'How will delimitation affect YOUR constituency?' })}
+            {t('delimitationExtended.verifiedImpactUnavailableTitle')}
           </Text>
           <Text style={[styles.heroDesc, { color: colors.textSecondary }]}>
-            {t('delimitationExtended.heroImpactDesc', { defaultValue: 'Enter your PIN code or use your saved constituency to see how boundary changes may impact your area — your MLA, your constituency name, and your reservation status.' })}
+            {t('delimitationExtended.verifiedImpactUnavailableBody')}
           </Text>
         </View>
 
-        {/* PIN Code Input */}
-        <View style={styles.inputSection}>
-          <Text style={[styles.inputLabel, { color: colors.text }]}>
-            {t('delimitationExtended.enterPinCode', { defaultValue: 'Enter your PIN Code' })}
+        <View style={[styles.subscribeCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Ionicons name={statusConfig.icon as any} size={28} color={statusConfig.color} />
+          <Text style={[styles.subscribeTitle, { color: colors.text }]}>
+            {t('common.status')}
           </Text>
-          <View style={styles.inputRow}>
-            <TextInput
-              style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text }]}
-              placeholder="500001"
-              placeholderTextColor={colors.textMuted}
-              value={pinCode}
-              onChangeText={(text) => setPinCode(text.replace(/\D/g, '').slice(0, 6))}
-              keyboardType="number-pad"
-              maxLength={6}
-            />
-            <Pressable
-              style={[styles.searchBtn, { backgroundColor: colors.primary }, pinCode.length !== 6 && styles.searchBtnDisabled]}
-              onPress={() => handleSearch()}
-              disabled={pinCode.length !== 6}
-            >
-              {searching ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
-              ) : (
-                <Ionicons name="search" size={18} color="#FFFFFF" />
-              )}
-            </Pressable>
-          </View>
-
-          {myHome && (
-            <Pressable style={styles.useHomeBtn} onPress={handleUseMyLocation}>
-              <Ionicons name="home" size={14} color={colors.primary} />
-              <Text style={[styles.useHomeText, { color: colors.primary }]}>
-                {t('delimitationExtended.useMyConstituency', { name: myHome.name, defaultValue: `Use my constituency: ${myHome.name}` })}
-              </Text>
-            </Pressable>
-          )}
-        </View>
-
-        {/* Result: Impact found */}
-        {result && (
-          <View style={[styles.resultCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <View style={styles.resultHeader}>
-              <Ionicons name="alert-circle" size={20} color={IMPACT_SEVERITY_CONFIG[result.impactSeverity].color} />
-              <Text style={[styles.resultSeverity, { color: IMPACT_SEVERITY_CONFIG[result.impactSeverity].color }]}>
-                {IMPACT_SEVERITY_CONFIG[result.impactSeverity].label}
-              </Text>
-            </View>
-
-            <Text style={[styles.resultSummary, { color: colors.text }]}>
-              {buildCitizenImpactSummary(result)}
+          <View style={styles.statusRow}>
+            <View style={[styles.liveDot, { backgroundColor: statusConfig.color }]} />
+            <Text style={[styles.statusText, { color: statusConfig.color }]}>
+              {statusAvailable && statusLabel ? statusLabel : t('common.dataUnavailable')}
             </Text>
-
-            {/* Current → Proposed */}
-            <View style={[styles.comparisonRow, { backgroundColor: colors.surfaceElevated, borderColor: colors.border }]}>
-              <View style={styles.comparisonCol}>
-                <Text style={[styles.comparisonLabel, { color: colors.textMuted }]}>
-                  {t('delimitationExtended.current', { defaultValue: 'Current' })}
-                </Text>
-                <Text style={[styles.comparisonName, { color: colors.text }]}>{result.currentAcName}</Text>
-                <Text style={[styles.comparisonDetail, { color: colors.textSecondary }]}>AC #{result.currentAcNo}</Text>
-                {result.currentMLA && (
-                  <Text style={[styles.comparisonDetail, { color: colors.textSecondary }]}>MLA: {result.currentMLA}</Text>
-                )}
-                <View style={[styles.resBadge, { backgroundColor: colors.primaryLight }]}>
-                  <Text style={[styles.resBadgeText, { color: colors.primary }]}>
-                    {result.currentReservation}
-                  </Text>
-                </View>
-              </View>
-
-              <Ionicons name="arrow-forward" size={20} color={colors.textMuted} />
-
-              <View style={styles.comparisonCol}>
-                <Text style={[styles.comparisonLabel, { color: colors.textMuted }]}>
-                  {t('delimitationExtended.proposed', { defaultValue: 'Proposed' })}
-                </Text>
-                <Text style={[styles.comparisonName, { color: colors.text }]}>{result.proposedAcName ?? 'TBD'}</Text>
-                <Text style={[styles.comparisonDetail, { color: colors.textSecondary }]}>
-                  {result.proposedAcNo ? `AC #${result.proposedAcNo}` : 'TBD'}
-                </Text>
-                <View style={[styles.resBadge, { backgroundColor: colors.primaryLight }]}>
-                  <Text style={[styles.resBadgeText, { color: colors.primary }]}>
-                    {result.proposedReservation ?? 'TBD'}
-                  </Text>
-                </View>
-              </View>
-            </View>
-
-            {/* Change detail badges */}
-            <View style={styles.changeBadgesRow}>
-              {result.changeType && BOUNDARY_CHANGE_CONFIG[result.changeType] && (
-                <View style={[styles.changeTypeBadge, { backgroundColor: BOUNDARY_CHANGE_CONFIG[result.changeType].color + '20' }]}>
-                  <Text style={[styles.changeTypeBadgeText, { color: BOUNDARY_CHANGE_CONFIG[result.changeType].color }]}>
-                    {BOUNDARY_CHANGE_CONFIG[result.changeType].label}
-                  </Text>
-                </View>
-              )}
-            </View>
-
-            {/* Explanation */}
-            {result.impactSummary ? (
-              <Text style={[styles.explanationText, { color: colors.textSecondary }]}>
-                {result.impactSummary}
-              </Text>
-            ) : null}
-
-            {/* Share Card Integration (JOB 022) */}
-            <DelimitationShareCard impact={result} />
           </View>
-        )}
-
-        {/* State not yet available / Subscribe */}
-        {showSubscribe && !result && (
-          <View style={[styles.subscribeCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Ionicons name="time" size={32} color={colors.primary} />
-            <Text style={[styles.subscribeTitle, { color: colors.text }]}>
-              {t('delimitationExtended.impactDataSoon', { defaultValue: 'Impact Data Coming Soon' })}
-            </Text>
+          {statusAvailable && statusDescription ? (
             <Text style={[styles.subscribeDesc, { color: colors.textSecondary }]}>
-              {t('delimitationExtended.impactDataSoonDesc', { defaultValue: "Delimitation proposals haven't been published yet. Once the Delimitation Commission releases draft boundaries, we'll calculate the exact impact for your PIN code." })}
+              {statusDescription}
             </Text>
-
-            <View style={styles.statusRow}>
-              <Ionicons name={statusConfig.icon as any} size={16} color={statusConfig.color} />
-              <Text style={[styles.statusText, { color: statusConfig.color }]}>
-                {t('delimitationExtended.currentStatus', {
-                  status: statusAvailable && statusLabel ? statusLabel : t('common.dataUnavailable'),
-                  defaultValue: `Current Status: ${statusAvailable && statusLabel ? statusLabel : t('common.dataUnavailable')}`,
-                })}
-              </Text>
-            </View>
-
-            {/* Subscribe to alerts */}
-            <Pressable style={[styles.subscribeBtn, { backgroundColor: colors.primary }]}>
-              <Ionicons name="notifications" size={16} color="#FFFFFF" />
-              <Text style={styles.subscribeBtnText}>
-                {t('delimitationExtended.notifyMe', { defaultValue: 'Notify Me When Available' })}
-              </Text>
-            </Pressable>
-
-            <Text style={[styles.subscribeNote, { color: colors.textMuted }]}>
-              {t('delimitationExtended.notifyNote', { defaultValue: "We'll send a push notification the moment impact data becomes available for your area." })}
+          ) : null}
+          <Pressable
+            accessibilityRole="link"
+            style={[styles.subscribeBtn, { backgroundColor: colors.primary }]}
+            onPress={openOfficialCensus}
+          >
+            <Ionicons name="open-outline" size={16} color="#FFFFFF" />
+            <Text style={styles.subscribeBtnText}>
+              {t('common.learnMore')} · Census of India
             </Text>
-          </View>
-        )}
+          </Pressable>
+        </View>
 
-        {/* State Projection Card */}
-        {stateProjection && (
-          <View style={[styles.stateCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={[styles.stateCardTitle, { color: colors.text }]}>
-              {t('delimitationExtended.yourState', { state: stateProjection.stateName, defaultValue: `Your State: ${stateProjection.stateName}` })}
-            </Text>
-            <View style={styles.stateStatsRow}>
-              <View style={styles.stateStat}>
-                <Text style={[styles.stateStatValue, { color: colors.text }]}>{stateProjection.currentSeats}</Text>
-                <Text style={[styles.stateStatLabel, { color: colors.textMuted }]}>
-                  {t('delimitation.currentSeats', { defaultValue: 'Current Seats' })}
-                </Text>
-              </View>
-              <Ionicons name="arrow-forward" size={16} color={colors.textMuted} />
-              <View style={styles.stateStat}>
-                <Text style={[styles.stateStatValue, {
-                  color: stateProjection.seatChange > 0 ? '#10B981' :
-                    stateProjection.seatChange < 0 ? '#EF4444' : colors.textMuted
-                }]}>
-                  {stateProjection.projectedSeats}
-                </Text>
-                <Text style={[styles.stateStatLabel, { color: colors.textMuted }]}>
-                  {t('delimitation.projectedSeats', { defaultValue: 'Projected' })}
-                </Text>
-              </View>
-              <View style={styles.stateStat}>
-                <Text style={[styles.stateStatValue, {
-                  color: stateProjection.seatChange > 0 ? '#10B981' :
-                    stateProjection.seatChange < 0 ? '#EF4444' : colors.textMuted
-                }]}>
-                  {stateProjection.seatChange > 0 ? '+' : ''}{stateProjection.seatChange}
-                </Text>
-                <Text style={[styles.stateStatLabel, { color: colors.textMuted }]}>
-                  {t('delimitationExtended.change', { defaultValue: 'Change' })}
-                </Text>
-              </View>
-            </View>
-            <Text style={[styles.stateCardNote, { color: colors.textMuted }]}>
-              Pop: {formatPopulation(stateProjection.totalPopulation)} · Based on Census 2011
-            </Text>
-          </View>
-        )}
-
-        {/* Development-only sample PINs for trying the simulation */}
-        {!IS_LIVE_ENVIRONMENT && <View style={[styles.sampleCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <Text style={[styles.sampleTitle, { color: colors.text }]}>{t('delimitation.quickTestPin', { defaultValue: 'Quick Test PIN Codes' })}</Text>
-          <Text style={[styles.sampleSub, { color: colors.textSecondary }]}>{t('delimitation.quickTestPinDesc', { defaultValue: 'Tap any PIN code to immediately calculate personal delimitation impact:' })}</Text>
-          <View style={styles.sampleChipsRow}>
-            {[
-              { pin: '500001', label: 'Hyderabad (500001)' },
-              { pin: '530001', label: 'Visakhapatnam (530001)' },
-              { pin: '560001', label: 'Bengaluru (560001)' },
-              { pin: '400001', label: 'Mumbai (400001)' },
-              { pin: '110001', label: 'Delhi (110001)' },
-              { pin: '600001', label: 'Chennai (600001)' },
-              { pin: '800001', label: 'Patna (800001)' },
-            ].map((item) => (
-              <Pressable
-                key={item.pin}
-                style={[
-                  styles.sampleChip,
-                  {
-                    backgroundColor: pinCode === item.pin ? colors.primary : colors.surfaceElevated,
-                    borderColor: pinCode === item.pin ? colors.primary : colors.border,
-                  },
-                ]}
-                onPress={() => handleSearch(item.pin)}
-              >
-                <Text
-                  style={[
-                    styles.sampleChipText,
-                    { color: pinCode === item.pin ? '#FFFFFF' : colors.text },
-                  ]}
-                >
-                  {item.label}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-        </View>}
-
-        {/* {t('delimitation.constitutionalFramework', { defaultValue: 'Constitutional Framework & Citizen Rights' })} */}
         <View style={[styles.comingSoonCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Ionicons name="shield-checkmark" size={20} color={colors.primary} />
-          <Text style={[styles.comingSoonTitle, { color: colors.text }]}>{t('delimitation.constitutionalFramework', { defaultValue: 'Constitutional Framework & Citizen Rights' })}</Text>
+          <Text style={[styles.comingSoonTitle, { color: colors.text }]}>
+            {t('delimitation.constitutionalFramework', { defaultValue: 'Constitutional Framework & Citizen Rights' })}
+          </Text>
           <Text style={[styles.comingSoonItem, { color: colors.textSecondary }]}>
             {t('delimitation.art170Desc')}
           </Text>
@@ -377,16 +137,7 @@ export default function MyImpactScreen() {
           <Text style={[styles.comingSoonItem, { color: colors.textSecondary }]}>
             {t('delimitation.contiguityDesc')}
           </Text>
-        </View>
-
-        {/* Disclaimer */}
-        <View style={[styles.disclaimer, { backgroundColor: '#F59E0B15', borderColor: '#F59E0B40' }]}>
-          <Ionicons name="information-circle" size={14} color="#F59E0B" />
-          <Text style={styles.disclaimerText}>
-            {t('delimitationExtended.myImpactDisclaimer', { defaultValue: 'All projections are simulations based on Census 2011 data. Actual delimitation will use Census 2026 data and may follow different methodology.' })}
-          </Text>
-        </View>
-      </ScrollView>
+        </View>      </ScrollView>
 
       {/* Contextual Guidance */}
       <DiscoveryHubSheet
@@ -496,6 +247,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: 6,
     marginVertical: 14,
   },
+  liveDot: { width: 8, height: 8, borderRadius: 4 },
   statusText: { fontSize: 12, fontWeight: '700' },
   subscribeBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 8,

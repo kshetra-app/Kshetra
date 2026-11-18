@@ -17,7 +17,11 @@ import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNewsStore } from '../../stores/news';
 import { useActiveStateStore } from '../../stores/activeState';
-import { useMyConstituencyStore } from '../../stores/myConstituency';
+import {
+  homeConstituencyBelongsToState,
+  useMyConstituencyStore,
+} from '../../stores/myConstituency';
+import { getUnifiedConstituenciesForState } from '../../lib/stateDataAdapter';
 import {
   NEWS_LANGUAGES,
   NEWS_CATEGORIES,
@@ -27,12 +31,10 @@ import {
 import NewsCard from '../../components/NewsCard';
 import AdCard from '../../components/AdCard';
 import { AD_INSERT_INTERVAL } from '../../lib/adConfig';
-import { STATES } from '@kshetra/shared';
+import { filterNewsByScope, STATES, type NewsGeographicScope } from '@kshetra/shared';
 import { useTheme } from '../../lib/theme';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import { tapLight } from '../../lib/haptics';
-
-type NewsScopeTab = 'national' | 'state' | 'constituency';
 
 export default function NewsScreen() {
   const [showDiscoveryHub, setShowDiscoveryHub] = useState(false);
@@ -56,10 +58,25 @@ export default function NewsScreen() {
 
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const myHome = useMyConstituencyStore((s) => s.home);
-  const userConstituencyId = myHome ? `${stateCode}-AC-${myHome.acNo}` : undefined;
+  const stateConstituencies = useMemo(
+    () => (stateCode === 'IN' ? [] : getUnifiedConstituenciesForState(stateCode)),
+    [stateCode],
+  );
+  const myHomeBelongsToState = useMemo(
+    () => homeConstituencyBelongsToState(myHome, stateCode, stateConstituencies),
+    [myHome, stateCode, stateConstituencies],
+  );
+  const userConstituencyId =
+    myHomeBelongsToState && myHome ? `${stateCode}-AC-${myHome.acNo}` : undefined;
 
-  const [scope, setScope] = useState<NewsScopeTab>(stateCode === 'IN' ? 'national' : 'state');
+  const [scope, setScope] = useState<NewsGeographicScope>(
+    stateCode === 'IN' ? 'national' : 'state',
+  );
   const [showBookmarks, setShowBookmarks] = useState(false);
+
+  useEffect(() => {
+    setScope(stateCode === 'IN' ? 'national' : 'state');
+  }, [stateCode]);
 
   // Revalidate when this tab is opened, when the app resumes, and periodically
   // while visible. Respect the server's refresh interval and avoid duplicate
@@ -113,19 +130,9 @@ export default function NewsScreen() {
     // Language consumption preference
     if (language) list = list.filter((i) => i.language === language);
 
-    // Geographic hierarchy
-    if (scope === 'national') {
-      list = list.filter((i) => i.scope === 'national');
-    } else if (scope === 'state') {
-      list = list.filter((i) => i.scope === 'national' || i.stateCode === stateCode);
-    } else if (scope === 'constituency') {
-      list = list.filter(
-        (i) =>
-          i.scope === 'national' ||
-          i.stateCode === stateCode ||
-          i.constituencyId === userConstituencyId,
-      );
-    }
+    // Geographic tabs use explicit feed metadata; state-labeled stories from
+    // national RSS feeds stay out of unrelated local areas.
+    list = filterNewsByScope(list, scope, stateCode, userConstituencyId);
 
     // Category
     if (category === 'video') list = list.filter((i) => !!i.video);
@@ -145,24 +152,39 @@ export default function NewsScreen() {
   }, [items, language, scope, category, showBookmarks, bookmarks, stateCode, userConstituencyId]);
 
   const stateName = (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode;
+  const hasContentFilters = language !== null || category !== 'top' || showBookmarks;
+  const generatedAtMs = Date.parse(generatedAt);
+  const hasFeedSnapshot =
+    Number.isFinite(generatedAtMs) && generatedAtMs <= Date.now() + 5 * 60_000;
+  const feedUnavailable = loaded && !loading && !hasFeedSnapshot;
 
-  const SCOPES: { key: NewsScopeTab; label: string; icon: string; disabled: boolean }[] = [
+  const SCOPES: { key: NewsGeographicScope; label: string; icon: string; disabled: boolean }[] = [
     { key: 'national', label: 'All India', icon: 'globe', disabled: false },
     { key: 'state', label: stateName, icon: 'map', disabled: stateCode === 'IN' },
-    { key: 'constituency', label: myHome?.name ?? 'My Area', icon: 'location', disabled: !myHome || stateCode === 'IN' },
+    {
+      key: 'constituency',
+      label:
+        myHomeBelongsToState && myHome
+          ? myHome.name
+          : t('common.scopes.myConstituency'),
+      icon: 'location',
+      disabled: !userConstituencyId,
+    },
   ];
 
   const currentLangLabel = useMemo(() => {
-    if (!language) return 'All Langs';
+    if (!language) return t('common.allLanguages');
     const match = NEWS_LANGUAGES.find((l) => l.code === language);
     return match ? match.native : language;
-  }, [language]);
+  }, [language, t]);
 
   const currentScopeLabel = useMemo(() => {
     if (scope === 'national') return 'National';
     if (scope === 'state') return stateName;
-    return myHome?.name ?? 'My Area';
-  }, [scope, stateName, myHome?.name]);
+    return myHomeBelongsToState && myHome
+      ? myHome.name
+      : t('common.scopes.myConstituency');
+  }, [scope, stateName, myHomeBelongsToState, myHome, t]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -173,9 +195,18 @@ export default function NewsScreen() {
             {t('tabs.news', { defaultValue: 'News' })}
           </Text>
           <View style={styles.updatedRow}>
-            <View style={[styles.liveDot, { backgroundColor: colors.success }]} />
+            <View
+              style={[
+                styles.liveDot,
+                { backgroundColor: hasFeedSnapshot ? colors.success : colors.textMuted },
+              ]}
+            />
             <Text style={[styles.updatedText, { color: colors.textMuted }]}>
-              Updated {formatRelativeTime(generatedAt)}
+              {hasFeedSnapshot
+                ? `Updated ${formatRelativeTime(generatedAt)}`
+                : loading || !loaded
+                  ? t('common.loading')
+                  : t('common.newsUnavailable', { defaultValue: 'News is unavailable right now.' })}
             </Text>
           </View>
         </View>
@@ -293,7 +324,7 @@ export default function NewsScreen() {
           {NEWS_CATEGORIES.map((c) => (
             <Chip
               key={c.key}
-              label={c.label}
+              label={t(['common', 'newsCategories', c.key].join('.'), { defaultValue: c.label })}
               icon={c.icon}
               active={category === c.key}
               onPress={() => {
@@ -313,7 +344,7 @@ export default function NewsScreen() {
               }}
             >
               <Ionicons name="close-circle" size={13} color="#EF4444" />
-              <Text style={styles.clearFiltersText}>Reset filters</Text>
+              <Text style={styles.clearFiltersText}>{t('common.resetFilters')}</Text>
             </Pressable>
           )}
         </ScrollView>
@@ -347,9 +378,31 @@ export default function NewsScreen() {
             <View style={styles.empty}>
               <Ionicons name={showBookmarks ? 'bookmark-outline' : 'newspaper-outline'} size={48} color={colors.textMuted} />
               <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-                {showBookmarks ? 'No saved stories yet' : 'No stories match these filters'}
+                {showBookmarks
+                  ? 'No saved stories yet'
+                  : feedUnavailable
+                    ? t('common.newsUnavailableDescription', { defaultValue: 'The latest stories could not be loaded. Please try again.' })
+                    : hasContentFilters
+                    ? 'No stories match these filters'
+                    : scope === 'constituency'
+                      ? 'No stories are available for this area yet'
+                      : scope === 'state'
+                        ? `No ${stateName} stories are available right now`
+                        : 'No news stories are available right now'}
               </Text>
-              {(language !== null || showBookmarks || category !== 'top') && (
+              {feedUnavailable ? (
+                <Pressable
+                  style={[styles.resetEmptyBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                  onPress={() => {
+                    tapLight();
+                    void refresh();
+                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Retry loading news"
+                >
+                  <Text style={[styles.resetEmptyBtnText, { color: colors.primary }]}>{t('common.retry')}</Text>
+                </Pressable>
+              ) : (hasContentFilters || scope !== 'national') && (
                 <Pressable
                   style={[styles.resetEmptyBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
                   onPress={() => {
@@ -357,10 +410,19 @@ export default function NewsScreen() {
                     setLanguage(null);
                     setCategory('top');
                     setShowBookmarks(false);
-                    if (stateCode !== 'IN') setScope('state');
+                    if (scope === 'constituency') setScope('state');
+                    else if (scope === 'state') setScope('national');
                   }}
                 >
-                  <Text style={[styles.resetEmptyBtnText, { color: colors.primary }]}>Show all news</Text>
+                  <Text style={[styles.resetEmptyBtnText, { color: colors.primary }]}>
+                    {scope === 'constituency'
+                      ? `Show ${stateName} news`
+                      : scope === 'state'
+                        ? 'Show All India news'
+                        : showBookmarks
+                          ? 'Show latest news'
+                          : 'Clear filters'}
+                  </Text>
                 </Pressable>
               )}
             </View>
@@ -565,19 +627,23 @@ function Chip({
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    gap: 8,
     paddingHorizontal: 16,
     paddingBottom: 8,
     borderBottomWidth: 1,
   },
   headerLeft: {
-    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
   },
   headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     gap: 6,
   },
   title: {
@@ -599,6 +665,8 @@ const styles = StyleSheet.create({
   updatedText: {
     fontSize: 10.5,
     fontWeight: '600',
+    flexShrink: 1,
+    textAlign: 'right',
   },
   filterPill: {
     flexDirection: 'row',
@@ -673,11 +741,15 @@ const styles = StyleSheet.create({
   empty: {
     alignItems: 'center',
     paddingTop: 80,
+    paddingHorizontal: 20,
     gap: 12,
   },
   emptyText: {
+    width: '100%',
     fontSize: 14,
     fontWeight: '700',
+    lineHeight: 20,
+    textAlign: 'center',
   },
   resetEmptyBtn: {
     paddingHorizontal: 16,

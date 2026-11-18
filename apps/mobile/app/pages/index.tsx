@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { getUnifiedConstituenciesForState } from '../../lib/stateDataAdapter';
+import { STATES } from '@kshetra/shared';
 import { useActiveStateStore } from '../../stores/activeState';
 import StateSwitcher from '../../components/StateSwitcher';
 import type { AspirantProfile } from '../../lib/aspirantTypes';
@@ -56,10 +57,20 @@ export default function PagesScreen() {
   const [myPageModalVisible, setMyPageModalVisible] = useState(false);
 
   const stateCode = useActiveStateStore((s) => s.stateCode);
-  const stateRepresentatives = useMemo(() => {
-    const list = getUnifiedConstituenciesForState(stateCode === 'IN' ? 'AP' : stateCode);
-    return list.filter((c) => c.officeholderStatus !== 'VACANT').slice(0, 35);
+  const stateSeats = useMemo(() => {
+    return stateCode === 'IN' ? [] : getUnifiedConstituenciesForState(stateCode);
   }, [stateCode]);
+  const stateRepresentatives = useMemo(
+    () =>
+      stateSeats.filter(
+        (constituency) =>
+          Boolean(constituency.currentMLA?.trim()) &&
+          (constituency.officeholderStatus === 'INCUMBENT_ACTIVE' ||
+            constituency.officeholderStatus === 'BY_ELECTION_SEATED'),
+      ),
+    [stateSeats],
+  );
+  const stateName = (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode;
 
   const authUser = useAuthStore((s) => s.user);
   const userProfile = useUserProfileStore((s) => s.profile);
@@ -372,22 +383,44 @@ export default function PagesScreen() {
         {/* ─── TAB 2: POLITICIANS & REPRESENTATIVES ─── */}
         {activeTab === 'politicians' && (
           <View style={styles.tabContent}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <View style={{ marginBottom: 12, gap: 8 }}>
               <Text style={[styles.sectionHeading, { color: colors.text, marginBottom: 0 }]}>
                 {t('pages.registeredPoliticians', { defaultValue: 'Elected Representatives & Leaders' })}
               </Text>
               <StateSwitcher />
             </View>
 
-            {/* State Elected MLAs & Officials */}
-            {stateRepresentatives.length > 0 && (
+            {stateCode === 'IN' ? (
+              <View style={[styles.emptyDirectoryCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <Ionicons name="map-outline" size={24} color={colors.primary} />
+                <Text style={[styles.aspirantBio, { color: colors.textSecondary }]}>
+                  Select a state to view current representative records.
+                </Text>
+              </View>
+            ) : stateRepresentatives.length === 0 ? (
+              <View style={[styles.emptyDirectoryCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <Ionicons name="information-circle-outline" size={24} color={colors.primary} />
+                <Text style={[styles.aspirantBio, { color: colors.textSecondary }]}>
+                  {`No current representative records are available for ${stateName}. The constituency directory has ${stateSeats.length} seats, but its current data does not include named officeholders.`}
+                </Text>
+                <Pressable
+                  style={[styles.btnViewPage, { borderColor: colors.primary }]}
+                  onPress={() => router.push('/(tabs)/explore' as any)}
+                  accessibilityRole="button"
+                  accessibilityLabel="Browse constituencies"
+                >
+                  <Ionicons name="search-outline" size={14} color={colors.primary} />
+                  <Text style={[styles.btnViewPageText, { color: colors.primary }]}>Browse constituencies</Text>
+                </Pressable>
+              </View>
+            ) : (
               <View style={{ marginBottom: 16 }}>
                 <Text style={{ fontSize: 11, fontWeight: '700', color: colors.textMuted, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 }}>
                   {t('pages.sittingMlas', { defaultValue: 'Sitting MLAs & Officials' })} ({stateRepresentatives.length})
                 </Text>
                 {stateRepresentatives.map((c) => {
-                  const repName = c.currentMLA || c.winnerName;
-                  const partyName = c.currentParty || c.winnerParty;
+                  const repName = c.currentMLA!.trim();
+                  const partyName = c.currentParty?.trim();
                   const legislatorId = `${c.stateCode}-AC-${c.acNo}`;
                   return (
                     <Pressable
@@ -402,19 +435,18 @@ export default function PagesScreen() {
                           </Text>
                         </View>
                         <View style={{ flex: 1, marginLeft: 12 }}>
-                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                            <Text style={[styles.aspirantName, { color: colors.text }]}>{repName}</Text>
-                            <Ionicons name="checkmark-circle" size={15} color="#10B981" />
-                          </View>
+                          <Text style={[styles.aspirantName, { color: colors.text }]}>{repName}</Text>
                           <Text style={[styles.aspirantSeat, { color: colors.textMuted }]}>
                             {c.name} ({c.district}) · MLA
                           </Text>
                         </View>
-                        <View style={[styles.scoreBadge, { backgroundColor: colors.primaryLight }]}>
-                          <Text style={[styles.scoreText, { color: colors.primary, fontWeight: '800' }]}>
-                            {partyName}
-                          </Text>
-                        </View>
+                        {partyName ? (
+                          <View style={[styles.scoreBadge, { backgroundColor: colors.primaryLight }]}>
+                            <Text style={[styles.scoreText, { color: colors.primary, fontWeight: '800' }]}>
+                              {partyName}
+                            </Text>
+                          </View>
+                        ) : null}
                       </View>
 
                       <View style={styles.cardActions}>
@@ -910,6 +942,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     marginTop: 20,
+  },
+  emptyDirectoryCard: {
+    gap: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderRadius: 14,
+    alignItems: 'flex-start',
   },
   promptTitle: { fontSize: 17, fontWeight: '800', marginTop: 12, marginBottom: 6 },
   promptDesc: { fontSize: 13, textAlign: 'center', lineHeight: 18, marginBottom: 18 },

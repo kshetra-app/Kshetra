@@ -17,10 +17,6 @@ import {
 } from '../../../lib/delimitation/seatCalculator';
 import { quickDistrictAggregation } from '../../../lib/delimitation/populationAggregator';
 import { analyzeStateReservation } from '../../../lib/delimitation/reservationAnalyzer';
-import {
-  computeMLARiskProfiles,
-  computeStatePartyProjections,
-} from '../../../lib/delimitation/constituencyMapper';
 import { getUnifiedConstituenciesForState } from '../../../lib/stateDataAdapter';
 import { formatPopulation, type SeatCalculationModel } from '../../../lib/delimitationTypes';
 import { useTheme } from '../../../lib/theme';
@@ -36,7 +32,6 @@ export default function StateDelimitationDetail() {
 
   const [model, setModel] = useState<SeatCalculationModel>('EXPANSION_SAFE');
   const [showConstituencies, setShowConstituencies] = useState(false);
-  const [showMLAs, setShowMLAs] = useState(false);
   const [helpVisible, setHelpVisible] = useState(false);
   const [showMethodology, setShowMethodology] = useState(false);
 
@@ -44,8 +39,6 @@ export default function StateDelimitationDetail() {
   const mathExplanation = useMemo(() => explainSeatCalculation(stateCode, model), [stateCode, model]);
   const districtAgg = useMemo(() => quickDistrictAggregation(stateCode), [stateCode]);
   const reservation = useMemo(() => analyzeStateReservation(stateCode), [stateCode]);
-  const mlaProfiles = useMemo(() => computeMLARiskProfiles(stateCode), [stateCode]);
-  const partyProjections = useMemo(() => computeStatePartyProjections(stateCode), [stateCode]);
   const constituencies = useMemo(() => getUnifiedConstituenciesForState(stateCode), [stateCode]);
 
   if (!allocation) {
@@ -88,9 +81,14 @@ export default function StateDelimitationDetail() {
 
       <ScrollView style={styles.scroll} contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 60 }]} showsVerticalScrollIndicator={false}>
 
+        <View style={[styles.disclaimer, { backgroundColor: '#FFF7ED', borderColor: '#FDBA74' }]}>
+          <Ionicons name="information-circle" size={18} color="#C2410C" />
+          <Text style={styles.disclaimerText}>{t('delimitationExtended.scenarioNoticeBody')}</Text>
+        </View>
+
         {/* Model Selector */}
         <View style={[styles.modelToggleBox, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <Text style={[styles.modelToggleTitle, { color: colors.text }]}>{t('delimitation.calcModel', { defaultValue: 'Constitutional Model' })}</Text>
+          <Text style={[styles.modelToggleTitle, { color: colors.text }]}>{t('delimitationExtended.scenarioModelTitle')}</Text>
           <View style={styles.modelToggleRow}>
             <Pressable
               style={[
@@ -102,7 +100,7 @@ export default function StateDelimitationDetail() {
               ]}
               onPress={() => setModel('EXPANSION_SAFE')}
             >
-              <Text style={[styles.modelChipText, { color: model === 'EXPANSION_SAFE' ? '#FFFFFF' : colors.text }]}>{t('delimitation.expansionSafe')}</Text>
+              <Text style={[styles.modelChipText, { color: model === 'EXPANSION_SAFE' ? '#FFFFFF' : colors.text }]}>{t('delimitationExtended.scenarioNoLossLabel')}</Text>
             </Pressable>
             <Pressable
               style={[
@@ -114,7 +112,7 @@ export default function StateDelimitationDetail() {
               ]}
               onPress={() => setModel('PROPORTIONAL')}
             >
-              <Text style={[styles.modelChipText, { color: model === 'PROPORTIONAL' ? '#FFFFFF' : colors.text }]}>{t('delimitation.proportional')}</Text>
+              <Text style={[styles.modelChipText, { color: model === 'PROPORTIONAL' ? '#FFFFFF' : colors.text }]}>{t('delimitationExtended.scenarioPopulationLabel')}</Text>
             </Pressable>
           </View>
         </View>
@@ -248,76 +246,6 @@ export default function StateDelimitationDetail() {
           </View>
         )}
 
-        {/* Party Seat Projections */}
-        {partyProjections && (
-          <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>{t('delimitation.partyProjectionsTitle', { state: allocation.stateName, defaultValue: `Party Seat Projections (${allocation.stateName})` })}</Text>
-            <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-              <Text style={[styles.sectionSubtitle, { color: colors.textSecondary, marginBottom: 8 }]}>
-                {partyProjections.methodologyNotes}
-              </Text>
-              {partyProjections.parties.map((p) => (
-                <View key={p.party} style={[styles.partyRow, { borderBottomColor: colors.border }]}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={[styles.partyName, { color: colors.text }]}>{p.party}</Text>
-                    <Text style={[styles.partyMeta, { color: colors.textMuted }]}>
-                      Share: {p.currentVoteSharePercent}% · Safe: {p.safeSeats} · Battleground: {p.battlegroundSeats}
-                    </Text>
-                  </View>
-                  <View style={{ alignItems: 'flex-end' }}>
-                    <Text style={[styles.partySeats, { color: colors.text }]}>{p.currentSeats} → {p.projectedSeats}</Text>
-                    <Text style={[styles.partyChange, { color: p.seatChange >= 0 ? '#10B981' : '#EF4444' }]}>
-                      {p.seatChange >= 0 ? `+${p.seatChange}` : p.seatChange} seats
-                    </Text>
-                  </View>
-                </View>
-              ))}
-            </View>
-          </View>
-        )}
-
-        {/* Sitting MLA Risk Summary */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeaderRow}>
-            <Text style={[styles.sectionTitle, { color: colors.text, marginBottom: 0 }]}>
-              {t('delimitation.sittingMlaAnalyzer', { state: `${mlaProfiles.length} MLAs`, defaultValue: `Sitting MLA Risk Analyzer (${mlaProfiles.length} MLAs)` })}
-            </Text>
-            <Pressable onPress={() => setShowMLAs(!showMLAs)}>
-              <Text style={[styles.toggleBtnText, { color: colors.primary }]}>
-                {showMLAs ? t('common.collapse', { defaultValue: 'Collapse' }) : t('common.expandAll', { defaultValue: 'Expand All' })}
-              </Text>
-            </Pressable>
-          </View>
-          <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            {(showMLAs ? mlaProfiles : mlaProfiles.slice(0, 4)).map((m) => (
-              <View key={m.currentAcNo} style={[styles.mlaRow, { borderBottomColor: colors.border }]}>
-                <View style={{ flex: 1 }}>
-                  <Text style={[styles.mlaName, { color: colors.text }]}>{m.mlaName} ({m.party})</Text>
-                  <Text style={[styles.mlaConstituency, { color: colors.textSecondary }]}>
-                    AC #{m.currentAcNo} {m.currentAcName} → {m.primaryNewAcName}
-                  </Text>
-                  <Text style={[styles.mlaMeta, { color: colors.textMuted }]}>
-                    Shift: {m.seatChangeType.toUpperCase()} · Margin: {m.currentMarginPercent}%
-                  </Text>
-                </View>
-                <View style={[styles.riskTag, {
-                  backgroundColor: m.riskRating === 'critical_risk' ? '#EF444420' :
-                    m.riskRating === 'high_risk' ? '#F9731620' :
-                    m.riskRating === 'moderate_risk' ? '#F59E0B20' : '#10B98120'
-                }]}>
-                  <Text style={[styles.riskTagText, {
-                    color: m.riskRating === 'critical_risk' ? '#EF4444' :
-                      m.riskRating === 'high_risk' ? '#F97316' :
-                      m.riskRating === 'moderate_risk' ? '#F59E0B' : '#10B981'
-                  }]}>
-                    {m.riskRating.replace('_', ' ').toUpperCase()} ({m.riskScore})
-                  </Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        </View>
-
         {/* District Breakdown */}
         {districtAgg && (
           <View style={styles.section}>
@@ -392,7 +320,8 @@ export default function StateDelimitationDetail() {
                         AC #{c.acNo} {c.name}
                       </Text>
                       <Text style={[styles.acDistrict, { color: colors.textMuted }]}>
-                        District: {c.district} · MLA: {c.winnerName || 'Incumbent'} ({c.winnerParty || 'IND'})
+                        District: {c.district}
+                        {c.winnerName && c.winnerParty ? ` · MLA: ${c.winnerName} (${c.winnerParty})` : ''}
                       </Text>
                     </View>
                     <View style={[styles.acTypeBadge, { backgroundColor: colors.primaryLight }]}>
@@ -410,7 +339,7 @@ export default function StateDelimitationDetail() {
         <View style={[styles.disclaimer, { backgroundColor: '#F59E0B15', borderColor: '#F59E0B40' }]}>
           <Ionicons name="information-circle" size={14} color="#F59E0B" />
           <Text style={styles.disclaimerText}>
-            {t('delimitation.stateFooterDisclaimer', { defaultValue: 'Delimitation calculations derived from Census of India official district demographic figures under Articles 81, 82, and 170 of the Constitution.' })}
+            {t('delimitationExtended.scenarioNoticeBody')}
           </Text>
         </View>
       </ScrollView>

@@ -2,7 +2,7 @@ import { createHash } from 'crypto';
 import { FEED_SOURCES } from './sources';
 import type { FeedSource, NewsCategory, NewsLanguageCode, NewsScope } from './sources';
 import { fetchFeedXml, parseFeed } from './rssParser';
-import { isFreshNewsTimestamp } from '@kshetra/shared';
+import { filterNewsByScope, isFreshNewsTimestamp } from '@kshetra/shared';
 
 export interface NewsItem {
   id: string;
@@ -39,6 +39,7 @@ export interface FeedFilters {
   lang?: string;
   scope?: string;
   state?: string;
+  constituencyId?: string;
   category?: string;
   limit?: number;
 }
@@ -144,9 +145,12 @@ export function getFeed(filters: FeedFilters = {}): NewsFeed {
         ? items.filter((i) => !!i.video)
         : items.filter((i) => i.category === filters.category);
   }
-  if (filters.scope === 'national') items = items.filter((i) => i.scope === 'national');
-  else if (filters.scope === 'state' && filters.state) {
-    items = items.filter((i) => i.scope === 'national' || i.stateCode === filters.state);
+  if (
+    filters.scope === 'national' ||
+    filters.scope === 'state' ||
+    filters.scope === 'constituency'
+  ) {
+    items = filterNewsByScope(items, filters.scope, filters.state, filters.constituencyId);
   }
   if (filters.limit && filters.limit > 0) items = items.slice(0, filters.limit);
   return { ...cache, items };

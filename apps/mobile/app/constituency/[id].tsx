@@ -421,7 +421,7 @@ export default function ConstituencyDetailScreen() {
   const isFavorite = useFavoritesStore((s) => s.isFavorite(acNo));
   const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
   const addRecent = useRecentsStore((s) => s.addRecent);
-  const isHome = useMyConstituencyStore((s) => s.isHome(acNo));
+  const isHome = useMyConstituencyStore((s) => s.isHome(stateCode, acNo));
   const isMyHome = isHome;
   const setHome = useMyConstituencyStore((s) => s.setHome);
   const clearHome = useMyConstituencyStore((s) => s.clearHome);
@@ -678,6 +678,7 @@ export default function ConstituencyDetailScreen() {
                 clearHome();
               } else {
                 setHome({
+                  stateCode,
                   acNo: acNo,
                   name: effectiveConstituencyName,
                   district: effectiveDistrict,

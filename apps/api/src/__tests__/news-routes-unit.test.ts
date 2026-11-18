@@ -70,6 +70,7 @@ describe('News Routes Unit Tests (Direct Route Injection)', () => {
     expect(body.version).toBe(1);
     expect(body.items.length).toBe(1);
     expect(body.items[0].title).toBe('Election Commission announces schedule');
+    expect(body.items[0].source).toEqual(mockFeed.items[0].source);
   });
 
   it('GET /api/v1/news/feed passes query filters to getFeed', async () => {
@@ -87,6 +88,25 @@ describe('News Routes Unit Tests (Direct Route Injection)', () => {
       state: 'TG',
       category: 'elections',
       limit: 10,
+    });
+  });
+
+  it('accepts the same explicit state and constituency filters used by the mobile feed', async () => {
+    const getFeedSpy = jest.spyOn(newsService, 'getFeed').mockReturnValue(mockFeed);
+
+    const res = await app.inject({
+      method: 'GET',
+      url: '/api/v1/news/feed?scope=constituency&state=TS&constituencyId=TS-AC-65',
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(getFeedSpy).toHaveBeenCalledWith({
+      scope: 'constituency',
+      state: 'TS',
+      constituencyId: 'TS-AC-65',
+      lang: undefined,
+      category: undefined,
+      limit: undefined,
     });
   });
 

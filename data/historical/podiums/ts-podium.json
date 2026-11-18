@@ -42903,11 +42903,11 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 153652,
+      "totalValidVotes": 148259,
       "constituencyName": "Goshamahal",
-      "marginWinnerToRunnerUp1": 15764,
-      "marginWinnerToRunnerUp2": 89234,
-      "marginRunnerUp1ToRunnerUp2": 64418,
+      "marginWinnerToRunnerUp1": 21457,
+      "marginWinnerToRunnerUp2": 73917,
+      "marginRunnerUp1ToRunnerUp2": 52460,
       "winner": {
         "name": "T. Raja Singh",
         "party": "BJP",
@@ -42943,21 +42943,18 @@
           "as": "ভাৰতীয় জনতা পাৰ্টী",
           "ne": "भारतीय जनता पार्टी"
         },
-        "photoUrl": "https://www.myneta.info/images_candidate/LokSabha2024/7168691c695085a58222c84bff1c930a9eb4e016.jpg",
-        "affidavitUrl": "https://www.myneta.info/loksabha2024/candidate.php?candidate_id=8745",
+        "photoUrl": "https://results.eci.gov.in/uploads1/candprofile/E22/2023/AC/s29/TRAJ-2023-20231104014656.jpg",
+        "photoVerified": true,
+        "affidavitUrl": "https://suvidha.eci.gov.in/ac/public/uploads1/acaffidavit/E22/2023/AC/S29/65/S29_15603_6351_202311100618431699620523.pdf",
         "age": 46,
-        "education": "10th Pass",
-        "profession": "Business & Agriculture",
-        "criminalCases": 0,
-        "totalAssets": 177243256,
-        "totalLiabilities": 44673348
+        "criminalCases": 8
       },
       "firstRunnerUp": {
-        "name": "Nand Kishore Vyas",
+        "name": "Nandu Bilal",
         "party": "BRS",
-        "votes": 64418,
-        "voteShare": 41.92,
-        "marginToWinner": 15764,
+        "votes": 58725,
+        "voteShare": 39.61,
+        "marginToWinner": 21457,
         "localizedParties": {
           "en": "Bharat Rashtra Samithi",
           "te": "భారత్ రాష్ట్ర సమితి",
@@ -42973,9 +42970,17 @@
           "as": "ভাৰত ৰাষ্ট্ৰ সমিতি",
           "ne": "भारत राष्ट्र समिति"
         },
-        "age": null
+        "age": 55
       },
-      "secondRunnerUp": null
+      "secondRunnerUp": {
+        "name": "Mogili Sunitha",
+        "party": "INC",
+        "votes": 6265,
+        "voteShare": 4.23,
+        "marginToWinner": 73917,
+        "marginToFirstRunnerUp": 52460,
+        "age": 53
+      }
     },
     {
       "year": 2018,

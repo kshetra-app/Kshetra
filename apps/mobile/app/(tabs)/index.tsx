@@ -23,7 +23,6 @@ import {
   getStateZoom,
 } from '../../lib/constants';
 import CandidateAvatar from '../../components/CandidateAvatar';
-import { getStaticPhoto } from '../../lib/candidatePhotos';
 import { useUserLocation } from '../../lib/useUserLocation';
 import { findConstituencyAtPoint, pointInPolygon, pointInMultiPolygon, STATES } from '@kshetra/shared';
 import { useActiveStateStore } from '../../stores/activeState';
@@ -64,7 +63,10 @@ import CompareSheet from '../../components/CompareSheet';
 import ChiefMinisterBadge from '../../components/ChiefMinisterBadge';
 import PhotoViewerModal from '../../components/PhotoViewerModal';
 import { useFavoritesStore } from '../../stores/favorites';
-import { useMyConstituencyStore } from '../../stores/myConstituency';
+import {
+  homeConstituencyBelongsToState,
+  useMyConstituencyStore,
+} from '../../stores/myConstituency';
 import {
   getAvailableYearsForState,
   type UnifiedConstituency,
@@ -350,6 +352,9 @@ function FullMapScreen() {
     () => new Map<number, UnifiedConstituency>(stateConstituencies.map((c) => [c.acNo, c])),
     [stateConstituencies],
   );
+  const myHomeBelongsToState = useMemo(() => {
+    return homeConstituencyBelongsToState(myHome, stateCode, stateConstituencies);
+  }, [myHome, stateCode, stateConstituencies]);
   const [historicalPartySummary, setHistoricalPartySummary] = useState<HistoricalPodiumSummaryRecord[]>([]);
 
   useEffect(() => {
@@ -1542,7 +1547,7 @@ function FullMapScreen() {
               <Text style={styles.headerSubtitle} numberOfLines={1} ellipsizeMode="tail">
                 {stateCode === 'IN'
                   ? t('mapExtended.nationalOverview')
-                  : `${getLocalizedStateName(stateCode, i18n.language) || currentState?.name || stateCode} · ${currentState?.assemblySeats ?? '?'} ${t('explore.constituencies')}`}
+                  : getLocalizedStateName(stateCode, i18n.language) || currentState?.name || stateCode}
               </Text>
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5, flexShrink: 0 }}>
@@ -1763,7 +1768,18 @@ function FullMapScreen() {
           records={stateConstituencies}
           electionRecords={historicalPartySummary}
           liveMode={IS_LIVE_ENVIRONMENT}
-          initialTop={mapTopOffset + (isScreenImmersive ? 54 : (!hideOverlays && !selected && stateCode !== 'IN' ? 148 : 98))}
+          initialTop={
+            mapTopOffset +
+            (isScreenImmersive
+              ? 54
+              : !hideOverlays && !selected && stateCode === 'IN'
+                ? Math.max(headerOverlayHeight, 94) + 10
+                : !hideOverlays && !selected && IS_LIVE_ENVIRONMENT
+                  ? Math.max(headerOverlayHeight, 94) + 142
+                  : !hideOverlays && !selected && stateCode !== 'IN'
+                    ? Math.max(headerOverlayHeight, 94) + 58
+                    : 98)
+          }
         />
       )}
 
@@ -2120,7 +2136,7 @@ function FullMapScreen() {
           pointerEvents={isScreenImmersive ? 'none' : 'box-none'}
         >
           {/* My Constituency home marker */}
-          {myHome && stateCode !== 'IN' && (
+          {myHomeBelongsToState && myHome && (
             <Pressable
               style={styles.homeIndicatorUnified}
               onPress={() => {
@@ -2511,7 +2527,8 @@ function FullMapScreen() {
                             name={winnerName || ''}
                             party={winnerParty || ''}
                             size={40}
-                            photoUrl={podium?.winner?.photoUrl || (winnerName ? getStaticPhoto(winnerName) : undefined) || mla?.photoUrl || undefined}
+                            photoUrl={podium?.winner?.photoVerified ? podium.winner.photoUrl || undefined : undefined}
+                            allowUnverifiedFallback={false}
                             onPress={(uri) => setPhotoViewer({ uri, name: winnerName || '', party: winnerParty || '' })}
                           />
                           <View style={[styles.s1RankBadge, { backgroundColor: '#F59E0B' }]}>
@@ -2558,7 +2575,8 @@ function FullMapScreen() {
                             name={runnerUpName || ''}
                             party={runnerUpParty || ''}
                             size={36}
-                            photoUrl={podium?.firstRunnerUp?.photoUrl || (runnerUpName ? getStaticPhoto(runnerUpName) : undefined) || undefined}
+                            photoUrl={podium?.firstRunnerUp?.photoVerified ? podium.firstRunnerUp.photoUrl || undefined : undefined}
+                            allowUnverifiedFallback={false}
                             onPress={(uri) => setPhotoViewer({ uri, name: runnerUpName || '', party: runnerUpParty || '' })}
                           />
                           <View style={[styles.s1RankBadge, { backgroundColor: '#64748B' }]}>
@@ -2606,7 +2624,8 @@ function FullMapScreen() {
                               name={ru2Name || ''}
                               party={ru2Party || ''}
                               size={34}
-                              photoUrl={podium?.secondRunnerUp?.photoUrl || (ru2Name ? getStaticPhoto(ru2Name) : undefined) || undefined}
+                              photoUrl={podium?.secondRunnerUp?.photoVerified ? podium.secondRunnerUp.photoUrl || undefined : undefined}
+                              allowUnverifiedFallback={false}
                               onPress={(uri) => setPhotoViewer({ uri, name: ru2Name || '', party: ru2Party || '' })}
                             />
                             <View style={[styles.s1RankBadge, { backgroundColor: '#B45309' }]}>

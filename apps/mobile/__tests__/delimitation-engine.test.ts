@@ -1,6 +1,6 @@
 /**
- * Comprehensive Delimitation Engine Unit Tests
- * 100% test coverage for:
+ * Delimitation Engine Unit Tests
+ * Covers representative behavior for:
  * - pinCodeResolver (PIN to AC and personal delimitation impact)
  * - seatCalculator (dual models & mathematical formula explanation)
  * - constituencyMapper (MLA risk assessment & party projections)
@@ -25,8 +25,19 @@ import {
 import { simulateStateQuick } from '../lib/delimitation/boundarySimulator';
 import { generateSyntheticWards } from '../lib/delimitation/populationAggregator';
 import { CENSUS_2011_STATES } from '../../../data/census/india-district-population-2011';
+import { useDelimitationStore } from '../stores/delimitation';
 
 describe('Delimitation Engine', () => {
+  describe('Citizen impact data source safety', () => {
+    it('does not synthesize a local impact without verified proposed-boundary records', () => {
+      useDelimitationStore.setState({ citizenImpacts: {} });
+      const store = useDelimitationStore.getState();
+
+      expect(store.getCitizenImpact('500034')).toBeUndefined();
+      expect(store.getCitizenImpactForConstituency('TS', 1)).toBeUndefined();
+    });
+  });
+
   describe('Synthetic population allocation', () => {
     it('is repeatable for identical district inputs and conserves source population', () => {
       const state = CENSUS_2011_STATES.find((item) => item.stateCode === 'TS');

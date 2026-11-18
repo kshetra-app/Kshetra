@@ -98,7 +98,7 @@ export default function OnboardingScreen() {
     });
 
     if (selected) {
-      setHome({ acNo: selected.acNo, name: selected.name, district: selected.district, party: selected.winnerParty });
+      setHome({ stateCode, acNo: selected.acNo, name: selected.name, district: selected.district, party: selected.winnerParty });
     }
 
     setOnboarded(true);

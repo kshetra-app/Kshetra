@@ -186,10 +186,11 @@ export default function MapLegend({
   // Floating Draggable Pan State
   const pan = useRef(new Animated.ValueXY({ x: initialX, y: initialTop })).current;
   const currentPos = useRef({ x: initialX, y: initialTop });
+  const hasUserMoved = useRef(false);
   const [panelOpensUpward, setPanelOpensUpward] = useState(false);
 
   useEffect(() => {
-    if (initialTop != null && currentPos.current.y === 160) {
+    if (initialTop != null && !hasUserMoved.current) {
       pan.setValue({ x: initialX, y: initialTop });
       currentPos.current = { x: initialX, y: initialTop };
     }
@@ -216,6 +217,9 @@ export default function MapLegend({
         const newX = Math.min(Math.max(10, currentPos.current.x + gestureState.dx), SCREEN_WIDTH - 110);
         const newY = Math.min(Math.max(60, currentPos.current.y + gestureState.dy), SCREEN_HEIGHT - 130);
 
+        if (Math.abs(gestureState.dx) >= 6 || Math.abs(gestureState.dy) >= 6) {
+          hasUserMoved.current = true;
+        }
         currentPos.current = { x: newX, y: newY };
         pan.setValue({ x: newX, y: newY });
         setPanelOpensUpward(newY > SCREEN_HEIGHT * 0.55);

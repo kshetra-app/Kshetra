@@ -212,6 +212,42 @@ describe('Constituency Routes', () => {
 
   // ─── ELECTIONS HISTORY ───
 
+  it('returns the ECI 2023 Goshamahal result with the correct podium and vote denominator', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/v1/states/TS/podium',
+    });
+
+    expect(response.statusCode).toBe(200);
+    const contests = JSON.parse(response.payload)['65'];
+    const election = contests.find((contest: { year: number }) => contest.year === 2023);
+
+    expect(election.totalValidVotes).toBe(148259);
+    expect(election.winner).toMatchObject({
+      name: 'T. Raja Singh',
+      votes: 80182,
+      voteShare: 54.08,
+    });
+    expect(election.firstRunnerUp).toMatchObject({
+      name: 'Nandu Bilal',
+      votes: 58725,
+      voteShare: 39.61,
+      marginToWinner: 21457,
+    });
+    expect(election.secondRunnerUp).toMatchObject({
+      name: 'Mogili Sunitha',
+      votes: 6265,
+      voteShare: 4.23,
+    });
+    expect(election.winner).toMatchObject({
+      photoUrl:
+        'https://results.eci.gov.in/uploads1/candprofile/E22/2023/AC/s29/TRAJ-2023-20231104014656.jpg',
+      photoVerified: true,
+    });
+    expect(election.winner.affidavitUrl).toContain('suvidha.eci.gov.in');
+    expect(election.winner.criminalCases).toBe(8);
+  });
+
   it('GET /states/TS/elections should return 3 elections', async () => {
     const response = await app.inject({
       method: 'GET',

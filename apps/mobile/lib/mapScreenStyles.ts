@@ -25,6 +25,10 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginHorizontal: -14,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    backgroundColor: 'rgba(10, 10, 26, 0.94)',
   },
   headerTitle: {
     fontSize: 17,

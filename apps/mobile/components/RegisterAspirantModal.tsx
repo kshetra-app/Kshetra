@@ -49,13 +49,15 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
     [stateCode],
   );
 
-  const [displayName, setDisplayName] = useState(authUser?.email?.split('@')[0] ?? '');
+  const [displayName, setDisplayName] = useState('');
   const [bio, setBio] = useState('');
-  const [constituency, setConstituency] = useState(myHome?.name ?? '');
-  const [year, setYear] = useState<number>(ELECTION_YEARS[1]);
-  const [isIndependent, setIsIndependent] = useState(true);
+  const constituency = myHome?.name ?? '';
+  const [year, setYear] = useState<number | null>(null);
+  const [affiliation, setAffiliation] = useState<'independent' | 'party' | null>(null);
+  const isIndependent = affiliation === 'independent';
+  const isPartyMember = affiliation === 'party';
   const [party, setParty] = useState('');
-  const [isPublic, setIsPublic] = useState(true);
+  const [isPublic, setIsPublic] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = useCallback(async () => {
@@ -67,7 +69,30 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
       Alert.alert(t('aspirantReg.bioRequired'), t('aspirantReg.bioRequiredMsg'));
       return;
     }
-    if (!isIndependent && !party.trim()) {
+    if (!myHome?.acNo || !myHome.name.trim()) {
+      Alert.alert(
+        t('aspirantReg.targetConstituency'),
+        t('aspirantReg.homeConstituencyRequired', {
+          defaultValue: 'Set your home constituency in Profile before registering.',
+        }),
+      );
+      return;
+    }
+    if (year === null) {
+      Alert.alert(
+        t('aspirantReg.targetYear'),
+        t('aspirantReg.targetYearRequired', { defaultValue: 'Choose the election year you intend to contest.' }),
+      );
+      return;
+    }
+    if (affiliation === null) {
+      Alert.alert(
+        t('aspirantReg.affiliation'),
+        t('aspirantReg.affiliationRequired', { defaultValue: 'Choose an affiliation to continue.' }),
+      );
+      return;
+    }
+    if (isPartyMember && !party.trim()) {
       Alert.alert(t('aspirantReg.partyRequired'), t('aspirantReg.partyRequiredMsg'));
       return;
     }
@@ -85,8 +110,8 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
         displayName: displayName.trim(),
         bio: bio.trim(),
         stateCode,
-        targetConstituencyAcNo: myHome?.acNo,
-        targetConstituencyName: constituency.trim() || undefined,
+        targetConstituencyAcNo: myHome.acNo,
+        targetConstituencyName: constituency,
         targetElectionYear: year,
         isIndependent,
         partyAffiliation: isIndependent ? undefined : party.trim(),
@@ -107,7 +132,7 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
     } finally {
       setIsSubmitting(false);
     }
-  }, [displayName, bio, isIndependent, party, registerAsAspirant, authUser, stateCode, myHome, constituency, year, isPublic, onClose, t]);
+  }, [displayName, bio, isIndependent, isPartyMember, affiliation, party, registerAsAspirant, authUser, stateCode, myHome, constituency, year, isPublic, onClose, t]);
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
@@ -167,11 +192,17 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
           <TextInput
             style={styles.input}
             value={constituency}
-            onChangeText={setConstituency}
-            placeholder={myHome ? myHome.name : 'Set your home constituency in Profile'}
+            editable={false}
+            placeholder={t('aspirantReg.homeConstituencyRequired', {
+              defaultValue: 'Set your home constituency in Profile',
+            })}
             placeholderTextColor="#4B5563"
           />
-          <Text style={styles.hint}>{t('aspirantReg.stateLabel')}: {stateName}</Text>
+          <Text style={styles.hint}>
+            {myHome ? `${t('aspirantReg.stateLabel')}: ${stateName}` : t('aspirantReg.homeConstituencyRequired', {
+              defaultValue: 'Set your home constituency in Profile before registering.',
+            })}
+          </Text>
 
           {/* Election year */}
           <Text style={styles.label}>{t('aspirantReg.targetYear')}</Text>
@@ -192,18 +223,18 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
           <View style={styles.chipRow}>
             <Pressable
               style={[styles.chip, isIndependent && styles.chipActive]}
-              onPress={() => setIsIndependent(true)}
+              onPress={() => setAffiliation('independent')}
             >
               <Text style={[styles.chipText, isIndependent && styles.chipTextActive]}>{t('politicianPortal.independent')}</Text>
             </Pressable>
             <Pressable
-              style={[styles.chip, !isIndependent && styles.chipActive]}
-              onPress={() => setIsIndependent(false)}
+              style={[styles.chip, isPartyMember && styles.chipActive]}
+              onPress={() => setAffiliation('party')}
             >
               <Text style={[styles.chipText, !isIndependent && styles.chipTextActive]}>{t('aspirantReg.partyMember')}</Text>
             </Pressable>
           </View>
-          {!isIndependent && (
+          {isPartyMember && (
             <TextInput
               style={[styles.input, { marginTop: 10 }]}
               value={party}

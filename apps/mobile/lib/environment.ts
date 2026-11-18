@@ -35,3 +35,11 @@ export function resolveApiBaseUrl(
   // Callers append /api/v1; normalize older local URLs that included the path.
   return configuredUrl.replace(/\/+$/, '').replace(/\/api(?:\/v\d+)?$/i, '');
 }
+
+/** Resolve the Supabase project URL from the same environment map as the API. */
+export function resolveSupabaseUrl(
+  explicitSupabaseUrl?: string | null,
+  environment: string = CURRENT_ENVIRONMENT,
+): string {
+  return (explicitSupabaseUrl?.trim() || getEnvironmentConfig(environment).supabaseUrl).replace(/\/+$/, '');
+}
