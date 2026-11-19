@@ -1,3 +1,4 @@
+import { SubmissionReview } from './SubmissionReview';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ShieldAlert, CheckCircle, Trash2, Radio, MessageSquare, FileText, AlertTriangle, RefreshCw, AlertCircle } from 'lucide-react';
 import { api } from '../lib/api';
@@ -101,6 +102,8 @@ export function Moderation() {
           </button>
         </div>
       </div>
+
+      <SubmissionReview />
 
       {error && <Notice tone="error">{error}</Notice>}
       {actionError && <Notice tone="error">{actionError}</Notice>}

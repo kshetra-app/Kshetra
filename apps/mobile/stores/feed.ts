@@ -9,6 +9,7 @@ import type {
   ReactionType,
   PostType,
   PostMedia,
+  PostReviewStatus,
   FeedScope,
   SortOrder,
 } from '../lib/feedTypes';
@@ -20,11 +21,13 @@ import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 import { logContentAction } from '../lib/contentAccountability';
 import { SequenceGuard } from '../lib/staleResponseGuard';
 import { useAuthStore } from './auth';
+import { prepareFeedAttachments, type SubmittedAttachment } from '../lib/feedAttachments';
 import { CONTENT_PAGE_SIZE, isInContentPeriod, type ContentPeriod } from '@kshetra/shared';
 
 const feedRefreshGuard = new SequenceGuard<string>();
 const FEED_AUTO_REFRESH_COOLDOWN_MS = 15_000;
-const feedRefreshStartedAt = new Map<string, number>();
+let lastFeedRefreshKey: string | undefined;
+let lastFeedRefreshAt = 0;
 const feedAutoRefreshInFlight = new Map<string, Promise<void>>();
 
 function getFeedRefreshKey(
@@ -45,7 +48,7 @@ function mapSupabasePost(post: any): Post {
       isVerified: post.author_is_verified ?? false,
       avatarUrl: post.author_avatar_url,
     },
-    stateCode: post.state_code,
+    stateCode: post.state_code ?? 'NATIONAL',
     constituencyId: post.constituency_id,
     constituencyName: post.constituency_name,
     content: post.content,
@@ -57,21 +60,16 @@ function mapSupabasePost(post: any): Post {
     language: post.language ?? 'en',
     createdAt: post.created_at,
     updatedAt: post.updated_at,
-    hashtags: post.hashtags ?? [],
+    hashtags: post.hashtags ?? (post.content?.match(/#(\w+)/g) ?? []).map((tag: string) => tag.slice(1).toLowerCase()),
+    poll: post.poll ?? undefined,
+    media: post.media,
     userReaction: post.user_reaction,
   };
 }
 
 function markFeedRefreshStarted(key: string) {
-  const now = Date.now();
-  for (const [storedKey, startedAt] of feedRefreshStartedAt) {
-    if (now - startedAt > 60 * 60_000) feedRefreshStartedAt.delete(storedKey);
-  }
-  if (feedRefreshStartedAt.size >= 128) {
-    const oldestKey = feedRefreshStartedAt.keys().next().value;
-    if (oldestKey) feedRefreshStartedAt.delete(oldestKey);
-  }
-  feedRefreshStartedAt.set(key, now);
+  lastFeedRefreshKey = key;
+  lastFeedRefreshAt = Date.now();
 }
 
 /**
@@ -1348,7 +1346,13 @@ const SEED_COMMENTS: Record<string, Comment[]> = {
 
 // ─── Feed Store Interface ───
 
-export type PostSubmissionOutcome = 'synced' | 'queued' | 'local' | 'failed';
+export type PostSubmissionOutcome = 'synced' | 'pending' | 'rejected' | 'queued' | 'local' | 'failed';
+
+function submissionOutcome(status?: PostReviewStatus): PostSubmissionOutcome {
+  if (status === 'pending' || status === 'rejected') return status;
+  if (status === 'approved' || status === 'previously_published' || !IS_LIVE_ENVIRONMENT) return 'synced';
+  return 'failed';
+}
 export type CommentSubmissionOutcome = 'synced' | 'queued' | 'local' | 'failed';
 
 interface FeedState {
@@ -1381,7 +1385,7 @@ interface FeedState {
 
   // Post Actions
   addPost: (post: Post) => Promise<PostSubmissionOutcome>;
-  editPost: (postId: string, content: string) => Promise<boolean>;
+  editPost: (postId: string, content: string) => Promise<boolean | 'pending'>;
   deletePost: (postId: string) => Promise<boolean>;
   addMediaToPost: (postId: string, media: PostMedia) => void;
   toggleReaction: (postId: string, reaction: ReactionType) => Promise<boolean>;
@@ -1415,7 +1419,7 @@ interface FeedState {
   receiveRealtimeComment: (serverComment: any) => void;
   receiveRealtimeReaction: (payload: any) => void;
   receiveRealtimeVote: (payload: any) => void;
-  reconcilePostSync: (clientToken: string, status: SyncStatus, serverId?: string | null, poll?: Post['poll']) => void;
+  reconcilePostSync: (clientToken: string, status: SyncStatus, serverId?: string | null, poll?: Post['poll'], reviewStatus?: PostReviewStatus) => void;
   reconcileCommentSync: (clientToken: string, status: SyncStatus, serverId?: string | null) => void;
   retryComment: (postId: string, clientToken: string) => Promise<boolean>;
   retryPost: (clientToken: string) => Promise<boolean>;
@@ -1496,14 +1500,6 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
       set({ lastError: 'Sign in before publishing a post.' });
       return 'failed';
     }
-    if (IS_LIVE_ENVIRONMENT && post.media?.length) {
-      set({ lastError: 'Post attachments cannot be published until media upload is connected.' });
-      return 'failed';
-    }
-    if (IS_LIVE_ENVIRONMENT && post.stateCode.length !== 2) {
-      set({ lastError: 'Nationally scoped posts are unavailable until the feed scope is persisted.' });
-      return 'failed';
-    }
     if (post.type === 'poll' && (!post.poll || post.poll.options.length < 2)) {
       set({ lastError: 'Polls require at least two options.' });
       return 'failed';
@@ -1513,17 +1509,28 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
     const onlineAtStart = isOnline();
 
     set((state) => ({
-      posts: [{ ...post, syncStatus: !userId ? 'LOCAL_ONLY' : onlineAtStart ? 'SYNCING' : 'QUEUED' }, ...state.posts],
+      posts: IS_LIVE_ENVIRONMENT ? state.posts : [{ ...post, syncStatus: !userId ? 'LOCAL_ONLY' : onlineAtStart ? 'SYNCING' : 'QUEUED' }, ...state.posts],
       lastPostTime: now,
       lastError: null,
     }));
 
     if (!userId) return 'local'; // Non-production local preview.
 
+    let media: SubmittedAttachment[] | undefined;
+    if (post.media?.length) {
+      try {
+        if (!onlineAtStart && post.media.some((item) => item.mediaType !== 'link')) throw new Error('Connect to the internet to upload photos or videos.');
+        media = await prepareFeedAttachments(post.media, userId);
+      } catch (error) {
+        set((state) => ({ posts: state.posts.filter((item) => item.id !== post.id), lastError: error instanceof Error ? error.message : 'Could not attach the file.' }));
+        return 'failed';
+      }
+    }
     const payload = {
+      ...(media ? { media } : {}),
       content: post.content,
       type: post.type,
-      stateCode: post.stateCode,
+      stateCode: post.stateCode === 'NATIONAL' ? 'IN' : post.stateCode,
       authorId: userId,
       hashtags: post.hashtags ?? [],
       constituencyId: post.constituencyId,
@@ -1535,10 +1542,8 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
 
     if (!onlineAtStart) {
       try {
-        await enqueue('compose_post', payload, clientToken);
-        return get().posts.find((item) => item.clientToken === clientToken || item.id === clientToken)?.syncStatus === 'SYNCED'
-          ? 'synced'
-          : 'queued';
+        const receipt = await enqueue('compose_post', payload, clientToken);
+        return receipt.status === 'SYNCED' ? submissionOutcome(receipt.reviewStatus) : 'queued';
       } catch {
         set((state) => ({
           posts: state.posts.filter((item) => item.clientToken !== clientToken && item.id !== clientToken),
@@ -1554,9 +1559,8 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
       if (!res.success || !res.id || !pollCreationConfirmed) {
         if (res.retryable) {
           try {
-            await enqueue('compose_post', payload, clientToken);
-            const saved = get().posts.find((item) => item.clientToken === clientToken || item.id === clientToken);
-            return saved?.syncStatus === 'SYNCED' ? 'synced' : 'queued';
+            const receipt = await enqueue('compose_post', payload, clientToken);
+            return receipt.status === 'SYNCED' ? submissionOutcome(receipt.reviewStatus) : 'queued';
           } catch {
             // Fall through to remove the optimistic record if it could not be queued.
           }
@@ -1568,8 +1572,11 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
         return 'failed';
       }
 
-      get().reconcilePostSync(clientToken, 'SYNCED', res.id, res.poll ?? undefined);
-      return 'synced';
+      get().reconcilePostSync(clientToken, 'SYNCED', res.id, res.poll ?? undefined, res.reviewStatus);
+      if (IS_LIVE_ENVIRONMENT && res.reviewStatus === 'pending' && useAuthStore.getState().user?.id === userId) {
+        void logContentAction('create_post', { type: 'post', id: res.id, body: post.content, screenName: 'compose' });
+      }
+      return submissionOutcome(res.reviewStatus);
     } catch (err: any) {
       const isModViolation = err?.message && err.message.includes('community guidelines');
       set((state) => ({
@@ -1591,7 +1598,12 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
 
     if (userId) {
       try {
-        if (!await dataService.editPost(postId, content, userId)) {
+        const result = await dataService.editPost(postId, content, userId);
+        if (result === 'pending') {
+          set((state) => ({ posts: state.posts.filter((item) => item.id !== postId), lastError: null }));
+          return 'pending';
+        }
+        if (!result || result === 'rejected' || (IS_LIVE_ENVIRONMENT && result === true)) {
           set({ lastError: 'Could not save the post edit. Please try again.' });
           return false;
         }
@@ -2013,8 +2025,10 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
     const requestOwnerId = useAuthStore.getState().user?.id ?? null;
     const key = getFeedRefreshKey(requestOwnerId, stateCode, constituencyId, period);
     const inFlight = feedAutoRefreshInFlight.get(key);
-    if (inFlight) return inFlight;
-    if (Date.now() - (feedRefreshStartedAt.get(key) ?? 0) < FEED_AUTO_REFRESH_COOLDOWN_MS) return;
+    if (lastFeedRefreshKey === key) {
+      if (inFlight) return inFlight;
+      if (Date.now() - lastFeedRefreshAt < FEED_AUTO_REFRESH_COOLDOWN_MS) return;
+    }
 
     const refresh = period === 'recent'
       ? get().refreshFeed(stateCode, constituencyId)
@@ -2189,6 +2203,7 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
       );
       if (
         rows === null ||
+        lastFeedRefreshKey !== getFeedRefreshKey(requestOwnerId, stateCode, constituencyId, period) ||
         get().feedPeriod !== period ||
         (useAuthStore.getState().user?.id ?? null) !== requestOwnerId
       ) {
@@ -2213,6 +2228,10 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
   // ─── Realtime Event Handlers for Live Feed ───
   receiveRealtimePost: (p: any) => {
     if (!p || !p.id) return;
+    if (p.review_status && !['approved', 'previously_published'].includes(p.review_status)) {
+      set((state) => ({ posts: state.posts.filter((item) => item.id !== p.id) }));
+      return;
+    }
     const exists = get().posts.some((existing) => existing.id === p.id);
     if (exists) {
       set((state) => ({
@@ -2238,7 +2257,7 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
           isVerified: p.author_is_verified ?? p.author_verified ?? false,
           avatarUrl: p.author_avatar_url,
         },
-        stateCode: p.state_code ?? 'TS',
+        stateCode: p.state_code ?? 'NATIONAL',
         constituencyId: p.constituency_id,
         constituencyName: p.constituency_name,
         content: p.content,
@@ -2330,8 +2349,16 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
     }));
   },
 
-  reconcilePostSync: (clientToken: string, status: SyncStatus, serverId?: string | null, poll?: Post['poll']) => {
+  reconcilePostSync: (clientToken: string, status: SyncStatus, serverId?: string | null, poll?: Post['poll'], reviewStatus?: PostReviewStatus) => {
     const post = get().posts.find((item) => item.clientToken === clientToken || item.id === clientToken);
+    // Only server reads populate the public feed after moderation.
+    if (IS_LIVE_ENVIRONMENT || reviewStatus === 'pending' || reviewStatus === 'rejected') {
+      set((state) => ({ posts: state.posts.filter((item) =>
+        item.clientToken !== clientToken && item.id !== clientToken &&
+        !(serverId && item.id === serverId && (reviewStatus === 'pending' || reviewStatus === 'rejected')),
+      ) }));
+      return;
+    }
     const shouldRecordConfirmedPost = status === 'SYNCED' && post?.syncStatus !== 'SYNCED';
     set((state) => ({
       posts: state.posts.map((p) => {
@@ -2432,6 +2459,13 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
   },
 
   retryPost: async (clientToken: string) => {
+    if (IS_LIVE_ENVIRONMENT) {
+      const saved = getPendingOps().find((op) => op.type === 'compose_post' && op.clientToken === clientToken);
+      const userId = useAuthStore.getState().user?.id;
+      if (!saved || !userId || saved.payload.authorId !== userId) return false;
+      if (!isOnline()) return true;
+      return retryFailedOp(clientToken);
+    }
     const post = get().posts.find((item) => item.clientToken === clientToken || item.id === clientToken);
     if (!post) return false;
     const userId = useAuthStore.getState().user?.id;
@@ -2473,7 +2507,7 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
       await enqueue('compose_post', {
         content: post.content,
         type: post.type,
-        stateCode: post.stateCode,
+        stateCode: post.stateCode === 'NATIONAL' ? 'IN' : post.stateCode,
         authorId: userId,
         hashtags: post.hashtags ?? [],
         constituencyId: post.constituencyId,

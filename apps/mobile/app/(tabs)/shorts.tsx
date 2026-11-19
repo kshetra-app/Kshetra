@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { PoliticalShort } from '../../data/politicalShortsData';
 import { formatCount, formatDuration } from '../../data/politicalShortsData';
 import ShortsPlayerModal from '../../components/ShortsPlayerModal';
-import UploadShortModal from '../../components/UploadShortModal';
+import ComposeSheet from '../../components/ComposeSheet';
 import { usePoliticalShortsStore } from '../../stores/politicalShorts';
 import { useActiveStateStore } from '../../stores/activeState';
 import { useMyConstituencyStore } from '../../stores/myConstituency';
@@ -218,7 +218,7 @@ export default function ShortsScreen({ hideHeader = false, searchQuery = '' }: S
         />
       )}
       {uploadVisible && (
-        <UploadShortModal visible={uploadVisible} onClose={() => setUploadVisible(false)} />
+        <ComposeSheet initialKind="short" visible={uploadVisible} onClose={() => setUploadVisible(false)} />
       )}
     </View>
   );
@@ -233,10 +233,10 @@ function ShortCard({ item, width, height, onPress }: { item: PoliticalShort; wid
       <View style={[StyleSheet.absoluteFill, { backgroundColor: item.gradientColors[0], borderRadius: 16 }]}>
         <View style={[StyleSheet.absoluteFill, { backgroundColor: item.gradientColors[1], opacity: 0.45, borderRadius: 16 }]} />
       </View>
-      <View style={styles.durationBadge}>
+      {item.duration > 0 && <View style={styles.durationBadge}>
         <Ionicons name="time-outline" size={10} color="#FFFFFF" />
         <Text style={styles.durationText}>{formatDuration(item.duration)}</Text>
-      </View>
+      </View>}
       <View style={[styles.visibilityDot, { backgroundColor: visibilityColor }]} />
       <View style={styles.playIconWrap}>
         <View style={styles.playIcon}>

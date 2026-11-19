@@ -244,6 +244,10 @@ const en =  {
     "demoDisclaimer": "Source: Census 2011 · ECI 2023 voter rolls"
   },
   "feed": {
+    "postReviewPending": "Submitted for review. Your post will appear after approval.",
+    "postReviewRejected": "This post was declined during review.",
+    "postQueuedTitle": "Post queued",
+    "postQueuedBody": "Your post will be sent for review when you are back online.",
     "votes": "votes",
     "pollClosed": "Poll closed",
     "voted": "Voted",
@@ -2668,6 +2672,7 @@ const en =  {
     "alertShareMessage": "Share link for \"{{title}}\" copied to clipboard."
   },
   "uploadShort": {
+    "confirmRights": "I have the right to share this video and agree to the community rules.",
     "title": "Upload Political Short",
     "creatorVerification": "Creator Verification Required",
     "verifyBullet1": "One-time identity verification (KYC/Aadhaar & Selfie check).",
@@ -2697,7 +2702,7 @@ const en =  {
     "alertTermsRequired": "Please accept the terms to upload.",
     "alertConstituencyRequired": "Your constituency must be verified before uploading.",
     "alertSuccessTitle": "Upload Successful",
-    "alertSuccessMessage": "Your political short is now live in your constituency feed."
+    "alertSuccessMessage": "Your short was submitted for review. It will appear in the feed after approval."
   },
   "moduleDetail": {
     "keyTakeaways": "Key Takeaways",

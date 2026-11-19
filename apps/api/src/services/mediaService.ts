@@ -13,8 +13,6 @@ import type {
   NewsArticleCreateRequest,
   NewsFeedQueryRequest,
   PoliticalContextDTO,
-  ShortsVideoCreateRequest,
-  ShortsVideoDTO,
   ShortsAnalyticsEventRequest,
   ShortsAnalyticsSummaryDTO,
   NotificationSubscriptionRequest,
@@ -29,7 +27,6 @@ export class MediaService {
   // In-memory runtime fallbacks for test isolation & staging resilience
   private static mockResponses = new Map<string, RepresentativeCivicResponseDTO[]>(); // issueId -> responses
   private static mockNews = new Map<string, PoliticalNewsArticleDTO>();
-  private static mockShorts = new Map<string, ShortsVideoDTO>();
   private static mockShortsAnalytics = new Map<string, ShortsAnalyticsEventRequest[]>(); // shortId -> events
   private static mockNotificationSubs = new Map<string, NotificationSubscriptionDTO>(); // "userId:constituencyId:topic" -> sub
   private static mockNotificationDispatches = new Map<
@@ -42,7 +39,6 @@ export class MediaService {
   static resetMockState() {
     this.mockResponses.clear();
     this.mockNews.clear();
-    this.mockShorts.clear();
     this.mockShortsAnalytics.clear();
     this.mockNotificationSubs.clear();
     this.mockNotificationDispatches.clear();
@@ -261,93 +257,9 @@ export class MediaService {
 
   // ─── 3. SHORTS PIPELINE, VIEWER & ANALYTICS (JOB 041, 042, 043) ───
 
-  static async createShort(
-    creatorId: string,
-    req: ShortsVideoCreateRequest,
-  ): Promise<ShortsVideoDTO> {
-    if (!req.title || req.title.trim().length < 3) {
-      throw new Error('INVALID_TITLE: Short title must be at least 3 characters');
-    }
-    if (!req.videoUrl) {
-      throw new Error('VIDEO_URL_REQUIRED');
-    }
-    if (!req.constituencyId) {
-      throw new Error('CONSTITUENCY_BINDING_REQUIRED: Shorts must be bound to a constituency');
-    }
-    if (req.durationSeconds < 5 || req.durationSeconds > 60) {
-      throw new Error('INVALID_DURATION: Video duration must be between 5 and 60 seconds');
-    }
-
-    const id = `short-${crypto.randomUUID()}`;
-    const now = new Date().toISOString();
-
-    const short: ShortsVideoDTO = {
-      id,
-      creatorId,
-      title: req.title.trim(),
-      description: req.description?.trim(),
-      videoUrl: req.videoUrl.trim(),
-      thumbnailUrl: req.thumbnailUrl || `${req.videoUrl}.thumb.jpg`,
-      durationSeconds: req.durationSeconds,
-      constituencyId: req.constituencyId,
-      stateCode: req.stateCode || 'TG',
-      candidateId: req.candidateId,
-      hashtags: req.hashtags || ['#CivicUpdate', '#KshetraShorts'],
-      viewCount: 0,
-      likeCount: 0,
-      commentCount: 0,
-      shareCount: 0,
-      createdAt: now,
-    };
-
-    if (isSupabaseConfigured) {
-      try {
-        await supabase.from('political_shorts').insert({
-          id: short.id,
-          creator_id: short.creatorId,
-          title: short.title,
-          description: short.description || null,
-          video_url: short.videoUrl,
-          thumbnail_url: short.thumbnailUrl,
-          duration_seconds: short.durationSeconds,
-          constituency_id: short.constituencyId,
-          state_code: short.stateCode,
-          candidate_id: short.candidateId || null,
-          hashtags: short.hashtags,
-          view_count: 0,
-          like_count: 0,
-          comment_count: 0,
-          share_count: 0,
-          created_at: now,
-        });
-      } catch {}
-    }
-
-    this.mockShorts.set(short.id, short);
-    return short;
-  }
-
-  static async getShortsFeed(
-    constituencyId?: string,
-    limit: number = 10,
-  ): Promise<ShortsVideoDTO[]> {
-    let list = Array.from(this.mockShorts.values());
-    if (constituencyId) {
-      list = list.filter((s) => s.constituencyId === constituencyId);
-    }
-    list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    return list.slice(0, limit);
-  }
-
   static async recordShortsAnalytics(
     event: ShortsAnalyticsEventRequest,
   ): Promise<{ success: boolean }> {
-    const short = this.mockShorts.get(event.shortId);
-    if (short) {
-      short.viewCount += 1;
-      if (event.shared) short.shareCount += 1;
-    }
-
     const events = this.mockShortsAnalytics.get(event.shortId) || [];
     events.push(event);
     this.mockShortsAnalytics.set(event.shortId, events);

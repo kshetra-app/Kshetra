@@ -1,3 +1,4 @@
+import AttachmentToolbar from './AttachmentToolbar';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -282,20 +283,7 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
                 );
               })}
               {mediaUris.length < MAX_MEDIA && (
-                <>
-                  <Pressable style={styles.mediaAddButton} onPress={pickFromGallery}>
-                    <Ionicons name="images" size={22} color="#4F8EF7" />
-                    <Text style={styles.mediaAddText}>{t('reportIssueSheet.gallery', { defaultValue: 'Gallery' })}</Text>
-                  </Pressable>
-                  <Pressable style={styles.mediaAddButton} onPress={takePhoto}>
-                    <Ionicons name="camera" size={22} color="#10B981" />
-                    <Text style={styles.mediaAddText}>{t('reportIssueSheet.camera', { defaultValue: 'Camera' })}</Text>
-                  </Pressable>
-                  <Pressable style={styles.mediaAddButton} onPress={recordVideo}>
-                    <Ionicons name="videocam" size={22} color="#EF4444" />
-                    <Text style={styles.mediaAddText}>Video</Text>
-                  </Pressable>
-                </>
+                <AttachmentToolbar gallery={pickFromGallery} photo={takePhoto} video={recordVideo} />
               )}
             </View>
             {mediaUris.length > 0 && (

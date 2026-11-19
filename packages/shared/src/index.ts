@@ -15,3 +15,5 @@ export * from './legacySyntheticRecords';
 export * from './contracts';
 export * from './i18n/indic-transliterator';
 export * from './i18n/domain-dictionary';
+
+export { getYouTubeVideoId } from './youtube';

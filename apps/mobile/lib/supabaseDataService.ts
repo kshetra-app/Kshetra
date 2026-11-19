@@ -19,7 +19,7 @@ import { apiClient } from './api';
 import { ApiNetworkError, ApiServerError, ApiTimeoutError } from './api/errors';
 import type { ShortCommentDTO, ShortCommentsResponseDTO } from './api/endpoints/shorts';
 import type { ChallengeParticipation, CivicBadge, CommunityChallenge } from './aspirantTypes';
-import type { Poll } from './feedTypes';
+import type { Poll, PostReviewStatus } from './feedTypes';
 import type { ContributorKYCStatusRecord } from './contentAccountabilityTypes';
 import { CONTENT_PAGE_SIZE, getContentArchiveCutoff, type ContentPeriod } from '@kshetra/shared';
 import { LEGACY_SYNTHETIC_POSTS_FILTER } from './legacySyntheticPosts';
@@ -260,6 +260,7 @@ export async function removeReaction(postId: string, _userId?: string): Promise<
 }
 
 export async function composePost(post: {
+  media?: import('./feedAttachments').SubmittedAttachment[];
   content: string;
   type: string;
   stateCode: string;
@@ -270,14 +271,15 @@ export async function composePost(post: {
   language?: string;
   pollOptions?: string[];
   clientToken?: string;
-}): Promise<{ id: string | null; success: boolean; poll?: Poll | null; retryable?: boolean; error?: string }> {
+}): Promise<{ id: string | null; success: boolean; reviewStatus?: PostReviewStatus; poll?: Poll | null; retryable?: boolean; error?: string }> {
   if (!guard()) return { id: null, success: false, poll: null, error: 'Post service is unavailable.' };
   try {
     addBreadcrumb('feed', 'compose_post', { type: post.type });
     const res = await apiClient.feed.composePost({
+      media: post.media,
       content: post.content,
       type: post.type as any,
-      stateCode: post.stateCode,
+      stateCode: post.stateCode === 'NATIONAL' ? 'IN' : post.stateCode,
       authorId: post.authorId,
       constituencyId: post.constituencyId,
       parentId: post.parentId,
@@ -296,7 +298,7 @@ export async function composePost(post: {
         }
       : null;
     const pollWasPersisted = post.type !== 'poll' || Boolean(poll?.id && poll.options.length >= 2);
-    return { id: res.id ?? null, success: res.success && pollWasPersisted, poll };
+    return { id: res.id ?? null, success: res.success && pollWasPersisted, reviewStatus: res.post?.review_status, poll };
   } catch (err) {
     captureException(err as Error, { op: 'compose_post' });
     return {
@@ -309,12 +311,12 @@ export async function composePost(post: {
   }
 }
 
-export async function editPost(postId: string, content: string, _userId?: string): Promise<boolean> {
+export async function editPost(postId: string, content: string, _userId?: string): Promise<boolean | PostReviewStatus> {
   if (!guard()) return false;
   try {
     addBreadcrumb('feed', 'edit_post', { postId });
     const res = await apiClient.feed.editPost(postId, content);
-    return res.success;
+    return res.success && (res.reviewStatus ?? true);
   } catch (err) {
     captureException(err as Error, { op: 'edit_post', postId });
     return false;
@@ -490,7 +492,7 @@ export async function uploadShort(short: {
   stateName?: string;
   constituencyId?: string;
   districtName?: string;
-  duration: number;
+  duration?: number;
   hashtags?: string[];
   gradientColors?: string[];
   stateAccent?: string;
@@ -1027,11 +1029,13 @@ export async function fetchBlendedFeed(
 
     let query = supabase
       .from('posts')
-      .select('*')
+      .select('id,author_id,constituency_id,state_code,content,type,parent_id,reply_count,reaction_count,is_pinned,is_deleted,language,created_at,updated_at,post_media(id,media_type,url,alt_text,sort_order),polls(id,question,total_votes,is_closed,expires_at,poll_options(id,label,vote_count,sort_order))')
       .eq('is_deleted', false)
       .not('id', 'in', LEGACY_SYNTHETIC_POSTS_FILTER);
 
-    if (followedIds.length > 0 && constituencyId) {
+    if (stateCode === 'IN') {
+      query = query.is('state_code', null);
+    } else if (followedIds.length > 0 && constituencyId) {
       const orFilter = `author_id.in.(${followedIds.join(',')}),constituency_id.eq.${constituencyId}`;
       query = query.or(orFilter);
     } else if (followedIds.length > 0) {
@@ -1054,7 +1058,44 @@ export async function fetchBlendedFeed(
       .range(offset, offset + limit - 1);
 
     if (error) throw error;
-    return data;
+    if (!data?.length) return [];
+    const authors = [...new Set(data.map((post) => post.author_id))];
+    const pollIds = data.flatMap((post) => {
+      const poll = Array.isArray(post.polls) ? post.polls[0] : post.polls;
+      return poll?.id ? [poll.id] : [];
+    });
+    const paths = [...new Set(data.flatMap((post) => post.post_media.filter((m) => m.media_type !== 'link' && !/^https?:\/\//i.test(m.url)).map((m) => m.url as string)))];
+    const [profiles, votes, signed] = await Promise.all([
+      supabase.from('user_profiles').select('user_id,display_name,avatar_url').in('user_id', authors),
+      viewerId && pollIds.length
+        ? supabase.from('poll_votes').select('poll_id,option_id').eq('user_id', viewerId).in('poll_id', pollIds)
+        : Promise.resolve({ data: [] }),
+      paths.length ? supabase.storage.from('post-media').createSignedUrls(paths, 600) : Promise.resolve({ data: [] }),
+    ]);
+    const authorsById = new Map((profiles.data ?? []).map((profile) => [profile.user_id, profile]));
+    const voteByPoll = new Map((votes.data ?? []).map((vote) => [vote.poll_id, vote.option_id]));
+    const signedByPath = new Map((signed.data ?? []).map((item) => [item.path, item.signedUrl]));
+    return data.map((post) => {
+      const profile = authorsById.get(post.author_id);
+      const poll = Array.isArray(post.polls) ? post.polls[0] : post.polls;
+      return {
+        ...post,
+        author_display_name: profile?.display_name,
+        author_avatar_url: profile?.avatar_url,
+        media: [...post.post_media].sort((a,b) => a.sort_order-b.sort_order).map((m) => ({
+          id: m.id, mediaType: m.media_type, altText: m.alt_text,
+          url: signedByPath.get(m.url) ?? m.url,
+          storagePath: m.media_type !== 'link' && !/^https?:\/\//i.test(m.url) ? m.url : undefined,
+        })),
+        poll: poll && {
+          id: poll.id, question: poll.question, totalVotes: poll.total_votes, isClosed: poll.is_closed,
+          expiresAt: poll.expires_at, userVotedOptionId: voteByPoll.get(poll.id),
+          options: [...poll.poll_options].sort((a, b) => a.sort_order - b.sort_order).map((option) => ({
+            id: option.id, label: option.label, voteCount: option.vote_count, sortOrder: option.sort_order,
+          })),
+        },
+      };
+    });
   } catch (err) {
     captureException(err as Error, { op: 'fetch_blended_feed' });
     return null;

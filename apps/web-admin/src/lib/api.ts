@@ -61,7 +61,70 @@ function parseFlags(payload: unknown): AppFeatureFlags {
   return validated;
 }
 
+export type SubmissionKind = 'post' | 'short';
+export type PublicationDecision = 'approved' | 'rejected';
+export interface ReviewSubmission {
+  id: string;
+  updated_at: string;
+  content?: string;
+  type?: string;
+  state_code: string | null;
+  constituency_id?: string;
+  title?: string;
+  description?: string;
+  video_url?: string;
+  polls?: { question: string; poll_options: { label: string; sort_order: number }[] } | null;
+  post_media?: {
+    id: string;
+    media_type: string;
+    alt_text: string | null;
+    sort_order: number;
+    reviewUrl: string | null;
+  }[];
+  post_hashtags?: { hashtags: { tag: string } }[];
+}
 export const api = {
+  async getSubmissions(
+    kind: SubmissionKind,
+    offset = 0,
+  ): Promise<{ records: ReviewSubmission[]; hasMore: boolean }> {
+    const res = await fetch(
+      `${API_BASE_URL}/api/v1/admin/content-submissions/${kind}?limit=20&offset=${offset}`,
+      { headers: await authenticatedHeaders() },
+    );
+    if (!res.ok) throw new Error(`Could not load submissions (${res.status}).`);
+    const body = await res.json();
+    if (
+      body.success !== true ||
+      !Array.isArray(body.data?.records) ||
+      typeof body.data?.hasMore !== 'boolean'
+    )
+      throw new Error('The queue response is incomplete.');
+    return body.data;
+  },
+  async reviewSubmission(
+    kind: SubmissionKind,
+    item: ReviewSubmission,
+    decision: PublicationDecision,
+  ) {
+    const res = await fetch(
+      `${API_BASE_URL}/api/v1/admin/content-submissions/${kind}/${encodeURIComponent(item.id)}/review`,
+      {
+        method: 'POST',
+        headers: await authenticatedHeaders(),
+        body: JSON.stringify({ decision, expectedUpdatedAt: item.updated_at }),
+      },
+    );
+    if (res.status === 409)
+      throw new Error('The submission changed. Refresh the queue and review it again.');
+    if (res.status === 403)
+      throw new Error('Another authorized reviewer must review this submission.');
+    if (!res.ok) throw new Error(`Could not save the decision (${res.status}).`);
+    const body = await res.json();
+    const expected = kind === 'short' && decision === 'rejected' ? 'removed' : decision;
+    if (body.success !== true || body.data?.id !== item.id || body.data.status !== expected)
+      throw new Error('The server did not confirm the decision.');
+  },
   async getHealth(): Promise<HealthResponse> {
     const res = await fetch(`${API_BASE_URL}/api/health`);
     if (!res.ok) throw new Error(`Healthcheck failed with status ${res.status}`);
@@ -79,14 +142,17 @@ export const api = {
     const res = await fetch(`${API_BASE_URL}/api/v1/dashboard/metrics`, { headers });
     if (!res.ok) throw new Error(`Product analytics unavailable (${res.status})`);
     const body: unknown = await res.json();
-    const payload = body && typeof body === 'object' && 'data' in body
-      ? (body as { data?: unknown }).data
-      : body;
+    const payload =
+      body && typeof body === 'object' && 'data' in body ? (body as { data?: unknown }).data : body;
     if (
-      !payload || typeof payload !== 'object' ||
-      !('activation' in payload) || !('retention' in payload) ||
-      !('engagement' in payload) || !('geographyDensity' in payload) ||
-      !('revenue' in payload) || !('dataQuality' in payload) ||
+      !payload ||
+      typeof payload !== 'object' ||
+      !('activation' in payload) ||
+      !('retention' in payload) ||
+      !('engagement' in payload) ||
+      !('geographyDensity' in payload) ||
+      !('revenue' in payload) ||
+      !('dataQuality' in payload) ||
       !('generatedAt' in payload)
     ) {
       throw new Error('Product analytics response is incomplete.');
@@ -103,7 +169,12 @@ export const api = {
     });
     if (!res.ok) throw new Error(`Failed to update flags: ${res.status}`);
     const payload: unknown = await res.json();
-    if (!payload || typeof payload !== 'object' || !('status' in payload) || payload.status !== 'updated') {
+    if (
+      !payload ||
+      typeof payload !== 'object' ||
+      !('status' in payload) ||
+      payload.status !== 'updated'
+    ) {
       throw new Error('The API did not confirm that the feature flag update was saved.');
     }
     const parsedFlags = parseFlags(payload);
@@ -128,26 +199,38 @@ export const api = {
     return res.json();
   },
 
-  async getDelimitationProjections(model: 'constitutional_proportional' | 'expansion_safe'): Promise<DelimitationProjectionsDTO> {
-    const res = await fetch(`${API_BASE_URL}/api/v1/delimitation/projections?model=${encodeURIComponent(model)}`);
+  async getDelimitationProjections(
+    model: 'constitutional_proportional' | 'expansion_safe',
+  ): Promise<DelimitationProjectionsDTO> {
+    const res = await fetch(
+      `${API_BASE_URL}/api/v1/delimitation/projections?model=${encodeURIComponent(model)}`,
+    );
     if (!res.ok) throw new Error(`Failed to fetch delimitation projections: ${res.status}`);
 
     const body: unknown = await res.json();
-    const result = body && typeof body === 'object' && 'data' in body
-      ? (body as { data?: unknown }).data
-      : body;
+    const result =
+      body && typeof body === 'object' && 'data' in body ? (body as { data?: unknown }).data : body;
     if (!result || typeof result !== 'object') {
       throw new Error('The delimitation API returned an incomplete projection response.');
     }
     const payload = result as Partial<DelimitationProjectionsDTO>;
-    const validProjectionRows = Array.isArray(payload.projections) && payload.projections.every((row) =>
-      row && typeof row.stateCode === 'string' && typeof row.stateName === 'string' &&
-      typeof row.population === 'number' && typeof row.currentSeats === 'number' &&
-      typeof row.projectedSeats === 'number' && typeof row.seatChange === 'number' &&
-      typeof row.dataStatus === 'string',
-    );
+    const validProjectionRows =
+      Array.isArray(payload.projections) &&
+      payload.projections.every(
+        (row) =>
+          row &&
+          typeof row.stateCode === 'string' &&
+          typeof row.stateName === 'string' &&
+          typeof row.population === 'number' &&
+          typeof row.currentSeats === 'number' &&
+          typeof row.projectedSeats === 'number' &&
+          typeof row.seatChange === 'number' &&
+          typeof row.dataStatus === 'string',
+      );
     if (
-      !validProjectionRows || !payload.summary || !payload.provenance ||
+      !validProjectionRows ||
+      !payload.summary ||
+      !payload.provenance ||
       !Array.isArray(payload.provenance.inputDatasetVersions)
     ) {
       throw new Error('The delimitation API returned an incomplete projection response.');
@@ -163,11 +246,14 @@ export const api = {
 
   async updateCivicIssueStatus(id: string, status: string, note?: string) {
     const headers = await authenticatedHeaders();
-    const res = await fetch(`${API_BASE_URL}/api/v1/civic/issues/${encodeURIComponent(id)}/status`, {
-      method: 'PATCH',
-      headers,
-      body: JSON.stringify({ status, note }),
-    });
+    const res = await fetch(
+      `${API_BASE_URL}/api/v1/civic/issues/${encodeURIComponent(id)}/status`,
+      {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({ status, note }),
+      },
+    );
     if (!res.ok) throw new Error(`Civic issue update failed: ${res.status}`);
     return res.json();
   },
@@ -185,17 +271,27 @@ export const api = {
     if (!res.ok) throw new Error(`Moderation queue count unavailable: ${res.status}`);
     const body: unknown = await res.json();
     if (
-      !body || typeof body !== 'object' || !('success' in body) || body.success !== true ||
-      !('data' in body) || !body.data || typeof body.data !== 'object' ||
-      !('totalPending' in body.data) || typeof body.data.totalPending !== 'number' ||
-      !Number.isInteger(body.data.totalPending) || body.data.totalPending < 0
+      !body ||
+      typeof body !== 'object' ||
+      !('success' in body) ||
+      body.success !== true ||
+      !('data' in body) ||
+      !body.data ||
+      typeof body.data !== 'object' ||
+      !('totalPending' in body.data) ||
+      typeof body.data.totalPending !== 'number' ||
+      !Number.isInteger(body.data.totalPending) ||
+      body.data.totalPending < 0
     ) {
       throw new Error('Moderation queue count response is invalid.');
     }
     return body.data.totalPending;
   },
 
-  async getContributorVerificationQueue(limit: number, offset: number): Promise<{
+  async getContributorVerificationQueue(
+    limit: number,
+    offset: number,
+  ): Promise<{
     records: ContributorVerificationQueueItem[];
     hasMore: boolean;
     limit: number;
@@ -204,26 +300,36 @@ export const api = {
   }> {
     const headers = await authenticatedHeaders();
     const params = new URLSearchParams({ limit: String(limit), offset: String(offset) });
-    const res = await fetch(`${API_BASE_URL}/api/v1/admin/contributor-verifications?${params}`, { headers });
+    const res = await fetch(`${API_BASE_URL}/api/v1/admin/contributor-verifications?${params}`, {
+      headers,
+    });
     if (res.status === 401) {
       throw new Error('Please sign in with a Poligram app account for this environment.');
     }
     if (res.status === 403) {
-      throw new Error('Your Poligram account is signed in, but contributor-review access has not been assigned.');
+      throw new Error(
+        'Your Poligram account is signed in, but contributor-review access has not been assigned.',
+      );
     }
     if (!res.ok) throw new Error(`Contributor verification queue unavailable (${res.status}).`);
-    const body = await res.json() as { success?: boolean; data?: unknown };
-    const data = body.data as Partial<{
-      records: ContributorVerificationQueueItem[];
-      hasMore: boolean;
-      limit: number;
-      offset: number;
-      signedUrlExpiresInSeconds: number;
-    }> | undefined;
+    const body = (await res.json()) as { success?: boolean; data?: unknown };
+    const data = body.data as
+      | Partial<{
+          records: ContributorVerificationQueueItem[];
+          hasMore: boolean;
+          limit: number;
+          offset: number;
+          signedUrlExpiresInSeconds: number;
+        }>
+      | undefined;
     if (
-      body.success !== true || !data || !Array.isArray(data.records) ||
-      typeof data.hasMore !== 'boolean' || typeof data.limit !== 'number' ||
-      typeof data.offset !== 'number' || typeof data.signedUrlExpiresInSeconds !== 'number'
+      body.success !== true ||
+      !data ||
+      !Array.isArray(data.records) ||
+      typeof data.hasMore !== 'boolean' ||
+      typeof data.limit !== 'number' ||
+      typeof data.offset !== 'number' ||
+      typeof data.signedUrlExpiresInSeconds !== 'number'
     ) {
       throw new Error('The contributor verification queue returned incomplete data.');
     }
@@ -242,17 +348,25 @@ export const api = {
     rejectionReason?: string,
   ): Promise<{ id: string; userId: string; status: 'verified' | 'rejected'; updatedAt: string }> {
     const headers = await authenticatedHeaders();
-    const res = await fetch(`${API_BASE_URL}/api/v1/admin/contributor-verifications/${encodeURIComponent(recordId)}/review`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({ decision, ...(rejectionReason ? { rejectionReason } : {}) }),
-    });
+    const res = await fetch(
+      `${API_BASE_URL}/api/v1/admin/contributor-verifications/${encodeURIComponent(recordId)}/review`,
+      {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ decision, ...(rejectionReason ? { rejectionReason } : {}) }),
+      },
+    );
     if (!res.ok) throw new Error(`Contributor review decision was not saved (${res.status}).`);
-    const body = await res.json() as { success?: boolean; data?: unknown };
-    const data = body.data as Partial<{ id: string; userId: string; status: string; updatedAt: string }> | undefined;
+    const body = (await res.json()) as { success?: boolean; data?: unknown };
+    const data = body.data as
+      Partial<{ id: string; userId: string; status: string; updatedAt: string }> | undefined;
     if (
-      body.success !== true || !data || data.id !== recordId ||
-      data.status !== decision || typeof data.userId !== 'string' || typeof data.updatedAt !== 'string'
+      body.success !== true ||
+      !data ||
+      data.id !== recordId ||
+      data.status !== decision ||
+      typeof data.userId !== 'string' ||
+      typeof data.updatedAt !== 'string'
     ) {
       throw new Error('The contributor review API did not confirm the decision.');
     }
@@ -274,7 +388,9 @@ export const api = {
   }) {
     const headers = await authenticatedHeaders();
     if (!supabase) {
-      throw new Error('Secure admin authentication is not configured for this web-admin environment.');
+      throw new Error(
+        'Secure admin authentication is not configured for this web-admin environment.',
+      );
     }
     const { data } = await supabase.auth.getSession();
     const moderatorId = data.session?.user.id;
@@ -287,5 +403,4 @@ export const api = {
     if (!res.ok) throw new Error(`Moderation action failed: ${res.status}`);
     return res.json();
   },
-
 };

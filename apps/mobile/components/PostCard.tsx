@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
-import * as Linking from 'expo-linking';
+import FeedAttachment from './FeedAttachment';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../lib/theme';
 import { useFeedStore } from '../stores/feed';
@@ -27,9 +27,7 @@ const TYPE_CONFIG: Record<string, { icon: string; color: string; tKey: string }>
   poll: { icon: 'stats-chart', color: '#C5A059', tKey: 'postCard.poll' },
 };
 
-function isVideoMedia(m: { mediaType: string; url: string }): boolean {
-  return m.mediaType === 'video' || /\.(mp4|mov|m4v|webm|avi|mkv|3gp)(\?.*)?$/i.test(m.url);
-}
+
 
 interface PostCardProps {
   post: Post;
@@ -228,38 +226,7 @@ export default function PostCard({
         {/* Attached Media */}
         {displayPost.media && displayPost.media.length > 0 && (
           <View style={styles.mediaContainer}>
-            {displayPost.media.map((m) => {
-              if (m.mediaType === 'link') {
-                return (
-                  <Pressable
-                    key={m.id}
-                    style={[styles.linkPill, { backgroundColor: colors.surfaceElevated || colors.surface, borderColor: colors.border }]}
-                    onPress={() => {
-                      try {
-                        Linking.openURL(m.url);
-                      } catch (_) {}
-                    }}
-                    hitSlop={6}
-                  >
-                    <Ionicons name="link" size={14} color={colors.primary} />
-                    <Text style={[styles.linkPillText, { color: colors.primary }]} numberOfLines={1}>
-                      {m.altText || m.url}
-                    </Text>
-                  </Pressable>
-                );
-              }
-              const isVideo = isVideoMedia(m);
-              return (
-                <View key={m.id} style={styles.mediaPreviewWrap}>
-                  <Image source={{ uri: m.url }} style={styles.mediaPreviewImage} contentFit="cover" />
-                  {isVideo && (
-                    <View style={styles.videoPlayOverlay}>
-                      <Ionicons name="play-circle" size={36} color="#FFFFFF" />
-                    </View>
-                  )}
-                </View>
-              );
-            })}
+            {displayPost.media.map((item) => <FeedAttachment key={item.id} item={item} />)}
           </View>
         )}
 

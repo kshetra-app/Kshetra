@@ -15,10 +15,12 @@
  * - DELETE /api/v1/feed/comments/:id/react
  */
 
+import type { PostReviewStatus } from '../../feedTypes';
 import type { ApiClient } from '../client';
 import { ApiValidationError } from '../errors';
 
 export interface ComposePostRequestDTO {
+  media?: import('../../feedAttachments').SubmittedAttachment[];
   content: string;
   type?: 'discussion' | 'news' | 'opinion' | 'question' | 'alert' | 'poll';
   stateCode: string;
@@ -40,7 +42,7 @@ export class FeedEndpoint {
   async composePost(payload: ComposePostRequestDTO): Promise<{
     success: boolean;
     id: string;
-    post?: any;
+    post?: { review_status?: PostReviewStatus };
     poll?: {
       id: string;
       question: string;
@@ -55,7 +57,7 @@ export class FeedEndpoint {
     const res = await this.client.post<{
       success: boolean;
       id: string;
-      post?: any;
+      post?: { review_status?: PostReviewStatus };
       poll?: {
         id: string;
         question: string;
@@ -74,11 +76,11 @@ export class FeedEndpoint {
   /**
    * 2. Edit post
    */
-  async editPost(postId: string, content: string): Promise<{ success: boolean; id: string }> {
+  async editPost(postId: string, content: string): Promise<{ success: boolean; id: string; reviewStatus?: PostReviewStatus }> {
     if (!postId || !content) {
       throw new ApiValidationError('Invalid edit post: postId and content are required');
     }
-    const res = await this.client.patch<{ success: boolean; id: string }>(
+    const res = await this.client.patch<{ success: boolean; id: string; reviewStatus?: PostReviewStatus }>(
       `/api/v1/feed/posts/${encodeURIComponent(postId)}`,
       { content },
       { authPolicy: 'authenticated' },

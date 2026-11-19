@@ -1,3 +1,4 @@
+import { registerContentReviewRoutes } from './contentReview';
 import type { FastifyPluginAsync, FastifyRequest, FastifyReply } from 'fastify';
 import { adminService } from '../services/adminService';
 import { sendApiError } from '../lib/replyHelper';
@@ -20,6 +21,8 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     if (!actor) return;
     request.adminActor = actor;
   });
+
+  await registerContentReviewRoutes(app);
 
   // 1. Users Action
   app.post('/api/v1/admin/users/action', async (request, reply) => {

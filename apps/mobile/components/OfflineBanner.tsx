@@ -9,7 +9,8 @@ import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNetworkStore } from '../lib/networkStatus';
-import { flushQueue, getQueueSize } from '../lib/offlineSync';
+import { useAuthStore } from '../stores/auth';
+import { addSyncListener, flushQueue, getQueueSize } from '../lib/offlineSync';
 
 export default function OfflineBanner() {
   const { t } = useTranslation();
@@ -17,6 +18,19 @@ export default function OfflineBanner() {
   const [pendingCount, setPendingCount] = useState(0);
   const [justReconnected, setJustReconnected] = useState(false);
   const [opacity] = useState(new Animated.Value(0));
+
+  const [reviewMessage, setReviewMessage] = useState<'feed.postReviewPending' | 'feed.postReviewRejected' | null>(null);
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    const unsubscribe = addSyncListener((event) => {
+      if (!event.replayAuthorId || event.replayAuthorId !== useAuthStore.getState().user?.id) return;
+      if (event.reviewStatus !== 'pending' && event.reviewStatus !== 'rejected') return;
+      setReviewMessage(event.reviewStatus === 'pending' ? 'feed.postReviewPending' : 'feed.postReviewRejected');
+      clearTimeout(timer);
+      timer = setTimeout(() => setReviewMessage(null), 6500);
+    });
+    return () => { unsubscribe(); clearTimeout(timer); };
+  }, []);
 
   // Monitor queue size
   useEffect(() => {
@@ -42,13 +56,13 @@ export default function OfflineBanner() {
   // Animate show/hide
   useEffect(() => {
     Animated.timing(opacity, {
-      toValue: !isConnected || justReconnected ? 1 : 0,
+      toValue: !isConnected || justReconnected || reviewMessage ? 1 : 0,
       duration: 300,
       useNativeDriver: true,
     }).start();
-  }, [isConnected, justReconnected, opacity]);
+  }, [isConnected, justReconnected, reviewMessage, opacity]);
 
-  if (isConnected && !justReconnected) return null;
+  if (isConnected && !justReconnected && !reviewMessage) return null;
 
   return (
     <Animated.View
@@ -64,7 +78,7 @@ export default function OfflineBanner() {
         color={justReconnected ? '#10B981' : '#F59E0B'}
       />
       <Text style={[styles.text, justReconnected && styles.textOnline]}>
-        {justReconnected
+        {reviewMessage ? t(reviewMessage) : justReconnected
           ? t('offlineBanner.backOnline')
           : pendingCount > 0
             ? t('offlineBanner.offlinePendingSyncs', { count: pendingCount })

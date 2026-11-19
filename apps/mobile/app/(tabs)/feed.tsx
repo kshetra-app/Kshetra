@@ -19,7 +19,8 @@ import { tapLight } from '../../lib/haptics';
 import { useFeedStore } from '../../stores/feed';
 import { useAuthStore } from '../../stores/auth';
 import { useActiveStateStore } from '../../stores/activeState';
-import { useMyConstituencyStore } from '../../stores/myConstituency';
+import { resolveConstituencyForState, useMyConstituencyStore } from '../../stores/myConstituency';
+import { getUnifiedConstituenciesForState } from '../../lib/stateDataAdapter';
 import PostCard from '../../components/PostCard';
 import PollCard from '../../components/PollCard';
 import { useResponsive } from '../../lib/responsive';
@@ -127,22 +128,22 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
   const stateName = getLocalizedStateName(stateCode, i18n.language, rawStateName);
   const myHome = useMyConstituencyStore((s) => s.home);
 
-  const effectiveConstituencyId = selectedConstituency
-    ? selectedConstituency.id
-    : myHome
-      ? `${stateCode}-AC-${myHome.acNo}`
-      : undefined;
-
-  const effectiveConstituencyName = selectedConstituency
-    ? selectedConstituency.name
-    : myHome?.name;
+  const activeConstituency = useMemo(() => resolveConstituencyForState(
+    stateCode, selectedConstituency, myHome,
+    stateCode === 'IN' ? [] : getUnifiedConstituenciesForState(stateCode),
+  ), [stateCode, selectedConstituency, myHome]);
+  const effectiveConstituencyId = activeConstituency
+    ? `${stateCode}-AC-${activeConstituency.acNo}` : undefined;
+  const effectiveConstituencyName = activeConstituency?.name;
+  const feedState = scopeFilter === 'national' ? 'IN' : stateCode;
+  const feedConstituency = scopeFilter === 'constituency' ? effectiveConstituencyId ?? null : null;
 
   const getContentVisibilityLevel = useContentPromotionStore((s) => s.getContentVisibilityLevel);
 
   useFocusEffect(
     useCallback(() => {
       const refreshCurrentFeed = () => {
-        void refreshFeedIfStale(stateCode, effectiveConstituencyId ?? null, feedPeriod);
+        void refreshFeedIfStale(feedState, feedConstituency, feedPeriod);
       };
       refreshCurrentFeed();
       const appStateSubscription = AppState.addEventListener('change', (nextState) => {
@@ -150,7 +151,7 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
       });
 
       return () => appStateSubscription.remove();
-    }, [effectiveConstituencyId, feedPeriod, refreshFeedIfStale, stateCode]),
+    }, [feedConstituency, feedPeriod, refreshFeedIfStale, feedState]),
   );
 
   useEffect(() => {
@@ -284,17 +285,17 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      await refreshFeed(stateCode, effectiveConstituencyId ?? null, feedPeriod);
+      await refreshFeed(feedState, feedConstituency, feedPeriod);
     } finally {
       setRefreshing(false);
     }
-  }, [effectiveConstituencyId, feedPeriod, refreshFeed, stateCode]);
+  }, [feedConstituency, feedPeriod, refreshFeed, feedState]);
 
   const changeFeedPeriod = (period: ContentPeriod) => {
     if (period === feedPeriod) return;
     tapLight();
     setFeedPeriod(period);
-    void refreshFeed(stateCode, effectiveConstituencyId ?? null, period);
+    void refreshFeed(feedState, feedConstituency, period);
   };
 
   const handleShare = useCallback(async (post: Post) => {
@@ -691,7 +692,7 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
         contentContainerStyle={styles.listContent}
         onEndReached={() => {
           if (feedHasMore && !feedLoadingMore) {
-            void loadMoreFeed(stateCode, effectiveConstituencyId ?? null);
+            void loadMoreFeed(feedState, feedConstituency);
           }
         }}
         onEndReachedThreshold={0.5}

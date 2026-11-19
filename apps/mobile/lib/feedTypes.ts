@@ -6,6 +6,8 @@
  * used by UI components regardless of the data source.
  */
 
+export type PostReviewStatus = 'pending' | 'approved' | 'rejected' | 'previously_published';
+
 export type PostType = 'discussion' | 'news' | 'opinion' | 'question' | 'alert' | 'poll';
 
 export type ReactionType = 'like' | 'insightful' | 'disagree' | 'celebrate';
@@ -39,6 +41,8 @@ export interface PostAuthor {
 }
 
 export interface PostMedia {
+  mimeType?: string;
+  storagePath?: string;
   id: string;
   mediaType: 'image' | 'link' | 'video';
   url: string;

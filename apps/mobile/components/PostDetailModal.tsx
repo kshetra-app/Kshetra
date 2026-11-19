@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import * as Linking from 'expo-linking';
+import FeedAttachment from './FeedAttachment';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../lib/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -35,9 +35,7 @@ import {
   formatLocalizedTimeAgo,
 } from '../lib/seedTranslations';
 
-function isVideoMedia(m: { mediaType: string; url: string }): boolean {
-  return m.mediaType === 'video' || /\.(mp4|mov|m4v|webm|avi|mkv|3gp)(\?.*)?$/i.test(m.url);
-}
+
 
 interface PostDetailModalProps {
   visible: boolean;
@@ -349,47 +347,7 @@ export default function PostDetailModal({
               {/* Media attachments */}
               {post.media && post.media.length > 0 && (
                 <View style={styles.mediaContainer}>
-                  {post.media.map((m) => {
-                    if (m.mediaType === 'link') {
-                      return (
-                        <Pressable
-                          key={m.id}
-                          style={[styles.mediaItem, { backgroundColor: colors.surface, borderColor: colors.border }]}
-                          onPress={() => {
-                            try {
-                              Linking.openURL(m.url);
-                            } catch (_) {}
-                          }}
-                          hitSlop={6}
-                        >
-                          <Ionicons name="link" size={16} color={colors.primary} />
-                          <Text style={[styles.mediaUrl, { color: colors.primary }]} numberOfLines={1}>
-                            {m.altText || m.url}
-                          </Text>
-                        </Pressable>
-                      );
-                    }
-                    const isVideo = isVideoMedia(m);
-                    return (
-                      <Pressable
-                        key={m.id}
-                        style={styles.mediaPreviewWrap}
-                        onPress={() => {
-                          try {
-                            Linking.openURL(m.url);
-                          } catch (_) {}
-                        }}
-                        hitSlop={4}
-                      >
-                        <Image source={{ uri: m.url }} style={styles.mediaPreviewImage} contentFit="cover" />
-                        {isVideo && (
-                          <View style={styles.videoPlayOverlay}>
-                            <Ionicons name="play-circle" size={40} color="#FFFFFF" />
-                          </View>
-                        )}
-                      </Pressable>
-                    );
-                  })}
+                  {post.media.map((item) => <FeedAttachment key={item.id} item={item} />)}
                 </View>
               )}
 

@@ -15,7 +15,8 @@
 
 import { mmkv, isMMKVAvailable, mmkvStorage } from './storage';
 import { isOnline } from './networkStatus';
-import type { Poll } from './feedTypes';
+import { IS_LIVE_ENVIRONMENT } from './environment';
+import type { Poll, PostReviewStatus } from './feedTypes';
 
 function readQueue(): string | null {
   if (isMMKVAvailable && mmkv) return mmkv.getString(QUEUE_KEY) ?? null;
@@ -70,6 +71,8 @@ export interface SyncEvent {
   status: SyncStatus;
   serverId?: string | null;
   poll?: Poll;
+  reviewStatus?: PostReviewStatus;
+  replayAuthorId?: string;
   error?: string;
 }
 
@@ -102,7 +105,7 @@ function defaultStoreReconciler(event: SyncEvent): void {
   try {
     if (event.opType === 'compose_post') {
       const { useFeedStore } = require('../stores/feed');
-      useFeedStore.getState().reconcilePostSync?.(event.clientToken, event.status, event.serverId, event.poll);
+      useFeedStore.getState().reconcilePostSync?.(event.clientToken, event.status, event.serverId, event.poll, event.reviewStatus);
     } else if (event.opType === 'report_issue') {
       const { useCivicStore } = require('../stores/civic');
       useCivicStore.getState().reconcileIssueSync?.(event.clientToken, event.status, event.serverId);
@@ -215,7 +218,7 @@ export async function enqueue(
   type: SyncOpType,
   payload: Record<string, unknown>,
   clientToken?: string,
-): Promise<void> {
+): Promise<SyncEvent> {
   const token = clientToken ?? (payload.clientToken as string) ?? `sync-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
   const op: SyncOperation = {
     id: `sync-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
@@ -230,14 +233,16 @@ export async function enqueue(
     notifySyncStateChange({ opType: type, clientToken: token, status: 'SYNCING' });
     const result = await executeOp(op);
     if (result.success) {
-      notifySyncStateChange({
+      const event: SyncEvent = {
         opType: type,
         clientToken: token,
         status: 'SYNCED',
         serverId: result.id,
         ...(result.poll ? { poll: result.poll } : {}),
-      });
-      return; // Done — no need to queue
+        reviewStatus: result.reviewStatus,
+      };
+      notifySyncStateChange(event);
+      return event;
     }
   }
 
@@ -246,12 +251,22 @@ export async function enqueue(
   const queue = getPendingOps();
   queue.push(op);
   writeQueue(JSON.stringify(queue));
+  return { opType: type, clientToken: token, status: 'QUEUED' };
 }
 
 /**
  * Attempt to flush the entire queue. Called when connectivity returns.
  */
-export async function flushQueue(): Promise<{ processed: number; failed: number }> {
+let activeFlush: Promise<{ processed: number; failed: number }> | null = null;
+
+export function flushQueue(): Promise<{ processed: number; failed: number }> {
+  if (!activeFlush) {
+    activeFlush = drainQueue().finally(() => { activeFlush = null; });
+  }
+  return activeFlush;
+}
+
+async function drainQueue(): Promise<{ processed: number; failed: number }> {
   const queue = getPendingOps();
   if (queue.length === 0) return { processed: 0, failed: 0 };
   if (!isOnline()) return { processed: 0, failed: queue.length };
@@ -261,6 +276,13 @@ export async function flushQueue(): Promise<{ processed: number; failed: number 
   const remaining: SyncOperation[] = [];
 
   for (const op of queue) {
+    if (IS_LIVE_ENVIRONMENT && op.type === 'compose_post') {
+      const { useAuthStore } = require('../stores/auth');
+      if (!op.payload.authorId || op.payload.authorId !== useAuthStore.getState().user?.id) {
+        remaining.push(op);
+        continue;
+      }
+    }
     const clientToken = op.clientToken ?? (op.payload?.clientToken as string) ?? op.id;
     notifySyncStateChange({
       opType: op.type,
@@ -277,6 +299,8 @@ export async function flushQueue(): Promise<{ processed: number; failed: number 
         status: 'SYNCED',
         serverId: result.id,
         ...(result.poll ? { poll: result.poll } : {}),
+        reviewStatus: result.reviewStatus,
+        replayAuthorId: op.type === 'compose_post' ? String(op.payload.authorId) : undefined,
       });
     } else {
       op.retries++;
@@ -301,13 +325,15 @@ export async function flushQueue(): Promise<{ processed: number; failed: number 
     }
   }
 
-  writeQueue(JSON.stringify(remaining));
+  const attemptedIds = new Set(queue.map((item) => item.id));
+  const addedDuringFlush = getPendingOps().filter((item) => !attemptedIds.has(item.id));
+  writeQueue(JSON.stringify([...remaining, ...addedDuringFlush]));
   return { processed, failed };
 }
 
-let customExecutor: ((op: SyncOperation) => Promise<{ success: boolean; id?: string | null; poll?: Poll; error?: string }>) | null = null;
+let customExecutor: ((op: SyncOperation) => Promise<{ success: boolean; id?: string | null; poll?: Poll; reviewStatus?: PostReviewStatus; error?: string }>) | null = null;
 
-export function setSyncExecutor(executor: ((op: SyncOperation) => Promise<{ success: boolean; id?: string | null; poll?: Poll; error?: string }>) | null): void {
+export function setSyncExecutor(executor: ((op: SyncOperation) => Promise<{ success: boolean; id?: string | null; poll?: Poll; reviewStatus?: PostReviewStatus; error?: string }>) | null): void {
   customExecutor = executor;
 }
 
@@ -315,7 +341,7 @@ export function setSyncExecutor(executor: ((op: SyncOperation) => Promise<{ succ
  * Execute a single sync operation against the API.
  * Returns { success, id?, error? }.
  */
-export async function executeOp(op: SyncOperation): Promise<{ success: boolean; id?: string | null; poll?: Poll; error?: string }> {
+export async function executeOp(op: SyncOperation): Promise<{ success: boolean; id?: string | null; poll?: Poll; reviewStatus?: PostReviewStatus; error?: string }> {
   if (customExecutor) {
     return customExecutor(op);
   }
@@ -346,7 +372,14 @@ export async function executeOp(op: SyncOperation): Promise<{ success: boolean; 
       }
       case 'compose_post': {
         const res = await getSvc().composePost(p);
-        return { success: res.success, id: res.id, poll: res.poll ?? undefined };
+        if (IS_LIVE_ENVIRONMENT && res.success && res.id && res.reviewStatus === 'pending') {
+          const { useAuthStore } = require('../stores/auth');
+          if (useAuthStore.getState().user?.id === p.authorId) {
+            const { logContentAction } = require('./contentAccountability');
+            void logContentAction('create_post', { type: 'post', id: res.id, body: p.content, screenName: 'compose' });
+          }
+        }
+        return { success: res.success, id: res.id, poll: res.poll ?? undefined, reviewStatus: res.reviewStatus };
       }
       case 'add_comment': {
         const res = await getSvc().addPostComment(

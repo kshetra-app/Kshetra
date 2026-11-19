@@ -1,3 +1,4 @@
+import AttachmentToolbar from './AttachmentToolbar';
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   View,
@@ -15,6 +16,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
+import { validWebLink } from '../lib/feedAttachments';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../lib/theme';
 import type { PostType, Post, PostMedia, FeedScope } from '../lib/feedTypes';
@@ -23,7 +25,9 @@ import { useActiveStateStore } from '../stores/activeState';
 import { resolveConstituencyForState, useMyConstituencyStore } from '../stores/myConstituency';
 import { useFeedStore } from '../stores/feed';
 import type { PostSubmissionOutcome } from '../stores/feed';
-import { STATES } from '@kshetra/shared';
+import { uuid } from 'expo-modules-core';
+import { uploadShort } from '../lib/supabaseDataService';
+import { getYouTubeVideoId, STATES } from '@kshetra/shared';
 import { gateContentAction, logContentAction } from '../lib/contentAccountability';
 import { useContentPromotionStore } from '../stores/contentPromotion';
 import { useUserProfileStore } from '../stores/userProfile';
@@ -33,8 +37,9 @@ import { getUnifiedConstituenciesForState } from '../lib/stateDataAdapter';
 interface ComposeSheetProps {
   visible: boolean;
   onClose: () => void;
-  onSubmit: (post: Post) => Promise<PostSubmissionOutcome>;
-  onEditSubmit?: (postId: string, content: string) => Promise<boolean>;
+  initialKind?: 'post' | 'short';
+  onSubmit?: (post: Post) => Promise<PostSubmissionOutcome>;
+  onEditSubmit?: (postId: string, content: string) => Promise<boolean | 'pending'>;
   editPost?: Post;
   replyTo?: { postId: string; authorName: string };
 }
@@ -70,7 +75,8 @@ const MAX_POLL_OPTIONS = 4;
 export default function ComposeSheet({
   visible,
   onClose,
-  onSubmit,
+  initialKind = 'post',
+  onSubmit = (post) => useFeedStore.getState().addPost(post),
   onEditSubmit,
   editPost,
   replyTo,
@@ -78,6 +84,14 @@ export default function ComposeSheet({
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
 
+  const [kind, setKind] = useState(initialKind);
+  const [shortTitle, setShortTitle] = useState('');
+  const [shortDescription, setShortDescription] = useState('');
+  const [shortUrl, setShortUrl] = useState('');
+  const [shortTerms, setShortTerms] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const saveLock = useRef(false);
+  const shortRetry = useRef<{draft:string; id:string} | null>(null);
   const [content, setContent] = useState('');
   const [postType, setPostType] = useState<PostType>('discussion');
   const [targetScope, setTargetScope] = useState<FeedScope>('state');
@@ -103,6 +117,9 @@ export default function ComposeSheet({
     () => resolveConstituencyForState(stateCode, selectedConstituency, myHome, stateConstituencies),
     [stateCode, selectedConstituency, myHome, stateConstituencies],
   );
+  const shortHome = useMemo(() => resolveConstituencyForState(stateCode, null, myHome, stateConstituencies), [stateCode, myHome, stateConstituencies]);
+  const shortVideoId = getYouTubeVideoId(shortUrl.trim());
+  const isShort = !editPost && !replyTo && kind === 'short';
   const effectiveTargetScope: FeedScope =
     stateCode === 'IN'
       ? 'national'
@@ -128,6 +145,12 @@ export default function ComposeSheet({
       }
       setTimeout(() => inputRef.current?.focus(), 200);
     } else {
+      setKind(initialKind);
+      setShortTitle('');
+      setShortDescription('');
+      setShortUrl('');
+      setShortTerms(false);
+      shortRetry.current = null;
       setContent('');
       setPostType('discussion');
       setPollOptions(['', '']);
@@ -136,7 +159,7 @@ export default function ComposeSheet({
       setLinkUrl('');
       setShowLangPicker(false);
     }
-  }, [visible, editPost, i18n.language]);
+  }, [visible, editPost, i18n.language, initialKind]);
 
   const canSubmit = content.trim().length > 0 && content.length <= MAX_CONTENT_LENGTH;
   const isPoll = postType === 'poll';
@@ -168,6 +191,7 @@ export default function ComposeSheet({
         return {
           id: `media_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
           mediaType: isVideo ? 'video' : 'image',
+          mimeType: asset.mimeType ?? undefined,
           url: asset.uri,
           thumbnailUrl: asset.uri,
           altText: asset.fileName || (isVideo ? 'Attached video' : 'Attached photo'),
@@ -200,6 +224,7 @@ export default function ComposeSheet({
       const newItem: PostMedia = {
         id: `media_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         mediaType: isVideo ? 'video' : 'image',
+        mimeType: asset.mimeType ?? undefined,
         url: asset.uri,
         thumbnailUrl: asset.uri,
         altText: asset.fileName || (isVideo ? 'Attached video' : 'Attached photo'),
@@ -211,6 +236,10 @@ export default function ComposeSheet({
   const addLinkMedia = () => {
     const url = linkUrl.trim();
     if (!url) return;
+    if (mediaItems.length >= 5 || !validWebLink(url)) {
+      Alert.alert(t('compose.addLink'), t('compose.linkHelp', { defaultValue: 'Enter a complete http or https link. Each post can have up to five attachments.' }));
+      return;
+    }
     setMediaItems((prev) => [
       ...prev,
       {
@@ -228,7 +257,31 @@ export default function ComposeSheet({
     setMediaItems((prev) => prev.filter((m) => m.id !== id));
   };
 
-  const handleSubmit = async () => {
+  const submitForm = async () => {
+    if (isShort) {
+      if (!gateContentAction('create_post')) return;
+      if (!shortHome || !user?.id || !shortVideoId || !shortTerms || !shortTitle.trim()) return;
+      const short = {
+        title: shortTitle.trim(),
+        description: shortDescription.trim(),
+        videoUrl: `https://www.youtube.com/embed/${shortVideoId}`,
+        stateCode, stateName,
+        constituencyId: `${stateCode}-AC-${shortHome.acNo}`,
+        districtName: stateConstituencies.find((item) => item.acNo === shortHome.acNo)?.district,
+        hashtags: shortDescription.match(/#[^\s#]+/gu)?.map((tag) => tag.slice(1)) ?? [],
+      };
+      const draft = JSON.stringify([user.id, short]);
+      if (shortRetry.current?.draft !== draft) shortRetry.current = {draft, id:uuid.v4()};
+      const result = await uploadShort({...short, id:shortRetry.current.id});
+      if (!result.success || !result.id) {
+        Alert.alert(t('common.error'), t('feed.createPostFailedBody'));
+        return;
+      }
+      logContentAction('create_post', {type:'short', id:result.id, body:short.title, screenName:'compose'});
+      Alert.alert(t('common.done'), t('uploadShort.alertSuccessMessage'));
+      onClose();
+      return;
+    }
     if (!canSubmit || !canSubmitPoll) return;
 
     if (isEditMode && editPost) {
@@ -238,6 +291,7 @@ export default function ComposeSheet({
         Alert.alert(t('feed.editFailed', { defaultValue: 'Could not save this edit. Check your connection and try again.' }));
         return;
       }
+      if (saved === 'pending') Alert.alert(t('feed.postReviewPending'));
       logContentAction('edit_post', {
         type: 'post',
         id: editPost.id,
@@ -314,10 +368,14 @@ export default function ComposeSheet({
       );
       return;
     }
-    if (submission === 'queued') {
+    if (submission === 'pending') {
+      Alert.alert(t('feed.postReviewPending'));
+    } else if (submission === 'rejected') {
+      Alert.alert(t('feed.postReviewRejected'));
+    } else if (submission === 'queued') {
       Alert.alert(
-        t('feed.postQueuedTitle', { defaultValue: 'Post queued' }),
-        t('feed.postQueuedBody', { defaultValue: 'This post will be sent when your connection is restored.' }),
+        t('feed.postQueuedTitle'),
+        t('feed.postQueuedBody'),
       );
     } else if (submission === 'local') {
       Alert.alert(
@@ -347,10 +405,25 @@ export default function ComposeSheet({
     onClose();
   };
 
+  const canSubmitForm = isShort ? !!(shortHome && shortTitle.trim() && shortVideoId && shortTerms) : canSubmit && canSubmitPoll;
+  const handleSubmit = async () => {
+    if (saveLock.current || !canSubmitForm) return;
+    saveLock.current = true;
+    setSaving(true);
+    try {
+      await submitForm();
+    } catch {
+      Alert.alert(t('common.error'), t('feed.createPostFailedBody'));
+    } finally {
+      saveLock.current = false;
+      setSaving(false);
+    }
+  };
+
   const currentLangLabel = LANGUAGES.find((l) => l.code === language)?.label ?? language;
 
   return (
-    <Modal visible={visible} animationType="slide" statusBarTranslucent>
+    <Modal visible={visible} onRequestClose={() => {if (!saveLock.current) onClose();}} animationType="slide" statusBarTranslucent>
       <View
         style={[
           styles.container,
@@ -364,7 +437,7 @@ export default function ComposeSheet({
         >
           {/* Header */}
           <View style={[styles.header, { borderBottomColor: colors.border }]}>
-            <Pressable onPress={onClose} hitSlop={10}>
+            <Pressable disabled={saving} onPress={onClose} hitSlop={10}>
               <Ionicons name="close" size={24} color={colors.textSecondary} />
             </Pressable>
             <Text style={[styles.headerTitle, { color: colors.text }]}>
@@ -372,24 +445,51 @@ export default function ComposeSheet({
                 ? t('compose.editTitle')
                 : replyTo
                   ? t('compose.replyTo', { name: replyTo.authorName })
-                  : t('compose.title')}
+                  : isShort ? t('uploadShort.title') : t('compose.title')}
             </Text>
             <Pressable
               style={[
                 styles.submitButton,
                 { backgroundColor: colors.primary },
-                (!canSubmit || !canSubmitPoll) && styles.submitDisabled,
+                (saving || !canSubmitForm) && styles.submitDisabled,
               ]}
               onPress={handleSubmit}
-              disabled={!canSubmit || !canSubmitPoll}
+              disabled={saving || !canSubmitForm}
             >
               <Text style={styles.submitText}>
-                {isEditMode ? t('compose.save') : t('compose.submit')}
+                {isEditMode ? t('compose.save') : isShort ? t('common.submit') : t('compose.submit')}
               </Text>
             </Pressable>
           </View>
 
           <ScrollView style={styles.scroll} keyboardShouldPersistTaps="handled">
+            {!replyTo && !isEditMode && (
+              <View style={styles.typeRow}>
+                {(['post','short'] as const).map((value) => (
+                  <Pressable key={value} disabled={saving} accessibilityRole="button"
+                    accessibilityState={{selected:kind === value}}
+                    onPress={() => setKind(value)} style={[styles.typeChip,{borderColor: colors.border, backgroundColor:kind === value ? colors.primary : colors.surface}]}>
+                    <Text style={[styles.typeChipText,{color:kind === value ? '#fff' : colors.text}]}>{t(value === 'post' ? 'tabs.feed' : 'tabs.shorts')}</Text>
+                  </Pressable>
+                ))}
+              </View>
+            )}
+            {isShort ? (
+              <View style={styles.shortFields}>
+                <Text style={{color:colors.textSecondary}}>{shortHome ? `${shortHome.name} · ${stateName}` : t('uploadShort.alertConstituencyRequired')}</Text>
+                <Text style={{color:colors.text}}>{t('uploadShort.inputTitle')}</Text>
+                <TextInput accessibilityLabel={t('uploadShort.inputTitle')} style={[styles.shortInput,{color:colors.text,borderColor:colors.border}]} value={shortTitle} onChangeText={setShortTitle} maxLength={200} />
+                <Text style={{color:colors.text}}>{t('uploadShort.inputDescription')}</Text>
+                <TextInput accessibilityLabel={t('uploadShort.inputDescription')} style={[styles.shortInput,{color:colors.text,borderColor:colors.border}]} value={shortDescription} onChangeText={setShortDescription} multiline maxLength={5000} />
+                <Text style={{color:colors.text}}>YouTube</Text>
+                <TextInput accessibilityLabel="YouTube" placeholder={t('uploadShort.urlPlaceholder')} placeholderTextColor={colors.textMuted} style={[styles.shortInput,{color:colors.text,borderColor:colors.border}]} value={shortUrl} onChangeText={setShortUrl} autoCapitalize="none" autoCorrect={false} keyboardType="url" />
+                {!!shortUrl && !shortVideoId && <Text style={{color:colors.textSecondary}}>{t('uploadShort.alertVideoUrlRequired')}</Text>}
+                <Pressable accessibilityRole="checkbox" accessibilityState={{checked:shortTerms}} style={styles.shortAgreement} onPress={() => setShortTerms(!shortTerms)}>
+                  <Ionicons name={shortTerms ? "checkbox" : "square-outline"} size={22} color={colors.primary}/>
+                  <Text style={{color:colors.text,flex:1}}>{t('uploadShort.confirmRights')}</Text>
+                </Pressable>
+              </View>
+            ) : (<>
             {/* Scope / Visibility Selection */}
             {!replyTo && (
               <View style={styles.sectionRow}>
@@ -642,59 +742,9 @@ export default function ComposeSheet({
               </View>
             )}
 
-            {/* Media toolbar */}
-            {!isPoll && !isEditMode && (
-              IS_LIVE_ENVIRONMENT ? (
-                <Text style={{ color: colors.textMuted, paddingVertical: 12 }}>
-                  {t('compose.mediaUnavailable', { defaultValue: 'Post media attachments are not available yet.' })}
-                </Text>
-              ) : (
-              <View style={[styles.mediaToolbar, { borderTopColor: colors.border }]}>
-                <Pressable
-                  style={styles.mediaButton}
-                  onPress={pickMedia}
-                  hitSlop={8}
-                >
-                  <Ionicons name="images" size={18} color="#4F8EF7" />
-                  <Text style={[styles.mediaButtonText, { color: colors.textSecondary }]}>
-                    {t('compose.addMedia', { defaultValue: 'Gallery' })}
-                  </Text>
-                </Pressable>
-
-                <Pressable
-                  style={styles.mediaButton}
-                  onPress={() => takeCameraMedia('image')}
-                  hitSlop={8}
-                >
-                  <Ionicons name="camera" size={18} color="#10B981" />
-                  <Text style={[styles.mediaButtonText, { color: colors.textSecondary }]}>
-                    {t('reportIssueSheet.camera', { defaultValue: 'Camera' })}
-                  </Text>
-                </Pressable>
-
-                <Pressable
-                  style={styles.mediaButton}
-                  onPress={() => takeCameraMedia('video')}
-                  hitSlop={8}
-                >
-                  <Ionicons name="videocam" size={18} color="#EF4444" />
-                  <Text style={[styles.mediaButtonText, { color: colors.textSecondary }]}>
-                    Video
-                  </Text>
-                </Pressable>
-
-                <Pressable
-                  style={styles.mediaButton}
-                  onPress={() => setShowLinkInput(!showLinkInput)}
-                  hitSlop={8}
-                >
-                  <Ionicons name="link" size={18} color={colors.primary} />
-                  <Text style={[styles.mediaButtonText, { color: colors.textSecondary }]}>
-                    {t('compose.addLink', { defaultValue: 'Link' })}
-                  </Text>
-                </Pressable>
-              </View>
-              )
+            {!isEditMode && mediaItems.length < 5 && (
+              <AttachmentToolbar gallery={pickMedia} photo={() => takeCameraMedia('image')}
+                video={() => takeCameraMedia('video')} link={() => setShowLinkInput(!showLinkInput)} />
             )}
 
             {/* Link input */}
@@ -764,6 +814,7 @@ export default function ComposeSheet({
               </View>
             )}
 
+            </>)}
             <View style={{ height: 40 }} />
           </ScrollView>
         </KeyboardAvoidingView>
@@ -898,6 +949,9 @@ const styles = StyleSheet.create({
     minHeight: 140,
     marginTop: 12,
   },
+  shortFields:{gap:10,marginTop:16},
+  shortInput:{borderWidth:1,borderRadius:10,paddingHorizontal:14,paddingVertical:10,fontSize:16},
+  shortAgreement:{flexDirection:'row',alignItems:'center',gap:8,minHeight:44},
   charCount: {
     fontSize: 12,
     textAlign: 'right',

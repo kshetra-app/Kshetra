@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import type { PoliticalShort } from '../data/politicalShortsData';
 import { formatCount, formatDuration } from '../data/politicalShortsData';
 import ShortsPlayerModal from './ShortsPlayerModal';
-import UploadShortModal from './UploadShortModal';
+import ComposeSheet from './ComposeSheet';
 import { usePoliticalShortsStore } from '../stores/politicalShorts';
 import { useFeedStore } from '../stores/feed';
 import { useActiveStateStore } from '../stores/activeState';
@@ -135,7 +135,7 @@ export default function PoliticalShortsCarousel() {
 
       {/* Upload modal sheet */}
       {uploadVisible && (
-        <UploadShortModal
+        <ComposeSheet initialKind="short"
           visible={uploadVisible}
           onClose={() => setUploadVisible(false)}
         />
@@ -198,10 +198,10 @@ function ShortThumbnailCard({ item, onPress }: ThumbnailProps) {
         </View>
 
         {/* Top Right: Duration badge */}
-        <View style={styles.durationBadge}>
+        {item.duration > 0 && <View style={styles.durationBadge}>
           <Ionicons name="time-outline" size={10} color="#FFFFFF" />
           <Text style={styles.durationText}>{formatDuration(item.duration)}</Text>
-        </View>
+        </View>}
 
         {/* Top Left: Verification Level Dot */}
         <View style={[styles.visibilityDot, { backgroundColor: visibilityColor }]} />

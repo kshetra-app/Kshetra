@@ -1,3 +1,4 @@
+import { getYouTubeVideoId } from '@kshetra/shared';
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -353,7 +354,7 @@ function ShortPageItem({
     }
   }, [commentText, commentSubmitting, item.id, authorName]);
 
-  const videoId = item.videoUrl.split('/').pop() || '';
+  const videoId = getYouTubeVideoId(item.videoUrl);
 
   // YouTube IFrame Player API — loaded via HTML to bypass WebView detection.
   // baseUrl is a neutral third-party origin (NOT youtube.com) so YouTube
@@ -399,7 +400,7 @@ function onYouTubeIframeAPIReady(){
   return (
     <View style={[styles.shortPage, { width: screenWidth, height: screenHeight }]}>
       {/* YouTube IFrame API Player via HTML — proven approach (same as react-native-youtube-iframe) */}
-      {isActive && !videoError && (
+      {isActive && videoId && !videoError && (
         <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#000' }}>
           <WebView
             key={videoId}
@@ -430,7 +431,7 @@ function onYouTubeIframeAPIReady(){
       )}
 
       {/* Error fallback — open externally */}
-      {videoError && (
+      {(videoError || !videoId) && (
         <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#000', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24 }}>
           <Ionicons name="alert-circle" size={48} color="#EF4444" />
           <Text style={{ color: '#FFFFFF', fontSize: 16, fontWeight: '700', marginTop: 12, textAlign: 'center' }}>{t('shortsPlayer.videoUnavailable')}</Text>
@@ -438,7 +439,8 @@ function onYouTubeIframeAPIReady(){
             {t('shortsPlayer.videoUnavailableDesc')}
           </Text>
           <Pressable
-            onPress={() => Linking.openURL(`https://www.youtube.com/watch?v=${videoId}`)}
+            disabled={!videoId}
+            onPress={() => videoId && Linking.openURL(`https://www.youtube.com/watch?v=${videoId}`)}
             style={{ backgroundColor: '#FF0000', borderRadius: 10, paddingHorizontal: 24, paddingVertical: 12, marginTop: 20, flexDirection: 'row', alignItems: 'center', gap: 8 }}
           >
             <Ionicons name="logo-youtube" size={20} color="#FFFFFF" />

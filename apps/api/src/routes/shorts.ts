@@ -4,7 +4,8 @@
  * Master Execution Framework — W021.5-H-04 (Class B Strangler Migration) / CTO Directive 138
  */
 
-import type { FastifyInstance } from 'fastify';
+import { getYouTubeVideoId } from '@kshetra/shared';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
 import { resolveAuthenticatedUser, assertActingUserMatch } from '../lib/userAuth';
@@ -12,6 +13,254 @@ import { checkContentModeration, ModerationUnavailableError } from '../services/
 
 const SHORT_ID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+interface ShortSubmission {
+  id?: string;
+  title: string;
+  videoUrl: string;
+  thumbnailUrl?: string;
+  description?: string;
+  stateCode?: string;
+  stateName?: string;
+  constituencyId?: string;
+  districtName?: string;
+  durationSeconds?: number;
+  hashtags?: string[];
+  gradientColors?: string[];
+  stateAccent?: string;
+}
+
+export function toMediaShort(row: Record<string, unknown>) {
+  return {
+    id: row.id,
+    creatorId: row.uploaded_by,
+    title: row.title,
+    description: row.description,
+    videoUrl: row.video_url,
+    thumbnailUrl: row.thumbnail_url,
+    durationSeconds: row.duration,
+    constituencyId: row.constituency_id,
+    stateCode: row.state_code,
+    hashtags: row.hashtags,
+    viewCount: row.view_count,
+    likeCount: row.like_count,
+    commentCount: row.comment_count,
+    createdAt: row.created_at,
+    status: row.status,
+  };
+}
+
+export async function submitCreatorShort(
+  request: FastifyRequest<{ Body: ShortSubmission }>,
+  reply: FastifyReply,
+  legacy = false,
+) {
+  const auth = await resolveAuthenticatedUser(request, reply);
+  if (!auth) return;
+
+  if (!isSupabaseConfigured) {
+    return sendApiError(
+      reply,
+      request,
+      503,
+      'Service Unavailable',
+      'Database service is not configured',
+      {
+        code: 'DATABASE_UNAVAILABLE',
+      },
+    );
+  }
+
+  const body = request.body;
+  try {
+    if (body.id) {
+      const { data: existing, error: existingError } = await supabase
+        .from('political_shorts')
+        .select('*')
+        .eq('id', body.id)
+        .maybeSingle();
+
+      if (existingError) {
+        request.log.error(
+          { err: existingError.message, shortId: body.id, userId: auth.userId },
+          'Failed to check an idempotent short upload',
+        );
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'The short upload could not be confirmed. Please retry.',
+          { code: 'UPLOAD_CONFIRMATION_UNAVAILABLE' },
+        );
+      }
+      if (existing) {
+        if (existing.uploaded_by !== auth.userId) {
+          return sendApiError(reply, request, 404, 'Not Found', 'Short not found', {
+            code: 'SHORT_NOT_FOUND',
+          });
+        }
+        return reply.send({
+          success: true,
+          id: existing.id,
+          short: legacy ? toMediaShort(existing) : existing,
+          alreadyPersisted: true,
+        });
+      }
+    }
+
+    const title = body.title.trim();
+    const videoId = getYouTubeVideoId(body.videoUrl.trim());
+    const stateCode = (body.stateCode ?? body.constituencyId?.split('-AC-')[0] ?? '')
+      .trim()
+      .toUpperCase();
+    if (
+      !title ||
+      !videoId ||
+      !/^[A-Z]{2}$/.test(stateCode) ||
+      (body.constituencyId &&
+        !(
+          body.constituencyId.startsWith(stateCode + '-AC-') &&
+          /^[A-Z]{2}-AC-[1-9][0-9]*$/.test(body.constituencyId)
+        ))
+    ) {
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'Bad Request',
+        'A title, valid HTTPS YouTube video link, and matching constituency when supplied are required',
+        {
+          code: 'INVALID_SHORT_CONTENT',
+        },
+      );
+    }
+
+    const { data: verification, error: verificationError } = await supabase
+      .from('creator_kyc_records')
+      .select('status')
+      .eq('user_id', auth.userId)
+      .maybeSingle();
+
+    if (verificationError) {
+      request.log.error(
+        { err: verificationError.message, userId: auth.userId },
+        'Failed to verify short uploader eligibility',
+      );
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Creator verification could not be checked. Please try again.',
+        { code: 'VERIFICATION_UNAVAILABLE' },
+      );
+    }
+    if (verification?.status !== 'verified') {
+      return sendApiError(
+        reply,
+        request,
+        403,
+        'Forbidden',
+        'Verified creator status is required to upload a short.',
+        { code: 'CREATOR_VERIFICATION_REQUIRED' },
+      );
+    }
+
+    const { data: profile, error: profileError } = await supabase
+      .from('user_profiles')
+      .select('display_name')
+      .eq('user_id', auth.userId)
+      .maybeSingle();
+    if (profileError) {
+      request.log.warn(
+        { err: profileError.message, userId: auth.userId },
+        'Could not resolve short channel display name',
+      );
+    }
+
+    const { data, error } = await supabase
+      .from('political_shorts')
+      .insert({
+        ...(body.id ? { id: body.id } : {}),
+        title,
+        video_url: `https://www.youtube.com/embed/${videoId}`,
+        status: 'pending',
+        thumbnail_url: body.thumbnailUrl || null,
+        description: body.description?.trim() || null,
+        channel_name: profile?.display_name?.trim() || 'Verified contributor',
+        channel_verified: true,
+        state_code: stateCode,
+        state_name: body.stateName?.trim() || null,
+        constituency_id: body.constituencyId || null,
+        district_name: body.districtName?.trim() || null,
+        duration: body.durationSeconds ?? 0,
+        hashtags: body.hashtags ?? [],
+        gradient_colors: body.gradientColors ?? [],
+        state_accent: body.stateAccent || null,
+        uploaded_by: auth.userId,
+      })
+      .select('*')
+      .single();
+
+    if (error || !data) {
+      return sendApiError(
+        reply,
+        request,
+        500,
+        'Internal Server Error',
+        error?.message || 'Failed to upload short',
+        {
+          code: 'DATABASE_ERROR',
+        },
+      );
+    }
+
+    return reply
+      .status(201)
+      .send({ success: true, id: data.id, short: legacy ? toMediaShort(data) : data });
+  } catch {
+    return sendApiError(
+      reply,
+      request,
+      500,
+      'Internal Server Error',
+      'Database error uploading short',
+      {
+        code: 'DATABASE_ERROR',
+      },
+    );
+  }
+}
+
+async function requirePublishedShort(
+  request: FastifyRequest,
+  reply: FastifyReply,
+  shortId: string,
+) {
+  const { data, error } = await supabase
+    .from('political_shorts')
+    .select('id')
+    .eq('id', shortId)
+    .eq('status', 'approved')
+    .maybeSingle();
+  if (error) {
+    sendApiError(
+      reply,
+      request,
+      503,
+      'Service Unavailable',
+      'Short availability could not be checked.',
+      { code: 'DATABASE_UNAVAILABLE' },
+    );
+    return false;
+  }
+  if (!data) {
+    sendApiError(reply, request, 404, 'Not Found', 'Short not found', { code: 'SHORT_NOT_FOUND' });
+    return false;
+  }
+  return true;
+}
 
 export async function shortsRoutes(app: FastifyInstance) {
   /**
@@ -54,6 +303,7 @@ export async function shortsRoutes(app: FastifyInstance) {
       }
 
       try {
+        if (!(await requirePublishedShort(request, reply, shortId))) return;
         let rpcSucceeded = false;
         try {
           const { error: rpcError } = await supabase.rpc('increment_short_views', {
@@ -207,7 +457,7 @@ export async function shortsRoutes(app: FastifyInstance) {
             },
           );
         }
-        if (!short || !['approved', 'pending'].includes(short.status)) {
+        if (!short || short.status !== 'approved') {
           return sendApiError(reply, request, 404, 'Not Found', 'Short not found', {
             code: 'SHORT_NOT_FOUND',
           });
@@ -338,7 +588,7 @@ export async function shortsRoutes(app: FastifyInstance) {
             },
           );
         }
-        if (!short || !['approved', 'pending'].includes(short.status)) {
+        if (!short || short.status !== 'approved') {
           return sendApiError(reply, request, 404, 'Not Found', 'Short not found', {
             code: 'SHORT_NOT_FOUND',
           });
@@ -448,23 +698,7 @@ export async function shortsRoutes(app: FastifyInstance) {
   /**
    * 3. POST /api/v1/shorts — Upload political short (Class B Method 41)
    */
-  app.post<{
-    Body: {
-      id?: string;
-      title: string;
-      videoUrl: string;
-      thumbnailUrl?: string;
-      description?: string;
-      stateCode: string;
-      stateName?: string;
-      constituencyId?: string;
-      districtName?: string;
-      durationSeconds?: number;
-      hashtags?: string[];
-      gradientColors?: string[];
-      stateAccent?: string;
-    };
-  }>(
+  app.post<{ Body: ShortSubmission }>(
     '/api/v1/shorts',
     {
       schema: {
@@ -477,7 +711,7 @@ export async function shortsRoutes(app: FastifyInstance) {
             videoUrl: { type: 'string', minLength: 1 },
             thumbnailUrl: { type: 'string' },
             description: { type: 'string', maxLength: 5000 },
-            stateCode: { type: 'string', minLength: 2, maxLength: 2 },
+            stateCode: { type: 'string', pattern: '^[A-Za-z]{2}$' },
             stateName: { type: 'string', maxLength: 100 },
             constituencyId: { type: 'string' },
             districtName: { type: 'string', maxLength: 100 },
@@ -497,170 +731,7 @@ export async function shortsRoutes(app: FastifyInstance) {
         },
       },
     },
-    async (request, reply) => {
-      const auth = await resolveAuthenticatedUser(request, reply);
-      if (!auth) return;
-
-      if (!isSupabaseConfigured) {
-        return sendApiError(
-          reply,
-          request,
-          503,
-          'Service Unavailable',
-          'Database service is not configured',
-          {
-            code: 'DATABASE_UNAVAILABLE',
-          },
-        );
-      }
-
-      const body = request.body;
-      try {
-        if (body.id) {
-          const { data: existing, error: existingError } = await supabase
-            .from('political_shorts')
-            .select('*')
-            .eq('id', body.id)
-            .maybeSingle();
-
-          if (existingError) {
-            app.log.error(
-              { err: existingError.message, shortId: body.id, userId: auth.userId },
-              'Failed to check an idempotent short upload',
-            );
-            return sendApiError(
-              reply,
-              request,
-              503,
-              'Service Unavailable',
-              'The short upload could not be confirmed. Please retry.',
-              { code: 'UPLOAD_CONFIRMATION_UNAVAILABLE' },
-            );
-          }
-          if (existing) {
-            if (existing.uploaded_by !== auth.userId) {
-              return sendApiError(reply, request, 404, 'Not Found', 'Short not found', {
-                code: 'SHORT_NOT_FOUND',
-              });
-            }
-            return reply.send({
-              success: true,
-              id: existing.id,
-              short: existing,
-              alreadyPersisted: true,
-            });
-          }
-        }
-
-        const title = body.title.trim();
-        const videoUrl = body.videoUrl.trim();
-        const stateCode = body.stateCode.trim().toUpperCase();
-        if (!title || !videoUrl) {
-          return sendApiError(
-            reply,
-            request,
-            400,
-            'Bad Request',
-            'Title and video URL are required',
-            {
-              code: 'INVALID_SHORT_CONTENT',
-            },
-          );
-        }
-
-        const { data: verification, error: verificationError } = await supabase
-          .from('creator_kyc_records')
-          .select('status')
-          .eq('user_id', auth.userId)
-          .maybeSingle();
-
-        if (verificationError) {
-          app.log.error(
-            { err: verificationError.message, userId: auth.userId },
-            'Failed to verify short uploader eligibility',
-          );
-          return sendApiError(
-            reply,
-            request,
-            503,
-            'Service Unavailable',
-            'Creator verification could not be checked. Please try again.',
-            { code: 'VERIFICATION_UNAVAILABLE' },
-          );
-        }
-        if (verification?.status !== 'verified') {
-          return sendApiError(
-            reply,
-            request,
-            403,
-            'Forbidden',
-            'Verified creator status is required to upload a short.',
-            { code: 'CREATOR_VERIFICATION_REQUIRED' },
-          );
-        }
-
-        const { data: profile, error: profileError } = await supabase
-          .from('user_profiles')
-          .select('display_name')
-          .eq('user_id', auth.userId)
-          .maybeSingle();
-        if (profileError) {
-          app.log.warn(
-            { err: profileError.message, userId: auth.userId },
-            'Could not resolve short channel display name',
-          );
-        }
-
-        const { data, error } = await supabase
-          .from('political_shorts')
-          .insert({
-            ...(body.id ? { id: body.id } : {}),
-            title,
-            video_url: videoUrl,
-            thumbnail_url: body.thumbnailUrl || null,
-            description: body.description?.trim() || null,
-            channel_name: profile?.display_name?.trim() || 'Verified contributor',
-            channel_verified: true,
-            state_code: stateCode,
-            state_name: body.stateName?.trim() || null,
-            constituency_id: body.constituencyId || null,
-            district_name: body.districtName?.trim() || null,
-            duration: body.durationSeconds ?? 0,
-            hashtags: body.hashtags ?? [],
-            gradient_colors: body.gradientColors ?? [],
-            state_accent: body.stateAccent || null,
-            uploaded_by: auth.userId,
-          })
-          .select('*')
-          .single();
-
-        if (error || !data) {
-          return sendApiError(
-            reply,
-            request,
-            500,
-            'Internal Server Error',
-            error?.message || 'Failed to upload short',
-            {
-              code: 'DATABASE_ERROR',
-            },
-          );
-        }
-
-        return reply.status(201).send({ success: true, id: data.id, short: data });
-      } catch {
-        return sendApiError(
-          reply,
-          request,
-          500,
-          'Internal Server Error',
-          'Database error uploading short',
-          {
-            code: 'DATABASE_ERROR',
-          },
-        );
-      }
-    },
+    (request, reply) => submitCreatorShort(request, reply),
   );
 
   /**
@@ -712,6 +783,7 @@ export async function shortsRoutes(app: FastifyInstance) {
       const { constituencyId } = request.body || {};
 
       try {
+        if (!(await requirePublishedShort(request, reply, shortId))) return;
         const { error } = await supabase.from('short_approvals').insert({
           short_id: shortId,
           user_id: auth.userId,
@@ -789,6 +861,7 @@ export async function shortsRoutes(app: FastifyInstance) {
       const { reason } = request.body || {};
 
       try {
+        if (!(await requirePublishedShort(request, reply, shortId))) return;
         const { error } = await supabase.from('short_flags').insert({
           short_id: shortId,
           user_id: auth.userId,

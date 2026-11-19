@@ -7,6 +7,8 @@
 import type { FastifyInstance } from 'fastify';
 import { sendApiError } from '../lib/replyHelper';
 import { resolveAuthenticatedUser, assertActingUserMatch } from '../lib/userAuth';
+import { submitCreatorShort, toMediaShort } from './shorts';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { MediaService } from '../services/mediaService';
 import type {
   RepresentativeCivicResponseCreateRequest,
@@ -156,26 +158,33 @@ export async function mediaRoutes(app: FastifyInstance) {
         },
       },
     },
-    async (request, reply) => {
-      const auth = await resolveAuthenticatedUser(request, reply);
-      if (!auth) return;
-
-      try {
-        const short = await MediaService.createShort(auth.userId, request.body);
-        return reply.status(201).send({ success: true, short });
-      } catch (err: any) {
-        return sendApiError(reply, request, 400, 'Bad Request', err.message, {
-          code: 'INVALID_SHORT_PAYLOAD',
-        });
-      }
-    },
+    (request, reply) => submitCreatorShort(request, reply, true),
   );
 
   app.get<{
     Querystring: { constituencyId?: string; limit?: number };
   }>('/api/v1/media/shorts/feed', async (request, reply) => {
     const { constituencyId, limit } = request.query;
-    const shorts = await MediaService.getShortsFeed(constituencyId, limit ? Number(limit) : 10);
+    if (!isSupabaseConfigured) {
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'DATABASE_UNAVAILABLE',
+        'Shorts feed is unavailable.',
+      );
+    }
+    let query = supabase
+      .from('political_shorts')
+      .select('*')
+      .eq('status', 'approved')
+      .order('created_at', { ascending: false })
+      .limit(Math.min(100, Math.max(1, Number(limit) || 10)));
+    if (constituencyId) query = query.eq('constituency_id', constituencyId);
+    const { data, error } = await query;
+    if (error)
+      return sendApiError(reply, request, 503, 'DATABASE_UNAVAILABLE', 'Could not load Shorts.');
+    const shorts = (data ?? []).map(toMediaShort);
     return reply.send({ success: true, shorts, total: shorts.length });
   });
 

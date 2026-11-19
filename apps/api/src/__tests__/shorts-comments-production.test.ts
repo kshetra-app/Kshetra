@@ -258,6 +258,7 @@ describe('Political short comments production contract', () => {
     expect(response.statusCode).toBe(201);
     expect(insert).toHaveBeenCalledTimes(1);
     expect(insertedValues).toEqual({
+      status: 'pending',
       title: 'A real civic update',
       video_url: 'https://www.youtube.com/embed/abcdefghijk',
       thumbnail_url: null,

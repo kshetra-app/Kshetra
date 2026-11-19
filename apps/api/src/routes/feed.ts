@@ -26,6 +26,7 @@ export async function feedRoutes(app: FastifyInstance) {
       hashtags?: string[];
       pollOptions?: string[];
       clientToken?: string;
+      media?: { mediaType: 'image' | 'video' | 'link'; url: string; altText?: string }[];
     };
   }>(
     '/api/v1/feed/posts',
@@ -47,6 +48,20 @@ export async function feedRoutes(app: FastifyInstance) {
             language: { type: 'string' },
             hashtags: { type: 'array', items: { type: 'string' } },
             clientToken: { type: 'string', minLength: 1, maxLength: 128 },
+            media: {
+              type: 'array',
+              maxItems: 5,
+              items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['mediaType', 'url'],
+                properties: {
+                  mediaType: { enum: ['image', 'video', 'link'] },
+                  url: { type: 'string', minLength: 1, maxLength: 2048 },
+                  altText: { type: 'string', maxLength: 200 },
+                },
+              },
+            },
             pollOptions: {
               type: 'array',
               minItems: 2,
@@ -76,6 +91,51 @@ export async function feedRoutes(app: FastifyInstance) {
         pollOptions,
         clientToken,
       } = request.body;
+      const media = request.body.media ?? [];
+      if (
+        media.some((item) => {
+          if (item.mediaType !== 'link')
+            return (
+              !item.url.startsWith(auth.userId + '/') ||
+              !/^[a-z0-9-]+\/[a-z0-9_-]+\.[a-z0-9]+$/i.test(item.url)
+            );
+          try {
+            const url = new URL(item.url);
+            return (
+              !['https:', 'http:'].includes(url.protocol) ||
+              !url.hostname ||
+              !!url.username ||
+              !!url.password
+            );
+          } catch {
+            return true;
+          }
+        })
+      )
+        return sendApiError(reply, request, 400, 'Bad Request', 'Invalid attachment or link.', {
+          code: 'INVALID_ATTACHMENT',
+        });
+
+      if (stateCode === 'IN' && constituencyId) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'National posts cannot select a constituency.',
+          { code: 'INVALID_AUDIENCE' },
+        );
+      }
+      if (!content.trim() || (type === 'poll' && content.length > 500)) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'Enter post text. Poll questions can contain at most 500 characters.',
+          { code: 'VALIDATION_ERROR' },
+        );
+      }
 
       const normalizedPollOptions = pollOptions?.map((option) => option.trim());
       if (
@@ -157,6 +217,7 @@ export async function feedRoutes(app: FastifyInstance) {
             language,
             hashtags: normalizedHashtags,
             pollOptions: normalizedPollOptions ?? null,
+            ...(media.length ? { media } : {}),
           }),
         )
         .digest('hex');
@@ -272,22 +333,33 @@ export async function feedRoutes(app: FastifyInstance) {
           if (replay) return replay;
         }
 
-        const { data: post, error: postErr } = await supabase
-          .from('posts')
-          .insert({
-            content,
-            type,
-            state_code: stateCode,
-            author_id: auth.userId,
-            constituency_id: constituencyId ?? null,
-            parent_id: parentId ?? null,
-            language,
-            ...(clientToken ? { client_token: clientToken, request_hash: requestHash } : {}),
-          })
-          .select('*')
-          .single();
+        const postRow = {
+          content,
+          type,
+          state_code: stateCode === 'IN' ? null : stateCode,
+          author_id: auth.userId,
+          review_status: 'pending',
+          constituency_id: constituencyId ?? null,
+          parent_id: parentId ?? null,
+          language,
+          ...(clientToken ? { client_token: clientToken, request_hash: requestHash } : {}),
+        };
+        const { data: post, error: postErr } = media.length
+          ? await supabase
+              .rpc('create_post_with_media', { p_post: postRow, p_media: media })
+              .single<Record<string, any>>()
+          : await supabase.from('posts').insert(postRow).select('*').single();
 
         if (postErr || !post) {
+          if (postErr?.code === '22023')
+            return sendApiError(
+              reply,
+              request,
+              400,
+              'Bad Request',
+              'Upload every attachment before submitting.',
+              { code: 'INVALID_ATTACHMENT' },
+            );
           if (clientToken && postErr?.code === '23505') {
             const replay = sendReplay(await lookupExistingPost());
             if (replay) return replay;
@@ -512,10 +584,14 @@ export async function feedRoutes(app: FastifyInstance) {
           );
         }
 
-        const { error: updateErr } = await supabase
+        const { data: updated, error: updateErr } = await supabase
           .from('posts')
           .update({ content, updated_at: new Date().toISOString() })
-          .eq('id', id);
+          .eq('id', id)
+          .eq('author_id', auth.userId)
+          .eq('is_deleted', false)
+          .select('id,review_status')
+          .single();
 
         if (updateErr) {
           return sendApiError(reply, request, 500, 'Internal Server Error', updateErr.message, {
@@ -523,7 +599,12 @@ export async function feedRoutes(app: FastifyInstance) {
           });
         }
 
-        return reply.send({ success: true, id, message: 'Post updated successfully' });
+        return reply.send({
+          success: true,
+          id,
+          reviewStatus: updated?.review_status,
+          message: 'Post updated successfully',
+        });
       } catch (err: any) {
         return sendApiError(
           reply,
