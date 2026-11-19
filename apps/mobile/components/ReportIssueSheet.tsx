@@ -1,3 +1,4 @@
+import { CONTENT_LIMITS } from '@kshetra/shared';
 import AttachmentToolbar from './AttachmentToolbar';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,7 +27,7 @@ import { gateContentAction, logContentAction } from '../lib/contentAccountabilit
 import { useContentPromotionStore } from '../stores/contentPromotion';
 import { useUserProfileStore } from '../stores/userProfile';
 
-const MAX_MEDIA = 5;
+const MAX_MEDIA = CONTENT_LIMITS.civic.attachments;
 
 function isVideoUri(uri: string): boolean {
   return /\.(mp4|mov|m4v|webm|avi|mkv|3gp)(\?.*)?$/i.test(uri) || uri.includes('video');
@@ -225,9 +226,9 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
               placeholderTextColor="#4B5563"
               value={title}
               onChangeText={setTitle}
-              maxLength={200}
+              maxLength={CONTENT_LIMITS.civic.title}
             />
-            <Text style={styles.charHint}>{title.length}/200</Text>
+            <Text style={styles.charHint}>{title.length}/{CONTENT_LIMITS.civic.title}</Text>
 
             {/* Description */}
             <Text style={styles.fieldLabel}>{t('reportIssueSheet.details')}</Text>
@@ -238,7 +239,7 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
               value={description}
               onChangeText={setDescription}
               multiline
-              maxLength={2000}
+              maxLength={CONTENT_LIMITS.civic.description}
               textAlignVertical="top"
             />
 

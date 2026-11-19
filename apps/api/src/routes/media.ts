@@ -136,18 +136,20 @@ export async function mediaRoutes(app: FastifyInstance) {
   // ─── 3. SHORTS PIPELINE, VIEWER & ANALYTICS (JOB 041, 042, 043) ───
 
   app.post<{
-    Body: ShortsVideoCreateRequest;
+    Body: ShortsVideoCreateRequest & { id: string; videoPath: string };
   }>(
     '/api/v1/media/shorts',
     {
       schema: {
         body: {
           type: 'object',
-          required: ['title', 'videoUrl', 'durationSeconds', 'constituencyId'],
+          required: ['id', 'title', 'videoPath', 'constituencyId', 'rightsConfirmed'],
           properties: {
+            id: { type: 'string', format: 'uuid' },
             title: { type: 'string', minLength: 3 },
             description: { type: 'string' },
-            videoUrl: { type: 'string' },
+            videoPath: { type: 'string', maxLength: 80 },
+            rightsConfirmed: { const: true },
             thumbnailUrl: { type: 'string' },
             durationSeconds: { type: 'number', minimum: 5, maximum: 60 },
             constituencyId: { type: 'string' },
@@ -178,13 +180,23 @@ export async function mediaRoutes(app: FastifyInstance) {
       .from('political_shorts')
       .select('*')
       .eq('status', 'approved')
+      .like('video_url', '%.mp4')
+      .not('video_url', 'like', 'http%')
       .order('created_at', { ascending: false })
       .limit(Math.min(100, Math.max(1, Number(limit) || 10)));
     if (constituencyId) query = query.eq('constituency_id', constituencyId);
     const { data, error } = await query;
     if (error)
       return sendApiError(reply, request, 503, 'DATABASE_UNAVAILABLE', 'Could not load Shorts.');
-    const shorts = (data ?? []).map(toMediaShort);
+    const paths = (data ?? []).map((row) => row.video_url);
+    const signed = paths.length
+      ? await supabase.storage.from('short-videos').createSignedUrls(paths, 600)
+      : { data: [] };
+    const byPath = new Map(signed.data?.map((entry) => [entry.path, entry.signedUrl]));
+    const shorts = (data ?? []).flatMap((row) => {
+      const videoUrl = byPath.get(row.video_url);
+      return videoUrl ? [{ ...toMediaShort(row), videoUrl }] : [];
+    });
     return reply.send({ success: true, shorts, total: shorts.length });
   });
 

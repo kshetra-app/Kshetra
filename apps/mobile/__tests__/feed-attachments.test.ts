@@ -36,6 +36,6 @@ describe('feed attachments', () => {
   it('rejects invalid links, unsupported content types and excess attachments', async () => {
     await expect(prepareFeedAttachments([{ ...link, url: 'file:///private' }], 'creator-a')).rejects.toThrow('link');
     await expect(prepareFeedAttachments([{ ...image, mimeType: 'text/html' }], 'creator-a')).rejects.toThrow('Choose a JPEG');
-    await expect(prepareFeedAttachments(Array(6).fill(link), 'creator-a')).rejects.toThrow('five');
+    await expect(prepareFeedAttachments(Array(6).fill(link), 'creator-a')).rejects.toThrow('four');
   });
 });

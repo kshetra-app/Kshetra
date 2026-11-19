@@ -74,7 +74,9 @@ export async function registerContentReviewRoutes(app: FastifyInstance) {
             .eq('is_deleted', false)
         : supabase
             .from('political_shorts')
-            .select('id,uploaded_by,title,description,video_url,state_code,created_at,updated_at')
+            .select(
+              'id,uploaded_by,title,description,video_url,state_code,constituency_id,language,hashtags,duration,media_metadata,rights_confirmed_at,created_at,updated_at',
+            )
             .eq('status', 'pending');
       const { data, error } = await query
         .order('created_at')
@@ -93,7 +95,13 @@ export async function registerContentReviewRoutes(app: FastifyInstance) {
       const page = data.slice(0, limit);
       const records = await Promise.all(
         page.map(async (item) => {
-          if (!('author_id' in item)) return item;
+          if (!('author_id' in item)) {
+            const isOriginal = item.video_url === `${item.uploaded_by}/${item.id}.mp4`;
+            const signed = isOriginal
+              ? await supabase.storage.from('short-videos').createSignedUrl(item.video_url, 600)
+              : null;
+            return { ...item, video_url: signed?.data?.signedUrl ?? null };
+          }
           const media = (item.post_media ?? []) as SubmissionMedia[];
           return {
             ...item,

@@ -485,7 +485,9 @@ export async function toggleFavorite(
 export async function uploadShort(short: {
   id?: string;
   title: string;
-  videoUrl: string;
+  videoPath?: string;
+  rightsConfirmed?: boolean;
+  language?: string;
   description?: string;
   thumbnailUrl?: string;
   stateCode: string;
@@ -496,14 +498,16 @@ export async function uploadShort(short: {
   hashtags?: string[];
   gradientColors?: string[];
   stateAccent?: string;
-}): Promise<{ id: string | null; success: boolean; channelName?: string; uploadedBy?: string }> {
+}): Promise<{ id: string | null; success: boolean; channelName?: string; uploadedBy?: string; error?: string }> {
   if (!guard()) return { id: null, success: false };
   try {
     addBreadcrumb('shorts', 'upload', { title: short.title });
     const res = await apiClient.shorts.uploadShort({
       id: isValidUuid(short.id) ? short.id : undefined,
       title: short.title,
-      videoUrl: short.videoUrl,
+      videoPath: short.videoPath,
+      rightsConfirmed: short.rightsConfirmed,
+      language: short.language,
       thumbnailUrl: short.thumbnailUrl,
       description: short.description,
       stateCode: short.stateCode,
@@ -520,7 +524,7 @@ export async function uploadShort(short: {
     return { id: res.id ?? null, success: res.success, channelName, uploadedBy };
   } catch (err) {
     captureException(err as Error, { op: 'upload_short' });
-    return { id: null, success: false };
+    return { id: null, success: false, error: err instanceof Error ? err.message : undefined };
   }
 }
 
@@ -1323,6 +1327,8 @@ export async function fetchShorts(
       .from('political_shorts')
       .select('*')
       .eq('status', 'approved')
+      .like('video_url', '%.mp4')
+      .not('video_url', 'like', 'http%')
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
 

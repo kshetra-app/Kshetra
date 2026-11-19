@@ -12,6 +12,7 @@ export interface ParsedItem {
   summary?: string;
   imageUrl?: string;
   publishedAt?: string;
+  categories?: string[];
 }
 
 const TIMEOUT_MS = 12_000;
@@ -131,12 +132,17 @@ export function parseFeed(xml: string): ParsedItem[] {
       }
     }
 
+    const categories = Array.from(
+      block.matchAll(/<category[^>]*>([\s\S]*?)<\/category>/gi),
+      (match) => stripHtml(match[1]),
+    );
     items.push({
       title: stripHtml(title).slice(0, 300),
       link,
       summary,
       imageUrl: image ? decodeEntities(image) : undefined,
       publishedAt,
+      ...(categories.length ? { categories } : {}),
     });
   }
 

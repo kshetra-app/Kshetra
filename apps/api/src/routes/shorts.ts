@@ -4,7 +4,8 @@
  * Master Execution Framework — W021.5-H-04 (Class B Strangler Migration) / CTO Directive 138
  */
 
-import { getYouTubeVideoId } from '@kshetra/shared';
+import { CONTENT_LIMITS, STATES } from '@kshetra/shared';
+import { inspectOriginalShort, ShortInspectionUnavailable } from '../services/originalShortVideo';
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
@@ -17,7 +18,9 @@ const SHORT_ID_PATTERN =
 interface ShortSubmission {
   id?: string;
   title: string;
-  videoUrl: string;
+  videoPath?: string;
+  rightsConfirmed?: boolean;
+  language?: string;
   thumbnailUrl?: string;
   description?: string;
   stateCode?: string;
@@ -47,6 +50,8 @@ export function toMediaShort(row: Record<string, unknown>) {
     commentCount: row.comment_count,
     createdAt: row.created_at,
     status: row.status,
+    language: row.language,
+    mediaMetadata: row.media_metadata,
   };
 }
 
@@ -110,14 +115,21 @@ export async function submitCreatorShort(
     }
 
     const title = body.title.trim();
-    const videoId = getYouTubeVideoId(body.videoUrl.trim());
+    const videoPath = body.videoPath;
     const stateCode = (body.stateCode ?? body.constituencyId?.split('-AC-')[0] ?? '')
       .trim()
       .toUpperCase();
     if (
       !title ||
-      !videoId ||
+      title.length > CONTENT_LIMITS.short.title ||
+      (body.description?.trim().length ?? 0) > CONTENT_LIMITS.short.description ||
+      !body.id ||
+      !SHORT_ID_PATTERN.test(body.id) ||
+      videoPath !== `${auth.userId}/${body.id}.mp4` ||
+      body.rightsConfirmed !== true ||
       !/^[A-Z]{2}$/.test(stateCode) ||
+      !Object.hasOwn(STATES, stateCode) ||
+      stateCode === 'IN' ||
       (body.constituencyId &&
         !(
           body.constituencyId.startsWith(stateCode + '-AC-') &&
@@ -129,7 +141,7 @@ export async function submitCreatorShort(
         request,
         400,
         'Bad Request',
-        'A title, valid HTTPS YouTube video link, and matching constituency when supplied are required',
+        'Choose an MP4 video from your device and enter a title and matching audience.',
         {
           code: 'INVALID_SHORT_CONTENT',
         },
@@ -167,6 +179,45 @@ export async function submitCreatorShort(
       );
     }
 
+    let district: string | null = null;
+    if (body.constituencyId) {
+      const { data: constituency, error } = await supabase
+        .from('constituencies')
+        .select('district')
+        .eq('id', body.constituencyId)
+        .eq('state_code', stateCode)
+        .maybeSingle();
+      if (error)
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Could not verify the constituency.',
+        );
+      if (!constituency)
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'Select a constituency in this state.',
+        );
+      district = constituency.district;
+    }
+
+    const inspectedVideo = await inspectOriginalShort(videoPath);
+    if (!inspectedVideo) {
+      return sendApiError(
+        reply,
+        request,
+        400,
+        'Bad Request',
+        'Upload a playable H.264 MP4 video up to 60 seconds and 25 MB.',
+        { code: 'INVALID_SHORT_VIDEO' },
+      );
+    }
+
     const { data: profile, error: profileError } = await supabase
       .from('user_profiles')
       .select('display_name')
@@ -184,17 +235,20 @@ export async function submitCreatorShort(
       .insert({
         ...(body.id ? { id: body.id } : {}),
         title,
-        video_url: `https://www.youtube.com/embed/${videoId}`,
+        video_url: videoPath,
         status: 'pending',
-        thumbnail_url: body.thumbnailUrl || null,
+        thumbnail_url: null,
         description: body.description?.trim() || null,
         channel_name: profile?.display_name?.trim() || 'Verified contributor',
         channel_verified: true,
         state_code: stateCode,
-        state_name: body.stateName?.trim() || null,
+        state_name: STATES[stateCode].name,
         constituency_id: body.constituencyId || null,
-        district_name: body.districtName?.trim() || null,
-        duration: body.durationSeconds ?? 0,
+        district_name: district,
+        duration: inspectedVideo.durationSeconds,
+        media_metadata: inspectedVideo.metadata,
+        language: body.language || null,
+        rights_confirmed_at: new Date().toISOString(),
         hashtags: body.hashtags ?? [],
         gradient_colors: body.gradientColors ?? [],
         state_accent: body.stateAccent || null,
@@ -204,6 +258,21 @@ export async function submitCreatorShort(
       .single();
 
     if (error || !data) {
+      if (error?.code === '23505') {
+        const { data: saved } = await supabase
+          .from('political_shorts')
+          .select('*')
+          .eq('id', body.id)
+          .eq('uploaded_by', auth.userId)
+          .maybeSingle();
+        if (saved)
+          return reply.send({
+            success: true,
+            id: saved.id,
+            short: legacy ? toMediaShort(saved) : saved,
+            alreadyPersisted: true,
+          });
+      }
       return sendApiError(
         reply,
         request,
@@ -219,7 +288,17 @@ export async function submitCreatorShort(
     return reply
       .status(201)
       .send({ success: true, id: data.id, short: legacy ? toMediaShort(data) : data });
-  } catch {
+  } catch (error) {
+    if (error instanceof ShortInspectionUnavailable) {
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'Video inspection is temporarily unavailable. Retry this upload shortly.',
+        { code: 'SHORT_INSPECTION_UNAVAILABLE' },
+      );
+    }
     return sendApiError(
       reply,
       request,
@@ -704,13 +783,18 @@ export async function shortsRoutes(app: FastifyInstance) {
       schema: {
         body: {
           type: 'object',
-          required: ['title', 'videoUrl', 'stateCode'],
+          required: ['id', 'title', 'videoPath', 'stateCode', 'rightsConfirmed'],
           properties: {
             id: { type: 'string', pattern: SHORT_ID_PATTERN.source },
-            title: { type: 'string', minLength: 1, maxLength: 200 },
-            videoUrl: { type: 'string', minLength: 1 },
+            title: { type: 'string', minLength: 1, maxLength: CONTENT_LIMITS.short.title },
+            videoPath: { type: 'string', minLength: 1, maxLength: 80 },
+            rightsConfirmed: { const: true },
+            language: {
+              type: 'string',
+              enum: ['en', 'hi', 'te', 'ta', 'kn', 'mr', 'bn', 'gu', 'ml', 'or', 'pa', 'as', 'ne'],
+            },
             thumbnailUrl: { type: 'string' },
-            description: { type: 'string', maxLength: 5000 },
+            description: { type: 'string', maxLength: CONTENT_LIMITS.short.description },
             stateCode: { type: 'string', pattern: '^[A-Za-z]{2}$' },
             stateName: { type: 'string', maxLength: 100 },
             constituencyId: { type: 'string' },

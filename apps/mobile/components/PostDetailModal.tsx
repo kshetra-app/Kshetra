@@ -1,3 +1,4 @@
+import { CONTENT_LIMITS } from '@kshetra/shared';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
@@ -534,7 +535,7 @@ export default function PostDetailModal({
             value={commentText}
             onChangeText={setCommentText}
             multiline
-            maxLength={1000}
+            maxLength={CONTENT_LIMITS.comment}
           />
           <Pressable
             style={[

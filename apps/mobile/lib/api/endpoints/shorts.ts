@@ -12,12 +12,15 @@
 
 import type { ApiClient } from '../client';
 import { ApiValidationError } from '../errors';
+import { CONTENT_LIMITS } from '@kshetra/shared';
 
 export interface UploadShortRequestDTO {
   /** Existing persisted ID used only to safely replay a queued legacy upload. */
   id?: string;
   title: string;
-  videoUrl: string;
+  videoPath?: string;
+  rightsConfirmed?: boolean;
+  language?: string;
   thumbnailUrl?: string;
   description?: string;
   stateCode: string;
@@ -59,15 +62,15 @@ export class ShortsEndpoint {
   async uploadShort(payload: UploadShortRequestDTO): Promise<UploadShortResponseDTO> {
     if (
       !payload?.title?.trim() ||
-      payload.title.trim().length > 200 ||
-      !payload?.videoUrl?.trim() ||
+      payload.title.trim().length > CONTENT_LIMITS.short.title ||
+      !payload.id || !payload.videoPath?.trim() ||
       !payload?.stateCode?.trim()
     ) {
-      throw new ApiValidationError('Invalid upload short: title, videoUrl, and stateCode are required');
+      throw new ApiValidationError('Choose an original video, title and audience.');
     }
     const res = await this.client.post<UploadShortResponseDTO>(
       '/api/v1/shorts',
-      { ...payload, title: payload.title.trim(), videoUrl: payload.videoUrl.trim() },
+      { ...payload, title: payload.title.trim(), videoPath: payload.videoPath.trim() },
       { authPolicy: 'authenticated' },
     );
     return res.data;

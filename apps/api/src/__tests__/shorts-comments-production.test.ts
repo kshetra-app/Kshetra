@@ -1,3 +1,4 @@
+import * as originalVideo from '../services/originalShortVideo';
 import Fastify, { FastifyInstance } from 'fastify';
 import { shortsRoutes } from '../routes/shorts';
 import { supabase, setSupabaseConfiguredForTesting } from '../lib/supabase';
@@ -209,10 +210,22 @@ describe('Political short comments production contract', () => {
         error: null,
       }),
     };
+    const metadata = {
+      mimeType: 'video/mp4',
+      bytes: 24000,
+      width: 320,
+      height: 480,
+      videoCodec: 'h264',
+      audioCodec: null,
+      framesPerSecond: 24,
+    };
+    jest
+      .spyOn(originalVideo, 'inspectOriginalShort')
+      .mockResolvedValue({ durationSeconds: 22, metadata });
     const savedShort = {
       id: SHORT_ID,
       title: 'A real civic update',
-      video_url: 'https://www.youtube.com/embed/abcdefghijk',
+      video_url: `${USER_ID}/${SHORT_ID}.mp4`,
       channel_name: 'Public Creator',
       channel_verified: true,
       state_code: 'TS',
@@ -229,7 +242,23 @@ describe('Political short comments production contract', () => {
     jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
       if (table === 'creator_kyc_records') return { select: () => verificationQuery } as never;
       if (table === 'user_profiles') return { select: () => profileQuery } as never;
-      if (table === 'political_shorts') return { insert } as never;
+      if (table === 'political_shorts')
+        return {
+          insert,
+          select: () => ({
+            eq: () => ({ maybeSingle: async () => ({ data: null, error: null }) }),
+          }),
+        } as never;
+      if (table === 'constituencies')
+        return {
+          select: () => ({
+            eq: () => ({
+              eq: () => ({
+                maybeSingle: async () => ({ data: { district: 'Hyderabad' }, error: null }),
+              }),
+            }),
+          }),
+        } as never;
       return {} as never;
     }) as never);
 
@@ -238,8 +267,10 @@ describe('Political short comments production contract', () => {
       url: '/api/v1/shorts',
       headers: { authorization: 'Bearer verified-test-token' },
       payload: {
+        id: SHORT_ID,
         title: '  A real civic update  ',
-        videoUrl: 'https://www.youtube.com/embed/abcdefghijk',
+        videoPath: `${USER_ID}/${SHORT_ID}.mp4`,
+        rightsConfirmed: true,
         description: 'Persisted description',
         stateCode: 'ts',
         stateName: 'Telangana',
@@ -257,10 +288,11 @@ describe('Political short comments production contract', () => {
 
     expect(response.statusCode).toBe(201);
     expect(insert).toHaveBeenCalledTimes(1);
-    expect(insertedValues).toEqual({
+    expect(insertedValues).toMatchObject({
+      id: SHORT_ID,
       status: 'pending',
       title: 'A real civic update',
-      video_url: 'https://www.youtube.com/embed/abcdefghijk',
+      video_url: `${USER_ID}/${SHORT_ID}.mp4`,
       thumbnail_url: null,
       description: 'Persisted description',
       channel_name: 'Public Creator',
@@ -269,7 +301,9 @@ describe('Political short comments production contract', () => {
       state_name: 'Telangana',
       constituency_id: 'TS-AC-67',
       district_name: 'Hyderabad',
-      duration: 45,
+      duration: 22,
+      media_metadata: metadata,
+      rights_confirmed_at: expect.any(String),
       hashtags: ['CivicUpdate'],
       gradient_colors: ['#0F2027', '#203A43'],
       state_accent: '#4F8EF7',
@@ -296,7 +330,23 @@ describe('Political short comments production contract', () => {
     const insert = jest.fn();
     jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
       if (table === 'creator_kyc_records') return { select: () => verificationQuery } as never;
-      if (table === 'political_shorts') return { insert } as never;
+      if (table === 'political_shorts')
+        return {
+          insert,
+          select: () => ({
+            eq: () => ({ maybeSingle: async () => ({ data: null, error: null }) }),
+          }),
+        } as never;
+      if (table === 'constituencies')
+        return {
+          select: () => ({
+            eq: () => ({
+              eq: () => ({
+                maybeSingle: async () => ({ data: { district: 'Hyderabad' }, error: null }),
+              }),
+            }),
+          }),
+        } as never;
       return {} as never;
     }) as never);
 
@@ -305,8 +355,10 @@ describe('Political short comments production contract', () => {
       url: '/api/v1/shorts',
       headers: { authorization: 'Bearer verified-test-token' },
       payload: {
+        id: SHORT_ID,
         title: 'Unverified submission',
-        videoUrl: 'https://www.youtube.com/embed/abcdefghijk',
+        videoPath: `${USER_ID}/${SHORT_ID}.mp4`,
+        rightsConfirmed: true,
         stateCode: 'TS',
       },
     });
@@ -343,7 +395,8 @@ describe('Political short comments production contract', () => {
       payload: {
         id: SHORT_ID,
         title: 'Already persisted',
-        videoUrl: 'https://www.youtube.com/embed/abcdefghijk',
+        videoPath: `${USER_ID}/${SHORT_ID}.mp4`,
+        rightsConfirmed: true,
         stateCode: 'TS',
       },
     });

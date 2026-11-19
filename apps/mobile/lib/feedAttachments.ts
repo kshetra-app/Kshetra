@@ -1,6 +1,7 @@
 import type { PostMedia } from './feedTypes';
 import { supabase } from './supabase';
 import { File } from 'expo-file-system';
+import { exceedsFeedMediaLimit } from '@kshetra/shared';
 
 export type SubmittedAttachment = Pick<PostMedia, 'mediaType' | 'url' | 'altText'>;
 const types = {
@@ -16,7 +17,7 @@ export function validWebLink(value: string) {
 }
 
 export async function prepareFeedAttachments(items: PostMedia[], userId: string): Promise<SubmittedAttachment[]> {
-  if (items.length > 5) throw new Error('Choose up to five attachments.');
+  if (exceedsFeedMediaLimit(items)) throw new Error('Attach up to four items: three photos, one video and one link.');
   const result: SubmittedAttachment[] = [];
   for (const item of items) {
     const altText = item.altText?.slice(0, 200);

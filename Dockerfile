@@ -1,6 +1,7 @@
 FROM node:22-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
+RUN apk add --no-cache ffmpeg
 
 # Install from the API's standalone, lockfile-backed manifest. The monorepo
 # root manifest includes unrelated mobile and test tooling, so it is not part

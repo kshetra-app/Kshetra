@@ -82,7 +82,7 @@ describe('W010 BATCH L1 — DEF-001 & DEF-007 VERIFICATION', () => {
     it('uploadShort reports an unavailable backend without inventing a persisted short ID', async () => {
       const res = await uploadShort({
         title: 'Test Short',
-        videoUrl: 'https://youtube.com/embed/test',
+        id: validUuid, videoPath: `${validUuid}/${validUuid}.mp4`, rightsConfirmed: true,
         stateCode: 'TS',
         duration: 30,
       });

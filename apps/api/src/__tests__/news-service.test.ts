@@ -84,6 +84,35 @@ describe('News Service (newsService.ts)', () => {
   });
 
   describe('getFeed filtering capabilities', () => {
+    it('returns Telugu Telangana publisher video and only fresh publisher-marked breaking news', async () => {
+      const recent = new Date(Date.now() - 30 * 60 * 1000).toUTCString();
+      const older = new Date(Date.now() - 12 * 60 * 60 * 1000).toUTCString();
+      jest.spyOn(rssParser, 'fetchFeedXml').mockImplementation(async (url) =>
+        url === 'https://tv9telugu.com/telangana/feed'
+          ? `
+          <rss><channel>
+            <item><title>తెలంగాణ తాజా వీడియో</title>
+              <link>https://tv9telugu.com/videos/telangana-fixture.html</link>
+              <category><![CDATA[Breaking News]]></category><pubDate>${recent}</pubDate></item>
+            <item><title>Previous alert</title>
+              <link>https://tv9telugu.com/telangana/old-alert.html</link>
+              <category>Breaking News</category><pubDate>${older}</pubDate></item>
+            <item><title>Regular article</title>
+              <link>https://tv9telugu.com/telangana/regular.html</link>
+              <pubDate>${recent}</pubDate></item>
+          </channel></rss>`
+          : null,
+      );
+      await refreshNews();
+      const scope = { scope: 'state', state: 'TS', lang: 'te' };
+      expect(getFeed({ ...scope, category: 'breaking' }).items).toHaveLength(1);
+      expect(getFeed({ ...scope, category: 'video' }).items[0].video).toMatchObject({
+        provider: 'native',
+      });
+      expect(getFeed({ ...scope, category: 'regional' }).items).toHaveLength(3);
+      expect(getFeed({ ...scope, state: 'AP' }).items).toHaveLength(0);
+    });
+
     it('filters items by language, category, scope, and limit', () => {
       // All filters exercisable
       const all = getFeed();

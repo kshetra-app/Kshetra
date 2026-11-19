@@ -75,6 +75,8 @@ export interface NewsSourceDTO {
 }
 
 export interface NewsItemDTO {
+  categories?: string[];
+  breaking?: boolean;
   id: string;
   title: string;
   summary?: string;

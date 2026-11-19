@@ -1,4 +1,5 @@
-import { getYouTubeVideoId } from '@kshetra/shared';
+import { resolveOriginalShortVideo } from '../lib/originalShortVideo';
+
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -15,7 +16,6 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Alert,
-  Linking,
   Share,
   type ViewToken,
   useWindowDimensions,
@@ -307,7 +307,7 @@ function ShortPageItem({
   const handleNativeShare = useCallback(async () => {
     try {
       await Share.share({
-        message: `${item.title}\n${item.videoUrl}\n\n— via Poligram Shorts`,
+        message: `${item.title}\n\n— via Poligram Shorts`,
       });
     } catch {}
   }, [item.title, item.videoUrl]);
@@ -354,100 +354,64 @@ function ShortPageItem({
     }
   }, [commentText, commentSubmitting, item.id, authorName]);
 
-  const videoId = getYouTubeVideoId(item.videoUrl);
-
-  // YouTube IFrame Player API — loaded via HTML to bypass WebView detection.
-  // baseUrl is a neutral third-party origin (NOT youtube.com) so YouTube
-  // doesn't interpret this as a self-embed attempt (Error 152).
-  const playerHtml = useMemo(() => `<!DOCTYPE html>
-<html><head>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<style>*{margin:0;padding:0;overflow:hidden}html,body{width:100%;height:100%;background:#000}#player{position:absolute;top:0;left:0;width:100%;height:100%}</style>
-</head><body>
-<div id="player"></div>
-<script>
-var tag=document.createElement('script');
-tag.src="https://www.youtube.com/iframe_api";
-document.head.appendChild(tag);
-var player;
-function onYouTubeIframeAPIReady(){
-  player=new YT.Player('player',{
-    width:'100%',height:'100%',
-    videoId:'${videoId}',
-    playerVars:{playsinline:1,autoplay:1,controls:1,rel:0,modestbranding:1,fs:0,iv_load_policy:3,loop:1,playlist:'${videoId}'},
-    events:{
-      onReady:function(e){window.ReactNativeWebView.postMessage(JSON.stringify({type:'ready'}));},
-      onError:function(e){window.ReactNativeWebView.postMessage(JSON.stringify({type:'error',code:e.data}));}
-    }
-  });
-}
-</script>
-</body></html>`, [videoId]);
-
-  const handleWebViewMessage = useCallback((event: { nativeEvent: { data: string } }) => {
-    try {
-      const data = JSON.parse(event.nativeEvent.data);
-      if (data.type === 'error') { setVideoError(true); setWebViewLoading(false); }
-      if (data.type === 'ready') setWebViewLoading(false);
-    } catch {}
-  }, []);
-
-  const handleRetry = useCallback(() => {
+  const [streamUrl, setStreamUrl] = useState<string | null>(null);
+  const [playbackAttempt, setPlaybackAttempt] = useState(0);
+  useEffect(() => {
+    if (!isActive) return;
+    let current = true;
     setVideoError(false);
+    setStreamUrl(null);
     setWebViewLoading(true);
-  }, []);
+    resolveOriginalShortVideo(item.videoUrl).then((url) => {
+      if (!current) return;
+      if (url) setStreamUrl(url);
+      else { setWebViewLoading(false); setVideoError(true); }
+    }).catch(() => {
+      if (current) { setWebViewLoading(false); setVideoError(true); }
+    });
+    return () => { current = false; };
+  }, [isActive, item.videoUrl, playbackAttempt]);
+
+  const playerHtml = useMemo(() => {
+    const safeUrl = (streamUrl ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+    return `<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1">
+      <body style="margin:0;background:black">
+      <video src="${safeUrl}" style="width:100vw;height:100vh;object-fit:contain"
+        playsinline controls autoplay muted loop
+        onloadeddata="window.ReactNativeWebView.postMessage('ready')"
+        onerror="window.ReactNativeWebView.postMessage('error')"></video></body>`;
+  }, [streamUrl]);
 
   return (
     <View style={[styles.shortPage, { width: screenWidth, height: screenHeight }]}>
-      {/* YouTube IFrame API Player via HTML — proven approach (same as react-native-youtube-iframe) */}
-      {isActive && videoId && !videoError && (
-        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#000' }}>
+      {isActive && streamUrl && !videoError && (
+        <View style={StyleSheet.absoluteFill}>
           <WebView
-            key={videoId}
+            key={streamUrl}
             style={{ flex: 1, backgroundColor: '#000' }}
-            source={{ html: playerHtml, baseUrl: 'https://lonelycpp.github.io' }}
-            originWhitelist={['*']}
-            javaScriptEnabled={true}
-            domStorageEnabled={true}
-            allowsInlineMediaPlayback={true}
+            source={{ html: playerHtml }}
+            allowsInlineMediaPlayback
             mediaPlaybackRequiresUserAction={false}
-            allowsFullscreenVideo={false}
-            mixedContentMode="always"
-            cacheEnabled={true}
-            thirdPartyCookiesEnabled={true}
-            sharedCookiesEnabled={true}
-            userAgent="Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36"
-            onLoadStart={() => setWebViewLoading(true)}
-            onLoadEnd={() => {/* wait for onReady postMessage instead */}}
+            onShouldStartLoadWithRequest={(request) => request.url === 'about:blank'}
+            onMessage={(event) => {
+              setWebViewLoading(false);
+              if (event.nativeEvent.data === 'error') setVideoError(true);
+            }}
             onError={() => { setWebViewLoading(false); setVideoError(true); }}
-            onMessage={handleWebViewMessage}
           />
-          {webViewLoading && (
-            <View style={[StyleSheet.absoluteFill, styles.loaderContainer]}>
-              <ActivityIndicator size="large" color="#4F8EF7" />
-            </View>
-          )}
         </View>
       )}
-
-      {/* Error fallback — open externally */}
-      {(videoError || !videoId) && (
-        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#000', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24 }}>
+      {isActive && webViewLoading && !videoError && (
+        <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.loaderContainer]}>
+          <ActivityIndicator size="large" color="#4F8EF7" />
+        </View>
+      )}
+      {isActive && videoError && (
+        <View style={[StyleSheet.absoluteFill, styles.loaderContainer]}>
           <Ionicons name="alert-circle" size={48} color="#EF4444" />
-          <Text style={{ color: '#FFFFFF', fontSize: 16, fontWeight: '700', marginTop: 12, textAlign: 'center' }}>{t('shortsPlayer.videoUnavailable')}</Text>
-          <Text style={{ color: '#9CA3AF', fontSize: 13, textAlign: 'center', marginTop: 8, lineHeight: 18 }}>
-            {t('shortsPlayer.videoUnavailableDesc')}
-          </Text>
-          <Pressable
-            disabled={!videoId}
-            onPress={() => videoId && Linking.openURL(`https://www.youtube.com/watch?v=${videoId}`)}
-            style={{ backgroundColor: '#FF0000', borderRadius: 10, paddingHorizontal: 24, paddingVertical: 12, marginTop: 20, flexDirection: 'row', alignItems: 'center', gap: 8 }}
-          >
-            <Ionicons name="logo-youtube" size={20} color="#FFFFFF" />
-            <Text style={{ color: '#FFFFFF', fontWeight: '800', fontSize: 14 }}>{t('shortsPlayer.openYouTube')}</Text>
-          </Pressable>
-          <Pressable onPress={handleRetry} style={{ marginTop: 14, paddingVertical: 8, paddingHorizontal: 16 }}>
-            <Text style={{ color: '#4F8EF7', fontWeight: '700', fontSize: 13 }}>{t('shortsPlayer.retry')}</Text>
+          <Text style={{ color: '#FFFFFF' }}>{t('shortsPlayer.videoUnavailable')}</Text>
+          <Pressable onPress={() => setPlaybackAttempt((attempt) => attempt + 1)} style={{ padding: 16 }}>
+            <Text style={{ color: '#4F8EF7' }}>{t('common.retry')}</Text>
           </Pressable>
         </View>
       )}

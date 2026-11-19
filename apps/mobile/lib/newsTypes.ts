@@ -20,6 +20,7 @@ export type NewsCategory =
   | 'economy'
   | 'governance'
   | 'regional'
+  | 'breaking'
   | 'video';
 
 /** Languages the user can choose to consume news in. */
@@ -69,6 +70,8 @@ export interface NewsItem {
   /** Language this item is written in. */
   language: NewsLanguageCode;
   category: NewsCategory;
+  categories?: string[];
+  breaking?: boolean;
   scope: NewsScope;
   /** ISO state code the item is relevant to (undefined = national). */
   stateCode?: string;
@@ -118,6 +121,7 @@ export const NEWS_CATEGORIES: { key: NewsCategory; label: string; icon: string }
   { key: 'governance', label: 'Governance', icon: 'business' },
   { key: 'economy', label: 'Economy', icon: 'trending-up' },
   { key: 'regional', label: 'Regional', icon: 'location' },
+  { key: 'breaking', label: 'Breaking', icon: 'flash-outline' },
   { key: 'video', label: 'Video', icon: 'play-circle' },
 ];
 

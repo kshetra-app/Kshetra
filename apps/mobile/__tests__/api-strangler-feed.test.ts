@@ -207,7 +207,8 @@ describe('Track 3: Mobile API Strangler - Feed & Social Mutations', () => {
     it('uploadShort dispatches to POST /api/v1/shorts', async () => {
       const res = await dataService.uploadShort({
         title: 'Rally video',
-        videoUrl: 'https://cdn.example.com/video.mp4',
+        id: '5bfe8c93-4df2-4cf1-9ed4-1cf58f64c095',
+        videoPath: '7bd6b9b1-aed6-43e8-aac4-a7bf6d2662cb/5bfe8c93-4df2-4cf1-9ed4-1cf58f64c095.mp4', rightsConfirmed: true,
         stateCode: 'TS',
         duration: 30,
       });

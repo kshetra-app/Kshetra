@@ -2,7 +2,12 @@ import { createHash } from 'crypto';
 import { FEED_SOURCES } from './sources';
 import type { FeedSource, NewsCategory, NewsLanguageCode, NewsScope } from './sources';
 import { fetchFeedXml, parseFeed } from './rssParser';
-import { filterNewsByScope, isFreshNewsTimestamp } from '@kshetra/shared';
+import {
+  filterNewsByScope,
+  getYouTubeVideoId,
+  isFreshNewsTimestamp,
+  matchesNewsCategory,
+} from '@kshetra/shared';
 
 export interface NewsItem {
   id: string;
@@ -20,6 +25,8 @@ export interface NewsItem {
   };
   language: NewsLanguageCode;
   category: NewsCategory;
+  categories?: NewsCategory[];
+  breaking?: boolean;
   scope: NewsScope;
   stateCode?: string;
   constituencyId?: string;
@@ -45,7 +52,6 @@ export interface FeedFilters {
 }
 
 const REFRESH_INTERVAL_MIN = 60;
-const MAX_ITEMS = 200;
 const PER_SOURCE_CAP = 15;
 
 let cache: NewsFeed = {
@@ -62,19 +68,55 @@ function hashId(link: string): string {
   return createHash('sha1').update(link).digest('hex').slice(0, 16);
 }
 
-function detectYouTube(link: string): { provider: 'youtube'; embedId: string } | undefined {
-  const m = link.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{6,})/i);
-  return m ? { provider: 'youtube', embedId: m[1] } : undefined;
+function detectVideo(link: string): NewsItem['video'] {
+  const youtube = getYouTubeVideoId(link);
+  if (youtube) return { provider: 'youtube', embedId: youtube };
+  try {
+    const url = new URL(link);
+    if (
+      url.protocol === 'https:' &&
+      url.hostname === 'tv9telugu.com' &&
+      url.pathname.startsWith('/videos/')
+    ) {
+      return { provider: 'native', embedId: link };
+    }
+  } catch {
+    return undefined;
+  }
 }
 
 async function scrapeSource(src: FeedSource): Promise<NewsItem[]> {
   const xml = await fetchFeedXml(src.rssUrl);
   if (!xml) return [];
-  const parsed = parseFeed(xml)
-    .filter((item) => isFreshNewsTimestamp(item.publishedAt))
-    .slice(0, PER_SOURCE_CAP);
+  const fresh = parseFeed(xml).filter(
+    (item) => item.title.trim() && isFreshNewsTimestamp(item.publishedAt),
+  );
+  const parsed = fresh.slice(0, PER_SOURCE_CAP);
+  const ids = new Set(parsed.map((item) => item.link));
+  // A busy text feed should not crowd out its publisher's fresh video stories.
+  for (const video of fresh.filter((item) => detectVideo(item.link)).slice(0, 5)) {
+    if (!ids.has(video.link)) parsed.push(video);
+  }
   return parsed.map((p) => {
-    const video = detectYouTube(p.link);
+    const video = detectVideo(p.link);
+    const publisherCategories = (p.categories ?? []).map((category) =>
+      category.trim().toLowerCase(),
+    );
+    const breaking =
+      publisherCategories.some((tag) =>
+        /^(breaking(?: news)?|బ్రేకింగ్(?: న్యూస్)?|ब्रेकिंग(?: न्यूज़)?)$/iu.test(tag),
+      ) || /^(breaking(?: news)?|బ్రేకింగ్(?: న్యూస్)?|ब्रेकिंग(?: न्यूज़)?)\s*[:|–—-]/iu.test(p.title);
+    const categories = new Set<NewsCategory>([src.category]);
+    if (publisherCategories.some((tag) => /^(politics|పాలిటిక్స్|రాజకీయం)$/iu.test(tag)))
+      categories.add('politics');
+    if (publisherCategories.some((tag) => /^(elections?|ఎన్నికలు)(?:\s*-?\s*20\d{2})?$/iu.test(tag)))
+      categories.add('elections');
+    if (
+      publisherCategories.some((tag) =>
+        /^(governance|public policy|government schemes|ప్రభుత్వ పథకాలు)$/iu.test(tag),
+      )
+    )
+      categories.add('governance');
     return {
       id: hashId(p.link),
       title: p.title,
@@ -91,6 +133,8 @@ async function scrapeSource(src: FeedSource): Promise<NewsItem[]> {
       },
       language: src.language,
       category: video ? 'video' : src.category,
+      categories: [...categories],
+      breaking,
       scope: src.scope,
       stateCode: src.stateCode,
       publishedAt: p.publishedAt!,
@@ -107,17 +151,23 @@ export async function refreshNews(): Promise<NewsFeed> {
     const all: NewsItem[] = [];
     for (const r of results) if (r.status === 'fulfilled') all.push(...r.value);
 
-    // Dedupe by canonical link (id), keep first occurrence.
-    const seen = new Set<string>();
-    const deduped: NewsItem[] = [];
+    // Dedupe by canonical link while retaining every section the publisher put it in.
+    const byId = new Map<string, NewsItem>();
     for (const item of all) {
-      if (seen.has(item.id)) continue;
-      seen.add(item.id);
-      deduped.push(item);
+      const existing = byId.get(item.id);
+      if (!existing) byId.set(item.id, item);
+      else {
+        existing.categories = [
+          ...new Set([...(existing.categories ?? []), ...(item.categories ?? [])]),
+        ];
+        existing.breaking ||= item.breaking;
+        existing.video ??= item.video;
+      }
     }
 
-    deduped.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
-    const items = deduped.slice(0, MAX_ITEMS);
+    const items = [...byId.values()].sort(
+      (a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt),
+    );
 
     const sourceMap = new Map<string, NewsItem['source']>();
     for (const it of items)
@@ -140,10 +190,8 @@ export function getFeed(filters: FeedFilters = {}): NewsFeed {
   let items = cache.items.filter((item) => isFreshNewsTimestamp(item.publishedAt));
   if (filters.lang) items = items.filter((i) => i.language === filters.lang);
   if (filters.category && filters.category !== 'top') {
-    items =
-      filters.category === 'video'
-        ? items.filter((i) => !!i.video)
-        : items.filter((i) => i.category === filters.category);
+    const category = filters.category;
+    items = items.filter((item) => matchesNewsCategory(item, category));
   }
   if (
     filters.scope === 'national' ||

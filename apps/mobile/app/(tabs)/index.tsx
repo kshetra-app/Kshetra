@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useResponsive } from '../../lib/responsive';
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import {
   CONSTITUENCY_ZOOM,
   MAP_STYLE,
@@ -585,7 +585,7 @@ function FullMapScreen() {
     (stateIdleTrivia && stateIdleTrivia.length > 0)
   );
 
-  const snapPoints = useMemo(() => ['28%', '55%'], []);
+  const snapPoints = useMemo(() => ['34%', '80%'], []);
 
   // Keep refs in sync so handlers always see latest state
   selectedRef.current = selected;
@@ -2420,7 +2420,8 @@ function FullMapScreen() {
           const turnout = typeof turnoutValue === 'number' && Number.isFinite(turnoutValue) ? turnoutValue : null;
 
           return (
-            <BottomSheetView style={styles.sheetContent}>
+            <BottomSheetScrollView contentContainerStyle={styles.sheetContent} showsVerticalScrollIndicator>
+
               {/* Top Badges & Identity Header */}
               <View style={styles.sheetHeader}>
                 <View style={styles.sheetBadgeRow}>
@@ -2884,7 +2885,7 @@ function FullMapScreen() {
               )}
 
               {mapOnlyMode && sheetTab === 'feed' && (
-                <ScrollView style={{ maxHeight: 180 }}>
+                <View>
                   {(() => {
                     const localPosts = allPosts.filter((p) => p.constituencyId === `${stateCode}-AC-${selected.acNo}` && !p.isDeleted);
                     return localPosts.length === 0 ? (
@@ -2906,7 +2907,7 @@ function FullMapScreen() {
                       ))
                     );
                   })()}
-                </ScrollView>
+                </View>
               )}
 
               {(!mapOnlyMode || sheetTab === 'analytics') && (
@@ -2998,7 +2999,7 @@ function FullMapScreen() {
                   )}
                 </>
               )}
-            </BottomSheetView>
+            </BottomSheetScrollView>
           );
         })()}
       </BottomSheet>

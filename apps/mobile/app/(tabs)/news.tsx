@@ -4,6 +4,7 @@ import {
   ActivityIndicator,
   View,
   Text,
+  TextInput,
   StyleSheet,
   FlatList,
   Pressable,
@@ -31,7 +32,7 @@ import {
 import NewsCard from '../../components/NewsCard';
 import AdCard from '../../components/AdCard';
 import { AD_INSERT_INTERVAL } from '../../lib/adConfig';
-import { filterNewsByScope, STATES, type NewsGeographicScope } from '@kshetra/shared';
+import { filterNewsByScope, matchesNewsCategory, STATES, type NewsGeographicScope } from '@kshetra/shared';
 import { useTheme } from '../../lib/theme';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import { tapLight } from '../../lib/haptics';
@@ -56,7 +57,10 @@ export default function NewsScreen() {
   const toggleBookmark = useNewsStore((s) => s.toggleBookmark);
   const refresh = useNewsStore((s) => s.refresh);
 
-  const stateCode = useActiveStateStore((s) => s.stateCode);
+  const activeStateCode = useActiveStateStore((s) => s.stateCode);
+  const [newsState, setNewsState] = useState<string | null>(null);
+  const [stateSearch, setStateSearch] = useState('');
+  const stateCode = newsState ?? activeStateCode;
   const myHome = useMyConstituencyStore((s) => s.home);
   const stateConstituencies = useMemo(
     () => (stateCode === 'IN' ? [] : getUnifiedConstituenciesForState(stateCode)),
@@ -135,8 +139,7 @@ export default function NewsScreen() {
     list = filterNewsByScope(list, scope, stateCode, userConstituencyId);
 
     // Category
-    if (category === 'video') list = list.filter((i) => !!i.video);
-    else if (category !== 'top') list = list.filter((i) => i.category === category);
+    list = list.filter((item) => matchesNewsCategory(item, category));
 
     // Bookmarks view
     if (showBookmarks) list = list.filter((i) => bookmarks.includes(i.id));
@@ -158,19 +161,10 @@ export default function NewsScreen() {
     Number.isFinite(generatedAtMs) && generatedAtMs <= Date.now() + 5 * 60_000;
   const feedUnavailable = loaded && !loading && !hasFeedSnapshot;
 
-  const SCOPES: { key: NewsGeographicScope; label: string; icon: string; disabled: boolean }[] = [
-    { key: 'national', label: 'All India', icon: 'globe', disabled: false },
-    { key: 'state', label: stateName, icon: 'map', disabled: stateCode === 'IN' },
-    {
-      key: 'constituency',
-      label:
-        myHomeBelongsToState && myHome
-          ? myHome.name
-          : t('common.scopes.myConstituency'),
-      icon: 'location',
-      disabled: !userConstituencyId,
-    },
-  ];
+  const stateOptions = useMemo(() => Object.values(STATES)
+    .filter((state) => state.code !== 'IN' &&
+      (!stateSearch.trim() || (state.name + ' ' + state.code).toLowerCase().includes(stateSearch.trim().toLowerCase())))
+    .sort((a, b) => a.name.localeCompare(b.name)), [stateSearch]);
 
   const currentLangLabel = useMemo(() => {
     if (!language) return t('common.allLanguages');
@@ -221,6 +215,7 @@ export default function NewsScreen() {
             ]}
             onPress={() => {
               tapLight();
+              setStateSearch('');
               setShowScopeModal(true);
             }}
             accessibilityRole="button"
@@ -382,6 +377,8 @@ export default function NewsScreen() {
                   ? 'No saved stories yet'
                   : feedUnavailable
                     ? t('common.newsUnavailableDescription', { defaultValue: 'The latest stories could not be loaded. Please try again.' })
+                    : category === 'breaking'
+                      ? t('news.noBreaking', { defaultValue: 'No recent stories marked breaking match these filters.' })
                     : hasContentFilters
                     ? 'No stories match these filters'
                     : scope === 'constituency'
@@ -445,46 +442,50 @@ export default function NewsScreen() {
                 <Ionicons name="close" size={20} color={colors.textMuted} />
               </Pressable>
             </View>
-            <View style={styles.modalList}>
-              {SCOPES.map((s) => {
-                const active = scope === s.key;
+            <TextInput
+              accessibilityLabel={t('news.searchStates', { defaultValue: 'Search states and union territories' })}
+              placeholder={t('news.searchStates', { defaultValue: 'Search states and union territories' })}
+              placeholderTextColor={colors.textMuted}
+              value={stateSearch}
+              onChangeText={setStateSearch}
+              maxLength={50}
+              style={{ color: colors.text, padding: 12, borderWidth: 1, borderColor: colors.border, borderRadius: 10 }}
+            />
+            <ScrollView style={{ maxHeight: 390 }} contentContainerStyle={styles.modalList} keyboardShouldPersistTaps="handled">
+              {!stateSearch.trim() && (
+                <>
+                  <Pressable accessibilityRole="button" style={[styles.modalOption, { borderColor: colors.border }]}
+                    onPress={() => { setScope('national'); setShowScopeModal(false); }}>
+                    <Text style={[styles.modalOptionText, { color: colors.text }]}>{t('common.scopes.allIndia', { defaultValue: 'All India' })}</Text>
+                    {scope === 'national' && <Ionicons name="checkmark-circle" size={18} color={colors.primary} />}
+                  </Pressable>
+                  {userConstituencyId && myHome && (
+                    <Pressable accessibilityRole="button" style={[styles.modalOption, { borderColor: colors.border }]}
+                      onPress={() => { setScope('constituency'); setShowScopeModal(false); }}>
+                      <Text style={[styles.modalOptionText, { color: colors.text }]}>{myHome.name}</Text>
+                      {scope === 'constituency' && <Ionicons name="checkmark-circle" size={18} color={colors.primary} />}
+                    </Pressable>
+                  )}
+                </>
+              )}
+              {stateOptions.map((state) => {
+                const active = scope === 'state' && stateCode === state.code;
                 return (
-                  <Pressable
-                    key={s.key}
-                    disabled={s.disabled}
-                    style={[
-                      styles.modalOption,
-                      { borderColor: colors.border },
-                      active && { backgroundColor: colors.primary + '15', borderColor: colors.primary },
-                      s.disabled && { opacity: 0.4 },
-                    ]}
+                  <Pressable key={state.code} accessibilityRole="button" accessibilityState={{ selected: active }}
+                    style={[styles.modalOption, { borderColor: active ? colors.primary : colors.border }]}
                     onPress={() => {
                       tapLight();
-                      setScope(s.key);
+                      setNewsState(state.code);
+                      setScope('state');
                       setShowScopeModal(false);
-                    }}
-                  >
-                    <View style={styles.modalOptionLeft}>
-                      <Ionicons
-                        name={s.icon as any}
-                        size={18}
-                        color={active ? colors.primary : colors.textSecondary}
-                      />
-                      <Text
-                        style={[
-                          styles.modalOptionText,
-                          { color: active ? colors.primary : colors.text },
-                          active && { fontWeight: '700' },
-                        ]}
-                      >
-                        {s.label}
-                      </Text>
-                    </View>
+                    }}>
+                    <Text style={[styles.modalOptionText, { color: colors.text }]}>{state.name}</Text>
                     {active && <Ionicons name="checkmark-circle" size={18} color={colors.primary} />}
                   </Pressable>
                 );
               })}
-            </View>
+              {stateOptions.length === 0 && <Text style={{ color: colors.textMuted }}>{t('news.noMatchingStates', { defaultValue: 'No matching states or union territories' })}</Text>}
+            </ScrollView>
           </View>
         </Pressable>
       </Modal>

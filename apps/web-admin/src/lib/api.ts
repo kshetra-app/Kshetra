@@ -72,7 +72,11 @@ export interface ReviewSubmission {
   constituency_id?: string;
   title?: string;
   description?: string;
-  video_url?: string;
+  video_url?: string | null;
+  language?: string;
+  duration?: number;
+  rights_confirmed_at?: string;
+  media_metadata?: import('@kshetra/shared').ShortMediaMetadata;
   polls?: { question: string; poll_options: { label: string; sort_order: number }[] } | null;
   post_media?: {
     id: string;

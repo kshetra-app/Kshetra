@@ -6,6 +6,7 @@
 
 import type { FastifyInstance } from 'fastify';
 import { createHash } from 'node:crypto';
+import { CONTENT_LIMITS, exceedsFeedMediaLimit } from '@kshetra/shared';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
 import { resolveAuthenticatedUser, assertActingUserMatch } from '../lib/userAuth';
@@ -36,7 +37,7 @@ export async function feedRoutes(app: FastifyInstance) {
           type: 'object',
           required: ['content', 'stateCode'],
           properties: {
-            content: { type: 'string', minLength: 1, maxLength: 2000 },
+            content: { type: 'string', minLength: 1, maxLength: CONTENT_LIMITS.post.discussion },
             type: {
               type: 'string',
               enum: ['discussion', 'news', 'opinion', 'question', 'alert', 'poll'],
@@ -50,7 +51,7 @@ export async function feedRoutes(app: FastifyInstance) {
             clientToken: { type: 'string', minLength: 1, maxLength: 128 },
             media: {
               type: 'array',
-              maxItems: 5,
+              maxItems: CONTENT_LIMITS.feedMedia.total,
               items: {
                 type: 'object',
                 additionalProperties: false,
@@ -65,8 +66,8 @@ export async function feedRoutes(app: FastifyInstance) {
             pollOptions: {
               type: 'array',
               minItems: 2,
-              maxItems: 5,
-              items: { type: 'string', minLength: 1, maxLength: 200 },
+              maxItems: CONTENT_LIMITS.pollOptions,
+              items: { type: 'string', minLength: 1, maxLength: CONTENT_LIMITS.pollOption },
             },
           },
         },
@@ -92,6 +93,16 @@ export async function feedRoutes(app: FastifyInstance) {
         clientToken,
       } = request.body;
       const media = request.body.media ?? [];
+      if (exceedsFeedMediaLimit(media)) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'Attach up to four items: three photos, one video and one link.',
+          { code: 'ATTACHMENT_LIMIT' },
+        );
+      }
       if (
         media.some((item) => {
           if (item.mediaType !== 'link')
@@ -126,13 +137,13 @@ export async function feedRoutes(app: FastifyInstance) {
           { code: 'INVALID_AUDIENCE' },
         );
       }
-      if (!content.trim() || (type === 'poll' && content.length > 500)) {
+      if (!content.trim() || content.length > CONTENT_LIMITS.post[type]) {
         return sendApiError(
           reply,
           request,
           400,
           'Bad Request',
-          'Enter post text. Poll questions can contain at most 500 characters.',
+          `Enter between 1 and ${CONTENT_LIMITS.post[type]} characters for this post.`,
           { code: 'VALIDATION_ERROR' },
         );
       }
@@ -142,8 +153,10 @@ export async function feedRoutes(app: FastifyInstance) {
         type === 'poll' &&
         (!normalizedPollOptions ||
           normalizedPollOptions.length < 2 ||
-          normalizedPollOptions.length > 5 ||
-          normalizedPollOptions.some((option) => !option || option.length > 200) ||
+          normalizedPollOptions.length > CONTENT_LIMITS.pollOptions ||
+          normalizedPollOptions.some(
+            (option) => !option || option.length > CONTENT_LIMITS.pollOption,
+          ) ||
           new Set(normalizedPollOptions.map((option) => option.toLocaleLowerCase())).size !==
             normalizedPollOptions.length)
       ) {
@@ -152,7 +165,7 @@ export async function feedRoutes(app: FastifyInstance) {
           request,
           400,
           'Bad Request',
-          'Polls require 2–5 distinct, non-empty options of at most 200 characters.',
+          'Polls require 2 to 4 distinct, non-empty options of at most 80 characters.',
           { code: 'VALIDATION_ERROR' },
         );
       }
@@ -522,7 +535,7 @@ export async function feedRoutes(app: FastifyInstance) {
           type: 'object',
           required: ['content'],
           properties: {
-            content: { type: 'string', minLength: 1, maxLength: 2000 },
+            content: { type: 'string', minLength: 1, maxLength: CONTENT_LIMITS.post.discussion },
             authorId: { type: 'string' },
           },
         },
@@ -555,7 +568,7 @@ export async function feedRoutes(app: FastifyInstance) {
       try {
         const { data: existing, error: fetchErr } = await supabase
           .from('posts')
-          .select('author_id')
+          .select('author_id,type')
           .eq('id', id)
           .maybeSingle();
 
@@ -581,6 +594,20 @@ export async function feedRoutes(app: FastifyInstance) {
             {
               code: 'FORBIDDEN',
             },
+          );
+        }
+
+        const limit =
+          CONTENT_LIMITS.post[existing.type as keyof typeof CONTENT_LIMITS.post] ??
+          CONTENT_LIMITS.post.discussion;
+        if (!content.trim() || content.length > limit) {
+          return sendApiError(
+            reply,
+            request,
+            400,
+            'Bad Request',
+            `Enter up to ${limit} characters.`,
+            { code: 'VALIDATION_ERROR' },
           );
         }
 
@@ -973,7 +1000,7 @@ export async function feedRoutes(app: FastifyInstance) {
           type: 'object',
           required: ['content'],
           properties: {
-            content: { type: 'string', minLength: 1, maxLength: 1000 },
+            content: { type: 'string', minLength: 1, maxLength: CONTENT_LIMITS.comment },
             language: { type: 'string' },
             authorId: { type: 'string' },
             clientToken: { type: 'string', minLength: 1, maxLength: 128 },

@@ -1,3 +1,4 @@
+import { CONTENT_LIMITS } from '@kshetra/shared';
 import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import type { FastifyInstance } from 'fastify';
 import { sendApiError } from '../lib/replyHelper';
@@ -435,8 +436,8 @@ const createIssueSchema = {
     type: 'object',
     required: ['title', 'category', 'stateCode'],
     properties: {
-      title: { type: 'string', minLength: 5, maxLength: 200 },
-      description: { type: 'string', maxLength: 2000 },
+      title: { type: 'string', minLength: 5, maxLength: CONTENT_LIMITS.civic.title },
+      description: { type: 'string', maxLength: CONTENT_LIMITS.civic.description },
       category: {
         type: 'string',
         enum: [

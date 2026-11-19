@@ -138,21 +138,22 @@ export function SubmissionReview() {
                     )}
                   </div>
                 ))}
-              {item.video_url && /^https:\/\//i.test(item.video_url) && (
-                <a
-                  className="underline"
-                  href={item.video_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Watch submitted video
-                </a>
+              {kind === 'short' && item.video_url && /^https:\/\//i.test(item.video_url) && (
+                <div className="space-y-2">
+                  <video className="max-h-80" src={item.video_url} controls preload="metadata" />
+                  {item.media_metadata && <p>
+                    {item.duration} s · {item.media_metadata.width} × {item.media_metadata.height} · {item.media_metadata.videoCodec.toUpperCase()} · {(item.media_metadata.bytes / (1024 * 1024)).toFixed(2)} MB
+                    {item.language ? ` · ${item.language}` : ''}
+                  </p>}
+                  {item.rights_confirmed_at && <p>Creator confirmed sharing rights.</p>}
+                </div>
               )}
               <div className="flex gap-4">
                 <button
                   className="text-emerald-300"
                   disabled={
                     saving ||
+                    (kind === 'short' && (!item.video_url || !item.media_metadata || !item.rights_confirmed_at)) ||
                     item.post_media?.some((media) => !media.reviewUrl) ||
                     (item.type === 'poll' && (item.polls?.poll_options.length ?? 0) < 2)
                   }

@@ -51,6 +51,17 @@ const newsFeedSchema = {
               source: newsSourceSchema,
               language: { type: 'string' },
               category: { type: 'string' },
+              categories: { type: 'array', items: { type: 'string' } },
+              breaking: { type: 'boolean' },
+              video: {
+                type: 'object',
+                properties: {
+                  provider: { type: 'string', enum: ['youtube', 'native'] },
+                  embedId: { type: 'string' },
+                  durationSec: { type: 'number' },
+                },
+                required: ['provider', 'embedId'],
+              },
               scope: { type: 'string' },
               stateCode: { type: 'string' },
               constituencyId: { type: 'string' },
