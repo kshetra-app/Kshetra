@@ -205,14 +205,15 @@ export async function captureNetworkFingerprint(): Promise<NetworkFingerprint> {
 
 export async function captureLocationFingerprint(): Promise<LocationFingerprint | null> {
   try {
-    const { status } = await Location.requestForegroundPermissionsAsync();
+    const { status } = await Location.getForegroundPermissionsAsync();
     if (status !== 'granted') {
       return null;
     }
 
-    const location = await Location.getCurrentPositionAsync({
-      accuracy: Location.Accuracy.Balanced,
-    });
+    // A content receipt must never open an OS location or accuracy prompt.
+    // Record a recent location only when the user has already allowed access.
+    const location = await Location.getLastKnownPositionAsync({ maxAge: 5 * 60 * 1000 });
+    if (!location) return null;
 
     const fingerprint: LocationFingerprint = {
       latitude: location.coords.latitude,

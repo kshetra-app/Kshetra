@@ -14,7 +14,7 @@
 import { supabase, isSupabaseConfigured } from './supabase';
 import { useAuthStore } from '../stores/auth';
 import { useUserProfileStore } from '../stores/userProfile';
-import { useMyConstituencyStore } from '../stores/myConstituency';
+import { resolveConstituencyForState, useMyConstituencyStore } from '../stores/myConstituency';
 import { useActiveStateStore } from '../stores/activeState';
 import { useFeedStore } from '../stores/feed';
 import { useCivicStore } from '../stores/civic';
@@ -29,6 +29,8 @@ import { isOnline } from './networkStatus';
 import { captureException, addBreadcrumb } from './errorReporting';
 import * as dataService from './supabaseDataService';
 import { hydrateContributorKYC } from './contributorKycService';
+import { getUnifiedConstituenciesForState } from './stateDataAdapter';
+import { getFeedReadScope } from './feedReadScope';
 
 let bootstrappedUserId: string | null | undefined;
 let bootstrapInFlight: Promise<void> | null = null;
@@ -240,12 +242,21 @@ async function syncLocalToServer(userId: string): Promise<void> {
 async function hydrateStoresFromServer(): Promise<void> {
   const stateCode = useActiveStateStore.getState().stateCode;
   const myHome = useMyConstituencyStore.getState().home;
-  const constituencyId = myHome ? `${stateCode}-AC-${myHome.acNo}` : undefined;
+  const directory = stateCode === 'IN' ? [] : getUnifiedConstituenciesForState(stateCode);
+  const home = resolveConstituencyForState(stateCode, null, myHome, directory);
+  const constituencyId = home ? `${stateCode}-AC-${home.acNo}` : undefined;
   const civicStore = useCivicStore.getState();
+  const feed = useFeedStore.getState();
+  const selected = resolveConstituencyForState(stateCode, feed.selectedConstituency, myHome, directory);
+  const feedScope = getFeedReadScope(
+    feed.scopeFilter,
+    stateCode,
+    selected ? `${stateCode}-AC-${selected.acNo}` : undefined,
+  );
 
   // Fetch in parallel
   const [feedRefresh, issuesData, promisesRefresh] = await Promise.allSettled([
-    useFeedStore.getState().refreshFeed(stateCode, constituencyId),
+    feed.refreshFeedIfStale(feedScope.stateCode, feedScope.constituencyId, feed.feedPeriod),
     civicStore.scopeFilter === 'constituency' && !constituencyId
       ? Promise.resolve()
       : civicStore.loadIssuesForScope(civicStore.scopeFilter, stateCode, constituencyId, true),

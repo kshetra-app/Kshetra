@@ -21,6 +21,7 @@ import { useAuthStore } from '../../stores/auth';
 import { useActiveStateStore } from '../../stores/activeState';
 import { resolveConstituencyForState, useMyConstituencyStore } from '../../stores/myConstituency';
 import { getUnifiedConstituenciesForState } from '../../lib/stateDataAdapter';
+import { getFeedReadScope } from '../../lib/feedReadScope';
 import PostCard from '../../components/PostCard';
 import PollCard from '../../components/PollCard';
 import { useResponsive } from '../../lib/responsive';
@@ -135,8 +136,9 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
   const effectiveConstituencyId = activeConstituency
     ? `${stateCode}-AC-${activeConstituency.acNo}` : undefined;
   const effectiveConstituencyName = activeConstituency?.name;
-  const feedState = scopeFilter === 'national' ? 'IN' : stateCode;
-  const feedConstituency = scopeFilter === 'constituency' ? effectiveConstituencyId ?? null : null;
+  const { stateCode: feedState, constituencyId: feedConstituency } = getFeedReadScope(
+    scopeFilter, stateCode, effectiveConstituencyId,
+  );
 
   const getContentVisibilityLevel = useContentPromotionStore((s) => s.getContentVisibilityLevel);
 
@@ -151,7 +153,7 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
       });
 
       return () => appStateSubscription.remove();
-    }, [feedConstituency, feedPeriod, refreshFeedIfStale, feedState]),
+    }, [feedConstituency, feedPeriod, refreshFeedIfStale, feedState, userId]),
   );
 
   useEffect(() => {
