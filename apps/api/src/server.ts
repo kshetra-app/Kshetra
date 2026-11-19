@@ -8,6 +8,7 @@ import type {
   RawServerDefault,
 } from 'fastify';
 import cors from '@fastify/cors';
+import { resolveCorsOrigin } from './lib/corsOrigins';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
 import { constituencyRoutes } from './routes/constituencies';
@@ -76,41 +77,6 @@ const envToLogger: Record<string, object | boolean> = {
   production: true,
   test: false,
 };
-
-/**
- * Default production and trusted application origins.
- * Ensures official product domains are always authorized even if CORS_ORIGINS
- * is omitted from container environment variables.
- */
-const DEFAULT_ALLOWED_ORIGINS = [
-  'https://poligram.in',
-  'https://www.poligram.in',
-  'https://poligram.app',
-  'https://www.poligram.app',
-  'https://kshetra.in',
-  'https://www.kshetra.in',
-  'https://panin.in',
-  'https://www.panin.in',
-  'https://kshetra.app',
-  'https://www.kshetra.app',
-];
-
-/**
- * Resolve allowed CORS origins. In production, combines explicit CORS_ORIGINS
- * with DEFAULT_ALLOWED_ORIGINS. In dev/test, permits local callers while preserving credentials.
- */
-function resolveCorsOrigin(env: string): boolean | string[] {
-  const configured = (process.env.CORS_ORIGINS ?? '')
-    .split(',')
-    .map((o) => o.trim())
-    .filter(Boolean);
-
-  const combined = Array.from(new Set([...DEFAULT_ALLOWED_ORIGINS, ...configured]));
-  if (configured.length > 0 || env === 'production') {
-    return combined;
-  }
-  return true;
-}
 
 export async function buildApp(): Promise<FastifyInstance> {
   const env = process.env.NODE_ENV ?? 'development';
@@ -193,7 +159,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   });
 
   await app.register(cors, {
-    origin: resolveCorsOrigin(env),
+    origin: resolveCorsOrigin(process.env),
     credentials: true,
   });
 

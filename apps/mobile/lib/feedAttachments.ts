@@ -1,5 +1,6 @@
 import type { PostMedia } from './feedTypes';
 import { supabase } from './supabase';
+import { File } from 'expo-file-system';
 
 export type SubmittedAttachment = Pick<PostMedia, 'mediaType' | 'url' | 'altText'>;
 const types = {
@@ -24,7 +25,6 @@ export async function prepareFeedAttachments(items: PostMedia[], userId: string)
       result.push({ mediaType: 'link', url: item.url, altText });
       continue;
     }
-    const { File } = await import('expo-file-system');
     const file = new File(item.url);
     if (!file.exists || !file.size || file.size > 25 * 1024 * 1024) throw new Error('Choose a file up to 25 MB.');
     const mime = item.mimeType || file.type;
