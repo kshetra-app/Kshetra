@@ -78,6 +78,70 @@ describe('Constituencies Routes Unit Tests (Exhaustive Branch Coverage)', () => 
     expect(contest.secondRunnerUp.caseDetails).toHaveLength(2);
   });
 
+  it('shows the official constituency and candidate names for the results before delimitation', async () => {
+    const response = await app.inject('/states/TS/constituencies/61/podium');
+    expect(response.statusCode).toBe(200);
+    const contest = response.json().find((row: { year: number }) => row.year === 2004);
+    expect(contest).toMatchObject({
+      constituencyName: 'Secunderabad',
+      historicalConstituencyNumber: 209,
+      winner: { name: 'T.Padma Rao', votes: 56997, party: 'TRS' },
+      resultSourceUrl: expect.stringContaining('/2004.pdf'),
+    });
+  });
+
+  it('serves independently verified historical portraits and recovered filing amounts', async () => {
+    const sirpur = await app.inject('/states/TS/constituencies/1/podium');
+    expect(sirpur.statusCode).toBe(200);
+    const older = sirpur.json().find((row: { year: number }) => row.year === 2018);
+    expect(older.winner).toMatchObject({
+      name: 'Koneru Konappa',
+      photoVerified: true,
+      photoSourceUrl: 'https://prsindia.org/mlatrack/koneru-konappa',
+    });
+    const jangaon = await app.inject('/states/TS/constituencies/98/podium');
+    expect(jangaon.statusCode).toBe(200);
+    expect(jangaon.json()[0].winner).toMatchObject({
+      name: 'Palla Rajeshwar Reddy',
+      totalAssets: 224396786,
+      totalLiabilities: 50068732,
+    });
+  });
+
+  it('serves a source and verified financial and case summaries for every 2023 Telangana podium slot', async () => {
+    const response = await app.inject('/states/TS/podium');
+    expect(response.statusCode).toBe(200);
+    const archive = response.json() as Record<
+      string,
+      Array<{ year: number } & Record<string, any>>
+    >;
+    expect(Object.keys(archive)).toHaveLength(119);
+    for (const contests of Object.values(archive)) {
+      const election = contests.find((row) => row.year === 2023);
+      for (const rank of ['winner', 'firstRunnerUp', 'secondRunnerUp']) {
+        const candidate = election?.[rank];
+        expect(candidate?.affidavitDocumentUrl || candidate?.affidavitUrl).toMatch(/^https:\/\//);
+        expect(Number.isFinite(candidate?.totalAssets)).toBe(true);
+        expect(Number.isFinite(candidate?.totalLiabilities)).toBe(true);
+        expect(Number.isInteger(candidate?.criminalCases)).toBe(true);
+      }
+    }
+    const uppal = archive['47'].find((row) => row.year === 2023);
+    expect(uppal?.firstRunnerUp).toMatchObject({
+      name: 'Parameshwar Reddy Mandumula',
+      totalAssets: 49960181.71,
+      totalLiabilities: 1207071,
+      criminalCases: 1,
+      affidavitDocumentUrl: expect.stringContaining('/affidavit-pdf-download/'),
+    });
+    const palakurthi = archive['100'].find((row) => row.year === 2023);
+    expect(palakurthi?.secondRunnerUp).toMatchObject({
+      name: 'Madavapeddi Venkat Reddy',
+      affidavitUrl: expect.stringContaining('candidate_id=1031'),
+    });
+    expect(palakurthi?.secondRunnerUp.affidavitDocumentUrl).toBeUndefined();
+  });
+
   it.each([
     [61, 2025, 'Naveen Yadav V', 98988, 24729],
     [71, 2024, 'Sri Ganesh Narayanan', 53651, 13206],

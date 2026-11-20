@@ -917,8 +917,14 @@ export async function constituencyRoutes(app: FastifyInstance) {
   );
 
   const PODIUM_DIR = path.resolve(__dirname, '../../../../data/historical/podiums');
-  const TELANGANA_2023_RESULT_SOURCE =
-    'https://www.eci.gov.in/eci-backend/public/all_files/full-statistical-reports/telangana/2023/Detailed_Results.pdf';
+  const telanganaResultSources = new Map([
+    [1999, 'https://www.electionawaaz.org/wp-content/uploads/2021/03/1999.pdf'],
+    [2004, 'https://www.electionawaaz.org/wp-content/uploads/2021/03/2004.pdf'],
+    [
+      2023,
+      'https://www.eci.gov.in/eci-backend/public/all_files/full-statistical-reports/telangana/2023/Detailed_Results.pdf',
+    ],
+  ]);
   const serverPodiumCache = new Map<string, any>();
 
   function loadServerPodium(stateCode: string): any | null {
@@ -932,7 +938,8 @@ export async function constituencyRoutes(app: FastifyInstance) {
         for (const contests of Object.values(data)) {
           if (!Array.isArray(contests)) continue;
           for (const contest of contests) {
-            if (contest?.year === 2023) contest.resultSourceUrl = TELANGANA_2023_RESULT_SOURCE;
+            const source = telanganaResultSources.get(contest?.year);
+            if (source && !contest.resultSourceUrl) contest.resultSourceUrl = source;
           }
         }
       }
