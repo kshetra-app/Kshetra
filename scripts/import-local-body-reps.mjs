@@ -255,6 +255,10 @@ async function importVerifiedArchive() {
     .eq('state_code', stateFilter).eq('election_year', Number(yearFilter))
     .eq('source_type', 'sec').eq('data_status', 'verified').not('district_slug', 'is', null);
   if (error || count !== rows.length) throw new Error('The target election count does not match the archive');
+  if (stateFilter === 'AP' && Number(yearFilter) === 2021) {
+    const reconciliation = await supabase.rpc('normalize_ap_2021_election_directory');
+    if (reconciliation.error) throw new Error('The AP election geography could not be reconciled');
+  }
   console.log(`Verified ${count} stored election returns`);
 }
 
