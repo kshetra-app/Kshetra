@@ -819,7 +819,8 @@ export default function ConstituencyDetailScreen() {
                     name={effectiveWinnerName}
                     party={effectiveWinnerParty}
                     size={52}
-                    photoUrl={mlaProfile?.photoUrl || undefined}
+                    allowUnverifiedFallback={!IS_LIVE_ENVIRONMENT || stateCode !== 'TS'}
+                    photoUrl={IS_LIVE_ENVIRONMENT && stateCode === 'TS' ? undefined : mlaProfile?.photoUrl || undefined}
                     onPress={(uri) => setPhotoViewer({ uri, name: effectiveWinnerName, party: effectiveWinnerParty })}
                   />
                   <View>

@@ -232,7 +232,7 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
             party={item.second_runner_up_party || ''}
             size={32}
             allowUnverifiedFallback={allowNamePhoto}
-            photoUrl={item.second_runner_up_photo_url || (cleanRu2 ? getStaticPhoto(cleanRu2) : undefined) || getStaticPhoto(ru2Name) || undefined}
+            photoUrl={item.second_runner_up_photo_url || (allowNamePhoto ? getStaticPhoto(cleanRu2 || ru2Name) || getStaticPhoto(ru2Name) : undefined) || undefined}
           />
 
           <View style={styles.candInfo}>
