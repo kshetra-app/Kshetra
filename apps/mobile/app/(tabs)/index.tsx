@@ -1534,10 +1534,10 @@ function FullMapScreen() {
         >
           <View style={styles.headerTop}>
             <View style={{ flex: 1, minWidth: 0, marginRight: 6, justifyContent: 'center' }}>
-              <View style={{ alignSelf: 'flex-start', width: 132, maxWidth: '100%', backgroundColor: '#FFF8EA', borderRadius: 8, marginBottom: 4 }}>
+              <View style={{ alignSelf: 'flex-start', width: 126, height: 42, backgroundColor: '#FFF8EA', borderRadius: 8, marginBottom: 4, overflow: 'hidden' }}>
                 <Image
                   source={require('../../assets/poligram_logo_lockup_transparent.png')}
-                  style={{ width: '100%', aspectRatio: 1197 / 400 }}
+                  style={{ width: 126, height: 42 }}
                   resizeMode="contain"
                   accessibilityLabel="Poligram"
                   accessible
