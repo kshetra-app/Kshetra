@@ -16,9 +16,10 @@
  *   SUPABASE_URL                 e.g. https://xxxx.supabase.co
  *   SUPABASE_SERVICE_ROLE_KEY    service-role key (server-side only!)
  *
- * Two input shapes are supported:
+ * Three input sources are supported:
  *   1. Legacy SEC results:  <STATE>-<YEAR>-panchayat-results.json
  *   2. TSEC KYR (hardened):  TS-<YEAR>-<OFFICE>-kyr.json  (--source=kyr --office=S)
+ *   3. Existing verified election archive: --source=verified-archive (Node.js 22+)
  *
  * Usage:
  *   node scripts/import-local-body-reps.mjs --state=TS --year=2019
@@ -209,8 +210,57 @@ async function upsertRows(rows) {
   process.stdout.write('\n');
 }
 
+async function importVerifiedArchive() {
+  const { DatabaseSync } = await import('node:sqlite');
+  const database = new DatabaseSync(path.join(ROOT, 'apps/mobile/data/seed-data.db'), {
+    readOnly: true,
+  });
+  let rows;
+  try {
+    rows = database.prepare(`
+      SELECT id, office_type, jurisdiction_type, jurisdiction_id, state_code, district,
+        district_slug, mandal, mandal_slug, gram_panchayat, gp_key, ward_no, constituency,
+        name, party, party_official, elected_party, gender, reservation, election_year,
+        source_type, source_url, data_status
+      FROM representatives
+      WHERE state_code = ? AND election_year = ? AND source_type = 'sec'
+        AND data_status = 'verified' AND source_url LIKE 'https://%'
+        AND length(trim(name)) > 0 AND district_slug IS NOT NULL
+      ORDER BY id
+    `).all(stateFilter, Number(yearFilter)).map((row) => ({
+      ...row,
+      party_official: row.party_official === 1,
+      is_current: false,
+      officeholding_status: 'HISTORICAL_WINNER',
+    }));
+  } finally {
+    database.close();
+  }
+  if (rows.length === 0 || new Set(rows.map((row) => row.id)).size !== rows.length) {
+    throw new Error('The selected election archive is empty or contains duplicate IDs');
+  }
+  console.log(`${stateFilter} ${yearFilter}: ${rows.length} verified election returns`);
+  if (dryRun) return;
+
+  // A replay adds missing records while preserving reviewed changes on existing IDs.
+  const batchSize = 1000;
+  for (let start = 0; start < rows.length; start += batchSize) {
+    const { error } = await supabase.from('representatives').upsert(
+      rows.slice(start, start + batchSize),
+      { onConflict: 'id', ignoreDuplicates: true },
+    );
+    if (error) throw new Error(`Archive import stopped after ${start} rows (${error.code})`);
+  }
+  const { count, error } = await supabase.from('representatives').select('id', { count: 'exact', head: true })
+    .eq('state_code', stateFilter).eq('election_year', Number(yearFilter))
+    .eq('source_type', 'sec').eq('data_status', 'verified').not('district_slug', 'is', null);
+  if (error || count !== rows.length) throw new Error('The target election count does not match the archive');
+  console.log(`Verified ${count} stored election returns`);
+}
+
 // ── Main ────────────────────────────────────────────────────────────────────
 async function main() {
+  if (source === 'verified-archive') return importVerifiedArchive();
   const isKyr = source === 'kyr';
   const outDir = path.join(ROOT, 'scrapers', 'output', 'local-body');
   const inFile = isKyr

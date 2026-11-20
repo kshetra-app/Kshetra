@@ -1,13 +1,3 @@
-/**
- * Local Bodies browser — drill-down for verified rural local-body reps.
- *
- * District → Mandal → Gram Panchayat → (Sarpanch + Ward members), sourced from
- * the bundled TSEC-KYR seed via lib/representativesData. MPTC & ZPTC show an
- * honest "elections to be conducted" note (2025 polls were postponed).
- *
- * Route: /local-bodies  (uses the active state).
- * Reached from the Explore tab quick-nav and the map bottom sheet.
- */
 import { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, TextInput, ActivityIndicator, Keyboard } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
@@ -15,7 +5,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../lib/useTheme';
-import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
 import { getPartyColor } from '../../lib/constants';
 import { getHierarchyConfig } from '../../lib/hierarchyData';
 import { useActiveStateStore } from '../../stores/activeState';
@@ -25,10 +14,10 @@ import {
   getLocalBodyDistricts,
   getLocalBodyMandals,
   getLocalBodyGPs,
-  getGpNode,
   getLocalBodyMptcs,
-  getUpperTierStatus,
-  useHasRepresentativeData,
+  getLocalBodyZptcs,
+  getLocalBodyCoverage,
+  hasRepresentativeData,
   type DistrictSummary,
   type MandalSummary,
   type GpNode,
@@ -38,108 +27,90 @@ import type { Representative } from '@kshetra/shared';
 type Level = 'districts' | 'mandals' | 'gps' | 'gp';
 
 export default function LocalBodiesScreen() {
+  const activeState = useActiveStateStore((state) => state.stateCode);
+  const stateCode = !activeState || activeState === 'IN' ? 'TS' : activeState;
+  return <LocalBodiesDirectory key={stateCode} stateCode={stateCode} />;
+}
+
+function LocalBodiesDirectory({ stateCode }: { stateCode: string }) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const rawStateCode = useActiveStateStore((s) => s.stateCode);
   const setStateCode = useActiveStateStore((s) => s.setStateCode);
-  // Default National 'IN' to 'TS' so local body data is immediately populated
-  const stateCode = (rawStateCode === 'IN' || !rawStateCode) ? 'TS' : rawStateCode;
   const stateName = getHierarchyConfig(stateCode)?.stateName ?? stateCode;
 
   const [level, setLevel] = useState<Level>('districts');
   const [district, setDistrict] = useState<DistrictSummary | null>(null);
   const [mandal, setMandal] = useState<MandalSummary | null>(null);
-  const [gpKey, setGpKey] = useState<string | null>(null);
+  const [gpNode, setGpNode] = useState<GpNode | null>(null);
   const [query, setQuery] = useState('');
   const [helpVisible, setHelpVisible] = useState(false);
-  const [loadError, setLoadError] = useState<string | null>(null);
-
-  useHasRepresentativeData(stateCode); // warms the availability cache
-  const [upperTier, setUpperTier] = useState({
-    mptc: { available: false, note: '' },
-    zptc: { available: false, note: '' },
-  });
+  const [loadError, setLoadError] = useState(false);
+  const [loading, setLoading] = useState(hasRepresentativeData(stateCode));
+  const [retry, setRetry] = useState(0);
+  const [electionYear, setElectionYear] = useState<number>();
   const [districts, setDistricts] = useState<DistrictSummary[]>([]);
-  const [districtsLoading, setDistrictsLoading] = useState(true);
   const [mandals, setMandals] = useState<MandalSummary[]>([]);
   const [gps, setGps] = useState<GpNode[]>([]);
   const [mptcs, setMptcs] = useState<Representative[]>([]);
-  const [gpNode, setGpNode] = useState<GpNode | null>(null);
+  const [zptcs, setZptcs] = useState<Representative[]>([]);
 
-  // Load districts + upper-tier status when the state changes.
   useEffect(() => {
-    let mounted = true;
-    if (IS_LIVE_ENVIRONMENT) {
-      setDistricts([]);
-      setDistrictsLoading(false);
-      return () => { mounted = false; };
-    }
-    setDistrictsLoading(true);
-    setLoadError(null);
-    getLocalBodyDistricts(stateCode)
-      .then((d) => {
-        if (mounted) {
-          setDistricts(d);
-          setDistrictsLoading(false);
+    if (!hasRepresentativeData(stateCode) || level === 'gp') return;
+    let active = true;
+    setLoading(true);
+    setLoadError(false);
+
+    async function load() {
+      try {
+        if (level === 'districts') {
+          const [items, coverage] = await Promise.all([
+            getLocalBodyDistricts(stateCode),
+            getLocalBodyCoverage(stateCode),
+          ]);
+          if (active) {
+            setDistricts(items);
+            setElectionYear(coverage.electionYear);
+          }
+        } else if (level === 'mandals' && district) {
+          const [items, members] = await Promise.all([
+            getLocalBodyMandals(stateCode, district.districtKey),
+            getLocalBodyZptcs(stateCode, district.districtKey),
+          ]);
+          if (active) {
+            setMandals(items);
+            setZptcs(members);
+          }
+        } else if (level === 'gps' && district && mandal) {
+          const [items, members] = await Promise.all([
+            getLocalBodyGPs(stateCode, district.districtKey, mandal.mandalKey),
+            getLocalBodyMptcs(stateCode, district.districtKey, mandal.mandalKey),
+          ]);
+          if (active) {
+            setGps(items);
+            setMptcs(members);
+          }
         }
-      })
-      .catch((err) => {
-        console.error('[LocalBodies] Error loading districts:', err);
-        if (mounted) {
-          setLoadError(err?.message ?? 'Failed to load local body records');
-          setDistrictsLoading(false);
-        }
-      });
-    getUpperTierStatus(stateCode).then((u) => {
-      if (mounted) setUpperTier(u);
-    }).catch(() => {});
-    return () => {
-      mounted = false;
-    };
-  }, [stateCode]);
-
-  useEffect(() => {
-    let mounted = true;
-    if (district) getLocalBodyMandals(stateCode, district.districtKey).then((r) => { if (mounted) setMandals(r); });
-    else setMandals([]);
-    return () => { mounted = false; };
-  }, [stateCode, district]);
-
-  useEffect(() => {
-    let mounted = true;
-    if (district && mandal) {
-      getLocalBodyGPs(stateCode, district.districtKey, mandal.mandalKey).then((r) => {
-        if (mounted) setGps(r);
-      });
-      getLocalBodyMptcs(stateCode, district.districtKey, mandal.mandalKey).then((r) => {
-        if (mounted) setMptcs(r);
-      });
-    } else {
-      setGps([]);
-      setMptcs([]);
+      } catch {
+        if (active) setLoadError(true);
+      } finally {
+        if (active) setLoading(false);
+      }
     }
-    return () => {
-      mounted = false;
-    };
-  }, [stateCode, district, mandal]);
 
-  useEffect(() => {
-    let mounted = true;
-    if (district && gpKey) getGpNode(stateCode, district.districtKey, gpKey).then((r) => { if (mounted) setGpNode(r); });
-    else setGpNode(null);
-    return () => { mounted = false; };
-  }, [stateCode, district, gpKey]);
+    void load();
+    return () => { active = false; };
+  }, [district, level, mandal, retry, stateCode]);
 
   const filteredDistricts = useMemo(() => filterByName(districts, query, (d) => d.name), [districts, query]);
   const filteredMandals = useMemo(() => filterByName(mandals, query, (m) => m.name), [mandals, query]);
   const filteredGps = useMemo(() => filterByName(gps, query, (g) => g.gramPanchayat), [gps, query]);
 
-  const goDistricts = () => { setLevel('districts'); setDistrict(null); setMandal(null); setGpKey(null); setQuery(''); };
-  const goMandals = (d: DistrictSummary) => { setDistrict(d); setMandal(null); setGpKey(null); setQuery(''); setLevel('mandals'); };
-  const goGps = (m: MandalSummary) => { setMandal(m); setGpKey(null); setQuery(''); setLevel('gps'); };
-  const goGp = (g: GpNode) => { setGpKey(g.key); setQuery(''); setLevel('gp'); };
+  const goDistricts = () => { setLevel('districts'); setDistrict(null); setMandal(null); setGpNode(null); setQuery(''); };
+  const goMandals = (d: DistrictSummary) => { setMandals([]); setZptcs([]); setDistrict(d); setMandal(null); setGpNode(null); setQuery(''); setLevel('mandals'); };
+  const goGps = (m: MandalSummary) => { setGps([]); setMptcs([]); setMandal(m); setGpNode(null); setQuery(''); setLevel('gps'); };
+  const goGp = (g: GpNode) => { setGpNode(g); setQuery(''); setLevel('gp'); };
 
   const openRep = (rep: Representative, jurisdictionName: string) => {
     router.push({
@@ -150,76 +121,8 @@ export default function LocalBodiesScreen() {
 
   const s = makeStyles(colors);
 
-  if (IS_LIVE_ENVIRONMENT) {
-    return (
-      <View style={s.container}>
-        <Stack.Screen options={{ title: t('localBodies.screenTitle', { defaultValue: 'Local Bodies' }) }} />
-        <View style={s.centerWrap}>
-          <Ionicons name="cloud-offline-outline" size={48} color={colors.gold} />
-          <Text style={[s.selectorTitle, { color: colors.text, marginTop: 12 }]}>Live local-body directory unavailable</Text>
-          <Text style={[s.selectorMsg, { color: colors.textSecondary }]}>
-            This directory is not yet connected to a live records service. Bundled local records are hidden in this build.
-          </Text>
-        </View>
-      </View>
-    );
-  }
-
-  // ── Error state with user retry ──
-  if (loadError) {
-    return (
-      <View style={s.container}>
-        <Stack.Screen
-          options={{
-            title: t('localBodies.screenTitle', { defaultValue: 'Local Bodies' }),
-            headerRight: () => <StateSwitcher />,
-          }}
-        />
-        <View style={s.centerWrap}>
-          <Ionicons name="alert-circle" size={48} color={colors.gold} />
-          <Text style={[s.selectorTitle, { color: colors.text, marginTop: 12 }]}>{t('localBodies.dbInitializing', { defaultValue: 'Database Initializing' })}</Text>
-          <Text style={[s.selectorMsg, { color: colors.textSecondary }]}>
-            {t('localBodies.dbLoadingDesc', { defaultValue: 'The bundled local bodies database (137 MB, 224,780 official records) is being loaded into device storage.' })}
-          </Text>
-          <Pressable
-            style={[s.retryBtn, { backgroundColor: colors.primary }]}
-            onPress={() => {
-              setDistrictsLoading(true);
-              setLoadError(null);
-              getLocalBodyDistricts(stateCode)
-                .then((d) => {
-                  setDistricts(d);
-                  setDistrictsLoading(false);
-                })
-                .catch((e) => {
-                  setLoadError(e?.message ?? 'Failed to initialize database');
-                  setDistrictsLoading(false);
-                });
-            }}
-          >
-            <Ionicons name="refresh" size={16} color="#fff" />
-            <Text style={s.retryBtnText}>{t('localBodies.retryDbLoad', { defaultValue: 'Retry Loading Database' })}</Text>
-          </Pressable>
-        </View>
-      </View>
-    );
-  }
-
-  // ── Loading state (districts still resolving from SQLite) ──
-  if (districtsLoading) {
-    return (
-      <View style={s.container}>
-        <Stack.Screen options={{ title: t('localBodies.screenTitle', { defaultValue: 'Local Bodies' }) }} />
-        <View style={s.emptyWrap}>
-          <ActivityIndicator color={colors.primary} />
-          <Text style={s.emptyMsg}>{t('localBodies.loadingState', { state: stateName, defaultValue: `Loading ${stateName} local bodies…` })}</Text>
-        </View>
-      </View>
-    );
-  }
-
   // ── State directory selector (e.g. for national 'IN' or states without data) ──
-  if (districts.length === 0) {
+  if (!hasRepresentativeData(stateCode)) {
     return (
       <View style={s.container}>
         <Stack.Screen
@@ -235,7 +138,7 @@ export default function LocalBodiesScreen() {
             </View>
             <Text style={[s.selectorTitle, { color: colors.text }]}>{t('localBodies.directoryTitle', { defaultValue: 'Local Bodies Directory' })}</Text>
             <Text style={[s.selectorMsg, { color: colors.textSecondary }]}>
-              {stateCode === 'IN' ? t('localBodies.nationalSelectStateDesc', { defaultValue: 'Official rural local body election records (Sarpanch, Ward Members, MPTC & ZPTC) are verified and available for the following states. Select a state to explore:' }) : t('localBodies.stateIngestionDesc', { state: stateName, defaultValue: `Official gram-panchayat records for ${stateName} are undergoing ingestion from the State Election Commission. Select one of the available states below to explore its complete verified hierarchy:` })}
+              {t('localBodies.selectElectionState', { defaultValue: 'Choose Andhra Pradesh or Telangana to browse local election results.' })}
             </Text>
 
             <Pressable
@@ -253,8 +156,6 @@ export default function LocalBodiesScreen() {
                     <Text style={[s.verifiedPillText, { color: '#10B981' }]}>{t('localBodies.verifiedTsec', { defaultValue: 'Verified TSEC' })}</Text>
                   </View>
                 </View>
-                <Text style={[s.stateLaunchSubtitle, { color: colors.textSecondary }]}>{t('localBodies.tsStatsSummary', { defaultValue: '31 Districts · 12,705 Gram Panchayats' })}</Text>
-                <Text style={[s.stateLaunchDesc, { color: colors.textMuted }]}>{t('localBodies.tsRecordsSummary', { defaultValue: '72,134 verified Sarpanch & Ward Member records' })}</Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color={colors.primary} />
             </Pressable>
@@ -274,8 +175,6 @@ export default function LocalBodiesScreen() {
                     <Text style={[s.verifiedPillText, { color: '#10B981' }]}>{t('localBodies.verifiedApsec', { defaultValue: 'Verified APSEC' })}</Text>
                   </View>
                 </View>
-                <Text style={[s.stateLaunchSubtitle, { color: colors.textSecondary }]}>{t('localBodies.apStatsSummary', { defaultValue: '13 Districts · 13,079 Gram Panchayats' })}</Text>
-                <Text style={[s.stateLaunchDesc, { color: colors.textMuted }]}>{t('localBodies.apRecordsSummary', { defaultValue: '152,646 verified Sarpanch, Ward, MPTC & ZPTC records' })}</Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color={colors.primary} />
             </Pressable>
@@ -328,7 +227,7 @@ export default function LocalBodiesScreen() {
           }}
         >
           <Text style={[s.stateTabBtnText, { color: stateCode === 'TS' ? colors.primary : colors.textSecondary }]}>
-            {t('localBodies.tsTabLabel', { defaultValue: 'Telangana (31 Districts)' })}
+            {t('localBodies.telangana', { defaultValue: 'Telangana' })}
           </Text>
           {stateCode === 'TS' && <View style={[s.activeDot, { backgroundColor: colors.primary }]} />}
         </Pressable>
@@ -344,7 +243,7 @@ export default function LocalBodiesScreen() {
           }}
         >
           <Text style={[s.stateTabBtnText, { color: stateCode === 'AP' ? colors.primary : colors.textSecondary }]}>
-            {t('localBodies.apTabLabel', { defaultValue: 'Andhra Pradesh (15 Districts)' })}
+            {t('localBodies.andhraPradesh', { defaultValue: 'Andhra Pradesh' })}
           </Text>
           {stateCode === 'AP' && <View style={[s.activeDot, { backgroundColor: colors.primary }]} />}
         </Pressable>
@@ -404,32 +303,27 @@ export default function LocalBodiesScreen() {
         keyboardDismissMode="on-drag"
         contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 32 }}
       >
+        {loading && <ActivityIndicator color={colors.primary} />}
+        {!loading && loadError && (
+          <View style={s.emptyWrap}>
+            <Text style={s.emptyMsg}>
+              {t('localBodies.resultsLoadError', { defaultValue: 'Could not load these election results.' })}
+            </Text>
+            <Pressable style={[s.retryBtn, { backgroundColor: colors.primary }]} onPress={() => setRetry((value) => value + 1)}>
+              <Text style={s.retryBtnText}>{t('common.retry', { defaultValue: 'Retry' })}</Text>
+            </Pressable>
+          </View>
+        )}
+        {!loading && !loadError && (
+          <>
         {/* DISTRICTS LEVEL */}
         {level === 'districts' && (
           <>
-            {/* Status Banner */}
-            {upperTier.mptc.available && upperTier.zptc.available ? (
-              <View style={[s.tierBanner, { backgroundColor: '#10B98112', borderColor: '#10B98135' }]}>
-                <Ionicons name="shield-checkmark" size={18} color="#10B981" />
-                <View style={{ flex: 1 }}>
-                  <Text style={[s.tierTitle, { color: colors.text }]}>{t('localBodies.verified3TierTitle', { defaultValue: 'Verified 3-Tier Panchayati Raj Dataset' })}</Text>
-                  <Text style={[s.tierSub, { color: colors.textSecondary }]}>
-                    {t('localBodies.verified3TierSub', { defaultValue: 'Complete official results for Gram Panchayats (Sarpanches & Ward Members), Mandal Parishad (MPTC), and Zilla Parishad (ZPTC).' })}
-                  </Text>
-                </View>
-              </View>
-            ) : (!upperTier.mptc.available || !upperTier.zptc.available) ? (
-              <View style={[s.tierBanner, { backgroundColor: colors.warning + '15', borderColor: colors.warning + '40' }]}>
-                <Ionicons name="information-circle-outline" size={18} color={colors.warning} />
-                <View style={{ flex: 1 }}>
-                  <Text style={[s.tierTitle, { color: colors.text }]}>{t('localBodies.gpTierActiveTitle', { defaultValue: 'Gram Panchayat Tier Active' })}</Text>
-                  <Text style={[s.tierSub, { color: colors.textSecondary }]}>
-                    {t('localBodies.gpTierActiveSub', { defaultValue: 'Verified official results for Gram Panchayat representatives (Sarpanch & Ward members). MPTC/ZPTC elections were postponed by the State Election Commission.' })}
-                  </Text>
-                </View>
-              </View>
-            ) : null}
-
+            {electionYear !== undefined && (
+              <Text style={s.sectionLabel}>
+                {t('localBodies.returnsYear', { year: electionYear, defaultValue: '{{year}} local election results' })}
+              </Text>
+            )}
             {filteredDistricts.map((d) => (
               <Pressable key={d.districtKey} onPress={() => goMandals(d)} style={s.card}>
                 <View style={s.cardHead}>
@@ -444,6 +338,25 @@ export default function LocalBodiesScreen() {
               </Pressable>
             ))}
           </>
+        )}
+
+        {level === 'mandals' && !query && zptcs.length > 0 && (
+          <View style={{ marginBottom: 18 }}>
+            <Text style={s.sectionLabel}>
+              {t('localBodies.zptcMembers', { defaultValue: 'ZILLA PARISHAD (ZPTC)' })}
+            </Text>
+            {zptcs.map((member) => (
+              <RepRow
+                key={member.id}
+                colors={colors}
+                rep={member}
+                title={member.name}
+                subtitle={member.constituency ?? district?.name ?? ''}
+                badge="ZPTC"
+                onPress={() => openRep(member, member.constituency ?? district?.name ?? stateName)}
+              />
+            ))}
+          </View>
         )}
 
         {/* MANDALS LEVEL */}
@@ -463,7 +376,7 @@ export default function LocalBodiesScreen() {
         {level === 'gps' && (
           <>
             {/* MPTC section for this mandal if present */}
-            {mptcs.length > 0 && (
+            {!query && mptcs.length > 0 && (
               <View style={{ marginBottom: 18 }}>
                 <Text style={s.sectionLabel}>
                   MANDAL PARISHAD TERRITORIAL CONSTITUENCY (MPTC) ({mptcs.length})
@@ -547,6 +460,8 @@ export default function LocalBodiesScreen() {
                 ? 'Source: Andhra Pradesh State Election Commission (APSEC) — Official local body election results. Gram Panchayat polls are officially non-party.'
                 : 'Source: Telangana State Election Commission (TSEC) — Know Your Public Representative (Rural). Gram Panchayat polls are officially non-party.'}
             </Text>
+          </>
+        )}
           </>
         )}
       </ScrollView>

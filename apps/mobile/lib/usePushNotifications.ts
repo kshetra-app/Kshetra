@@ -1,13 +1,32 @@
 import { useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
-import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRootNavigationState, useRouter } from 'expo-router';
 import { requestPermissions, getPushToken } from './notifications';
 import { useNotificationsStore } from '../stores/notifications';
 import { useAuthStore } from '../stores/auth';
 import { registerPushToken } from './supabaseDataService';
 import { apiClient } from './api';
 import type { AlertCategory } from './notifications';
+
+const HANDLED_TAPS_KEY = 'poligram-handled-notification-taps';
+const HANDLED_TAPS_LIMIT = 40;
+
+export function getNotificationTap(response: Notifications.NotificationResponse) {
+  if (response.actionIdentifier !== Notifications.DEFAULT_ACTION_IDENTIFIER) return null;
+  const request = response.notification?.request;
+  const content = request?.content;
+  // Android can also emit a response for ordinary launcher intent extras.
+  const title = typeof content?.title === 'string' ? content.title.trim() : '';
+  const body = typeof content?.body === 'string' ? content.body.trim() : '';
+  if (typeof request?.identifier !== 'string' || !request.identifier.trim() || !content || !(title || body)) {
+    return null;
+  }
+  const data = content.data;
+  const category = typeof data?.category === 'string' ? data.category : undefined;
+  return { id: request.identifier, route: resolveNotificationRoute(data, category) };
+}
 
 /**
  * Resolves target application route from notification payload data and category.
@@ -20,9 +39,8 @@ export function resolveNotificationRoute(
   if (!data && !category) return '/notifications';
 
   // 1. Explicit deep link route
-  if (data?.route && typeof data.route === 'string' && data.route.trim().length > 0) {
-    return data.route.trim();
-  }
+  const route = typeof data?.route === 'string' ? data.route.trim() : '';
+  if (route.startsWith('/') && !route.startsWith('//')) return route;
 
   // 2. Entity-specific route resolution
   if (data?.issueId && typeof data.issueId === 'string') {
@@ -83,8 +101,8 @@ export function resolveNotificationRoute(
 export function usePushNotifications() {
   const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
   const notificationListener = useRef<Notifications.Subscription | null>(null);
-  const responseListener = useRef<Notifications.Subscription | null>(null);
   const router = useRouter();
+  const navigationReady = Boolean(useRootNavigationState()?.key);
   const user = useAuthStore((s) => s.user);
   const addNotification = useNotificationsStore((s) => s.addNotification);
   const enabled = useNotificationsStore((s) => s.enabled);
@@ -167,25 +185,40 @@ export function usePushNotifications() {
 
   // Listen for notification taps (background -> foreground)
   useEffect(() => {
+    if (!navigationReady) return;
+    let active = true;
+    const handledTaps = AsyncStorage.getItem(HANDLED_TAPS_KEY).then((value): string[] => {
+      const saved: unknown = value ? JSON.parse(value) : [];
+      return Array.isArray(saved) ? saved.filter((id): id is string => typeof id === 'string') : [];
+    }).catch((): string[] => []);
+
+    const handleTap = (response: Notifications.NotificationResponse) => {
+      try { Notifications.clearLastNotificationResponse(); } catch {}
+      const tap = getNotificationTap(response);
+      if (!tap) return;
+      void handledTaps.then((seen) => {
+        if (!active || seen.includes(tap.id)) return;
+        seen.push(tap.id);
+        if (seen.length > HANDLED_TAPS_LIMIT) seen.shift();
+        void AsyncStorage.setItem(HANDLED_TAPS_KEY, JSON.stringify(seen)).catch(() => {});
+        router.push(tap.route as any);
+      });
+    };
+
+    let subscription: Notifications.Subscription | undefined;
     try {
-      responseListener.current = Notifications.addNotificationResponseReceivedListener(
-        (response) => {
-          const { data } = response.notification.request.content;
-          const category = (data?.category as AlertCategory) ?? 'app_updates';
-          const targetRoute = resolveNotificationRoute(data as Record<string, unknown> | undefined, category);
-          if (targetRoute) {
-            router.push(targetRoute as any);
-          }
-        },
-      );
+      subscription = Notifications.addNotificationResponseReceivedListener(handleTap);
+      const launchResponse = Notifications.getLastNotificationResponse();
+      if (launchResponse) handleTap(launchResponse);
     } catch {
       // expo-notifications native module may not be available
     }
 
     return () => {
-      try { responseListener.current?.remove(); } catch {}
+      active = false;
+      subscription?.remove();
     };
-  }, [router]);
+  }, [navigationReady, router]);
 
   return { expoPushToken };
 }

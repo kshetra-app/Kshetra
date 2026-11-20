@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getPartyColor } from '../lib/constants';
 import CandidateAvatar from './CandidateAvatar';
-import type { MPProfile } from '../lib/mpTypes';
+import type { MPProfile } from '../lib/data';
 import { useTheme } from '../lib/theme';
 
 interface MPCardProps {
@@ -55,6 +55,7 @@ export default function MPCard({ profile, compact, onPress }: MPCardProps) {
           party={profile.party}
           size={52}
           photoUrl={profile.photoUrl}
+          allowUnverifiedFallback={false}
         />
         <View style={styles.headerInfo}>
           <Text style={[styles.name, { color: colors.text }]} numberOfLines={1}>{profile.name}</Text>

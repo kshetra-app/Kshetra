@@ -97,7 +97,7 @@ import {
 import { getSnapshotVoteShares } from '../../lib/snapshotVoteShares';
 import { useAffidavitStore } from '../../stores/affidavits';
 import { getBoothsForConstituency, hasHierarchyData, hasBoothData } from '../../lib/hierarchyData';
-import { useHasRepresentativeData } from '../../lib/representativesData';
+import { hasRepresentativeData } from '../../lib/representativesData';
 import { loadHistoricalResultsForState } from '../../lib/seedDataLoader';
 
 interface SelectedConstituency {
@@ -255,7 +255,7 @@ function FullMapScreen() {
   const mapOnlyMode = useActiveStateStore((s) => s.mapOnlyMode);
   const broadcastMode = usePreferencesStore((s) => s.broadcastMode);
   const currentState = STATES[stateCode];
-  const hasLocalBodyData = useHasRepresentativeData(stateCode);
+  const hasLocalBodyData = hasRepresentativeData(stateCode);
 
   // Immersion mode & inactivity auto-revival timer (JOB 102)
   const isScreenImmersive = useActiveStateStore((s) => s.isScreenImmersive);
@@ -1534,13 +1534,15 @@ function FullMapScreen() {
         >
           <View style={styles.headerTop}>
             <View style={{ flex: 1, minWidth: 0, marginRight: 6, justifyContent: 'center' }}>
-              <Image
-                source={require('../../assets/poligram_logo_lockup_transparent.png')}
-                style={{ width: 96, height: 28, marginBottom: 2 }}
-                resizeMode="contain"
-                accessibilityLabel="POLIGRAM"
-                accessible={true}
-              />
+              <View style={{ alignSelf: 'flex-start', width: 132, maxWidth: '100%', backgroundColor: '#FFF8EA', borderRadius: 8, marginBottom: 4 }}>
+                <Image
+                  source={require('../../assets/poligram_logo_lockup_transparent.png')}
+                  style={{ width: '100%', aspectRatio: 1197 / 400 }}
+                  resizeMode="contain"
+                  accessibilityLabel="Poligram"
+                  accessible
+                />
+              </View>
               <Text style={styles.headerSubtitle} numberOfLines={1} ellipsizeMode="tail">
                 {stateCode === 'IN'
                   ? t('mapExtended.nationalOverview')

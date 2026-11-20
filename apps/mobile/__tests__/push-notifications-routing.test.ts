@@ -13,10 +13,32 @@ jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock')
 );
 
-import { resolveNotificationRoute } from '../lib/usePushNotifications';
+import * as Notifications from 'expo-notifications';
+import { getNotificationTap, resolveNotificationRoute } from '../lib/usePushNotifications';
 import { apiClient } from '../lib/api';
 
 describe('Push Notifications Routing & Gateway Integration', () => {
+  it('ignores ordinary Android launcher responses', () => {
+    const response = {
+      actionIdentifier: Notifications.DEFAULT_ACTION_IDENTIFIER,
+      notification: { request: { identifier: '', content: { data: { route: '/notifications' } } } },
+    } as unknown as Notifications.NotificationResponse;
+    expect(getNotificationTap(response)).toBeNull();
+  });
+
+  it('accepts a tapped alert with a real message and a notification ID', () => {
+    const response = {
+      actionIdentifier: Notifications.DEFAULT_ACTION_IDENTIFIER,
+      notification: {
+        request: {
+          identifier: 'real-alert-19',
+          content: { title: 'New reply', body: 'A member replied to your post.', data: { issueId: 'civic-19' } },
+        },
+      },
+    } as unknown as Notifications.NotificationResponse;
+    expect(getNotificationTap(response)).toEqual({ id: 'real-alert-19', route: '/issue/civic-19' });
+  });
+
   describe('1. resolveNotificationRoute Payload Router', () => {
     it('honors explicit route in data payload with highest precedence', () => {
       const route = resolveNotificationRoute({

@@ -9,6 +9,7 @@ import {
   Text,
   StyleSheet,
   ScrollView,
+  FlatList,
   Pressable,
   TextInput,
   Modal,
@@ -17,6 +18,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { STATES } from '@kshetra/shared';
 import { getPartyColor } from '../../lib/constants';
 import { useResponsive } from '../../lib/responsive';
 import {
@@ -24,7 +26,6 @@ import {
   MP_PROFILES_SNAPSHOT,
   STATE_PARLIAMENTARY_SUMMARIES,
   getMPsByState,
-  getAllianceStrength,
   type MPProfile,
 } from '../../lib/data';
 import MPCard from '../../components/MPCard';
@@ -32,37 +33,18 @@ import CandidateAvatar from '../../components/CandidateAvatar';
 import { useActiveStateStore } from '../../stores/activeState';
 import { useTheme } from '../../lib/theme';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
-import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
 
 type TabType = 'overview' | 'lok_sabha' | 'rajya_sabha';
 
-const POPULAR_STATES = [
-  { code: 'IN', label: 'All India (National)' },
-  { code: 'TS', label: 'Telangana' },
-  { code: 'AP', label: 'Andhra Pradesh' },
-  { code: 'UP', label: 'Uttar Pradesh' },
-  { code: 'MH', label: 'Maharashtra' },
-  { code: 'WB', label: 'West Bengal' },
-  { code: 'BR', label: 'Bihar' },
-  { code: 'TN', label: 'Tamil Nadu' },
-  { code: 'KA', label: 'Karnataka' },
-  { code: 'KL', label: 'Kerala' },
-  { code: 'GJ', label: 'Gujarat' },
-  { code: 'RJ', label: 'Rajasthan' },
-  { code: 'MP', label: 'Madhya Pradesh' },
-  { code: 'AS', label: 'Assam' },
-  { code: 'PB', label: 'Punjab' },
-  { code: 'OD', label: 'Odisha' },
-  { code: 'JH', label: 'Jharkhand' },
-  { code: 'DL', label: 'Delhi' },
+const PARLIAMENT_SCOPES = [
+  { code: 'IN', label: 'All India' },
+  ...Array.from(new Set(ALL_MP_PROFILES.map((member) => member.stateCode)))
+    .map((code) => ({ code, label: STATES[code]?.name ?? (code === 'NM' ? 'Nominated' : code) }))
+    .sort((a, b) => a.label.localeCompare(b.label)),
 ];
 
-function formatINR(val?: number | null): string {
-  if (val === null || val === undefined) return 'Not Disclosed';
-  if (val === 0) return '₹0';
-  if (val >= 1_00_00_000) return `₹${(val / 1_00_00_000).toFixed(2)} Cr`;
-  if (val >= 1_00_000) return `₹${(val / 1_00_000).toFixed(1)} L`;
-  return `₹${val.toLocaleString('en-IN')}`;
+function formatINR(value?: number) {
+  return value === undefined ? '—' : '₹' + value.toLocaleString('en-IN');
 }
 
 function formatPartyName(party: string): string {
@@ -104,12 +86,6 @@ export default function ParliamentScreen() {
 
   const isNational = selectedScope === 'IN' || selectedScope === 'ALL';
 
-  // Alliance Strength at Centre (NDA 266, INDIA 217, Others 60 = 543)
-  const allianceMap = useMemo(() => getAllianceStrength(), []);
-  const ndaStrength   = { total: allianceMap['NDA'] ?? 0, lokSabha: allianceMap['NDA'] ?? 0, rajyaSabha: 0 };
-  const indiaStrength = { total: allianceMap['INDIA'] ?? 0, lokSabha: allianceMap['INDIA'] ?? 0, rajyaSabha: 0 };
-  const othersStrength = { total: allianceMap['Others'] ?? 0, lokSabha: allianceMap['Others'] ?? 0, rajyaSabha: 0 };
-
   // MPs for current scope
   const scopeMPs = useMemo(() => {
     return getMPsByState(selectedScope);
@@ -117,20 +93,11 @@ export default function ParliamentScreen() {
 
   const lokSabhaMPs = useMemo(() => scopeMPs.filter((m) => m.house === 'lok_sabha'), [scopeMPs]);
   const rajyaSabhaMPs = useMemo(() => scopeMPs.filter((m) => m.house === 'rajya_sabha'), [scopeMPs]);
-  const lokSabhaProfileCount = useMemo(
-    () => ALL_MP_PROFILES.filter((mp) => mp.house === 'lok_sabha').length,
-    [],
-  );
-  const rajyaSabhaProfileCount = useMemo(
-    () => ALL_MP_PROFILES.filter((mp) => mp.house === 'rajya_sabha').length,
-    [],
-  );
-
   // All 54 parties in Parliament with both LS and RS counts
   const allPartiesStrength = useMemo(() => {
     const pMap = new Map<string, { party: string; lokSabhaSeats: number; rajyaSabhaSeats: number; totalSeats: number }>();
     for (const mp of ALL_MP_PROFILES) {
-      const p = mp.party || 'IND';
+      const p = mp.party;
       const cur = pMap.get(p) || { party: p, lokSabhaSeats: 0, rajyaSabhaSeats: 0, totalSeats: 0 };
       if (mp.house === 'lok_sabha') cur.lokSabhaSeats++;
       else if (mp.house === 'rajya_sabha') cur.rajyaSabhaSeats++;
@@ -164,7 +131,7 @@ export default function ParliamentScreen() {
       .map(([party, counts]) => ({ party, ...counts }))
       .sort((a, b) => (b.lokSabha + b.rajyaSabha) - (a.lokSabha + a.rajyaSabha));
 
-    const stateObj = POPULAR_STATES.find(s => s.code === selectedScope);
+    const stateObj = PARLIAMENT_SCOPES.find(s => s.code === selectedScope);
 
     return {
       stateCode: selectedScope,
@@ -214,29 +181,10 @@ export default function ParliamentScreen() {
 
   const displayedParties = showAllParties ? allPartiesStrength : allPartiesStrength.slice(0, 15);
 
-  if (IS_LIVE_ENVIRONMENT) {
-    return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border, paddingTop: insets.top + 8 }]}>
-          <Pressable onPress={() => router.back()} style={[styles.backBtn, { backgroundColor: colors.primaryLight }]}>
-            <Ionicons name="arrow-back" size={22} color={colors.primary} />
-          </Pressable>
-          <View style={{ flex: 1 }}>
-            <Text style={[styles.headerTitle, { color: colors.text }]}>{t('parliament.screenTitle')}</Text>
-            <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>Live records only</Text>
-          </View>
-        </View>
-        <View style={{ padding: 24 }}>
-          <Text style={{ color: colors.text, fontSize: 18, fontWeight: '700', marginBottom: 8 }}>
-            Live parliamentary directory unavailable
-          </Text>
-          <Text style={{ color: colors.textSecondary, fontSize: 14, lineHeight: 21 }}>
-            This screen is not yet connected to the live parliamentary records service. The bundled roster is hidden so it cannot be mistaken for current information.
-          </Text>
-        </View>
-      </View>
-    );
-  }
+  const houseMembers = tab === 'lok_sabha' ? filteredLokSabhaMPs : filteredRajyaSabhaMPs;
+  const scopeHouseCount = tab === 'lok_sabha' ? lokSabhaMPs.length : rajyaSabhaMPs.length;
+  const houseLabel = tab === 'lok_sabha' ? t('parliament.lokSabha') : t('parliament.rajyaSabha');
+
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -248,9 +196,10 @@ export default function ParliamentScreen() {
         <View style={{ flex: 1 }}>
           <Text style={[styles.headerTitle, { color: colors.text }]}>{t('parliament.screenTitle')}</Text>
           <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
-            {isNational
-              ? 'Bundled roster · not live-updated'
-              : `${stateSummary?.stateName || selectedScope} Parliamentary Delegation · bundled roster`}
+            {t('parliament.membershipDate', {
+              date: MP_PROFILES_SNAPSHOT.asOf,
+              defaultValue: 'Members as of {{date}}',
+            })}
           </Text>
         </View>
         <Pressable
@@ -265,7 +214,7 @@ export default function ParliamentScreen() {
       {/* Scope Selector (All India / States) */}
       <View style={[styles.scopeBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scopeScroll}>
-          {POPULAR_STATES.map((s) => {
+          {PARLIAMENT_SCOPES.map((s) => {
             const isSelected = selectedScope === s.code;
             return (
               <Pressable
@@ -320,7 +269,7 @@ export default function ParliamentScreen() {
           <Ionicons name="search" size={18} color={colors.textMuted} />
           <TextInput
             style={[styles.searchInput, { color: colors.text }]}
-            placeholder={tab === 'lok_sabha' ? t('parliament.searchLokSabhaPlaceholder', { defaultValue: 'Search 543 MPs by name, constituency, or party…' }) : t('parliament.searchRajyaSabhaPlaceholder', { defaultValue: 'Search Rajya Sabha MPs by name or party…' })}
+            placeholder={tab === 'lok_sabha' ? t('parliament.searchLokSabhaByMember', { defaultValue: 'Search by name, constituency, or party…' }) : t('parliament.searchRajyaSabhaPlaceholder', { defaultValue: 'Search Rajya Sabha MPs by name or party…' })}
             placeholderTextColor={colors.textMuted}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -372,53 +321,13 @@ export default function ParliamentScreen() {
         </ScrollView>
       )}
 
+      {tab === 'overview' ? (
       <ScrollView
         style={styles.scroll}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
         contentContainerStyle={[styles.scrollContent, { paddingBottom: Math.max(insets.bottom, 20) + 80 }]}
       >
-        {tab === 'overview' && (
-          <>
-            {/* Alliance Strength at Centre */}
-            <View style={styles.sectionHeaderRow}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                {t('parliament.allianceStrength', { defaultValue: 'Alliance Strength at Centre' })}
-              </Text>
-              <Text style={[styles.sectionSubtitle, { color: colors.textMuted }]}>
-                {t('parliament.majorityMark', { count: 272, total: 543, defaultValue: 'Majority Mark: 272 / 543' })}
-              </Text>
-            </View>
-
-            <View style={styles.allianceRow}>
-              <View style={[styles.allianceCard, { backgroundColor: colors.surface, borderLeftColor: '#F97316', borderColor: colors.border, borderWidth: 1 }]}>
-                <Text style={styles.allianceName}>{t('parliament.ndaAlliance', { defaultValue: 'NDA' })}</Text>
-                <Text style={[styles.allianceSeats, { color: colors.text }]}>{ndaStrength.total}</Text>
-                <Text style={[styles.allianceSub, { color: colors.textMuted }]}>{t('parliament.lokSabhaSeats', { defaultValue: 'Lok Sabha Seats' })}</Text>
-                <View style={[styles.statusPill, { backgroundColor: '#10B98120' }]}>
-                  <Text style={[styles.statusPillText, { color: '#10B981' }]}>{t('parliament.rulingAlliance', { defaultValue: 'RULING ALLIANCE' })}</Text>
-                </View>
-              </View>
-
-              <View style={[styles.allianceCard, { backgroundColor: colors.surface, borderLeftColor: '#3B82F6', borderColor: colors.border, borderWidth: 1 }]}>
-                <Text style={styles.allianceName}>{t('parliament.indiaAlliance', { defaultValue: 'I.N.D.I.A' })}</Text>
-                <Text style={[styles.allianceSeats, { color: colors.text }]}>{indiaStrength.total}</Text>
-                <Text style={[styles.allianceSub, { color: colors.textMuted }]}>{t('parliament.lokSabhaSeats', { defaultValue: 'Lok Sabha Seats' })}</Text>
-                <View style={[styles.statusPill, { backgroundColor: '#3B82F620' }]}>
-                  <Text style={[styles.statusPillText, { color: '#3B82F6' }]}>{t('parliament.oppositionAlliance', { defaultValue: 'OPPOSITION' })}</Text>
-                </View>
-              </View>
-
-              <View style={[styles.allianceCard, { backgroundColor: colors.surface, borderLeftColor: '#6B7280', borderColor: colors.border, borderWidth: 1 }]}>
-                <Text style={styles.allianceName}>{t('parliament.othersAlliance', { defaultValue: 'Others' })}</Text>
-                <Text style={[styles.allianceSeats, { color: colors.text }]}>{othersStrength.total}</Text>
-                <Text style={[styles.allianceSub, { color: colors.textMuted }]}>{t('parliament.lokSabhaSeats', { defaultValue: 'Lok Sabha Seats' })}</Text>
-                <View style={[styles.statusPill, { backgroundColor: '#6B728020' }]}>
-                  <Text style={[styles.statusPillText, { color: '#6B7280' }]}>{t('parliament.independentRegional', { defaultValue: 'INDEPENDENT/REGIONAL' })}</Text>
-                </View>
-              </View>
-            </View>
-
             {/* State Parliamentary Summary (if in state mode) */}
             {stateSummary && (
               <View style={{ marginTop: 16 }}>
@@ -505,65 +414,38 @@ export default function ParliamentScreen() {
                 <Ionicons name={showAllParties ? 'chevron-up' : 'chevron-down'} size={16} color={colors.primary} />
               </Pressable>
             </View>
-          </>
-        )}
-
-        {tab === 'lok_sabha' && (
-          <>
+        </ScrollView>
+      ) : (
+        <FlatList
+          key={tab + selectedScope}
+          data={houseMembers}
+          keyExtractor={(member) => member.id}
+          style={styles.scroll}
+          contentContainerStyle={[styles.scrollContent, { paddingBottom: Math.max(insets.bottom, 20) + 80 }]}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+          ListHeaderComponent={
             <View style={styles.sectionHeaderRow}>
               <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                {isNational ? t('parliament.lokSabhaMPsCount', { count: filteredLokSabhaMPs.length, total: lokSabhaProfileCount, defaultValue: `Lok Sabha profiles (${filteredLokSabhaMPs.length} of ${lokSabhaProfileCount})` }) : t('parliament.stateLokSabhaCount', { state: stateSummary?.stateName || selectedScope, count: filteredLokSabhaMPs.length, defaultValue: `Lok Sabha profiles — ${stateSummary?.stateName || selectedScope} (${filteredLokSabhaMPs.length})` })}
+                {houseLabel} · {houseMembers.length} / {scopeHouseCount}
               </Text>
             </View>
-
-            {filteredLokSabhaMPs.length === 0 ? (
-              <View style={[styles.emptyContainer, { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1 }]}>
-                <Ionicons name="people-outline" size={40} color={colors.textMuted} />
-                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-                  {t('parliament.noMPsMatch', { defaultValue: 'No MPs match your search or filter.' })}
-                </Text>
-              </View>
-            ) : (
-              filteredLokSabhaMPs.map((mp) => (
-                <View key={mp.id} style={{ marginBottom: 12 }}>
-                  <MPCard
-                    profile={mp}
-                    onPress={() => setSelectedMP(mp)}
-                  />
-                </View>
-              ))
-            )}
-          </>
-        )}
-
-        {tab === 'rajya_sabha' && (
-          <>
-            <View style={styles.sectionHeaderRow}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                {isNational ? t('parliament.rajyaSabhaMPsCount', { count: filteredRajyaSabhaMPs.length, total: rajyaSabhaProfileCount, seatTotal: MP_PROFILES_SNAPSHOT.rajyaSabhaSeatCount, defaultValue: `Rajya Sabha profiles (${filteredRajyaSabhaMPs.length} listed of ${rajyaSabhaProfileCount}; ${MP_PROFILES_SNAPSHOT.rajyaSabhaSeatCount} seats total)` }) : t('parliament.stateRajyaSabhaCount', { state: stateSummary?.stateName || selectedScope, count: filteredRajyaSabhaMPs.length, defaultValue: `Rajya Sabha profiles — ${stateSummary?.stateName || selectedScope} (${filteredRajyaSabhaMPs.length})`})}
+          }
+          ListEmptyComponent={
+            <View style={[styles.emptyContainer, { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1 }]}>
+              <Ionicons name="people-outline" size={40} color={colors.textMuted} />
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                {t('parliament.noMPsMatch')}
               </Text>
             </View>
-
-            {filteredRajyaSabhaMPs.length === 0 ? (
-              <View style={[styles.emptyContainer, { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1 }]}>
-                <Ionicons name="people-outline" size={40} color={colors.textMuted} />
-                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-                  {t('parliament.noRajyaSabhaMatch', { defaultValue: 'No Rajya Sabha MPs match your query.' })}
-                </Text>
-              </View>
-            ) : (
-              filteredRajyaSabhaMPs.map((mp) => (
-                <View key={mp.id} style={{ marginBottom: 12 }}>
-                  <MPCard
-                    profile={mp}
-                    onPress={() => setSelectedMP(mp)}
-                  />
-                </View>
-              ))
-            )}
-          </>
-        )}
-      </ScrollView>
+          }
+          renderItem={({ item }) => (
+            <View style={{ marginBottom: 12 }}>
+              <MPCard profile={item} onPress={() => setSelectedMP(item)} />
+            </View>
+          )}
+        />
+      )}
 
       {/* Interactive MP Profile Detail Modal */}
       {selectedMP && (
@@ -591,6 +473,7 @@ export default function ParliamentScreen() {
                     party={selectedMP.party}
                     size={72}
                     photoUrl={selectedMP.photoUrl}
+                    allowUnverifiedFallback={false}
                   />
                   <Text style={[styles.modalName, { color: colors.text }]}>{selectedMP.name}</Text>
                   <Text style={[styles.modalConstituency, { color: colors.textSecondary }]}>
@@ -613,23 +496,29 @@ export default function ParliamentScreen() {
                 <View style={[styles.metricsGrid, { backgroundColor: colors.surfaceElevated, borderColor: colors.border, borderWidth: 1 }]}>
                   <View style={styles.metricCell}>
                     <Text style={[styles.metricLabel, { color: colors.textMuted }]}>{t('parliament.termsElected', { defaultValue: 'Terms Elected' })}</Text>
-                    <Text style={[styles.metricValue, { color: colors.text }]}>{selectedMP.terms || 1}</Text>
+                    <Text style={[styles.metricValue, { color: colors.text }]}>{selectedMP.terms ?? '—'}</Text>
                   </View>
                   <View style={styles.metricCell}>
                     <Text style={[styles.metricLabel, { color: colors.textMuted }]}>{t('parliament.age', { defaultValue: 'Age' })}</Text>
                     <Text style={[styles.metricValue, { color: colors.text }]}>{selectedMP.age ? `${selectedMP.age} yrs` : 'N/A'}</Text>
                   </View>
                   <View style={styles.metricCell}>
-                    <Text style={[styles.metricLabel, { color: colors.textMuted }]}>{t('parliament.criminalCases', { defaultValue: 'Criminal Cases' })}</Text>
-                    <Text style={[styles.metricValue, { color: (selectedMP.criminalCases ?? 0) > 0 ? '#EF4444' : '#10B981' }]}>
-                      {selectedMP.criminalCases ?? 0}
+                    <Text style={[styles.metricLabel, { color: colors.textMuted }]}>{t('parliament.declaredCases', { defaultValue: 'Declared cases' })}</Text>
+                    <Text style={[styles.metricValue, { color: selectedMP.criminalCases !== undefined && selectedMP.criminalCases > 0 ? colors.danger : colors.text }]}>
+                      {selectedMP.criminalCases ?? '—'}
                     </Text>
                   </View>
                 </View>
 
                 {/* Financial Summary */}
+                {selectedMP.affidavitUrl && (
                 <View style={[styles.detailSection, { backgroundColor: colors.surfaceElevated, borderColor: colors.border, borderWidth: 1 }]}>
-                  <Text style={[styles.detailSectionTitle, { color: colors.text }]}>{t('parliament.declaredFinancials', { defaultValue: 'Declared Financials (Affidavit)' })}</Text>
+                  <Text style={[styles.detailSectionTitle, { color: colors.text }]}>{t('parliament.affidavitFinancials', { defaultValue: 'Affidavit disclosures' })}</Text>
+                  {selectedMP.affidavitYear && (
+                    <Text style={[styles.infoKey, { color: colors.textSecondary }]}>
+                      {t('parliament.filingYear', { year: selectedMP.affidavitYear, defaultValue: 'Filed in {{year}}' })}
+                    </Text>
+                  )}
                   <View style={styles.financialRow}>
                     <View style={styles.financialCol}>
                       <Text style={[styles.financialLabel, { color: colors.textMuted }]}>{t('parliament.totalAssets', { defaultValue: 'Total Assets' })}</Text>
@@ -645,6 +534,8 @@ export default function ParliamentScreen() {
                     </View>
                   </View>
                 </View>
+
+                )}
 
                 {/* Performance Metrics */}
                 {(selectedMP.questionsAsked !== undefined || selectedMP.debatesParticipated !== undefined) && (
@@ -672,14 +563,35 @@ export default function ParliamentScreen() {
                   <Text style={[styles.detailSectionTitle, { color: colors.text }]}>{t('parliament.background', { defaultValue: 'Background' })}</Text>
                   <View style={styles.infoRow}>
                     <Text style={[styles.infoKey, { color: colors.textMuted }]}>{t('parliament.education', { defaultValue: 'Education:' })}</Text>
-                    <Text style={[styles.infoVal, { color: colors.text }]}>{selectedMP.education || 'Not Specified'}</Text>
+                    <Text style={[styles.infoVal, { color: colors.text }]}>{selectedMP.education ?? '—'}</Text>
                   </View>
                   <View style={styles.infoRow}>
                     <Text style={[styles.infoKey, { color: colors.textMuted }]}>{t('parliament.profession', { defaultValue: 'Profession:' })}</Text>
-                    <Text style={[styles.infoVal, { color: colors.text }]}>{selectedMP.profession || 'Public Service'}</Text>
+                    <Text style={[styles.infoVal, { color: colors.text }]}>{selectedMP.profession ?? '—'}</Text>
                   </View>
                 </View>
 
+                {selectedMP.termStart && selectedMP.termEnd && (
+                  <View style={[styles.detailSection, { backgroundColor: colors.surfaceElevated, borderColor: colors.border, borderWidth: 1 }]}>
+                    <Text style={[styles.detailSectionTitle, { color: colors.text }]}>
+                      {t('parliament.currentTerm', { defaultValue: 'Current term' })}
+                    </Text>
+                    <Text style={[styles.infoVal, { color: colors.textSecondary }]}>
+                      {selectedMP.termStart} – {selectedMP.termEnd}
+                    </Text>
+                  </View>
+                )}
+                {selectedMP.affidavitUrl && (
+                  <Pressable
+                    style={[styles.sourceLinkBtn, { backgroundColor: colors.primaryLight }]}
+                    onPress={() => Linking.openURL(selectedMP.affidavitUrl!)}
+                  >
+                    <Ionicons name="document-text-outline" size={16} color={colors.primary} />
+                    <Text style={[styles.sourceLinkText, { color: colors.primary }]}>
+                      {t('parliament.viewFilingRecord', { defaultValue: 'View election affidavit and case details' })}
+                    </Text>
+                  </Pressable>
+                )}
                 {/* Source Verification Link */}
                 {selectedMP.sourceUrl && (
                   <Pressable
@@ -687,7 +599,7 @@ export default function ParliamentScreen() {
                     onPress={() => Linking.openURL(selectedMP.sourceUrl!)}
                   >
                     <Ionicons name="open-outline" size={16} color={colors.primary} />
-                    <Text style={[styles.sourceLinkText, { color: colors.primary }]}>{t('parliament.viewOfficialAffidavit', { defaultValue: 'View Official Affidavit on MyNeta / Sansad' })}</Text>
+                    <Text style={[styles.sourceLinkText, { color: colors.primary }]}>{t('parliament.officialMemberProfile', { defaultValue: 'Official Parliament profile' })}</Text>
                   </Pressable>
                 )}
               </ScrollView>
@@ -798,28 +710,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
   },
-
-  allianceRow: {
-    flexDirection: 'row',
-    gap: 8,
-    marginBottom: 12,
-  },
-  allianceCard: {
-    flex: 1,
-    borderRadius: 12,
-    padding: 10,
-    borderLeftWidth: 4,
-    alignItems: 'center',
-  },
-  allianceName: { fontSize: 13, fontWeight: '800', marginBottom: 2 },
-  allianceSeats: { fontSize: 24, fontWeight: '900' },
-  allianceSub: { fontSize: 9, marginTop: 1, marginBottom: 6 },
-  statusPill: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  statusPillText: { fontSize: 8, fontWeight: '800' },
 
   stateSummaryCard: {
     borderRadius: 12,

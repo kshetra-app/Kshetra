@@ -5,45 +5,7 @@
  * Data sourced from PRS Legislative Research, Sansad.in, and ECI.
  */
 
-export type HouseType = 'lok_sabha' | 'rajya_sabha';
-
-export interface MPProfile {
-  /** Unique MP identifier */
-  id: string;
-  name: string;
-  party: string;
-  /** State the MP represents */
-  stateCode: string;
-  house: HouseType;
-  /** Lok Sabha: constituency name; Rajya Sabha: 'Rajya Sabha' */
-  constituency?: string;
-  /** Lok Sabha constituency number */
-  constituencyNo?: number;
-  gender: 'M' | 'F';
-  age?: number;
-  education?: string;
-  profession?: string;
-  terms: number;
-  /** Year first elected to current term */
-  electedYear: number;
-  /** For Rajya Sabha: term end year */
-  termEndYear?: number;
-  criminalCases?: number;
-  totalAssets?: number | null;
-  totalLiabilities?: number | null;
-  maritalStatus?: 'Single' | 'Married' | 'Widowed' | 'Divorced';
-  /** Whether this MP is a minister */
-  isMinister?: boolean;
-  ministerialPortfolio?: string;
-  /** Number of questions asked */
-  questionsAsked?: number;
-  /** Number of debates participated in */
-  debatesParticipated?: number;
-  /** Number of private member bills introduced */
-  privateBills?: number;
-  /** Photo URL (MyNeta/ECI CDN) — use avatar generator if absent */
-  photoUrl?: string;
-}
+export type { MPProfile, HouseType } from '../../../data/seed/mp-profiles';
 
 export interface PartyStrength {
   party: string;

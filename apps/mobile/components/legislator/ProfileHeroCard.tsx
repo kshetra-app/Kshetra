@@ -27,7 +27,8 @@ interface Props {
   photoUrl: string | null;
   gender: string;
   age: number | null;
-  termsServed: number;
+  termsServed?: number;
+  allowUnverifiedPhotoFallback?: boolean;
   isCabinetMinister?: boolean;
   isChiefMinister?: boolean;
   isCurrentMember?: boolean;
@@ -55,7 +56,7 @@ export default function ProfileHeroCard({
   photoUrl,
   gender,
   age,
-  termsServed,
+  allowUnverifiedPhotoFallback = true,
   isCabinetMinister,
   isChiefMinister,
   isCurrentMember,
@@ -76,12 +77,14 @@ export default function ProfileHeroCard({
   const [imgError, setImgError] = useState(false);
 
   const effectivePhoto = useMemo(() => {
-    const raw = photoUrl || getStaticPhoto(fullName) || getStaticPhoto(displayName) || getCachedPhoto(fullName) || getCachedPhoto(displayName) || null;
+    const raw = photoUrl || (allowUnverifiedPhotoFallback
+      ? getStaticPhoto(fullName) || getStaticPhoto(displayName) || getCachedPhoto(fullName) || getCachedPhoto(displayName)
+      : null);
     if (!raw || typeof raw !== 'string') return null;
     const trimmed = raw.trim();
     if (!trimmed.startsWith('http') || trimmed.includes('.svg') || trimmed.includes('LokSabha2024/photos/')) return null;
     return trimmed.replace(/^http:\/\//i, 'https://');
-  }, [photoUrl, fullName, displayName]);
+  }, [photoUrl, fullName, displayName, allowUnverifiedPhotoFallback]);
 
   const LEGISLATOR_HOUSE_LABELS: Record<string, string> = {
     state_assembly: 'MLA',

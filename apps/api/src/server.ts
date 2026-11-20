@@ -12,6 +12,7 @@ import { resolveCorsOrigin } from './lib/corsOrigins';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
 import { constituencyRoutes } from './routes/constituencies';
+import { localBodyRoutes } from './routes/localBodies';
 import { healthRoutes } from './routes/health';
 import { aiRoutes } from './routes/ai';
 import { notificationRoutes } from './routes/notifications';
@@ -235,6 +236,7 @@ export async function buildApp(): Promise<FastifyInstance> {
 
   await app.register(healthRoutes, { prefix: '/api' });
   await app.register(constituencyRoutes, { prefix: '/api/v1' });
+  await app.register(localBodyRoutes);
   await app.register(geoRuntimeRoutes, { prefix: '/api/v1' });
   await app.register(spatialAnalyticsRoutes);
   await app.register(politicalEntityRoutes);

@@ -16,6 +16,7 @@ import { Stack, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { sendAIChat, type AIChatMessage } from '../lib/aiService';
+import { ApiAuthError, ApiError } from '../lib/api/errors';
 import { getUnifiedConstituenciesForState } from '../lib/stateDataAdapter';
 import { useActiveStateStore } from '../stores/activeState';
 import { useTheme } from '../lib/theme';
@@ -76,7 +77,7 @@ export default function AIChatScreen() {
     setLoading(true);
 
     const history: AIChatMessage[] = [
-      ...messages.slice(-(MAX_AI_HISTORY_MESSAGES - 1)).map((m) => ({
+      ...messages.filter((message) => !message.isError).slice(-(MAX_AI_HISTORY_MESSAGES - 1)).map((m) => ({
         role: m.role,
         content: m.content,
       })),
@@ -86,7 +87,7 @@ export default function AIChatScreen() {
     try {
       const response = await sendAIChat(
         history,
-        constituency ? { constituencyName: constituency.name, acNo: constituency.acNo } : undefined,
+        { stateCode, acNo: constituency?.acNo },
       );
 
       const assistantMsg: Message = {
@@ -98,18 +99,26 @@ export default function AIChatScreen() {
       };
 
       setMessages((prev) => [...prev, assistantMsg]);
-    } catch {
+    } catch (error) {
+      let message = t('ai.chatLoadError', { defaultValue: 'Could not get an answer. Please try again.' });
+      if (error instanceof ApiAuthError) {
+        message = t('ai.chatSignInRequired', { defaultValue: 'Sign in to use Civic AI.' });
+      } else if (error instanceof ApiError && error.statusCode === 429) {
+        message = t('ai.chatLimitReached', { defaultValue: 'Civic AI has reached its usage limit. Try again later.' });
+      } else if (error instanceof ApiError && error.statusCode === 503) {
+        message = t('ai.chatServiceUnavailable', { defaultValue: 'Civic AI is temporarily unavailable.' });
+      }
       setMessages((prev) => [...prev, {
         id: `assistant-error-${Date.now()}`,
         role: 'assistant',
-        content: t('ai.unavailable', { defaultValue: 'AI is temporarily unavailable. Check your connection and try again.' }),
+        content: message,
         timestamp: Date.now(),
         isError: true,
       }]);
     } finally {
       setLoading(false);
     }
-  }, [input, loading, messages, constituency, t]);
+  }, [input, loading, messages, constituency, stateCode, t]);
 
   const renderMessage = ({ item }: { item: Message }) => (
     <View
@@ -145,11 +154,6 @@ export default function AIChatScreen() {
             {t('ai.referenceDataNotVerified', {
               defaultValue: 'Reference data has not been verified against dated sources.',
             })}
-          </Text>
-        )}
-        {item.isError && (
-          <Text style={[styles.provenanceText, { color: colors.danger }]}>
-            {t('ai.tryAgain', { defaultValue: 'Please try again later.' })}
           </Text>
         )}
       </View>

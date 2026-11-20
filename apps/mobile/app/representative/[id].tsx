@@ -40,11 +40,14 @@ export default function RepresentativeProfileScreen() {
   const [rep, setRep] = useState<Representative | null>(null);
   const [profile, setProfile] = useState<RepresentativeProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [retry, setRetry] = useState(0);
   const [helpVisible, setHelpVisible] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     setLoading(true);
+    setLoadError(false);
     getRepresentativeById(String(id ?? '')).then((repData) => {
       if (!mounted) return;
       if (repData) {
@@ -58,9 +61,15 @@ export default function RepresentativeProfileScreen() {
         setProfile(null);
       }
       setLoading(false);
+    }).catch(() => {
+      if (!mounted) return;
+      setRep(null);
+      setProfile(null);
+      setLoadError(true);
+      setLoading(false);
     });
     return () => { mounted = false; };
-  }, [id, jurisdictionName, office, state]);
+  }, [id, jurisdictionName, office, retry, state]);
 
   if (loading) {
     return (
@@ -79,10 +88,16 @@ export default function RepresentativeProfileScreen() {
         <Stack.Screen options={{ title: 'Representative' }} />
         <View style={styles.center}>
           <Ionicons name="person-circle-outline" size={56} color={colors.textMuted} />
-          <Text style={[styles.emptyTitle, { color: colors.text }]}>{i18n.t('representative.profileNotFound')}</Text>
-          <Pressable style={styles.backBtn} onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={18} color={colors.primary} />
-            <Text style={[styles.backBtnText, { color: colors.primary }]}>{i18n.t('common.back')}</Text>
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>
+            {loadError
+              ? i18n.t('representative.profileLoadError', { defaultValue: 'Could not load this election record.' })
+              : i18n.t('representative.profileNotFound')}
+          </Text>
+          <Pressable style={styles.backBtn} onPress={() => loadError ? setRetry((value) => value + 1) : router.back()}>
+            <Ionicons name={loadError ? 'refresh' : 'arrow-back'} size={18} color={colors.primary} />
+            <Text style={[styles.backBtnText, { color: colors.primary }]}>
+              {loadError ? i18n.t('common.retry', { defaultValue: 'Retry' }) : i18n.t('common.back')}
+            </Text>
           </Pressable>
         </View>
       </View>
@@ -149,15 +164,15 @@ export default function RepresentativeProfileScreen() {
             <ProfileHeroCard
               fullName={profile.name}
               displayName={profile.name}
-              party={profile.party ?? (profile.partyOfficial ? 'Independent' : 'Non-Party')}
+              party={profile.party ?? (profile.partyOfficial ? '' : 'Non-Party')}
               constituency={profile.jurisdictionName}
               district={profile.district ?? ''}
               stateCode={profile.stateCode}
               house={profile.officeLabel}
               photoUrl={profile.photoUrl ?? null}
-              gender={profile.gender === 'F' ? 'female' : 'male'}
+              allowUnverifiedPhotoFallback={false}
+              gender={profile.gender === 'F' ? 'female' : profile.gender === 'M' ? 'male' : ''}
               age={profile.age ?? null}
-              termsServed={profile.terms ?? 1}
               isCurrentMember={profile.isCurrent}
               onSharePress={handleShare}
             />
