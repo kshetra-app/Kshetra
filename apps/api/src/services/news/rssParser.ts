@@ -48,6 +48,14 @@ function decodeEntities(input: string): string {
     .replace(/&apos;/g, "'")
     .replace(/&nbsp;/g, ' ')
     .replace(/&amp;/g, '&')
+    .replace(/&#(x[0-9a-f]{1,6}|[0-9]{1,7});/gi, (entity, value: string) => {
+      const hex = value[0].toLowerCase() === 'x';
+      const codePoint = Number.parseInt(hex ? value.slice(1) : value, hex ? 16 : 10);
+      if (codePoint < 32 || codePoint > 0x10ffff || (codePoint >= 0xd800 && codePoint <= 0xdfff)) {
+        return entity;
+      }
+      return String.fromCodePoint(codePoint);
+    })
     .trim();
 }
 
