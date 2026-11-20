@@ -246,6 +246,8 @@ const hi = {
   },
   "feed": {
     "changeOrRemoveVote": "अपना वोट बदलने या वापस लेने के लिए किसी विकल्प पर टैप करें",
+    "voteCount_one": "{{count}} वोट",
+    "voteCount_other": "{{count}} वोट",
     "postReviewPending": "पोस्ट समीक्षा के लिए भेज दी गई है। मंज़ूरी मिलने पर यह दिखाई देगी।",
     "postReviewRejected": "समीक्षा में यह पोस्ट अस्वीकार कर दी गई।",
     "postQueuedTitle": "पोस्ट कतार में है",

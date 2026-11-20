@@ -246,6 +246,8 @@ const en =  {
   },
   "feed": {
     "changeOrRemoveVote": "Tap an option to change or remove your vote",
+    "voteCount_one": "{{count}} vote",
+    "voteCount_other": "{{count}} votes",
     "postReviewPending": "Submitted for review. Your post will appear after approval.",
     "postReviewRejected": "This post was declined during review.",
     "postQueuedTitle": "Post queued",

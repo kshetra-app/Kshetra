@@ -495,6 +495,11 @@ export async function shortsRoutes(app: FastifyInstance) {
       const { id: shortId } = request.params;
       const offset = request.query.offset ?? 0;
       const limit = request.query.limit ?? 100;
+      const viewer = request.headers.authorization
+        ? await resolveAuthenticatedUser(request, reply)
+        : null;
+      if (request.headers.authorization && !viewer) return;
+      if (viewer) reply.header('Cache-Control', 'private, no-store');
       if (!SHORT_ID_PATTERN.test(shortId)) {
         return sendApiError(reply, request, 400, 'Bad Request', 'Invalid short ID', {
           code: 'INVALID_SHORT_ID',
@@ -544,7 +549,7 @@ export async function shortsRoutes(app: FastifyInstance) {
 
         const { data, count, error } = await supabase
           .from('short_comments')
-          .select('id,author_name,text,created_at', { count: 'exact' })
+          .select('id,user_id,author_name,text,created_at', { count: 'exact' })
           .eq('short_id', shortId)
           .order('created_at', { ascending: false })
           .order('id', { ascending: false })
@@ -569,6 +574,7 @@ export async function shortsRoutes(app: FastifyInstance) {
           authorName: row.author_name || 'Anonymous',
           text: row.text,
           createdAt: row.created_at,
+          ...(viewer ? { canEdit: row.user_id === viewer.userId } : {}),
         }));
 
         return reply.send({ success: true, shortId, comments, total: count ?? comments.length });
@@ -588,6 +594,117 @@ export async function shortsRoutes(app: FastifyInstance) {
           },
         );
       }
+    },
+  );
+
+  app.route<{
+    Params: { id: string; commentId: string };
+    Body: { content: string };
+  }>({
+    method: 'PATCH',
+    url: '/api/v1/shorts/:id/comments/:commentId',
+    schema: {
+      body: {
+        type: 'object',
+        required: ['content'],
+        properties: {
+          content: { type: 'string', minLength: 1, maxLength: 500 },
+        },
+      },
+    },
+    async handler(request, reply) {
+      const viewer = await resolveAuthenticatedUser(request, reply);
+      if (!viewer) return;
+      const { id, commentId } = request.params;
+      const content = request.body.content.trim();
+      if (!content || !SHORT_ID_PATTERN.test(id) || !SHORT_ID_PATTERN.test(commentId)) {
+        return sendApiError(reply, request, 400, 'Bad Request', 'Invalid comment');
+      }
+      if (!isSupabaseConfigured) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Comments are unavailable');
+      }
+      try {
+        if ((await checkContentModeration(content)).flagged) {
+          return sendApiError(
+            reply,
+            request,
+            422,
+            'Unprocessable Entity',
+            'Comment rejected due to policy violations',
+          );
+        }
+      } catch (error) {
+        if (!(error instanceof ModerationUnavailableError)) throw error;
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Comment moderation is temporarily unavailable',
+        );
+      }
+      const { data, error } = await supabase
+        .from('short_comments')
+        .update({ text: content })
+        .eq('id', commentId)
+        .eq('short_id', id)
+        .eq('user_id', viewer.userId)
+        .select('id,author_name,text,created_at')
+        .maybeSingle();
+      if (error)
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'The edit could not be saved',
+        );
+      if (!data)
+        return sendApiError(reply, request, 404, 'Not Found', 'Editable comment not found');
+      return {
+        success: true,
+        comment: {
+          id: data.id,
+          authorName: data.author_name,
+          text: data.text,
+          createdAt: data.created_at,
+          canEdit: true,
+        },
+      };
+    },
+  });
+
+  app.delete<{ Params: { id: string; commentId: string } }>(
+    '/api/v1/shorts/:id/comments/:commentId',
+    async (request, reply) => {
+      const viewer = await resolveAuthenticatedUser(request, reply);
+      if (!viewer) return;
+      const { id, commentId } = request.params;
+      if (!SHORT_ID_PATTERN.test(id) || !SHORT_ID_PATTERN.test(commentId)) {
+        return sendApiError(reply, request, 400, 'Bad Request', 'Invalid comment');
+      }
+      if (!isSupabaseConfigured) {
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Comments are unavailable');
+      }
+      const { data, error } = await supabase
+        .from('short_comments')
+        .delete()
+        .eq('id', commentId)
+        .eq('short_id', id)
+        .eq('user_id', viewer.userId)
+        .select('id')
+        .maybeSingle();
+      if (error)
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'The comment could not be removed',
+        );
+      if (!data)
+        return sendApiError(reply, request, 404, 'Not Found', 'Removable comment not found');
+      return { success: true, id: data.id };
     },
   );
 

@@ -246,6 +246,8 @@ const te = {
   },
   "feed": {
     "changeOrRemoveVote": "మీ ఓటును మార్చడానికి లేదా తొలగించడానికి ఓ ఎంపికను నొక్కండి",
+    "voteCount_one": "{{count}} ఓటు",
+    "voteCount_other": "{{count}} ఓట్లు",
     "postReviewPending": "పోస్ట్‌ను సమీక్ష కోసం పంపాము. ఆమోదం తర్వాత అది కనిపిస్తుంది.",
     "postReviewRejected": "సమీక్షలో ఈ పోస్ట్‌ను తిరస్కరించారు.",
     "postQueuedTitle": "పోస్ట్ వరుసలో ఉంది",

@@ -1396,7 +1396,7 @@ export async function incrementShortView(shortId: string): Promise<boolean> {
 
 export async function fetchShortComments(
   shortId: string,
-  options?: { offset?: number; limit?: number },
+  options?: { offset?: number; limit?: number; authenticated?: boolean },
 ): Promise<ShortCommentsResponseDTO | null> {
   if (!isValidUuid(shortId)) return null;
   try {

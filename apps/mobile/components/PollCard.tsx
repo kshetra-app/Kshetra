@@ -99,7 +99,7 @@ export default function PollCard({ poll, onVote }: PollCardProps) {
       {/* Footer info */}
       <View style={styles.footer}>
         <Text style={[styles.footerText, { color: colors.textMuted }]}>
-          {poll.totalVotes} {t('feed.votes', 'votes')}
+          {t('feed.voteCount', { count: poll.totalVotes, defaultValue: `${poll.totalVotes} ${t('feed.votes', 'votes')}` })}
         </Text>
         <Text style={[styles.footerDot, { color: colors.textMuted }]}>·</Text>
         {closed ? (

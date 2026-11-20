@@ -29,9 +29,9 @@ import { usePoliticalShortsStore } from '../stores/politicalShorts';
 import { useMyConstituencyStore } from '../stores/myConstituency';
 import { useActiveStateStore } from '../stores/activeState';
 import { useAuthStore } from '../stores/auth';
-import { useUserProfileStore } from '../stores/userProfile';
 import { gateContentAction, logContentAction } from '../lib/contentAccountability';
 import { addShortComment, fetchShortComments } from '../lib/supabaseDataService';
+import { apiClient } from '../lib/api';
 import type { ShortCommentDTO } from '../lib/api/endpoints/shorts';
 
 interface ShortsPlayerModalProps {
@@ -53,9 +53,7 @@ export default function ShortsPlayerModal({
   
   // State from stores
   const authUser = useAuthStore((s) => s.user);
-  const userProfile = useUserProfileStore((s) => s.profile);
   const userId = authUser?.id || 'anon-user';
-  const authorName = userProfile?.displayName || authUser?.email?.split('@')[0] || 'Citizen';
   const myHome = useMyConstituencyStore((s) => s.home);
   const activeStateCode = useActiveStateStore((s) => s.stateCode);
   const userConstituencyId = myHome ? `${activeStateCode}-AC-${myHome.acNo}` : undefined;
@@ -89,7 +87,6 @@ export default function ShortsPlayerModal({
           isActive={isActive}
           screenWidth={screenWidth}
           screenHeight={screenHeight}
-          authorName={authorName}
           userConstituencyId={userConstituencyId}
           isApproved={isApproved}
           isFlagged={isFlagged}
@@ -100,7 +97,7 @@ export default function ShortsPlayerModal({
         />
       );
     },
-    [currentIndex, screenWidth, screenHeight, userApprovals, flaggedShorts, userId, authorName, userConstituencyId, approveShort, flagShort, incrementViews, onClose]
+    [currentIndex, screenWidth, screenHeight, userApprovals, flaggedShorts, userId, userConstituencyId, approveShort, flagShort, incrementViews, onClose]
   );
 
   return (
@@ -154,7 +151,6 @@ interface ShortPageItemProps {
   isActive: boolean;
   screenWidth: number;
   screenHeight: number;
-  authorName: string;
   userConstituencyId: string | undefined;
   isApproved: boolean;
   isFlagged: boolean;
@@ -169,7 +165,6 @@ function ShortPageItem({
   isActive,
   screenWidth,
   screenHeight,
-  authorName,
   userConstituencyId,
   isApproved,
   isFlagged,
@@ -200,8 +195,13 @@ function ShortPageItem({
   const [commentsLoadMoreError, setCommentsLoadMoreError] = useState(false);
   const [commentsOffset, setCommentsOffset] = useState(0);
   const [commentSubmitting, setCommentSubmitting] = useState(false);
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const viewerId = useAuthStore((state) => state.user?.id);
+  const commentRequest = useRef(0);
+  const writingComment = useRef(false);
 
   const refreshComments = useCallback(async () => {
+    const request = ++commentRequest.current;
     setCommentsLoading(true);
     setCommentsLoadingMore(false);
     setCommentsError(false);
@@ -209,7 +209,8 @@ function ShortPageItem({
     setComments([]);
     setCommentsTotal(null);
     setCommentsOffset(0);
-    const result = await fetchShortComments(item.id, { offset: 0, limit: 50 });
+    const result = await fetchShortComments(item.id, { offset: 0, limit: 50, authenticated: Boolean(viewerId) });
+    if (request !== commentRequest.current) return;
     if (result) {
       setComments(result.comments);
       setCommentsTotal(result.total);
@@ -219,15 +220,17 @@ function ShortPageItem({
       setCommentsTotal(null);
     }
     setCommentsLoading(false);
-  }, [item.id]);
+  }, [item.id, viewerId]);
 
   const loadMoreComments = useCallback(async () => {
-    if (commentsLoading || commentsLoadingMore || commentsTotal === null || commentsOffset >= commentsTotal) {
+    if (commentsLoading || commentsLoadingMore || writingComment.current || commentsTotal === null || commentsOffset >= commentsTotal) {
       return;
     }
+    const request = ++commentRequest.current;
     setCommentsLoadingMore(true);
     setCommentsLoadMoreError(false);
-    const result = await fetchShortComments(item.id, { offset: commentsOffset, limit: 50 });
+    const result = await fetchShortComments(item.id, { offset: commentsOffset, limit: 50, authenticated: Boolean(viewerId) });
+    if (request !== commentRequest.current) return;
     if (result) {
       setComments((current) => {
         const knownIds = new Set(current.map((comment) => comment.id));
@@ -239,10 +242,14 @@ function ShortPageItem({
       setCommentsLoadMoreError(true);
     }
     setCommentsLoadingMore(false);
-  }, [commentsLoading, commentsLoadingMore, commentsOffset, commentsTotal, item.id]);
+  }, [commentsLoading, commentsLoadingMore, commentsOffset, commentsTotal, item.id, viewerId]);
 
   useEffect(() => {
-    if (commentsVisible) void refreshComments();
+    if (!commentsVisible) return;
+    setEditingCommentId(null);
+    setCommentText('');
+    void refreshComments();
+    return () => { commentRequest.current++; };
   }, [commentsVisible, refreshComments]);
 
   // Curation eligibility check
@@ -314,24 +321,24 @@ function ShortPageItem({
 
   const handlePostComment = useCallback(async () => {
     const commentBody = commentText.trim();
-    if (!commentBody || commentSubmitting) return;
+    if (!commentBody || writingComment.current || commentsLoading || commentsLoadingMore) return;
     if (!gateContentAction('create_comment')) return;
 
-    const tempCommentId = `pending-${Date.now()}`;
-    const pendingComment: ShortCommentDTO = {
-      id: tempCommentId,
-      authorName: authorName || 'Citizen',
-      text: commentBody,
-      createdAt: new Date().toISOString(),
-    };
-    setComments((prev) => [pendingComment, ...prev]);
+    writingComment.current = true;
     setCommentSubmitting(true);
 
     try {
-      const savedComment = await addShortComment(item.id, commentBody);
-      setComments((prev) => prev.map((comment) => comment.id === tempCommentId ? savedComment : comment));
-      setCommentsTotal((total) => total === null ? null : total + 1);
+      if (editingCommentId) {
+        const saved = await apiClient.shorts.editComment(item.id, editingCommentId, commentBody);
+        if (!saved.success || saved.comment.id !== editingCommentId) throw new Error(t('postDetail.editCommentFailed'));
+        setComments((current) => current.map((comment) => comment.id === editingCommentId ? saved.comment : comment));
+        setEditingCommentId(null);
+        setCommentText('');
+        return;
+      }
+      await addShortComment(item.id, commentBody);
       setCommentText('');
+      await refreshComments();
       try {
         logContentAction('create_comment', {
           type: 'political_short_comment',
@@ -344,15 +351,39 @@ function ShortPageItem({
       }
     } catch (err) {
       console.warn('[Shorts] Failed to persist comment to database:', err);
-      setComments((prev) => prev.filter((c) => c.id !== tempCommentId));
       Alert.alert(
-        'Comment not posted',
+        editingCommentId ? t('postDetail.editCommentFailed') : t('postDetail.commentFailed', { defaultValue: 'Comment not sent' }),
         err instanceof Error ? err.message : 'Could not save your comment. Please try again.',
       );
     } finally {
+      writingComment.current = false;
       setCommentSubmitting(false);
     }
-  }, [commentText, commentSubmitting, item.id, authorName]);
+  }, [commentText, commentsLoading, commentsLoadingMore, editingCommentId, item.id, refreshComments, t]);
+
+  function confirmRemoveComment(commentId: string) {
+    Alert.alert(t('postDetail.deleteComment'), t('postDetail.deleteCommentConfirm'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('common.delete'), style: 'destructive', onPress: async () => {
+          if (writingComment.current) return;
+          writingComment.current = true;
+          setCommentSubmitting(true);
+          try {
+            const removed = await apiClient.shorts.deleteComment(item.id, commentId);
+            if (!removed.success || removed.id !== commentId) throw new Error(t('postDetail.deleteCommentFailed'));
+            if (editingCommentId === commentId) { setEditingCommentId(null); setCommentText(''); }
+            await refreshComments();
+          } catch {
+            Alert.alert(t('postDetail.deleteCommentFailed', { defaultValue: 'The comment could not be removed.' }));
+          } finally {
+            writingComment.current = false;
+            setCommentSubmitting(false);
+          }
+        },
+      },
+    ]);
+  }
 
   const [streamUrl, setStreamUrl] = useState<string | null>(null);
   const [playbackAttempt, setPlaybackAttempt] = useState(0);
@@ -575,6 +606,7 @@ function ShortPageItem({
 
             <FlatList
               style={styles.commentsList}
+              keyboardShouldPersistTaps="handled"
               data={comments}
               keyExtractor={(c) => c.id}
               renderItem={({ item: c }) => (
@@ -584,6 +616,18 @@ function ShortPageItem({
                     <Text style={styles.commentTime}>{new Date(c.createdAt).toLocaleString()}</Text>
                   </View>
                   <Text style={styles.commentText}>{c.text}</Text>
+                  {viewerId && c.canEdit && (
+                    <View style={styles.commentActions}>
+                      <Pressable accessibilityRole="button" disabled={commentSubmitting}
+                        onPress={() => { setEditingCommentId(c.id); setCommentText(c.text); }}>
+                        <Text style={styles.commentsRetry}>{t('common.edit')}</Text>
+                      </Pressable>
+                      <Pressable accessibilityRole="button" disabled={commentSubmitting}
+                        onPress={() => confirmRemoveComment(c.id)}>
+                        <Text style={styles.commentsRetry}>{t('common.delete')}</Text>
+                      </Pressable>
+                    </View>
+                  )}
                 </View>
               )}
               ListEmptyComponent={
@@ -621,6 +665,15 @@ function ShortPageItem({
             />
 
             {/* Comment Input */}
+            {editingCommentId && (
+              <View style={[styles.commentActions, { paddingHorizontal: 16 }]}>
+                <Text style={styles.commentText}>{t('postDetail.editingComment')}</Text>
+                <Pressable accessibilityRole="button" disabled={commentSubmitting}
+                  onPress={() => { setEditingCommentId(null); setCommentText(''); }}>
+                  <Text style={styles.commentsRetry}>{t('common.cancel')}</Text>
+                </Pressable>
+              </View>
+            )}
             <View style={[styles.commentInputRow, { paddingBottom: Math.max(insets.bottom, 12) }]}>
               <TextInput
                 style={styles.commentInput}
@@ -629,8 +682,12 @@ function ShortPageItem({
                 value={commentText}
                 onChangeText={setCommentText}
                 maxLength={500}
+                multiline
               />
-              <Pressable style={styles.commentPostBtn} onPress={() => void handlePostComment()} disabled={commentSubmitting}>
+              <Pressable style={styles.commentPostBtn} accessibilityRole="button"
+                accessibilityLabel={editingCommentId ? t('common.save') : t('common.send')}
+                onPress={() => void handlePostComment()}
+                disabled={commentSubmitting || commentsLoading || commentsLoadingMore || !commentText.trim()}>
                 {commentSubmitting ? <ActivityIndicator size="small" color="#FFFFFF" /> : <Ionicons name="send" size={16} color="#FFFFFF" />}
               </Pressable>
             </View>
@@ -642,6 +699,7 @@ function ShortPageItem({
 }
 
 const styles = StyleSheet.create({
+  commentActions: { flexDirection: 'row', gap: 12, flexWrap: 'wrap', marginVertical: 6 },
   container: {
     flex: 1,
     backgroundColor: '#000000',
@@ -928,11 +986,14 @@ const styles = StyleSheet.create({
   },
   commentMeta: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   commentAuthor: {
     fontSize: 12,
+    flexShrink: 1,
     fontWeight: '700',
     color: '#9CA3AF',
   },
@@ -974,7 +1035,8 @@ const styles = StyleSheet.create({
   },
   commentInput: {
     flex: 1,
-    height: 40,
+    minHeight: 44,
+    maxHeight: 120,
     backgroundColor: '#1F2937',
     borderRadius: 20,
     paddingHorizontal: 16,

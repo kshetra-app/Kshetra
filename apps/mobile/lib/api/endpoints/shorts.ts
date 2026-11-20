@@ -11,7 +11,7 @@
  */
 
 import type { ApiClient } from '../client';
-import { ApiValidationError } from '../errors';
+import { ApiAuthError, ApiValidationError } from '../errors';
 import { CONTENT_LIMITS } from '@kshetra/shared';
 
 export interface UploadShortRequestDTO {
@@ -44,6 +44,7 @@ export interface ShortCommentDTO {
   authorName: string;
   text: string;
   createdAt: string;
+  canEdit?: boolean;
 }
 
 export interface ShortCommentsResponseDTO {
@@ -149,7 +150,7 @@ export class ShortsEndpoint {
   /** Load persisted public comments for a short. */
   async listComments(
     shortId: string,
-    options: { offset?: number; limit?: number } = {},
+    options: { offset?: number; limit?: number; authenticated?: boolean } = {},
   ): Promise<ShortCommentsResponseDTO> {
     if (!shortId) {
       throw new ApiValidationError('Invalid list comments request: shortId is required');
@@ -159,10 +160,30 @@ export class ShortsEndpoint {
     if (!Number.isInteger(offset) || offset < 0 || !Number.isInteger(limit) || limit < 1 || limit > 100) {
       throw new ApiValidationError('Invalid comments pagination: offset must be non-negative and limit must be 1–100');
     }
-    const res = await this.client.get<ShortCommentsResponseDTO>(
-      `/api/v1/shorts/${encodeURIComponent(shortId)}/comments?offset=${offset}&limit=${limit}`,
-      { authPolicy: 'public' },
-    );
+    const route = `/api/v1/shorts/${encodeURIComponent(shortId)}/comments?offset=${offset}&limit=${limit}`;
+    const res = await this.client.get<ShortCommentsResponseDTO>(route, {
+      authPolicy: options.authenticated ? 'authenticated' : 'public',
+    }).catch((error: unknown) => {
+      if (!options.authenticated || !(error instanceof ApiAuthError)) throw error;
+      return this.client.get<ShortCommentsResponseDTO>(route, { authPolicy: 'public' });
+    });
     return res.data;
+  }
+
+  async editComment(shortId: string, commentId: string, content: string) {
+    const response = await this.client.patch<{ success: boolean; comment: ShortCommentDTO }>(
+      `/api/v1/shorts/${encodeURIComponent(shortId)}/comments/${encodeURIComponent(commentId)}`,
+      { content },
+      { authPolicy: 'authenticated' },
+    );
+    return response.data;
+  }
+
+  async deleteComment(shortId: string, commentId: string) {
+    const response = await this.client.delete<{ success: boolean; id: string }>(
+      `/api/v1/shorts/${encodeURIComponent(shortId)}/comments/${encodeURIComponent(commentId)}`,
+      { authPolicy: 'authenticated' },
+    );
+    return response.data;
   }
 }
