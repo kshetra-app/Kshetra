@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,7 @@ import type { Poll } from '../lib/feedTypes';
 
 interface PollCardProps {
   poll: Poll;
-  onVote: (optionId: string) => void;
+  onVote: (optionId: string | null) => Promise<void>;
 }
 
 const BAR_COLORS = ['#A8201A', '#C5A059', '#145C68', '#D97706', '#2E7D32'];
@@ -16,7 +16,17 @@ export default function PollCard({ poll, onVote }: PollCardProps) {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const hasVoted = !!poll.userVotedOptionId;
-  const showResults = hasVoted || poll.isClosed;
+  const closed = poll.isClosed || Boolean(poll.expiresAt && Date.parse(poll.expiresAt) <= Date.now());
+  const showResults = hasVoted || closed;
+  const [saving, setSaving] = useState(false);
+  const pending = useRef(false);
+  async function choose(optionId: string | null) {
+    if (pending.current || closed) return;
+    pending.current = true;
+    setSaving(true);
+    try { await onVote(optionId); }
+    finally { pending.current = false; setSaving(false); }
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border }]}>
@@ -43,8 +53,10 @@ export default function PollCard({ poll, onVote }: PollCardProps) {
                 { backgroundColor: colors.background, borderColor: colors.border },
                 isSelected && { borderColor: colors.primary, borderWidth: 1.5 },
               ]}
-              onPress={() => !showResults && onVote(option.id)}
-              disabled={showResults}
+              accessibilityRole="radio"
+              accessibilityState={{ checked: isSelected, disabled: closed || saving }}
+              onPress={() => void choose(isSelected ? null : option.id)}
+              disabled={closed || saving}
             >
               {showResults && (
                 <View
@@ -90,11 +102,11 @@ export default function PollCard({ poll, onVote }: PollCardProps) {
           {poll.totalVotes} {t('feed.votes', 'votes')}
         </Text>
         <Text style={[styles.footerDot, { color: colors.textMuted }]}>·</Text>
-        {poll.isClosed ? (
+        {closed ? (
           <Text style={styles.closedText}>{t('feed.pollClosed', 'Poll closed')}</Text>
         ) : (
           <Text style={[styles.footerText, { color: colors.textMuted }]}>
-            {hasVoted ? t('feed.voted', 'Voted') : t('feed.tapToVote', 'Tap to vote')}
+            {hasVoted ? t('feed.changeOrRemoveVote', { defaultValue: 'Tap an option to change or remove your vote' }) : t('feed.tapToVote', 'Tap to vote')}
           </Text>
         )}
       </View>
@@ -166,6 +178,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 10,
+    flexWrap: 'wrap',
   },
   footerText: {
     fontSize: 12,

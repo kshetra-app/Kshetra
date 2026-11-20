@@ -303,7 +303,7 @@ function DashboardContent() {
       </View>
 
       {/* ── Scope Toggle (horizontal scroll) ── */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scopeScroll} contentContainerStyle={styles.scopeScrollContent}>
+      <ScrollView horizontal showsHorizontalScrollIndicator style={styles.scopeScroll} contentContainerStyle={styles.scopeScrollContent}>
         {SCOPE_OPTIONS.map((opt) => {
           const active = scopeFilter === opt.key;
           const disabled = (opt.key === 'constituency' && !myHome) || (stateCode === 'IN' && (opt.key === 'state' || opt.key === 'constituency'));
@@ -790,7 +790,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   scopeScroll: {
-    maxHeight: 36,
+    flexGrow: 0,
     marginBottom: 6,
   },
   scopeScrollContent: {

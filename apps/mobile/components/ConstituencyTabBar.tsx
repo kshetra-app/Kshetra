@@ -1,6 +1,6 @@
 import { useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../lib/theme';
 
@@ -47,7 +47,10 @@ export default function ConstituencyTabBar({
 }: ConstituencyTabBarProps) {
   const { t } = useTranslation();
   const { colors, isDark } = useTheme();
+  const { width } = useWindowDimensions();
   const scrollRef = useRef<ScrollView>(null);
+  const tabPositions = useRef<Partial<Record<ConstituencyTab, number>>>({});
+  const selected = activeTab === 'results' ? 'overview' : activeTab === 'affidavits' ? 'xray' : activeTab;
 
   const getBadge = useCallback(
     (key: ConstituencyTab) => {
@@ -60,26 +63,22 @@ export default function ConstituencyTabBar({
   );
 
   useEffect(() => {
-    // Map aliases
-    const effectiveKey = (activeTab === 'results' ? 'overview' : (activeTab === 'affidavits' ? 'xray' : activeTab));
-    const idx = TABS.findIndex((t) => t.key === effectiveKey);
-    if (idx > 0 && scrollRef.current) {
-      scrollRef.current.scrollTo({ x: Math.max(0, (idx - 1) * 110), animated: true });
-    } else if (idx === 0 && scrollRef.current) {
-      scrollRef.current.scrollTo({ x: 0, animated: true });
-    }
-  }, [activeTab]);
+    const x = tabPositions.current[selected];
+    if (x !== undefined) scrollRef.current?.scrollTo({ x: Math.max(0, x - 16), animated: true });
+  }, [selected]);
 
   return (
     <View style={[styles.container, { backgroundColor: isDark ? colors.surface : '#FFFFFF', borderBottomColor: isDark ? colors.border : '#E2E8F0' }]}>
       <ScrollView
         ref={scrollRef}
         horizontal
-        showsHorizontalScrollIndicator={false}
+        showsHorizontalScrollIndicator
+        keyboardShouldPersistTaps="handled"
+        accessibilityRole="tablist"
         contentContainerStyle={styles.scrollContent}
       >
         {TABS.map((tab) => {
-          const isActive = activeTab === tab.key || (tab.key === 'overview' && activeTab === 'results') || (tab.key === 'xray' && activeTab === 'affidavits');
+          const isActive = selected === tab.key;
           const badge = getBadge(tab.key);
 
           return (
@@ -87,11 +86,19 @@ export default function ConstituencyTabBar({
               key={tab.key}
               style={[
                 styles.tab,
+                { maxWidth: Math.max(width - 32, 120) },
                 isActive
                   ? styles.tabActive
                   : [styles.tabInactive, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC', borderColor: isDark ? '#334155' : '#E2E8F0' }],
               ]}
               onPress={() => onTabChange(tab.key)}
+              onLayout={(event) => {
+                const x = event.nativeEvent.layout.x;
+                tabPositions.current[tab.key] = x;
+                if (isActive) scrollRef.current?.scrollTo({ x: Math.max(0, x - 16), animated: false });
+              }}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: isActive }}
               hitSlop={4}
             >
               <Ionicons
@@ -105,8 +112,7 @@ export default function ConstituencyTabBar({
                   { color: isActive ? '#FFFFFF' : (isDark ? '#E2E8F0' : '#1E293B') },
                   isActive && styles.tabLabelActive,
                 ]}
-                numberOfLines={1}
-                ellipsizeMode="tail"
+                adjustsFontSizeToFit={false}
               >
                 {t(tab.label, tab.key)}
               </Text>
@@ -166,6 +172,7 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   tabLabel: {
+    flexShrink: 1,
     fontSize: 13,
     fontWeight: '700',
     includeFontPadding: false,

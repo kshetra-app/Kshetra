@@ -3,6 +3,7 @@
  */
 const en =  {
   "common": {
+    "send": "Send",
     "appName": "Poligram",
     "loading": "Loading…",
     "error": "Something went wrong",
@@ -244,6 +245,7 @@ const en =  {
     "demoDisclaimer": "Source: Census 2011 · ECI 2023 voter rolls"
   },
   "feed": {
+    "changeOrRemoveVote": "Tap an option to change or remove your vote",
     "postReviewPending": "Submitted for review. Your post will appear after approval.",
     "postReviewRejected": "This post was declined during review.",
     "postQueuedTitle": "Post queued",
@@ -329,6 +331,11 @@ const en =  {
     "celebrate": "Celebrate"
   },
   "postDetail": {
+    "olderComments": "Load older comments",
+    "retryComments": "Retry loading comments",
+    "editComment": "Edit comment",
+    "editingComment": "Editing your comment",
+    "editCommentFailed": "The edit could not be saved.",
     "title": "Discussion",
     "comments": "Comments",
     "noComments": "No comments yet. Start the conversation!",

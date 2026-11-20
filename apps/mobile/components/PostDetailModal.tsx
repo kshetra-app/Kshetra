@@ -1,3 +1,4 @@
+import type { FeedCommentCursor } from '../lib/api/endpoints/feed';
 import { CONTENT_LIMITS } from '@kshetra/shared';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
@@ -8,6 +9,7 @@ import {
   Pressable,
   TextInput,
   FlatList,
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   Share,
@@ -36,7 +38,7 @@ import {
   formatLocalizedTimeAgo,
 } from '../lib/seedTranslations';
 
-
+const EMPTY_COMMENTS: Comment[] = [];
 
 interface PostDetailModalProps {
   visible: boolean;
@@ -48,7 +50,7 @@ interface PostDetailModalProps {
 
 export default function PostDetailModal({
   visible,
-  post,
+  post: initialPost,
   autoFocusReply = false,
   onClose,
   onEditPost,
@@ -56,11 +58,43 @@ export default function PostDetailModal({
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const post = useFeedStore((state) => state.posts.find((entry) => entry.id === initialPost?.id) ?? initialPost);
   const [commentText, setCommentText] = useState('');
   const [isSendingComment, setIsSendingComment] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [nextComment, setNextComment] = useState<FeedCommentCursor | null>(null);
+  const [commentLoading, setCommentLoading] = useState(false);
+  const [commentError, setCommentError] = useState(false);
   const [reportVisible, setReportVisible] = useState(false);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const inputRef = useRef<TextInput>(null);
+  const pageRequest = useRef(0);
+  const loadPage = useFeedStore((state) => state.loadCommentPage);
+  const editComment = useFeedStore((state) => state.editComment);
+  const postId = post?.id;
+  const load = useCallback(async (cursor: FeedCommentCursor | null) => {
+    if (!postId) return;
+    const request = ++pageRequest.current;
+    setCommentLoading(true);
+    setCommentError(false);
+    try {
+      const next = await loadPage(postId, cursor);
+      if (request === pageRequest.current) setNextComment(next);
+    } catch {
+      if (request === pageRequest.current) setCommentError(true);
+    } finally {
+      if (request === pageRequest.current) setCommentLoading(false);
+    }
+  }, [postId, loadPage]);
+
+  useEffect(() => {
+    if (!visible || !postId) return;
+    setEditingId(null);
+    setCommentText('');
+    setNextComment(null);
+    void load(null);
+    return () => { pageRequest.current++; };
+  }, [visible, postId, load]);
 
   useEffect(() => {
     const showSub = Keyboard.addListener(
@@ -77,7 +111,7 @@ export default function PostDetailModal({
     };
   }, []);
 
-  const rawComments = useFeedStore((s) => (post ? s.comments[post.id] ?? [] : []));
+  const rawComments = useFeedStore((s) => (postId ? s.comments[postId] : undefined) ?? EMPTY_COMMENTS);
   const addComment = useFeedStore((s) => s.addComment);
   const deleteComment = useFeedStore((s) => s.deleteComment);
   const retryComment = useFeedStore((s) => s.retryComment);
@@ -102,10 +136,23 @@ export default function PostDetailModal({
   }, [visible, autoFocusReply]);
 
   const handleSendComment = useCallback(async () => {
-    if (!post || !commentText.trim() || isSendingComment) return;
+    if (!post || !commentText.trim() || isSendingComment || commentLoading) return;
     if (!gateContentAction('create_comment')) return;
     tapLight();
     setIsSendingComment(true);
+    if (editingId) {
+      try {
+        if (!await editComment(post.id, editingId, commentText.trim())) {
+          Alert.alert(t('postDetail.editCommentFailed', { defaultValue: 'The edit could not be saved.' }));
+          return;
+        }
+        setEditingId(null);
+        setCommentText('');
+      } finally {
+        setIsSendingComment(false);
+      }
+      return;
+    }
 
     const authorName = user?.email?.split('@')[0] ?? 'Citizen';
     const clientToken = `client_cmt_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -144,7 +191,7 @@ export default function PostDetailModal({
     } finally {
       setIsSendingComment(false);
     }
-  }, [post, commentText, user, userId, i18n.language, isSendingComment, addComment, t]);
+  }, [post, commentText, user, userId, i18n.language, isSendingComment, commentLoading, addComment, editComment, editingId, t]);
 
   const handleShare = useCallback(async () => {
     if (!post) return;
@@ -274,7 +321,18 @@ export default function PostDetailModal({
         <FlatList
           data={comments}
           keyExtractor={(item) => item.id}
-          showsVerticalScrollIndicator={false}
+          showsVerticalScrollIndicator
+          ListFooterComponent={commentLoading ? <ActivityIndicator color={colors.primary} /> : (
+            nextComment || commentError ? (
+              <Pressable accessibilityRole="button" onPress={() => void load(nextComment)}
+                style={{ alignItems: 'center', padding: 14 }}>
+                <Text style={{ color: colors.primary }}>
+                  {commentError ? t('postDetail.retryComments', { defaultValue: 'Retry loading comments' })
+                    : t('postDetail.olderComments', { defaultValue: 'Load older comments' })}
+                </Text>
+              </Pressable>
+            ) : null
+          )}
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={styles.listContent}
           ListHeaderComponent={
@@ -337,7 +395,7 @@ export default function PostDetailModal({
                       logContentAction('vote_poll', {
                         type: 'poll',
                         id: displayPost.id,
-                        body: optId,
+                        body: optId ?? '',
                         screenName: 'post_detail',
                       });
                     }}
@@ -385,7 +443,7 @@ export default function PostDetailModal({
                 <View style={styles.metricItem}>
                   <Ionicons name="chatbubble-outline" size={18} color={colors.textMuted} />
                   <Text style={[styles.metricCount, { color: colors.textSecondary }]}>
-                    {post.replyCount} {t('feed.replies')}
+                    {t('postCard.comment', { defaultValue: 'Comments' })}
                   </Text>
                 </View>
 
@@ -397,7 +455,7 @@ export default function PostDetailModal({
               {/* Comments Section Title */}
               <View style={styles.commentsHeader}>
                 <Text style={[styles.commentsTitle, { color: colors.text }]}>
-                  {t('postDetail.comments')} ({comments.length})
+                  {t('postDetail.comments')}
                 </Text>
               </View>
             </View>
@@ -463,8 +521,19 @@ export default function PostDetailModal({
                         </Text>
                       )}
                     </Pressable>
-                    {isCommentOwner && (
+                    {isCommentOwner && (!item.syncStatus || item.syncStatus === 'SYNCED') && (
+                      <Pressable accessibilityRole="button"
+                        accessibilityLabel={t('postDetail.editComment', { defaultValue: 'Edit comment' })}
+                        disabled={isSendingComment || commentLoading}
+                        onPress={() => { setEditingId(item.id); setCommentText(item.content); inputRef.current?.focus(); }}
+                        hitSlop={6} style={{ marginLeft: 8 }}>
+                        <Ionicons name="create-outline" size={16} color={colors.primary} />
+                      </Pressable>
+                    )}
+                    {isCommentOwner && (!item.syncStatus || item.syncStatus === 'SYNCED') && (
                       <Pressable
+                        accessibilityRole="button" accessibilityLabel={t('postDetail.deleteComment')}
+                        disabled={isSendingComment || commentLoading}
                         onPress={() => handleDeleteComment(item.id)}
                         hitSlop={6}
                         style={{ marginLeft: 6 }}
@@ -506,17 +575,25 @@ export default function PostDetailModal({
               </View>
             );
           }}
-          ListEmptyComponent={
+          ListEmptyComponent={!commentLoading && !commentError ? (
             <View style={styles.emptyComments}>
               <Ionicons name="chatbubbles-outline" size={32} color={colors.textMuted} />
               <Text style={[styles.emptyCommentsText, { color: colors.textSecondary }]}>
                 {t('postDetail.noComments')}
               </Text>
             </View>
-          }
+          ) : null}
         />
 
         {/* Bottom Reply Bar */}
+        {editingId && (
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', paddingHorizontal: 16, gap: 8 }}>
+            <Text style={{ color: colors.text }}>{t('postDetail.editingComment', { defaultValue: 'Editing your comment' })}</Text>
+            <Pressable accessibilityRole="button" disabled={isSendingComment} onPress={() => { setEditingId(null); setCommentText(''); }}>
+              <Text style={{ color: colors.primary }}>{t('common.cancel')}</Text>
+            </Pressable>
+          </View>
+        )}
         <View
           style={[
             styles.replyBar,
@@ -541,10 +618,12 @@ export default function PostDetailModal({
             style={[
               styles.sendButton,
               { backgroundColor: colors.primary },
-              !commentText.trim() && styles.sendDisabled,
+              (!commentText.trim() || commentLoading || isSendingComment) && styles.sendDisabled,
             ]}
             onPress={handleSendComment}
-            disabled={!commentText.trim() || isSendingComment}
+            disabled={!commentText.trim() || isSendingComment || commentLoading}
+            accessibilityRole="button"
+            accessibilityLabel={editingId ? t('common.save') : t('common.send', { defaultValue: 'Send' })}
           >
             <Ionicons name="send" size={16} color="#FFFFFF" />
           </Pressable>
@@ -579,6 +658,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 17,
     fontWeight: '800',
+    flexShrink: 1,
   },
   headerRight: {
     flexDirection: 'row',
@@ -626,6 +706,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   typePill: {
+    maxWidth: '40%',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
@@ -753,6 +834,7 @@ const styles = StyleSheet.create({
   commentAuthorName: {
     fontSize: 13,
     fontWeight: '700',
+    flexShrink: 1,
   },
   commentTime: {
     fontSize: 11,

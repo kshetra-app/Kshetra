@@ -13,6 +13,7 @@ import type {
   FeedScope,
   SortOrder,
 } from '../lib/feedTypes';
+import { apiClient, ApiAuthError, type FeedCommentCursor } from '../lib/api';
 import * as dataService from '../lib/supabaseDataService';
 import { enqueue, getPendingOps, type SyncStatus, retryFailedOp } from '../lib/offlineSync';
 import { rankPostsV1 } from '../lib/feedRanking';
@@ -24,6 +25,7 @@ import { useAuthStore } from './auth';
 import { prepareFeedAttachments, type SubmittedAttachment } from '../lib/feedAttachments';
 import { CONTENT_PAGE_SIZE, isInContentPeriod, type ContentPeriod } from '@kshetra/shared';
 
+const pollWrites = new Set<string>();
 const feedRefreshGuard = new SequenceGuard<string>();
 const FEED_AUTO_REFRESH_COOLDOWN_MS = 15_000;
 let lastFeedRefreshKey: string | undefined;
@@ -1389,7 +1391,9 @@ interface FeedState {
   deletePost: (postId: string) => Promise<boolean>;
   addMediaToPost: (postId: string, media: PostMedia) => void;
   toggleReaction: (postId: string, reaction: ReactionType) => Promise<boolean>;
-  votePoll: (postId: string, optionId: string) => Promise<boolean>;
+  votePoll: (postId: string, optionId: string | null) => Promise<boolean>;
+  loadCommentPage: (postId: string, cursor: FeedCommentCursor | null) => Promise<FeedCommentCursor | null>;
+  editComment: (postId: string, commentId: string, content: string) => Promise<boolean>;
 
   // Comments Actions
   addComment: (postId: string, comment: Comment) => Promise<CommentSubmissionOutcome>;
@@ -1417,8 +1421,12 @@ interface FeedState {
   loadMoreFeed: (stateCode?: string, constituencyId?: string | null) => Promise<void>;
   receiveRealtimePost: (serverPost: any) => void;
   receiveRealtimeComment: (serverComment: any) => void;
-  receiveRealtimeReaction: (payload: any) => void;
-  receiveRealtimeVote: (payload: any) => void;
+  updateRealtimeComment: (row: { id?: string; post_id?: string; content?: string; reaction_count?: number; is_deleted?: boolean; updated_at?: string }) => void;
+  updateRealtimePoll: (
+    pollId: string,
+    changes: Partial<Pick<NonNullable<Post['poll']>, 'totalVotes' | 'isClosed' | 'expiresAt'>>,
+    option?: { id: string; count: number },
+  ) => void;
   reconcilePostSync: (clientToken: string, status: SyncStatus, serverId?: string | null, poll?: Post['poll'], reviewStatus?: PostReviewStatus) => void;
   reconcileCommentSync: (clientToken: string, status: SyncStatus, serverId?: string | null) => void;
   retryComment: (postId: string, clientToken: string) => Promise<boolean>;
@@ -1725,48 +1733,76 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
   },
 
   votePoll: async (postId, optionId) => {
-    const post = get().posts.find((p) => p.id === postId);
-    if (!post || !post.poll) return false;
-    if (post.poll.userVotedOptionId) return true;
+    const poll = get().posts.find((post) => post.id === postId)?.poll;
+    if (!poll || poll.isClosed || (poll.expiresAt && Date.parse(poll.expiresAt) <= Date.now()) ||
+      (optionId !== null && !poll.options.some((option) => option.id === optionId))) return false;
     const userId = useAuthStore.getState().user?.id;
-    if (IS_LIVE_ENVIRONMENT && (!userId || !post.poll.id)) {
-      set({ lastError: !userId ? 'Sign in to vote in this poll.' : 'This poll is not connected to a persisted record.' });
+    if (!userId || !poll.id || pollWrites.has(poll.id)) return false;
+    pollWrites.add(poll.id);
+    try {
+      const saved = await apiClient.feed.votePoll(poll.id, optionId);
+      if (!saved.success || saved.pollId !== poll.id || saved.optionId !== optionId ||
+        !Number.isInteger(saved.totalVotes) || saved.totalVotes < 0 || !Array.isArray(saved.options) ||
+        userId !== useAuthStore.getState().user?.id) return false;
+      const counts = new Map(saved.options.map((option) => [option.id, option.voteCount]));
+      if (poll.options.some((option) => !counts.has(option.id))) return false;
+      set((state) => ({
+        posts: state.posts.map((post) => post.poll?.id === poll.id ? {
+          ...post, poll: {
+            ...post.poll,
+            userVotedOptionId: saved.optionId ?? undefined,
+            totalVotes: saved.totalVotes,
+            options: post.poll.options.map((option) => ({ ...option, voteCount: counts.get(option.id)! })),
+          },
+        } : post),
+      }));
+      return true;
+    } catch {
+      set({ lastError: 'Could not save your choice. Please try again.' });
+      return false;
+    } finally {
+      pollWrites.delete(poll.id);
+    }
+  },
+
+  loadCommentPage: async (postId, cursor) => {
+    if (!IS_LIVE_ENVIRONMENT) return null;
+    const viewer = useAuthStore.getState().user?.id;
+    const page = await apiClient.feed.listComments(postId, cursor, Boolean(viewer)).catch((error: unknown) => {
+      if (!viewer || !(error instanceof ApiAuthError)) throw error;
+      return apiClient.feed.listComments(postId, cursor, false);
+    });
+    const sameViewer = viewer === useAuthStore.getState().user?.id;
+    const rows = sameViewer ? page.comments : page.comments.map((item) => ({ ...item, userReaction: undefined }));
+    set((state) => {
+      const current = state.comments[postId] ?? [];
+      const retained = cursor ? current : current.filter((item) =>
+        item.author.id === viewer && sameViewer && item.syncStatus && item.syncStatus !== 'SYNCED');
+      const byId = new Map([...retained, ...rows].map((item) => [item.id, item]));
+      return { comments: { ...state.comments, [postId]: [...byId.values()] } };
+    });
+    return page.next;
+  },
+
+  editComment: async (postId, commentId, content) => {
+    const item = get().comments[postId]?.find((comment) => comment.id === commentId);
+    const userId = useAuthStore.getState().user?.id;
+    if (!userId || item?.author.id !== userId || item.isDeleted ||
+      (item.syncStatus && item.syncStatus !== 'SYNCED')) return false;
+    try {
+      const saved = await apiClient.feed.editComment(commentId, content);
+      if (!saved.success || saved.id !== commentId) return false;
+      set((state) => ({ comments: {
+        ...state.comments,
+        [postId]: (state.comments[postId] ?? []).map((comment) => comment.id === commentId ? {
+          ...comment, content: saved.content, updatedAt: saved.updatedAt,
+        } : comment),
+      } }));
+      return true;
+    } catch (error) {
+      set({ lastError: error instanceof Error ? error.message : 'The comment edit could not be saved.' });
       return false;
     }
-
-    // Snapshot for rollback
-    const prevPoll = { ...post.poll };
-
-    set((state) => ({
-      posts: state.posts.map((p) => {
-        if (p.id !== postId || !p.poll || p.poll.userVotedOptionId) return p;
-        return {
-          ...p,
-          poll: {
-            ...p.poll,
-            userVotedOptionId: optionId,
-            totalVotes: p.poll.totalVotes + 1,
-            options: p.poll.options.map((o) =>
-              o.id === optionId ? { ...o, voteCount: o.voteCount + 1 } : o,
-            ),
-          },
-        };
-      }),
-    }));
-
-    if (!userId || !post.poll.id) return true; // Non-production offline/demo interaction.
-
-    try {
-      if (await dataService.votePoll(post.poll.id, optionId, userId)) return true;
-    } catch {
-      // Restore the prior poll below if the service did not confirm the vote.
-    }
-
-    set((state) => ({
-      posts: state.posts.map((p) => p.id === postId ? { ...p, poll: prevPoll } : p),
-      lastError: 'Could not record your vote. Please try again.',
-    }));
-    return false;
   },
 
   addComment: async (postId, comment) => {
@@ -1795,11 +1831,11 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
     set((state) => ({
       comments: {
         ...state.comments,
-        [postId]: [...(state.comments[postId] ?? []), {
+        [postId]: [{
           ...comment,
           clientToken,
           syncStatus: !userId ? 'LOCAL_ONLY' : onlineAtStart ? 'SYNCING' : 'QUEUED',
-        }],
+        }, ...(state.comments[postId] ?? [])],
       },
       posts: state.posts.map((p) =>
         p.id === postId ? { ...p, replyCount: p.replyCount + 1 } : p,
@@ -2279,7 +2315,7 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
     if (!c || !c.post_id || !c.id) return;
     const postId = c.post_id;
     const currentComments = get().comments[postId] ?? [];
-    if (currentComments.some((existing) => existing.id === c.id)) return;
+    if (currentComments.some((existing) => existing.id === c.id || (c.client_token && existing.clientToken === c.client_token))) return;
 
     const newComment: Comment = {
       id: c.id,
@@ -2301,7 +2337,7 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
     set((state) => ({
       comments: {
         ...state.comments,
-        [postId]: [...(state.comments[postId] ?? []), newComment],
+        [postId]: [newComment, ...(state.comments[postId] ?? [])],
       },
       posts: state.posts.map((p) =>
         p.id === postId ? { ...p, replyCount: p.replyCount + 1 } : p,
@@ -2309,42 +2345,32 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
     }));
   },
 
-  receiveRealtimeReaction: (r: any) => {
-    if (!r) return;
-    if (r.post_id) {
-      set((state) => ({
-        posts: state.posts.map((p) =>
-          p.id === r.post_id ? { ...p, reactionCount: Math.max(0, p.reactionCount + 1) } : p,
-        ),
-      }));
-    } else if (r.comment_id) {
-      set((state) => {
-        const nextComments = { ...state.comments };
-        for (const [pId, list] of Object.entries(nextComments)) {
-          nextComments[pId] = list.map((c) =>
-            c.id === r.comment_id ? { ...c, reactionCount: Math.max(0, c.reactionCount + 1) } : c,
-          );
-        }
-        return { comments: nextComments };
-      });
-    }
+  updateRealtimeComment: (row) => {
+    const postId = row.post_id;
+    if (!row.id || !postId || !get().comments[postId]?.some((comment) => comment.id === row.id)) return;
+    set((state) => ({
+      comments: {
+        ...state.comments,
+        [postId]: (state.comments[postId] ?? []).map((comment) => comment.id === row.id ? {
+          ...comment,
+          content: row.content ?? comment.content,
+          reactionCount: row.reaction_count ?? comment.reactionCount,
+          isDeleted: row.is_deleted ?? comment.isDeleted,
+          updatedAt: row.updated_at ?? comment.updatedAt,
+        } : comment),
+      },
+    }));
   },
 
-  receiveRealtimeVote: (v: any) => {
-    if (!v || !v.poll_id || !v.option_id) return;
+  updateRealtimePoll: (pollId, changes, option) => {
+    if (pollWrites.has(pollId)) return;
     set((state) => ({
-      posts: state.posts.map((p) => {
-        if (!p.poll || p.poll.id !== v.poll_id) return p;
-        return {
-          ...p,
-          poll: {
-            ...p.poll,
-            totalVotes: p.poll.totalVotes + 1,
-            options: p.poll.options.map((opt) =>
-              opt.id === v.option_id ? { ...opt, voteCount: opt.voteCount + 1 } : opt,
-            ),
-          },
-        };
+      posts: state.posts.map((post) => {
+        if (post.poll?.id !== pollId) return post;
+        const options = option ? post.poll.options.map((choice) =>
+          choice.id === option.id ? { ...choice, voteCount: option.count } : choice,
+        ) : post.poll.options;
+        return { ...post, poll: { ...post.poll, ...changes, options } };
       }),
     }));
   },

@@ -131,11 +131,22 @@ export function subscribeToFeed(stateCode?: string): () => void {
       useFeedStore.getState().receiveRealtimeComment(comment);
       notifyCommunityReply(comment.author_display_name ?? 'Someone', comment.content ?? '');
     })
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'reactions' }, (payload) => {
-      useFeedStore.getState().receiveRealtimeReaction(payload.new);
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'comments' }, (payload) => {
+      useFeedStore.getState().updateRealtimeComment(payload.new);
     })
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'poll_votes' }, (payload) => {
-      useFeedStore.getState().receiveRealtimeVote(payload.new);
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'polls' }, (payload) => {
+      const row = payload.new;
+      if (row.id && typeof row.total_votes === 'number') {
+        useFeedStore.getState().updateRealtimePoll(row.id, {
+          totalVotes: row.total_votes, isClosed: row.is_closed, expiresAt: row.expires_at,
+        });
+      }
+    })
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'poll_options' }, (payload) => {
+      const row = payload.new;
+      if (row.poll_id && row.id && typeof row.vote_count === 'number') {
+        useFeedStore.getState().updateRealtimePoll(row.poll_id, {}, { id: row.id, count: row.vote_count });
+      }
     })
     .subscribe();
 

@@ -332,11 +332,11 @@ function GroupedSection({
               </View>
 
               <View style={styles.rowTextWrap}>
-                <Text style={[styles.rowTitle, { color: colors.text }]} numberOfLines={1} ellipsizeMode="tail">
+                <Text style={[styles.rowTitle, { color: colors.text }]}>
                   {item.label}
                 </Text>
                 {item.subtitle && (
-                  <Text style={[styles.rowSubtitle, { color: colors.textMuted }]} numberOfLines={1}>
+                  <Text style={[styles.rowSubtitle, { color: colors.textMuted }]}>
                     {item.subtitle}
                   </Text>
                 )}
@@ -474,13 +474,11 @@ const styles = StyleSheet.create({
   rowTitle: {
     fontSize: 13.5,
     fontWeight: '700',
-    includeFontPadding: false,
     textAlignVertical: 'center',
   },
   rowSubtitle: {
     fontSize: 11,
     marginTop: 1,
-    includeFontPadding: false,
   },
   rowRight: {
     flexDirection: 'row',

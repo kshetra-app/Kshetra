@@ -74,7 +74,7 @@ export default function ElectionResultsScreen() {
         </View>}
       </View>
       {choosing ? (
-        <FlatList data={Object.keys(STATES).filter((code) => code !== 'IN').sort((a, b) => stateName(a).localeCompare(stateName(b)))}
+        <FlatList keyboardShouldPersistTaps="handled" data={Object.keys(STATES).filter((code) => code !== 'IN').sort((a, b) => stateName(a).localeCompare(stateName(b)))}
           keyExtractor={(code) => code} renderItem={({ item }) => (
             <Pressable accessibilityRole="button" style={[styles.row, { borderColor: colors.border }]} onPress={() => {
               setQuery(''); setYear(null); setFailed(false); setStateCode(item); setChoosing(false);
@@ -87,7 +87,7 @@ export default function ElectionResultsScreen() {
           <Text style={{ color: colors.primary }}>{t('electionArchive.retry', { defaultValue: 'Could not load the archive. Tap to retry.' })}</Text>
         </Pressable>
       ) : currentRecords === null ? <ActivityIndicator color={colors.primary} /> : (
-        <FlatList data={rows} keyExtractor={(item) => item.resultKey}
+        <FlatList keyboardShouldPersistTaps="handled" data={rows} keyExtractor={(item) => item.resultKey}
           ListEmptyComponent={<Text style={[styles.controls, { color: colors.textSecondary }]}>
             {t('electionArchive.noMatches', { defaultValue: 'No matching assembly results in the archive. Open the Election Commission link above for official coverage.' })}
           </Text>}

@@ -15,7 +15,7 @@
  * - DELETE /api/v1/feed/comments/:id/react
  */
 
-import type { PostReviewStatus } from '../../feedTypes';
+import type { Comment, PostReviewStatus } from '../../feedTypes';
 import type { ApiClient } from '../client';
 import { ApiValidationError } from '../errors';
 
@@ -31,6 +31,19 @@ export interface ComposePostRequestDTO {
   hashtags?: string[];
   pollOptions?: string[];
   clientToken?: string;
+}
+
+export interface FeedCommentCursor {
+  beforeId: string;
+  beforeAt: string;
+}
+
+interface PollChoiceResponse {
+  success: boolean;
+  pollId: string;
+  optionId: string | null;
+  totalVotes: number;
+  options: { id: string; voteCount: number }[];
 }
 
 export class FeedEndpoint {
@@ -134,13 +147,27 @@ export class FeedEndpoint {
   /**
    * 6. Vote in poll
    */
-  async votePoll(pollId: string, optionId: string): Promise<{ success: boolean; pollId: string; optionId: string }> {
-    if (!pollId || !optionId) {
-      throw new ApiValidationError('Invalid poll vote: pollId and optionId are required');
-    }
-    const res = await this.client.post<{ success: boolean; pollId: string; optionId: string }>(
-      `/api/v1/feed/polls/${encodeURIComponent(pollId)}/vote`,
-      { optionId },
+  async votePoll(pollId: string, optionId: string | null): Promise<PollChoiceResponse> {
+    if (!pollId || optionId === '') throw new ApiValidationError('Select a valid poll and choice');
+    const path = `/api/v1/feed/polls/${encodeURIComponent(pollId)}/vote`;
+    const res = optionId === null
+      ? await this.client.delete<PollChoiceResponse>(path, { authPolicy: 'authenticated' })
+      : await this.client.post<PollChoiceResponse>(path, { optionId }, { authPolicy: 'authenticated' });
+    return res.data;
+  }
+
+  async listComments(postId: string, cursor: FeedCommentCursor | null, authenticated: boolean) {
+    const res = await this.client.get<{ comments: Comment[]; next: FeedCommentCursor | null }>(
+      `/api/v1/feed/posts/${encodeURIComponent(postId)}/comments`,
+      { authPolicy: authenticated ? 'authenticated' : 'public', query: { limit: 25, ...cursor } },
+    );
+    return res.data;
+  }
+
+  async editComment(commentId: string, content: string) {
+    const res = await this.client.patch<{ success: boolean; id: string; content: string; updatedAt: string }>(
+      `/api/v1/feed/comments/${encodeURIComponent(commentId)}`,
+      { content },
       { authPolicy: 'authenticated' },
     );
     return res.data;

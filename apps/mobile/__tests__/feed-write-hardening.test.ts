@@ -22,6 +22,7 @@ jest.mock('../lib/supabaseDataService', () => ({
 import { useFeedStore } from '../stores/feed';
 import { useAuthStore } from '../stores/auth';
 import * as dataService from '../lib/supabaseDataService';
+import { apiClient } from '../lib/api';
 import { useNetworkStore } from '../lib/networkStatus';
 import { clearQueue, getPendingOps } from '../lib/offlineSync';
 import type { Comment, Post } from '../lib/feedTypes';
@@ -276,10 +277,11 @@ describe('Phase 1: Ticket 1.2 - Feed Write Hardening & Throttling', () => {
       },
     });
     useFeedStore.setState({ posts: [post] });
-    (dataService.votePoll as jest.Mock).mockResolvedValue(false);
+    const vote = jest.spyOn(apiClient.feed, 'votePoll').mockRejectedValueOnce(new Error('offline'));
 
     await expect(useFeedStore.getState().votePoll(post.id, 'option-1')).resolves.toBe(false);
     expect(useFeedStore.getState().posts[0].poll).toEqual(post.poll);
+    vote.mockRestore();
   });
 
   it('updates poll totals after vote persistence succeeds', async () => {
@@ -294,11 +296,23 @@ describe('Phase 1: Ticket 1.2 - Feed Write Hardening & Throttling', () => {
       },
     });
     useFeedStore.setState({ posts: [post] });
-    (dataService.votePoll as jest.Mock).mockResolvedValue(true);
+    const vote = jest.spyOn(apiClient.feed, 'votePoll').mockResolvedValueOnce({
+      success: true, pollId: 'poll-1', optionId: 'option-2', totalVotes: 3,
+      options: [{ id: 'option-1', voteCount: 1 }, { id: 'option-2', voteCount: 2 }],
+    });
 
     await expect(useFeedStore.getState().votePoll(post.id, 'option-2')).resolves.toBe(true);
     expect(useFeedStore.getState().posts[0].poll?.userVotedOptionId).toBe('option-2');
     expect(useFeedStore.getState().posts[0].poll?.totalVotes).toBe(3);
+    vote.mockResolvedValueOnce({
+      success: true, pollId: 'poll-1', optionId: null, totalVotes: 2,
+      options: [{ id: 'option-1', voteCount: 1 }, { id: 'option-2', voteCount: 1 }],
+    });
+    await expect(useFeedStore.getState().votePoll(post.id, null)).resolves.toBe(true);
+    expect(vote).toHaveBeenLastCalledWith('poll-1', null);
+    expect(useFeedStore.getState().posts[0].poll?.userVotedOptionId).toBeUndefined();
+    expect(useFeedStore.getState().posts[0].poll?.totalVotes).toBe(2);
+    vote.mockRestore();
   });
 
   it('sends poll options and replaces temporary poll IDs with persisted IDs', async () => {

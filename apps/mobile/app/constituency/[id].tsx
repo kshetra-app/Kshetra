@@ -1247,13 +1247,16 @@ export default function ConstituencyDetailScreen() {
                       <View style={{ paddingHorizontal: 16, marginTop: -4, marginBottom: 10 }}>
                         <PollCard
                           poll={post.poll}
-                          onVote={(optId) => {
+                          onVote={async (optId) => {
                             if (!gateContentAction('vote_poll')) return;
-                            feedVotePoll(post.id, optId);
+                            if (!await feedVotePoll(post.id, optId)) {
+                              Alert.alert(t('feed.voteFailed', { defaultValue: 'Could not save your choice. Please try again.' }));
+                              return;
+                            }
                             logContentAction('vote_poll', {
                               type: 'poll',
                               id: post.id,
-                              body: optId,
+                              body: optId ?? '',
                               screenName: 'constituency_detail',
                             });
                           }}

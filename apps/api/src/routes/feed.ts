@@ -4,12 +4,62 @@
  * Master Execution Framework — Jobs 011-012 / Launch Gate A Prerequisite
  */
 
-import type { FastifyInstance } from 'fastify';
+import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { createHash } from 'node:crypto';
 import { CONTENT_LIMITS, exceedsFeedMediaLimit } from '@kshetra/shared';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
 import { resolveAuthenticatedUser, assertActingUserMatch } from '../lib/userAuth';
+
+import { checkContentModeration } from '../services/contentModeration';
+
+const uuidPattern = /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i;
+const timestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/;
+
+async function savePollChoice(
+  request: FastifyRequest,
+  reply: FastifyReply,
+  pollId: string,
+  userId: string,
+  optionId: string | null,
+) {
+  if (!isSupabaseConfigured) {
+    return sendApiError(
+      reply,
+      request,
+      503,
+      'Service Unavailable',
+      'Database service is not configured',
+      { code: 'DATABASE_UNAVAILABLE' },
+    );
+  }
+  const { data, error } = await supabase.rpc('set_feed_poll_choice', {
+    p_poll_id: pollId,
+    p_user_id: userId,
+    p_option_id: optionId,
+  });
+  if (error?.code === 'P0002')
+    return sendApiError(reply, request, 404, 'Not Found', 'Published poll not found');
+  if (error?.code === '55000')
+    return sendApiError(reply, request, 409, 'Conflict', 'This poll has closed');
+  if (error?.code === '22023' || error?.code === '22P02')
+    return sendApiError(reply, request, 400, 'Bad Request', 'Invalid poll or choice');
+  if (error || !data)
+    return sendApiError(
+      reply,
+      request,
+      503,
+      'Service Unavailable',
+      'Your choice could not be saved',
+    );
+  return reply.send({
+    success: true,
+    pollId,
+    optionId,
+    totalVotes: data.totalVotes,
+    options: data.options,
+  });
+}
 
 export async function feedRoutes(app: FastifyInstance) {
   /**
@@ -938,46 +988,177 @@ export async function feedRoutes(app: FastifyInstance) {
         return;
       }
 
-      if (!isSupabaseConfigured) {
+      return savePollChoice(request, reply, request.params.id, auth.userId, request.body.optionId);
+    },
+  );
+
+  app.delete<{ Params: { id: string } }>('/api/v1/feed/polls/:id/vote', async (request, reply) => {
+    const auth = await resolveAuthenticatedUser(request, reply);
+    if (!auth) return;
+    return savePollChoice(request, reply, request.params.id, auth.userId, null);
+  });
+
+  app.get<{
+    Params: { id: string };
+    Querystring: { limit?: number; beforeId?: string; beforeAt?: string };
+  }>(
+    '/api/v1/feed/posts/:id/comments',
+    {
+      schema: {
+        querystring: {
+          type: 'object',
+          properties: {
+            limit: { type: 'integer', minimum: 1, maximum: 50 },
+            beforeId: { type: 'string', maxLength: 36 },
+            beforeAt: { type: 'string', maxLength: 35 },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params;
+      const { limit = 25, beforeId, beforeAt } = request.query;
+      if (
+        !uuidPattern.test(id) ||
+        Boolean(beforeId) !== Boolean(beforeAt) ||
+        (beforeId && !uuidPattern.test(beforeId)) ||
+        (beforeAt && (!timestampPattern.test(beforeAt) || !Number.isFinite(Date.parse(beforeAt))))
+      ) {
+        return sendApiError(reply, request, 400, 'Bad Request', 'Invalid comment page');
+      }
+      if (!isSupabaseConfigured)
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Comments are unavailable');
+      const viewer = request.headers.authorization
+        ? await resolveAuthenticatedUser(request, reply)
+        : null;
+      if (request.headers.authorization && !viewer) return;
+      if (viewer) reply.header('Cache-Control', 'private, no-store');
+
+      const { data: post, error: postError } = await supabase
+        .from('posts')
+        .select('id')
+        .eq('id', id)
+        .in('review_status', ['approved', 'previously_published'])
+        .eq('is_deleted', false)
+        .maybeSingle();
+      if (postError)
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Comments are unavailable');
+      if (!post) return sendApiError(reply, request, 404, 'Not Found', 'Published post not found');
+      let query = supabase
+        .from('comments')
+        .select('id,post_id,author_id,content,language,reaction_count,created_at,updated_at')
+        .eq('post_id', id)
+        .eq('is_deleted', false);
+      if (beforeId && beforeAt)
+        query = query.or(
+          `created_at.lt.${beforeAt},and(created_at.eq.${beforeAt},id.lt.${beforeId})`,
+        );
+      const { data, error } = await query
+        .order('created_at', { ascending: false })
+        .order('id', { ascending: false })
+        .limit(limit + 1);
+      if (error || !data)
         return sendApiError(
           reply,
           request,
           503,
           'Service Unavailable',
-          'Database service is not configured',
-          {
-            code: 'DATABASE_UNAVAILABLE',
-          },
+          'Comments could not be read',
         );
-      }
-
-      const { id: pollId } = request.params;
-      const { optionId } = request.body;
-
-      try {
-        const { error: voteErr } = await supabase
-          .from('poll_votes')
-          .insert({ poll_id: pollId, option_id: optionId, user_id: auth.userId });
-
-        if (voteErr) {
-          return sendApiError(reply, request, 500, 'Internal Server Error', voteErr.message, {
-            code: 'DATABASE_ERROR',
-          });
-        }
-
-        return reply.send({ success: true, pollId, optionId });
-      } catch (err: any) {
+      const rows = data.slice(0, limit);
+      const last = rows.at(-1);
+      const next =
+        last && data.length > limit ? { beforeId: last.id, beforeAt: last.created_at } : null;
+      if (!rows.length) return { comments: [], next };
+      const authorIds = [...new Set(rows.map((row) => row.author_id))];
+      const ids = rows.map((row) => row.id);
+      const [profiles, reactions] = await Promise.all([
+        supabase.from('user_profiles').select('user_id,display_name').in('user_id', authorIds),
+        viewer
+          ? supabase
+              .from('reactions')
+              .select('comment_id,type')
+              .in('comment_id', ids)
+              .eq('user_id', viewer.userId)
+          : Promise.resolve({ data: [], error: null }),
+      ]);
+      if (profiles.error || reactions.error)
         return sendApiError(
           reply,
           request,
-          500,
-          'Internal Server Error',
-          'Database error casting poll vote',
-          {
-            code: 'DATABASE_ERROR',
+          503,
+          'Service Unavailable',
+          'Comment details could not be read',
+        );
+      const names = new Map(profiles.data?.map((row) => [row.user_id, row.display_name]));
+      const selected = new Map(reactions.data?.map((row) => [row.comment_id, row.type]));
+      return {
+        comments: rows.map((row) => ({
+          id: row.id,
+          postId: id,
+          author: { id: row.author_id, displayName: names.get(row.author_id) ?? 'Anonymous' },
+          content: row.content,
+          language: row.language,
+          reactionCount: row.reaction_count,
+          userReaction: selected.get(row.id),
+          isDeleted: false,
+          createdAt: row.created_at,
+          updatedAt: row.updated_at,
+        })),
+        next,
+      };
+    },
+  );
+
+  app.patch<{ Params: { id: string }; Body: { content: string } }>(
+    '/api/v1/feed/comments/:id',
+    {
+      schema: {
+        body: {
+          type: 'object',
+          required: ['content'],
+          properties: {
+            content: { type: 'string', minLength: 1, maxLength: CONTENT_LIMITS.comment },
           },
+        },
+      },
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthenticatedUser(request, reply);
+      if (!auth) return;
+      if (!isSupabaseConfigured)
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Comments are unavailable');
+      if (!uuidPattern.test(request.params.id))
+        return sendApiError(reply, request, 400, 'Bad Request', 'Invalid comment');
+      const content = request.body.content.trim();
+      if (!content || (await checkContentModeration(content)).flagged) {
+        return sendApiError(
+          reply,
+          request,
+          422,
+          'Unprocessable Entity',
+          'Enter a comment that follows the community rules',
         );
       }
+      const { data, error } = await supabase
+        .from('comments')
+        .update({ content })
+        .eq('id', request.params.id)
+        .eq('author_id', auth.userId)
+        .eq('is_deleted', false)
+        .select('id,content,updated_at')
+        .maybeSingle();
+      if (error)
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'The comment edit could not be saved',
+        );
+      if (!data)
+        return sendApiError(reply, request, 404, 'Not Found', 'Editable comment not found');
+      return { success: true, id: data.id, content: data.content, updatedAt: data.updated_at };
     },
   );
 

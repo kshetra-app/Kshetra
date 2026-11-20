@@ -149,9 +149,11 @@ describe('Track 3: Fastify Strangler Mutations API', () => {
         method: 'POST',
         url: '/api/v1/shorts',
         payload: {
+          id: '233a5a32-aa45-46a2-9317-1a73706063da',
           title: 'Townhall Highlight',
-          videoUrl: 'https://video.example.com/1',
+          videoPath: '233a5a32-aa45-46a2-9317-1a73706063da.mp4',
           stateCode: 'TS',
+          rightsConfirmed: true,
         },
       });
       expect(res.statusCode).toBe(401);

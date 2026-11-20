@@ -1059,6 +1059,7 @@ export async function fetchBlendedFeed(
 
     const { data, error } = await query
       .order('created_at', { ascending: false })
+      .order('id', { ascending: false })
       .range(offset, offset + limit - 1);
 
     if (error) throw error;
@@ -1069,15 +1070,21 @@ export async function fetchBlendedFeed(
       return poll?.id ? [poll.id] : [];
     });
     const paths = [...new Set(data.flatMap((post) => post.post_media.filter((m) => m.media_type !== 'link' && !/^https?:\/\//i.test(m.url)).map((m) => m.url as string)))];
-    const [profiles, votes, signed] = await Promise.all([
+    const [profiles, votes, reactions, signed] = await Promise.all([
       supabase.from('user_profiles').select('user_id,display_name,avatar_url').in('user_id', authors),
       viewerId && pollIds.length
         ? supabase.from('poll_votes').select('poll_id,option_id').eq('user_id', viewerId).in('poll_id', pollIds)
         : Promise.resolve({ data: [] }),
+      viewerId
+        ? supabase.from('reactions').select('post_id,type').eq('user_id', viewerId).in('post_id', data.map((post) => post.id))
+        : Promise.resolve({ data: [] }),
       paths.length ? supabase.storage.from('post-media').createSignedUrls(paths, 600) : Promise.resolve({ data: [] }),
     ]);
+    if ('error' in votes && votes.error) throw votes.error;
+    if ('error' in reactions && reactions.error) throw reactions.error;
     const authorsById = new Map((profiles.data ?? []).map((profile) => [profile.user_id, profile]));
     const voteByPoll = new Map((votes.data ?? []).map((vote) => [vote.poll_id, vote.option_id]));
+    const reactionByPost = new Map((reactions.data ?? []).map((reaction) => [reaction.post_id, reaction.type]));
     const signedByPath = new Map((signed.data ?? []).map((item) => [item.path, item.signedUrl]));
     return data.map((post) => {
       const profile = authorsById.get(post.author_id);
@@ -1086,6 +1093,7 @@ export async function fetchBlendedFeed(
         ...post,
         author_display_name: profile?.display_name,
         author_avatar_url: profile?.avatar_url,
+        user_reaction: reactionByPost.get(post.id),
         media: [...post.post_media].sort((a,b) => a.sort_order-b.sort_order).map((m) => ({
           id: m.id, mediaType: m.media_type, altText: m.alt_text,
           url: signedByPath.get(m.url) ?? m.url,

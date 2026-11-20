@@ -677,7 +677,7 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
                       logContentAction('vote_poll', {
                         type: 'poll',
                         id: item.id,
-                        body: optionId,
+                        body: optionId ?? '',
                         screenName: 'feed',
                       });
                     }}
