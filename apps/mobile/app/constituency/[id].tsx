@@ -226,7 +226,9 @@ export default function ConstituencyDetailScreen() {
       if (!candidate || isGenericCandidate(candidate.name) || !candidate.party?.trim()) return null;
       return {
         ...candidate,
-        photoUrl: candidate.photoUrl || getStaticPhoto(candidate.name) || undefined,
+        photoUrl: IS_LIVE_ENVIRONMENT && stateCode === 'TS'
+          ? (candidate.photoVerified ? candidate.photoUrl : undefined)
+          : candidate.photoUrl || getStaticPhoto(candidate.name) || undefined,
       };
     };
     const cleanContest = (contest: HistoricalPodiumContest): HistoricalPodiumContest | null => {
@@ -330,9 +332,15 @@ export default function ConstituencyDetailScreen() {
       second_runner_up_vote_share: contest.secondRunnerUp?.voteShare ?? null,
       margin_winner_to_runner_up_2: contest.marginWinnerToRunnerUp2 ?? contest.secondRunnerUp?.marginToWinner,
       margin_runner_up_1_to_runner_up_2: contest.marginRunnerUp1ToRunnerUp2 ?? contest.secondRunnerUp?.marginToFirstRunnerUp,
-      winner_photo_url: contest.winner?.photoUrl || (contest.winner?.name ? getStaticPhoto(contest.winner.name) : undefined) || undefined,
-      first_runner_up_photo_url: contest.firstRunnerUp?.photoUrl || (contest.firstRunnerUp?.name ? getStaticPhoto(contest.firstRunnerUp.name) : undefined) || undefined,
-      second_runner_up_photo_url: contest.secondRunnerUp?.photoUrl || (contest.secondRunnerUp?.name ? getStaticPhoto(contest.secondRunnerUp.name) : undefined) || undefined,
+      winner_photo_url: IS_LIVE_ENVIRONMENT && stateCode === 'TS'
+        ? (contest.winner?.photoVerified ? contest.winner.photoUrl : undefined)
+        : contest.winner?.photoUrl || (contest.winner?.name ? getStaticPhoto(contest.winner.name) : undefined),
+      first_runner_up_photo_url: IS_LIVE_ENVIRONMENT && stateCode === 'TS'
+        ? (contest.firstRunnerUp?.photoVerified ? contest.firstRunnerUp.photoUrl : undefined)
+        : contest.firstRunnerUp?.photoUrl || (contest.firstRunnerUp?.name ? getStaticPhoto(contest.firstRunnerUp.name) : undefined),
+      second_runner_up_photo_url: IS_LIVE_ENVIRONMENT && stateCode === 'TS'
+        ? (contest.secondRunnerUp?.photoVerified ? contest.secondRunnerUp.photoUrl : undefined)
+        : contest.secondRunnerUp?.photoUrl || (contest.secondRunnerUp?.name ? getStaticPhoto(contest.secondRunnerUp.name) : undefined),
       localized_names_json: JSON.stringify({
         winner: contest.winner?.localizedNames,
         ru1: contest.firstRunnerUp?.localizedNames,
@@ -781,9 +789,15 @@ export default function ConstituencyDetailScreen() {
                 second_runner_up_votes: canonicalPodium.secondRunnerUp?.votes ?? null,
                 second_runner_up_vote_share: canonicalPodium.secondRunnerUp?.voteShare ?? null,
                 margin_winner_to_runner_up_2: canonicalPodium.marginWinnerToRunnerUp2 ?? null,
-                winner_photo_url: canonicalPodium.winner?.photoUrl || (canonicalPodium.winner?.name ? getStaticPhoto(canonicalPodium.winner.name) : undefined) || undefined,
-                first_runner_up_photo_url: canonicalPodium.firstRunnerUp?.photoUrl || (canonicalPodium.firstRunnerUp?.name ? getStaticPhoto(canonicalPodium.firstRunnerUp.name) : undefined) || undefined,
-                second_runner_up_photo_url: canonicalPodium.secondRunnerUp?.photoUrl || (canonicalPodium.secondRunnerUp?.name ? getStaticPhoto(canonicalPodium.secondRunnerUp.name) : undefined) || undefined,
+                winner_photo_url: IS_LIVE_ENVIRONMENT && stateCode === 'TS'
+        ? (canonicalPodium.winner?.photoVerified ? canonicalPodium.winner.photoUrl : undefined)
+        : canonicalPodium.winner?.photoUrl || (canonicalPodium.winner?.name ? getStaticPhoto(canonicalPodium.winner.name) : undefined),
+                first_runner_up_photo_url: IS_LIVE_ENVIRONMENT && stateCode === 'TS'
+        ? (canonicalPodium.firstRunnerUp?.photoVerified ? canonicalPodium.firstRunnerUp.photoUrl : undefined)
+        : canonicalPodium.firstRunnerUp?.photoUrl || (canonicalPodium.firstRunnerUp?.name ? getStaticPhoto(canonicalPodium.firstRunnerUp.name) : undefined),
+                second_runner_up_photo_url: IS_LIVE_ENVIRONMENT && stateCode === 'TS'
+        ? (canonicalPodium.secondRunnerUp?.photoVerified ? canonicalPodium.secondRunnerUp.photoUrl : undefined)
+        : canonicalPodium.secondRunnerUp?.photoUrl || (canonicalPodium.secondRunnerUp?.name ? getStaticPhoto(canonicalPodium.secondRunnerUp.name) : undefined),
                 localized_names_json: JSON.stringify({
                   winner: canonicalPodium.winner?.localizedNames,
                   ru1: canonicalPodium.firstRunnerUp?.localizedNames,
@@ -1504,7 +1518,7 @@ export default function ConstituencyDetailScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{t('constituencyExtended.candidateTransparency')}</Text>
           {(canonicalPodium?.year ?? effectiveElectionYear ?? constituency?.electionYear) != null
-            ? <AffidavitCard stateCode={stateCode} acNo={acNo} electionYear={(canonicalPodium?.year ?? effectiveElectionYear ?? constituency?.electionYear)!} />
+            ? <AffidavitCard stateCode={stateCode} acNo={acNo} candidate={canonicalPodium?.winner} electionYear={(canonicalPodium?.year ?? effectiveElectionYear ?? constituency?.electionYear)!} />
             : <Text style={styles.casteNoticeText}>{t('constituency.noAffidavitYear', { defaultValue: 'Election year is unavailable, so no affidavit record can be matched.' })}</Text>}
         </View>
 

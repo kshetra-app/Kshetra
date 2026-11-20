@@ -4,7 +4,7 @@
  * Dynamically fits all device sizes via useResponsive() and safe area insets.
  */
 import React, { useMemo, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, Share, Linking } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Share, Linking, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useResponsive } from '../../lib/responsive';
@@ -35,6 +35,7 @@ import ShareableCardModal from '../../components/ShareableCardModal';
 import { useTheme } from '../../lib/theme';
 import { getStaticPhoto, getCanonicalCandidateName } from '../../lib/candidatePhotos';
 import i18n from '../../i18n';
+import { apiClient } from '../../lib/api';
 
 
 export default function LegislatorProfileScreen() {
@@ -106,31 +107,41 @@ export default function LegislatorProfileScreen() {
   const stateCode = parsedStateCode;
   const acNo = parsedAcNo;
 
-  const [, setPodiumTick] = useState(0);
+  const [podiumTick, setPodiumTick] = useState(0);
+  const [profileLoaded, setProfileLoaded] = useState('');
+  const [incumbent, setIncumbent] = useState<{ key: string; name: string }>();
+  const profileKey = `${stateCode}-${acNo}`;
   const [showShareModal, setShowShareModal] = useState(false);
   React.useEffect(() => {
     let active = true;
     if (acNo > 0) {
+      if (IS_LIVE_ENVIRONMENT) {
+        apiClient.constituencies.getConstituency(stateCode, acNo).then((record) => {
+          if (active) setIncumbent({ key: profileKey, name: record.currentMLA });
+        }).catch(() => {});
+      }
       Promise.all([
         ...(IS_LIVE_ENVIRONMENT ? [] : [loadHistoricalResultsForState(stateCode).catch(() => {})]),
         fetchHistoricalPodiumForConstituency(stateCode, acNo).catch(() => []),
       ]).then(() => {
         if (active) {
           setPodiumTick((t) => t + 1);
+          setProfileLoaded(profileKey);
         }
       });
     }
     return () => {
       active = false;
     };
-  }, [stateCode, acNo]);
+  }, [stateCode, acNo, profileKey]);
 
   // All data access is wrapped in try-catch useMemo to prevent crashes
   const { mla, constituency, winnerAffidavit, financialRecords, redFlags, electionYear, podiumDetail, podiumContest, isSamePersonAsSittingMLA } = useMemo(() => {
     try {
       const _allConst = getUnifiedConstituenciesForState(stateCode) || [];
       const _constituency = _allConst.find(c => c.acNo === acNo) ?? null;
-      const effectiveYear = parsedElectionYear ?? _constituency?.electionYear ?? null;
+      const effectiveYear = parsedElectionYear ??
+        (IS_LIVE_ENVIRONMENT ? getHistoricalPodiumForConstituency(stateCode, acNo)[0]?.year : _constituency?.electionYear) ?? null;
 
       // Check historical podium contest
       const { candidate: _podiumCand, contest: _podiumContest } = effectiveYear != null
@@ -138,8 +149,10 @@ export default function LegislatorProfileScreen() {
         : { candidate: null, contest: null };
 
       const isWinnerRank = parsedRank === 'winner';
-      let rawMla = isWinnerRank ? (getMLAProfileForState(stateCode, acNo) ?? null) : null;
-      const sittingWinnerName = _constituency?.winnerName || rawMla?.name || '';
+      const rawMla = isWinnerRank && !IS_LIVE_ENVIRONMENT ? getMLAProfileForState(stateCode, acNo) ?? null : null;
+      const sittingWinnerName = IS_LIVE_ENVIRONMENT
+        ? (incumbent?.key === profileKey ? incumbent.name : '')
+        : _constituency?.winnerName || rawMla?.name || '';
       const candPodiumName = _podiumCand?.name || '';
       const selectedWinnerName = candPodiumName || (effectiveYear == null
         ? rawMla?.name || _constituency?.winnerName || ''
@@ -193,7 +206,7 @@ export default function LegislatorProfileScreen() {
       }
 
       const _store = useAffidavitStore.getState();
-      const _winnerAffidavit = (isWinnerRank && isSamePerson && effectiveYear != null)
+      const _winnerAffidavit = (!IS_LIVE_ENVIRONMENT && isWinnerRank && isSamePerson && effectiveYear != null)
         ? _store.getWinnerAffidavit(stateCode, acNo, effectiveYear)
         : null;
 
@@ -216,12 +229,25 @@ export default function LegislatorProfileScreen() {
             spouseIncome: _winnerAffidavit.spouseIncome,
           },
         ];
-      } else if (_podiumCand && (_podiumCand.totalAssets != null || _podiumCand.totalLiabilities != null)) {
+      } else if (_podiumCand && [
+        _podiumCand.totalAssets,
+        _podiumCand.totalLiabilities,
+        _podiumCand.selfMovableAssets,
+        _podiumCand.selfImmovableAssets,
+        _podiumCand.spouseMovableAssets,
+        _podiumCand.spouseImmovableAssets,
+        _podiumCand.dependentsAssets,
+      ].some((amount) => amount != null)) {
         const assets = _podiumCand.totalAssets ?? null;
         const liab = _podiumCand.totalLiabilities ?? null;
         _financialRecords = [
           {
             electionYear: effectiveYear,
+            selfMovableAssets: _podiumCand.selfMovableAssets,
+            selfImmovableAssets: _podiumCand.selfImmovableAssets,
+            spouseMovableAssets: _podiumCand.spouseMovableAssets,
+            spouseImmovableAssets: _podiumCand.spouseImmovableAssets,
+            dependentsAssets: _podiumCand.dependentsAssets,
             totalAssets: assets,
             totalLiabilities: liab,
             netWorth: assets != null && liab != null ? assets - liab : null,
@@ -257,7 +283,15 @@ export default function LegislatorProfileScreen() {
       console.error('[LegislatorProfile] Data load error:', e);
       return { mla: null, constituency: null, winnerAffidavit: null, financialRecords: [], redFlags: [], electionYear: parsedElectionYear ?? null, podiumDetail: null, podiumContest: null, isSamePersonAsSittingMLA: false };
     }
-  }, [stateCode, acNo, parsedElectionYear, parsedRank]);
+  }, [stateCode, acNo, parsedElectionYear, parsedRank, podiumTick, incumbent, profileKey]);
+
+  if (IS_LIVE_ENVIRONMENT && acNo > 0 && !podiumDetail && profileLoaded !== profileKey) {
+    return (
+      <View style={[styles.center, { backgroundColor: colors.background }]}>
+        <ActivityIndicator color={colors.primary} />
+      </View>
+    );
+  }
 
   // Fall through — need at least MLA or constituency data
   if (!mla && !constituency) {
@@ -288,13 +322,13 @@ export default function LegislatorProfileScreen() {
 
   const rawName = isWinner
     ? (mla?.name || (isSamePersonAsSittingMLA ? constituency?.winnerName : null) || '')
-    : ((!isGeneric(podiumDetail?.name) ? podiumDetail?.name : null) || cleanSeedRuName || '');
+    : ((!isGeneric(podiumDetail?.name) ? podiumDetail?.name : null) || (!IS_LIVE_ENVIRONMENT ? cleanSeedRuName : null) || '');
 
   const rawParty = podiumDetail?.party || mla?.party || (isWinner && isSamePersonAsSittingMLA ? constituency?.winnerParty : '') || '';
   let name = rawName && podiumDetail && !isGeneric(podiumDetail.name)
     ? (getLocalizedCandidateName(podiumDetail, i18n.language) || rawName)
     : (rawName ? (getLocalizedCandidateName(rawName, i18n.language) || rawName) : 'Candidate data unavailable');
-  if (!isWinner && isGeneric(name) && cleanSeedRuName) {
+  if (!IS_LIVE_ENVIRONMENT && !isWinner && isGeneric(name) && cleanSeedRuName) {
     name = cleanSeedRuName;
   }
   const party = rawParty
@@ -311,10 +345,16 @@ export default function LegislatorProfileScreen() {
       : (isSamePersonAsSittingMLA && mla?.gender ? (mla.gender === 'F' ? 'female' : 'male') : '—');
   const age = podiumDetail?.age ?? (isSamePersonAsSittingMLA ? (winnerAffidavit?.age ?? mla?.age) : null) ?? null;
   const terms = electionYear != null && rawName ? (calculateTermsServed(rawName, stateCode, acNo, electionYear) ?? 0) : 0;
-  const photoUrl = podiumDetail?.photoUrl || getStaticPhoto(rawName) || getStaticPhoto(name) || (cleanSeedRuName ? getStaticPhoto(cleanSeedRuName) : null) || (isSamePersonAsSittingMLA ? mla?.photoUrl : null);
+  const photoUrl = IS_LIVE_ENVIRONMENT && stateCode === 'TS'
+    ? (podiumDetail?.photoVerified ? podiumDetail.photoUrl : null)
+    : podiumDetail?.photoUrl || getStaticPhoto(rawName) || (isSamePersonAsSittingMLA ? mla?.photoUrl : null);
+  const affidavitUrl = podiumDetail?.affidavitUrl || winnerAffidavit?.sourceUrl;
+  const affidavitDocumentUrl = podiumDetail?.affidavitDocumentUrl;
+  const resultSourceUrl = podiumContest?.resultSourceUrl;
   const constType = constituency?.type || '—';
 
-  const defectionEvent = useMemo(() => {
+  const defectionEvent = (() => {
+    if (IS_LIVE_ENVIRONMENT) return null;
     try {
       const events = getTimelineForState(stateCode, acNo);
       return events.find(e => 
@@ -323,15 +363,11 @@ export default function LegislatorProfileScreen() {
     } catch {
       return null;
     }
-  }, [stateCode, acNo, name]);
+  })();
 
 
   const handleShare = () => {
     setShowShareModal(true);
-  };
-
-  const handleSourceLink = () => {
-    if (winnerAffidavit?.sourceUrl) Linking.openURL(winnerAffidavit.sourceUrl);
   };
 
   return (
@@ -538,22 +574,7 @@ export default function LegislatorProfileScreen() {
               </View>
             </View>
 
-            {/* Statutory Form 26 Affidavit Disclaimer for Pre-2004 or Unverified Elections */}
-            {electionYear != null && electionYear < 2004 ? (
-              <View style={[styles.sectionCard, { backgroundColor: '#F8FAFC', borderColor: colors.border }]}>
-                <Text style={{ fontSize: 12, color: colors.textMuted, lineHeight: 18 }}>
-                  Statutory Form 26 sworn affidavits were instituted by the Election Commission of India starting with the 2004 elections. Sworn asset and criminal disclosures were not legally mandated for the {electionYear} election term.
-                </Text>
-              </View>
-            ) : (!winnerAffidavit && podiumDetail?.totalAssets == null && (
-              <View style={[styles.sectionCard, { backgroundColor: '#F8FAFC', borderColor: colors.border }]}>
-                <Text style={{ fontSize: 12, color: colors.textMuted, lineHeight: 18 }}>
-                  {electionYear != null
-                    ? `Affidavit and asset disclosures for this representative are not available for the ${electionYear} election in the connected records.`
-                    : 'The election year is unavailable, so a matching affidavit record cannot be selected.'}
-                </Text>
-              </View>
-            ))}
+
           </>
         )}
 
@@ -568,14 +589,14 @@ export default function LegislatorProfileScreen() {
             totalCases={isWinner
               ? (winnerAffidavit?.criminalCases ?? mla?.criminalCases ?? podiumDetail?.criminalCases ?? null)
               : (podiumDetail?.criminalCases ?? null)}
-            seriousCases={isWinner ? (winnerAffidavit?.seriousCriminalCases ?? null) : null}
+            seriousCases={podiumDetail?.seriousCriminalCases ?? winnerAffidavit?.seriousCriminalCases ?? null}
             convictions={null}
-            caseDetails={isWinner ? (winnerAffidavit?.caseDetails || []).map(c => ({
+            caseDetails={(podiumDetail?.caseDetails ?? winnerAffidavit?.caseDetails ?? []).map(c => ({
               caseNo: c.caseNo,
               court: c.court,
               ipcSections: c.ipcSections,
               status: c.status,
-            })) : []}
+            }))}
           />
         )}
 
@@ -675,9 +696,15 @@ export default function LegislatorProfileScreen() {
                         second_runner_up_vote_share: contest.secondRunnerUp?.voteShare,
                         margin_winner_to_runner_up_2: contest.marginWinnerToRunnerUp2 ?? contest.secondRunnerUp?.marginToWinner,
                         margin_runner_up_1_to_runner_up_2: contest.marginRunnerUp1ToRunnerUp2 ?? contest.secondRunnerUp?.marginToFirstRunnerUp,
-                        winner_photo_url: contest.winner?.photoUrl,
-                        first_runner_up_photo_url: contest.firstRunnerUp?.photoUrl,
-                        second_runner_up_photo_url: contest.secondRunnerUp?.photoUrl,
+                        winner_photo_url: IS_LIVE_ENVIRONMENT && stateCode === 'TS' && !contest.winner?.photoVerified
+                          ? undefined
+                          : contest.winner?.photoUrl,
+                        first_runner_up_photo_url: IS_LIVE_ENVIRONMENT && stateCode === 'TS' && !contest.firstRunnerUp?.photoVerified
+                          ? undefined
+                          : contest.firstRunnerUp?.photoUrl,
+                        second_runner_up_photo_url: IS_LIVE_ENVIRONMENT && stateCode === 'TS' && !contest.secondRunnerUp?.photoVerified
+                          ? undefined
+                          : contest.secondRunnerUp?.photoUrl,
                       } as any}
                       isLatest={idx === 0}
                     />
@@ -688,36 +715,21 @@ export default function LegislatorProfileScreen() {
           );
         })()}
 
-        {/* Disclaimer / Disclosure Status */}
-        {winnerAffidavit ? (
-          <Text style={[styles.disclaimer, { color: colors.textMuted }]}>
-            {i18n.t('legislator.dataDisclaimer')}
-          </Text>
-        ) : (
-          <View style={{ marginHorizontal: 16, marginTop: 12, padding: 12, borderRadius: 8, backgroundColor: colors.surfaceElevated, borderWidth: 1, borderColor: colors.border }}>
-            <Text style={{ fontSize: 12, lineHeight: 16, color: colors.textMuted }}>
-              {electionYear != null
-                ? `Affidavit and asset disclosures are not available for the ${electionYear} election in the connected records.`
-                : 'No election year is attached to this profile, so a matching affidavit record cannot be selected.'}
-            </Text>
+        {(affidavitUrl || affidavitDocumentUrl || resultSourceUrl) && (
+          <View style={[styles.sourcesSection, { borderTopColor: colors.border }]}>
+            <Text style={[styles.sourcesTitle, { color: colors.textMuted }]}>{i18n.t('legislator.dataSources')}</Text>
+            {[
+              [affidavitUrl, i18n.t('legislator.viewOnMyNeta')],
+              [affidavitDocumentUrl, i18n.t('legislator.viewAffidavit', { defaultValue: 'View filed affidavit' })],
+              [resultSourceUrl, i18n.t('constituency.electionHistory')],
+            ].map(([url, label]) => url && (
+              <Pressable key={url} style={styles.sourceLink} accessibilityRole="link" onPress={() => void Linking.openURL(url)}>
+                <Ionicons name="open-outline" size={14} color={colors.primary} />
+                <Text style={[styles.sourceLinkText, { color: colors.primary }]}>{label}</Text>
+              </Pressable>
+            ))}
           </View>
         )}
-
-        {/* Sources */}
-        <View style={[styles.sourcesSection, { borderTopColor: colors.border }]}>
-          <Text style={[styles.sourcesTitle, { color: colors.textMuted }]}>{i18n.t('legislator.dataSources')}</Text>
-          {winnerAffidavit?.sourceUrl && (
-            <Pressable style={styles.sourceLink} onPress={handleSourceLink}>
-              <Ionicons name="open-outline" size={14} color={colors.primary} />
-              <Text style={[styles.sourceLinkText, { color: colors.primary }]}>{i18n.t('legislator.viewOnMyNeta')}</Text>
-            </Pressable>
-          )}
-          {!winnerAffidavit?.sourceUrl && (
-            <Text style={{ fontSize: 12, color: colors.textMuted, marginTop: 8 }}>
-              Source citation is not attached to this record.
-            </Text>
-          )}
-        </View>
       </ScrollView>
       <DiscoveryHubSheet
         visible={helpVisible}

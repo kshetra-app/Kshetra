@@ -184,11 +184,13 @@ export default function MapLegend({
   const currentPos = useRef({ x: initialX, y: initialTop });
   const hasUserMoved = useRef(false);
   const [panelOpensUpward, setPanelOpensUpward] = useState(false);
+  const [panelHeight, setPanelHeight] = useState(0);
 
   useEffect(() => {
     if (initialTop != null && !hasUserMoved.current) {
       pan.setValue({ x: initialX, y: initialTop });
       currentPos.current = { x: initialX, y: initialTop };
+      setPanelOpensUpward(initialTop > SCREEN_HEIGHT * 0.55);
     }
   }, [initialTop, initialX, pan]);
 
@@ -369,13 +371,17 @@ export default function MapLegend({
     <Animated.View
       style={[
         styles.floatingContainer,
+        panelOpensUpward && styles.floatingContainerUpwards,
         {
-          transform: [{ translateX: pan.x }, { translateY: pan.y }],
+          transform: [
+            { translateX: pan.x },
+            { translateY: expanded && panelOpensUpward ? Animated.subtract(pan.y, panelHeight + 6) : pan.y },
+          ],
         },
       ]}
-      {...panResponder.panHandlers}
+      pointerEvents="box-none"
     >
-      <View style={styles.toggle}>
+      <View style={styles.toggle} {...panResponder.panHandlers}>
         <Ionicons name="reorder-two" size={14} color="#94A3B8" style={{ marginRight: 2 }} />
         <Ionicons
           name={expanded ? 'close' : 'information-circle'}
@@ -387,7 +393,7 @@ export default function MapLegend({
       </View>
 
       {expanded && (
-        <View style={[styles.panel, panelOpensUpward ? styles.panelUpwards : styles.panelDownwards]}>
+        <View style={styles.panel} onLayout={(event) => setPanelHeight(event.nativeEvent.layout.height)}>
           <View style={styles.panelHeader}>
             <Text style={styles.panelTitleText}>
               {t('mapLegend.legend').toUpperCase()}
@@ -402,6 +408,7 @@ export default function MapLegend({
             showsVerticalScrollIndicator={true}
             persistentScrollbar={true}
             nestedScrollEnabled={true}
+            keyboardShouldPersistTaps="handled"
           >
             {renderContent()}
 
@@ -428,6 +435,11 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     zIndex: 90,
+    gap: 6,
+    alignItems: 'flex-start',
+  },
+  floatingContainerUpwards: {
+    flexDirection: 'column-reverse',
   },
   toggle: {
     flexDirection: 'row',
@@ -451,8 +463,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
   },
   panel: {
-    position: 'absolute',
-    left: 0,
     borderRadius: 14,
     padding: 12,
     minWidth: 220,
@@ -466,12 +476,6 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 12,
     zIndex: 100,
-  },
-  panelDownwards: {
-    top: 36,
-  },
-  panelUpwards: {
-    bottom: 36,
   },
   panelHeader: {
     flexDirection: 'row',

@@ -49199,86 +49199,43 @@
     "stateName": "Telangana",
     "electionYear": 2024,
     "acNo": 71,
-    "constituencyName": "Secunderabad Cantonment",
+    "year": 2024,
+    "electionType": "BYPOLL",
+    "resultSourceUrl": "https://www.eci.gov.in/eci-backend/public/all_files/election_report/Bye_Elections_2024_Jan_to_June_2024/Telangana-71-Secunderabad_Cantt%28SC%29-AC-BYE-2024_1783595400.xlsx",
     "delimitationId": "4",
-    "validVotes": 132470,
-    "marginWinnerToRunnerUp1": 13256,
+    "totalValidVotes": 130325,
+    "constituencyName": "Secunderabad Cantonment",
+    "marginWinnerToRunnerUp1": 13206,
     "marginWinnerToRunnerUp2": 19189,
-    "marginRunnerUp1ToRunnerUp2": 5933,
+    "marginRunnerUp1ToRunnerUp2": 5983,
     "winner": {
       "name": "Sri Ganesh Narayanan",
       "party": "INC",
       "votes": 53651,
-      "voteShare": 40.5,
-      "localizedNames": {
-        "en": "Sri Ganesh Narayanan",
-        "te": "శ్రీ గణేష్ నారాయణన్",
-        "hi": "श्री गणेश नारायणन",
-        "ta": "ஸ்ரீ கணேஷ் நாராயணன்",
-        "kn": "ಶ್ರೀ ಗಣೇಶ್ ನಾರಾಯಣನ್",
-        "mr": "श्री गणेश नारायणन",
-        "bn": "শ্রী গণেশ নারায়ণন",
-        "gu": "શ્રી ગણેશ નારાયણન",
-        "ml": "ശ്രീ ഗണേഷ് നാരായണൻ",
-        "pa": "ਸ੍ਰੀ ਗਣੇਸ਼ ਨਾਰਾਇਣਨ",
-        "or": "ଶ୍ରୀ ଗଣେଶ ନାରାୟଣନ",
-        "as": "শ্ৰী গণেশ নাৰায়ণন",
-        "ne": "श्री गणेश नारायणन"
-      },
-      "localizedParties": {
-        "en": "Indian National Congress",
-        "te": "భారత జాతీయ కాంగ్రెస్",
-        "hi": "भारतीय राष्ट्रीय कांग्रेस"
-      },
-      "education": "Post Graduate",
-      "profession": "Business & Social Work",
-      "criminalCases": 0,
-      "totalAssets": 47250000,
-      "totalLiabilities": 8500000
+      "age": 45,
+      "sex": "M",
+      "voteShare": 41.17
     },
     "firstRunnerUp": {
-      "name": "Dr. T. V. Vamsha Tilak",
+      "name": "Dr. Vamsha Tilak T. N.",
       "party": "BJP",
-      "votes": 40395,
-      "voteShare": 30.5,
-      "marginToWinner": 13256,
-      "localizedNames": {
-        "en": "Dr. T. V. Vamsha Tilak",
-        "te": "డా. టి. వి. వంశ తిలక్",
-        "hi": "डॉ. टी. वी. वंश तिलक",
-        "ta": "டாக்டர் டி. வி. வம்ச திலக்",
-        "kn": "ಡಾ. ಟಿ. ವಿ. ವಂಶ ತಿಲಕ್",
-        "mr": "डॉ. टी. व्ही. वंश टिळक"
-      },
-      "localizedParties": {
-        "en": "Bharatiya Janata Party",
-        "te": "భారతీయ జనతా పార్టీ",
-        "hi": "भारतीय जनता पार्टी"
-      }
+      "votes": 40445,
+      "age": 63,
+      "sex": "M",
+      "voteShare": 31.03,
+      "marginToWinner": 13206
     },
     "secondRunnerUp": {
-      "name": "G. Niveditha",
+      "name": "Niveditha Sayanna",
       "party": "BRS",
       "votes": 34462,
-      "voteShare": 26,
+      "age": 40,
+      "sex": "F",
+      "voteShare": 26.44,
       "marginToWinner": 19189,
-      "marginToFirstRunnerUp": 5933,
-      "localizedNames": {
-        "en": "G. Niveditha",
-        "te": "జి. నివేదిత",
-        "hi": "जी. निवेदिता",
-        "ta": "ஜி. நிவேதிதா",
-        "kn": "ಜಿ. ನಿವೇದಿತಾ",
-        "mr": "जी. निवेदिता"
-      },
-      "localizedParties": {
-        "en": "Bharat Rashtra Samithi",
-        "te": "భారత్ రాష్ట్ర సమితి",
-        "hi": "भारत राष्ट्र समिति"
-      }
+      "marginToFirstRunnerUp": 5983
     },
-    "year": 2024,
-    "totalValidVotes": 132470,
+    "validVotes": 130325,
     "constituencyId": 71
   },
   {
@@ -84084,5 +84041,50 @@
     "year": 1999,
     "totalValidVotes": 117429,
     "constituencyId": 119
+  },
+  {
+    "id": "TS-AC-61-2025",
+    "stateCode": "TS",
+    "stateName": "Telangana",
+    "electionYear": 2025,
+    "acNo": 61,
+    "year": 2025,
+    "electionType": "BYPOLL",
+    "resultSourceUrl": "https://www.eci.gov.in/eci-backend/public/all_files/election_report/Bye_Election_to_8__Assembly__Constituencies_October_to_November__2025_2025/Telangana-61-Jubilee_hills_1763377453.xlsx",
+    "delimitationId": "4",
+    "totalValidVotes": 193803,
+    "constituencyName": "Jubilee Hills",
+    "marginWinnerToRunnerUp1": 24729,
+    "marginWinnerToRunnerUp2": 81927,
+    "marginRunnerUp1ToRunnerUp2": 57198,
+    "winner": {
+      "name": "Naveen Yadav V",
+      "party": "INC",
+      "votes": 98988,
+      "age": 41,
+      "sex": "M",
+      "voteShare": 51.08
+    },
+    "firstRunnerUp": {
+      "name": "Maganti Sunitha Gopinath",
+      "party": "BRS",
+      "votes": 74259,
+      "age": 54,
+      "sex": "F",
+      "voteShare": 38.32,
+      "marginToWinner": 24729
+    },
+    "secondRunnerUp": {
+      "name": "Deepak Reddy Lankala",
+      "party": "BJP",
+      "votes": 17061,
+      "age": 51,
+      "sex": "M",
+      "voteShare": 8.8,
+      "marginToWinner": 81927,
+      "marginToFirstRunnerUp": 57198
+    },
+    "validVotes": 193803,
+    "constituencyId": 61
   }
 ]

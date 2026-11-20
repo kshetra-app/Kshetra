@@ -16,6 +16,14 @@ export interface CandidatePodiumDetail {
   photoUrl?: string | null;
   photoVerified?: boolean;
   affidavitUrl?: string | null;
+  affidavitDocumentUrl?: string | null;
+  selfMovableAssets?: number | null;
+  selfImmovableAssets?: number | null;
+  spouseMovableAssets?: number | null;
+  spouseImmovableAssets?: number | null;
+  dependentsAssets?: number | null;
+  seriousCriminalCases?: number | null;
+  caseDetails?: import('./affidavitTypes').CriminalCaseDetail[];
   age?: number | null;
   education?: string | null;
   profession?: string | null;
@@ -26,6 +34,8 @@ export interface CandidatePodiumDetail {
 
 export interface HistoricalPodiumContest {
   year: number;
+  electionType?: 'GENERAL' | 'BYPOLL';
+  resultSourceUrl?: string;
   delimitationId?: string;
   totalValidVotes?: number;
   constituencyName?: string;

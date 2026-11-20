@@ -54,6 +54,72 @@ describe('Constituencies Routes Unit Tests (Exhaustive Branch Coverage)', () => 
     });
   });
 
+  it('keeps disclosures, portraits and citations attached to the individual podium candidate', async () => {
+    const response = await app.inject('/states/TS/constituencies/1/podium');
+    expect(response.statusCode).toBe(200);
+    const contest = response.json().find((row: { year: number }) => row.year === 2023);
+    expect(contest.resultSourceUrl).toContain('eci.gov.in');
+    expect(contest.winner).toMatchObject({ name: 'Palvai Harish Babu', criminalCases: 9 });
+    expect(contest.firstRunnerUp).toMatchObject({
+      name: 'Koneru Konappa',
+      criminalCases: 0,
+      totalAssets: 20193242,
+      photoVerified: true,
+      affidavitUrl: expect.stringContaining('candidate_id=310'),
+    });
+    expect(contest.secondRunnerUp).toMatchObject({
+      name: 'R. S. Praveen Kumar',
+      criminalCases: 2,
+      totalAssets: 12600644,
+      photoVerified: true,
+      affidavitUrl: expect.stringContaining('candidate_id=1144'),
+    });
+    expect(contest.secondRunnerUp.photoUrl).not.toBe(contest.firstRunnerUp.photoUrl);
+    expect(contest.secondRunnerUp.caseDetails).toHaveLength(2);
+  });
+
+  it.each([
+    [61, 2025, 'Naveen Yadav V', 98988, 24729],
+    [71, 2024, 'Sri Ganesh Narayanan', 53651, 13206],
+  ])(
+    'serves the official bye-election archive for Telangana AC %s',
+    async (seat, year, name, votes, margin) => {
+      const response = await app.inject(`/states/TS/constituencies/${seat}/podium`);
+      expect(response.statusCode).toBe(200);
+      expect(response.json()[0]).toMatchObject({
+        year,
+        electionType: 'BYPOLL',
+        winner: { name, votes, party: 'INC' },
+        marginWinnerToRunnerUp1: margin,
+        resultSourceUrl: expect.stringContaining('eci.gov.in'),
+      });
+    },
+  );
+
+  it('serves the filed Jubilee Hills disclosures separately from the election results', async () => {
+    const response = await app.inject('/states/TS/constituencies/61/podium');
+    expect(response.statusCode).toBe(200);
+    const contest = response.json()[0];
+    expect(contest.winner).toMatchObject({
+      name: 'Naveen Yadav V',
+      criminalCases: 7,
+      totalAssets: 387475216,
+    });
+    expect(contest.firstRunnerUp).toMatchObject({
+      criminalCases: 1,
+      selfImmovableAssets: 61137500,
+    });
+    expect(contest.firstRunnerUp.totalAssets).toBeUndefined();
+    expect(contest.secondRunnerUp).toMatchObject({ criminalCases: 5, totalAssets: 86663578 });
+    const candidates = [contest.winner, contest.firstRunnerUp, contest.secondRunnerUp];
+    for (const candidate of candidates) {
+      expect(candidate.affidavitDocumentUrl).toMatch(/^https:\/\/affidavit\.eci\.gov\.in\//);
+      expect(candidate.photoVerified).toBe(true);
+      expect(candidate.photoUrl).toMatch(/^https:\/\/suvidha\.eci\.gov\.in\//);
+    }
+    expect(new Set(candidates.map((candidate) => candidate.photoUrl)).size).toBe(3);
+  });
+
   describe('1. GET /states/:stateCode/constituencies', () => {
     it('returns 200 with list of constituencies for TS', async () => {
       const res = await app.inject({

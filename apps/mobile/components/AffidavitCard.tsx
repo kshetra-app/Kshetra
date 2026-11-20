@@ -8,21 +8,21 @@ import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useAffidavitStore } from '../stores/affidavits';
+import type { CandidatePodiumDetail } from '../lib/historicalPodiumStore';
 import {
   formatINR,
   EDUCATION_LEVEL_CONFIG,
   RED_FLAG_CONFIG,
-  type CandidateAffidavit,
-  type AffidavitRedFlag,
 } from '../lib/affidavitTypes';
 
 interface AffidavitCardProps {
   stateCode: string;
   acNo: number;
   electionYear: number;
+  candidate?: CandidatePodiumDetail | null;
 }
 
-export default React.memo(function AffidavitCard({ stateCode, acNo, electionYear }: AffidavitCardProps) {
+export default React.memo(function AffidavitCard({ stateCode, acNo, electionYear, candidate }: AffidavitCardProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const getWinnerAffidavit = useAffidavitStore((s) => s.getWinnerAffidavit);
@@ -44,7 +44,7 @@ export default React.memo(function AffidavitCard({ stateCode, acNo, electionYear
     [affidavit, getWealthGrowth],
   );
 
-  if (!affidavit) {
+  if (!affidavit && !candidate?.affidavitUrl) {
     return (
       <View style={styles.card}>
         <View style={styles.header}>
@@ -57,18 +57,21 @@ export default React.memo(function AffidavitCard({ stateCode, acNo, electionYear
           </View>
         </View>
         <Text style={[styles.candidateMeta, { marginBottom: 0 }]}>
-          Candidate affidavit disclosures for this constituency and election term are pending formal ingestion and verification.
+          {t('legislator.noDisclosures', { defaultValue: 'No affidavit is linked for this election.' })}
         </Text>
       </View>
     );
   }
 
   const latestGrowth = wealthGrowth.length > 0 ? wealthGrowth[wealthGrowth.length - 1] : null;
+  const education = candidate?.education || (affidavit ? EDUCATION_LEVEL_CONFIG[affidavit.education]?.label : null);
+  const age = candidate?.age ?? affidavit?.age;
+  const cases = candidate?.criminalCases ?? affidavit?.criminalCases;
 
   return (
     <Pressable
       style={styles.card}
-      onPress={() => router.push(`/legislator/MLA_${stateCode}_${electionYear}_${affidavit.constituencyName || 'AC'}_${acNo}` as any)}
+      onPress={() => router.push(`/legislator/MLA_${stateCode}_${electionYear}_${acNo}_W` as any)}
     >
       {/* Header */}
       <View style={styles.header}>
@@ -77,34 +80,36 @@ export default React.memo(function AffidavitCard({ stateCode, acNo, electionYear
           <Text style={styles.title}>{t('affidavit.title')}</Text>
         </View>
         <View style={styles.yearBadge}>
-          <Text style={styles.yearText}>{affidavit.electionYear}</Text>
+          <Text style={styles.yearText}>{electionYear}</Text>
         </View>
       </View>
 
       {/* Candidate info */}
-      <Text style={styles.candidateName}>{affidavit.candidateName}</Text>
-      <Text style={styles.candidateMeta}>{affidavit.party} · {EDUCATION_LEVEL_CONFIG[affidavit.education].label} · {t('affidavit.age')} {affidavit.age}</Text>
+      <Text style={styles.candidateName}>{candidate?.name || affidavit?.candidateName}</Text>
+      <Text style={styles.candidateMeta}>
+        {[candidate?.party || affidavit?.party, education, age == null ? null : `${t('affidavit.age')} ${age}`].filter(Boolean).join(' · ')}
+      </Text>
 
       {/* Key metrics */}
       <View style={styles.metricsRow}>
         <View style={styles.metric}>
           <Ionicons name="wallet" size={16} color="#10B981" />
-          <Text style={styles.metricValue}>{formatINR(affidavit.totalAssets)}</Text>
+          <Text style={styles.metricValue}>{formatINR(candidate?.totalAssets ?? affidavit?.totalAssets ?? null)}</Text>
           <Text style={styles.metricLabel}>{t('affidavit.totalAssets')}</Text>
         </View>
         <View style={styles.metric}>
           <Ionicons name="card" size={16} color="#F59E0B" />
-          <Text style={styles.metricValue}>{formatINR(affidavit.totalLiabilities)}</Text>
+          <Text style={styles.metricValue}>{formatINR(candidate?.totalLiabilities ?? affidavit?.totalLiabilities ?? null)}</Text>
           <Text style={styles.metricLabel}>{t('affidavit.liabilities')}</Text>
         </View>
         <View style={styles.metric}>
           <Ionicons
-            name={affidavit.criminalCases > 0 ? 'alert-circle' : 'checkmark-circle'}
+            name={cases == null ? 'help-circle-outline' : cases > 0 ? 'alert-circle' : 'checkmark-circle'}
             size={16}
-            color={affidavit.criminalCases > 0 ? '#EF4444' : '#10B981'}
+            color={cases == null ? '#94A3B8' : cases > 0 ? '#EF4444' : '#10B981'}
           />
-          <Text style={[styles.metricValue, affidavit.criminalCases > 0 && { color: '#EF4444' }]}>
-            {affidavit.criminalCases}
+          <Text style={[styles.metricValue, cases != null && cases > 0 && { color: '#EF4444' }]}>
+            {cases ?? '—'}
           </Text>
           <Text style={styles.metricLabel}>{t('affidavit.cases')}</Text>
         </View>

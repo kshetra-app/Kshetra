@@ -917,6 +917,8 @@ export async function constituencyRoutes(app: FastifyInstance) {
   );
 
   const PODIUM_DIR = path.resolve(__dirname, '../../../../data/historical/podiums');
+  const TELANGANA_2023_RESULT_SOURCE =
+    'https://www.eci.gov.in/eci-backend/public/all_files/full-statistical-reports/telangana/2023/Detailed_Results.pdf';
   const serverPodiumCache = new Map<string, any>();
 
   function loadServerPodium(stateCode: string): any | null {
@@ -926,6 +928,14 @@ export async function constituencyRoutes(app: FastifyInstance) {
     if (!fs.existsSync(file)) return null;
     try {
       const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+      if (code === 'TS') {
+        for (const contests of Object.values(data)) {
+          if (!Array.isArray(contests)) continue;
+          for (const contest of contests) {
+            if (contest?.year === 2023) contest.resultSourceUrl = TELANGANA_2023_RESULT_SOURCE;
+          }
+        }
+      }
       serverPodiumCache.set(code, data);
       return data;
     } catch {

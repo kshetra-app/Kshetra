@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { getPartyColor } from '../lib/constants';
 import CandidateAvatar from './CandidateAvatar';
 import { getStaticPhoto } from '../lib/candidatePhotos';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 import { useTheme } from '../lib/theme';
 import type { HistoricalResultRow } from '../lib/seedDataLoader';
 
@@ -38,6 +39,7 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
     }
   }, [item.localized_parties_json]);
 
+  const allowNamePhoto = !IS_LIVE_ENVIRONMENT || item.state_code !== 'TS';
   const isGenericCandidate = (name?: string | null) => {
     if (!name) return true;
     const lower = name.trim().toLowerCase();
@@ -142,7 +144,8 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
           name={winnerName}
           party={rawWinnerParty}
           size={36}
-          photoUrl={item.winner_photo_url || getStaticPhoto(winnerName) || getStaticPhoto(cleanWinner) || undefined}
+          allowUnverifiedFallback={allowNamePhoto}
+          photoUrl={item.winner_photo_url || (allowNamePhoto ? getStaticPhoto(winnerName) || getStaticPhoto(cleanWinner) : undefined) || undefined}
         />
 
         <View style={styles.candInfo}>
@@ -187,7 +190,8 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
             name={ru1Name}
             party={item.first_runner_up_party || ''}
             size={32}
-            photoUrl={item.first_runner_up_photo_url || (cleanRu1 ? getStaticPhoto(cleanRu1) : undefined) || getStaticPhoto(ru1Name) || undefined}
+            allowUnverifiedFallback={allowNamePhoto}
+            photoUrl={item.first_runner_up_photo_url || (allowNamePhoto ? getStaticPhoto(cleanRu1 || ru1Name) : undefined) || undefined}
           />
 
           <View style={styles.candInfo}>
@@ -227,6 +231,7 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
             name={ru2Name}
             party={item.second_runner_up_party || ''}
             size={32}
+            allowUnverifiedFallback={allowNamePhoto}
             photoUrl={item.second_runner_up_photo_url || (cleanRu2 ? getStaticPhoto(cleanRu2) : undefined) || getStaticPhoto(ru2Name) || undefined}
           />
 
