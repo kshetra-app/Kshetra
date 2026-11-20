@@ -1076,6 +1076,13 @@ export async function constituencyRoutes(app: FastifyInstance) {
                 winnerName: contest.winner.name.trim(),
                 winnerParty: contest.winner.party.trim(),
                 margin,
+                electionType:
+                  contest.electionType === 'BYPOLL'
+                    ? 'BYPOLL'
+                    : contest.electionType === 'GENERAL'
+                      ? 'GENERAL'
+                      : undefined,
+                resultSourceUrl: contest.resultSourceUrl,
               },
             ];
           });

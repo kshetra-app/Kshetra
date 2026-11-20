@@ -115,7 +115,12 @@ export default function CivicMetricsScreen() {
 
   const budgetSummary = useMemo(() => store.getBudgetSummary(activeState), [store, activeState]);
   const bills = useMemo(() => store.getBillsByState(activeState), [store, activeState]);
-  const activeBills = useMemo(() => bills.filter((b) => !['enacted', 'lapsed', 'withdrawn'].includes(b.status)), [bills]);
+  const officialResource = activeTab === 'schemes'
+    ? { label: t('civicMetrics.officialSchemes', { defaultValue: 'Government scheme eligibility and application guidance' }), url: 'https://www.myscheme.gov.in/' }
+    : activeTab === 'bills' && activeState === 'IN'
+      ? { label: t('civicMetrics.officialBills', { defaultValue: 'Official Parliament bill texts and statuses' }), url: 'https://sansad.in/ls/legislation/bills' }
+      : activeTab === 'budget' && activeState === 'TS'
+        ? { label: t('civicMetrics.telanganaBudgetPublications', { defaultValue: 'Telangana budget documents and archive' }), url: 'https://www.telangana.gov.in/budget-2026-2027/' } : null;
   const schemes = useMemo(() => store.getSchemesByState(activeState), [store, activeState]);
   const projects = useMemo(() => store.getProjectsByState(activeState), [store, activeState]);
   const publicRTIs = useMemo(() => store.getPublicRTIs(activeState), [store, activeState]);
@@ -193,6 +198,11 @@ export default function CivicMetricsScreen() {
         contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
         showsVerticalScrollIndicator={false}
       >
+        {officialResource && (
+          <Pressable accessibilityRole="link" style={styles.empty} onPress={() => { void Linking.openURL(officialResource.url).catch(() => undefined); }}>
+            <Text style={{ color: colors.primary }}>{officialResource.label} ↗</Text>
+          </Pressable>
+        )}
         {activeTab === 'budget' && (
           <>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>{t('civicMetrics.stateBudgetOverview')}</Text>
@@ -213,10 +223,10 @@ export default function CivicMetricsScreen() {
             {bills.length ? (
               <>
                 <Text style={styles.sectionTitle}>
-                  {t('civicMetrics.activeBillsLabel', { defaultValue: 'Active Bills & Legislation' })}
+                  {t('civicMetrics.billRecords', { defaultValue: 'Bills and legislation' })}
                 </Text>
                 {billLoadStatus === 'error' && <Text style={styles.emptyText}>{noConnectedData}</Text>}
-                {activeBills.map((b) => <BillCard key={b.id} bill={b} onSupport={() => store.supportBill(b.id)} onOppose={() => store.opposeBill(b.id)} />)}
+                {bills.map((b) => <BillCard key={b.id} bill={b} onSupport={() => store.supportBill(b.id)} onOppose={() => store.opposeBill(b.id)} />)}
                 {billTotal !== null && billPage * 50 < billTotal && (
                   <Pressable
                     accessibilityRole="button"
@@ -310,11 +320,18 @@ export default function CivicMetricsScreen() {
 
         {activeTab === 'rti' && (
           <>
+            <View style={styles.rtiCard}>
+              <Text style={styles.rtiSubject}>{t('civicMetrics.rtiOfficialTitle', { defaultValue: 'File with the relevant public authority' })}</Text>
+              <Text style={styles.rtiQuestion}>{t('civicMetrics.rtiOfficialDescription', { defaultValue: 'Use the central portal for central public authorities. For a state authority, follow that state’s RTI process. Entries below are community records shared in Poligram.' })}</Text>
+              <Pressable accessibilityRole="link" onPress={() => { void Linking.openURL('https://www.rtionline.gov.in/faq.php').catch(() => undefined); }}>
+                <Text style={{ color: colors.primary, paddingVertical: 10 }}>{t('civicMetrics.rtiOfficialGuide', { defaultValue: 'Central RTI portal and filing guidance' })} ↗</Text>
+              </Pressable>
+            </View>
             {publicRTIs.length ? <>
             <Text style={styles.sectionTitle}>
               {rtiTotal === null
-                ? t('civicMetrics.publicRTIRequestsLabel', { defaultValue: 'Public RTI Requests' })
-                : t('civicMetrics.publicRTIRequests', { count: rtiTotal })}
+                ? t('civicMetrics.communityRtiRecords', { defaultValue: 'Community RTI records' })
+                : t('civicMetrics.communityRtiCount', { count: rtiTotal, defaultValue: 'Community RTI records ({{count}})' })}
             </Text>
             {rtiLoadStatus === 'error' && <Text style={styles.emptyText}>{noConnectedData}</Text>}
             {publicRTIs.map((r) => (
@@ -335,7 +352,7 @@ export default function CivicMetricsScreen() {
                   </Pressable>
                   <Text style={styles.rtiViews}>{t('civicMetrics.views', { count: r.views })}</Text>
                   <Text style={styles.rtiDate}>
-                    {r.filedDate ? t('civicMetrics.filed', { date: r.filedDate }) : t('common.dataUnavailable')}
+                    {r.filedDate ? t('civicMetrics.reportedDate', { date: r.filedDate, defaultValue: 'Reported date {{date}}' }) : t('common.dataUnavailable')}
                   </Text>
                 </View>
               </View>

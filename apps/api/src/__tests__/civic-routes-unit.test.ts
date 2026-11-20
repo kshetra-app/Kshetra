@@ -1556,83 +1556,59 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
       expect(res.statusCode).toBe(400);
     });
 
-    it('successfully inserts civic issue', async () => {
-      let insertedIssue: any = null;
-      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
-        if (table === 'civic_issues') {
-          return {
-            insert: (record: any) => {
-              insertedIssue = record;
-              return {
-                select: () => ({
-                  single: async () => ({
-                    data: { id: 'iss-uuid-999' },
-                    error: null,
-                  }),
-                }),
-              };
-            },
-          } as any;
-        }
-        return {} as any;
-      }) as any);
-
+    it('creates a report through the atomic record operation', async () => {
+      const rpc = jest
+        .spyOn(supabase, 'rpc')
+        .mockResolvedValueOnce({ data: 'iss-uuid-999', error: null } as any);
+      const submissionId = '6ee1ded5-b499-4de3-85a5-964b3cb6d47f';
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/civic/issues',
         headers: { 'x-user-id': 'user-reporter' },
         payload: {
-          title: 'Severe waterlogging at Begumpet Flyover',
-          description: 'Road blocked due to heavy rains',
+          submissionId,
+          title: 'Severe waterlogging',
           category: 'water',
           severity: 'high',
-          constituencyId: 'AC-065',
           stateCode: 'TS',
-          mediaUrls: ['https://example.com/photo1.jpg'],
         },
       });
-
       expect(res.statusCode).toBe(200);
-      const body = JSON.parse(res.payload);
-      expect(body.success).toBe(true);
-      expect(body.id).toBe('iss-uuid-999');
-      expect(insertedIssue.title).toBe('Severe waterlogging at Begumpet Flyover');
-      expect(insertedIssue.reporter_id).toBe('user-reporter');
-      expect(insertedIssue.severity).toBe('high');
-      expect(insertedIssue.status).toBe('open');
+      expect(res.json()).toMatchObject({ success: true, id: 'iss-uuid-999' });
+      expect(rpc).toHaveBeenCalledWith('create_civic_issue_record', {
+        p_issue: expect.objectContaining({
+          id: submissionId,
+          reporter_id: 'user-reporter',
+          severity: 'high',
+        }),
+      });
     });
 
-    it('returns 500 when civic issue insertion fails', async () => {
-      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
-        if (table === 'civic_issues') {
-          return {
-            insert: () => ({
-              select: () => ({
-                single: async () => ({
-                  data: null,
-                  error: { message: 'Insert issue failed' },
-                }),
-              }),
-            }),
-          } as any;
-        }
-        return {} as any;
-      }) as any);
-
+    it('rejects a constituency belonging to a different state', async () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/civic/issues',
         headers: { 'x-user-id': 'user-1' },
         payload: {
-          title: 'Broken street lights',
-          category: 'electricity',
+          title: 'Wrong constituency',
+          category: 'roads',
           stateCode: 'TS',
+          constituencyId: 'AP-AC-1',
         },
       });
+      expect(res.statusCode).toBe(400);
+      expect(supabase.rpc).not.toHaveBeenCalled();
+    });
 
-      expect(res.statusCode).toBe(500);
-      const body = JSON.parse(res.payload);
-      expect(body.code).toBe('DATABASE_ERROR');
+    it('reports failure when the atomic report cannot be committed', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/v1/civic/issues',
+        headers: { 'x-user-id': 'user-1' },
+        payload: { title: 'Broken street lights', category: 'electricity', stateCode: 'TS' },
+      });
+      expect(res.statusCode).toBe(503);
+      expect(res.json().success).not.toBe(true);
     });
   });
 
@@ -1891,134 +1867,103 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
       expect(body.code).toBe('FORBIDDEN');
     });
 
-    it('allows issue reporter to update status to closed', async () => {
-      let updatedStatus: any = null;
-      let historyInserted: any = null;
-
-      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
-        if (table === 'civic_issues') {
-          return {
-            select: () => ({
-              eq: () => ({
-                maybeSingle: async () => ({
-                  data: { reporter_id: 'author-user', status: 'open' },
-                  error: null,
-                }),
-              }),
+    function mockIssueAndProfile() {
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => ({
+        select: () => ({
+          eq: () => ({
+            maybeSingle: async () => ({
+              data:
+                table === 'civic_issues'
+                  ? { reporter_id: 'author-user', status: 'open', constituency_id: 'TS-AC-65' }
+                  : {
+                      role: 'official',
+                      display_name: 'Verified Officer',
+                      verification_status: 'verified',
+                    },
+              error: null,
             }),
-            update: (payload: any) => {
-              updatedStatus = payload;
-              return {
-                eq: async () => ({ error: null }),
-              };
-            },
-          } as any;
-        }
-        if (table === 'issue_status_history') {
-          return {
-            insert: async (entry: any) => {
-              historyInserted = entry;
-              return { error: null };
-            },
-          } as any;
-        }
-        return {} as any;
-      }) as any);
+          }),
+        }),
+      })) as any);
+    }
 
+    it('records the reporter and the status transition together', async () => {
+      mockIssueAndProfile();
+      const rpc = jest
+        .spyOn(supabase, 'rpc')
+        .mockResolvedValueOnce({ data: true, error: null } as any);
       const res = await app.inject({
         method: 'PATCH',
         url: '/api/v1/civic/issues/iss-1/status',
-        headers: {
-          'x-user-id': 'author-user',
-          'x-user-role': 'citizen',
-        },
-        payload: { status: 'closed', note: 'Issue was resolved by municipal team' },
+        headers: { 'x-user-id': 'author-user' },
+        payload: { status: 'closed', note: 'Resolved by the municipal team' },
       });
-
       expect(res.statusCode).toBe(200);
-      const body = JSON.parse(res.payload);
-      expect(body.success).toBe(true);
-      expect(body.status).toBe('closed');
-      expect(updatedStatus.status).toBe('closed');
-      expect(historyInserted.from_status).toBe('open');
-      expect(historyInserted.to_status).toBe('closed');
-      expect(historyInserted.note).toBe('Issue was resolved by municipal team');
+      expect(rpc).toHaveBeenCalledWith(
+        'record_civic_issue_status',
+        expect.objectContaining({
+          p_expected_status: 'open',
+          p_status: 'closed',
+          p_actor_id: 'author-user',
+          p_actor_role: 'reporter',
+          p_note: 'Resolved by the municipal team',
+        }),
+      );
     });
 
-    it('allows privileged roles (official / admin / moderator / politician) to update status', async () => {
-      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
-        if (table === 'civic_issues') {
-          return {
-            select: () => ({
-              eq: () => ({
-                maybeSingle: async () => ({
-                  data: { reporter_id: 'some-citizen', status: 'open' },
-                  error: null,
-                }),
-              }),
-            }),
-            update: () => ({
-              eq: async () => ({ error: null }),
-            }),
-          } as any;
-        }
-        if (table === 'issue_status_history') {
-          return {
-            insert: async () => ({ error: null }),
-          } as any;
-        }
-        return {} as any;
-      }) as any);
+    it.each(['moderator', 'official'])(
+      'blocks an acknowledgment from a %s without verified authority',
+      async (role) => {
+        mockIssueAndProfile();
+        const res = await app.inject({
+          method: 'PATCH',
+          url: '/api/v1/civic/issues/iss-1/status',
+          headers: { 'x-user-id': 'unassigned', 'x-user-role': role },
+          payload: { status: 'acknowledged' },
+        });
+        expect(res.statusCode).toBe(403);
+        expect(supabase.rpc).not.toHaveBeenCalled();
+      },
+    );
 
+    it('accepts acknowledgment from the verified authority assigned to that constituency', async () => {
+      mockIssueAndProfile();
+      jest.spyOn(supabase.auth, 'getUser').mockResolvedValueOnce({
+        data: {
+          user: { id: 'authority', app_metadata: { civic_authority_constituency: 'TS-AC-65' } },
+        },
+        error: null,
+      } as any);
+      const rpc = jest
+        .spyOn(supabase, 'rpc')
+        .mockResolvedValueOnce({ data: true, error: null } as any);
       const res = await app.inject({
         method: 'PATCH',
         url: '/api/v1/civic/issues/iss-1/status',
-        headers: {
-          'x-user-id': 'official-1',
-          'x-user-role': 'official',
-        },
+        headers: { authorization: 'Bearer authority-test' },
         payload: { status: 'acknowledged' },
       });
-
       expect(res.statusCode).toBe(200);
-      const body = JSON.parse(res.payload);
-      expect(body.success).toBe(true);
-      expect(body.status).toBe('acknowledged');
+      expect(rpc).toHaveBeenCalledWith(
+        'record_civic_issue_status',
+        expect.objectContaining({
+          p_actor_id: 'authority',
+          p_actor_name: 'Verified Officer',
+          p_actor_role: 'authority',
+        }),
+      );
     });
 
-    it('returns 500 when updating civic issue status fails', async () => {
-      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
-        if (table === 'civic_issues') {
-          return {
-            select: () => ({
-              eq: () => ({
-                maybeSingle: async () => ({
-                  data: { reporter_id: 'author-user', status: 'open' },
-                  error: null,
-                }),
-              }),
-            }),
-            update: () => ({
-              eq: async () => ({ error: { message: 'Update failed' } }),
-            }),
-          } as any;
-        }
-        return {} as any;
-      }) as any);
-
+    it('reports a conflicting status change without claiming success', async () => {
+      mockIssueAndProfile();
+      jest.spyOn(supabase, 'rpc').mockResolvedValueOnce({ data: false, error: null } as any);
       const res = await app.inject({
         method: 'PATCH',
         url: '/api/v1/civic/issues/iss-1/status',
-        headers: {
-          'x-user-id': 'author-user',
-          'x-user-role': 'citizen',
-        },
+        headers: { 'x-user-id': 'author-user' },
         payload: { status: 'closed' },
       });
-
-      expect(res.statusCode).toBe(500);
-      const body = JSON.parse(res.payload);
-      expect(body.code).toBe('DATABASE_ERROR');
+      expect(res.statusCode).toBe(409);
     });
   });
 
@@ -2097,7 +2042,7 @@ describe('Civic Routes Unit Tests (Direct Route Injection)', () => {
       expect(body.issueId).toBe('iss-123');
       expect(insertedComment.body).toContain('Municipal team visited');
       expect(insertedComment.user_id).toBe('commenter-1');
-      expect(insertedComment.user_name).toBe('Ramesh K');
+      expect(insertedComment.user_name).toBe('Anonymous');
     });
 
     it('returns 500 when adding comment fails', async () => {

@@ -541,9 +541,11 @@ export class CivicService {
           .eq('id', id)
           .maybeSingle();
 
+        if (!error && !data && isProductionRuntime()) return null;
         if (!error && data) {
           return {
             id: data.id,
+            imageUrl: data.image_url,
             reporterId: data.reporter_id,
             reporterName: data.reporter_name,
             constituencyId: data.constituency_id,
@@ -575,6 +577,8 @@ export class CivicService {
       } catch {}
     }
 
+    if (isProductionRuntime())
+      throw Object.assign(new Error('Could not load civic issue'), { statusCode: 503 });
     return this.inMemoryIssues.get(id) || null;
   }
 
@@ -717,7 +721,7 @@ export class CivicService {
           .select('*')
           .eq('issue_id', issueId)
           .order('created_at', { ascending: true });
-        if (!error && data && data.length > 0) {
+        if (!error && data && (data.length > 0 || isProductionRuntime())) {
           return data.map((d: any) => ({
             id: d.id,
             issueId: d.issue_id,
@@ -725,7 +729,7 @@ export class CivicService {
             toStatus: d.to_status,
             changedBy: d.changed_by,
             changedByName: d.changed_by_name,
-            actorRole: d.actor_role || 'citizen',
+            actorRole: d.actor_role ?? undefined,
             note: d.note,
             evidenceUrl: d.evidence_url,
             assignedDepartment: d.assigned_department,
@@ -734,6 +738,8 @@ export class CivicService {
         }
       } catch {}
     }
+    if (isProductionRuntime())
+      throw Object.assign(new Error('Could not load issue history'), { statusCode: 503 });
     return this.inMemoryStatusHistory.get(issueId) || [];
   }
 

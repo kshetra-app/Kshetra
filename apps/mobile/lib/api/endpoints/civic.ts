@@ -36,6 +36,7 @@ export interface ReportIssueRequestDTO {
   constituencyId?: string;
   stateCode: string;
   mediaUrls?: string[];
+  submissionId?: string;
 }
 
 export interface CivicIssueListFilters {
@@ -44,6 +45,8 @@ export interface CivicIssueListFilters {
   constituencyId?: string;
   page?: number;
   limit?: number;
+  category?: string;
+  status?: string;
 }
 
 export interface CivicIssueListResponse {
@@ -505,6 +508,27 @@ function parsePublicHearing(value: unknown): PublicHearing | null {
 export class CivicEndpoint {
   constructor(private readonly client: ApiClient) {}
 
+  getIssue(id: string, authenticated: boolean) {
+    return this.client.get<{ issue: Record<string, unknown> }>(
+      `/api/v1/civic/issues/${encodeURIComponent(id)}`,
+      { authPolicy: authenticated ? 'authenticated' : 'public' },
+    );
+  }
+
+  getIssueComments(id: string) {
+    return this.client.get<{ comments: Record<string, unknown>[] }>(
+      `/api/v1/civic/issues/${encodeURIComponent(id)}/comments`,
+      { authPolicy: 'public' },
+    );
+  }
+
+  getIssueHistory(id: string) {
+    return this.client.get<{ history: import('../../civicTypes').IssueStatusChange[] }>(
+      `/api/v1/civic/issues/${encodeURIComponent(id)}/history`,
+      { authPolicy: 'public' },
+    );
+  }
+
   /** Load a bounded, newest-first page of civic issues for the selected dashboard scope. */
   async listIssues(filters: CivicIssueListFilters): Promise<CivicIssueListResponse> {
     const { scope, stateCode, constituencyId } = filters;
@@ -534,6 +558,8 @@ export class CivicEndpoint {
       query: {
         stateCode: scope === 'national' ? undefined : stateCode,
         constituencyId: scope === 'constituency' ? constituencyId : undefined,
+        ...(filters.category ? { category: filters.category } : {}),
+        ...(filters.status ? { status: filters.status } : {}),
         page,
         limit,
       },

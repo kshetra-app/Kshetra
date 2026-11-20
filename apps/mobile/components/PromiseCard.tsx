@@ -3,9 +3,11 @@
  */
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
+import { validWebLink } from '../lib/feedAttachments';
 import { getPartyColor } from '../lib/constants';
 import {
   PROMISE_STATUS_CONFIG,
@@ -18,14 +20,17 @@ interface PromiseCardProps {
   promise: ElectionPromise;
   onFollow?: () => void;
   onPress?: () => void;
+  statusEvidence?: { sourceUrl: string; createdAt: string };
 }
 
-export default React.memo(function PromiseCard({ promise, onFollow, onPress }: PromiseCardProps) {
+export default React.memo(function PromiseCard({ promise, onFollow, onPress, statusEvidence }: PromiseCardProps) {
   const { t } = useTranslation();
   const statusConfig = PROMISE_STATUS_CONFIG[promise.status];
   const categoryConfig = PROMISE_CATEGORY_CONFIG[promise.category];
   const sourceConfig = PROMISE_SOURCE_CONFIG[promise.source];
   const partyColor = getPartyColor(promise.party);
+
+  const hasStatusProof = !IS_LIVE_ENVIRONMENT || promise.status === 'promised' || Boolean(statusEvidence);
 
   const isOverdue = promise.deadline && new Date(promise.deadline) < new Date() && promise.status !== 'delivered';
 
@@ -39,7 +44,7 @@ export default React.memo(function PromiseCard({ promise, onFollow, onPress }: P
         </View>
         <View style={[styles.statusBadge, { backgroundColor: statusConfig.color + '20' }]}>
           <Ionicons name={statusConfig.icon as any} size={12} color={statusConfig.color} />
-          <Text style={[styles.statusText, { color: statusConfig.color }]}>{statusConfig.label}</Text>
+          <Text style={[styles.statusText, { color: statusConfig.color }]}>{hasStatusProof ? statusConfig.label : t('promiseCard.awaitingEvidence', { defaultValue: 'Status awaiting evidence' })}</Text>
         </View>
       </View>
 
@@ -59,8 +64,20 @@ export default React.memo(function PromiseCard({ promise, onFollow, onPress }: P
       {/* Description */}
       <Text style={styles.description} numberOfLines={2}>{promise.description}</Text>
 
-      {/* Progress bar */}
-      <View style={styles.progressSection}>
+      {promise.promisedDate && <Text style={styles.sourceText}>{t('promiseCard.promisedOn', { defaultValue: 'Pledged {{date}}', date: new Date(promise.promisedDate).toLocaleDateString() })}</Text>}
+      {promise.sourceUrl && validWebLink(promise.sourceUrl) && (
+        <Pressable accessibilityRole="link" onPress={() => { void Linking.openURL(promise.sourceUrl!).catch(() => undefined); }}>
+          <Text style={[styles.sourceText, { color: '#1D4ED8', paddingVertical: 8 }]}>{t('promiseCard.viewPledge', { defaultValue: 'Read the original pledge' })} ↗</Text>
+        </Pressable>
+      )}
+      {statusEvidence && (
+        <Pressable accessibilityRole="link" onPress={() => { void Linking.openURL(statusEvidence.sourceUrl).catch(() => undefined); }}>
+          <Text style={[styles.sourceText, { color: '#1D4ED8', paddingVertical: 8 }]}>
+            {t('promiseCard.viewStatusEvidence', { defaultValue: 'Status evidence, {{date}}', date: new Date(statusEvidence.createdAt).toLocaleDateString() })} ↗
+          </Text>
+        </Pressable>
+      )}
+      {!IS_LIVE_ENVIRONMENT && <View style={styles.progressSection}>
         <View style={styles.progressHeader}>
           <Text style={styles.progressLabel}>{t('promiseCard.deliveryProgress')}</Text>
           <Text style={[styles.progressPercent, { color: statusConfig.color }]}>
@@ -78,10 +95,10 @@ export default React.memo(function PromiseCard({ promise, onFollow, onPress }: P
             ]}
           />
         </View>
-      </View>
+      </View>}
 
       {/* Overdue warning */}
-      {isOverdue && (
+      {isOverdue && hasStatusProof && (
         <View style={styles.overdueBar}>
           <Ionicons name="time" size={13} color="#EF4444" />
           <Text style={styles.overdueText}>

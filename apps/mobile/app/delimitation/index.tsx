@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useDelimitationStore } from '../../stores/delimitation';
 import DelimitationTimeline from '../../components/DelimitationTimeline';
@@ -40,7 +40,8 @@ export default function DelimitationHub() {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { width: screenWidth } = useWindowDimensions();
-  const [activeTab, setActiveTab] = useState<TabKey>('overview');
+  const { tab } = useLocalSearchParams<{ tab?: string }>();
+  const [activeTab, setActiveTab] = useState<TabKey>(tab === 'impact' ? 'impact' : 'overview');
   const [helpVisible, setHelpVisible] = useState(false);
 
   const {
@@ -160,21 +161,6 @@ export default function DelimitationHub() {
       {renderModelToggle()}
       {renderScenarioDisclosure()}
 
-      {/* Citizen Personal Impact Banner (Clickable) */}
-      <Pressable
-        style={[styles.impactCta, { backgroundColor: '#3B82F615', borderColor: '#3B82F640' }]}
-        onPress={() => router.push('/delimitation/my-impact')}
-      >
-        <Ionicons name="location" size={22} color="#3B82F6" />
-        <View style={{ flex: 1, marginLeft: 10 }}>
-          <Text style={[styles.impactCtaTitle, { color: '#2563EB' }]}>{t('delimitation.whatChangesForYou', { defaultValue: 'What Changes For You?' })}</Text>
-          <Text style={[styles.impactCtaSub, { color: colors.textSecondary }]}>
-            {t('delimitation.enterPinDesc', { defaultValue: 'Enter your PIN code to see how boundary redraws, MLA shifts, and reservation affect your vote.' })}
-          </Text>
-        </View>
-        <Ionicons name="chevron-forward" size={18} color="#3B82F6" />
-      </Pressable>
-
       {/* Simulator CTA */}
       <Pressable
         style={[styles.simCta, { backgroundColor: colors.primary, borderColor: colors.primary }]}
@@ -182,7 +168,7 @@ export default function DelimitationHub() {
       >
         <Ionicons name="flask" size={20} color="#FFFFFF" />
         <View style={{ flex: 1, marginLeft: 10 }}>
-          <Text style={[styles.simCtaTitle, { color: '#FFFFFF' }]}>{t('delimitationExtended.interactiveSimulator')}</Text>
+          <Text style={[styles.simCtaTitle, { color: '#FFFFFF' }]}>{t('delimitationExtended.exploreScenarios', { defaultValue: 'Explore Scenarios' })}</Text>
           <Text style={[styles.simCtaSub, { color: '#FBE8E7' }]}>{t('delimitationExtended.simulatorSub')}</Text>
         </View>
         <Ionicons name="chevron-forward" size={18} color="#FFFFFF" />
@@ -332,22 +318,6 @@ export default function DelimitationHub() {
 
   const renderImpact = () => (
     <View>
-      <Pressable
-        style={[styles.impactCta, { backgroundColor: '#3B82F615', borderColor: '#3B82F640', marginBottom: 16 }]}
-        onPress={() => router.push('/delimitation/my-impact')}
-      >
-        <Ionicons name="search" size={22} color="#3B82F6" />
-        <View style={{ flex: 1, marginLeft: 10 }}>
-          <Text style={[styles.impactCtaTitle, { color: '#2563EB' }]}>
-            {t('delimitation.lookupCitizenImpact', { defaultValue: 'Lookup Citizen Delimitation Impact' })}
-          </Text>
-          <Text style={[styles.impactCtaSub, { color: colors.textSecondary }]}>
-            {t('delimitationExtended.verifiedImpactUnavailableTitle')}
-          </Text>
-        </View>
-        <Ionicons name="chevron-forward" size={18} color="#3B82F6" />
-      </Pressable>
-
       <View style={[styles.impactCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         <View style={styles.impactHeader}>
           <Ionicons name="information-circle" size={20} color={colors.primary} />

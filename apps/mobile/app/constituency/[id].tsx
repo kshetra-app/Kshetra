@@ -76,7 +76,7 @@ export default function ConstituencyDetailScreen() {
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const router = useRouter();
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, view } = useLocalSearchParams<{ id: string; view?: string }>();
   const stateCodeStore = useActiveStateStore((s) => s.stateCode);
   const setStateCode = useActiveStateStore((s) => s.setStateCode);
 
@@ -422,7 +422,7 @@ export default function ConstituencyDetailScreen() {
     });
     return () => { isMounted = false; };
   }, [stateCode, acNo]);
-  const [activeTab, setActiveTab] = useState<ConstituencyTab>('overview');
+  const [activeTab, setActiveTab] = useState<ConstituencyTab>(view === 'history' ? 'history' : 'overview');
   const [reportIssueVisible, setReportIssueVisible] = useState(false);
   const [photoViewer, setPhotoViewer] = useState<{ uri: string | null; name: string; party: string } | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -1691,7 +1691,8 @@ export default function ConstituencyDetailScreen() {
         <ReportIssueSheet
           visible={reportIssueVisible}
           onClose={() => setReportIssueVisible(false)}
-          onSubmit={(iss) => addIssue(iss)}
+          constituency={constituency ? { id: `${stateCode}-AC-${constituency.acNo}`, name: constituency.name } : undefined}
+          onSubmit={(iss) => addIssue(iss).then((issueId) => { setReportIssueVisible(false); router.push(`/issue/${issueId}`); return issueId; })}
         />
       )}
 

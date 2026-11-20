@@ -201,6 +201,14 @@ export default function ParliamentScreen() {
               defaultValue: 'Members as of {{date}}',
             })}
           </Text>
+          {tab !== 'overview' && (
+            <Pressable accessibilityRole="link" onPress={() => {
+              const house = tab === 'lok_sabha' ? 'ls' : 'rs';
+              void Linking.openURL(`https://sansad.in/${house}/members`).catch(() => undefined);
+            }}>
+              <Text style={[styles.headerSubtitle, { color: colors.primary }]}>{t('parliament.officialRoster', { defaultValue: 'Official member list' })} ↗</Text>
+            </Pressable>
+          )}
         </View>
         <Pressable
           accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}

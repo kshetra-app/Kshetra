@@ -1,6 +1,9 @@
 import { CONTENT_LIMITS } from '@kshetra/shared';
 import AttachmentToolbar from './AttachmentToolbar';
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { uuid } from 'expo-modules-core';
+import { prepareFeedAttachments } from '../lib/feedAttachments';
+import { getUnifiedConstituenciesForState } from '../lib/stateDataAdapter';
 import { useTranslation } from 'react-i18next';
 import {
   View,
@@ -21,7 +24,7 @@ import * as ImagePicker from 'expo-image-picker';
 import type { IssueCategory, IssueSeverity, CivicIssue } from '../lib/civicTypes';
 import { ISSUE_CATEGORY_CONFIG, SEVERITY_CONFIG } from '../lib/civicTypes';
 import { useAuthStore } from '../stores/auth';
-import { useMyConstituencyStore } from '../stores/myConstituency';
+import { resolveConstituencyForState, useMyConstituencyStore } from '../stores/myConstituency';
 import { useActiveStateStore } from '../stores/activeState';
 import { gateContentAction, logContentAction } from '../lib/contentAccountability';
 import { useContentPromotionStore } from '../stores/contentPromotion';
@@ -36,23 +39,31 @@ function isVideoUri(uri: string): boolean {
 interface ReportIssueSheetProps {
   visible: boolean;
   onClose: () => void;
-  onSubmit: (issue: CivicIssue) => void;
+  onSubmit: (issue: CivicIssue) => Promise<string>;
+  constituency?: { id: string; name: string };
 }
 
 const CATEGORIES = Object.entries(ISSUE_CATEGORY_CONFIG) as [IssueCategory, typeof ISSUE_CATEGORY_CONFIG[IssueCategory]][];
 const SEVERITIES = Object.entries(SEVERITY_CONFIG) as [IssueSeverity, typeof SEVERITY_CONFIG[IssueSeverity]][];
 
-export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportIssueSheetProps) {
+export default function ReportIssueSheet({ visible, onClose, onSubmit, constituency }: ReportIssueSheetProps) {
   const { t } = useTranslation();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<IssueCategory>('roads');
   const [severity, setSeverity] = useState<IssueSeverity>('medium');
-  const [mediaUris, setMediaUris] = useState<string[]>([]);
+  const [media, setMedia] = useState<{ id: string; asset: ImagePicker.ImagePickerAsset }[]>([]);
+  const mediaUris = media.map(({ asset }) => asset.uri);
+  const [submitting, setSubmitting] = useState(false);
+  const inFlight = useRef(false);
+  const draft = useRef({ key: '', id: '' });
   const titleRef = useRef<TextInput>(null);
   const user = useAuthStore((s) => s.user);
   const myHome = useMyConstituencyStore((s) => s.home);
-  const stateCode = useActiveStateStore((s) => s.stateCode);
+  const activeState = useActiveStateStore((s) => s.stateCode);
+  const stateCode = constituency?.id.slice(0, 2) ?? activeState;
+  const home = resolveConstituencyForState(stateCode, null, myHome, getUnifiedConstituenciesForState(stateCode));
+  const target = constituency ?? (home ? { id: `${stateCode}-AC-${home.acNo}`, name: home.name } : undefined);
 
   useEffect(() => {
     if (visible) {
@@ -62,7 +73,7 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
       setDescription('');
       setCategory('roads');
       setSeverity('medium');
-      setMediaUris([]);
+      setMedia([]);
     }
   }, [visible]);
 
@@ -83,7 +94,7 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
       selectionLimit: MAX_MEDIA - mediaUris.length,
     });
     if (!result.canceled && result.assets.length > 0) {
-      setMediaUris((prev) => [...prev, ...result.assets.map((a) => a.uri)].slice(0, MAX_MEDIA));
+      setMedia((prev) => [...prev, ...result.assets.map((asset) => ({ id: uuid.v4(), asset }))].slice(0, MAX_MEDIA));
     }
   }, [mediaUris, t]);
 
@@ -102,7 +113,7 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
       quality: 0.8,
     });
     if (!result.canceled && result.assets.length > 0) {
-      setMediaUris((prev) => [...prev, result.assets[0].uri].slice(0, MAX_MEDIA));
+      setMedia((prev) => [...prev, { id: uuid.v4(), asset: result.assets[0] }].slice(0, MAX_MEDIA));
     }
   }, [mediaUris, t]);
 
@@ -121,23 +132,31 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
       quality: 0.8,
     });
     if (!result.canceled && result.assets.length > 0) {
-      setMediaUris((prev) => [...prev, result.assets[0].uri].slice(0, MAX_MEDIA));
+      setMedia((prev) => [...prev, { id: uuid.v4(), asset: result.assets[0] }].slice(0, MAX_MEDIA));
     }
   }, [mediaUris, t]);
 
   const removeMedia = useCallback((index: number) => {
-    setMediaUris((prev) => prev.filter((_, i) => i !== index));
+    setMedia((prev) => prev.filter((_, i) => i !== index));
   }, []);
 
-  const canSubmit = title.trim().length >= 5 && title.length <= 200;
+  const canSubmit = title.trim().length >= 5 && title.length <= CONTENT_LIMITS.civic.title && stateCode !== 'IN';
 
-  const handleSubmit = () => {
-    if (!canSubmit) return;
-    if (!gateContentAction('report_issue')) return;
+  const handleSubmit = async () => {
+    if (!canSubmit || inFlight.current) return;
+    if (!gateContentAction('report_issue') || !user?.id) return;
+    inFlight.current = true;
+    setSubmitting(true);
+    try {
     const now = new Date().toISOString();
-    const authorName = user?.email?.split('@')[0] ?? 'Anonymous';
+    const authorName = useUserProfileStore.getState().profile?.displayName ?? 'Anonymous';
 
-    const clientToken = `issue_client_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+    const draftKey = JSON.stringify([title.trim(), description.trim(), category, severity, stateCode, target?.id, media.map((item) => item.id)]);
+    if (draft.current.key !== draftKey) draft.current = { key: draftKey, id: uuid.v4() };
+    const clientToken = draft.current.id;
+    const attachments = await prepareFeedAttachments(media.map(({ asset, id }) => ({
+      id, url: asset.uri, mediaType: asset.type === 'video' ? 'video' : 'image', mimeType: asset.mimeType ?? undefined,
+    })), user.id, 'civic');
     const newIssue: CivicIssue = {
       id: clientToken,
       clientToken,
@@ -145,8 +164,8 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
       reporterId: user?.id ?? 'anon',
       reporterName: authorName,
       stateCode,
-      constituencyId: myHome ? `${stateCode}-AC-${myHome.acNo}` : undefined,
-      constituencyName: myHome?.name,
+      constituencyId: target?.id,
+      constituencyName: target?.name,
       title: title.trim(),
       description: description.trim() || undefined,
       category,
@@ -157,7 +176,7 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
       followCount: 0,
       evidenceCount: mediaUris.length,
       disputeCount: 0,
-      mediaUrls: mediaUris.length > 0 ? mediaUris : undefined,
+      mediaUrls: attachments.map((item) => item.url),
       mlaTagged: false,
       mlaResponded: false,
       isVerifiedReport: false,
@@ -165,14 +184,14 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
       updatedAt: now,
     };
 
-    onSubmit(newIssue);
-    logContentAction('report_issue', { type: 'issue', id: newIssue.id, body: newIssue.title, screenName: 'report_issue' });
+    const savedId = await onSubmit(newIssue);
+    logContentAction('report_issue', { type: 'issue', id: savedId, body: newIssue.title, screenName: 'report_issue' });
 
     // Register in Content Promotion Pipeline
     const profile = useUserProfileStore.getState().profile;
     useContentPromotionStore.getState().registerContent({
       contentType: 'civic_issue',
-      contentId: newIssue.id,
+      contentId: savedId,
       authorId: user?.id ?? 'anon',
       constituencyId: newIssue.constituencyId ?? null,
       stateCode: stateCode ?? null,
@@ -181,7 +200,14 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
       isAuthorVerified: profile?.isVerified ?? false,
     });
 
+    draft.current = { key: '', id: '' };
     onClose();
+    } catch (error) {
+      Alert.alert(t('common.error'), error instanceof Error ? error.message : t('reportIssueSheet.saveFailed', { defaultValue: 'Your report could not be saved. Please try again.' }));
+    } finally {
+      inFlight.current = false;
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -193,30 +219,33 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit }: ReportI
         >
           {/* Header */}
           <View style={styles.header}>
-            <Pressable onPress={onClose} hitSlop={8}>
+            <Pressable onPress={onClose} disabled={submitting} hitSlop={8}>
               <Ionicons name="close" size={24} color="#9CA3AF" />
             </Pressable>
             <Text style={styles.headerTitle}>{t('reportIssueSheet.title')}</Text>
             <Pressable
-              style={[styles.submitButton, !canSubmit && styles.submitDisabled]}
+              style={[styles.submitButton, (!canSubmit || submitting) && styles.submitDisabled]}
               onPress={handleSubmit}
-              disabled={!canSubmit}
+              disabled={!canSubmit || submitting}
             >
-              <Text style={styles.submitText}>{t('reportIssueSheet.submit')}</Text>
+              <Text style={styles.submitText}>{submitting ? t('common.loading') : t('reportIssueSheet.submit')}</Text>
             </Pressable>
           </View>
 
           <ScrollView style={styles.scroll} keyboardShouldPersistTaps="handled">
             {/* Constituency badge */}
-            {myHome && (
+            {target && (
               <View style={styles.constituencyBadge}>
                 <Ionicons name="location" size={14} color="#4F8EF7" />
                 <Text style={styles.constituencyBadgeText}>
-                  {t('reportIssueSheet.reportingIn')} {myHome.name}
+                  {t('reportIssueSheet.reportingIn')} {target.name}
                 </Text>
               </View>
             )}
 
+            {stateCode === 'IN' && (
+              <Text style={styles.fieldLabel}>{t('reportIssueSheet.selectState', { defaultValue: 'Select a state to report an issue.' })}</Text>
+            )}
             {/* Title */}
             <Text style={styles.fieldLabel}>{t('reportIssueSheet.titleLabel')}</Text>
             <TextInput

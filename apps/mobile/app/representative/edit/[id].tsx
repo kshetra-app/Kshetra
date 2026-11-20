@@ -15,7 +15,6 @@ import { getRepresentativeById } from '../../../lib/representativesData';
 import type { Representative } from '@kshetra/shared';
 import { submitRepresentativeEdit } from '../../../lib/representativeEdits';
 import { gateContentAction, logContentAction } from '../../../lib/contentAccountability';
-import { useContributorVerificationStore } from '../../../stores/contributorVerification';
 import DiscoveryHubSheet from '../../../components/DiscoveryHubSheet';
 import i18n from '../../../i18n';
 
@@ -34,10 +33,9 @@ export default function RepresentativeEditScreen() {
   const { colors } = useTheme();
 
   const [rep, setRep] = useState<Representative | null>(null);
+  const [loadError, setLoadError] = useState(false);
   const [helpVisible, setHelpVisible] = useState(false);
 
-  const kyc = useContributorVerificationStore((s) => s.kycRecord);
-  const editorVerified = kyc?.status === 'verified';
 
   const [values, setValues] = useState<Record<string, string>>({
     name: '', party: '', phone: '', email: '', photoUrl: '',
@@ -57,8 +55,8 @@ export default function RepresentativeEditScreen() {
           email: r.email ?? '',
           photoUrl: r.photoUrl ?? '',
         });
-      }
-    });
+      } else setLoadError(true);
+    }).catch(() => { if (mounted) setLoadError(true); });
     return () => { mounted = false; };
   }, [id]);
   const [sourceUrl, setSourceUrl] = useState('');
@@ -67,7 +65,7 @@ export default function RepresentativeEditScreen() {
 
   const setField = (k: string, v: string) => setValues((prev) => ({ ...prev, [k]: v }));
 
-  const buildDiff = (): Record<string, { from: unknown; to: unknown }> => {
+  const buildDiff = (): Record<string, { from: string | null; to: string | null }> => {
     const original: Record<string, unknown> = {
       name: rep?.name ?? '',
       party: rep?.party ?? '',
@@ -75,7 +73,7 @@ export default function RepresentativeEditScreen() {
       email: rep?.email ?? '',
       photoUrl: rep?.photoUrl ?? '',
     };
-    const diff: Record<string, { from: unknown; to: unknown }> = {};
+    const diff: Record<string, { from: string | null; to: string | null }> = {};
     for (const { key } of EDITABLE_FIELDS) {
       const to = values[key]?.trim() ?? '';
       const from = (original[key] as string) ?? '';
@@ -85,13 +83,14 @@ export default function RepresentativeEditScreen() {
   };
 
   const handleSubmit = async () => {
+    if (submitting || !rep) return;
     const diff = buildDiff();
     if (Object.keys(diff).length === 0) {
       Alert.alert('No changes', 'Edit at least one field before submitting.');
       return;
     }
-    if (!sourceUrl.trim()) {
-      Alert.alert('Source required', 'A source link or citation is required for every edit (zero-fabrication policy).');
+    if (!sourceUrl.trim().startsWith('https://')) {
+      Alert.alert('Source required', 'Enter an HTTPS link supporting the correction.');
       return;
     }
 
@@ -101,34 +100,20 @@ export default function RepresentativeEditScreen() {
 
     setSubmitting(true);
     try {
-      const result = await submitRepresentativeEdit({
-        representativeId: String(id ?? ''),
-        editorUserId: kyc?.userId,
-        editorKycVerified: !!editorVerified,
-        sourceType: 'crowdsourced',
+      await submitRepresentativeEdit({
+        representativeId: rep.id,
         sourceUrl: sourceUrl.trim(),
         citation: citation.trim() || undefined,
         diff,
       });
-
-      if (result.success) {
-        logContentAction('add_evidence', {
-          type: 'representative_edit',
-          id: String(id ?? ''),
-          body: sourceUrl.trim(),
-          screenName: 'representative_edit',
-        });
-
-        Alert.alert(
-          'Thank you',
-          result.queued
-            ? 'Your contribution has been submitted for moderation. Verified edits appear with source attribution.'
-            : 'Your contribution was captured and will sync for moderation when online.',
-          [{ text: 'Done', onPress: () => router.back() }],
-        );
-      } else {
-        Alert.alert('Submission failed', result.error ?? 'Please try again later.');
-      }
+      logContentAction('add_evidence', {
+        type: 'representative_edit', id: rep.id, body: sourceUrl.trim(), screenName: 'representative_edit',
+      });
+      Alert.alert('Thank you', 'Your correction has been submitted for review.', [
+        { text: 'Done', onPress: () => router.back() },
+      ]);
+    } catch (error) {
+      Alert.alert('Submission failed', error instanceof Error ? error.message : 'Please try again later.');
     } finally {
       setSubmitting(false);
     }
@@ -151,6 +136,7 @@ export default function RepresentativeEditScreen() {
           ),
         }}
       />
+      {loadError && <Text style={{ color: colors.text, padding: 16 }}>The representative profile could not be loaded.</Text>}
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 32 }}>
         <View style={[styles.banner, { backgroundColor: colors.primaryLight, borderColor: colors.primary + '40' }]}>
           <Ionicons name="shield-checkmark-outline" size={16} color={colors.primary} />
@@ -160,7 +146,7 @@ export default function RepresentativeEditScreen() {
           </Text>
         </View>
 
-        {EDITABLE_FIELDS.map((f) => (
+        {EDITABLE_FIELDS.filter(({ key }) => key !== 'party' || rep?.partyOfficial).map((f) => (
           <View key={f.key} style={styles.fieldWrap}>
             <Text style={[styles.label, { color: colors.textSecondary }]}>{f.label}</Text>
             <TextInput
@@ -202,7 +188,7 @@ export default function RepresentativeEditScreen() {
         </View>
 
         <Pressable
-          disabled={submitting}
+          disabled={submitting || !rep}
           style={[styles.submitBtn, { backgroundColor: colors.primary, opacity: submitting ? 0.6 : 1 }]}
           onPress={handleSubmit}
         >

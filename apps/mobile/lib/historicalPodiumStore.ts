@@ -59,6 +59,8 @@ export interface HistoricalElectionSummary {
   year: number;
   constituencyName: string;
   winnerName: string;
+  electionType?: 'GENERAL' | 'BYPOLL';
+  resultSourceUrl?: string;
   winnerParty: string;
   margin: number | null;
 }
@@ -167,23 +169,25 @@ export async function fetchStatePodium(stateCode: string): Promise<Record<string
 /** Fetch the compact, derived party summary used to color a live state map. */
 export async function fetchStatePodiumSummary(
   stateCode: string,
+  options?: { strict?: boolean },
 ): Promise<HistoricalPodiumSummaryRecord[]> {
   const code = (stateCode || 'TS').toUpperCase();
   const cached = stateSummaryCache.get(code);
   if (cached && Date.now() - cached.fetchedAt < SUMMARY_TTL_MS) return cached.records;
 
-  const pending = stateSummaryRequests.get(code);
-  if (pending) return pending;
-
-  const request = loadStatePodiumSummary(code).finally(() => stateSummaryRequests.delete(code));
-  stateSummaryRequests.set(code, request);
-  return request;
+  let request = stateSummaryRequests.get(code);
+  if (!request) {
+    request = loadStatePodiumSummary(code).finally(() => stateSummaryRequests.delete(code));
+    stateSummaryRequests.set(code, request);
+  }
+  return options?.strict ? request : request.catch(() => []);
 }
 
 async function loadStatePodiumSummary(code: string): Promise<HistoricalPodiumSummaryRecord[]> {
   try {
     const res = await fetch(`${API_BASE_URL}/api/v1/states/${code}/podium-summary`);
-    if (!res.ok) return [];
+    if (res.status === 404) return [];
+    if (!res.ok) throw new Error(`Podium summary returned HTTP ${res.status}`);
 
     const response = await res.json();
     if (
@@ -224,7 +228,7 @@ async function loadStatePodiumSummary(code: string): Promise<HistoricalPodiumSum
     return normalized;
   } catch (err) {
     console.warn(`[historicalPodiumStore] Failed to fetch podium summary for ${code}:`, err);
-    return [];
+    throw err;
   }
 }
 

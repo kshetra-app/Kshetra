@@ -1,7 +1,8 @@
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Linking } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import type { StateBudgetSummary } from '../lib/civicMetricsTypes';
+import { validWebLink } from '../lib/feedAttachments';
 import { BUDGET_CATEGORY_CONFIG, getUtilizationColor, formatCrores } from '../lib/civicMetricsTypes';
 
 interface BudgetCardProps {
@@ -22,14 +23,18 @@ export default function BudgetCard({ summary, onPress }: BudgetCardProps) {
       <View style={styles.header}>
         <View>
           <Text style={styles.title}>{t('civicMetrics.stateBudget')} {summary.fiscalYear}</Text>
-          <Text style={styles.subtitle}>{summary.stateCode} · {t('civicMetrics.totalBudget')}: {formatCrores(summary.totalBudgetCrores)}</Text>
+          <Text style={styles.subtitle}>
+            {summary.stateCode} · {summary.budgetBasis === 'gross_expenditure_estimate'
+              ? t('civicMetrics.grossEstimate', { defaultValue: 'Gross expenditure estimate' })
+              : t('civicMetrics.totalBudget')} · {formatCrores(summary.totalBudgetCrores)}
+          </Text>
         </View>
-        <View style={[styles.utilizationBadge, { backgroundColor: utilizationColor + '20' }]}>
+        {summary.overallUtilization !== null && <View style={[styles.utilizationBadge, { backgroundColor: utilizationColor + '20' }]}>
           <Text style={[styles.utilizationText, { color: utilizationColor }]}>
             {summary.overallUtilization === null ? unavailable : `${summary.overallUtilization}%`}
           </Text>
           <Text style={styles.utilizationLabel}>{t('civicMetrics.utilized')}</Text>
-        </View>
+        </View>}
       </View>
 
       {/* Category breakdown */}
@@ -57,33 +62,50 @@ export default function BudgetCard({ summary, onPress }: BudgetCardProps) {
 
       {/* Fiscal indicators */}
       <View style={styles.fiscalRow}>
-        <View style={styles.fiscal}>
+        {summary.fiscalDeficitCrores !== null && <View style={styles.fiscal}>
           <Text style={styles.fiscalLabel}>{t('civicMetrics.fiscalDeficit')}</Text>
           <Text style={[styles.fiscalValue, { color: summary.fiscalDeficitCrores === null ? '#6B7280' : '#EF4444' }]}>
             {formatOptionalCrores(summary.fiscalDeficitCrores)}
           </Text>
-        </View>
-        <View style={styles.fiscal}>
+        </View>}
+        {summary.revenueDeficitCrores !== null && <View style={styles.fiscal}>
           <Text style={styles.fiscalLabel}>{t('civicMetrics.revenueDeficit')}</Text>
           <Text style={[styles.fiscalValue, { color: summary.revenueDeficitCrores === null ? '#6B7280' : '#F59E0B' }]}>
             {formatOptionalCrores(summary.revenueDeficitCrores)}
           </Text>
-        </View>
-        <View style={styles.fiscal}>
+        </View>}
+        {summary.debtToGDPRatio !== null && <View style={styles.fiscal}>
           <Text style={styles.fiscalLabel}>{t('civicMetrics.debtGDP')}</Text>
           <Text style={[styles.fiscalValue, {
             color: summary.debtToGDPRatio === null ? '#6B7280' : summary.debtToGDPRatio > 25 ? '#EF4444' : '#10B981',
           }]}>
             {summary.debtToGDPRatio === null ? unavailable : `${summary.debtToGDPRatio}%`}
           </Text>
-        </View>
+        </View>}
       </View>
+      {summary.sourceUrl && validWebLink(summary.sourceUrl) && (
+        <Pressable accessibilityRole="link" onPress={() => { void Linking.openURL(summary.sourceUrl!).catch(() => undefined); }}>
+          <Text style={styles.source}>{t('civicMetrics.viewBudgetSource', { defaultValue: 'Official budget publication' })} ↗</Text>
+        </Pressable>
+      )}
+      {summary.priorEstimates?.map((entry) => (
+        <View key={entry.fiscalYear} style={styles.prior}>
+          <Text style={styles.title}>{entry.fiscalYear}</Text>
+          <Text style={styles.subtitle}>{t('civicMetrics.originalEstimate', { defaultValue: 'Original estimate' })} · {formatCrores(entry.original)}</Text>
+          {entry.revised !== null && <Text style={styles.subtitle}>{t('civicMetrics.revisedEstimate', { defaultValue: 'Revised estimate' })} · {formatCrores(entry.revised)}</Text>}
+          {entry.sourceUrl && validWebLink(entry.sourceUrl) && <Pressable accessibilityRole="link" onPress={() => { void Linking.openURL(entry.sourceUrl!).catch(() => undefined); }}>
+            <Text style={styles.source}>{t('civicMetrics.viewBudgetSource', { defaultValue: 'Official budget publication' })} ↗</Text>
+          </Pressable>}
+        </View>
+      ))}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   card: { backgroundColor: '#FFFFFF', borderRadius: 16, marginHorizontal: 16, marginVertical: 8, padding: 16, borderWidth: 1, borderColor: '#E8DED1' },
+  source: { color: '#1D4ED8', paddingVertical: 10, fontWeight: '600' },
+  prior: { borderTopWidth: 1, borderColor: '#E8DED1', paddingTop: 10 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 },
   title: { fontSize: 16, fontWeight: '800', color: '#241814' },
   subtitle: { fontSize: 12, color: '#988275', marginTop: 2 },

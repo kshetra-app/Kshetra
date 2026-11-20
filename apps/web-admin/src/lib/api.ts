@@ -43,6 +43,15 @@ export interface ContributorVerificationQueueItem {
   evidenceAvailable: boolean;
 }
 
+export interface RepresentativeCorrection {
+  id: number;
+  representative_id: string;
+  source_url: string | null;
+  citation: string | null;
+  diff: Record<string, { from: unknown; to: unknown }>;
+  submitted_at: string;
+}
+
 function parseFlags(payload: unknown): AppFeatureFlags {
   const candidate = payload && typeof payload === 'object' && 'flags' in payload
     ? (payload as { flags?: unknown }).flags
@@ -246,6 +255,24 @@ export const api = {
     const res = await fetch(`${API_BASE_URL}/api/v1/civic/issues?limit=100`);
     if (!res.ok) throw new Error(`Failed to fetch civic issues: ${res.status}`);
     return res.json();
+  },
+
+  async getRepresentativeCorrections(): Promise<RepresentativeCorrection[]> {
+    const response = await fetch(`${API_BASE_URL}/api/v1/admin/representative-edits`, {
+      headers: await authenticatedHeaders(),
+    });
+    if (!response.ok) throw new Error('The correction queue could not be loaded.');
+    const payload = await response.json();
+    if (!Array.isArray(payload.records)) throw new Error('The correction queue returned an incomplete response.');
+    return payload.records;
+  },
+
+  async reviewRepresentativeCorrection(id: number, decision: 'approved' | 'rejected', note: string) {
+    const response = await fetch(`${API_BASE_URL}/api/v1/admin/representative-edits/${id}/review`, {
+      headers: await authenticatedHeaders(), method: 'POST', body: JSON.stringify({ decision, note }),
+    });
+    const payload = await response.json();
+    if (!response.ok || !payload.success) throw new Error(payload.message ?? 'The review could not be saved.');
   },
 
   async updateCivicIssueStatus(id: string, status: string, note?: string) {

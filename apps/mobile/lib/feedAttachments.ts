@@ -1,7 +1,7 @@
 import type { PostMedia } from './feedTypes';
 import { supabase } from './supabase';
 import { File } from 'expo-file-system';
-import { exceedsFeedMediaLimit } from '@kshetra/shared';
+import { CONTENT_LIMITS, exceedsFeedMediaLimit } from '@kshetra/shared';
 
 export type SubmittedAttachment = Pick<PostMedia, 'mediaType' | 'url' | 'altText'>;
 const types = {
@@ -16,8 +16,11 @@ export function validWebLink(value: string) {
   } catch { return false; }
 }
 
-export async function prepareFeedAttachments(items: PostMedia[], userId: string): Promise<SubmittedAttachment[]> {
-  if (exceedsFeedMediaLimit(items)) throw new Error('Attach up to four items: three photos, one video and one link.');
+export async function prepareFeedAttachments(items: Pick<PostMedia, 'id' | 'url' | 'mediaType' | 'mimeType' | 'altText'>[], userId: string, purpose: 'feed' | 'civic' = 'feed'): Promise<SubmittedAttachment[]> {
+  if (purpose === 'civic' && (items.length > CONTENT_LIMITS.civic.attachments || items.some((item) => item.mediaType === 'link'))) {
+    throw new Error('Choose photos or videos within the report attachment limit.');
+  }
+  if (purpose === 'feed' && exceedsFeedMediaLimit(items)) throw new Error('Attach up to four items: three photos, one video and one link.');
   const result: SubmittedAttachment[] = [];
   for (const item of items) {
     const altText = item.altText?.slice(0, 200);

@@ -127,6 +127,9 @@ export interface StateBudgetSummary {
   revenueDeficitCrores: number | null;
   debtToGDPRatio: number | null;
   updatedAt?: string | null;
+  sourceUrl?: string;
+  budgetBasis?: string;
+  priorEstimates?: { fiscalYear: string; original: number; revised: number | null; sourceUrl?: string }[];
 }
 
 type StateBudgetSummaryRow = Record<string, unknown>;
@@ -197,6 +200,15 @@ export function parseStateBudgetSummary(
     revenueDeficitCrores: readFiniteNumber(readBudgetField(row, 'revenue_deficit_crores', 'revenueDeficitCrores')),
     debtToGDPRatio: readFiniteNumber(readBudgetField(row, 'debt_to_gdp_ratio', 'debtToGDPRatio')),
     updatedAt: typeof updatedAt === 'string' ? updatedAt : null,
+    ...(typeof row.source_url === 'string' ? { sourceUrl: row.source_url } : {}),
+    ...(typeof row.budget_basis === 'string' ? { budgetBasis: row.budget_basis } : {}),
+    ...(Array.isArray(row.priorEstimates) ? { priorEstimates: row.priorEstimates.flatMap((entry) => {
+      const original = readFiniteNumber(entry?.total_budget_crores);
+      return original !== null && typeof entry?.fiscal_year === 'string' ? [{
+        fiscalYear: entry.fiscal_year, original, revised: readFiniteNumber(entry.total_revised_crores),
+        sourceUrl: typeof entry.source_url === 'string' ? entry.source_url : undefined,
+      }] : [];
+    }) } : {}),
   };
 }
 

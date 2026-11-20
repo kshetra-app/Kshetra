@@ -16,12 +16,14 @@ import type {
 } from '../lib/civicTypes';
 import { MILESTONE_THRESHOLDS, HEADLINE_PROMOTION_THRESHOLD } from '../lib/civicTypes';
 import * as dataService from '../lib/supabaseDataService';
-import { enqueue, type SyncStatus, retryFailedOp } from '../lib/offlineSync';
+import { type SyncStatus, retryFailedOp } from '../lib/offlineSync';
 import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 import { useAuthStore } from './auth';
 import { apiClient } from '../lib/api';
+import { ApiError } from '../lib/api/errors';
 
 let issueLoadRequestSequence = 0;
+const pendingIssueActions = new Set<string>();
 const ISSUE_SCOPE_FRESHNESS_MS = 60_000;
 const issueScopeLoadedAt = new Map<string, number>();
 
@@ -41,10 +43,13 @@ export function getCivicIssueScopeKey(
   scope: CivicScope,
   stateCode: string,
   constituencyId?: string,
+  category: IssueCategory | 'all' = 'all',
+  status: IssueStatus | 'all' = 'all',
 ): string {
-  if (scope === 'national') return 'national';
-  if (scope === 'state') return `state:${stateCode}`;
-  return constituencyId ? `constituency:${constituencyId}` : 'constituency:unselected';
+  const scopeKey = scope === 'national' ? 'national'
+    : scope === 'state' ? `state:${stateCode}`
+    : `constituency:${constituencyId ?? 'unselected'}`;
+  return category === 'all' && status === 'all' ? scopeKey : `${scopeKey}:${category}:${status}`;
 }
 
 function mapServerIssue(issue: Record<string, unknown>): CivicIssue {
@@ -55,6 +60,8 @@ function mapServerIssue(issue: Record<string, unknown>): CivicIssue {
     reporterName: String(value('reporter_name', 'reporterName') ?? 'Anonymous'),
     constituencyId: value('constituency_id', 'constituencyId') as string | undefined,
     stateCode: String(value('state_code', 'stateCode') ?? ''),
+    constituencyName: value('constituency_name', 'constituencyName') as string | undefined,
+    imageUrl: value('image_url', 'imageUrl') as string | undefined,
     title: String(issue.title ?? ''),
     description: (issue.description as string | null | undefined) ?? undefined,
     category: String(issue.category) as IssueCategory,
@@ -78,6 +85,8 @@ function mapServerIssue(issue: Record<string, unknown>): CivicIssue {
     createdAt: String(value('created_at', 'createdAt') ?? ''),
     updatedAt: String(value('updated_at', 'updatedAt') ?? ''),
     userUpvoted: Boolean(value('user_upvoted', 'userUpvoted') ?? false),
+    viewerCanAcknowledge: issue.viewerCanAcknowledge === true,
+    userDisputed: Boolean(value('user_disputed', 'userDisputed') ?? false),
     userFollowing: Boolean(value('user_following', 'userFollowing') ?? false),
   };
 }
@@ -792,13 +801,14 @@ interface CivicState {
   getSentimentSorted: () => ConstituencySentiment[];
 
   // Actions — issue lifecycle
-  addIssue: (issue: CivicIssue) => void;
-  toggleUpvote: (issueId: string) => void;
-  toggleFollow: (issueId: string) => void;
+  addIssue: (issue: CivicIssue) => Promise<string>;
+  loadIssueDetails: (id: string) => Promise<boolean>;
+  toggleUpvote: (issueId: string) => Promise<boolean>;
+  toggleFollow: (issueId: string) => Promise<boolean>;
   addComment: (issueId: string, body: string, userName: string, imageUrl?: string) => Promise<boolean>;
   addEvidence: (issueId: string, imageUrl: string, userName: string, caption?: string) => void;
-  tagMLA: (issueId: string) => void;
-  disputeResolution: (issueId: string, reason?: string) => void;
+  tagMLA: (issueId: string) => Promise<boolean>;
+  disputeResolution: (issueId: string, reason?: string) => Promise<boolean>;
   updateIssueStatus: (issueId: string, newStatus: IssueStatus, note?: string, changedByName?: string) => Promise<boolean>;
   shareIssue: (issueId: string) => string; // returns share text
   loadIssuesForScope: (scope: CivicScope, stateCode: string, constituencyId?: string, force?: boolean) => Promise<void>;
@@ -806,6 +816,21 @@ interface CivicState {
   hydrateFromServer: (serverIssues: Record<string, unknown>[]) => void;
   reconcileIssueSync: (clientToken: string, status: SyncStatus, serverId?: string | null) => void;
   retryIssue: (clientToken: string) => Promise<boolean>;
+}
+
+async function runIssueAction(
+  key: string,
+  action: () => Promise<boolean>,
+): Promise<boolean> {
+  if (pendingIssueActions.has(key)) return false;
+  pendingIssueActions.add(key);
+  try {
+    return await action();
+  } catch {
+    return false;
+  } finally {
+    pendingIssueActions.delete(key);
+  }
 }
 
 export const useCivicStore = create<CivicState>()((set, get) => ({
@@ -883,47 +908,24 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
 
   // ─── Actions ───
 
-  toggleUpvote: (issueId) => {
-    const issue = get().issues.find((i) => i.id === issueId);
-    const wasUpvoted = issue?.userUpvoted;
-    set((state) => ({
-      issues: state.issues.map((i) => {
-        if (i.id !== issueId) return i;
-        return {
-          ...i,
-          userUpvoted: !wasUpvoted,
-          upvoteCount: i.upvoteCount + (wasUpvoted ? -1 : 1),
-        };
-      }),
-    }));
-    const userId = useAuthStore.getState().user?.id;
-    if (userId) {
-      if (wasUpvoted) {
-        dataService.removeUpvote(issueId, userId);
-      } else {
-        enqueue('upvote_issue', { issueId, userId });
-      }
-    }
-  },
+  toggleUpvote: (id) => runIssueAction(`vote:${id}`, async () => {
+    if (!await get().loadIssueDetails(id)) return false;
+    const issue = get().getIssueById(id);
+    if (!issue) return false;
+    const saved = issue.userUpvoted ? await dataService.removeUpvote(id) : await dataService.upvoteIssue(id);
+    if (saved) await get().loadIssueDetails(id).catch(() => undefined);
+    return saved;
+  }),
 
-  toggleFollow: (issueId) => {
-    const issue = get().issues.find((i) => i.id === issueId);
-    const wasFollowing = issue?.userFollowing;
-    set((state) => ({
-      issues: state.issues.map((i) => {
-        if (i.id !== issueId) return i;
-        return {
-          ...i,
-          userFollowing: !wasFollowing,
-          followCount: i.followCount + (wasFollowing ? -1 : 1),
-        };
-      }),
-    }));
+  toggleFollow: (id) => runIssueAction(`follow:${id}`, async () => {
     const userId = useAuthStore.getState().user?.id;
-    if (userId) {
-      enqueue('follow_issue', { issueId, userId, follow: !wasFollowing });
-    }
-  },
+    if (!userId || !await get().loadIssueDetails(id)) return false;
+    const issue = get().getIssueById(id);
+    if (!issue) return false;
+    const saved = await dataService.followIssue(id, userId, !issue.userFollowing);
+    if (saved) await get().loadIssueDetails(id).catch(() => undefined);
+    return saved;
+  }),
 
   addComment: async (issueId, body, userName, imageUrl) => {
     const userId = useAuthStore.getState().user?.id ?? 'current-user';
@@ -931,25 +933,8 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
     if (!res.success) {
       throw new Error('Failed to post comment to server');
     }
-    const commentId = res.id || `client_cmt_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
-    const comment: IssueComment = {
-      id: commentId,
-      clientToken: commentId,
-      syncStatus: res.id ? 'SYNCED' : 'QUEUED',
-      issueId,
-      userId,
-      userName,
-      body,
-      imageUrl,
-      isOfficial: false,
-      createdAt: new Date().toISOString(),
-    };
-    set((state) => ({
-      comments: [...state.comments, comment],
-      issues: state.issues.map((i) =>
-        i.id === issueId ? { ...i, commentCount: i.commentCount + 1 } : i,
-      ),
-    }));
+    if (!res.id) throw new Error('The server did not confirm your comment.');
+    await get().loadIssueDetails(issueId).catch(() => undefined);
     return true;
   },
 
@@ -967,166 +952,80 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
     }));
   },
 
-  tagMLA: (issueId) => {
-    set((state) => ({
-      issues: state.issues.map((i) =>
-        i.id === issueId ? { ...i, mlaTagged: true } : i,
-      ),
-    }));
-    dataService.tagMLAOnIssue(issueId);
-  },
+  tagMLA: (id) => runIssueAction(`flag:${id}`, async () => {
+    const saved = await dataService.tagMLAOnIssue(id);
+    if (saved) await get().loadIssueDetails(id).catch(() => undefined);
+    return saved;
+  }),
 
-  disputeResolution: (issueId, reason) => {
-    set((state) => {
-      const updatedIssues = state.issues.map((i) => {
-        if (i.id !== issueId) return i;
-        const newDisputeCount = i.disputeCount + 1;
-        // Auto-reopen if 5+ disputes on a resolved issue
-        if (newDisputeCount >= 5 && i.status === 'resolved') {
-          return {
-            ...i,
-            disputeCount: newDisputeCount,
-            userDisputed: true,
-            status: 'reopened' as IssueStatus,
-            resolvedAt: undefined,
-          };
-        }
-        return { ...i, disputeCount: newDisputeCount, userDisputed: true };
-      });
+  disputeResolution: (id, reason) => runIssueAction(`dispute:${id}`, async () => {
+    const saved = await dataService.disputeIssueResolution(id, reason ?? 'Resolution is disputed');
+    if (saved) await get().loadIssueDetails(id).catch(() => undefined);
+    return saved;
+  }),
 
-      // Add status history entry if auto-reopened
-      const issue = state.issues.find((i) => i.id === issueId);
-      const newHistory = [...state.statusHistory];
-      if (issue && issue.disputeCount + 1 >= 5 && issue.status === 'resolved') {
-        newHistory.push({
-          id: `sh-${Date.now()}`,
-          issueId,
-          fromStatus: 'resolved',
-          toStatus: 'reopened',
-          note: `Auto-reopened: ${issue.disputeCount + 1} community disputes`,
-          createdAt: new Date().toISOString(),
-        });
+  updateIssueStatus: (id, status, note) => runIssueAction(`status:${id}`, async () => {
+    const saved = await dataService.updateIssueStatus(id, status, note);
+    if (saved) await get().loadIssueDetails(id).catch(() => undefined);
+    return saved;
+  }),
+
+  loadIssueDetails: async (id) => {
+    if (!IS_LIVE_ENVIRONMENT) return Boolean(get().getIssueById(id));
+    const userId = useAuthStore.getState().user?.id;
+    try {
+      const [detail, replies, timeline] = await Promise.all([
+        apiClient.civic.getIssue(id, Boolean(userId)),
+        apiClient.civic.getIssueComments(id),
+        apiClient.civic.getIssueHistory(id),
+      ]);
+      if (userId !== useAuthStore.getState().user?.id) {
+        throw new Error('The signed-in account changed. Please reopen the report.');
       }
-
-      return { issues: updatedIssues, statusHistory: newHistory };
-    });
-
-    const user = useAuthStore.getState().user;
-    if (user?.id) {
-      dataService.disputeIssueResolution(issueId, user.id, reason || 'Disputed by community member').catch((err) => {
-        console.warn('[CivicStore] Failed to persist dispute to database:', err);
-      });
-    }
-  },
-
-  updateIssueStatus: async (issueId, newStatus, note, changedByName) => {
-    const issue = get().issues.find((i) => i.id === issueId);
-    if (!issue) return false;
-    const oldStatus = issue.status;
-
-    const historyEntry: IssueStatusChange = {
-      id: `sh-${Date.now()}`,
-      issueId,
-      fromStatus: oldStatus,
-      toStatus: newStatus,
-      changedByName,
-      note,
-      createdAt: new Date().toISOString(),
-    };
-
-    // Optimistic update
-    set((state) => ({
-      issues: state.issues.map((i) => {
-        if (i.id !== issueId) return i;
-        return {
-          ...i,
-          status: newStatus,
-          updatedAt: new Date().toISOString(),
-          ...(newStatus === 'resolved' ? { resolvedAt: new Date().toISOString(), resolutionNote: note } : {}),
-        };
-      }),
-      statusHistory: [...state.statusHistory, historyEntry],
-    }));
-
-    const success = await dataService.updateIssueStatus(issueId, newStatus, note);
-    if (!success) {
-      // Rollback on failure
-      set((state) => ({
-        issues: state.issues.map((i) => {
-          if (i.id !== issueId) return i;
-          return {
-            ...i,
-            status: oldStatus,
-          };
-        }),
-        statusHistory: state.statusHistory.filter((h) => h.id !== historyEntry.id),
+      const issue = mapServerIssue(detail.data.issue);
+      const comments: IssueComment[] = replies.data.comments.map((row) => ({
+        id: String(row.id),
+        issueId: id,
+        userId: String(row.user_id ?? row.userId ?? ''),
+        userName: String(row.user_name ?? row.userName ?? 'Anonymous'),
+        body: String(row.body ?? ''),
+        imageUrl: (row.image_url ?? row.imageUrl) as string | undefined,
+        isOfficial: Boolean(row.is_official ?? row.isOfficial),
+        createdAt: String(row.created_at ?? row.createdAt),
       }));
-      return false;
+      set((state) => {
+        const index = state.issues.findIndex((row) => row.id === id);
+        const issues = [...state.issues];
+        if (index < 0) issues.unshift(issue);
+        else issues[index] = issue;
+        return {
+          issues,
+          comments: [...state.comments.filter((row) => row.issueId !== id), ...comments],
+          statusHistory: [...state.statusHistory.filter((row) => row.issueId !== id), ...timeline.data.history],
+        };
+      });
+      return true;
+    } catch (error) {
+      if (error instanceof ApiError && error.statusCode === 404) return false;
+      throw error;
     }
-    return true;
   },
 
   addIssue: async (issue) => {
-    set((state) => ({ issues: [{ ...issue, syncStatus: issue.syncStatus ?? 'SYNCING' }, ...state.issues] }));
-    const userId = useAuthStore.getState().user?.id;
-    if (userId) {
-      try {
-        const res = await dataService.reportIssue({
-          title: issue.title,
-          description: issue.description ?? '',
-          category: issue.category,
-          severity: issue.severity,
-          constituencyId: issue.constituencyId ?? '',
-          stateCode: issue.stateCode,
-          reporterId: userId,
-          reporterName: issue.reporterName ?? 'Anonymous',
-          mediaUrls: issue.mediaUrls ?? [],
-        });
-        if (res.success) {
-          set((state) => ({
-            issues: state.issues.map((i) =>
-              i.id === issue.id ? { ...i, id: res.id ?? i.id, syncStatus: 'SYNCED' } : i
-            ),
-          }));
-        } else {
-          enqueue('report_issue', {
-            title: issue.title,
-            description: issue.description ?? '',
-            category: issue.category,
-            severity: issue.severity,
-            constituencyId: issue.constituencyId ?? '',
-            stateCode: issue.stateCode,
-            reporterId: userId,
-            reporterName: issue.reporterName ?? 'Anonymous',
-            mediaUrls: issue.mediaUrls ?? [],
-            clientToken: issue.clientToken ?? issue.id,
-          }, issue.clientToken ?? issue.id);
-          set((state) => ({
-            issues: state.issues.map((i) =>
-              i.id === issue.id ? { ...i, syncStatus: 'QUEUED' } : i
-            ),
-          }));
-        }
-      } catch {
-        enqueue('report_issue', {
-          title: issue.title,
-          description: issue.description ?? '',
-          category: issue.category,
-          severity: issue.severity,
-          constituencyId: issue.constituencyId ?? '',
-          stateCode: issue.stateCode,
-          reporterId: userId,
-          reporterName: issue.reporterName ?? 'Anonymous',
-          mediaUrls: issue.mediaUrls ?? [],
-          clientToken: issue.clientToken ?? issue.id,
-        }, issue.clientToken ?? issue.id);
-        set((state) => ({
-          issues: state.issues.map((i) =>
-            i.id === issue.id ? { ...i, syncStatus: 'QUEUED' } : i
-          ),
-        }));
-      }
-    }
+    if (!useAuthStore.getState().user?.id) throw new Error('Sign in to submit a report.');
+    const saved = await apiClient.civic.reportIssue({
+      title: issue.title,
+      description: issue.description,
+      category: issue.category,
+      severity: issue.severity,
+      constituencyId: issue.constituencyId,
+      stateCode: issue.stateCode,
+      mediaUrls: issue.mediaUrls,
+      submissionId: issue.id,
+    });
+    if (!saved.success || !saved.id) throw new Error('The server did not confirm your report.');
+    issueScopeLoadedAt.clear();
+    return saved.id;
   },
 
   shareIssue: (issueId) => {
@@ -1152,8 +1051,9 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
   loadIssuesForScope: async (scope, stateCode, constituencyId, force = false) => {
     if (!IS_LIVE_ENVIRONMENT || (scope === 'constituency' && !constituencyId)) return;
 
-    const scopeKey = getCivicIssueScopeKey(scope, stateCode, constituencyId);
     const current = get();
+    const { issueFilter, statusFilter } = current;
+    const scopeKey = getCivicIssueScopeKey(scope, stateCode, constituencyId, issueFilter, statusFilter);
     const sameLoadedScope = current.issueLoadScopeKey === scopeKey && current.issueLoadStatus === 'loaded';
     if (
       !force &&
@@ -1184,6 +1084,8 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
         scope,
         stateCode,
         constituencyId,
+        ...(issueFilter !== 'all' ? { category: issueFilter } : {}),
+        ...(statusFilter !== 'all' ? { status: statusFilter } : {}),
         page: 1,
         limit,
       });
@@ -1226,7 +1128,9 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
     const current = get();
     if (!IS_LIVE_ENVIRONMENT || current.issueLoadStatus !== 'loaded' || current.issueLoadTotal === null) return;
     if (current.issueRefreshing) return;
-    if (current.issueLoadScopeKey !== getCivicIssueScopeKey(scope, stateCode, constituencyId)) return;
+    const { issueFilter, statusFilter } = current;
+    const scopeKey = getCivicIssueScopeKey(scope, stateCode, constituencyId, issueFilter, statusFilter);
+    if (current.issueLoadScopeKey !== scopeKey) return;
     if (current.issueLoadPage * current.issueLoadLimit >= current.issueLoadTotal) return;
 
     const requestSequence = ++issueLoadRequestSequence;
@@ -1237,11 +1141,13 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
         scope,
         stateCode,
         constituencyId,
+        ...(issueFilter !== 'all' ? { category: issueFilter } : {}),
+        ...(statusFilter !== 'all' ? { status: statusFilter } : {}),
         page: nextPage,
         limit: current.issueLoadLimit,
       });
       if (requestSequence !== issueLoadRequestSequence) return;
-      markIssueScopeLoaded(getCivicIssueScopeKey(scope, stateCode, constituencyId));
+      markIssueScopeLoaded(scopeKey);
       set((state) => {
         const merged = new Map(state.issues.map((issue) => [issue.id, issue]));
         for (const row of result.issues) merged.set(String(row.id), mapServerIssue(row));

@@ -343,12 +343,6 @@ export default function ProfileScreen() {
             color="#10B981"
           />
           <SettingRow
-            icon="person-circle"
-            label={t('profileExtended.whatChangesForYou')}
-            onPress={() => router.push('/delimitation/my-impact' as any)}
-            color="#EF4444"
-          />
-          <SettingRow
             icon="school"
             label={t('profileExtended.leadershipAcademy')}
             onPress={() => router.push('/leadership-academy' as any)}

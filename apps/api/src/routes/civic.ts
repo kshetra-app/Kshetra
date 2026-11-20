@@ -1,6 +1,7 @@
-import { CONTENT_LIMITS } from '@kshetra/shared';
+import { CONTENT_LIMITS, STATES } from '@kshetra/shared';
 import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import type { FastifyInstance } from 'fastify';
+import { extractAuthoritativeRole } from '../lib/userAuth';
 import { sendApiError } from '../lib/replyHelper';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import {
@@ -15,6 +16,7 @@ import { checkContentModeration } from '../services/contentModeration';
 import { LEGACY_SYNTHETIC_CIVIC_ISSUE_IDS } from '@kshetra/shared';
 
 const isProductionRuntime = () => isProductionLikeRuntime();
+const uuidPattern = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
 
 function parseNonNegativeInteger(value: unknown): number | null {
   const parsed =
@@ -458,7 +460,12 @@ const createIssueSchema = {
       severity: { type: 'string', enum: ['low', 'medium', 'high', 'critical'] },
       constituencyId: { type: 'string' },
       stateCode: { type: 'string', pattern: '^[A-Z]{2}$' },
-      mediaUrls: { type: 'array', items: { type: 'string' } },
+      mediaUrls: {
+        type: 'array',
+        maxItems: CONTENT_LIMITS.civic.attachments,
+        items: { type: 'string', maxLength: 256 },
+      },
+      submissionId: { type: 'string', format: 'uuid' },
       latitude: { type: 'number' },
       longitude: { type: 'number' },
       locality: { type: 'string' },
@@ -768,9 +775,16 @@ const addIssueCommentSchema = {
   },
 };
 
-async function resolveAuthUser(request: any): Promise<{ userId: string; role: string } | null> {
+async function resolveAuthUser(request: any): Promise<{
+  userId: string;
+  role: string;
+  displayName: string | null;
+  authorityConstituency: string | null;
+} | null> {
   let userId: string | null = null;
   let role = 'citizen';
+  let displayName: string | null = null;
+  let authorityConstituency: string | null = null;
   const authHeader = request.headers.authorization;
 
   if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -785,13 +799,25 @@ async function resolveAuthUser(request: any): Promise<{ userId: string; role: st
       } = await supabase.auth.getUser(token);
       if (!error && user) {
         userId = user.id;
+        role = extractAuthoritativeRole(user);
         try {
           const { data: profile, error: profileError } = await supabase
             .from('user_profiles')
-            .select('role')
+            .select('role,display_name,verification_status')
             .eq('user_id', user.id)
             .maybeSingle();
-          if (!profileError && profile?.role) role = profile.role;
+          if (!profileError && profile) {
+            displayName = profile.display_name;
+            const assigned = user.app_metadata?.civic_authority_constituency;
+            if (
+              profile.verification_status === 'verified' &&
+              typeof assigned === 'string' &&
+              ['official', 'politician'].includes(profile.role)
+            ) {
+              role = profile.role;
+              authorityConstituency = assigned;
+            }
+          }
         } catch {
           // Profile lookup failure must not grant elevated access.
           role = 'citizen';
@@ -807,7 +833,21 @@ async function resolveAuthUser(request: any): Promise<{ userId: string; role: st
 
   if (!userId) return null;
 
-  return { userId, role };
+  return { userId, role, displayName, authorityConstituency };
+}
+
+async function verifiedCivicContributor(userId: string): Promise<boolean> {
+  if (!isProductionRuntime()) return true;
+  const { data, error } = await supabase
+    .from('creator_kyc_records')
+    .select('status')
+    .eq('user_id', userId)
+    .maybeSingle();
+  if (error)
+    throw Object.assign(new Error('Could not confirm contributor verification'), {
+      statusCode: 503,
+    });
+  return data?.status === 'verified';
 }
 
 export async function civicRoutes(app: FastifyInstance) {
@@ -858,12 +898,27 @@ export async function civicRoutes(app: FastifyInstance) {
           );
         }
 
+        const priorEstimates = data?.source_url
+          ? await supabase
+              .from('state_budget_summaries')
+              .select('fiscal_year,total_budget_crores,total_revised_crores,source_url')
+              .eq('state_code', stateCode)
+              .lt('fiscal_year', data.fiscal_year)
+              .not('source_url', 'is', null)
+              .order('fiscal_year', { ascending: false })
+              .limit(4)
+          : null;
+        if (priorEstimates?.error)
+          request.log.warn({ stateCode }, 'Prior budget estimates unavailable');
         return {
           stateCode,
           message: data
             ? 'Budget summary loaded from stored records.'
             : 'No state budget record is available yet.',
-          budget: data ?? null,
+          budget:
+            data && priorEstimates
+              ? { ...data, priorEstimates: priorEstimates.data ?? [] }
+              : (data ?? null),
         };
       } catch (error: any) {
         request.log.error(
@@ -1664,7 +1719,7 @@ export async function civicRoutes(app: FastifyInstance) {
       }
 
       // Check milestones & auto-promotion to headlines (Decision 1: Option A at 500 upvotes)
-      let upvoteCount = 1;
+      let upvoteCount: number | undefined;
       let promotedToHeadline = false;
       try {
         const { count } = await supabase
@@ -1673,16 +1728,16 @@ export async function civicRoutes(app: FastifyInstance) {
           .eq('issue_id', id);
         if (count !== null && count !== undefined) upvoteCount = count;
 
-        if (upvoteCount >= 500) {
+        if (upvoteCount !== undefined && upvoteCount >= 500) {
           const { data: issueData } = await supabase
             .from('civic_issues')
             .select('*')
             .eq('id', id)
             .maybeSingle();
           if (issueData) {
-            await supabase.from('headlines').upsert({
+            const promotion = await supabase.from('headlines').upsert({
               id: `hl_auto_${id}`,
-              title: `${issueData.constituency_id || issueData.state_code}: ${issueData.title} — 500+ citizens demand immediate action`,
+              title: `${issueData.constituency_id || issueData.state_code}: ${issueData.title} — received ${upvoteCount} upvotes in Poligram`,
               summary: issueData.description || issueData.title,
               source_name: 'Poligram Citizen Action',
               source_url: `https://poligram.in/issues/${id}`,
@@ -1691,7 +1746,7 @@ export async function civicRoutes(app: FastifyInstance) {
               constituency_id: issueData.constituency_id,
               published_at: new Date().toISOString(),
             });
-            promotedToHeadline = true;
+            promotedToHeadline = !promotion.error;
           }
         }
       } catch {}
@@ -1818,6 +1873,7 @@ export async function civicRoutes(app: FastifyInstance) {
       constituencyId?: string;
       stateCode: string;
       mediaUrls?: string[];
+      submissionId?: string;
       latitude?: number;
       longitude?: number;
       locality?: string;
@@ -1848,7 +1904,41 @@ export async function civicRoutes(app: FastifyInstance) {
           code: 'DATABASE_UNAVAILABLE',
         });
       }
+      if (!(await verifiedCivicContributor(auth.userId))) {
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Verification required',
+          'Complete contributor verification to publish.',
+        );
+      }
       const body = request.body;
+      if (!Object.hasOwn(STATES, body.stateCode) || body.stateCode === 'IN') {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'Select a valid state or union territory',
+        );
+      }
+      if (body.constituencyId) {
+        const match = /^([A-Z]{2})-AC-([1-9][0-9]*)$/.exec(body.constituencyId);
+        const constituency =
+          match &&
+          match[1] === body.stateCode &&
+          (await canonicalGeographyService.getConstituency(body.stateCode, Number(match[2])));
+        if (!constituency) {
+          return sendApiError(
+            reply,
+            request,
+            400,
+            'Bad Request',
+            'Select a constituency in the report state',
+          );
+        }
+      }
 
       // Fail-closed content moderation check
       const modCheck = await checkContentModeration(`${body.title} ${body.description || ''}`);
@@ -1890,47 +1980,51 @@ export async function civicRoutes(app: FastifyInstance) {
         }
       }
 
-      const { data, error } = await supabase
-        .from('civic_issues')
-        .insert({
-          title: body.title,
-          description: body.description || '',
+      const { data: id, error } = await supabase.rpc('create_civic_issue_record', {
+        p_issue: {
+          id: body.submissionId,
+          title: body.title.trim(),
+          description: body.description?.trim() ?? '',
           category: body.category,
-          severity: body.severity || 'medium',
+          severity: body.severity ?? 'medium',
           constituency_id: body.constituencyId,
           state_code: body.stateCode,
           reporter_id: auth.userId,
-          media_urls: body.mediaUrls || [],
+          reporter_name: auth.displayName,
+          media_urls: body.mediaUrls ?? [],
           latitude: body.latitude,
           longitude: body.longitude,
-          status: 'open',
-        })
-        .select('id')
-        .single();
-      if (error || !data) {
+        },
+      });
+      if (error?.code === '22023' || error?.code === '23514') {
         return sendApiError(
           reply,
           request,
-          500,
-          'Internal Server Error',
-          error?.message || 'Failed to report issue',
-          {
-            code: 'DATABASE_ERROR',
-          },
+          400,
+          'Bad Request',
+          'Check the report fields and attachments, then try again',
         );
       }
-
-      try {
-        await supabase.from('issue_status_history').insert({
-          issue_id: data.id,
-          from_status: 'open',
-          to_status: 'open',
-          changed_by: auth.userId,
-          note: 'Issue reported',
-        });
-      } catch {}
-
-      return { success: true, id: data.id, message: 'Civic issue reported successfully' };
+      if (error?.code === '23505') {
+        return sendApiError(
+          reply,
+          request,
+          409,
+          'Conflict',
+          'This submission ID already belongs to another report',
+        );
+      }
+      if (error || !id) {
+        request.log.error({ error }, 'Could not save civic report');
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Your report could not be saved. Please try again',
+        );
+      }
+      return { success: true, id, message: 'Civic issue reported successfully' };
     },
   );
 
@@ -1964,10 +2058,11 @@ export async function civicRoutes(app: FastifyInstance) {
       }
       const { id } = request.params;
       const { status, note } = request.body;
+      const storedStatus = status === 'reopened' ? 'open' : status;
 
       const { data: issue, error: fetchErr } = await supabase
         .from('civic_issues')
-        .select('reporter_id, status')
+        .select('reporter_id, status, constituency_id')
         .eq('id', id)
         .maybeSingle();
       if (fetchErr) {
@@ -1982,9 +2077,21 @@ export async function civicRoutes(app: FastifyInstance) {
       }
 
       const isAuthor = issue.reporter_id === auth.userId;
-      const hasPrivilegedRole = ['admin', 'moderator', 'official', 'politician'].includes(
-        auth.role,
+      const isAuthority = Boolean(
+        issue.constituency_id && auth.authorityConstituency === issue.constituency_id,
       );
+      const hasPrivilegedRole =
+        ['admin', 'moderator', 'super_admin', 'compliance_officer'].includes(auth.role) ||
+        isAuthority;
+      if (status === 'acknowledged' && !isAuthority) {
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          'Only the verified authority for this constituency can acknowledge the issue',
+        );
+      }
       if (!isAuthor && !hasPrivilegedRole) {
         return sendApiError(
           reply,
@@ -2003,7 +2110,7 @@ export async function civicRoutes(app: FastifyInstance) {
         civicService.validateStatusTransition(
           issue.status as any,
           status as any,
-          auth.role,
+          isAuthority ? 'official' : hasPrivilegedRole ? 'moderator' : 'citizen',
           isAuthor,
         );
       } catch (err: any) {
@@ -2012,31 +2119,35 @@ export async function civicRoutes(app: FastifyInstance) {
         });
       }
 
-      const { error: updateErr } = await supabase
-        .from('civic_issues')
-        .update({
-          status,
-          resolution_note: status === 'resolved' ? note : null,
-          resolved_at: status === 'resolved' ? new Date().toISOString() : null,
-          resolved_by: status === 'resolved' ? auth.userId : null,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', id);
-      if (updateErr) {
-        return sendApiError(reply, request, 500, 'Internal Server Error', updateErr.message, {
-          code: 'DATABASE_ERROR',
-        });
-      }
-
-      await supabase.from('issue_status_history').insert({
-        issue_id: id,
-        from_status: issue.status,
-        to_status: status,
-        changed_by: auth.userId,
-        note: note || null,
+      const { data: committed, error } = await supabase.rpc('record_civic_issue_status', {
+        p_issue_id: id,
+        p_expected_status: issue.status,
+        p_status: storedStatus,
+        p_actor_id: auth.userId,
+        p_actor_name: auth.displayName,
+        p_actor_role: isAuthority ? 'authority' : hasPrivilegedRole ? auth.role : 'reporter',
+        p_note: note ?? null,
       });
-
-      return { success: true, issueId: id, status, message: `Status updated to ${status}` };
+      if (error) {
+        request.log.error({ error }, 'Could not save civic issue status');
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'The status change could not be saved',
+        );
+      }
+      if (!committed) {
+        return sendApiError(
+          reply,
+          request,
+          409,
+          'Conflict',
+          'The issue status changed. Refresh and try again',
+        );
+      }
+      return { success: true, issueId: id, status: storedStatus };
     },
   );
 
@@ -2068,16 +2179,43 @@ export async function civicRoutes(app: FastifyInstance) {
           code: 'DATABASE_UNAVAILABLE',
         });
       }
+      if (!(await verifiedCivicContributor(auth.userId))) {
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Verification required',
+          'Complete contributor verification to publish.',
+        );
+      }
       const { id } = request.params;
-      const { body, userName, imageUrl } = request.body;
+      const { body, imageUrl } = request.body;
+      if (!body.trim() || (await checkContentModeration(body)).flagged) {
+        return sendApiError(
+          reply,
+          request,
+          422,
+          'Unprocessable Entity',
+          'Enter a comment that follows the community rules',
+        );
+      }
+      if (imageUrl && !/^https:\/\//i.test(imageUrl)) {
+        return sendApiError(
+          reply,
+          request,
+          400,
+          'Bad Request',
+          'Use an HTTPS link for a comment image',
+        );
+      }
 
       const { data, error } = await supabase
         .from('issue_comments')
         .insert({
           issue_id: id,
           user_id: auth.userId,
-          user_name: userName || 'Anonymous',
-          body,
+          user_name: auth.displayName || 'Anonymous',
+          body: body.trim(),
           image_url: imageUrl || null,
         })
         .select('id')
@@ -2131,16 +2269,19 @@ export async function civicRoutes(app: FastifyInstance) {
         });
       }
       const { id } = request.params;
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('civic_issues')
         .update({ mla_tagged: true })
-        .eq('id', id);
+        .eq('id', id)
+        .select('id')
+        .maybeSingle();
 
       if (error) {
         return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
           code: 'DATABASE_ERROR',
         });
       }
+      if (!data) return sendApiError(reply, request, 404, 'Not Found', 'Issue not found');
       return { success: true, issueId: id, mlaTagged: true };
     },
   );
@@ -2201,62 +2342,40 @@ export async function civicRoutes(app: FastifyInstance) {
       }
       const { id } = request.params;
       const { reason } = request.body;
-      const { error } = await supabase.from('issue_disputes').upsert(
-        {
-          issue_id: id,
-          user_id: auth.userId,
-          reason,
-        },
-        { onConflict: 'issue_id,user_id' },
-      );
-
-      if (error) {
-        return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
-          code: 'DATABASE_ERROR',
-        });
+      const issue = await civicService.getIssue(id);
+      if (!issue) return sendApiError(reply, request, 404, 'Not Found', 'Issue not found');
+      if (issue.status !== 'resolved') {
+        return sendApiError(
+          reply,
+          request,
+          409,
+          'Conflict',
+          'Disputes can be submitted for resolved issues',
+        );
       }
-
-      // Check if disputes reach 5 to trigger auto-reopen (Decision 2: Option 1)
-      let disputeCount = 1;
-      let reopened = false;
-      try {
-        const { count } = await supabase
-          .from('issue_disputes')
-          .select('*', { count: 'exact', head: true })
-          .eq('issue_id', id);
-        if (count !== null && count !== undefined) disputeCount = count;
-
-        if (disputeCount >= 5) {
-          const { data: currentIssue } = await supabase
-            .from('civic_issues')
-            .select('status')
-            .eq('id', id)
-            .maybeSingle();
-
-          if (currentIssue && currentIssue.status === 'resolved') {
-            await supabase
-              .from('civic_issues')
-              .update({
-                status: 'reopened',
-                resolved_at: null,
-                dispute_count: disputeCount,
-                updated_at: new Date().toISOString(),
-              })
-              .eq('id', id);
-
-            await supabase.from('issue_status_history').insert({
-              issue_id: id,
-              from_status: 'resolved',
-              to_status: 'reopened',
-              changed_by: 'system_community_consensus',
-              note: `Auto-reopened: ${disputeCount} community disputes filed within resolution window`,
-            });
-            reopened = true;
-          }
-        }
-      } catch {}
-
-      return { success: true, issueId: id, disputed: true, disputeCount, reopened };
+      const { error } = await supabase
+        .from('issue_disputes')
+        .upsert(
+          { issue_id: id, user_id: auth.userId, reason },
+          { onConflict: 'issue_id,user_id', ignoreDuplicates: true },
+        );
+      if (error) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'The dispute could not be saved',
+        );
+      }
+      const updated = await civicService.getIssue(id);
+      return {
+        success: true,
+        issueId: id,
+        disputed: true,
+        disputeCount: updated?.disputeCount,
+        reopened: updated?.status === 'open',
+      };
     },
   );
 
@@ -2375,13 +2494,64 @@ export async function civicRoutes(app: FastifyInstance) {
           code: 'NOT_FOUND',
         });
       }
-      const issue = await civicService.getIssue(id);
+      const issue =
+        isProductionRuntime() && !uuidPattern.test(id) ? null : await civicService.getIssue(id);
       if (!issue) {
         return sendApiError(reply, request, 404, 'Not Found', `Civic issue ${id} not found`, {
           code: 'NOT_FOUND',
         });
       }
-      return { success: true, issue };
+      if (request.headers.authorization) reply.header('Cache-Control', 'private, no-store');
+      const auth = request.headers.authorization ? await resolveAuthUser(request) : null;
+      if (request.headers.authorization && !auth) {
+        return sendApiError(
+          reply,
+          request,
+          401,
+          'Unauthorized',
+          'Sign in to see your civic activity.',
+        );
+      }
+      const flags: Record<string, boolean> = {
+        viewerCanAcknowledge: Boolean(
+          issue.constituencyId && auth?.authorityConstituency === issue.constituencyId,
+        ),
+      };
+      if (auth && isSupabaseConfigured && uuidPattern.test(id)) {
+        await Promise.all(
+          Object.entries({
+            userUpvoted: 'issue_upvotes',
+            userFollowing: 'issue_follows',
+            userDisputed: 'issue_disputes',
+          }).map(async ([flag, table]) => {
+            const { data, error } = await supabase
+              .from(table)
+              .select('user_id')
+              .eq('issue_id', id)
+              .eq('user_id', auth.userId)
+              .maybeSingle();
+            if (error)
+              throw Object.assign(new Error('Could not load civic engagement'), {
+                statusCode: 503,
+              });
+            flags[flag] = Boolean(data);
+          }),
+        );
+      }
+      const paths = (issue.mediaUrls ?? []).filter((url) => url.startsWith(issue.reporterId + '/'));
+      if (paths.length) {
+        const { data, error } = await supabase.storage
+          .from('post-media')
+          .createSignedUrls(paths, 600);
+        if (error) request.log.warn({ error }, 'Issue evidence is temporarily unavailable');
+        issue.mediaUrls = [
+          ...(issue.mediaUrls ?? []).filter((url) => /^https:\/\//i.test(url)),
+          ...(data ?? []).flatMap((item) => (item.signedUrl ? [item.signedUrl] : [])),
+        ];
+      } else {
+        issue.mediaUrls = (issue.mediaUrls ?? []).filter((url) => /^https:\/\//i.test(url));
+      }
+      return { success: true, issue: { ...issue, ...flags } };
     },
   );
 
@@ -2449,7 +2619,10 @@ export async function civicRoutes(app: FastifyInstance) {
     },
     async (request) => {
       const { id } = request.params;
-      const history = await civicService.getStatusHistory(id);
+      const history =
+        isProductionRuntime() && !uuidPattern.test(id)
+          ? []
+          : await civicService.getStatusHistory(id);
       return { history, total: history.length };
     },
   );
@@ -2464,21 +2637,20 @@ export async function civicRoutes(app: FastifyInstance) {
     },
     async (request) => {
       const { id } = request.params;
-      let commentsList: any[] = [];
-      if (isSupabaseConfigured) {
-        try {
-          const { data, error } = await supabase
-            .from('issue_comments')
-            .select('*')
-            .eq('issue_id', id)
-            .order('created_at', { ascending: true });
-          if (!error && data) commentsList = data;
-        } catch {}
+      if (isSupabaseConfigured && uuidPattern.test(id)) {
+        const { data, error } = await supabase
+          .from('issue_comments')
+          .select('id,issue_id,user_id,user_name,body,image_url,is_official,created_at')
+          .eq('issue_id', id)
+          .order('created_at', { ascending: true });
+        if (!error) return { comments: data ?? [], total: data?.length ?? 0 };
       }
-      if (commentsList.length === 0) {
-        commentsList = await civicService.listComments(id);
+      if (isProductionRuntime()) {
+        if (!uuidPattern.test(id)) return { comments: [], total: 0 };
+        throw Object.assign(new Error('Could not load issue comments'), { statusCode: 503 });
       }
-      return { comments: commentsList, total: commentsList.length };
+      const comments = await civicService.listComments(id);
+      return { comments, total: comments.length };
     },
   );
 

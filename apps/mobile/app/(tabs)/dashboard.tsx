@@ -1,5 +1,9 @@
+import { apiClient } from '../../lib/api';
+import { validWebLink } from '../../lib/feedAttachments';
+import { getUnifiedConstituenciesForState } from '../../lib/stateDataAdapter';
 import { useState, useMemo, Component, useEffect, useCallback, type ReactNode } from 'react';
 import {
+  Alert,
   View,
   Text,
   StyleSheet,
@@ -15,15 +19,13 @@ import { getCivicIssueScopeKey, useCivicStore } from '../../stores/civic';
 import IssueCard from '../../components/IssueCard';
 import ReportIssueSheet from '../../components/ReportIssueSheet';
 import ExportSheet from '../../components/ExportSheet';
-import SentimentBar from '../../components/SentimentBar';
 import { ISSUE_CATEGORY_CONFIG } from '../../lib/civicTypes';
-import AIDashboardSummary from '../../components/AIDashboardSummary';
 import { useResponsive } from '../../lib/responsive';
 import PromiseCard from '../../components/PromiseCard';
 import type { IssueCategory, IssueStatus, CivicScope } from '../../lib/civicTypes';
 import { useTranslation } from 'react-i18next';
 import { useActiveStateStore } from '../../stores/activeState';
-import { useMyConstituencyStore } from '../../stores/myConstituency';
+import { resolveConstituencyForState, useMyConstituencyStore } from '../../stores/myConstituency';
 import { usePromiseStore } from '../../stores/promises';
 import { STATES } from '@kshetra/shared';
 import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
@@ -68,12 +70,12 @@ class DashboardErrorBoundary extends Component<
   }
 }
 
-type DashboardTab = 'issues' | 'sentiment' | 'promises';
+type DashboardTab = 'issues' | 'activity' | 'promises';
 
 const TAB_KEYS: { key: DashboardTab; tKey: string; icon: string }[] = [
   { key: 'issues', tKey: 'dashboard.tabs.issues', icon: 'alert-circle' },
   { key: 'promises', tKey: 'dashboard.tabs.promises', icon: 'ribbon' },
-  { key: 'sentiment', tKey: 'dashboard.tabs.sentiment', icon: 'pulse' },
+  { key: 'activity', tKey: 'dashboard.tabs.activity', icon: 'pulse' },
 ];
 
 const STATUS_FILTER_KEYS: { key: IssueStatus | 'all'; tKey: string }[] = [
@@ -110,7 +112,6 @@ function DashboardContent() {
   const statusFilter = useCivicStore((s) => s.statusFilter);
   const allIssues = useCivicStore((s) => s.issues);
   const allHeadlines = useCivicStore((s) => s.headlines);
-  const allSentiment = useCivicStore((s) => s.sentiment);
   const toggleUpvote = useCivicStore((s) => s.toggleUpvote);
   const toggleFollow = useCivicStore((s) => s.toggleFollow);
   const shareIssue = useCivicStore((s) => s.shareIssue);
@@ -130,14 +131,16 @@ function DashboardContent() {
 
   // Promise store — select raw arrays, derive in useMemo
   const allPromises = usePromiseStore((s) => s.promises);
+  const promiseUpdates = usePromiseStore((s) => s.updates);
   const promiseLoadStatus = usePromiseStore((s) => s.promiseLoadStatus);
   const promiseRefreshing = usePromiseStore((s) => s.promiseRefreshing);
   const promiseRefreshError = usePromiseStore((s) => s.promiseRefreshError);
   const toggleFollowPromise = usePromiseStore((s) => s.toggleFollowPromise);
   const loadPromisesForState = usePromiseStore((s) => s.loadForState);
 
-  const constituencyId = myHome ? `${stateCode}-AC-${myHome.acNo}` : undefined;
-  const issueScopeKey = getCivicIssueScopeKey(scopeFilter, stateCode, constituencyId);
+  const home = resolveConstituencyForState(stateCode, null, myHome, getUnifiedConstituenciesForState(stateCode));
+  const constituencyId = home ? `${stateCode}-AC-${home.acNo}` : undefined;
+  const issueScopeKey = getCivicIssueScopeKey(scopeFilter, stateCode, constituencyId, issueFilter, statusFilter);
   const issueScopeReady = !IS_LIVE_ENVIRONMENT || (
     issueLoadScopeKey === issueScopeKey &&
     (issueLoadStatus === 'loaded' || issueLoadStatus === 'loading_more')
@@ -172,6 +175,8 @@ function DashboardContent() {
     }, [
       activeTab,
       constituencyId,
+      issueFilter,
+      statusFilter,
       loadIssuesForScope,
       loadPromisesForState,
       promiseQueryState,
@@ -180,33 +185,47 @@ function DashboardContent() {
     ]),
   );
 
+  const [activity, setActivity] = useState<{ key: string; total: number | null }>();
+  const activityScope = getCivicIssueScopeKey(scopeFilter, stateCode, constituencyId);
+  useFocusEffect(useCallback(() => {
+    if (activeTab !== 'activity' || !IS_LIVE_ENVIRONMENT || (scopeFilter === 'constituency' && !constituencyId)) return;
+    if (scopeFilter === 'state' && stateCode === 'IN') return;
+    let active = true;
+    setActivity(undefined);
+    apiClient.civic.listIssues({ scope: scopeFilter, stateCode, constituencyId, limit: 1 })
+      .then(({ total }) => { if (active) setActivity({ key: activityScope, total }); })
+      .catch(() => { if (active) setActivity({ key: activityScope, total: null }); });
+    return () => { active = false; };
+  }, [activeTab, activityScope, scopeFilter, stateCode, constituencyId]));
+  const activityTotal = activity?.key === activityScope ? activity.total : null;
+
   // Strict scope demarcation for promises: each level shows ONLY its own content.
   const scopedPromises = useMemo(() => {
+    const datedPromises = IS_LIVE_ENVIRONMENT
+      ? allPromises.filter((promise) => promise.sourceUrl && validWebLink(promise.sourceUrl) && Number.isFinite(Date.parse(promise.promisedDate)))
+      : allPromises;
     if (scopeFilter === 'constituency') {
-      return myHome
-        ? allPromises.filter((p) => p.stateCode === stateCode && p.constituencyAcNo === myHome.acNo)
+      return home
+        ? datedPromises.filter((p) => p.stateCode === stateCode && p.constituencyAcNo === home.acNo)
         : [];
     }
     if (scopeFilter === 'national') {
-      return allPromises.filter((p) => p.stateCode === 'NATIONAL');
+      return datedPromises.filter((p) => p.stateCode === 'NATIONAL');
     }
-    return allPromises.filter((p) => p.stateCode === stateCode && p.constituencyAcNo == null);
-  }, [allPromises, scopeFilter, stateCode, myHome]);
+    return datedPromises.filter((p) => p.stateCode === stateCode && p.constituencyAcNo == null);
+  }, [allPromises, scopeFilter, stateCode, home]);
 
   // Scope-filtered data — derive in useMemo from raw arrays
-  const { issues, headlines, sentiment } = useMemo(() => {
+  const { issues, headlines } = useMemo(() => {
     let filteredIssues = allIssues;
     let filteredHeadlines = allHeadlines;
-    let filteredSentiment = allSentiment;
 
     if (scopeFilter === 'constituency' && constituencyId) {
       filteredIssues = allIssues.filter((i) => i.constituencyId === constituencyId);
       filteredHeadlines = allHeadlines.filter((h) => h.constituencyId === constituencyId);
-      filteredSentiment = allSentiment.filter((s) => s.constituencyId === constituencyId);
     } else if (scopeFilter === 'state') {
       filteredIssues = allIssues.filter((i) => i.stateCode === stateCode);
       filteredHeadlines = allHeadlines.filter((h) => h.stateCode === stateCode);
-      filteredSentiment = allSentiment.filter((s) => s.constituencyId.startsWith(stateCode));
     }
 
     // Apply issue filters
@@ -217,12 +236,12 @@ function DashboardContent() {
       filteredIssues = filteredIssues.filter((i) => i.status === statusFilter);
     }
 
-    return { issues: filteredIssues, headlines: filteredHeadlines, sentiment: filteredSentiment };
-  }, [allIssues, allHeadlines, allSentiment, scopeFilter, stateCode, constituencyId, issueFilter, statusFilter]);
+    return { issues: filteredIssues, headlines: filteredHeadlines };
+  }, [allIssues, allHeadlines, scopeFilter, stateCode, constituencyId, issueFilter, statusFilter]);
 
   // Scope label
   const scopeLabel = useMemo(() => {
-    if (scopeFilter === 'constituency' && myHome) return myHome.name;
+    if (scopeFilter === 'constituency' && home) return home.name;
     if (scopeFilter === 'state') return (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode;
     return t('common.scopes.allIndia');
   }, [scopeFilter, stateCode, myHome, t]);
@@ -244,10 +263,6 @@ function DashboardContent() {
       .map(([category, count]) => ({ category, count }))
       .sort((a, b) => b.count - a.count);
   }, [issues]);
-
-  const sentimentSorted = useMemo(() => {
-    return [...sentiment].sort((a, b) => a.score - b.score);
-  }, [sentiment]);
 
   const { insets } = useResponsive();
 
@@ -338,7 +353,7 @@ function DashboardContent() {
               onPress={() => setActiveTab(tab.key)}
             >
               <Ionicons name={tab.icon as any} size={15} color={active ? '#FFF' : colors.textSecondary} />
-              <Text style={[styles.tabLabel, { color: colors.textSecondary }, active && styles.tabLabelActive]}>{t(tab.tKey)}</Text>
+              <Text style={[styles.tabLabel, { color: colors.textSecondary }, active && styles.tabLabelActive]}>{t(tab.tKey, tab.key === 'activity' ? { defaultValue: 'Activity' } : {})}</Text>
             </Pressable>
           );
         })}
@@ -350,7 +365,7 @@ function DashboardContent() {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: 12, marginBottom: 8 }} contentContainerStyle={{ gap: 8 }}>
           {[
             { tKey: 'dashboardExtended.civicMetrics', icon: 'bar-chart', color: colors.teal, route: '/civic-metrics' },
-            { tKey: 'dashboardExtended.liveElection', icon: 'radio', color: colors.primary, route: '/live-election' },
+            { tKey: 'more.tiles.electionResults', icon: 'stats-chart', color: colors.primary, route: '/live-election' },
           ].map((item) => (
             <Pressable
               key={item.route}
@@ -440,7 +455,7 @@ function DashboardContent() {
 
             {IS_LIVE_ENVIRONMENT && issueLoadTotal !== null && (
               <Text style={{ color: colors.textMuted, fontSize: 11, marginHorizontal: 4, marginBottom: 8 }}>
-                Showing the latest {allIssues.length} loaded records of {issueLoadTotal}. Counts and category filters summarize loaded records; load more to include older reports.
+                {t('dashboard.loadedMatches', { defaultValue: '{{shown}} of {{total}} matching reports loaded. The counts above summarize the loaded reports.', shown: issues.length, total: issueLoadTotal })}
               </Text>
             )}
 
@@ -558,9 +573,12 @@ function DashboardContent() {
                 <IssueCard
                   key={issue.id}
                   issue={issue}
-                  onUpvote={() => {
+                  onUpvote={async () => {
                     if (!gateContentAction('upvote_issue')) return;
-                    toggleUpvote(issue.id);
+                    if (!await toggleUpvote(issue.id)) {
+                      Alert.alert(t('common.error'), t('issueDetail.actionFailed', { defaultValue: 'The change could not be saved. Please try again.' }));
+                      return;
+                    }
                     logContentAction('upvote_issue', {
                       type: 'civic_issue',
                       id: issue.id,
@@ -568,9 +586,12 @@ function DashboardContent() {
                       screenName: 'dashboard',
                     });
                   }}
-                  onFollow={() => {
+                  onFollow={async () => {
                     if (!gateContentAction('follow_issue')) return;
-                    toggleFollow(issue.id);
+                    if (!await toggleFollow(issue.id)) {
+                      Alert.alert(t('common.error'), t('issueDetail.actionFailed', { defaultValue: 'The change could not be saved. Please try again.' }));
+                      return;
+                    }
                     logContentAction('follow_issue', {
                       type: 'civic_issue',
                       id: issue.id,
@@ -657,38 +678,36 @@ function DashboardContent() {
                 <Text style={styles.emptyTitle}>{t('dashboardExtended.noPromisesTracked')}</Text>
               </View>
             ) : (
-              scopedPromises.map((promise) => (
-                <PromiseCard
+              scopedPromises.map((promise) => {
+                const evidence = promiseUpdates
+                  .filter((entry) => entry.promiseId === promise.id && entry.toStatus === promise.status &&
+                    entry.sourceUrl && validWebLink(entry.sourceUrl) && Number.isFinite(Date.parse(entry.createdAt)))
+                  .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))[0];
+                return <PromiseCard
                   key={promise.id}
                   promise={promise}
+                  statusEvidence={evidence?.sourceUrl ? { sourceUrl: evidence.sourceUrl, createdAt: evidence.createdAt } : undefined}
                   onFollow={() => toggleFollowPromise(promise.id)}
-                />
-              ))
+                />;
+              })
             )}
           </View>
         )}
 
-        {activeTab === 'sentiment' && (
-          <View style={styles.tabContent}>
-            {IS_LIVE_ENVIRONMENT && sentimentSorted.length === 0 ? (
-              <View style={styles.emptyState}>
-                <Ionicons name="pulse-outline" size={42} color={colors.textMuted} />
-                <Text style={[styles.emptyTitle, { color: colors.text }]}>
-                  {t('dashboard.sentimentUnavailable', { defaultValue: 'Verified sentiment analytics are not available for this scope yet. Civic issue reports remain available in the Issues tab.' })}
-                </Text>
-              </View>
-            ) : (
-              <>
-                {sentimentSorted.map((item) => (
-                  <View key={item.constituencyId} style={styles.sentimentItem}>
-                    <SentimentBar item={item} />
-                  </View>
-                ))}
-                <AIDashboardSummary
-                  constituencyName={sentimentSorted[0]?.constituencyName}
-                  issues={issues.map((i) => `${i.title} (${i.category}, ${i.severity})`)}
-                />
-              </>
+        {activeTab === 'activity' && (
+          <View style={styles.emptyState}>
+            <Ionicons name="pulse-outline" size={36} color={colors.primary} />
+            <Text style={[styles.emptyTitle, { color: colors.text }]}>{t('dashboard.tabs.activity', { defaultValue: 'Poligram Activity' })}</Text>
+            <Text style={[styles.emptyTitle, { color: colors.text }]}>
+              {activityTotal !== null
+                ? t('dashboard.activityReportCount', { count: activityTotal, defaultValue: '{{count}} reports in {{scope}}', scope: scopeLabel })
+                : !activity && !(scopeFilter === 'constituency' && !constituencyId)
+                  ? t('common.loading') : t('common.dataUnavailable')}
+            </Text>
+            {activityTotal !== null && (
+              <Text style={{ color: colors.textSecondary, textAlign: 'center' }}>
+                {t('dashboard.activityDefinition', { defaultValue: 'Counts reports submitted through Poligram across all categories and statuses for this area.' })}
+              </Text>
             )}
           </View>
         )}
@@ -701,7 +720,12 @@ function DashboardContent() {
         <ReportIssueSheet
           visible={reportVisible}
           onClose={() => setReportVisible(false)}
-          onSubmit={(issue) => addIssue(issue)}
+          onSubmit={async (issue) => {
+            const issueId = await addIssue(issue);
+            setReportVisible(false);
+            router.push(`/issue/${issueId}`);
+            return issueId;
+          }}
         />
       )}
 
@@ -709,13 +733,12 @@ function DashboardContent() {
       <ExportSheet
         visible={exportVisible}
         onClose={() => setExportVisible(false)}
-        filteredIssues={issues}
-        allIssues={allIssues}
-        filteredHeadlines={headlines}
-        allHeadlines={allHeadlines}
-        filteredSentiment={sentiment}
-        allSentiment={allSentiment}
+        issues={issueScopeReady ? issues : []}
         scopeLabel={scopeLabel}
+        coverage={t('export.loadedIssueCoverage', {
+          defaultValue: '{{matched}} of {{total}} matching reports loaded for this area and these filters.',
+          matched: issues.length, total: issueLoadTotal ?? 0,
+        })}
       />
 
       {/* Contextual Page Guidance */}

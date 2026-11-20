@@ -24,6 +24,90 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
 
   await registerContentReviewRoutes(app);
 
+  app.get('/api/v1/admin/representative-edits', async (request, reply) => {
+    const { data, error } = await supabase
+      .from('representative_edits')
+      .select('id,representative_id,source_url,citation,diff,submitted_at')
+      .eq('moderation_status', 'pending')
+      .order('submitted_at')
+      .order('id')
+      .limit(50);
+    if (error)
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Unavailable',
+        'The correction queue could not be loaded.',
+      );
+    return { records: data };
+  });
+
+  app.post<{ Params: { id: string }; Body: { decision: 'approved' | 'rejected'; note: string } }>(
+    '/api/v1/admin/representative-edits/:id/review',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          properties: { id: { type: 'string', pattern: '^[1-9][0-9]{0,17}$' } },
+          required: ['id'],
+        },
+        body: {
+          type: 'object',
+          properties: {
+            decision: { type: 'string', enum: ['approved', 'rejected'] },
+            note: { type: 'string', minLength: 10, maxLength: 500 },
+          },
+          required: ['decision', 'note'],
+          additionalProperties: false,
+        },
+      },
+    },
+    async (request, reply) => {
+      const { data, error } = await supabase.rpc('review_representative_correction', {
+        p_edit_id: request.params.id,
+        p_reviewer: request.adminActor!.id,
+        p_decision: request.body.decision,
+        p_note: request.body.note.trim(),
+      });
+      if (error?.code === '40001')
+        return sendApiError(
+          reply,
+          request,
+          409,
+          'Conflict',
+          'The underlying profile changed since the correction was submitted.',
+        );
+      if (error?.code === '42501')
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          'A different staff member must review this correction.',
+        );
+      if (error?.code === '22023')
+        return sendApiError(
+          reply,
+          request,
+          422,
+          'Invalid correction',
+          'Check the proposed fields, source and reviewer note.',
+        );
+      if (error)
+        return sendApiError(reply, request, 503, 'Unavailable', 'The review could not be saved.');
+      if (!data)
+        return sendApiError(
+          reply,
+          request,
+          409,
+          'Conflict',
+          'This correction is no longer pending.',
+        );
+      return { success: true };
+    },
+  );
+
   // 1. Users Action
   app.post('/api/v1/admin/users/action', async (request, reply) => {
     const actor = request.adminActor!;

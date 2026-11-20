@@ -52,6 +52,7 @@ export interface CivicIssueDTO {
   followCount: number;
   evidenceCount: number;
   disputeCount: number;
+  imageUrl?: string;
   mediaUrls: string[];
   mlaTagged: boolean;
   mlaResponded: boolean;

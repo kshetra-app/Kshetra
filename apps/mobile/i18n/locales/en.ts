@@ -377,6 +377,7 @@ const en =  {
       "issues": "Issues",
       "promises": "Promises",
       "sentiment": "Sentiment",
+      "activity": "Activity",
       "headlines": "Headlines"
     },
     "reportIssue": "Report Issue",
@@ -1199,6 +1200,7 @@ const en =  {
     "vs": "vs"
   },
   "parliament": {
+    "directoryDescription": "Lok Sabha and Rajya Sabha member profiles",
     "screenTitle": "Parliament & MPs",
     "tabOverview": "Overview",
     "tabLokSabha": "Lok Sabha",
@@ -1950,6 +1952,9 @@ const en =  {
       "retry": "Tap to retry",
       "offline": "Stream is offline"
     }
+  },
+  "electionArchive": {
+    "menuDescription": "Assembly results and official counting updates"
   },
   "liveElection": {
     "screenTitle": "Live Election Center",
@@ -2763,6 +2768,7 @@ const en =  {
     "missingFieldsMessage": "Please fill in the template name and message body."
   },
   "localBodies": {
+    "ruralDirectoryDescription": "Rural election records for Andhra Pradesh and Telangana",
     "screenTitle": "Local Bodies",
     "loadingState": "Loading {{state}} local bodies…",
     "noDataDesc": "Verified gram-panchayat representatives for {{state}} are being ingested from the State Election Commission. We only display data confirmed from official sources.",
@@ -2831,6 +2837,7 @@ const en =  {
       "analytics": "Analytics",
       "civicMetrics": "Civic Metrics",
       "liveElection": "Live Election",
+      "electionResults": "Election Results",
       "parliament": "Parliament",
       "profile": "Profile",
       "notifications": "Notifications",
@@ -2987,7 +2994,7 @@ const en =  {
     },
     "features": {
       "civicDashboard": {
-        "desc": "Monitor local issues, political promises, and citizen sentiment"
+        "desc": "Report local issues and follow published pledges"
       },
       "intelligence": {
         "desc": "Statewide seat forecasts, party distribution, and defection analytics"

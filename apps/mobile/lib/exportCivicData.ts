@@ -19,32 +19,34 @@ export interface ExportPayload {
   scopeLabel: string;
   exportedAt: string;
   tierLabel: string;
+  coverage?: string;
 }
 
 // ─── CSV Generation ───
 
 function escapeCSV(val: string | number | undefined): string {
   if (val === undefined || val === null) return '';
-  const str = String(val);
-  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+  const raw = String(val);
+  const str = typeof val === 'string' && /^[\s\uFEFF]*[=+@-]|^[\t\r\n]/.test(raw) ? "'" + raw : raw;
+  if (str.includes(',') || str.includes('"') || /[\r\n]/.test(str)) {
     return `"${str.replace(/"/g, '""')}"`;
   }
   return str;
 }
 
-function issuesToCSV(issues: CivicIssue[]): string {
+function issuesToCSV({ issues, scopeLabel, exportedAt, coverage }: ExportPayload): string {
   const headers = [
-    'ID', 'Title', 'Category', 'Severity', 'Status', 'Constituency',
+    'Scope', 'Exported UTC', 'Coverage', 'ID', 'Title', 'Category', 'Severity', 'Status', 'Constituency ID',
     'State', 'Reporter', 'Upvotes', 'Comments', 'Followers', 'Evidence',
     'Disputes', 'MLA Tagged', 'MLA Responded', 'Created', 'Updated',
   ];
   const rows = issues.map((i) => [
-    i.id,
+    scopeLabel, exportedAt, coverage, i.id,
     i.title,
     ISSUE_CATEGORY_CONFIG[i.category]?.label ?? i.category,
     SEVERITY_CONFIG[i.severity]?.label ?? i.severity,
     STATUS_CONFIG[i.status]?.label ?? i.status,
-    i.constituencyName ?? '',
+    i.constituencyId ?? '',
     i.stateCode,
     i.reporterName,
     i.upvoteCount,
@@ -56,14 +58,6 @@ function issuesToCSV(issues: CivicIssue[]): string {
     i.mlaResponded ? 'Yes' : 'No',
     i.createdAt,
     i.updatedAt,
-  ]);
-  return [headers.join(','), ...rows.map((r) => r.map(escapeCSV).join(','))].join('\n');
-}
-
-function headlinesToCSV(headlines: Headline[]): string {
-  const headers = ['ID', 'Title', 'Source', 'Category', 'State', 'Published'];
-  const rows = headlines.map((h) => [
-    h.id, h.title, h.sourceName, h.category, h.stateCode, h.publishedAt,
   ]);
   return [headers.join(','), ...rows.map((r) => r.map(escapeCSV).join(','))].join('\n');
 }
@@ -275,17 +269,7 @@ export async function exportCivicData(
     const baseFilename = `poligram-civic-${timestamp}`;
 
     if (format === 'csv') {
-      const csvContent = [
-        `# Poligram Civic Export — ${payload.scopeLabel}`,
-        `# Exported: ${payload.exportedAt}`,
-        `# Plan: ${payload.tierLabel}`,
-        '',
-        '## ISSUES',
-        issuesToCSV(payload.issues),
-        '',
-        '## HEADLINES',
-        headlinesToCSV(payload.headlines),
-      ].join('\n');
+      const csvContent = issuesToCSV(payload);
 
       const file = new File(Paths.cache, `${baseFilename}.csv`);
       file.create();

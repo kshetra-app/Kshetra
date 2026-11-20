@@ -143,7 +143,7 @@ export default function SimulatorScreen() {
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text style={[styles.headerTitle, { color: colors.text }]}>
-            {t('delimitationExtended.interactiveSimulator', { defaultValue: 'Delimitation Simulator' })}
+            {t('delimitationExtended.exploreScenarios', { defaultValue: 'Explore Scenarios' })}
           </Text>
           <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
             {t('delimitationExtended.simulatorSub', { defaultValue: 'Interactive Boundary Simulation' })}

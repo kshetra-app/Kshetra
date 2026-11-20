@@ -71,6 +71,7 @@ export interface CivicIssue {
   userUpvoted?: boolean;
   userFollowing?: boolean;
   userDisputed?: boolean;
+  viewerCanAcknowledge?: boolean;
   syncStatus?: 'LOCAL_ONLY' | 'FAILED' | 'QUEUED' | 'SYNCING' | 'SYNCED';
   clientToken?: string;
 }
@@ -105,6 +106,7 @@ export interface IssueStatusChange {
   toStatus: IssueStatus;
   changedBy?: string;
   changedByName?: string;
+  actorRole?: string;
   note?: string;
   createdAt: string;
 }

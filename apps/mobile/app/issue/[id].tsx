@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, Alert, Share, TextInput, KeyboardAvoidingView, Platform, ActivityIndicator, Linking, Keyboard } from 'react-native';
-import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
+import { useLocalSearchParams, useRouter, useFocusEffect, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -46,6 +46,7 @@ export default function IssueDetailScreen() {
   const { colors } = useTheme();
 
   const issues = useCivicStore((s) => s.issues);
+  const loadIssueDetails = useCivicStore((s) => s.loadIssueDetails);
   const allComments = useCivicStore((s) => s.comments);
   const allHistory = useCivicStore((s) => s.statusHistory);
   const toggleUpvote = useCivicStore((s) => s.toggleUpvote);
@@ -53,6 +54,7 @@ export default function IssueDetailScreen() {
   const tagMLA = useCivicStore((s) => s.tagMLA);
   const disputeResolution = useCivicStore((s) => s.disputeResolution);
   const addComment = useCivicStore((s) => s.addComment);
+  const updateStatus = useCivicStore((s) => s.updateIssueStatus);
   const shareIssue = useCivicStore((s) => s.shareIssue);
 
   const issue = useMemo(() => issues.find((i) => i.id === id), [issues, id]);
@@ -89,12 +91,28 @@ export default function IssueDetailScreen() {
     };
   }, []);
 
-  if (!issue) {
+  const [loadState, setLoadState] = useState<{ id: string; status: 'loading' | 'loaded' | 'missing' | 'error' }>();
+  const [reload, setReload] = useState(0);
+  useFocusEffect(useCallback(() => {
+    if (!id) return;
+    let current = true;
+    setLoadState({ id, status: 'loading' });
+    loadIssueDetails(id)
+      .then((found) => { if (current) setLoadState({ id, status: found ? 'loaded' : 'missing' }); })
+      .catch(() => { if (current) setLoadState({ id, status: 'error' }); });
+    return () => { current = false; };
+  }, [id, loadIssueDetails, reload]));
+
+  const status = loadState?.id === id ? loadState.status : 'loading';
+  if (!issue || status !== 'loaded') {
     return (
       <View style={[styles.errorContainer, { backgroundColor: colors.background }]}>
-        <Stack.Screen options={{ headerShown: true, title: t('issueDetail.notFound', { defaultValue: 'Issue Not Found' }), headerStyle: { backgroundColor: colors.surface }, headerTintColor: colors.primary }} />
-        <Ionicons name="alert-circle-outline" size={48} color={colors.primary} />
-        <Text style={[styles.errorText, { color: colors.textSecondary }]}>{t('issueDetail.notFound', { defaultValue: 'Issue not found' })}</Text>
+        <Stack.Screen options={{ headerShown: true, title: t('issueDetail.title', { defaultValue: 'Issue detail' }), headerStyle: { backgroundColor: colors.surface }, headerTintColor: colors.primary }} />
+        {status === 'loading' ? <ActivityIndicator color={colors.primary} /> : <Ionicons name="alert-circle-outline" size={48} color={colors.primary} />}
+        <Text style={[styles.errorText, { color: colors.textSecondary }]}>{status === 'loading' ? t('common.loading') : status === 'error'
+          ? t('issueDetail.loadFailed', { defaultValue: 'This issue could not be loaded.' })
+          : t('issueDetail.notFound', { defaultValue: 'Issue not found' })}</Text>
+        {status === 'error' && <Pressable onPress={() => setReload((n) => n + 1)}><Text style={{ color: colors.primary }}>{t('common.retry', { defaultValue: 'Retry' })}</Text></Pressable>}
         <Pressable style={[styles.backButton, { backgroundColor: colors.surfaceElevated }]} onPress={() => router.back()}>
           <Text style={[styles.backButtonText, { color: colors.primary }]}>{t('common.back')}</Text>
         </Pressable>
@@ -104,7 +122,11 @@ export default function IssueDetailScreen() {
 
   const catConfig = ISSUE_CATEGORY_CONFIG[issue.category];
   const sevConfig = SEVERITY_CONFIG[issue.severity];
-  const statusConfig = STATUS_CONFIG[issue.status];
+  const authorityAcknowledged = statusHistory.some((entry) =>
+    entry.actorRole === 'authority' && entry.toStatus === 'acknowledged');
+  const statusConfig = issue.status === 'acknowledged' && !authorityAcknowledged
+    ? { ...STATUS_CONFIG.acknowledged, label: t('issueDetail.legacyAcknowledgment', { defaultValue: 'Acknowledgment on record' }) }
+    : STATUS_CONFIG[issue.status] ?? STATUS_CONFIG.open;
 
   const handleShare = async () => {
     const text = shareIssue(issue.id);
@@ -115,19 +137,22 @@ export default function IssueDetailScreen() {
 
   const handleTagMLA = () => {
     if (issue.mlaTagged) {
-      Alert.alert(t('issueDetail.mlaTagged', { defaultValue: 'Already Tagged' }), 'MLA has already been tagged on this issue.');
+      Alert.alert(t('issueDetail.flagged', { defaultValue: 'Flagged in Poligram' }), t('issueDetail.flagAlreadyRecorded', { defaultValue: 'This issue is already flagged for representative attention.' }));
       return;
     }
     if (!gateContentAction('tag_mla')) return;
     Alert.alert(
-      t('issueDetail.tagMla', { defaultValue: 'Tag MLA' }),
-      `This will send a notification to your constituency MLA about "${issue.title}". Continue?`,
+      t('issueDetail.flagForRepresentative', { defaultValue: 'Flag issue' }),
+      `Flag "${issue.title}" for representative attention in Poligram?`,
       [
         { text: t('common.cancel'), style: 'cancel' },
         {
-          text: t('issueDetail.tagMla', { defaultValue: 'Tag MLA' }),
-          onPress: () => {
-            tagMLA(issue.id);
+          text: t('issueDetail.flagForRepresentative', { defaultValue: 'Flag issue' }),
+          onPress: async () => {
+            if (!await tagMLA(issue.id)) {
+              Alert.alert(t('common.error'), t('issueDetail.actionFailed', { defaultValue: 'The change could not be saved. Please try again.' }));
+              return;
+            }
             logContentAction('tag_mla', {
               type: 'civic_issue',
               id: issue.id,
@@ -154,8 +179,11 @@ export default function IssueDetailScreen() {
         {
           text: 'Dispute',
           style: 'destructive',
-          onPress: () => {
-            disputeResolution(issue.id, 'Resolution not satisfactory');
+          onPress: async () => {
+            if (!await disputeResolution(issue.id, 'Resolution not satisfactory')) {
+              Alert.alert(t('common.error'), t('issueDetail.actionFailed', { defaultValue: 'The change could not be saved. Please try again.' }));
+              return;
+            }
             logContentAction('dispute_resolution', {
               type: 'civic_issue',
               id: issue.id,
@@ -293,9 +321,12 @@ export default function IssueDetailScreen() {
         <View style={styles.actionRow}>
           <Pressable
             style={[styles.actionBtn, issue.userUpvoted && styles.actionBtnActive]}
-            onPress={() => {
+            onPress={async () => {
               if (!gateContentAction('upvote_issue')) return;
-              toggleUpvote(issue.id);
+              if (!await toggleUpvote(issue.id)) {
+                Alert.alert(t('common.error'), t('issueDetail.actionFailed', { defaultValue: 'The change could not be saved. Please try again.' }));
+                return;
+              }
               logContentAction('upvote_issue', {
                 type: 'civic_issue',
                 id: issue.id,
@@ -311,9 +342,12 @@ export default function IssueDetailScreen() {
           </Pressable>
           <Pressable
             style={[styles.actionBtn, issue.userFollowing && styles.actionBtnActive]}
-            onPress={() => {
+            onPress={async () => {
               if (!gateContentAction('follow_issue')) return;
-              toggleFollow(issue.id);
+              if (!await toggleFollow(issue.id)) {
+                Alert.alert(t('common.error'), t('issueDetail.actionFailed', { defaultValue: 'The change could not be saved. Please try again.' }));
+                return;
+              }
               logContentAction('follow_issue', {
                 type: 'civic_issue',
                 id: issue.id,
@@ -339,35 +373,28 @@ export default function IssueDetailScreen() {
           >
             <Ionicons name="megaphone" size={18} color={issue.mlaTagged ? '#D97706' : '#64748B'} />
             <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.actionBtnText, issue.mlaTagged && { color: '#D97706' }]}>
-              {issue.mlaTagged ? t('issueDetail.mlaTagged', { defaultValue: 'MLA Tagged' }) : t('issueDetail.tagMla', { defaultValue: 'Tag MLA' })}
+              {issue.mlaTagged ? t('issueDetail.flagged', { defaultValue: 'Flagged in Poligram' }) : t('issueDetail.flagForRepresentative', { defaultValue: 'Flag issue' })}
             </Text>
           </Pressable>
         </View>
 
-        {/* ── MLA Response ── */}
-        {issue.mlaTagged && (
-          <View style={styles.mlaSection}>
-            <View style={styles.sectionHeader}>
-              <Ionicons name="megaphone" size={16} color="#F59E0B" />
-              <Text style={styles.sectionTitle}>MLA Response</Text>
-              {issue.mlaResponded && (
-                <View style={[styles.badge, { backgroundColor: '#10B98120', marginLeft: 8 }]}>
-                  <Ionicons name="checkmark-circle" size={11} color="#10B981" />
-                  <Text style={[styles.badgeText, { color: '#10B981', fontSize: 10 }]}>Responded</Text>
-                </View>
-              )}
-            </View>
-            {issue.mlaResponded && issue.mlaResponseNote ? (
-              <View style={styles.mlaResponseCard}>
-                <Text style={styles.mlaResponseText}>{issue.mlaResponseNote}</Text>
-              </View>
-            ) : (
-              <View style={styles.mlaWaitingCard}>
-                <Ionicons name="time-outline" size={16} color="#F59E0B" />
-                <Text style={styles.mlaWaitingText}>Awaiting response from MLA...</Text>
-              </View>
-            )}
-          </View>
+        {issue.viewerCanAcknowledge && issue.status === 'open' && (
+          <Pressable accessibilityRole="button" style={styles.actionBtn} onPress={() => {
+            Alert.alert(
+              t('issueDetail.acknowledge', { defaultValue: 'Acknowledge as the verified authority' }),
+              t('issueDetail.acknowledgeConfirm', { defaultValue: 'Record that your office has received this report?' }),
+              [
+                { text: t('common.cancel'), style: 'cancel' },
+                { text: t('common.confirm'), onPress: async () => {
+                  if (!await updateStatus(issue.id, 'acknowledged')) {
+                    Alert.alert(t('common.error'), t('issueDetail.actionFailed', { defaultValue: 'The change could not be saved. Please try again.' }));
+                  }
+                } },
+              ],
+            );
+          }}>
+            <Text style={styles.actionBtnText}>{t('issueDetail.acknowledge', { defaultValue: 'Acknowledge as the verified authority' })}</Text>
+          </Pressable>
         )}
 
         {/* ── Resolution Note ── */}
@@ -459,7 +486,7 @@ export default function IssueDetailScreen() {
             </View>
             <View style={styles.timeline}>
               {statusHistory.map((entry, idx) => {
-                const toConfig = STATUS_CONFIG[entry.toStatus];
+                const toConfig = STATUS_CONFIG[entry.toStatus] ?? { color: colors.textSecondary, label: entry.toStatus };
                 const isLast = idx === statusHistory.length - 1;
                 return (
                   <View key={entry.id} style={styles.timelineItem}>
@@ -472,9 +499,12 @@ export default function IssueDetailScreen() {
                         <Text style={[styles.timelineStatus, { color: toConfig.color }]}>{toConfig.label}</Text>
                         <Text style={styles.timelineTime}>{formatDate(entry.createdAt)}</Text>
                       </View>
-                      {entry.changedByName && (
-                        <Text style={styles.timelineActor}>by {entry.changedByName}</Text>
-                      )}
+                      <Text style={styles.timelineActor}>
+                        {entry.changedByName ?? t('issueDetail.actorUnrecorded', { defaultValue: 'Actor not recorded' })}
+                        {entry.actorRole === 'authority' ? ' · ' + t('issueDetail.verifiedAuthority', { defaultValue: 'Verified authority' })
+                          : ['admin', 'moderator', 'super_admin', 'compliance_officer'].includes(entry.actorRole ?? '')
+                            ? ' · ' + t('issueDetail.poligramStaff', { defaultValue: 'Poligram staff' }) : ''}
+                      </Text>
                       {entry.note && <Text style={styles.timelineNote}>{entry.note}</Text>}
                     </View>
                   </View>
