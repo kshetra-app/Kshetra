@@ -91,11 +91,10 @@ import {
   getLocalizedCandidateName,
   getLatestPodiumForConstituency,
   fetchHistoricalPodiumForConstituency,
-  fetchStatePodiumSummary,
   sanitizeContestWithSeed,
-  type HistoricalPodiumSummaryRecord,
   type HistoricalPodiumContest,
 } from '../../lib/historicalPodiumStore';
+import { getSnapshotVoteShares } from '../../lib/snapshotVoteShares';
 import { useAffidavitStore } from '../../stores/affidavits';
 import { getBoothsForConstituency, hasHierarchyData, hasBoothData } from '../../lib/hierarchyData';
 import { useHasRepresentativeData } from '../../lib/representativesData';
@@ -345,8 +344,7 @@ function FullMapScreen() {
   /** Unified constituency list + lookup map for the active state */
   const {
     constituencies: stateConstituencies,
-    status: constituencyDirectoryStatus,
-    refresh: refreshConstituencyDirectory,
+    electionSummaries: historicalPartySummary,
   } = useConstituencyDirectory(stateCode);
   const seedMap = useMemo(
     () => new Map<number, UnifiedConstituency>(stateConstituencies.map((c) => [c.acNo, c])),
@@ -355,26 +353,25 @@ function FullMapScreen() {
   const myHomeBelongsToState = useMemo(() => {
     return homeConstituencyBelongsToState(myHome, stateCode, stateConstituencies);
   }, [myHome, stateCode, stateConstituencies]);
-  const [historicalPartySummary, setHistoricalPartySummary] = useState<HistoricalPodiumSummaryRecord[]>([]);
+  const historicalPartyByAcNo = useMemo(
+    () => new Map(historicalPartySummary?.map((record) => [record.acNo, record])),
+    [historicalPartySummary],
+  );
+  const [nationalParties, setNationalParties] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    if (!IS_LIVE_ENVIRONMENT || stateCode === 'IN') {
-      setHistoricalPartySummary([]);
-      return;
-    }
-
+    if (!IS_LIVE_ENVIRONMENT || stateCode !== 'IN') return;
     let active = true;
-    setHistoricalPartySummary([]);
-    fetchStatePodiumSummary(stateCode).then((records) => {
-      if (active) setHistoricalPartySummary(records);
+    apiClient.states.listStates().then(({ states }) => {
+      if (!active) return;
+      setNationalParties(Object.fromEntries(states.flatMap(({ code, rulingParty }) =>
+        rulingParty?.trim() ? [[code.toUpperCase(), rulingParty.trim().toUpperCase()]] : [],
+      )));
+    }).catch(() => {
+      // Keep any parties already loaded when briefly offline.
     });
     return () => { active = false; };
   }, [stateCode]);
-
-  const historicalPartyByAcNo = useMemo(
-    () => new Map(historicalPartySummary.map((record) => [record.acNo, record])),
-    [historicalPartySummary],
-  );
 
   /** Streamed + cached boundary GeoJSON for the active state (Phase 3).
    *  Bundled / already-viewed states resolve instantly; others stream once
@@ -410,8 +407,8 @@ function FullMapScreen() {
         }
         if (IS_LIVE_ENVIRONMENT) {
           if (stateCode === 'IN') {
-            props.WINNER_PARTY = '';
-            props.CURRENT_PARTY = '';
+            props.WINNER_PARTY = nationalParties[props.STATE_CODE] || '';
+            props.CURRENT_PARTY = props.WINNER_PARTY;
           } else {
             const acNo = Number(props.AC_NO);
             const record = Number.isInteger(acNo) ? seedMap.get(acNo) : undefined;
@@ -441,7 +438,7 @@ function FullMapScreen() {
         };
       }),
     };
-  }, [rawEnriched, stateCode, i18n.language, seedMap, historicalPartyByAcNo]);
+  }, [rawEnriched, stateCode, i18n.language, seedMap, historicalPartyByAcNo, nationalParties]);
 
   /** Deduped GeoJSON for map labels (STATE_NAME or DISTRICT) */
   const labelGeoJSON = useMemo(() => {
@@ -1709,54 +1706,7 @@ function FullMapScreen() {
             onModeChange={setColorMode}
             allowedModes={IS_LIVE_ENVIRONMENT ? ['party', 'reservation'] : undefined}
           />
-          {IS_LIVE_ENVIRONMENT && (
-            <View
-              style={{
-                marginTop: 5,
-                marginRight: 4,
-                paddingHorizontal: 9,
-                paddingVertical: 7,
-                borderRadius: 9,
-                borderWidth: 1,
-                borderColor: colors.border,
-                backgroundColor: colors.surface,
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 7,
-              }}
-            >
-              {constituencyDirectoryStatus === 'LOADING' ? (
-                <ActivityIndicator size="small" color={colors.primary} />
-              ) : (
-                <Ionicons
-                  name={constituencyDirectoryStatus === 'DATABASE_RECORDS' ? 'server-outline' : 'information-circle-outline'}
-                  size={15}
-                  color={constituencyDirectoryStatus === 'DATABASE_RECORDS' ? colors.teal : colors.textMuted}
-                />
-              )}
-              <Text style={{ flex: 1, color: colors.textSecondary, fontSize: 10, lineHeight: 14 }}>
-                {constituencyDirectoryStatus === 'LOADING'
-                  ? t('constituencyDirectory.loading', { defaultValue: 'Checking live constituency records…' })
-                  : constituencyDirectoryStatus === 'DATABASE_RECORDS'
-                    ? t('constituencyDirectory.databaseRecords', { defaultValue: 'Map colors show the latest available election result. Current representative details appear only when a database record is available.' })
-                    : constituencyDirectoryStatus === 'STALE_DATABASE_RECORDS'
-                      ? t('constituencyDirectory.staleRecords', { defaultValue: 'Showing previously loaded records; current database data could not be confirmed.' })
-                      : constituencyDirectoryStatus === 'DATABASE_EMPTY'
-                        ? t('constituencyDirectory.empty', { defaultValue: 'No representative records are available for this state yet.' })
-                        : t('constituencyDirectory.unavailable', { defaultValue: 'Live representative records are unavailable. Constituency geography remains available.' })}
-              </Text>
-              {(constituencyDirectoryStatus === 'UNAVAILABLE' || constituencyDirectoryStatus === 'STALE_DATABASE_RECORDS' || constituencyDirectoryStatus === 'DATABASE_EMPTY') && (
-                <Pressable
-                  onPress={refreshConstituencyDirectory}
-                  accessibilityRole="button"
-                  accessibilityLabel={t('common.retry', { defaultValue: 'Retry' })}
-                  hitSlop={8}
-                >
-                  <Ionicons name="refresh" size={16} color={colors.primary} />
-                </Pressable>
-              )}
-            </View>
-          )}
+
         </View>
       )}
 
@@ -1767,6 +1717,7 @@ function FullMapScreen() {
           stateCode={stateCode}
           records={stateConstituencies}
           electionRecords={historicalPartySummary}
+          nationalParties={nationalParties}
           liveMode={IS_LIVE_ENVIRONMENT}
           initialTop={
             mapTopOffset +
@@ -1774,8 +1725,6 @@ function FullMapScreen() {
               ? 54
               : !hideOverlays && !selected && stateCode === 'IN'
                 ? Math.max(headerOverlayHeight, 94) + 10
-                : !hideOverlays && !selected && IS_LIVE_ENVIRONMENT
-                  ? Math.max(headerOverlayHeight, 94) + 142
                   : !hideOverlays && !selected && stateCode !== 'IN'
                     ? Math.max(headerOverlayHeight, 94) + 58
                     : 98)
@@ -2019,7 +1968,7 @@ function FullMapScreen() {
                 (() => {
                   const counts = new Map<string, number>();
                   for (const state of Object.values(STATES)) {
-                    const p = state.rulingParty;
+                    const p = IS_LIVE_ENVIRONMENT ? nationalParties[state.code] : state.rulingParty;
                     if (p) counts.set(p, (counts.get(p) ?? 0) + 1);
                   }
                   const sorted = Array.from(counts.entries()).sort((a, b) => b[1] - a[1]);
@@ -2064,6 +2013,7 @@ function FullMapScreen() {
                 Object.values(STATES).map((state) => {
                   const data = getStateData(state.code);
                   const supported = isStateSupported(state.code);
+                  const party = IS_LIVE_ENVIRONMENT ? nationalParties[state.code] : state.rulingParty;
                   return (
                     <Pressable
                       key={state.code}
@@ -2073,11 +2023,11 @@ function FullMapScreen() {
                         setStateCode(state.code);
                       }}
                     >
-                      <View style={[styles.spatialHubDot, { backgroundColor: getPartyColor(state.rulingParty) }]} />
+                      <View style={[styles.spatialHubDot, { backgroundColor: getPartyColor(party || '') }]} />
                       <View style={styles.spatialHubRowInfo}>
                         <Text style={styles.spatialHubRowTitle}>{state.name}</Text>
                         <Text style={styles.spatialHubRowSubtitle}>
-                          {state.assemblySeats} {t('mapExtended.constituenciesRuledBy')} {state.rulingParty}
+                          {state.assemblySeats} {t('explore.constituencies')}{party ? ` · ${getLocalizedPartyName(party, i18n.language) || party}` : ''}
                         </Text>
                       </View>
                       <View style={styles.spatialHubBadge}>
@@ -2371,23 +2321,19 @@ function FullMapScreen() {
           const margin = IS_LIVE_ENVIRONMENT
             ? podium?.marginWinnerToRunnerUp1 ?? selected.margin
             : seed?.margin ?? podium?.marginWinnerToRunnerUp1 ?? selected.margin;
-          const totalValidVotesRaw = IS_LIVE_ENVIRONMENT
-            ? podium?.totalValidVotes
-            : (seed as any)?.totalValidVotes ?? podium?.totalValidVotes;
-          const totalValidVotes = typeof totalValidVotesRaw === 'number' && totalValidVotesRaw > 0 ? totalValidVotesRaw : null;
-          const winnerShare = totalValidVotes && winnerVotes != null && winnerVotes > 0
-            ? (winnerVotes / totalValidVotes) * 100
-            : podium?.winner?.voteShare ?? null;
-          const runnerUpShare = totalValidVotes && runnerUpVotes != null && runnerUpVotes > 0
-            ? (runnerUpVotes / totalValidVotes) * 100
-            : podium?.firstRunnerUp?.voteShare ?? null;
-          const ru2Share = totalValidVotes && ru2Votes != null && ru2Votes > 0
-            ? (ru2Votes / totalValidVotes) * 100
-            : podium?.secondRunnerUp?.voteShare ?? null;
-          const hasAllLeadingCandidateVotes = winnerVotes != null && runnerUpVotes != null && ru2Votes != null;
-          const othersShare = totalValidVotes && hasAllLeadingCandidateVotes
-            ? Math.max(0, 100 - (winnerShare ?? 0) - (runnerUpShare ?? 0) - (ru2Share ?? 0))
-            : null;
+          const {
+            total: totalValidVotes,
+            shares: [winnerShare, runnerUpShare, ru2Share],
+            others: othersShare,
+          } = getSnapshotVoteShares(
+            IS_LIVE_ENVIRONMENT ? podium?.totalValidVotes : (seed as any)?.totalValidVotes ?? podium?.totalValidVotes,
+            [
+              !IS_LIVE_ENVIRONMENT || podium?.winner?.votes != null ? winnerVotes : null,
+              runnerUpVotes,
+              ru2Votes,
+            ],
+            [podium?.winner?.voteShare, podium?.firstRunnerUp?.voteShare, podium?.secondRunnerUp?.voteShare],
+          );
           const margin2 = podium?.marginWinnerToRunnerUp2 != null
             ? podium.marginWinnerToRunnerUp2
             : (winnerVotes != null && winnerVotes > 0 && ru2Votes != null && ru2Votes > 0 ? winnerVotes - ru2Votes : null);
@@ -2694,12 +2640,12 @@ function FullMapScreen() {
                       </View>
                       {winnerShare != null && runnerUpShare != null && othersShare != null && (
                       <View style={styles.s1TugBarTrack}>
-                        <View style={{ width: `${Math.min(100, Math.max(1, winnerShare))}%`, backgroundColor: winnerColor }} />
-                        <View style={{ width: `${Math.min(100, Math.max(1, runnerUpShare))}%`, backgroundColor: runnerUpColor }} />
+                        <View style={{ width: `${winnerShare}%`, backgroundColor: winnerColor }} />
+                        <View style={{ width: `${runnerUpShare}%`, backgroundColor: runnerUpColor }} />
                         {ru2Share != null && ru2Share > 0 && (
-                          <View style={{ width: `${Math.min(100, Math.max(1, ru2Share))}%`, backgroundColor: ru2Color }} />
+                          <View style={{ width: `${ru2Share}%`, backgroundColor: ru2Color }} />
                         )}
-                        <View style={{ width: `${Math.min(100, Math.max(0, othersShare))}%`, backgroundColor: '#CBD5E1' }} />
+                        <View style={{ width: `${othersShare}%`, backgroundColor: '#CBD5E1' }} />
                       </View>
                       )}
                     </View>

@@ -25,6 +25,35 @@ describe('Constituencies Routes Unit Tests (Exhaustive Branch Coverage)', () => 
     jest.restoreAllMocks();
   });
 
+  it('serves dated Explore history and corrected Sirpur votes from the same archive', async () => {
+    const [summary, detail] = await Promise.all([
+      app.inject('/states/TS/podium-summary'),
+      app.inject('/states/TS/constituencies/1/podium'),
+    ]);
+    expect(summary.statusCode).toBe(200);
+    expect(detail.statusCode).toBe(200);
+    expect(summary.json().data.find((seat: { acNo: number }) => seat.acNo === 1)).toMatchObject({
+      year: 2023,
+      winnerParty: 'BJP',
+      history: expect.arrayContaining([
+        {
+          year: 2023,
+          constituencyName: 'Sirpur',
+          winnerName: 'Palvai Harish Babu',
+          winnerParty: 'BJP',
+          margin: 3088,
+        },
+        expect.objectContaining({ year: 2018, winnerName: 'Koneru Konappa' }),
+      ]),
+    });
+    expect(detail.json().find((contest: { year: number }) => contest.year === 2023)).toMatchObject({
+      totalValidVotes: 186880,
+      winner: { votes: 63702, voteShare: 34.09 },
+      firstRunnerUp: { votes: 60614, voteShare: 32.43 },
+      secondRunnerUp: { votes: 44646, voteShare: 23.89 },
+    });
+  });
+
   describe('1. GET /states/:stateCode/constituencies', () => {
     it('returns 200 with list of constituencies for TS', async () => {
       const res = await app.inject({
@@ -459,7 +488,7 @@ describe('Constituencies Routes Unit Tests (Exhaustive Branch Coverage)', () => 
         .filter((contest: any) => Number.isInteger(contest?.year) && contest?.winner?.party?.trim())
         .sort((left: any, right: any) => right.year - left.year)[0];
 
-      expect(firstRow).toEqual({
+      expect(firstRow).toMatchObject({
         acNo: firstRow.acNo,
         year: expected.year,
         winnerParty: expected.winner.party.trim(),

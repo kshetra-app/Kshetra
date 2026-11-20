@@ -9,7 +9,6 @@ import {
   ScrollView,
   Image,
   Keyboard,
-  ActivityIndicator,
 } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { Ionicons } from '@expo/vector-icons';
@@ -38,7 +37,11 @@ import {
   getLocalizedReservation,
   getLocalizedPartyName,
 } from '../../lib/stateTranslations';
-import { getLocalizedCandidateName } from '../../lib/historicalPodiumStore';
+import { getLocalizedCandidateName, type HistoricalElectionSummary } from '../../lib/historicalPodiumStore';
+
+function constituencyNameKey(name: string): string {
+  return name.normalize('NFKC').toLowerCase().replace(/\s*\((?:sc|st|gen)\)\s*$/i, '').replace(/[^\p{L}\p{N}]/gu, '');
+}
 
 type SortKey = 'acNo' | 'name' | 'margin_asc' | 'margin_desc';
 
@@ -69,9 +72,21 @@ export default function ExploreScreen() {
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const {
     constituencies: allConstituencies,
+    electionSummaries,
     status: directoryStatus,
     refresh: refreshDirectory,
   } = useConstituencyDirectory(stateCode);
+
+  const historyByAcNo = useMemo(() => {
+    const histories = new Map(electionSummaries?.map((record) => [record.acNo, record.history]));
+    return new Map(allConstituencies.map(({ acNo, name }) => {
+      const nameKey = constituencyNameKey(name);
+      const history = (histories.get(acNo) ?? []).filter(
+        (contest) => constituencyNameKey(contest.constituencyName) === nameKey,
+      );
+      return [acNo, history];
+    }));
+  }, [allConstituencies, electionSummaries]);
 
   /** Reset filters and search when switching state to avoid phantom empty results */
   useEffect(() => {
@@ -136,6 +151,10 @@ export default function ExploreScreen() {
           representativeName.toLowerCase().includes(q) ||
           locWinner.toLowerCase().includes(q) ||
           representativeParty.toLowerCase().includes(q) ||
+          historyByAcNo.get(c.acNo)?.some((contest) =>
+            contest.winnerName.toLowerCase().includes(q) ||
+            contest.winnerParty.toLowerCase().includes(q),
+          ) ||
           (c.runnerUp && c.runnerUp.toLowerCase().includes(q)) ||
           c.type.toLowerCase() === q ||
           String(c.acNo) === q ||
@@ -180,15 +199,17 @@ export default function ExploreScreen() {
         return a.acNo - b.acNo;
       });
     } else {
+      const margin = (item: UnifiedConstituency) =>
+        item.margin ?? historyByAcNo.get(item.acNo)?.[0]?.margin;
       switch (sortKey) {
         case 'name':
           sorted.sort((a, b) => a.name.localeCompare(b.name));
           break;
         case 'margin_asc':
-          sorted.sort((a, b) => (a.margin ?? Number.POSITIVE_INFINITY) - (b.margin ?? Number.POSITIVE_INFINITY));
+          sorted.sort((a, b) => (margin(a) ?? Number.POSITIVE_INFINITY) - (margin(b) ?? Number.POSITIVE_INFINITY));
           break;
         case 'margin_desc':
-          sorted.sort((a, b) => (b.margin ?? Number.NEGATIVE_INFINITY) - (a.margin ?? Number.NEGATIVE_INFINITY));
+          sorted.sort((a, b) => (margin(b) ?? Number.NEGATIVE_INFINITY) - (margin(a) ?? Number.NEGATIVE_INFINITY));
           break;
         default: // acNo
           sorted.sort((a, b) => a.acNo - b.acNo);
@@ -196,13 +217,14 @@ export default function ExploreScreen() {
     }
 
     return sorted;
-  }, [query, showFavoritesOnly, favoriteIds, allConstituencies, partyFilter, districtFilter, typeFilter, sortKey, i18n.language, stateCode]);
+  }, [query, showFavoritesOnly, favoriteIds, allConstituencies, partyFilter, districtFilter, typeFilter, sortKey, i18n.language, stateCode, historyByAcNo]);
 
   const renderItem = useCallback(
     ({ item, index }: { item: UnifiedConstituency; index: number }) => (
       <View>
         <ConstituencyCard
           item={item}
+          history={historyByAcNo.get(item.acNo)}
           isFav={isFavorite(item.acNo)}
           onPress={() => {
             Keyboard.dismiss();
@@ -216,7 +238,7 @@ export default function ExploreScreen() {
         )}
       </View>
     ),
-    [isFavorite, toggleFavorite, router],
+    [isFavorite, toggleFavorite, router, historyByAcNo],
   );
 
   const { insets, contentPaddingBottom } = useResponsive();
@@ -445,54 +467,6 @@ export default function ExploreScreen() {
             </Pressable>
           </View>
         </View>
-
-        {IS_LIVE_ENVIRONMENT && directoryStatus !== 'NOT_APPLICABLE' && (
-          <View style={{
-            marginHorizontal: 16,
-            marginTop: 8,
-            marginBottom: 10,
-            paddingHorizontal: 10,
-            paddingVertical: 8,
-            minHeight: 36,
-            borderRadius: 10,
-            borderWidth: 1,
-            borderColor: colors.border,
-            backgroundColor: colors.surface,
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 8,
-          }}>
-            {directoryStatus === 'LOADING' ? (
-              <ActivityIndicator size="small" color={colors.primary} />
-            ) : (
-              <Ionicons
-                name={directoryStatus === 'DATABASE_RECORDS' ? 'server-outline' : 'information-circle-outline'}
-                size={16}
-                color={directoryStatus === 'DATABASE_RECORDS' ? colors.teal : colors.textMuted}
-              />
-            )}
-            <Text style={{ flex: 1, fontSize: 11, lineHeight: 15, color: colors.textSecondary }}>
-              {directoryStatus === 'LOADING'
-                ? t('constituencyDirectory.loading', { defaultValue: 'Loading constituency records…' })
-                : directoryStatus === 'DATABASE_RECORDS'
-                  ? t('constituencyDirectory.databaseRecords', { defaultValue: 'Representative details are Poligram database records. Historical election results are not included in this directory.' })
-                  : directoryStatus === 'STALE_DATABASE_RECORDS'
-                    ? t('constituencyDirectory.staleRecords', { defaultValue: 'Showing previously loaded representative records; refresh to check for updates.' })
-                    : directoryStatus === 'DATABASE_EMPTY'
-                      ? t('constituencyDirectory.empty', { defaultValue: 'No representative records are available for this state yet.' })
-                      : t('constituencyDirectory.unavailable', { defaultValue: 'Live representative records are unavailable. Constituency geography remains available.' })}
-            </Text>
-            {(directoryStatus === 'UNAVAILABLE' || directoryStatus === 'STALE_DATABASE_RECORDS') && (
-              <Pressable
-                onPress={refreshDirectory}
-                accessibilityRole="button"
-                accessibilityLabel={t('common.retry', { defaultValue: 'Retry' })}
-              >
-                <Ionicons name="refresh" size={17} color={colors.primary} />
-              </Pressable>
-            )}
-          </View>
-        )}
 
         {/* Platform Discovery & Directory Card */}
         <Pressable
@@ -752,6 +726,8 @@ export default function ExploreScreen() {
         keyExtractor={(item) => `${stateCode}-${item.acNo}`}
         ListHeaderComponent={renderListHeader}
         ListEmptyComponent={renderEmptyComponent}
+        refreshing={IS_LIVE_ENVIRONMENT && directoryStatus === 'LOADING'}
+        onRefresh={IS_LIVE_ENVIRONMENT && stateCode !== 'IN' ? refreshDirectory : undefined}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
         contentContainerStyle={[
@@ -779,12 +755,14 @@ export default function ExploreScreen() {
 
 const ConstituencyCard = React.memo(function ConstituencyCard({
   item,
+  history,
   isFav,
   onPress,
   onAvatarPress,
   onToggleFav,
 }: {
   item: UnifiedConstituency;
+  history?: HistoricalElectionSummary[];
   isFav: boolean;
   onPress: () => void;
   onAvatarPress?: (uri: string | null, name: string, party: string) => void;
@@ -847,11 +825,26 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
           <Text style={[styles.cardWinner, { color: colors.textSecondary }]} numberOfLines={1}>
             {representativeName
               ? IS_LIVE_ENVIRONMENT
-                ? localizedWinnerName
+                ? `${t('constituency.currentMLA')} · ${localizedWinnerName}`
                 : `${localizedWinnerName} · ${item.margin != null ? item.margin.toLocaleString() : '—'}`
               : t('constituencyDirectory.officeholderUnavailable', { defaultValue: 'Representative details unavailable' })}
           </Text>
         </View>
+        {!!history?.length && (
+          <View style={{ gap: 3, marginTop: 6 }}>
+            <Text style={[styles.cardMeta, { color: colors.textMuted }]}>
+              {t('constituency.electionHistory')}
+            </Text>
+            {history.slice(0, 2).map((contest, index) => {
+              const name = getLocalizedCandidateName(contest.winnerName, i18n.language) || contest.winnerName;
+              return (
+                <Text key={`${contest.year}-${index}`} style={[styles.cardWinner, { color: colors.textSecondary }]}>
+                  {contest.year} · {name} · {contest.winnerParty}
+                </Text>
+              );
+            })}
+          </View>
+        )}
         {/* Transparency badges row */}
         {(isCrorepati || (criminalCases != null && criminalCases > 0)) && (
           <View style={styles.cardBadgeRow}>

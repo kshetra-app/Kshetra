@@ -1010,7 +1010,7 @@ export async function constituencyRoutes(app: FastifyInstance) {
     },
   );
 
-  /** Compact, derived party-color data from the same historical podium source. */
+  /** Compact election history for the state map and Explore directory. */
   app.get<{ Params: { stateCode: string } }>(
     '/states/:stateCode/podium-summary',
     async (request, reply) => {
@@ -1033,14 +1033,36 @@ export async function constituencyRoutes(app: FastifyInstance) {
           const acNo = Number(rawAcNo);
           if (!Number.isInteger(acNo) || acNo <= 0 || !Array.isArray(contests)) return [];
 
-          const latest = contests
+          const ordered = contests
             .filter(
               (contest: any) => Number.isInteger(contest?.year) && contest?.winner?.party?.trim(),
             )
-            .sort((left: any, right: any) => right.year - left.year)[0];
+            .sort((left: any, right: any) => right.year - left.year);
+          const latest = ordered[0];
           if (!latest) return [];
 
-          return [{ acNo, year: latest.year, winnerParty: latest.winner.party.trim() }];
+          const history = ordered.flatMap((contest: any) => {
+            if (!contest.winner.name?.trim() || !contest.constituencyName?.trim()) return [];
+            const winnerVotes = contest.winner.votes;
+            const runnerUpVotes = contest.firstRunnerUp?.votes;
+            const margin =
+              Number.isSafeInteger(winnerVotes) &&
+              Number.isSafeInteger(runnerUpVotes) &&
+              runnerUpVotes >= 0 &&
+              winnerVotes >= runnerUpVotes
+                ? winnerVotes - runnerUpVotes
+                : null;
+            return [
+              {
+                year: contest.year,
+                constituencyName: contest.constituencyName.trim(),
+                winnerName: contest.winner.name.trim(),
+                winnerParty: contest.winner.party.trim(),
+                margin,
+              },
+            ];
+          });
+          return [{ acNo, year: latest.year, winnerParty: latest.winner.party.trim(), history }];
         },
       );
 

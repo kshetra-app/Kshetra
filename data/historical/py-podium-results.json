@@ -9405,11 +9405,11 @@
     "delimitationId": "4",
     "validVotes": 24693,
     "marginWinnerToRunnerUp1": 16677,
-    "marginWinnerToRunnerUp2": 19107,
-    "marginRunnerUp1ToRunnerUp2": 2430,
     "winner": {
-      "rank": 1,
       "name": "N. Rangasamy",
+      "party": "AINRC",
+      "votes": 20685,
+      "voteShare": 83.77,
       "localizedNames": {
         "en": "N. Rangasamy",
         "hi": "ण. रंगसमय",
@@ -9425,7 +9425,6 @@
         "pa": "ਣ. ਰਂਗਸਮਯ",
         "or": "ଣ. ରଂଗସମଯ"
       },
-      "party": "AINRC",
       "localizedParties": {
         "en": "AINRC",
         "te": "AINRC",
@@ -9441,23 +9440,21 @@
         "as": "AINRC",
         "ne": "AINRC"
       },
-      "sex": "M",
-      "age": 61,
-      "votes": 20685,
-      "voteShare": 83.77,
-      "education": "Bachelor of Commerce, Tagore Arts College, Puducherry. Bachelor in Law Ambedkar Law College Puducherry Year 1977",
-      "profession": "Politician",
-      "totalAssets": 279925752,
-      "totalLiabilities": 3500000,
-      "criminalCases": 0,
-      "seriousCriminalCases": 0,
       "photoUrl": "https://www.myneta.info/images_candidate/Puducherry2026/31b45e2e83af19dfdacb3fe4a4fc0df677ef6523.jpg",
       "affidavitUrl": "https://www.myneta.info/Puducherry2026/candidate.php?candidate_id=32",
-      "dataStatus": "VERIFIED"
+      "age": 61,
+      "education": "Bachelor of Commerce, Tagore Arts College, Puducherry. Bachelor in Law Ambedkar Law College Puducherry Year 1977",
+      "profession": "Politician",
+      "criminalCases": 0,
+      "totalAssets": 279925752,
+      "totalLiabilities": 3500000
     },
     "firstRunnerUp": {
-      "rank": 2,
       "name": "V. Aroumougam",
+      "party": "INC",
+      "votes": 4008,
+      "voteShare": 16.23,
+      "marginToWinner": 16677,
       "localizedNames": {
         "en": "V. Aroumougam",
         "hi": "व. अरोउमोउगम",
@@ -9473,7 +9470,6 @@
         "pa": "ਵ. ਅਰੋਉਮੋਉਗਮ",
         "or": "ଵ. ଅରୋଉମୋଉଗମ"
       },
-      "party": "INC",
       "localizedParties": {
         "en": "Indian National Congress",
         "te": "భారత జాతీయ కాంగ్రెస్",
@@ -9489,53 +9485,10 @@
         "as": "ভাৰতীয় জাতীয় কংগ্ৰেছ",
         "ne": "भारतीय राष्ट्रिय काङ्ग्रेस"
       },
-      "sex": "M",
-      "age": 47,
-      "votes": 4008,
-      "voteShare": 16.23,
-      "marginToWinner": 16677
+      "age": 47
     },
-    "secondRunnerUp": {
-      "rank": 3,
-      "name": "A.V. Baskaran",
-      "localizedNames": {
-        "en": "A.V. Baskaran",
-        "hi": "अ.व. बसकरं",
-        "mr": "अ.व. बसकरं",
-        "ne": "अ.व. बसकरं",
-        "te": "అ.వ. బసకరం",
-        "kn": "ಅ.ವ. ಬಸಕರಂ",
-        "ta": "அ.வ. ஬ஸகரஂ",
-        "ml": "അ.വ. ബസകരം",
-        "bn": "অ.঵. বসকরং",
-        "as": "অ.঵. বসকরং",
-        "gu": "અ.વ. બસકરં",
-        "pa": "ਅ.ਵ. ਬਸਕਰਂ",
-        "or": "ଅ.ଵ. ବସକରଂ"
-      },
-      "party": "AIDMK",
-      "localizedParties": {
-        "en": "AIDMK",
-        "te": "AIDMK",
-        "hi": "AIDMK",
-        "kn": "AIDMK",
-        "mr": "AIDMK",
-        "ta": "AIDMK",
-        "ml": "AIDMK",
-        "bn": "AIDMK",
-        "gu": "AIDMK",
-        "pa": "AIDMK",
-        "or": "AIDMK",
-        "as": "AIDMK",
-        "ne": "AIDMK"
-      },
-      "sex": "O",
-      "age": null,
-      "votes": 1578,
-      "voteShare": 6.39,
-      "marginToWinner": 19107,
-      "marginToFirstRunnerUp": 2430
-    }
+    "secondRunnerUp": null,
+    "totalValidVotes": 24693
   },
   {
     "id": "PY-AC-9-2011",

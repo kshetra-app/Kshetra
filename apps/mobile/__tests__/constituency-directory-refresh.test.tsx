@@ -1,4 +1,7 @@
 jest.mock('../lib/environment', () => ({ IS_LIVE_ENVIRONMENT: true }));
+jest.mock('../lib/historicalPodiumStore', () => ({
+  fetchStatePodiumSummary: jest.fn(async () => []),
+}));
 jest.mock('../lib/api', () => ({
   apiClient: {
     constituencies: {

@@ -42,6 +42,15 @@ export interface HistoricalPodiumSummaryRecord {
   acNo: number;
   year: number;
   winnerParty: string;
+  history: HistoricalElectionSummary[];
+}
+
+export interface HistoricalElectionSummary {
+  year: number;
+  constituencyName: string;
+  winnerName: string;
+  winnerParty: string;
+  margin: number | null;
 }
 
 function containsNonAsciiCharacters(value: string): boolean {
@@ -54,7 +63,9 @@ import { IS_LIVE_ENVIRONMENT } from './environment';
 
 // In-memory cache for parsed state podium files (hydrated on demand from API or local cache)
 const stateCache = new Map<string, Record<string, HistoricalPodiumContest[]>>();
-const stateSummaryCache = new Map<string, HistoricalPodiumSummaryRecord[]>();
+const stateSummaryCache = new Map<string, { records: HistoricalPodiumSummaryRecord[]; fetchedAt: number }>();
+const stateSummaryRequests = new Map<string, Promise<HistoricalPodiumSummaryRecord[]>>();
+const SUMMARY_TTL_MS = 5 * 60 * 1000;
 let lokSabhaNameIndex: Map<string, HistoricalPodiumContest[]> | null = null;
 let lokSabhaNoIndex: Map<number, HistoricalPodiumContest[]> | null = null;
 
@@ -149,8 +160,17 @@ export async function fetchStatePodiumSummary(
 ): Promise<HistoricalPodiumSummaryRecord[]> {
   const code = (stateCode || 'TS').toUpperCase();
   const cached = stateSummaryCache.get(code);
-  if (cached) return cached;
+  if (cached && Date.now() - cached.fetchedAt < SUMMARY_TTL_MS) return cached.records;
 
+  const pending = stateSummaryRequests.get(code);
+  if (pending) return pending;
+
+  const request = loadStatePodiumSummary(code).finally(() => stateSummaryRequests.delete(code));
+  stateSummaryRequests.set(code, request);
+  return request;
+}
+
+async function loadStatePodiumSummary(code: string): Promise<HistoricalPodiumSummaryRecord[]> {
   try {
     const res = await fetch(`${API_BASE_URL}/api/v1/states/${code}/podium-summary`);
     if (!res.ok) return [];
@@ -165,7 +185,7 @@ export async function fetchStatePodiumSummary(
     }
 
     const seenAcNumbers = new Set<number>();
-    const records = response.data.filter((record: unknown): record is HistoricalPodiumSummaryRecord => {
+    const records = (response.data as unknown[]).filter((record): record is HistoricalPodiumSummaryRecord => {
       if (!record || typeof record !== 'object') return false;
       const candidate = record as HistoricalPodiumSummaryRecord;
       if (
@@ -181,8 +201,17 @@ export async function fetchStatePodiumSummary(
     if (records.length !== response.data.length) {
       throw new Error(`Invalid constituency record in podium summary for ${code}`);
     }
-    stateSummaryCache.set(code, records);
-    return records;
+    const normalized = records.map((record) => ({
+      ...record,
+      history: Array.isArray(record.history) ? record.history.filter((contest) =>
+        Number.isInteger(contest?.year) && contest.year > 0 &&
+        typeof contest.constituencyName === 'string' && Boolean(contest.constituencyName.trim()) &&
+        typeof contest.winnerName === 'string' && Boolean(contest.winnerName.trim()) &&
+        typeof contest.winnerParty === 'string' && Boolean(contest.winnerParty.trim()),
+      ) : [],
+    }));
+    stateSummaryCache.set(code, { records: normalized, fetchedAt: Date.now() });
+    return normalized;
   } catch (err) {
     console.warn(`[historicalPodiumStore] Failed to fetch podium summary for ${code}:`, err);
     return [];

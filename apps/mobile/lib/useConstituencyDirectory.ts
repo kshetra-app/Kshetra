@@ -3,6 +3,7 @@ import { AppState } from 'react-native';
 import type { ConstituencyBrief } from '@kshetra/shared';
 import { apiClient } from './api';
 import { IS_LIVE_ENVIRONMENT } from './environment';
+import { fetchStatePodiumSummary, type HistoricalPodiumSummaryRecord } from './historicalPodiumStore';
 import {
   getUnifiedConstituenciesForState,
   toGeographyOnlyConstituency,
@@ -161,6 +162,7 @@ export function useConstituencyDirectory(stateCode: string) {
   const code = stateCode.toUpperCase();
   const geography = useMemo(() => getUnifiedConstituenciesForState(code), [code]);
   const [revision, setRevision] = useState(0);
+  const [history, setHistory] = useState<{ stateCode: string; records: HistoricalPodiumSummaryRecord[] }>();
   const previousRevision = useRef(0);
   const [snapshot, setSnapshot] = useState<DirectorySnapshot>(() => ({
     stateCode: code,
@@ -218,6 +220,15 @@ export function useConstituencyDirectory(stateCode: string) {
 
   useEffect(() => {
     if (!IS_LIVE_ENVIRONMENT || code === 'IN') return;
+    let active = true;
+    fetchStatePodiumSummary(code).then((records) => {
+      if (active) setHistory({ stateCode: code, records });
+    });
+    return () => { active = false; };
+  }, [code, revision]);
+
+  useEffect(() => {
+    if (!IS_LIVE_ENVIRONMENT || code === 'IN') return;
 
     let wasActive = AppState.currentState === 'active';
     const subscription = AppState.addEventListener('change', (nextState) => {
@@ -254,6 +265,7 @@ export function useConstituencyDirectory(stateCode: string) {
 
   return {
     constituencies,
+    electionSummaries: history?.stateCode === code ? history.records : undefined,
     status: currentSnapshot.status,
     error: currentSnapshot.error,
     refresh,

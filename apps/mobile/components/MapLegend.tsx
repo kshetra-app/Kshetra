@@ -25,21 +25,15 @@ export function buildPartyLegend(
   records?: UnifiedConstituency[],
   liveMode = false,
   electionRecords?: Array<{ winnerParty: string }>,
+  nationalParties?: Record<string, string>,
 ): { party: string; label: string; seats: number }[] {
   if (liveMode) {
-    if (stateCode.toUpperCase() === 'IN' || !records) return [];
-
     const counts = new Map<string, number>();
-    if (electionRecords && electionRecords.length > 0) {
-      for (const record of electionRecords) {
-        const party = record.winnerParty.trim();
-        if (party) counts.set(party, (counts.get(party) ?? 0) + 1);
-      }
-    } else {
-      for (const record of records) {
-        const party = record.currentParty.trim();
-        if (party) counts.set(party, (counts.get(party) ?? 0) + 1);
-      }
+    const parties = stateCode.toUpperCase() === 'IN'
+      ? Object.values(nationalParties ?? {})
+      : (electionRecords ?? []).map((record) => record.winnerParty.trim());
+    for (const party of parties) {
+      if (party) counts.set(party, (counts.get(party) ?? 0) + 1);
     }
 
     return Array.from(counts.entries())
@@ -161,6 +155,7 @@ interface MapLegendProps {
   stateCode?: string;
   records?: UnifiedConstituency[];
   electionRecords?: Array<{ winnerParty: string }>;
+  nationalParties?: Record<string, string>;
   liveMode?: boolean;
   initialX?: number;
   initialTop?: number;
@@ -171,6 +166,7 @@ export default function MapLegend({
   stateCode = 'TS',
   records,
   electionRecords,
+  nationalParties,
   liveMode = false,
   initialX = 16,
   initialTop = 160,
@@ -179,8 +175,8 @@ export default function MapLegend({
   const { colors } = useTheme();
   const [expanded, setExpanded] = useState(false);
   const partyLegend = useMemo(
-    () => buildPartyLegend(stateCode, records, liveMode, electionRecords),
-    [stateCode, records, liveMode, electionRecords],
+    () => buildPartyLegend(stateCode, records, liveMode, electionRecords, nationalParties),
+    [stateCode, records, liveMode, electionRecords, nationalParties],
   );
 
   // Floating Draggable Pan State
@@ -350,7 +346,7 @@ export default function MapLegend({
               <Text style={[styles.partyName, { color: colors.textSecondary }]} numberOfLines={1}>
                 {item.label}
               </Text>
-              {!liveMode && item.seats > 0 && (
+              {item.seats > 0 && (
                 <Text style={[styles.partySeats, { color: colors.gold || '#FCD34D' }]}>
                   {item.seats}
                 </Text>

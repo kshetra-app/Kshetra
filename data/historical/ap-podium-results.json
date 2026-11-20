@@ -7,7 +7,7 @@
     "acNo": 1,
     "constituencyName": "Ichchapuram",
     "delimitationId": "4",
-    "validVotes": 181441,
+    "validVotes": 188815,
     "marginWinnerToRunnerUp1": 39783,
     "marginWinnerToRunnerUp2": 109820,
     "marginRunnerUp1ToRunnerUp2": 70037,
@@ -80,7 +80,7 @@
       "marginToFirstRunnerUp": 70037
     },
     "year": 2024,
-    "totalValidVotes": 181441,
+    "totalValidVotes": 188815,
     "constituencyId": 1
   },
   {
@@ -717,15 +717,15 @@
     "acNo": 2,
     "constituencyName": "Palasa",
     "delimitationId": "4",
-    "validVotes": 162770,
+    "validVotes": 168035,
     "marginWinnerToRunnerUp1": 40350,
-    "marginWinnerToRunnerUp2": 99057,
-    "marginRunnerUp1ToRunnerUp2": 58707,
+    "marginWinnerToRunnerUp2": 100496,
+    "marginRunnerUp1ToRunnerUp2": 60146,
     "winner": {
       "name": "Gouthu Sireesha",
       "party": "TDP",
       "votes": 101560,
-      "voteShare": 45.67,
+      "voteShare": 60.44,
       "localizedNames": {
         "en": "Gouthu Sireesha",
         "hi": "गोउठु सिरीश",
@@ -768,7 +768,7 @@
       "name": "Seediri Appalaraju",
       "party": "YSRCP",
       "votes": 61210,
-      "voteShare": 27.53,
+      "voteShare": 36.43,
       "marginToWinner": 40350,
       "localizedParties": {
         "en": "YSR Congress Party",
@@ -788,15 +788,15 @@
       "age": null
     },
     "secondRunnerUp": {
-      "name": "Remaining",
-      "party": "IND",
-      "votes": 2503,
-      "voteShare": 1.12,
-      "marginToWinner": 99057,
-      "marginToFirstRunnerUp": 58707
+      "name": "Trinath Babu Majji",
+      "party": "INC",
+      "votes": 1064,
+      "voteShare": 0.63,
+      "marginToWinner": 100496,
+      "marginToFirstRunnerUp": 60146
     },
     "year": 2024,
-    "totalValidVotes": 162770,
+    "totalValidVotes": 168035,
     "constituencyId": 2
   },
   {
@@ -1463,15 +1463,15 @@
     "acNo": 3,
     "constituencyName": "Tekkali",
     "delimitationId": "4",
-    "validVotes": 181411,
+    "validVotes": 190053,
     "marginWinnerToRunnerUp1": 34435,
-    "marginWinnerToRunnerUp2": 102963,
-    "marginRunnerUp1ToRunnerUp2": 68528,
+    "marginWinnerToRunnerUp2": 105239,
+    "marginRunnerUp1ToRunnerUp2": 70804,
     "winner": {
       "name": "Kinjarapu Atchannaidu",
       "party": "TDP",
       "votes": 107923,
-      "voteShare": 45.11,
+      "voteShare": 56.79,
       "localizedNames": {
         "en": "Kinjarapu Atchannaidu",
         "hi": "किणजरपु अटचंनिडु",
@@ -1508,7 +1508,7 @@
       "name": "Duvvada Srinivas",
       "party": "YSRCP",
       "votes": 73488,
-      "voteShare": 30.72,
+      "voteShare": 38.67,
       "marginToWinner": 34435,
       "localizedParties": {
         "en": "YSR Congress Party",
@@ -1528,15 +1528,15 @@
       "age": null
     },
     "secondRunnerUp": {
-      "name": "Remaining",
-      "party": "IND",
-      "votes": 4960,
-      "voteShare": 2.07,
-      "marginToWinner": 102963,
-      "marginToFirstRunnerUp": 68528
+      "name": "Killi Krupa Rani",
+      "party": "INC",
+      "votes": 2684,
+      "voteShare": 1.41,
+      "marginToWinner": 105239,
+      "marginToFirstRunnerUp": 70804
     },
     "year": 2024,
-    "totalValidVotes": 181411,
+    "totalValidVotes": 190053,
     "constituencyId": 3
   },
   {
@@ -2212,15 +2212,15 @@
     "acNo": 4,
     "constituencyName": "Pathapatnam",
     "delimitationId": "4",
-    "validVotes": 152377,
+    "validVotes": 163335,
     "marginWinnerToRunnerUp1": 26527,
-    "marginWinnerToRunnerUp2": 82098,
-    "marginRunnerUp1ToRunnerUp2": 55571,
+    "marginWinnerToRunnerUp2": 85887,
+    "marginRunnerUp1ToRunnerUp2": 59360,
     "winner": {
       "name": "Mamidi Govinda Rao",
       "party": "TDP",
       "votes": 89452,
-      "voteShare": 39.38,
+      "voteShare": 54.77,
       "localizedNames": {
         "en": "Mamidi Govinda Rao",
         "hi": "ममिडि गोविणद रओ",
@@ -2264,7 +2264,7 @@
       "name": "Reddy Shanthi",
       "party": "YSRCP",
       "votes": 62925,
-      "voteShare": 27.7,
+      "voteShare": 38.53,
       "marginToWinner": 26527,
       "localizedParties": {
         "en": "YSR Congress Party",
@@ -2284,15 +2284,15 @@
       "age": null
     },
     "secondRunnerUp": {
-      "name": "Remaining",
-      "party": "IND",
-      "votes": 7354,
-      "voteShare": 3.24,
-      "marginToWinner": 82098,
-      "marginToFirstRunnerUp": 55571
+      "name": "Koppurautu Venkata Rao",
+      "party": "INC",
+      "votes": 3565,
+      "voteShare": 2.18,
+      "marginToWinner": 85887,
+      "marginToFirstRunnerUp": 59360
     },
     "year": 2024,
-    "totalValidVotes": 152377,
+    "totalValidVotes": 163335,
     "constituencyId": 4
   },
   {
@@ -2963,7 +2963,7 @@
     "acNo": 5,
     "constituencyName": "Srikakulam",
     "delimitationId": "4",
-    "validVotes": 181661,
+    "validVotes": 192168,
     "marginWinnerToRunnerUp1": 52521,
     "marginWinnerToRunnerUp2": 112738,
     "marginRunnerUp1ToRunnerUp2": 60217,
@@ -3038,12 +3038,12 @@
       "name": "Ambati Krishna Rao",
       "party": "INC",
       "votes": 4353,
-      "voteShare": 1.59,
+      "voteShare": 2.27,
       "marginToWinner": 112738,
       "marginToFirstRunnerUp": 60217
     },
     "year": 2024,
-    "totalValidVotes": 181661,
+    "totalValidVotes": 192168,
     "constituencyId": 5
   },
   {
@@ -3704,7 +3704,7 @@
     "acNo": 6,
     "constituencyName": "Amadalavalasa",
     "delimitationId": "4",
-    "validVotes": 140974,
+    "validVotes": 158707,
     "marginWinnerToRunnerUp1": 35032,
     "marginWinnerToRunnerUp2": 78466,
     "marginRunnerUp1ToRunnerUp2": 43434,
@@ -3712,7 +3712,7 @@
       "name": "Koona Ravikumar",
       "party": "TDP",
       "votes": 88003,
-      "voteShare": 44.88,
+      "voteShare": 55.45,
       "localizedNames": {
         "en": "Koona Ravi Kumar",
         "hi": "कून रवि कुमर",
@@ -3754,7 +3754,7 @@
       "name": "Thammineni Seethram",
       "party": "YSRCP",
       "votes": 52971,
-      "voteShare": 27.01,
+      "voteShare": 33.38,
       "marginToWinner": 35032,
       "localizedParties": {
         "en": "YSR Congress Party",
@@ -3775,14 +3775,14 @@
     },
     "secondRunnerUp": {
       "name": "Gandhi Suvvari",
-      "party": "INDEPENDENT",
+      "party": "IND",
       "votes": 9537,
-      "voteShare": 4.86,
+      "voteShare": 6.01,
       "marginToWinner": 78466,
       "marginToFirstRunnerUp": 43434
     },
     "year": 2024,
-    "totalValidVotes": 140974,
+    "totalValidVotes": 158707,
     "constituencyId": 6
   },
   {
@@ -4458,7 +4458,7 @@
     "acNo": 7,
     "constituencyName": "Etcherla",
     "delimitationId": "4",
-    "validVotes": 196451,
+    "validVotes": 206562,
     "marginWinnerToRunnerUp1": 29089,
     "marginWinnerToRunnerUp2": 110318,
     "marginRunnerUp1ToRunnerUp2": 81229,
@@ -4466,7 +4466,7 @@
       "name": "Eswara Rao Nadukuditi",
       "party": "BJP",
       "votes": 112770,
-      "voteShare": 45.9,
+      "voteShare": 54.59,
       "localizedNames": {
         "en": "Nadukuditi Eswara Rao",
         "hi": "नडुकुडिटि एसवर रओ",
@@ -4503,7 +4503,7 @@
       "name": "Gorle.kiran Kumar",
       "party": "YSRCP",
       "votes": 83681,
-      "voteShare": 34.06,
+      "voteShare": 40.51,
       "marginToWinner": 29089,
       "localizedParties": {
         "en": "YSR Congress Party",
@@ -4526,12 +4526,12 @@
       "name": "Karimajji.malleswara Rao",
       "party": "INC",
       "votes": 2452,
-      "voteShare": 1,
+      "voteShare": 1.19,
       "marginToWinner": 110318,
       "marginToFirstRunnerUp": 81229
     },
     "year": 2024,
-    "totalValidVotes": 196451,
+    "totalValidVotes": 206562,
     "constituencyId": 7
   },
   {
@@ -5210,7 +5210,7 @@
     "acNo": 8,
     "constituencyName": "Narasannapeta",
     "delimitationId": "4",
-    "validVotes": 170531,
+    "validVotes": 177376,
     "marginWinnerToRunnerUp1": 29371,
     "marginWinnerToRunnerUp2": 97726,
     "marginRunnerUp1ToRunnerUp2": 68355,
@@ -5218,7 +5218,7 @@
       "name": "Baggu Ramana Murthy",
       "party": "TDP",
       "votes": 99951,
-      "voteShare": 46.04,
+      "voteShare": 56.35,
       "localizedNames": {
         "en": "Baggu Ramanamurthy",
         "hi": "बगगु रमंअमुरठय",
@@ -5261,7 +5261,7 @@
       "name": "Dharmana Krishna Das",
       "party": "YSRCP",
       "votes": 70580,
-      "voteShare": 32.51,
+      "voteShare": 39.79,
       "marginToWinner": 29371,
       "localizedParties": {
         "en": "YSR Congress Party",
@@ -5284,12 +5284,12 @@
       "name": "Narasimhamurthy Mantri",
       "party": "INC",
       "votes": 2225,
-      "voteShare": 1.02,
+      "voteShare": 1.25,
       "marginToWinner": 97726,
       "marginToFirstRunnerUp": 68355
     },
     "year": 2024,
-    "totalValidVotes": 170531,
+    "totalValidVotes": 177376,
     "constituencyId": 8
   },
   {
@@ -5956,7 +5956,7 @@
     "acNo": 9,
     "constituencyName": "Rajam",
     "delimitationId": "4",
-    "validVotes": 168048,
+    "validVotes": 176494,
     "marginWinnerToRunnerUp1": 20722,
     "marginWinnerToRunnerUp2": 90701,
     "marginRunnerUp1ToRunnerUp2": 69979,
@@ -5964,7 +5964,7 @@
       "name": "Kondru Murali Mohan",
       "party": "TDP",
       "votes": 94385,
-      "voteShare": 41.33,
+      "voteShare": 53.48,
       "localizedNames": {
         "en": "Kondru Murali Mohan",
         "hi": "कोणडरु मुरलि मोहं",
@@ -6001,7 +6001,7 @@
       "name": "Dr. Tale Rajesh",
       "party": "YSRCP",
       "votes": 73663,
-      "voteShare": 32.25,
+      "voteShare": 41.74,
       "marginToWinner": 20722,
       "localizedParties": {
         "en": "YSR Congress Party",
@@ -6024,12 +6024,12 @@
       "name": "Kambala Rajavardhana",
       "party": "INC",
       "votes": 3684,
-      "voteShare": 1.61,
+      "voteShare": 2.09,
       "marginToWinner": 90701,
       "marginToFirstRunnerUp": 69979
     },
     "year": 2024,
-    "totalValidVotes": 168048,
+    "totalValidVotes": 176494,
     "constituencyId": 9
   },
   {
@@ -6652,7 +6652,7 @@
     "acNo": 10,
     "constituencyName": "Palakonda",
     "delimitationId": "4",
-    "validVotes": 137125,
+    "validVotes": 148375,
     "marginWinnerToRunnerUp1": 13291,
     "marginWinnerToRunnerUp2": 73167,
     "marginRunnerUp1ToRunnerUp2": 59876,
@@ -6720,12 +6720,12 @@
       "name": "Chanti Babu Savara",
       "party": "INC",
       "votes": 2041,
-      "voteShare": 1.04,
+      "voteShare": 1.38,
       "marginToWinner": 73167,
       "marginToFirstRunnerUp": 59876
     },
     "year": 2024,
-    "totalValidVotes": 137125,
+    "totalValidVotes": 148375,
     "constituencyId": 10
   },
   {
@@ -7400,7 +7400,7 @@
     "acNo": 11,
     "constituencyName": "Kurupam",
     "delimitationId": "4",
-    "validVotes": 143210,
+    "validVotes": 155291,
     "marginWinnerToRunnerUp1": 23500,
     "marginWinnerToRunnerUp2": 79432,
     "marginRunnerUp1ToRunnerUp2": 55932,
@@ -7408,7 +7408,7 @@
       "name": "Jagadeeswari Thoyaka",
       "party": "TDP",
       "votes": 83355,
-      "voteShare": 42.83,
+      "voteShare": 53.68,
       "localizedNames": {
         "en": "Jagadeeswari Thoyaka",
         "hi": "जगडीसवरि ठोयक",
@@ -7452,7 +7452,7 @@
       "name": "Pushpasreevani Pamula",
       "party": "YSRCP",
       "votes": 59855,
-      "voteShare": 30.76,
+      "voteShare": 38.54,
       "marginToWinner": 23500,
       "localizedParties": {
         "en": "YSR Congress Party",
@@ -7475,12 +7475,12 @@
       "name": "Mandangi Ramana",
       "party": "CPI(M)",
       "votes": 3923,
-      "voteShare": 2.02,
+      "voteShare": 2.53,
       "marginToWinner": 79432,
       "marginToFirstRunnerUp": 55932
     },
     "year": 2024,
-    "totalValidVotes": 143210,
+    "totalValidVotes": 155291,
     "constituencyId": 11
   },
   {
@@ -8103,7 +8103,7 @@
     "acNo": 12,
     "constituencyName": "Parvathipuram",
     "delimitationId": "4",
-    "validVotes": 143396,
+    "validVotes": 151633,
     "marginWinnerToRunnerUp1": 24414,
     "marginWinnerToRunnerUp2": 82265,
     "marginRunnerUp1ToRunnerUp2": 57851,
@@ -8111,7 +8111,7 @@
       "name": "Bonela Vijaya Chandra",
       "party": "TDP",
       "votes": 83905,
-      "voteShare": 44.04,
+      "voteShare": 55.33,
       "localizedNames": {
         "en": "Bonela Vijaya Chandra",
         "hi": "बोणेल विजय चंडर",
@@ -8155,7 +8155,7 @@
       "name": "Alajangi Jogarao",
       "party": "YSRCP",
       "votes": 59491,
-      "voteShare": 31.23,
+      "voteShare": 39.23,
       "marginToWinner": 24414,
       "localizedParties": {
         "en": "YSR Congress Party",
@@ -8178,12 +8178,12 @@
       "name": "Bathina Mohana Rao",
       "party": "INC",
       "votes": 1640,
-      "voteShare": 0.86,
+      "voteShare": 1.08,
       "marginToWinner": 82265,
       "marginToFirstRunnerUp": 57851
     },
     "year": 2024,
-    "totalValidVotes": 143396,
+    "totalValidVotes": 151633,
     "constituencyId": 12
   },
   {
@@ -8806,7 +8806,7 @@
     "acNo": 13,
     "constituencyName": "Salur",
     "delimitationId": "4",
-    "validVotes": 146689,
+    "validVotes": 158355,
     "marginWinnerToRunnerUp1": 13733,
     "marginWinnerToRunnerUp2": 77972,
     "marginRunnerUp1ToRunnerUp2": 64239,
@@ -8886,7 +8886,7 @@
       "marginToFirstRunnerUp": 64239
     },
     "year": 2024,
-    "totalValidVotes": 146689,
+    "totalValidVotes": 158355,
     "constituencyId": 13
   },
   {
@@ -9516,52 +9516,21 @@
     "acNo": 14,
     "constituencyName": "Bobbili",
     "delimitationId": "4",
-    "validVotes": 180084,
+    "validVotes": 189024,
     "marginWinnerToRunnerUp1": 44648,
-    "marginWinnerToRunnerUp2": 112366,
-    "marginRunnerUp1ToRunnerUp2": 67718,
+    "marginWinnerToRunnerUp2": 107584,
+    "marginRunnerUp1ToRunnerUp2": 62936,
     "winner": {
-      "name": "\"\" Candidates",
-      "party": "REMAINING",
+      "name": "R.v.s.k.k.ranga Rao @ Babynayana",
+      "party": "TDP",
       "votes": 112366,
-      "voteShare": 62.4,
-      "localizedNames": {
-        "en": "Ravu Venkata Swetha Kumara Krishna Ranga Rao (Babynayana)",
-        "hi": "रवु वेणकत सवेथ कुमर करिशन रंग रओ (बबयनयंअ)",
-        "mr": "रवु वेणकत सवेथ कुमर करिशन रंग रओ (बबयनयंअ)",
-        "ne": "रवु वेणकत सवेथ कुमर करिशन रंग रओ (बबयनयंअ)",
-        "te": "రవు వేణకత సవేథ కుమర కరిశన రంగ రఓ (బబయనయంఅ)",
-        "kn": "ರವು ವೇಣಕತ ಸವೇಥ ಕುಮರ ಕರಿಶನ ರಂಗ ರಓ (ಬಬಯನಯಂಅ)",
-        "ta": "ரவு வேணகத ஸவே஥ குமர கரிஶந ரஂ஗ ரஓ (஬஬யநயஂஅ)",
-        "ml": "രവു വേണകത സവേഥ കുമര കരിശന രംഗ രഓ (ബബയനയംഅ)",
-        "bn": "র঵ু ঵েণকত স঵েথ কুমর করিশন রংগ রও (ববযনযংঅ)",
-        "as": "র঵ু ঵েণকত স঵েথ কুমর করিশন রংগ রও (ববযনযংঅ)",
-        "gu": "રવુ વેણકત સવેથ કુમર કરિશન રંગ રઓ (બબયનયંઅ)",
-        "pa": "ਰਵੁ ਵੇਣਕਤ ਸਵੇਥ ਕੁਮਰ ਕਰਿਸ਼ਨ ਰਂਗ ਰਓ (ਬਬਯਨਯਂਅ)",
-        "or": "ରଵୁ ଵେଣକତ ସଵେଥ କୁମର କରିଶନ ରଂଗ ରଓ (ବବଯନଯଂଅ)"
-      },
-      "localizedParties": {
-        "en": "Telugu Desam Party",
-        "te": "తెలుగుదేశం పార్టీ",
-        "hi": "तेलुगु देशम पार्टी",
-        "kn": "ತೆಲುಗು ದೇಶಂ ಪಕ್ಷ",
-        "mr": "तेलुगु देशम पार्टी",
-        "ta": "தெலுங்கு தேசம் கட்சி",
-        "ml": "തെലുങ്ക് ദേശം പാർട്ടി",
-        "bn": "তেলেগু দেশম পার্টি",
-        "gu": "તેલુગુ દેશમ પાર્ટી",
-        "pa": "ਤੇਲਗੂ ਦੇਸ਼ਮ ਪਾਰਟੀ",
-        "or": "ତେଲୁଗୁ ଦେଶମ ପାର୍ଟି",
-        "as": "তেলেগু দেশম পাৰ্টী",
-        "ne": "तेलुगु देशम पार्टी"
-      },
-      "age": null
+      "voteShare": 59.45
     },
     "firstRunnerUp": {
       "name": "S. V. China Appala Naidu",
       "party": "YSRCP",
       "votes": 67718,
-      "voteShare": 37.6,
+      "voteShare": 35.83,
       "marginToWinner": 44648,
       "localizedParties": {
         "en": "YSR Congress Party",
@@ -9580,9 +9549,16 @@
       },
       "age": null
     },
-    "secondRunnerUp": null,
+    "secondRunnerUp": {
+      "name": "Maripi Vidyasagar (vinay)",
+      "party": "INC",
+      "votes": 4782,
+      "voteShare": 2.53,
+      "marginToWinner": 107584,
+      "marginToFirstRunnerUp": 62936
+    },
     "year": 2024,
-    "totalValidVotes": 180084,
+    "totalValidVotes": 189024,
     "constituencyId": 14
   },
   {
@@ -10243,7 +10219,7 @@
     "acNo": 15,
     "constituencyName": "Cheepurupalli",
     "delimitationId": "4",
-    "validVotes": 164479,
+    "validVotes": 173055,
     "marginWinnerToRunnerUp1": 11971,
     "marginWinnerToRunnerUp2": 84138,
     "marginRunnerUp1ToRunnerUp2": 72167,
@@ -10316,7 +10292,7 @@
       "marginToFirstRunnerUp": 72167
     },
     "year": 2024,
-    "totalValidVotes": 164479,
+    "totalValidVotes": 173055,
     "constituencyId": 15
   },
   {
@@ -10977,7 +10953,7 @@
     "acNo": 16,
     "constituencyName": "Gajapathinagaram",
     "delimitationId": "4",
-    "validVotes": 170801,
+    "validVotes": 178313,
     "marginWinnerToRunnerUp1": 25301,
     "marginWinnerToRunnerUp2": 96736,
     "marginRunnerUp1ToRunnerUp2": 71435,
@@ -11055,7 +11031,7 @@
       "marginToFirstRunnerUp": 71435
     },
     "year": 2024,
-    "totalValidVotes": 170801,
+    "totalValidVotes": 178313,
     "constituencyId": 16
   },
   {
@@ -11678,15 +11654,15 @@
     "acNo": 17,
     "constituencyName": "Nellimarla",
     "delimitationId": "4",
-    "validVotes": 180001,
+    "validVotes": 190314,
     "marginWinnerToRunnerUp1": 39829,
-    "marginWinnerToRunnerUp2": null,
-    "marginRunnerUp1ToRunnerUp2": null,
+    "marginWinnerToRunnerUp2": 108248,
+    "marginRunnerUp1ToRunnerUp2": 68419,
     "winner": {
       "name": "Lokam Naga Madhavi",
       "party": "JSP",
       "votes": 109915,
-      "voteShare": 54.7,
+      "voteShare": 57.75,
       "localizedNames": {
         "en": "Lokam Naga Madhavi",
         "hi": "लोकम नग मधवि",
@@ -11723,7 +11699,7 @@
       "name": "Appalanaidu Baddukonda",
       "party": "YSRCP",
       "votes": 70086,
-      "voteShare": 34.8,
+      "voteShare": 36.83,
       "marginToWinner": 39829,
       "localizedParties": {
         "en": "YSR Congress Party",
@@ -11745,11 +11721,13 @@
     "secondRunnerUp": {
       "name": "Saragada Ramesh Kumar",
       "party": "INC",
-      "votes": 0,
-      "voteShare": 0
+      "votes": 1667,
+      "voteShare": 0.88,
+      "marginToWinner": 108248,
+      "marginToFirstRunnerUp": 68419
     },
     "year": 2024,
-    "totalValidVotes": 180001,
+    "totalValidVotes": 190314,
     "constituencyId": 17
   },
   {
@@ -12410,7 +12388,7 @@
     "acNo": 18,
     "constituencyName": "Vizianagaram",
     "delimitationId": "4",
-    "validVotes": 181873,
+    "validVotes": 188807,
     "marginWinnerToRunnerUp1": 60609,
     "marginWinnerToRunnerUp2": 119187,
     "marginRunnerUp1ToRunnerUp2": 58578,
@@ -12475,15 +12453,15 @@
       "age": null
     },
     "secondRunnerUp": {
-      "name": "Meesala Geetha",
-      "party": "INDEPENDENT",
+      "name": "Geetha Meesala",
+      "party": "IND",
       "votes": 2054,
       "voteShare": 1.09,
       "marginToWinner": 119187,
       "marginToFirstRunnerUp": 58578
     },
     "year": 2024,
-    "totalValidVotes": 181873,
+    "totalValidVotes": 188807,
     "constituencyId": 18
   },
   {
@@ -12884,7 +12862,7 @@
     "acNo": 19,
     "constituencyName": "Srungavarapukota",
     "delimitationId": "4",
-    "validVotes": 183262,
+    "validVotes": 190254,
     "marginWinnerToRunnerUp1": 38790,
     "marginWinnerToRunnerUp2": 109108,
     "marginRunnerUp1ToRunnerUp2": 70318,
@@ -12964,7 +12942,7 @@
       "marginToFirstRunnerUp": 70318
     },
     "year": 2024,
-    "totalValidVotes": 183262,
+    "totalValidVotes": 190254,
     "constituencyId": 19
   },
   {
@@ -13646,80 +13624,33 @@
     "acNo": 20,
     "constituencyName": "Bhimili",
     "delimitationId": "4",
-    "validVotes": 260059,
-    "marginWinnerToRunnerUp1": 994,
-    "marginWinnerToRunnerUp2": 3038,
-    "marginRunnerUp1ToRunnerUp2": 2044,
+    "validVotes": 278235,
+    "marginWinnerToRunnerUp1": 92401,
+    "marginWinnerToRunnerUp2": 171083,
+    "marginRunnerUp1ToRunnerUp2": 78682,
     "winner": {
-      "name": "Kaligotla Suryanarayana",
-      "party": "INDEPENDENT POLITICIAN",
-      "votes": 11194,
-      "voteShare": 31.69,
-      "localizedNames": {
-        "en": "Ganta Srinivasa Rao",
-        "hi": "गंत सरिणिवस रओ",
-        "mr": "गंत सरिणिवस रओ",
-        "ne": "गंत सरिणिवस रओ",
-        "te": "గంత సరిణివస రఓ",
-        "kn": "ಗಂತ ಸರಿಣಿವಸ ರಓ",
-        "ta": "஗ஂத ஸரிணிவஸ ரஓ",
-        "ml": "ഗംത സരിണിവസ രഓ",
-        "bn": "গংত সরিণি঵স রও",
-        "as": "গংত সরিণি঵স রও",
-        "gu": "ગંત સરિણિવસ રઓ",
-        "pa": "ਗਂਤ ਸਰਿਣਿਵਸ ਰਓ",
-        "or": "ଗଂତ ସରିଣିଵସ ରଓ"
-      },
-      "localizedParties": {
-        "en": "Telugu Desam Party",
-        "te": "తెలుగుదేశం పార్టీ",
-        "hi": "तेलुगु देशम पार्टी",
-        "kn": "ತೆಲುಗು ದೇಶಂ ಪಕ್ಷ",
-        "mr": "तेलुगु देशम पार्टी",
-        "ta": "தெலுங்கு தேசம் கட்சி",
-        "ml": "തെലുങ്ക് ദേശം പാർട്ടി",
-        "bn": "তেলেগু দেশম পার্টি",
-        "gu": "તેલુગુ દેશમ પાર્ટી",
-        "pa": "ਤੇਲਗੂ ਦੇਸ਼ਮ ਪਾਰਟੀ",
-        "or": "ତେଲୁଗୁ ଦେଶମ ପାର୍ଟି",
-        "as": "তেলেগু দেশম পাৰ্টী",
-        "ne": "तेलुगु देशम पार्टी"
-      },
-      "age": null
+      "name": "Ganta Srinivasa Rao",
+      "party": "TDP",
+      "votes": 176230,
+      "voteShare": 63.34
     },
     "firstRunnerUp": {
-      "name": "J. V. K. Vallabha Rao",
-      "party": "CPI",
-      "votes": 10200,
-      "voteShare": 28.88,
-      "marginToWinner": 994,
-      "localizedParties": {
-        "en": "YSR Congress Party",
-        "te": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
-        "hi": "वाईएसआर कांग्रेस पार्टी",
-        "kn": "ವೈಎಸ್ಆರ್ ಕಾಂಗ್ರೆಸ್ ಪಕ್ಷ",
-        "mr": "वायएसआर काँग्रेस पार्टी",
-        "ta": "ஒய்.எஸ்.ஆர் காங்கிரஸ் கட்சி",
-        "ml": "വൈ.എസ്.ആർ കോൺഗ്രസ് പാർട്ടി",
-        "bn": "ওয়াইএসআর কংগ্রেস পার্টি",
-        "gu": "વાયએસઆર કોંગ્રેસ પાર્ટી",
-        "pa": "ਵਾਈਐਸਆਰ ਕਾਂਗਰਸ ਪਾਰਟੀ",
-        "or": "ୱାଇଏସଆର କଂଗ୍ରେସ ପାର୍ଟି",
-        "as": "ৱাইএছআৰ কংগ্ৰেছ পাৰ্টী",
-        "ne": "वाईएसआर काङ्ग्रेस पार्टी"
-      },
-      "age": null
+      "name": "Muttamsetti (avanthi) Srinivasa Rao",
+      "party": "YSRCP",
+      "votes": 83829,
+      "voteShare": 30.13,
+      "marginToWinner": 92401
     },
     "secondRunnerUp": {
-      "name": "Botcha Adinarayanna",
-      "party": "SOCIALIST PARTY (INDIA)",
-      "votes": 8156,
-      "voteShare": 23.09,
-      "marginToWinner": 3038,
-      "marginToFirstRunnerUp": 2044
+      "name": "Addala Venkata Varma Raju",
+      "party": "INC",
+      "votes": 5147,
+      "voteShare": 1.85,
+      "marginToWinner": 171083,
+      "marginToFirstRunnerUp": 78682
     },
     "year": 2024,
-    "totalValidVotes": 260059,
+    "totalValidVotes": 278235,
     "constituencyId": 20
   },
   {
@@ -14380,10 +14311,10 @@
     "acNo": 21,
     "constituencyName": "Visakhapatnam East",
     "delimitationId": "4",
-    "validVotes": 193217,
+    "validVotes": 203494,
     "marginWinnerToRunnerUp1": 70877,
-    "marginWinnerToRunnerUp2": 128617,
-    "marginRunnerUp1ToRunnerUp2": 57740,
+    "marginWinnerToRunnerUp2": 128539,
+    "marginRunnerUp1ToRunnerUp2": 57662,
     "winner": {
       "name": "Velagapudi Ramakrishna Babu",
       "party": "TDP",
@@ -14450,15 +14381,15 @@
       "age": null
     },
     "secondRunnerUp": {
-      "name": "Guthula Srinivas Rao",
-      "party": "INC",
-      "votes": 3430,
-      "voteShare": 1.69,
-      "marginToWinner": 128617,
-      "marginToFirstRunnerUp": 57740
+      "name": "Vaddi Sirisha",
+      "party": "IND",
+      "votes": 3508,
+      "voteShare": 1.72,
+      "marginToWinner": 128539,
+      "marginToFirstRunnerUp": 57662
     },
     "year": 2024,
-    "totalValidVotes": 193217,
+    "totalValidVotes": 203494,
     "constituencyId": 21
   },
   {
@@ -15119,52 +15050,21 @@
     "acNo": 22,
     "constituencyName": "Visakhapatnam South",
     "delimitationId": "4",
-    "validVotes": 131142,
+    "validVotes": 139328,
     "marginWinnerToRunnerUp1": 64594,
-    "marginWinnerToRunnerUp2": 97868,
-    "marginRunnerUp1ToRunnerUp2": 33274,
+    "marginWinnerToRunnerUp2": 93928,
+    "marginRunnerUp1ToRunnerUp2": 29334,
     "winner": {
-      "name": "Vamsi Krishna Srinivas",
+      "name": "Ch.vamsi Krishna Srinivas",
       "party": "JSP",
       "votes": 97868,
-      "voteShare": 70.23,
-      "localizedNames": {
-        "en": "Vamsi Krishna Srinivasa Yadav",
-        "hi": "वमसि करिशन सरिणिवस यदव",
-        "mr": "वमसि करिशन सरिणिवस यदव",
-        "ne": "वमसि करिशन सरिणिवस यदव",
-        "te": "వమసి కరిశన సరిణివస యదవ",
-        "kn": "ವಮಸಿ ಕರಿಶನ ಸರಿಣಿವಸ ಯದವ",
-        "ta": "வமஸி கரிஶந ஸரிணிவஸ ய஦வ",
-        "ml": "വമസി കരിശന സരിണിവസ യദവ",
-        "bn": "঵মসি করিশন সরিণি঵স যদ঵",
-        "as": "঵মসি করিশন সরিণি঵স যদ঵",
-        "gu": "વમસિ કરિશન સરિણિવસ યદવ",
-        "pa": "ਵਮਸਿ ਕਰਿਸ਼ਨ ਸਰਿਣਿਵਸ ਯਦਵ",
-        "or": "ଵମସି କରିଶନ ସରିଣିଵସ ଯଦଵ"
-      },
-      "localizedParties": {
-        "en": "JSP",
-        "te": "జసప",
-        "hi": "जसप",
-        "kn": "ಜಸಪ",
-        "mr": "जसप",
-        "ta": "ஜஸப",
-        "ml": "ജസപ",
-        "bn": "জসপ",
-        "gu": "જસપ",
-        "pa": "ਜਸਪ",
-        "or": "ଜସପ",
-        "as": "জসপ",
-        "ne": "जसप"
-      },
-      "age": null
+      "voteShare": 70.24
     },
     "firstRunnerUp": {
       "name": "Vasupalli Ganesh Kumar",
       "party": "YSRCP",
       "votes": 33274,
-      "voteShare": 23.87,
+      "voteShare": 23.88,
       "marginToWinner": 64594,
       "localizedParties": {
         "en": "YSR Congress Party",
@@ -15183,9 +15083,16 @@
       },
       "age": null
     },
-    "secondRunnerUp": null,
+    "secondRunnerUp": {
+      "name": "Vasupalli Santosh Kumar",
+      "party": "INC",
+      "votes": 3940,
+      "voteShare": 2.83,
+      "marginToWinner": 93928,
+      "marginToFirstRunnerUp": 29334
+    },
     "year": 2024,
-    "totalValidVotes": 131142,
+    "totalValidVotes": 139328,
     "constituencyId": 22
   },
   {
@@ -15846,7 +15753,7 @@
     "acNo": 23,
     "constituencyName": "Visakhapatnam North",
     "delimitationId": "4",
-    "validVotes": 170068,
+    "validVotes": 188208,
     "marginWinnerToRunnerUp1": 47534,
     "marginWinnerToRunnerUp2": 103490,
     "marginRunnerUp1ToRunnerUp2": 55956,
@@ -15919,14 +15826,14 @@
     },
     "secondRunnerUp": {
       "name": "Vaddi Sirisha",
-      "party": "INDEPENDENT POLITICIAN",
+      "party": "IND",
       "votes": 5311,
       "voteShare": 2.82,
       "marginToWinner": 103490,
       "marginToFirstRunnerUp": 55956
     },
     "year": 2024,
-    "totalValidVotes": 170068,
+    "totalValidVotes": 188208,
     "constituencyId": 23
   },
   {
@@ -16594,7 +16501,7 @@
     "acNo": 24,
     "constituencyName": "Visakhapatnam West",
     "delimitationId": "4",
-    "validVotes": 146426,
+    "validVotes": 151008,
     "marginWinnerToRunnerUp1": 35184,
     "marginWinnerToRunnerUp2": 89648,
     "marginRunnerUp1ToRunnerUp2": 54464,
@@ -16667,7 +16574,7 @@
       "marginToFirstRunnerUp": 54464
     },
     "year": 2024,
-    "totalValidVotes": 146426,
+    "totalValidVotes": 151008,
     "constituencyId": 24
   },
   {
@@ -17082,7 +16989,7 @@
     "acNo": 25,
     "constituencyName": "Gajuwaka",
     "delimitationId": "4",
-    "validVotes": 220171,
+    "validVotes": 234329,
     "marginWinnerToRunnerUp1": 95235,
     "marginWinnerToRunnerUp2": 153387,
     "marginRunnerUp1ToRunnerUp2": 58152,
@@ -17148,14 +17055,14 @@
     },
     "secondRunnerUp": {
       "name": "Kakarlamudi Krishna Pradeep",
-      "party": "INDEPENDENT POLITICIAN",
+      "party": "IND",
       "votes": 4316,
       "voteShare": 1.84,
       "marginToWinner": 153387,
       "marginToFirstRunnerUp": 58152
     },
     "year": 2024,
-    "totalValidVotes": 220171,
+    "totalValidVotes": 234329,
     "constituencyId": 25
   },
   {
@@ -17568,7 +17475,7 @@
     "acNo": 26,
     "constituencyName": "Chodavaram",
     "delimitationId": "4",
-    "validVotes": 177113,
+    "validVotes": 185741,
     "marginWinnerToRunnerUp1": 42189,
     "marginWinnerToRunnerUp2": 107124,
     "marginRunnerUp1ToRunnerUp2": 64935,
@@ -17636,12 +17543,12 @@
       "name": "Jagath Srinivas",
       "party": "INC",
       "votes": 2527,
-      "voteShare": 0,
+      "voteShare": 1.36,
       "marginToWinner": 107124,
       "marginToFirstRunnerUp": 64935
     },
     "year": 2024,
-    "totalValidVotes": 177113,
+    "totalValidVotes": 185741,
     "constituencyId": 26
   },
   {
@@ -18302,7 +18209,7 @@
     "acNo": 27,
     "constituencyName": "Madugula",
     "delimitationId": "4",
-    "validVotes": 155712,
+    "validVotes": 165221,
     "marginWinnerToRunnerUp1": 28026,
     "marginWinnerToRunnerUp2": 90085,
     "marginRunnerUp1ToRunnerUp2": 62059,
@@ -18376,12 +18283,12 @@
       "name": "BBS Srinivas Rao",
       "party": "INC",
       "votes": 1784,
-      "voteShare": 0,
+      "voteShare": 1.08,
       "marginToWinner": 90085,
       "marginToFirstRunnerUp": 62059
     },
     "year": 2024,
-    "totalValidVotes": 155712,
+    "totalValidVotes": 165221,
     "constituencyId": 27
   },
   {
@@ -19042,7 +18949,7 @@
     "acNo": 28,
     "constituencyName": "Araku Valley",
     "delimitationId": "4",
-    "validVotes": 99439,
+    "validVotes": 178852,
     "marginWinnerToRunnerUp1": 31877,
     "marginWinnerToRunnerUp2": 52103,
     "marginRunnerUp1ToRunnerUp2": 20226,
@@ -19115,14 +19022,14 @@
     },
     "secondRunnerUp": {
       "name": "Vanthala Ramanna",
-      "party": "INDEPENDENT POLITICIAN",
+      "party": "IND",
       "votes": 13555,
       "voteShare": 7.58,
       "marginToWinner": 52103,
       "marginToFirstRunnerUp": 20226
     },
     "year": 2024,
-    "totalValidVotes": 99439,
+    "totalValidVotes": 178852,
     "constituencyId": 28
   },
   {
@@ -19783,7 +19690,7 @@
     "acNo": 29,
     "constituencyName": "Paderu",
     "delimitationId": "4",
-    "validVotes": 117002,
+    "validVotes": 161160,
     "marginWinnerToRunnerUp1": 19338,
     "marginWinnerToRunnerUp2": 52235,
     "marginRunnerUp1ToRunnerUp2": 32897,
@@ -19791,7 +19698,7 @@
       "name": "Matsyarasa Visweswara Raju",
       "party": "YSRCP",
       "votes": 68170,
-      "voteShare": 42.29,
+      "voteShare": 42.3,
       "localizedNames": {
         "en": "Matsyarasa Visweswara Raju",
         "hi": "मटसयरस विसवेसवर रजु",
@@ -19856,14 +19763,14 @@
     },
     "secondRunnerUp": {
       "name": "Vanthala Subba Rao",
-      "party": "INDEPENDENT (POLITICIAN)",
+      "party": "IND",
       "votes": 15935,
-      "voteShare": 9.88,
+      "voteShare": 9.89,
       "marginToWinner": 52235,
       "marginToFirstRunnerUp": 32897
     },
     "year": 2024,
-    "totalValidVotes": 117002,
+    "totalValidVotes": 161160,
     "constituencyId": 29
   },
   {
@@ -20530,7 +20437,7 @@
     "acNo": 30,
     "constituencyName": "Anakapalle",
     "delimitationId": "4",
-    "validVotes": 164488,
+    "validVotes": 172778,
     "marginWinnerToRunnerUp1": 65764,
     "marginWinnerToRunnerUp2": 113231,
     "marginRunnerUp1ToRunnerUp2": 47467,
@@ -20609,7 +20516,7 @@
       "marginToFirstRunnerUp": 47467
     },
     "year": 2024,
-    "totalValidVotes": 164488,
+    "totalValidVotes": 172778,
     "constituencyId": 30
   },
   {
@@ -21282,7 +21189,7 @@
     "acNo": 31,
     "constituencyName": "Pendurthi",
     "delimitationId": "4",
-    "validVotes": 217352,
+    "validVotes": 230144,
     "marginWinnerToRunnerUp1": 81870,
     "marginWinnerToRunnerUp2": 145387,
     "marginRunnerUp1ToRunnerUp2": 63517,
@@ -21360,7 +21267,7 @@
       "marginToFirstRunnerUp": 63517
     },
     "year": 2024,
-    "totalValidVotes": 217352,
+    "totalValidVotes": 230144,
     "constituencyId": 31
   },
   {
@@ -22044,10 +21951,10 @@
     "acNo": 32,
     "constituencyName": "Elamanchili",
     "delimitationId": "4",
-    "validVotes": 169930,
+    "validVotes": 179427,
     "marginWinnerToRunnerUp1": 48956,
-    "marginWinnerToRunnerUp2": 109443,
-    "marginRunnerUp1ToRunnerUp2": 60487,
+    "marginWinnerToRunnerUp2": 107621,
+    "marginRunnerUp1ToRunnerUp2": 58665,
     "winner": {
       "name": "Sundarapu Vijay Kumar",
       "party": "JSP",
@@ -22115,9 +22022,16 @@
       },
       "age": null
     },
-    "secondRunnerUp": null,
+    "secondRunnerUp": {
+      "name": "Anantha Rama Narasingarao Thanakala",
+      "party": "INC",
+      "votes": 1822,
+      "voteShare": 1.02,
+      "marginToWinner": 107621,
+      "marginToFirstRunnerUp": 58665
+    },
     "year": 2024,
-    "totalValidVotes": 169930,
+    "totalValidVotes": 179427,
     "constituencyId": 32
   },
   {
@@ -22795,7 +22709,7 @@
     "acNo": 33,
     "constituencyName": "Payakaraopet",
     "delimitationId": "4",
-    "validVotes": 196357,
+    "validVotes": 207486,
     "marginWinnerToRunnerUp1": 43727,
     "marginWinnerToRunnerUp2": 117955,
     "marginRunnerUp1ToRunnerUp2": 74228,
@@ -22868,7 +22782,7 @@
       "marginToFirstRunnerUp": 74228
     },
     "year": 2024,
-    "totalValidVotes": 196357,
+    "totalValidVotes": 207486,
     "constituencyId": 33
   },
   {
@@ -23543,10 +23457,10 @@
     "acNo": 34,
     "constituencyName": "Narsipatnam",
     "delimitationId": "4",
-    "validVotes": 175022,
+    "validVotes": 182866,
     "marginWinnerToRunnerUp1": 24676,
-    "marginWinnerToRunnerUp2": 98761,
-    "marginRunnerUp1ToRunnerUp2": 74085,
+    "marginWinnerToRunnerUp2": 98605,
+    "marginRunnerUp1ToRunnerUp2": 73929,
     "winner": {
       "name": "Chintakayala Ayyanna Patrudu",
       "party": "TDP",
@@ -23608,15 +23522,15 @@
       "age": null
     },
     "secondRunnerUp": {
-      "name": "Ruthala Sriramamurthy",
-      "party": "INC",
-      "votes": 1088,
-      "voteShare": 0.59,
-      "marginToWinner": 98761,
-      "marginToFirstRunnerUp": 74085
+      "name": "Botta Nagaraju",
+      "party": "BSP",
+      "votes": 1244,
+      "voteShare": 0.68,
+      "marginToWinner": 98605,
+      "marginToFirstRunnerUp": 73929
     },
     "year": 2024,
-    "totalValidVotes": 175022,
+    "totalValidVotes": 182866,
     "constituencyId": 34
   },
   {
@@ -24031,7 +23945,7 @@
     "acNo": 35,
     "constituencyName": "Tuni",
     "delimitationId": "4",
-    "validVotes": 179235,
+    "validVotes": 189445,
     "marginWinnerToRunnerUp1": 15177,
     "marginWinnerToRunnerUp2": 95283,
     "marginRunnerUp1ToRunnerUp2": 80106,
@@ -24104,7 +24018,7 @@
       "marginToFirstRunnerUp": 80106
     },
     "year": 2024,
-    "totalValidVotes": 179235,
+    "totalValidVotes": 189445,
     "constituencyId": 35
   },
   {
@@ -24765,7 +24679,7 @@
     "acNo": 36,
     "constituencyName": "Prathipadu (Kakinada)",
     "delimitationId": "4",
-    "validVotes": 167236,
+    "validVotes": 176485,
     "marginWinnerToRunnerUp1": 38768,
     "marginWinnerToRunnerUp2": 101648,
     "marginRunnerUp1ToRunnerUp2": 62880,
@@ -24845,7 +24759,7 @@
       "marginToFirstRunnerUp": 62880
     },
     "year": 2024,
-    "totalValidVotes": 167236,
+    "totalValidVotes": 176485,
     "constituencyId": 36
   },
   {
@@ -25506,46 +25420,15 @@
     "acNo": 37,
     "constituencyName": "Pithapuram",
     "delimitationId": "4",
-    "validVotes": 198509,
+    "validVotes": 207169,
     "marginWinnerToRunnerUp1": 70279,
-    "marginWinnerToRunnerUp2": 133163,
-    "marginRunnerUp1ToRunnerUp2": 62884,
+    "marginWinnerToRunnerUp2": 132899,
+    "marginRunnerUp1ToRunnerUp2": 62620,
     "winner": {
-      "name": "Pawan Kalyan",
+      "name": "Konidala Pawan Kalyan",
       "party": "JSP",
       "votes": 134394,
-      "voteShare": 64.87,
-      "localizedNames": {
-        "en": "Pawan Kalyan",
-        "hi": "पवं कलयं",
-        "mr": "पवं कलयं",
-        "ne": "पवं कलयं",
-        "te": "పవం కలయం",
-        "kn": "ಪವಂ ಕಲಯಂ",
-        "ta": "பவஂ கலயஂ",
-        "ml": "പവം കലയം",
-        "bn": "প঵ং কলযং",
-        "as": "প঵ং কলযং",
-        "gu": "પવં કલયં",
-        "pa": "ਪਵਂ ਕਲਯਂ",
-        "or": "ପଵଂ କଲଯଂ"
-      },
-      "localizedParties": {
-        "en": "JSP",
-        "te": "జసప",
-        "hi": "जसप",
-        "kn": "ಜಸಪ",
-        "mr": "जसप",
-        "ta": "ஜஸப",
-        "ml": "ജസപ",
-        "bn": "জসপ",
-        "gu": "જસપ",
-        "pa": "ਜਸਪ",
-        "or": "ଜସପ",
-        "as": "জসপ",
-        "ne": "जसप"
-      },
-      "age": null
+      "voteShare": 64.87
     },
     "firstRunnerUp": {
       "name": "Vanga Geetha",
@@ -25571,15 +25454,15 @@
       "age": null
     },
     "secondRunnerUp": {
-      "name": "Madepalli Satyananda Rao",
-      "party": "INC",
-      "votes": 1231,
-      "voteShare": 0.59,
-      "marginToWinner": 133163,
-      "marginToFirstRunnerUp": 62884
+      "name": "Gowri Mani Bolisetti",
+      "party": "IND",
+      "votes": 1495,
+      "voteShare": 0.72,
+      "marginToWinner": 132899,
+      "marginToFirstRunnerUp": 62620
     },
     "year": 2024,
-    "totalValidVotes": 198509,
+    "totalValidVotes": 207169,
     "constituencyId": 37
   },
   {
@@ -25980,46 +25863,15 @@
     "acNo": 38,
     "constituencyName": "Kakinada Rural",
     "delimitationId": "4",
-    "validVotes": 196788,
+    "validVotes": 206439,
     "marginWinnerToRunnerUp1": 72040,
-    "marginWinnerToRunnerUp2": 132209,
-    "marginRunnerUp1ToRunnerUp2": 60169,
+    "marginWinnerToRunnerUp2": 132049,
+    "marginRunnerUp1ToRunnerUp2": 60009,
     "winner": {
-      "name": "Pantham Venkateswara Rao",
+      "name": "Pantam Venkateswara Rao (pantam Nanaji)",
       "party": "JSP",
       "votes": 134414,
-      "voteShare": 65.11,
-      "localizedNames": {
-        "en": "Pantham Venkateswara Rao",
-        "hi": "पंथम वेणकटेसवर रओ",
-        "mr": "पंथम वेणकटेसवर रओ",
-        "ne": "पंथम वेणकटेसवर रओ",
-        "te": "పంథమ వేణకటేసవర రఓ",
-        "kn": "ಪಂಥಮ ವೇಣಕಟೇಸವರ ರಓ",
-        "ta": "பஂ஥ம வேணகடேஸவர ரஓ",
-        "ml": "പംഥമ വേണകടേസവര രഓ",
-        "bn": "পংথম ঵েণকটেস঵র রও",
-        "as": "পংথম ঵েণকটেস঵র রও",
-        "gu": "પંથમ વેણકટેસવર રઓ",
-        "pa": "ਪਂਥਮ ਵੇਣਕਟੇਸਵਰ ਰਓ",
-        "or": "ପଂଥମ ଵେଣକଟେସଵର ରଓ"
-      },
-      "localizedParties": {
-        "en": "JSP",
-        "te": "జసప",
-        "hi": "जसप",
-        "kn": "ಜಸಪ",
-        "mr": "जसप",
-        "ta": "ஜஸப",
-        "ml": "ജസപ",
-        "bn": "জসপ",
-        "gu": "જસપ",
-        "pa": "ਜਸਪ",
-        "or": "ଜସପ",
-        "as": "জসপ",
-        "ne": "जसप"
-      },
-      "age": null
+      "voteShare": 65.11
     },
     "firstRunnerUp": {
       "name": "Kurasala Kannababu",
@@ -26045,15 +25897,15 @@
       "age": null
     },
     "secondRunnerUp": {
-      "name": "Pilli Satya Lakshmi",
-      "party": "INC",
-      "votes": 2205,
-      "voteShare": 1.07,
-      "marginToWinner": 132209,
-      "marginToFirstRunnerUp": 60169
+      "name": "Melam Veeraswamy",
+      "party": "NRCP",
+      "votes": 2365,
+      "voteShare": 1.15,
+      "marginToWinner": 132049,
+      "marginToFirstRunnerUp": 60009
     },
     "year": 2024,
-    "totalValidVotes": 196788,
+    "totalValidVotes": 206439,
     "constituencyId": 38
   },
   {
@@ -26714,7 +26566,7 @@
     "acNo": 39,
     "constituencyName": "Peddapuram",
     "delimitationId": "4",
-    "validVotes": 170919,
+    "validVotes": 178849,
     "marginWinnerToRunnerUp1": 40451,
     "marginWinnerToRunnerUp2": 103517,
     "marginRunnerUp1ToRunnerUp2": 63066,
@@ -26787,7 +26639,7 @@
       "marginToFirstRunnerUp": 63066
     },
     "year": 2024,
-    "totalValidVotes": 170919,
+    "totalValidVotes": 178849,
     "constituencyId": 39
   },
   {
@@ -27448,10 +27300,10 @@
     "acNo": 40,
     "constituencyName": "Anaparthy",
     "delimitationId": "4",
-    "validVotes": 190590,
+    "validVotes": 196754,
     "marginWinnerToRunnerUp1": 20850,
-    "marginWinnerToRunnerUp2": 105720,
-    "marginRunnerUp1ToRunnerUp2": 84870,
+    "marginWinnerToRunnerUp2": 104420,
+    "marginRunnerUp1ToRunnerUp2": 83570,
     "winner": {
       "name": "Ramakrishna Reddy Nallamilli",
       "party": "BJP",
@@ -27519,9 +27371,16 @@
       },
       "age": null
     },
-    "secondRunnerUp": null,
+    "secondRunnerUp": {
+      "name": "Yella Srinivasa Rao",
+      "party": "INC",
+      "votes": 1300,
+      "voteShare": 0.66,
+      "marginToWinner": 104420,
+      "marginToFirstRunnerUp": 83570
+    },
     "year": 2024,
-    "totalValidVotes": 190590,
+    "totalValidVotes": 196754,
     "constituencyId": 40
   },
   {
@@ -27936,7 +27795,7 @@
     "acNo": 41,
     "constituencyName": "Kakinada City",
     "delimitationId": "4",
-    "validVotes": 169456,
+    "validVotes": 177184,
     "marginWinnerToRunnerUp1": 56572,
     "marginWinnerToRunnerUp2": 110876,
     "marginRunnerUp1ToRunnerUp2": 54304,
@@ -27944,7 +27803,7 @@
       "name": "Vanamadi Venkateswara Rao",
       "party": "TDP",
       "votes": 113014,
-      "voteShare": 63.7,
+      "voteShare": 63.78,
       "localizedNames": {
         "en": "Vanamadi Venkateswara Rao",
         "hi": "वंअमडि वेणकटेसवर रओ",
@@ -27981,7 +27840,7 @@
       "name": "Dwarampudi Chandrasekhar Reddy",
       "party": "YSRCP",
       "votes": 56442,
-      "voteShare": 32.9,
+      "voteShare": 31.86,
       "marginToWinner": 56572,
       "localizedParties": {
         "en": "YSR Congress Party",
@@ -28009,7 +27868,7 @@
       "marginToFirstRunnerUp": 54304
     },
     "year": 2024,
-    "totalValidVotes": 169456,
+    "totalValidVotes": 177184,
     "constituencyId": 41
   },
   {
@@ -28670,10 +28529,10 @@
     "acNo": 42,
     "constituencyName": "Ramachandrapuram",
     "delimitationId": "4",
-    "validVotes": 169013,
-    "marginWinnerToRunnerUp1": 96479,
-    "marginWinnerToRunnerUp2": 97652,
-    "marginRunnerUp1ToRunnerUp2": 71361,
+    "validVotes": 175388,
+    "marginWinnerToRunnerUp1": 26291,
+    "marginWinnerToRunnerUp2": 96446,
+    "marginRunnerUp1ToRunnerUp2": 70155,
     "winner": {
       "name": "Vasamsetti Subhash",
       "party": "TDP",
@@ -28712,31 +28571,22 @@
       "age": null
     },
     "firstRunnerUp": {
-      "name": "Kota Srinivasa Rao",
-      "party": "INC",
-      "votes": 1173,
-      "voteShare": 0.67,
-      "marginToWinner": 96479,
-      "localizedParties": {
-        "en": "YSR Congress Party",
-        "te": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
-        "hi": "वाईएसआर कांग्रेस पार्टी",
-        "kn": "ವೈಎಸ್ಆರ್ ಕಾಂಗ್ರೆಸ್ ಪಕ್ಷ",
-        "mr": "वायएसआर काँग्रेस पार्टी",
-        "ta": "ஒய்.எஸ்.ஆர் காங்கிரஸ் கட்சி",
-        "ml": "വൈ.എസ്.ആർ കോൺഗ്രസ് പാർട്ടി",
-        "bn": "ওয়াইএসআর কংগ্রেস পার্টি",
-        "gu": "વાયએસઆર કોંગ્રેસ પાર્ટી",
-        "pa": "ਵਾਈਐਸਆਰ ਕਾਂਗਰਸ ਪਾਰਟੀ",
-        "or": "ୱାଇଏସଆର କଂଗ୍ରେସ ପାର୍ଟି",
-        "as": "ৱাইএছআৰ কংগ্ৰেছ পাৰ্টী",
-        "ne": "वाईएसआर काङ्ग्रेस पार्टी"
-      },
-      "age": null
+      "name": "Pilli Surya Prakash",
+      "party": "YSRCP",
+      "votes": 71361,
+      "voteShare": 40.69,
+      "marginToWinner": 26291
     },
-    "secondRunnerUp": null,
+    "secondRunnerUp": {
+      "name": "Matha Rani Subrahmanyam",
+      "party": "BSP",
+      "votes": 1206,
+      "voteShare": 0.69,
+      "marginToWinner": 96446,
+      "marginToFirstRunnerUp": 70155
+    },
     "year": 2024,
-    "totalValidVotes": 169013,
+    "totalValidVotes": 175388,
     "constituencyId": 42
   },
   {
@@ -29397,10 +29247,10 @@
     "acNo": 43,
     "constituencyName": "Mummidivaram",
     "delimitationId": "4",
-    "validVotes": 198638,
+    "validVotes": 207321,
     "marginWinnerToRunnerUp1": 38736,
-    "marginWinnerToRunnerUp2": 118687,
-    "marginRunnerUp1ToRunnerUp2": 79951,
+    "marginWinnerToRunnerUp2": 115905,
+    "marginRunnerUp1ToRunnerUp2": 77169,
     "winner": {
       "name": "Datla Subbaraju",
       "party": "TDP",
@@ -29461,9 +29311,16 @@
       },
       "age": null
     },
-    "secondRunnerUp": null,
+    "secondRunnerUp": {
+      "name": "Bhimarao Vakapalli",
+      "party": "BSP",
+      "votes": 2782,
+      "voteShare": 1.34,
+      "marginToWinner": 115905,
+      "marginToFirstRunnerUp": 77169
+    },
     "year": 2024,
-    "totalValidVotes": 198638,
+    "totalValidVotes": 207321,
     "constituencyId": 43
   },
   {
@@ -30131,10 +29988,10 @@
     "acNo": 44,
     "constituencyName": "Amalapuram",
     "delimitationId": "4",
-    "validVotes": 169416,
+    "validVotes": 177636,
     "marginWinnerToRunnerUp1": 38628,
-    "marginWinnerToRunnerUp2": 102665,
-    "marginRunnerUp1ToRunnerUp2": 64037,
+    "marginWinnerToRunnerUp2": 102031,
+    "marginRunnerUp1ToRunnerUp2": 63403,
     "winner": {
       "name": "Aithabathula Ananda Rao",
       "party": "TDP",
@@ -30203,15 +30060,15 @@
       "age": null
     },
     "secondRunnerUp": {
-      "name": "Aithabathula Subhashini",
-      "party": "INC",
-      "votes": 1357,
-      "voteShare": 0.76,
-      "marginToWinner": 102665,
-      "marginToFirstRunnerUp": 64037
+      "name": "Mohan Babu Polamuri",
+      "party": "BSP",
+      "votes": 1991,
+      "voteShare": 1.12,
+      "marginToWinner": 102031,
+      "marginToFirstRunnerUp": 63403
     },
     "year": 2024,
-    "totalValidVotes": 169416,
+    "totalValidVotes": 177636,
     "constituencyId": 44
   },
   {
@@ -30893,7 +30750,7 @@
     "acNo": 45,
     "constituencyName": "Razole",
     "delimitationId": "4",
-    "validVotes": 152017,
+    "validVotes": 158840,
     "marginWinnerToRunnerUp1": 39011,
     "marginWinnerToRunnerUp2": 94079,
     "marginRunnerUp1ToRunnerUp2": 55068,
@@ -30973,7 +30830,7 @@
       "marginToFirstRunnerUp": 55068
     },
     "year": 2024,
-    "totalValidVotes": 152017,
+    "totalValidVotes": 158840,
     "constituencyId": 45
   },
   {
@@ -31634,15 +31491,15 @@
     "acNo": 46,
     "constituencyName": "Gannavaram (Konaseema)",
     "delimitationId": "4",
-    "validVotes": 158849,
+    "validVotes": 168202,
     "marginWinnerToRunnerUp1": 33367,
-    "marginWinnerToRunnerUp2": 96108,
-    "marginRunnerUp1ToRunnerUp2": 62741,
+    "marginWinnerToRunnerUp2": 94289,
+    "marginRunnerUp1ToRunnerUp2": 60922,
     "winner": {
       "name": "Giddi Satyanarayana",
       "party": "JSP",
       "votes": 96108,
-      "voteShare": 60.5,
+      "voteShare": 57.14,
       "localizedNames": {
         "en": "Giddi Satyanarayana",
         "hi": "गिडडि सटयंअरयंअ",
@@ -31679,7 +31536,7 @@
       "name": "Vipparthi Venugopal Rao",
       "party": "YSRCP",
       "votes": 62741,
-      "voteShare": 39.5,
+      "voteShare": 37.3,
       "marginToWinner": 33367,
       "localizedParties": {
         "en": "YSR Congress Party",
@@ -31698,9 +31555,16 @@
       },
       "age": null
     },
-    "secondRunnerUp": null,
+    "secondRunnerUp": {
+      "name": "Kollabathula Satyanarayana (satyam)",
+      "party": "BSP",
+      "votes": 1819,
+      "voteShare": 1.08,
+      "marginToWinner": 94289,
+      "marginToFirstRunnerUp": 60922
+    },
     "year": 2024,
-    "totalValidVotes": 158849,
+    "totalValidVotes": 168202,
     "constituencyId": 46
   },
   {
@@ -32361,87 +32225,33 @@
     "acNo": 47,
     "constituencyName": "Kothapeta",
     "delimitationId": "4",
-    "validVotes": 212093,
-    "marginWinnerToRunnerUp1": 33367,
-    "marginWinnerToRunnerUp2": 94289,
-    "marginRunnerUp1ToRunnerUp2": 60922,
+    "validVotes": 217629,
+    "marginWinnerToRunnerUp1": 56479,
+    "marginWinnerToRunnerUp2": 133117,
+    "marginRunnerUp1ToRunnerUp2": 76638,
     "winner": {
-      "name": "Giddi Satyanarayana",
-      "party": "JSP",
-      "votes": 96108,
-      "voteShare": 57.14,
-      "localizedNames": {
-        "en": "Bandaru Satyananda Rao",
-        "hi": "बंदरु सटयंअणद रओ",
-        "mr": "बंदरु सटयंअणद रओ",
-        "ne": "बंदरु सटयंअणद रओ",
-        "te": "బందరు సటయంఅణద రఓ",
-        "kn": "ಬಂದರು ಸಟಯಂಅಣದ ರಓ",
-        "ta": "஬ஂ஦ரு ஸடயஂஅண஦ ரஓ",
-        "ml": "ബംദരു സടയംഅണദ രഓ",
-        "bn": "বংদরু সটযংঅণদ রও",
-        "as": "বংদরু সটযংঅণদ রও",
-        "gu": "બંદરુ સટયંઅણદ રઓ",
-        "pa": "ਬਂਦਰੁ ਸਟਯਂਅਣਦ ਰਓ",
-        "or": "ବଂଦରୁ ସଟଯଂଅଣଦ ରଓ"
-      },
-      "localizedParties": {
-        "en": "Telugu Desam Party",
-        "te": "తెలుగుదేశం పార్టీ",
-        "hi": "तेलुगु देशम पार्टी",
-        "kn": "ತೆಲುಗು ದೇಶಂ ಪಕ್ಷ",
-        "mr": "तेलुगु देशम पार्टी",
-        "ta": "தெலுங்கு தேசம் கட்சி",
-        "ml": "തെലുങ്ക് ദേശം പാർട്ടി",
-        "bn": "তেলেগু দেশম পার্টি",
-        "gu": "તેલુગુ દેશમ પાર્ટી",
-        "pa": "ਤੇਲਗੂ ਦੇਸ਼ਮ ਪਾਰਟੀ",
-        "or": "ତେଲୁଗୁ ଦେଶମ ପାର୍ଟି",
-        "as": "তেলেগু দেশম পাৰ্টী",
-        "ne": "तेलुगु देशम पार्टी"
-      },
-      "photoUrl": "https://www.myneta.info/images_candidate/AndhraPradesh2024/69e14d45c88112058fcc8274d81f278f574303d7.jpg",
-      "affidavitUrl": "https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=460",
-      "age": 59,
-      "education": "Graduate",
-      "profession": "Agriculture and Politician",
-      "criminalCases": 2,
-      "totalAssets": 140078091,
-      "totalLiabilities": 47088068
+      "name": "Bandaru Satyananda Rao",
+      "party": "TDP",
+      "votes": 134286,
+      "voteShare": 61.7
     },
     "firstRunnerUp": {
-      "name": "Vipparthi Venugopalarao",
+      "name": "Chirla Jaggi Reddy",
       "party": "YSRCP",
-      "votes": 62741,
-      "voteShare": 37.3,
-      "marginToWinner": 33367,
-      "localizedParties": {
-        "en": "YSR Congress Party",
-        "te": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
-        "hi": "वाईएसआर कांग्रेस पार्टी",
-        "kn": "ವೈಎಸ್ಆರ್ ಕಾಂಗ್ರೆಸ್ ಪಕ್ಷ",
-        "mr": "वायएसआर काँग्रेस पार्टी",
-        "ta": "ஒய்.எஸ்.ஆர் காங்கிரஸ் கட்சி",
-        "ml": "വൈ.എസ്.ആർ കോൺഗ്രസ് പാർട്ടി",
-        "bn": "ওয়াইএসআর কংগ্রেস পার্টি",
-        "gu": "વાયએસઆર કોંગ્રેસ પાર્ટી",
-        "pa": "ਵਾਈਐਸਆਰ ਕਾਂਗਰਸ ਪਾਰਟੀ",
-        "or": "ୱାଇଏସଆର କଂଗ୍ରେସ ପାର୍ଟି",
-        "as": "ৱাইএছআৰ কংগ্ৰেছ পাৰ্টী",
-        "ne": "वाईएसआर काङ्ग्रेस पार्टी"
-      },
-      "age": null
+      "votes": 77807,
+      "voteShare": 35.75,
+      "marginToWinner": 56479
     },
     "secondRunnerUp": {
-      "name": "Kollabathula Satyanarayana",
-      "party": "BSP",
-      "votes": 1819,
-      "voteShare": 1.08,
-      "marginToWinner": 94289,
-      "marginToFirstRunnerUp": 60922
+      "name": "Eswara Rao Routhu",
+      "party": "INC",
+      "votes": 1169,
+      "voteShare": 0.54,
+      "marginToWinner": 133117,
+      "marginToFirstRunnerUp": 76638
     },
     "year": 2024,
-    "totalValidVotes": 212093,
+    "totalValidVotes": 217629,
     "constituencyId": 47
   },
   {
@@ -33123,7 +32933,7 @@
     "acNo": 48,
     "constituencyName": "Mandapeta",
     "delimitationId": "4",
-    "validVotes": 188183,
+    "validVotes": 194046,
     "marginWinnerToRunnerUp1": 44435,
     "marginWinnerToRunnerUp2": 114825,
     "marginRunnerUp1ToRunnerUp2": 70390,
@@ -33196,7 +33006,7 @@
       "marginToFirstRunnerUp": 70390
     },
     "year": 2024,
-    "totalValidVotes": 188183,
+    "totalValidVotes": 194046,
     "constituencyId": 48
   },
   {
@@ -33878,46 +33688,15 @@
     "acNo": 49,
     "constituencyName": "Rajanagaram",
     "delimitationId": "4",
-    "validVotes": 177941,
+    "validVotes": 190938,
     "marginWinnerToRunnerUp1": 34049,
     "marginWinnerToRunnerUp2": 104094,
     "marginRunnerUp1ToRunnerUp2": 70045,
     "winner": {
-      "name": "Bathula Balaramakrishna",
+      "name": "Bathula Balaramakrishna S/o Gangarao",
       "party": "JSP",
       "votes": 105995,
-      "voteShare": 55.51,
-      "localizedNames": {
-        "en": "Bathula Balaramakrishna",
-        "hi": "बठुल बलरमकरिशन",
-        "mr": "बठुल बलरमकरिशन",
-        "ne": "बठुल बलरमकरिशन",
-        "te": "బఠుల బలరమకరిశన",
-        "kn": "ಬಠುಲ ಬಲರಮಕರಿಶನ",
-        "ta": "஬஠ுல ஬லரமகரிஶந",
-        "ml": "ബഠുല ബലരമകരിശന",
-        "bn": "বঠুল বলরমকরিশন",
-        "as": "বঠুল বলরমকরিশন",
-        "gu": "બઠુલ બલરમકરિશન",
-        "pa": "ਬਠੁਲ ਬਲਰਮਕਰਿਸ਼ਨ",
-        "or": "ବଠୁଲ ବଲରମକରିଶନ"
-      },
-      "localizedParties": {
-        "en": "JSP",
-        "te": "జసప",
-        "hi": "जसप",
-        "kn": "ಜಸಪ",
-        "mr": "जसप",
-        "ta": "ஜஸப",
-        "ml": "ജസപ",
-        "bn": "জসপ",
-        "gu": "જસપ",
-        "pa": "ਜਸਪ",
-        "or": "ଜସପ",
-        "as": "জসপ",
-        "ne": "जसप"
-      },
-      "age": null
+      "voteShare": 55.51
     },
     "firstRunnerUp": {
       "name": "Jakkampudi Raja",
@@ -33951,7 +33730,7 @@
       "marginToFirstRunnerUp": 70045
     },
     "year": 2024,
-    "totalValidVotes": 177941,
+    "totalValidVotes": 190938,
     "constituencyId": 49
   },
   {
@@ -34612,7 +34391,7 @@
     "acNo": 50,
     "constituencyName": "Rajahmundry City",
     "delimitationId": "4",
-    "validVotes": 175178,
+    "validVotes": 182151,
     "marginWinnerToRunnerUp1": 71404,
     "marginWinnerToRunnerUp2": 121373,
     "marginRunnerUp1ToRunnerUp2": 49969,
@@ -34690,7 +34469,7 @@
       "marginToFirstRunnerUp": 49969
     },
     "year": 2024,
-    "totalValidVotes": 175178,
+    "totalValidVotes": 182151,
     "constituencyId": 50
   },
   {
@@ -35351,7 +35130,7 @@
     "acNo": 51,
     "constituencyName": "Rajahmundry Rural",
     "delimitationId": "4",
-    "validVotes": 194030,
+    "validVotes": 202058,
     "marginWinnerToRunnerUp1": 64090,
     "marginWinnerToRunnerUp2": 126332,
     "marginRunnerUp1ToRunnerUp2": 62242,
@@ -35424,7 +35203,7 @@
       "marginToFirstRunnerUp": 62242
     },
     "year": 2024,
-    "totalValidVotes": 194030,
+    "totalValidVotes": 202058,
     "constituencyId": 51
   },
   {
@@ -36092,7 +35871,7 @@
     "acNo": 52,
     "constituencyName": "Jaggampeta",
     "delimitationId": "4",
-    "validVotes": 174510,
+    "validVotes": 193979,
     "marginWinnerToRunnerUp1": 52676,
     "marginWinnerToRunnerUp2": 101062,
     "marginRunnerUp1ToRunnerUp2": 48386,
@@ -36100,7 +35879,7 @@
       "name": "'''Jyothula Nehru'''",
       "party": "TDP",
       "votes": 113593,
-      "voteShare": 65.09,
+      "voteShare": 58.56,
       "localizedNames": {
         "en": "Jyothula Nehru",
         "hi": "जयोठुल णेहरु",
@@ -36165,14 +35944,14 @@
     },
     "secondRunnerUp": {
       "name": "Patamsetti Surya Chandra",
-      "party": "INDEPENDENT",
+      "party": "IND",
       "votes": 12531,
-      "voteShare": 6.4,
+      "voteShare": 6.46,
       "marginToWinner": 101062,
       "marginToFirstRunnerUp": 48386
     },
     "year": 2024,
-    "totalValidVotes": 174510,
+    "totalValidVotes": 193979,
     "constituencyId": 52
   },
   {
@@ -36854,7 +36633,7 @@
     "acNo": 53,
     "constituencyName": "Rampachodavaram",
     "delimitationId": "4",
-    "validVotes": 171035,
+    "validVotes": 210508,
     "marginWinnerToRunnerUp1": 9139,
     "marginWinnerToRunnerUp2": 68822,
     "marginRunnerUp1ToRunnerUp2": 59683,
@@ -36927,7 +36706,7 @@
       "marginToFirstRunnerUp": 59683
     },
     "year": 2024,
-    "totalValidVotes": 171035,
+    "totalValidVotes": 210508,
     "constituencyId": 53
   },
   {
@@ -37588,7 +37367,7 @@
     "acNo": 54,
     "constituencyName": "Kovvur",
     "delimitationId": "4",
-    "validVotes": 151540,
+    "validVotes": 159111,
     "marginWinnerToRunnerUp1": 33946,
     "marginWinnerToRunnerUp2": 90846,
     "marginRunnerUp1ToRunnerUp2": 56900,
@@ -37668,7 +37447,7 @@
       "marginToFirstRunnerUp": 56900
     },
     "year": 2024,
-    "totalValidVotes": 151540,
+    "totalValidVotes": 159111,
     "constituencyId": 54
   },
   {
@@ -38305,7 +38084,7 @@
     "acNo": 55,
     "constituencyName": "Nidadavole",
     "delimitationId": "4",
-    "validVotes": 172094,
+    "validVotes": 182496,
     "marginWinnerToRunnerUp1": 33304,
     "marginWinnerToRunnerUp2": 101008,
     "marginRunnerUp1ToRunnerUp2": 67704,
@@ -38385,7 +38164,7 @@
       "marginToFirstRunnerUp": 67704
     },
     "year": 2024,
-    "totalValidVotes": 172094,
+    "totalValidVotes": 182496,
     "constituencyId": 55
   },
   {
@@ -38786,7 +38565,7 @@
     "acNo": 56,
     "constituencyName": "Achanta",
     "delimitationId": "4",
-    "validVotes": 144250,
+    "validVotes": 150541,
     "marginWinnerToRunnerUp1": 26554,
     "marginWinnerToRunnerUp2": 83530,
     "marginRunnerUp1ToRunnerUp2": 56976,
@@ -38866,7 +38645,7 @@
       "marginToFirstRunnerUp": 56976
     },
     "year": 2024,
-    "totalValidVotes": 144250,
+    "totalValidVotes": 150541,
     "constituencyId": 56
   },
   {
@@ -39288,7 +39067,7 @@
     "acNo": 57,
     "constituencyName": "Palakollu",
     "delimitationId": "4",
-    "validVotes": 156061,
+    "validVotes": 163213,
     "marginWinnerToRunnerUp1": 67945,
     "marginWinnerToRunnerUp2": 111169,
     "marginRunnerUp1ToRunnerUp2": 43224,
@@ -39368,7 +39147,7 @@
       "marginToFirstRunnerUp": 43224
     },
     "year": 2024,
-    "totalValidVotes": 156061,
+    "totalValidVotes": 163213,
     "constituencyId": 57
   },
   {
@@ -40043,53 +39822,15 @@
     "acNo": 58,
     "constituencyName": "Narasapuram",
     "delimitationId": "4",
-    "validVotes": 138494,
+    "validVotes": 145418,
     "marginWinnerToRunnerUp1": 49738,
     "marginWinnerToRunnerUp2": 92201,
     "marginRunnerUp1ToRunnerUp2": 42463,
     "winner": {
-      "name": "Bommidi Narayana Nayakar",
+      "name": "Bommidi Nayakar",
       "party": "JSP",
       "votes": 94116,
-      "voteShare": 64.7,
-      "localizedNames": {
-        "en": "Bommidi Narayana Nayakar",
-        "hi": "बोममिडि नरयंअ नयकर",
-        "mr": "बोममिडि नरयंअ नयकर",
-        "ne": "बोममिडि नरयंअ नयकर",
-        "te": "బోమమిడి నరయంఅ నయకర",
-        "kn": "ಬೋಮಮಿಡಿ ನರಯಂಅ ನಯಕರ",
-        "ta": "஬ோமமி஡ி நரயஂஅ நயகர",
-        "ml": "ബോമമിഡി നരയംഅ നയകര",
-        "bn": "বোমমিডি নরযংঅ নযকর",
-        "as": "বোমমিডি নরযংঅ নযকর",
-        "gu": "બોમમિડિ નરયંઅ નયકર",
-        "pa": "ਬੋਮਮਿਡਿ ਨਰਯਂਅ ਨਯਕਰ",
-        "or": "ବୋମମିଡି ନରଯଂଅ ନଯକର"
-      },
-      "localizedParties": {
-        "en": "JSP",
-        "te": "జసప",
-        "hi": "जसप",
-        "kn": "ಜಸಪ",
-        "mr": "जसप",
-        "ta": "ஜஸப",
-        "ml": "ജസപ",
-        "bn": "জসপ",
-        "gu": "જસપ",
-        "pa": "ਜਸਪ",
-        "or": "ଜସପ",
-        "as": "জসপ",
-        "ne": "जसप"
-      },
-      "photoUrl": "https://www.myneta.info/images_candidate/AndhraPradesh2024/c518b4d4ffe1dd887e9a87b6ab033f2db0dcc7aa.jpg",
-      "affidavitUrl": "https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=408",
-      "age": 51,
-      "education": "10th Pass",
-      "profession": "Business",
-      "criminalCases": 9,
-      "totalAssets": 17387638,
-      "totalLiabilities": 17251087
+      "voteShare": 64.72
     },
     "firstRunnerUp": {
       "name": "Mudunuri Prasad Raju",
@@ -40123,7 +39864,7 @@
       "marginToFirstRunnerUp": 42463
     },
     "year": 2024,
-    "totalValidVotes": 138494,
+    "totalValidVotes": 145418,
     "constituencyId": 58
   },
   {
@@ -40784,53 +40525,15 @@
     "acNo": 59,
     "constituencyName": "Bhimavaram",
     "delimitationId": "4",
-    "validVotes": 193874,
+    "validVotes": 203983,
     "marginWinnerToRunnerUp1": 66974,
     "marginWinnerToRunnerUp2": 127172,
     "marginRunnerUp1ToRunnerUp2": 60198,
     "winner": {
-      "name": "Ramanjaneyulu Pulaparthi",
+      "name": "Ramanjaneyulu Pulaparthi (anjibabu)",
       "party": "JSP",
       "votes": 130424,
-      "voteShare": 63.94,
-      "localizedNames": {
-        "en": "Pulaparthi Ramanjaneyulu",
-        "hi": "पुलपरठि रमंजंएयुलु",
-        "mr": "पुलपरठि रमंजंएयुलु",
-        "ne": "पुलपरठि रमंजंएयुलु",
-        "te": "పులపరఠి రమంజంఏయులు",
-        "kn": "ಪುಲಪರಠಿ ರಮಂಜಂಏಯುಲು",
-        "ta": "புலபர஠ி ரமஂஜஂஏயுலு",
-        "ml": "പുലപരഠി രമംജംഏയുലു",
-        "bn": "পুলপরঠি রমংজংএযুলু",
-        "as": "পুলপরঠি রমংজংএযুলু",
-        "gu": "પુલપરઠિ રમંજંએયુલુ",
-        "pa": "ਪੁਲਪਰਠਿ ਰਮਂਜਂਏਯੁਲੁ",
-        "or": "ପୁଲପରଠି ରମଂଜଂଏଯୁଲୁ"
-      },
-      "localizedParties": {
-        "en": "JSP",
-        "te": "జసప",
-        "hi": "जसप",
-        "kn": "ಜಸಪ",
-        "mr": "जसप",
-        "ta": "ஜஸப",
-        "ml": "ജസപ",
-        "bn": "জসপ",
-        "gu": "જસપ",
-        "pa": "ਜਸਪ",
-        "or": "ଜସପ",
-        "as": "জসপ",
-        "ne": "जसप"
-      },
-      "photoUrl": "https://www.myneta.info/images_candidate/AndhraPradesh2024/89bb4b676a5476f34cf90dcb10436acaa8cd4ab9.jpg",
-      "affidavitUrl": "https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=2098",
-      "age": 69,
-      "education": "12th Pass",
-      "profession": "Business",
-      "criminalCases": 0,
-      "totalAssets": 400523572,
-      "totalLiabilities": 2406664
+      "voteShare": 63.94
     },
     "firstRunnerUp": {
       "name": "Grandhi Srinivas",
@@ -40864,7 +40567,7 @@
       "marginToFirstRunnerUp": 60198
     },
     "year": 2024,
-    "totalValidVotes": 193874,
+    "totalValidVotes": 203983,
     "constituencyId": 59
   },
   {
@@ -41531,10 +41234,10 @@
     "acNo": 60,
     "constituencyName": "Undi",
     "delimitationId": "4",
-    "validVotes": 177027,
+    "validVotes": 195472,
     "marginWinnerToRunnerUp1": 56777,
-    "marginWinnerToRunnerUp2": 116902,
-    "marginRunnerUp1ToRunnerUp2": 60125,
+    "marginWinnerToRunnerUp2": 103642,
+    "marginRunnerUp1ToRunnerUp2": 46865,
     "winner": {
       "name": "Raghu Rama Krishna Raju",
       "party": "TDP",
@@ -41595,9 +41298,16 @@
       },
       "age": null
     },
-    "secondRunnerUp": null,
+    "secondRunnerUp": {
+      "name": "V V Siva Rama Raju (kalavapudi Siva)",
+      "party": "AIFB",
+      "votes": 13260,
+      "voteShare": 6.78,
+      "marginToWinner": 103642,
+      "marginToFirstRunnerUp": 46865
+    },
     "year": 2024,
-    "totalValidVotes": 177027,
+    "totalValidVotes": 195472,
     "constituencyId": 60
   },
   {
@@ -42258,7 +41968,7 @@
     "acNo": 61,
     "constituencyName": "Tanuku",
     "delimitationId": "4",
-    "validVotes": 186973,
+    "validVotes": 194768,
     "marginWinnerToRunnerUp1": 72121,
     "marginWinnerToRunnerUp2": 127125,
     "marginRunnerUp1ToRunnerUp2": 55004,
@@ -42338,7 +42048,7 @@
       "marginToFirstRunnerUp": 55004
     },
     "year": 2024,
-    "totalValidVotes": 186973,
+    "totalValidVotes": 194768,
     "constituencyId": 61
   },
   {
@@ -43013,52 +42723,21 @@
     "acNo": 62,
     "constituencyName": "Tadepalligudem",
     "delimitationId": "4",
-    "validVotes": 170394,
+    "validVotes": 178049,
     "marginWinnerToRunnerUp1": 62492,
     "marginWinnerToRunnerUp2": 114542,
     "marginRunnerUp1ToRunnerUp2": 52050,
     "winner": {
-      "name": "Bolisetti Srinivas",
+      "name": "Bolisetty Srinivas",
       "party": "JSP",
       "votes": 116443,
-      "voteShare": 65.32,
-      "localizedNames": {
-        "en": "Bolisetti Srinivas",
-        "hi": "बोलिसेटटि सरिणिवस",
-        "mr": "बोलिसेटटि सरिणिवस",
-        "ne": "बोलिसेटटि सरिणिवस",
-        "te": "బోలిసేటటి సరిణివస",
-        "kn": "ಬೋಲಿಸೇಟಟಿ ಸರಿಣಿವಸ",
-        "ta": "஬ோலிஸேடடி ஸரிணிவஸ",
-        "ml": "ബോലിസേടടി സരിണിവസ",
-        "bn": "বোলিসেটটি সরিণি঵স",
-        "as": "বোলিসেটটি সরিণি঵স",
-        "gu": "બોલિસેટટિ સરિણિવસ",
-        "pa": "ਬੋਲਿਸੇਟਟਿ ਸਰਿਣਿਵਸ",
-        "or": "ବୋଲିସେଟଟି ସରିଣିଵସ"
-      },
-      "localizedParties": {
-        "en": "JSP",
-        "te": "జసప",
-        "hi": "जसप",
-        "kn": "ಜಸಪ",
-        "mr": "जसप",
-        "ta": "ஜஸப",
-        "ml": "ജസപ",
-        "bn": "জসপ",
-        "gu": "જસપ",
-        "pa": "ਜਸਪ",
-        "or": "ଜସପ",
-        "as": "জসপ",
-        "ne": "जसप"
-      },
-      "age": null
+      "voteShare": 65.4
     },
     "firstRunnerUp": {
       "name": "Kottu Satyanarayana",
       "party": "YSRCP",
       "votes": 53951,
-      "voteShare": 30.37,
+      "voteShare": 30.3,
       "marginToWinner": 62492,
       "localizedParties": {
         "en": "YSR Congress Party",
@@ -43081,12 +42760,12 @@
       "name": "Marneedi Sekhar",
       "party": "INC",
       "votes": 1901,
-      "voteShare": 1.08,
+      "voteShare": 1.07,
       "marginToWinner": 114542,
       "marginToFirstRunnerUp": 52050
     },
     "year": 2024,
-    "totalValidVotes": 170394,
+    "totalValidVotes": 178049,
     "constituencyId": 62
   },
   {
@@ -43747,53 +43426,15 @@
     "acNo": 63,
     "constituencyName": "Unguturu",
     "delimitationId": "4",
-    "validVotes": 172843,
+    "validVotes": 182623,
     "marginWinnerToRunnerUp1": 44945,
     "marginWinnerToRunnerUp2": 105764,
     "marginRunnerUp1ToRunnerUp2": 60819,
     "winner": {
-      "name": "Patsamatla Dharmaraju",
+      "name": "Dharmaraju Patsamatla",
       "party": "JSP",
       "votes": 108894,
-      "voteShare": 59.63,
-      "localizedNames": {
-        "en": "Dharmaraju Patsamatla",
-        "hi": "धरमरजु पटसमटल",
-        "mr": "धरमरजु पटसमटल",
-        "ne": "धरमरजु पटसमटल",
-        "te": "ధరమరజు పటసమటల",
-        "kn": "ಧರಮರಜು ಪಟಸಮಟಲ",
-        "ta": "஧ரமரஜு படஸமடல",
-        "ml": "ധരമരജു പടസമടല",
-        "bn": "ধরমরজু পটসমটল",
-        "as": "ধরমরজু পটসমটল",
-        "gu": "ધરમરજુ પટસમટલ",
-        "pa": "ਧਰਮਰਜੁ ਪਟਸਮਟਲ",
-        "or": "ଧରମରଜୁ ପଟସମଟଲ"
-      },
-      "localizedParties": {
-        "en": "JSP",
-        "te": "జసప",
-        "hi": "जसप",
-        "kn": "ಜಸಪ",
-        "mr": "जसप",
-        "ta": "ஜஸப",
-        "ml": "ജസപ",
-        "bn": "জসপ",
-        "gu": "જસપ",
-        "pa": "ਜਸਪ",
-        "or": "ଜସପ",
-        "as": "জসপ",
-        "ne": "जसप"
-      },
-      "photoUrl": "https://www.myneta.info/images_candidate/AndhraPradesh2024/434097a50e795931eb5a8fd862d68bdf6542b8cb.jpg",
-      "affidavitUrl": "https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=402",
-      "age": 43,
-      "education": "10th Pass",
-      "profession": "Business",
-      "criminalCases": 0,
-      "totalAssets": 342987315,
-      "totalLiabilities": 216804823
+      "voteShare": 59.63
     },
     "firstRunnerUp": {
       "name": "Puppala Srinivasa Rao Vasubabu",
@@ -43827,7 +43468,7 @@
       "marginToFirstRunnerUp": 60819
     },
     "year": 2024,
-    "totalValidVotes": 172843,
+    "totalValidVotes": 182623,
     "constituencyId": 63
   },
   {
@@ -44488,7 +44129,7 @@
     "acNo": 64,
     "constituencyName": "Denduluru",
     "delimitationId": "4",
-    "validVotes": 188308,
+    "validVotes": 194666,
     "marginWinnerToRunnerUp1": 26266,
     "marginWinnerToRunnerUp2": 105680,
     "marginRunnerUp1ToRunnerUp2": 79414,
@@ -44568,7 +44209,7 @@
       "marginToFirstRunnerUp": 79414
     },
     "year": 2024,
-    "totalValidVotes": 188308,
+    "totalValidVotes": 194666,
     "constituencyId": 64
   },
   {
@@ -45229,10 +44870,10 @@
     "acNo": 65,
     "constituencyName": "Eluru",
     "delimitationId": "4",
-    "validVotes": 160736,
+    "validVotes": 166275,
     "marginWinnerToRunnerUp1": 62388,
-    "marginWinnerToRunnerUp2": 110958,
-    "marginRunnerUp1ToRunnerUp2": 48570,
+    "marginWinnerToRunnerUp2": 109792,
+    "marginRunnerUp1ToRunnerUp2": 47404,
     "winner": {
       "name": "Radha Krishnayya Badeti",
       "party": "TDP",
@@ -45301,15 +44942,15 @@
       "age": null
     },
     "secondRunnerUp": {
-      "name": "Bandi Venkateswara Rao",
-      "party": "CPI",
-      "votes": 604,
-      "voteShare": 0.36,
-      "marginToWinner": 110958,
-      "marginToFirstRunnerUp": 48570
+      "name": "Mathe Bobby",
+      "party": "RPI(A)",
+      "votes": 1770,
+      "voteShare": 1.06,
+      "marginToWinner": 109792,
+      "marginToFirstRunnerUp": 47404
     },
     "year": 2024,
-    "totalValidVotes": 160736,
+    "totalValidVotes": 166275,
     "constituencyId": 65
   },
   {
@@ -45970,10 +45611,10 @@
     "acNo": 66,
     "constituencyName": "Gopalapuram",
     "delimitationId": "4",
-    "validVotes": 202056,
+    "validVotes": 211659,
     "marginWinnerToRunnerUp1": 26784,
-    "marginWinnerToRunnerUp2": 112739,
-    "marginRunnerUp1ToRunnerUp2": 85955,
+    "marginWinnerToRunnerUp2": 112033,
+    "marginRunnerUp1ToRunnerUp2": 85249,
     "winner": {
       "name": "Maddipati Venkata Raju",
       "party": "TDP",
@@ -46042,15 +45683,15 @@
       "age": null
     },
     "secondRunnerUp": {
-      "name": "Various",
-      "party": "IND",
-      "votes": 1681,
-      "voteShare": 0.8,
-      "marginToWinner": 112739,
-      "marginToFirstRunnerUp": 85955
+      "name": "Sodadasi Martin Luther",
+      "party": "INC",
+      "votes": 2387,
+      "voteShare": 1.13,
+      "marginToWinner": 112033,
+      "marginToFirstRunnerUp": 85249
     },
     "year": 2024,
-    "totalValidVotes": 202056,
+    "totalValidVotes": 211659,
     "constituencyId": 66
   },
   {
@@ -46725,10 +46366,10 @@
     "acNo": 67,
     "constituencyName": "Polavaram",
     "delimitationId": "4",
-    "validVotes": 194971,
+    "validVotes": 218999,
     "marginWinnerToRunnerUp1": 7935,
-    "marginWinnerToRunnerUp2": 97885,
-    "marginRunnerUp1ToRunnerUp2": 89950,
+    "marginWinnerToRunnerUp2": 97642,
+    "marginRunnerUp1ToRunnerUp2": 89707,
     "winner": {
       "name": "Chirri Balaraju",
       "party": "JSP",
@@ -46797,15 +46438,15 @@
       "age": null
     },
     "secondRunnerUp": {
-      "name": "Srujana Duvvela",
-      "party": "INC",
-      "votes": 3568,
-      "voteShare": 1.63,
-      "marginToWinner": 97885,
-      "marginToFirstRunnerUp": 89950
+      "name": "Sariyam Ram Mohan",
+      "party": "IND",
+      "votes": 3811,
+      "voteShare": 1.74,
+      "marginToWinner": 97642,
+      "marginToFirstRunnerUp": 89707
     },
     "year": 2024,
-    "totalValidVotes": 194971,
+    "totalValidVotes": 218999,
     "constituencyId": 67
   },
   {
@@ -47473,7 +47114,7 @@
     "acNo": 68,
     "constituencyName": "Chintalapudi",
     "delimitationId": "4",
-    "validVotes": 212486,
+    "validVotes": 225391,
     "marginWinnerToRunnerUp1": 27766,
     "marginWinnerToRunnerUp2": 115168,
     "marginRunnerUp1ToRunnerUp2": 87402,
@@ -47552,7 +47193,7 @@
       "marginToFirstRunnerUp": 87402
     },
     "year": 2024,
-    "totalValidVotes": 212486,
+    "totalValidVotes": 225391,
     "constituencyId": 68
   },
   {
@@ -48175,7 +47816,7 @@
     "acNo": 69,
     "constituencyName": "Tiruvuru",
     "delimitationId": "4",
-    "validVotes": 179564,
+    "validVotes": 183420,
     "marginWinnerToRunnerUp1": 21874,
     "marginWinnerToRunnerUp2": 99390,
     "marginRunnerUp1ToRunnerUp2": 77516,
@@ -48253,7 +47894,7 @@
       "marginToFirstRunnerUp": 77516
     },
     "year": 2024,
-    "totalValidVotes": 179564,
+    "totalValidVotes": 183420,
     "constituencyId": 69
   },
   {
@@ -48914,7 +48555,7 @@
     "acNo": 70,
     "constituencyName": "Nuzvid",
     "delimitationId": "4",
-    "validVotes": 204080,
+    "validVotes": 211717,
     "marginWinnerToRunnerUp1": 12378,
     "marginWinnerToRunnerUp2": 105824,
     "marginRunnerUp1ToRunnerUp2": 93446,
@@ -48994,7 +48635,7 @@
       "marginToFirstRunnerUp": 93446
     },
     "year": 2024,
-    "totalValidVotes": 204080,
+    "totalValidVotes": 211717,
     "constituencyId": 70
   },
   {
@@ -49655,15 +49296,15 @@
     "acNo": 71,
     "constituencyName": "Gannavaram (Krishna)",
     "delimitationId": "4",
-    "validVotes": 233476,
+    "validVotes": 239525,
     "marginWinnerToRunnerUp1": 37628,
-    "marginWinnerToRunnerUp2": 135552,
-    "marginRunnerUp1ToRunnerUp2": 97924,
+    "marginWinnerToRunnerUp2": 134333,
+    "marginRunnerUp1ToRunnerUp2": 96705,
     "winner": {
       "name": "Yarlagadda Venkata Rao",
       "party": "TDP",
       "votes": 135552,
-      "voteShare": 58.06,
+      "voteShare": 56.59,
       "localizedNames": {
         "en": "Yarlagadda Venkata Rao",
         "hi": "यरलगडद वेणकत रओ",
@@ -49700,7 +49341,7 @@
       "name": "Vallabhaneni Vamsi Mohan",
       "party": "YSRCP",
       "votes": 97924,
-      "voteShare": 41.94,
+      "voteShare": 40.88,
       "marginToWinner": 37628,
       "localizedParties": {
         "en": "YSR Congress Party",
@@ -49719,9 +49360,16 @@
       },
       "age": null
     },
-    "secondRunnerUp": null,
+    "secondRunnerUp": {
+      "name": "Kallam Venkateswararao",
+      "party": "CPI(M)",
+      "votes": 1219,
+      "voteShare": 0.51,
+      "marginToWinner": 134333,
+      "marginToFirstRunnerUp": 96705
+    },
     "year": 2024,
-    "totalValidVotes": 233476,
+    "totalValidVotes": 239525,
     "constituencyId": 71
   },
   {
@@ -50122,15 +49770,15 @@
     "acNo": 72,
     "constituencyName": "Gudivada",
     "delimitationId": "4",
-    "validVotes": 166920,
-    "marginWinnerToRunnerUp1": 64980,
-    "marginWinnerToRunnerUp2": 109980,
-    "marginRunnerUp1ToRunnerUp2": 56940,
+    "validVotes": 171604,
+    "marginWinnerToRunnerUp1": 53040,
+    "marginWinnerToRunnerUp2": 108647,
+    "marginRunnerUp1ToRunnerUp2": 55607,
     "winner": {
       "name": "Venigandla Ramu",
       "party": "TDP",
-      "votes": 120980,
-      "voteShare": 34.08,
+      "votes": 109980,
+      "voteShare": 64.09,
       "localizedNames": {
         "en": "Venigandla Ramu",
         "hi": "वेणिगंडल रमु",
@@ -50171,31 +49819,22 @@
       "totalLiabilities": 166115412
     },
     "firstRunnerUp": {
-      "name": "Kodali Sri Venkateswara Rao",
+      "name": "Kodali Sri Venkateswara Rao (nani)",
       "party": "YSRCP",
-      "votes": 56000,
+      "votes": 56940,
       "voteShare": 33.18,
-      "marginToWinner": 64980,
-      "localizedParties": {
-        "en": "YSR Congress Party",
-        "te": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
-        "hi": "वाईएसआर कांग्रेस पार्टी",
-        "kn": "ವೈಎಸ್ಆರ್ ಕಾಂಗ್ರೆಸ್ ಪಕ್ಷ",
-        "mr": "वायएसआर काँग्रेस पार्टी",
-        "ta": "ஒய்.எஸ்.ஆர் காங்கிரஸ் கட்சி",
-        "ml": "വൈ.എസ്.ആർ കോൺഗ്രസ് പാർട്ടി",
-        "bn": "ওয়াইএসআর কংগ্রেস পার্টি",
-        "gu": "વાયએસઆર કોંગ્રેસ પાર્ટી",
-        "pa": "ਵਾਈਐਸਆਰ ਕਾਂਗਰਸ ਪਾਰਟੀ",
-        "or": "ୱାଇଏସଆର କଂଗ୍ରେସ ପାର୍ଟି",
-        "as": "ৱাইএছআৰ কংগ্ৰেছ পাৰ্টী",
-        "ne": "वाईएसआर काङ्ग्रेस पार्टी"
-      },
-      "age": null
+      "marginToWinner": 53040
     },
-    "secondRunnerUp": null,
+    "secondRunnerUp": {
+      "name": "Vaddadi Govinda Rao (rajesh)",
+      "party": "INC",
+      "votes": 1333,
+      "voteShare": 0.78,
+      "marginToWinner": 108647,
+      "marginToFirstRunnerUp": 55607
+    },
     "year": 2024,
-    "totalValidVotes": 166920,
+    "totalValidVotes": 171604,
     "constituencyId": 72
   },
   {
@@ -50596,13 +50235,13 @@
     "acNo": 73,
     "constituencyName": "Kaikalur",
     "delimitationId": "4",
-    "validVotes": 173287,
+    "validVotes": 180991,
     "marginWinnerToRunnerUp1": 45273,
-    "marginWinnerToRunnerUp2": 109280,
-    "marginRunnerUp1ToRunnerUp2": 64007,
+    "marginWinnerToRunnerUp2": 106800,
+    "marginRunnerUp1ToRunnerUp2": 61527,
     "winner": {
       "name": "Kamineni Srinivas",
-      "party": "BHARTIYA JANATA PARTY",
+      "party": "BJP",
       "votes": 109280,
       "voteShare": 60.38,
       "localizedNames": {
@@ -50665,9 +50304,16 @@
       },
       "age": null
     },
-    "secondRunnerUp": null,
+    "secondRunnerUp": {
+      "name": "Boddu Noble",
+      "party": "INC",
+      "votes": 2480,
+      "voteShare": 1.37,
+      "marginToWinner": 106800,
+      "marginToFirstRunnerUp": 61527
+    },
     "year": 2024,
-    "totalValidVotes": 173287,
+    "totalValidVotes": 180991,
     "constituencyId": 73
   },
   {
@@ -51338,10 +50984,10 @@
     "acNo": 74,
     "constituencyName": "Pedana",
     "delimitationId": "4",
-    "validVotes": 144665,
+    "validVotes": 149961,
     "marginWinnerToRunnerUp1": 38123,
-    "marginWinnerToRunnerUp2": 90000,
-    "marginRunnerUp1ToRunnerUp2": 51877,
+    "marginWinnerToRunnerUp2": 90040,
+    "marginRunnerUp1ToRunnerUp2": 51917,
     "winner": {
       "name": "Kagitha Krishna Prasad",
       "party": "TDP",
@@ -51412,13 +51058,13 @@
     "secondRunnerUp": {
       "name": "Sonti Nagaraju",
       "party": "INC",
-      "votes": 1394,
+      "votes": 1354,
       "voteShare": 0.9,
-      "marginToWinner": 90000,
-      "marginToFirstRunnerUp": 51877
+      "marginToWinner": 90040,
+      "marginToFirstRunnerUp": 51917
     },
     "year": 2024,
-    "totalValidVotes": 144665,
+    "totalValidVotes": 149961,
     "constituencyId": 74
   },
   {
@@ -52086,7 +51732,7 @@
     "acNo": 75,
     "constituencyName": "Machilipatnam",
     "delimitationId": "4",
-    "validVotes": 159846,
+    "validVotes": 164839,
     "marginWinnerToRunnerUp1": 50242,
     "marginWinnerToRunnerUp2": 103601,
     "marginRunnerUp1ToRunnerUp2": 53359,
@@ -52166,7 +51812,7 @@
       "marginToFirstRunnerUp": 53359
     },
     "year": 2024,
-    "totalValidVotes": 159846,
+    "totalValidVotes": 164839,
     "constituencyId": 75
   },
   {
@@ -52848,46 +52494,15 @@
     "acNo": 76,
     "constituencyName": "Avanigadda",
     "delimitationId": "4",
-    "validVotes": 180486,
+    "validVotes": 186445,
     "marginWinnerToRunnerUp1": 46434,
     "marginWinnerToRunnerUp2": 112392,
     "marginRunnerUp1ToRunnerUp2": 65958,
     "winner": {
-      "name": "Mandali Buddha Prasad",
+      "name": "Buddhaprasad Mandali",
       "party": "JSP",
       "votes": 113460,
-      "voteShare": 60.85,
-      "localizedNames": {
-        "en": "Mandali Buddha Prasad",
-        "hi": "मंदलि बुडध परसड",
-        "mr": "मंदलि बुडध परसड",
-        "ne": "मंदलि बुडध परसड",
-        "te": "మందలి బుడధ పరసడ",
-        "kn": "ಮಂದಲಿ ಬುಡಧ ಪರಸಡ",
-        "ta": "மஂ஦லி ஬ு஡஧ பரஸ஡",
-        "ml": "മംദലി ബുഡധ പരസഡ",
-        "bn": "মংদলি বুডধ পরসড",
-        "as": "মংদলি বুডধ পরসড",
-        "gu": "મંદલિ બુડધ પરસડ",
-        "pa": "ਮਂਦਲਿ ਬੁਡਧ ਪਰਸਡ",
-        "or": "ମଂଦଲି ବୁଡଧ ପରସଡ"
-      },
-      "localizedParties": {
-        "en": "JSP",
-        "te": "జసప",
-        "hi": "जसप",
-        "kn": "ಜಸಪ",
-        "mr": "जसप",
-        "ta": "ஜஸப",
-        "ml": "ജസപ",
-        "bn": "জসপ",
-        "gu": "જસપ",
-        "pa": "ਜਸਪ",
-        "or": "ଜସପ",
-        "as": "জসপ",
-        "ne": "जसप"
-      },
-      "age": null
+      "voteShare": 60.85
     },
     "firstRunnerUp": {
       "name": "Simhadri Ramesh Babu",
@@ -52921,7 +52536,7 @@
       "marginToFirstRunnerUp": 65958
     },
     "year": 2024,
-    "totalValidVotes": 180486,
+    "totalValidVotes": 186445,
     "constituencyId": 76
   },
   {
@@ -53603,80 +53218,33 @@
     "acNo": 77,
     "constituencyName": "Pamarru",
     "delimitationId": "4",
-    "validVotes": 158688,
-    "marginWinnerToRunnerUp1": 37628,
-    "marginWinnerToRunnerUp2": 134333,
-    "marginRunnerUp1ToRunnerUp2": 96705,
+    "validVotes": 164869,
+    "marginWinnerToRunnerUp1": 29690,
+    "marginWinnerToRunnerUp2": 91956,
+    "marginRunnerUp1ToRunnerUp2": 62266,
     "winner": {
-      "name": "Yarlagadda Venkata Rao",
+      "name": "Kumar Raja Varla",
       "party": "TDP",
-      "votes": 135552,
-      "voteShare": 56.59,
-      "localizedNames": {
-        "en": "Varla Kumar Raja",
-        "hi": "वरल कुमर रज",
-        "mr": "वरल कुमर रज",
-        "ne": "वरल कुमर रज",
-        "te": "వరల కుమర రజ",
-        "kn": "ವರಲ ಕುಮರ ರಜ",
-        "ta": "வரல குமர ரஜ",
-        "ml": "വരല കുമര രജ",
-        "bn": "঵রল কুমর রজ",
-        "as": "঵রল কুমর রজ",
-        "gu": "વરલ કુમર રજ",
-        "pa": "ਵਰਲ ਕੁਮਰ ਰਜ",
-        "or": "ଵରଲ କୁମର ରଜ"
-      },
-      "localizedParties": {
-        "en": "Telugu Desam Party",
-        "te": "తెలుగుదేశం పార్టీ",
-        "hi": "तेलुगु देशम पार्टी",
-        "kn": "ತೆಲುಗು ದೇಶಂ ಪಕ್ಷ",
-        "mr": "तेलुगु देशम पार्टी",
-        "ta": "தெலுங்கு தேசம் கட்சி",
-        "ml": "തെലുങ്ക് ദേശം പാർട്ടി",
-        "bn": "তেলেগু দেশম পার্টি",
-        "gu": "તેલુગુ દેશમ પાર્ટી",
-        "pa": "ਤੇਲਗੂ ਦੇਸ਼ਮ ਪਾਰਟੀ",
-        "or": "ତେଲୁଗୁ ଦେଶମ ପାର୍ଟି",
-        "as": "তেলেগু দেশম পাৰ্টী",
-        "ne": "तेलुगु देशम पार्टी"
-      },
-      "age": null
+      "votes": 94189,
+      "voteShare": 57.13
     },
     "firstRunnerUp": {
-      "name": "Vallabhaneni Vamsi Mohan",
+      "name": "Anil Kumar Kaile",
       "party": "YSRCP",
-      "votes": 97924,
-      "voteShare": 40.88,
-      "marginToWinner": 37628,
-      "localizedParties": {
-        "en": "YSR Congress Party",
-        "te": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
-        "hi": "वाईएसआर कांग्रेस पार्टी",
-        "kn": "ವೈಎಸ್ಆರ್ ಕಾಂಗ್ರೆಸ್ ಪಕ್ಷ",
-        "mr": "वायएसआर काँग्रेस पार्टी",
-        "ta": "ஒய்.எஸ்.ஆர் காங்கிரஸ் கட்சி",
-        "ml": "വൈ.എസ്.ആർ കോൺഗ്രസ് പാർട്ടി",
-        "bn": "ওয়াইএসআর কংগ্রেস পার্টি",
-        "gu": "વાયએસઆર કોંગ્રેસ પાર્ટી",
-        "pa": "ਵਾਈਐਸਆਰ ਕਾਂਗਰਸ ਪਾਰਟੀ",
-        "or": "ୱାଇଏସଆର କଂଗ୍ରେସ ପାର୍ଟି",
-        "as": "ৱাইএছআৰ কংগ্ৰেছ পাৰ্টী",
-        "ne": "वाईएसआर काङ्ग्रेस पार्टी"
-      },
-      "age": null
+      "votes": 64499,
+      "voteShare": 39.12,
+      "marginToWinner": 29690
     },
     "secondRunnerUp": {
-      "name": "Kallam Venkateswara Rao",
-      "party": "CPI(M)",
-      "votes": 1219,
-      "voteShare": 0.51,
-      "marginToWinner": 134333,
-      "marginToFirstRunnerUp": 96705
+      "name": "D Y Das",
+      "party": "INC",
+      "votes": 2233,
+      "voteShare": 1.35,
+      "marginToWinner": 91956,
+      "marginToFirstRunnerUp": 62266
     },
     "year": 2024,
-    "totalValidVotes": 158688,
+    "totalValidVotes": 164869,
     "constituencyId": 77
   },
   {
@@ -54337,7 +53905,7 @@
     "acNo": 78,
     "constituencyName": "Penamaluru",
     "delimitationId": "4",
-    "validVotes": 229909,
+    "validVotes": 236539,
     "marginWinnerToRunnerUp1": 59915,
     "marginWinnerToRunnerUp2": 142316,
     "marginRunnerUp1ToRunnerUp2": 82401,
@@ -54417,7 +53985,7 @@
       "marginToFirstRunnerUp": 82401
     },
     "year": 2024,
-    "totalValidVotes": 229909,
+    "totalValidVotes": 236539,
     "constituencyId": 78
   },
   {
@@ -55099,7 +54667,7 @@
     "acNo": 79,
     "constituencyName": "Vijayawada West",
     "delimitationId": "4",
-    "validVotes": 164306,
+    "validVotes": 171843,
     "marginWinnerToRunnerUp1": 47032,
     "marginWinnerToRunnerUp2": 101946,
     "marginRunnerUp1ToRunnerUp2": 54914,
@@ -55172,7 +54740,7 @@
       "marginToFirstRunnerUp": 54914
     },
     "year": 2024,
-    "totalValidVotes": 164306,
+    "totalValidVotes": 171843,
     "constituencyId": 79
   },
   {
@@ -55833,7 +55401,7 @@
     "acNo": 80,
     "constituencyName": "Vijayawada Central",
     "delimitationId": "4",
-    "validVotes": 191182,
+    "validVotes": 204717,
     "marginWinnerToRunnerUp1": 68886,
     "marginWinnerToRunnerUp2": 125147,
     "marginRunnerUp1ToRunnerUp2": 56261,
@@ -55913,7 +55481,7 @@
       "marginToFirstRunnerUp": 56261
     },
     "year": 2024,
-    "totalValidVotes": 191182,
+    "totalValidVotes": 204717,
     "constituencyId": 80
   },
   {
@@ -56588,10 +56156,10 @@
     "acNo": 81,
     "constituencyName": "Vijayawada East",
     "delimitationId": "4",
-    "validVotes": 188042,
+    "validVotes": 195906,
     "marginWinnerToRunnerUp1": 49640,
-    "marginWinnerToRunnerUp2": 118841,
-    "marginRunnerUp1ToRunnerUp2": 69201,
+    "marginWinnerToRunnerUp2": 116076,
+    "marginRunnerUp1ToRunnerUp2": 66436,
     "winner": {
       "name": "Gadde Rama Mohan",
       "party": "TDP",
@@ -56658,9 +56226,16 @@
       },
       "age": null
     },
-    "secondRunnerUp": null,
+    "secondRunnerUp": {
+      "name": "Dasharath Kunapareddy",
+      "party": "AllJP",
+      "votes": 2765,
+      "voteShare": 1.41,
+      "marginToWinner": 116076,
+      "marginToFirstRunnerUp": 66436
+    },
     "year": 2024,
-    "totalValidVotes": 188042,
+    "totalValidVotes": 195906,
     "constituencyId": 81
   },
   {
@@ -57339,7 +56914,7 @@
     "acNo": 82,
     "constituencyName": "Mylavaram",
     "delimitationId": "4",
-    "validVotes": 231847,
+    "validVotes": 242597,
     "marginWinnerToRunnerUp1": 42829,
     "marginWinnerToRunnerUp2": 132686,
     "marginRunnerUp1ToRunnerUp2": 89857,
@@ -57412,7 +56987,7 @@
       "marginToFirstRunnerUp": 89857
     },
     "year": 2024,
-    "totalValidVotes": 231847,
+    "totalValidVotes": 242597,
     "constituencyId": 82
   },
   {
@@ -57813,10 +57388,10 @@
     "acNo": 83,
     "constituencyName": "Nandigama",
     "delimitationId": "4",
-    "validVotes": 177007,
+    "validVotes": 181991,
     "marginWinnerToRunnerUp1": 27395,
-    "marginWinnerToRunnerUp2": 100715,
-    "marginRunnerUp1ToRunnerUp2": 73320,
+    "marginWinnerToRunnerUp2": 100053,
+    "marginRunnerUp1ToRunnerUp2": 72658,
     "winner": {
       "name": "Tangirala Sowmya",
       "party": "TDP",
@@ -57885,15 +57460,15 @@
       "age": null
     },
     "secondRunnerUp": {
-      "name": "Manda Vajraiah",
-      "party": "INC",
-      "votes": 1486,
-      "voteShare": 0.82,
-      "marginToWinner": 100715,
-      "marginToFirstRunnerUp": 73320
+      "name": "Barre. Udaya Kiran",
+      "party": "BSP",
+      "votes": 2148,
+      "voteShare": 1.18,
+      "marginToWinner": 100053,
+      "marginToFirstRunnerUp": 72658
     },
     "year": 2024,
-    "totalValidVotes": 177007,
+    "totalValidVotes": 181991,
     "constituencyId": 83
   },
   {
@@ -58561,7 +58136,7 @@
     "acNo": 84,
     "constituencyName": "Jaggayyapeta",
     "delimitationId": "4",
-    "validVotes": 180981,
+    "validVotes": 185887,
     "marginWinnerToRunnerUp1": 15977,
     "marginWinnerToRunnerUp2": 95952,
     "marginRunnerUp1ToRunnerUp2": 79975,
@@ -58640,7 +58215,7 @@
       "marginToFirstRunnerUp": 79975
     },
     "year": 2024,
-    "totalValidVotes": 180981,
+    "totalValidVotes": 185887,
     "constituencyId": 84
   },
   {
@@ -59301,7 +58876,7 @@
     "acNo": 85,
     "constituencyName": "Pedakurapadu",
     "delimitationId": "4",
-    "validVotes": 204825,
+    "validVotes": 209298,
     "marginWinnerToRunnerUp1": 21089,
     "marginWinnerToRunnerUp2": 111667,
     "marginRunnerUp1ToRunnerUp2": 90578,
@@ -59374,7 +58949,7 @@
       "marginToFirstRunnerUp": 90578
     },
     "year": 2024,
-    "totalValidVotes": 204825,
+    "totalValidVotes": 209298,
     "constituencyId": 85
   },
   {
@@ -60035,7 +59610,7 @@
     "acNo": 86,
     "constituencyName": "Tadikonda",
     "delimitationId": "4",
-    "validVotes": 179564,
+    "validVotes": 184100,
     "marginWinnerToRunnerUp1": 39606,
     "marginWinnerToRunnerUp2": 107071,
     "marginRunnerUp1ToRunnerUp2": 67465,
@@ -60115,7 +59690,7 @@
       "marginToFirstRunnerUp": 67465
     },
     "year": 2024,
-    "totalValidVotes": 179564,
+    "totalValidVotes": 184100,
     "constituencyId": 86
   },
   {
@@ -60783,7 +60358,7 @@
     "acNo": 87,
     "constituencyName": "Mangalagiri",
     "delimitationId": "4",
-    "validVotes": 244007,
+    "validVotes": 253830,
     "marginWinnerToRunnerUp1": 91413,
     "marginWinnerToRunnerUp2": 165081,
     "marginRunnerUp1ToRunnerUp2": 73668,
@@ -60863,7 +60438,7 @@
       "marginToFirstRunnerUp": 73668
     },
     "year": 2024,
-    "totalValidVotes": 244007,
+    "totalValidVotes": 253830,
     "constituencyId": 87
   },
   {
@@ -61531,15 +61106,15 @@
     "acNo": 88,
     "constituencyName": "Ponnuru",
     "delimitationId": "4",
-    "validVotes": 187905,
+    "validVotes": 193875,
     "marginWinnerToRunnerUp1": 32915,
-    "marginWinnerToRunnerUp2": 110410,
-    "marginRunnerUp1ToRunnerUp2": 77495,
+    "marginWinnerToRunnerUp2": 108010,
+    "marginRunnerUp1ToRunnerUp2": 75095,
     "winner": {
       "name": "Dhulipalla Narendra Kumar",
       "party": "TDP",
       "votes": 110410,
-      "voteShare": 58.76,
+      "voteShare": 56.95,
       "localizedNames": {
         "en": "Dhulipalla Narendra Kumar",
         "hi": "ढुलिपलल नरेणडर कुमर",
@@ -61576,7 +61151,7 @@
       "name": "Ambati Murali",
       "party": "YSRCP",
       "votes": 77495,
-      "voteShare": 41.24,
+      "voteShare": 39.97,
       "marginToWinner": 32915,
       "localizedParties": {
         "en": "YSR Congress Party",
@@ -61595,9 +61170,16 @@
       },
       "age": null
     },
-    "secondRunnerUp": null,
+    "secondRunnerUp": {
+      "name": "Jakka Ravindranath",
+      "party": "INC",
+      "votes": 2400,
+      "voteShare": 1.24,
+      "marginToWinner": 108010,
+      "marginToFirstRunnerUp": 75095
+    },
     "year": 2024,
-    "totalValidVotes": 187905,
+    "totalValidVotes": 193875,
     "constituencyId": 88
   },
   {
@@ -62220,80 +61802,33 @@
     "acNo": 89,
     "constituencyName": "Vemuru",
     "delimitationId": "4",
-    "validVotes": 167823,
-    "marginWinnerToRunnerUp1": 32915,
-    "marginWinnerToRunnerUp2": 108010,
-    "marginRunnerUp1ToRunnerUp2": 75095,
+    "validVotes": 172851,
+    "marginWinnerToRunnerUp1": 22021,
+    "marginWinnerToRunnerUp2": 93258,
+    "marginRunnerUp1ToRunnerUp2": 71237,
     "winner": {
-      "name": "Dhulipalla Narendra Kumar",
+      "name": "Ananda Babu Nakka",
       "party": "TDP",
-      "votes": 110410,
-      "voteShare": 56.95,
-      "localizedNames": {
-        "en": "Nakka Ananda Babu",
-        "hi": "नकक अनणद बबु",
-        "mr": "नकक अनणद बबु",
-        "ne": "नकक अनणद बबु",
-        "te": "నకక అనణద బబు",
-        "kn": "ನಕಕ ಅನಣದ ಬಬು",
-        "ta": "நகக அநண஦ ஬஬ு",
-        "ml": "നകക അനണദ ബബു",
-        "bn": "নকক অনণদ ববু",
-        "as": "নকক অনণদ ববু",
-        "gu": "નકક અનણદ બબુ",
-        "pa": "ਨਕਕ ਅਨਣਦ ਬਬੁ",
-        "or": "ନକକ ଅନଣଦ ବବୁ"
-      },
-      "localizedParties": {
-        "en": "Telugu Desam Party",
-        "te": "తెలుగుదేశం పార్టీ",
-        "hi": "तेलुगु देशम पार्टी",
-        "kn": "ತೆಲುಗು ದೇಶಂ ಪಕ್ಷ",
-        "mr": "तेलुगु देशम पार्टी",
-        "ta": "தெலுங்கு தேசம் கட்சி",
-        "ml": "തെലുങ്ക് ദേശം പാർട്ടി",
-        "bn": "তেলেগু দেশম পার্টি",
-        "gu": "તેલુગુ દેશમ પાર્ટી",
-        "pa": "ਤੇਲਗੂ ਦੇਸ਼ਮ ਪਾਰਟੀ",
-        "or": "ତେଲୁଗୁ ଦେଶମ ପାର୍ଟି",
-        "as": "তেলেগু দেশম পাৰ্টী",
-        "ne": "तेलुगु देशम पार्टी"
-      },
-      "age": null
+      "votes": 94922,
+      "voteShare": 54.92
     },
     "firstRunnerUp": {
-      "name": "Ambati Murali Krishna",
+      "name": "Ashok Babu Varikuti",
       "party": "YSRCP",
-      "votes": 77495,
-      "voteShare": 39.97,
-      "marginToWinner": 32915,
-      "localizedParties": {
-        "en": "YSR Congress Party",
-        "te": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
-        "hi": "वाईएसआर कांग्रेस पार्टी",
-        "kn": "ವೈಎಸ್ಆರ್ ಕಾಂಗ್ರೆಸ್ ಪಕ್ಷ",
-        "mr": "वायएसआर काँग्रेस पार्टी",
-        "ta": "ஒய்.எஸ்.ஆர் காங்கிரஸ் கட்சி",
-        "ml": "വൈ.എസ്.ആർ കോൺഗ്രസ് പാർട്ടി",
-        "bn": "ওয়াইএসআর কংগ্রেস পার্টি",
-        "gu": "વાયએસઆર કોંગ્રેસ પાર્ટી",
-        "pa": "ਵਾਈਐਸਆਰ ਕਾਂਗਰਸ ਪਾਰਟੀ",
-        "or": "ୱାଇଏସଆର କଂଗ୍ରେସ ପାର୍ଟି",
-        "as": "ৱাইএছআৰ কংগ্ৰেছ পাৰ্টী",
-        "ne": "वाईएसआर काङ्ग्रेस पार्टी"
-      },
-      "age": null
+      "votes": 72901,
+      "voteShare": 42.18,
+      "marginToWinner": 22021
     },
     "secondRunnerUp": {
-      "name": "Jakka Ravindranath",
+      "name": "Buraga Subba Rao",
       "party": "INC",
-      "votes": 2400,
-      "voteShare": 1.24,
-      "marginToWinner": 108010,
-      "marginToFirstRunnerUp": 75095
+      "votes": 1664,
+      "voteShare": 0.96,
+      "marginToWinner": 93258,
+      "marginToFirstRunnerUp": 71237
     },
     "year": 2024,
-    "totalValidVotes": 167823,
+    "totalValidVotes": 172851,
     "constituencyId": 89
   },
   {
@@ -62975,7 +62510,7 @@
     "acNo": 90,
     "constituencyName": "Repalle",
     "delimitationId": "4",
-    "validVotes": 182311,
+    "validVotes": 188832,
     "marginWinnerToRunnerUp1": 39947,
     "marginWinnerToRunnerUp2": 108288,
     "marginRunnerUp1ToRunnerUp2": 68341,
@@ -63048,7 +62583,7 @@
       "marginToFirstRunnerUp": 68341
     },
     "year": 2024,
-    "totalValidVotes": 182311,
+    "totalValidVotes": 188832,
     "constituencyId": 90
   },
   {
@@ -63709,7 +63244,7 @@
     "acNo": 91,
     "constituencyName": "Tenali",
     "delimitationId": "4",
-    "validVotes": 199810,
+    "validVotes": 205996,
     "marginWinnerToRunnerUp1": 48112,
     "marginWinnerToRunnerUp2": 121773,
     "marginRunnerUp1ToRunnerUp2": 73661,
@@ -63789,7 +63324,7 @@
       "marginToFirstRunnerUp": 73661
     },
     "year": 2024,
-    "totalValidVotes": 199810,
+    "totalValidVotes": 205996,
     "constituencyId": 91
   },
   {
@@ -64471,7 +64006,7 @@
     "acNo": 92,
     "constituencyName": "Bapatla",
     "delimitationId": "4",
-    "validVotes": 153484,
+    "validVotes": 161226,
     "marginWinnerToRunnerUp1": 27768,
     "marginWinnerToRunnerUp2": 86433,
     "marginRunnerUp1ToRunnerUp2": 58665,
@@ -64516,7 +64051,7 @@
       "name": "Kona Raghupathi",
       "party": "YSRCP",
       "votes": 62858,
-      "voteShare": 38.98,
+      "voteShare": 38.99,
       "marginToWinner": 27768,
       "localizedParties": {
         "en": "YSR Congress Party",
@@ -64544,7 +64079,7 @@
       "marginToFirstRunnerUp": 58665
     },
     "year": 2024,
-    "totalValidVotes": 153484,
+    "totalValidVotes": 161226,
     "constituencyId": 92
   },
   {
@@ -65205,7 +64740,7 @@
     "acNo": 93,
     "constituencyName": "Prathipadu (Guntur)",
     "delimitationId": "4",
-    "validVotes": 215315,
+    "validVotes": 221479,
     "marginWinnerToRunnerUp1": 42015,
     "marginWinnerToRunnerUp2": 125174,
     "marginRunnerUp1ToRunnerUp2": 83159,
@@ -65285,7 +64820,7 @@
       "marginToFirstRunnerUp": 83159
     },
     "year": 2024,
-    "totalValidVotes": 215315,
+    "totalValidVotes": 221479,
     "constituencyId": 93
   },
   {
@@ -65946,7 +65481,7 @@
     "acNo": 94,
     "constituencyName": "Guntur West",
     "delimitationId": "4",
-    "validVotes": 180984,
+    "validVotes": 188475,
     "marginWinnerToRunnerUp1": 51150,
     "marginWinnerToRunnerUp2": 112348,
     "marginRunnerUp1ToRunnerUp2": 61198,
@@ -66026,7 +65561,7 @@
       "marginToFirstRunnerUp": 61198
     },
     "year": 2024,
-    "totalValidVotes": 180984,
+    "totalValidVotes": 188475,
     "constituencyId": 94
   },
   {
@@ -66701,7 +66236,7 @@
     "acNo": 95,
     "constituencyName": "Guntur East",
     "delimitationId": "4",
-    "validVotes": 169668,
+    "validVotes": 179491,
     "marginWinnerToRunnerUp1": 31962,
     "marginWinnerToRunnerUp2": 95576,
     "marginRunnerUp1ToRunnerUp2": 63614,
@@ -66779,7 +66314,7 @@
       "marginToFirstRunnerUp": 63614
     },
     "year": 2024,
-    "totalValidVotes": 169668,
+    "totalValidVotes": 179491,
     "constituencyId": 95
   },
   {
@@ -67440,87 +66975,33 @@
     "acNo": 96,
     "constituencyName": "Chilakaluripet",
     "delimitationId": "4",
-    "validVotes": 188862,
-    "marginWinnerToRunnerUp1": 29486,
-    "marginWinnerToRunnerUp2": 126045,
-    "marginRunnerUp1ToRunnerUp2": 96559,
+    "validVotes": 195400,
+    "marginWinnerToRunnerUp1": 33262,
+    "marginWinnerToRunnerUp2": 108792,
+    "marginRunnerUp1ToRunnerUp2": 75530,
     "winner": {
-      "name": "Yarapathineni Srinivasa Rao",
+      "name": "Prathipati Pullarao",
       "party": "TDP",
-      "votes": 128201,
-      "voteShare": 55.01,
-      "localizedNames": {
-        "en": "Prathipati Pulla Rao",
-        "hi": "परठिपटि पुलल रओ",
-        "mr": "परठिपटि पुलल रओ",
-        "ne": "परठिपटि पुलल रओ",
-        "te": "పరఠిపటి పులల రఓ",
-        "kn": "ಪರಠಿಪಟಿ ಪುಲಲ ರಓ",
-        "ta": "பர஠ிபடி புலல ரஓ",
-        "ml": "പരഠിപടി പുലല രഓ",
-        "bn": "পরঠিপটি পুলল রও",
-        "as": "পরঠিপটি পুলল রও",
-        "gu": "પરઠિપટિ પુલલ રઓ",
-        "pa": "ਪਰਠਿਪਟਿ ਪੁਲਲ ਰਓ",
-        "or": "ପରଠିପଟି ପୁଲଲ ରଓ"
-      },
-      "localizedParties": {
-        "en": "Telugu Desam Party",
-        "te": "తెలుగుదేశం పార్టీ",
-        "hi": "तेलुगु देशम पार्टी",
-        "kn": "ತೆಲುಗು ದೇಶಂ ಪಕ್ಷ",
-        "mr": "तेलुगु देशम पार्टी",
-        "ta": "தெலுங்கு தேசம் கட்சி",
-        "ml": "തെലുങ്ക് ദേശം പാർട്ടി",
-        "bn": "তেলেগু দেশম পার্টি",
-        "gu": "તેલુગુ દેશમ પાર્ટી",
-        "pa": "ਤੇਲਗੂ ਦੇਸ਼ਮ ਪਾਰਟੀ",
-        "or": "ତେଲୁଗୁ ଦେଶମ ପାର୍ଟି",
-        "as": "তেলেগু দেশম পাৰ্টী",
-        "ne": "तेलुगु देशम पार्टी"
-      },
-      "photoUrl": "https://www.myneta.info/images_candidate/AndhraPradesh2024/c2c331e20554c975ad94a828bc0a5263dbed54d9.jpg",
-      "affidavitUrl": "https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=312",
-      "age": 65,
-      "education": "Graduate",
-      "profession": "Business",
-      "criminalCases": 20,
-      "totalAssets": 947882298,
-      "totalLiabilities": 407478809
+      "votes": 111062,
+      "voteShare": 56.84
     },
     "firstRunnerUp": {
-      "name": "Kasu Mahesh Reddy",
+      "name": "Kavati Siva Naga Manohar Naidu",
       "party": "YSRCP",
-      "votes": 98715,
-      "voteShare": 42.36,
-      "marginToWinner": 29486,
-      "localizedParties": {
-        "en": "YSR Congress Party",
-        "te": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
-        "hi": "वाईएसआर कांग्रेस पार्टी",
-        "kn": "ವೈಎಸ್ಆರ್ ಕಾಂಗ್ರೆಸ್ ಪಕ್ಷ",
-        "mr": "वायएसआर काँग्रेस पार्टी",
-        "ta": "ஒய்.எஸ்.ஆர் காங்கிரஸ் கட்சி",
-        "ml": "വൈ.എസ്.ആർ കോൺഗ്രസ് പാർട്ടി",
-        "bn": "ওয়াইএসআর কংগ্রেস পার্টি",
-        "gu": "વાયએસઆર કોંગ્રેસ પાર્ટી",
-        "pa": "ਵਾਈਐਸਆਰ ਕਾਂਗਰਸ ਪਾਰਟੀ",
-        "or": "ୱାଇଏସଆର କଂଗ୍ରେସ ପାର୍ଟି",
-        "as": "ৱাইএছআৰ কংগ্ৰেছ পাৰ্টী",
-        "ne": "वाईएसआर काङ्ग्रेस पार्टी"
-      },
-      "age": null
+      "votes": 77800,
+      "voteShare": 39.82,
+      "marginToWinner": 33262
     },
     "secondRunnerUp": {
-      "name": "Tiyyagura Yalamanda Reddy",
+      "name": "Maddula Radha Krishna",
       "party": "INC",
-      "votes": 2156,
-      "voteShare": 0.93,
-      "marginToWinner": 126045,
-      "marginToFirstRunnerUp": 96559
+      "votes": 2270,
+      "voteShare": 1.16,
+      "marginToWinner": 108792,
+      "marginToFirstRunnerUp": 75530
     },
     "year": 2024,
-    "totalValidVotes": 188862,
+    "totalValidVotes": 195400,
     "constituencyId": 96
   },
   {
@@ -68202,7 +67683,7 @@
     "acNo": 97,
     "constituencyName": "Narasaraopet",
     "delimitationId": "4",
-    "validVotes": 186629,
+    "validVotes": 191117,
     "marginWinnerToRunnerUp1": 19705,
     "marginWinnerToRunnerUp2": 101347,
     "marginRunnerUp1ToRunnerUp2": 81642,
@@ -68275,7 +67756,7 @@
       "marginToFirstRunnerUp": 81642
     },
     "year": 2024,
-    "totalValidVotes": 186629,
+    "totalValidVotes": 191117,
     "constituencyId": 97
   },
   {
@@ -68943,7 +68424,7 @@
     "acNo": 98,
     "constituencyName": "Sattenapalle",
     "delimitationId": "4",
-    "validVotes": 208094,
+    "validVotes": 212568,
     "marginWinnerToRunnerUp1": 27836,
     "marginWinnerToRunnerUp2": 116385,
     "marginRunnerUp1ToRunnerUp2": 88549,
@@ -69016,7 +68497,7 @@
       "marginToFirstRunnerUp": 88549
     },
     "year": 2024,
-    "totalValidVotes": 208094,
+    "totalValidVotes": 212568,
     "constituencyId": 98
   },
   {
@@ -69677,7 +69158,7 @@
     "acNo": 99,
     "constituencyName": "Vinukonda",
     "delimitationId": "4",
-    "validVotes": 232609,
+    "validVotes": 238697,
     "marginWinnerToRunnerUp1": 30267,
     "marginWinnerToRunnerUp2": 129536,
     "marginRunnerUp1ToRunnerUp2": 99269,
@@ -69750,7 +69231,7 @@
       "marginToFirstRunnerUp": 99269
     },
     "year": 2024,
-    "totalValidVotes": 232609,
+    "totalValidVotes": 238697,
     "constituencyId": 99
   },
   {
@@ -70411,15 +69892,15 @@
     "acNo": 100,
     "constituencyName": "Gurajala",
     "delimitationId": "4",
-    "validVotes": 226916,
+    "validVotes": 233046,
     "marginWinnerToRunnerUp1": 29486,
-    "marginWinnerToRunnerUp2": 128201,
-    "marginRunnerUp1ToRunnerUp2": 98715,
+    "marginWinnerToRunnerUp2": 126045,
+    "marginRunnerUp1ToRunnerUp2": 96559,
     "winner": {
       "name": "Yarapathineni Srinivasa Rao",
       "party": "TDP",
       "votes": 128201,
-      "voteShare": 56.5,
+      "voteShare": 55.01,
       "localizedNames": {
         "en": "Yarapathineni Srinivasa Rao",
         "hi": "यरपठिणेणि सरिणिवस रओ",
@@ -70456,7 +69937,7 @@
       "name": "Kasu Mahesh Reddy",
       "party": "YSRCP",
       "votes": 98715,
-      "voteShare": 43.5,
+      "voteShare": 42.36,
       "marginToWinner": 29486,
       "localizedParties": {
         "en": "YSR Congress Party",
@@ -70475,9 +69956,16 @@
       },
       "age": null
     },
-    "secondRunnerUp": null,
+    "secondRunnerUp": {
+      "name": "Yalamanda Reddy Tiyyagura",
+      "party": "INC",
+      "votes": 2156,
+      "voteShare": 0.93,
+      "marginToWinner": 126045,
+      "marginToFirstRunnerUp": 96559
+    },
     "year": 2024,
-    "totalValidVotes": 226916,
+    "totalValidVotes": 233046,
     "constituencyId": 100
   },
   {
@@ -71138,10 +70626,10 @@
     "acNo": 101,
     "constituencyName": "Macherla",
     "delimitationId": "4",
-    "validVotes": 211508,
+    "validVotes": 220099,
     "marginWinnerToRunnerUp1": 33318,
-    "marginWinnerToRunnerUp2": 120176,
-    "marginRunnerUp1ToRunnerUp2": 86858,
+    "marginWinnerToRunnerUp2": 119986,
+    "marginRunnerUp1ToRunnerUp2": 86668,
     "winner": {
       "name": "Julakanti Brahmananda Reddy",
       "party": "TDP",
@@ -71203,15 +70691,15 @@
       "age": null
     },
     "secondRunnerUp": {
-      "name": "Ramachandra Reddy Yeramala",
-      "party": "INC",
-      "votes": 2237,
-      "voteShare": 1.02,
-      "marginToWinner": 120176,
-      "marginToFirstRunnerUp": 86858
+      "name": "Gundala Saidulu",
+      "party": "BSP",
+      "votes": 2427,
+      "voteShare": 1.1,
+      "marginToWinner": 119986,
+      "marginToFirstRunnerUp": 86668
     },
     "year": 2024,
-    "totalValidVotes": 211508,
+    "totalValidVotes": 220099,
     "constituencyId": 101
   },
   {
@@ -71872,7 +71360,7 @@
     "acNo": 102,
     "constituencyName": "Yerragondapalem",
     "delimitationId": "4",
-    "validVotes": 178282,
+    "validVotes": 185725,
     "marginWinnerToRunnerUp1": 5200,
     "marginWinnerToRunnerUp2": 89549,
     "marginRunnerUp1ToRunnerUp2": 84349,
@@ -71945,7 +71433,7 @@
       "marginToFirstRunnerUp": 84349
     },
     "year": 2024,
-    "totalValidVotes": 178282,
+    "totalValidVotes": 185725,
     "constituencyId": 102
   },
   {
@@ -72606,10 +72094,10 @@
     "acNo": 103,
     "constituencyName": "Darsi",
     "delimitationId": "4",
-    "validVotes": 201322,
+    "validVotes": 207106,
     "marginWinnerToRunnerUp1": 2456,
-    "marginWinnerToRunnerUp2": 101889,
-    "marginRunnerUp1ToRunnerUp2": 99433,
+    "marginWinnerToRunnerUp2": 99904,
+    "marginRunnerUp1ToRunnerUp2": 97448,
     "winner": {
       "name": "Buchepalli Siva Prasad Reddy",
       "party": "YSRCP",
@@ -72670,9 +72158,16 @@
       },
       "age": null
     },
-    "secondRunnerUp": null,
+    "secondRunnerUp": {
+      "name": "Putluri Konda Reddy",
+      "party": "INC",
+      "votes": 1985,
+      "voteShare": 0.96,
+      "marginToWinner": 99904,
+      "marginToFirstRunnerUp": 97448
+    },
     "year": 2024,
-    "totalValidVotes": 201322,
+    "totalValidVotes": 207106,
     "constituencyId": 103
   },
   {
@@ -73333,7 +72828,7 @@
     "acNo": 104,
     "constituencyName": "Parchur",
     "delimitationId": "4",
-    "validVotes": 197137,
+    "validVotes": 202274,
     "marginWinnerToRunnerUp1": 24013,
     "marginWinnerToRunnerUp2": 108282,
     "marginRunnerUp1ToRunnerUp2": 84269,
@@ -73413,7 +72908,7 @@
       "marginToFirstRunnerUp": 84269
     },
     "year": 2024,
-    "totalValidVotes": 197137,
+    "totalValidVotes": 202274,
     "constituencyId": 104
   },
   {
@@ -74088,7 +73583,7 @@
     "acNo": 105,
     "constituencyName": "Addanki",
     "delimitationId": "4",
-    "validVotes": 207946,
+    "validVotes": 215518,
     "marginWinnerToRunnerUp1": 24890,
     "marginWinnerToRunnerUp2": 112346,
     "marginRunnerUp1ToRunnerUp2": 87456,
@@ -74168,7 +73663,7 @@
       "marginToFirstRunnerUp": 87456
     },
     "year": 2024,
-    "totalValidVotes": 207946,
+    "totalValidVotes": 215518,
     "constituencyId": 105
   },
   {
@@ -74850,7 +74345,7 @@
     "acNo": 106,
     "constituencyName": "Chirala",
     "delimitationId": "4",
-    "validVotes": 124416,
+    "validVotes": 170328,
     "marginWinnerToRunnerUp1": 20984,
     "marginWinnerToRunnerUp2": 30841,
     "marginRunnerUp1ToRunnerUp2": 9857,
@@ -74923,7 +74418,7 @@
       "marginToFirstRunnerUp": 9857
     },
     "year": 2024,
-    "totalValidVotes": 124416,
+    "totalValidVotes": 170328,
     "constituencyId": 106
   },
   {
@@ -75584,10 +75079,10 @@
     "acNo": 107,
     "constituencyName": "Santhanuthalapadu",
     "delimitationId": "4",
-    "validVotes": 181129,
+    "validVotes": 189916,
     "marginWinnerToRunnerUp1": 30385,
-    "marginWinnerToRunnerUp2": 103042,
-    "marginRunnerUp1ToRunnerUp2": 72657,
+    "marginWinnerToRunnerUp2": 102527,
+    "marginRunnerUp1ToRunnerUp2": 72142,
     "winner": {
       "name": "B. N. Vijay Kumar",
       "party": "TDP",
@@ -75649,15 +75144,15 @@
       "age": null
     },
     "secondRunnerUp": {
-      "name": "Vijesh Raj Palaparthi",
-      "party": "INC",
-      "votes": 2715,
-      "voteShare": 1.43,
-      "marginToWinner": 103042,
-      "marginToFirstRunnerUp": 72657
+      "name": "Kaila Venkatarao",
+      "party": "BSP",
+      "votes": 3230,
+      "voteShare": 1.7,
+      "marginToWinner": 102527,
+      "marginToFirstRunnerUp": 72142
     },
     "year": 2024,
-    "totalValidVotes": 181129,
+    "totalValidVotes": 189916,
     "constituencyId": 107
   },
   {
@@ -76332,7 +75827,7 @@
     "acNo": 108,
     "constituencyName": "Ongole",
     "delimitationId": "4",
-    "validVotes": 203574,
+    "validVotes": 209303,
     "marginWinnerToRunnerUp1": 34026,
     "marginWinnerToRunnerUp2": 116733,
     "marginRunnerUp1ToRunnerUp2": 82707,
@@ -76412,7 +75907,7 @@
       "marginToFirstRunnerUp": 82707
     },
     "year": 2024,
-    "totalValidVotes": 203574,
+    "totalValidVotes": 209303,
     "constituencyId": 108
   },
   {
@@ -77087,7 +76582,7 @@
     "acNo": 109,
     "constituencyName": "Kandukur",
     "delimitationId": "4",
-    "validVotes": 199788,
+    "validVotes": 206773,
     "marginWinnerToRunnerUp1": 18558,
     "marginWinnerToRunnerUp2": 106873,
     "marginRunnerUp1ToRunnerUp2": 88315,
@@ -77165,7 +76660,7 @@
       "marginToFirstRunnerUp": 88315
     },
     "year": 2024,
-    "totalValidVotes": 199788,
+    "totalValidVotes": 206773,
     "constituencyId": 109
   },
   {
@@ -77826,7 +77321,7 @@
     "acNo": 110,
     "constituencyName": "Kondapi",
     "delimitationId": "4",
-    "validVotes": 208592,
+    "validVotes": 213944,
     "marginWinnerToRunnerUp1": 24756,
     "marginWinnerToRunnerUp2": 115008,
     "marginRunnerUp1ToRunnerUp2": 90252,
@@ -77899,7 +77394,7 @@
       "marginToFirstRunnerUp": 90252
     },
     "year": 2024,
-    "totalValidVotes": 208592,
+    "totalValidVotes": 213944,
     "constituencyId": 110
   },
   {
@@ -78567,10 +78062,10 @@
     "acNo": 111,
     "constituencyName": "Markapuram",
     "delimitationId": "4",
-    "validVotes": 184031,
+    "validVotes": 190930,
     "marginWinnerToRunnerUp1": 13979,
-    "marginWinnerToRunnerUp2": 99005,
-    "marginRunnerUp1ToRunnerUp2": 85026,
+    "marginWinnerToRunnerUp2": 96917,
+    "marginRunnerUp1ToRunnerUp2": 82938,
     "winner": {
       "name": "Kandula Narayana Reddy",
       "party": "TDP",
@@ -78638,9 +78133,16 @@
       },
       "age": null
     },
-    "secondRunnerUp": null,
+    "secondRunnerUp": {
+      "name": "Syed Javeed Anwar",
+      "party": "INC",
+      "votes": 2088,
+      "voteShare": 1.09,
+      "marginToWinner": 96917,
+      "marginToFirstRunnerUp": 82938
+    },
     "year": 2024,
-    "totalValidVotes": 184031,
+    "totalValidVotes": 190930,
     "constituencyId": 111
   },
   {
@@ -79322,7 +78824,7 @@
     "acNo": 112,
     "constituencyName": "Giddalur",
     "delimitationId": "4",
-    "validVotes": 195953,
+    "validVotes": 206869,
     "marginWinnerToRunnerUp1": 973,
     "marginWinnerToRunnerUp2": 95584,
     "marginRunnerUp1ToRunnerUp2": 94611,
@@ -79395,7 +78897,7 @@
       "marginToFirstRunnerUp": 94611
     },
     "year": 2024,
-    "totalValidVotes": 195953,
+    "totalValidVotes": 206869,
     "constituencyId": 112
   },
   {
@@ -80066,7 +79568,7 @@
     "acNo": 113,
     "constituencyName": "Kanigiri",
     "delimitationId": "4",
-    "validVotes": 199486,
+    "validVotes": 206147,
     "marginWinnerToRunnerUp1": 14604,
     "marginWinnerToRunnerUp2": 105207,
     "marginRunnerUp1ToRunnerUp2": 90603,
@@ -80139,7 +79641,7 @@
       "marginToFirstRunnerUp": 90603
     },
     "year": 2024,
-    "totalValidVotes": 199486,
+    "totalValidVotes": 206147,
     "constituencyId": 113
   },
   {
@@ -80814,10 +80316,10 @@
     "acNo": 114,
     "constituencyName": "Kavali",
     "delimitationId": "4",
-    "validVotes": 182124,
+    "validVotes": 199982,
     "marginWinnerToRunnerUp1": 30948,
-    "marginWinnerToRunnerUp2": 104196,
-    "marginRunnerUp1ToRunnerUp2": 73248,
+    "marginWinnerToRunnerUp2": 95425,
+    "marginRunnerUp1ToRunnerUp2": 64477,
     "winner": {
       "name": "Dagumati Venkata Krishna Reddy",
       "party": "TDP",
@@ -80884,15 +80386,15 @@
       "age": null
     },
     "secondRunnerUp": {
-      "name": "Podalakuri Kalyan",
-      "party": "INC",
-      "votes": 2340,
-      "voteShare": 1.17,
-      "marginToWinner": 104196,
-      "marginToFirstRunnerUp": 73248
+      "name": "Pasupuleti Sudhakar",
+      "party": "IND",
+      "votes": 11111,
+      "voteShare": 5.56,
+      "marginToWinner": 95425,
+      "marginToFirstRunnerUp": 64477
     },
     "year": 2024,
-    "totalValidVotes": 182124,
+    "totalValidVotes": 199982,
     "constituencyId": 114
   },
   {
@@ -81553,7 +81055,7 @@
     "acNo": 115,
     "constituencyName": "Atmakur",
     "delimitationId": "4",
-    "validVotes": 174754,
+    "validVotes": 182893,
     "marginWinnerToRunnerUp1": 7576,
     "marginWinnerToRunnerUp2": 88250,
     "marginRunnerUp1ToRunnerUp2": 80674,
@@ -81633,7 +81135,7 @@
       "marginToFirstRunnerUp": 80674
     },
     "year": 2024,
-    "totalValidVotes": 174754,
+    "totalValidVotes": 182893,
     "constituencyId": 115
   },
   {
@@ -82308,7 +81810,7 @@
     "acNo": 116,
     "constituencyName": "Kovur",
     "delimitationId": "4",
-    "validVotes": 206663,
+    "validVotes": 215254,
     "marginWinnerToRunnerUp1": 54583,
     "marginWinnerToRunnerUp2": 127420,
     "marginRunnerUp1ToRunnerUp2": 72837,
@@ -82381,7 +81883,7 @@
       "marginToFirstRunnerUp": 72837
     },
     "year": 2024,
-    "totalValidVotes": 206663,
+    "totalValidVotes": 215254,
     "constituencyId": 116
   },
   {
@@ -83042,7 +82544,7 @@
     "acNo": 117,
     "constituencyName": "Nellore City",
     "delimitationId": "4",
-    "validVotes": 168613,
+    "validVotes": 174738,
     "marginWinnerToRunnerUp1": 72489,
     "marginWinnerToRunnerUp2": 118513,
     "marginRunnerUp1ToRunnerUp2": 46024,
@@ -83122,7 +82624,7 @@
       "marginToFirstRunnerUp": 46024
     },
     "year": 2024,
-    "totalValidVotes": 168613,
+    "totalValidVotes": 174738,
     "constituencyId": 117
   },
   {
@@ -83785,7 +83287,7 @@
     "acNo": 118,
     "constituencyName": "Nellore Rural",
     "delimitationId": "4",
-    "validVotes": 185470,
+    "validVotes": 194542,
     "marginWinnerToRunnerUp1": 34480,
     "marginWinnerToRunnerUp2": 105695,
     "marginRunnerUp1ToRunnerUp2": 71215,
@@ -83865,7 +83367,7 @@
       "marginToFirstRunnerUp": 71215
     },
     "year": 2024,
-    "totalValidVotes": 185470,
+    "totalValidVotes": 194542,
     "constituencyId": 118
   },
   {
@@ -84540,7 +84042,7 @@
     "acNo": 119,
     "constituencyName": "Sarvepalli",
     "delimitationId": "4",
-    "validVotes": 190268,
+    "validVotes": 195716,
     "marginWinnerToRunnerUp1": 16288,
     "marginWinnerToRunnerUp2": 101701,
     "marginRunnerUp1ToRunnerUp2": 85413,
@@ -84613,7 +84115,7 @@
       "marginToFirstRunnerUp": 85413
     },
     "year": 2024,
-    "totalValidVotes": 190268,
+    "totalValidVotes": 195716,
     "constituencyId": 119
   },
   {
@@ -85295,73 +84797,33 @@
     "acNo": 120,
     "constituencyName": "Gudur",
     "delimitationId": "4",
-    "validVotes": 184158,
-    "marginWinnerToRunnerUp1": 78175,
-    "marginWinnerToRunnerUp2": 102675,
-    "marginRunnerUp1ToRunnerUp2": 81483,
+    "validVotes": 194565,
+    "marginWinnerToRunnerUp1": 21192,
+    "marginWinnerToRunnerUp2": 99367,
+    "marginRunnerUp1ToRunnerUp2": 78175,
     "winner": {
+      "name": "Pasim Sunil Kumar",
+      "party": "TDP",
+      "votes": 102675,
+      "voteShare": 52.77
+    },
+    "firstRunnerUp": {
       "name": "Meriga Muralidhar",
       "party": "YSRCP",
       "votes": 81483,
       "voteShare": 41.88,
-      "localizedNames": {
-        "en": "Pasam Sunil Kumar",
-        "hi": "पसम सुणिल कुमर",
-        "mr": "पसम सुणिल कुमर",
-        "ne": "पसम सुणिल कुमर",
-        "te": "పసమ సుణిల కుమర",
-        "kn": "ಪಸಮ ಸುಣಿಲ ಕುಮರ",
-        "ta": "பஸம ஸுணில குமர",
-        "ml": "പസമ സുണില കുമര",
-        "bn": "পসম সুণিল কুমর",
-        "as": "পসম সুণিল কুমর",
-        "gu": "પસમ સુણિલ કુમર",
-        "pa": "ਪਸਮ ਸੁਣਿਲ ਕੁਮਰ",
-        "or": "ପସମ ସୁଣିଲ କୁମର"
-      },
-      "localizedParties": {
-        "en": "Telugu Desam Party",
-        "te": "తెలుగుదేశం పార్టీ",
-        "hi": "तेलुगु देशम पार्टी",
-        "kn": "ತೆಲುಗು ದೇಶಂ ಪಕ್ಷ",
-        "mr": "तेलुगु देशम पार्टी",
-        "ta": "தெலுங்கு தேசம் கட்சி",
-        "ml": "തെലുങ്ക് ദേശം പാർട്ടി",
-        "bn": "তেলেগু দেশম পার্টি",
-        "gu": "તેલુગુ દેશમ પાર્ટી",
-        "pa": "ਤੇਲਗੂ ਦੇਸ਼ਮ ਪਾਰਟੀ",
-        "or": "ତେଲୁଗୁ ଦେଶମ ପାର୍ଟି",
-        "as": "তেলেগু দেশম পাৰ্টী",
-        "ne": "तेलुगु देशम पार्टी"
-      },
-      "age": null
+      "marginToWinner": 21192
     },
-    "firstRunnerUp": {
-      "name": "Dr. U. Ramakrishna Rao",
+    "secondRunnerUp": {
+      "name": "Dr Uyyala Ramakrishna Rao",
       "party": "INC",
       "votes": 3308,
       "voteShare": 1.7,
-      "marginToWinner": 78175,
-      "localizedParties": {
-        "en": "YSR Congress Party",
-        "te": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
-        "hi": "वाईएसआर कांग्रेस पार्टी",
-        "kn": "ವೈಎಸ್ಆರ್ ಕಾಂಗ್ರೆಸ್ ಪಕ್ಷ",
-        "mr": "वायएसआर काँग्रेस पार्टी",
-        "ta": "ஒய்.எஸ்.ஆர் காங்கிரஸ் கட்சி",
-        "ml": "വൈ.എസ്.ആർ കോൺഗ്രസ് പാർട്ടി",
-        "bn": "ওয়াইএসআর কংগ্রেস পার্টি",
-        "gu": "વાયએસઆર કોંગ્રેસ પાર્ટી",
-        "pa": "ਵਾਈਐਸਆਰ ਕਾਂਗਰਸ ਪਾਰਟੀ",
-        "or": "ୱାଇଏସଆର କଂଗ୍ରେସ ପାର୍ଟି",
-        "as": "ৱাইএছআৰ কংগ্ৰেছ পাৰ্টী",
-        "ne": "वाईएसआर काङ्ग्रेस पार्टी"
-      },
-      "age": null
+      "marginToWinner": 99367,
+      "marginToFirstRunnerUp": 78175
     },
-    "secondRunnerUp": null,
     "year": 2024,
-    "totalValidVotes": 184158,
+    "totalValidVotes": 194565,
     "constituencyId": 120
   },
   {
@@ -86032,7 +85494,7 @@
     "acNo": 121,
     "constituencyName": "Sullurpeta",
     "delimitationId": "4",
-    "validVotes": 192981,
+    "validVotes": 203138,
     "marginWinnerToRunnerUp1": 29115,
     "marginWinnerToRunnerUp2": 106924,
     "marginRunnerUp1ToRunnerUp2": 77809,
@@ -86112,7 +85574,7 @@
       "marginToFirstRunnerUp": 77809
     },
     "year": 2024,
-    "totalValidVotes": 192981,
+    "totalValidVotes": 203138,
     "constituencyId": 121
   },
   {
@@ -86773,7 +86235,7 @@
     "acNo": 122,
     "constituencyName": "Venkatagiri",
     "delimitationId": "4",
-    "validVotes": 192502,
+    "validVotes": 199565,
     "marginWinnerToRunnerUp1": 16294,
     "marginWinnerToRunnerUp2": 102463,
     "marginRunnerUp1ToRunnerUp2": 86169,
@@ -86846,7 +86308,7 @@
       "marginToFirstRunnerUp": 86169
     },
     "year": 2024,
-    "totalValidVotes": 192502,
+    "totalValidVotes": 199565,
     "constituencyId": 122
   },
   {
@@ -87514,7 +86976,7 @@
     "acNo": 123,
     "constituencyName": "Udayagiri",
     "delimitationId": "4",
-    "validVotes": 193453,
+    "validVotes": 200892,
     "marginWinnerToRunnerUp1": 9621,
     "marginWinnerToRunnerUp2": 99025,
     "marginRunnerUp1ToRunnerUp2": 89404,
@@ -87592,7 +87054,7 @@
       "marginToFirstRunnerUp": 89404
     },
     "year": 2024,
-    "totalValidVotes": 193453,
+    "totalValidVotes": 200892,
     "constituencyId": 123
   },
   {
@@ -88253,7 +87715,7 @@
     "acNo": 124,
     "constituencyName": "Badvel",
     "delimitationId": "4",
-    "validVotes": 162253,
+    "validVotes": 174880,
     "marginWinnerToRunnerUp1": 18567,
     "marginWinnerToRunnerUp2": 83044,
     "marginRunnerUp1ToRunnerUp2": 64477,
@@ -88261,7 +87723,7 @@
       "name": "Dasari Sudha",
       "party": "YSRCP",
       "votes": 90410,
-      "voteShare": 51.69,
+      "voteShare": 51.7,
       "localizedNames": {
         "en": "Dasari Sudha",
         "hi": "दसरि सुध",
@@ -88332,7 +87794,7 @@
       "marginToFirstRunnerUp": 64477
     },
     "year": 2024,
-    "totalValidVotes": 162253,
+    "totalValidVotes": 174880,
     "constituencyId": 124
   },
   {
@@ -88993,7 +88455,7 @@
     "acNo": 125,
     "constituencyName": "Rajampet",
     "delimitationId": "4",
-    "validVotes": 178202,
+    "validVotes": 184557,
     "marginWinnerToRunnerUp1": 7016,
     "marginWinnerToRunnerUp2": 91600,
     "marginRunnerUp1ToRunnerUp2": 84584,
@@ -89001,7 +88463,7 @@
       "name": "Akepati Amarnath Reddy",
       "party": "YSRCP",
       "votes": 92609,
-      "voteShare": 50.17,
+      "voteShare": 50.18,
       "localizedNames": {
         "en": "Akepati Amarnath Reddy",
         "hi": "अकेपटि अमरनठ रेडडय",
@@ -89063,12 +88525,12 @@
       "name": "Bhukya Viswanatha Naik",
       "party": "CPI",
       "votes": 1009,
-      "voteShare": 0.54,
+      "voteShare": 0.55,
       "marginToWinner": 91600,
       "marginToFirstRunnerUp": 84584
     },
     "year": 2024,
-    "totalValidVotes": 178202,
+    "totalValidVotes": 184557,
     "constituencyId": 125
   },
   {
@@ -89729,7 +89191,7 @@
     "acNo": 126,
     "constituencyName": "Kadapa",
     "delimitationId": "4",
-    "validVotes": 163116,
+    "validVotes": 190527,
     "marginWinnerToRunnerUp1": 18860,
     "marginWinnerToRunnerUp2": 66488,
     "marginRunnerUp1ToRunnerUp2": 47628,
@@ -89802,7 +89264,7 @@
       "marginToFirstRunnerUp": 47628
     },
     "year": 2024,
-    "totalValidVotes": 163116,
+    "totalValidVotes": 190527,
     "constituencyId": 126
   },
   {
@@ -90463,7 +89925,7 @@
     "acNo": 127,
     "constituencyName": "Kodur",
     "delimitationId": "4",
-    "validVotes": 146087,
+    "validVotes": 153805,
     "marginWinnerToRunnerUp1": 11101,
     "marginWinnerToRunnerUp2": 76462,
     "marginRunnerUp1ToRunnerUp2": 65361,
@@ -90471,7 +89933,7 @@
       "name": "Arava Sreedhar",
       "party": "JSP",
       "votes": 78594,
-      "voteShare": 51.58,
+      "voteShare": 51.1,
       "localizedNames": {
         "en": "Arava Sreedhar",
         "hi": "अरव सरीधर",
@@ -90515,7 +89977,7 @@
       "name": "Koramutla Srinivasulu",
       "party": "YSRCP",
       "votes": 67493,
-      "voteShare": 44.29,
+      "voteShare": 43.88,
       "marginToWinner": 11101,
       "localizedParties": {
         "en": "YSR Congress Party",
@@ -90543,7 +90005,7 @@
       "marginToFirstRunnerUp": 65361
     },
     "year": 2024,
-    "totalValidVotes": 146087,
+    "totalValidVotes": 153805,
     "constituencyId": 127
   },
   {
@@ -91204,15 +90666,15 @@
     "acNo": 128,
     "constituencyName": "Rayachoti",
     "delimitationId": "4",
-    "validVotes": 189355,
+    "validVotes": 199901,
     "marginWinnerToRunnerUp1": 2495,
-    "marginWinnerToRunnerUp2": 95925,
-    "marginRunnerUp1ToRunnerUp2": 93430,
+    "marginWinnerToRunnerUp2": 90354,
+    "marginRunnerUp1ToRunnerUp2": 87859,
     "winner": {
       "name": "Mandipalli Ramprasad Reddy",
       "party": "TDP",
       "votes": 95925,
-      "voteShare": 50.66,
+      "voteShare": 47.99,
       "localizedNames": {
         "en": "Mandipalli Ramprasad Reddy",
         "hi": "मंडिपललि रमपरसड रेडडय",
@@ -91256,7 +90718,7 @@
       "name": "Gadikota Srikanth Reddy",
       "party": "YSRCP",
       "votes": 93430,
-      "voteShare": 49.34,
+      "voteShare": 46.74,
       "marginToWinner": 2495,
       "localizedParties": {
         "en": "YSR Congress Party",
@@ -91275,9 +90737,16 @@
       },
       "age": null
     },
-    "secondRunnerUp": null,
+    "secondRunnerUp": {
+      "name": "Shaik Allabakash",
+      "party": "INC",
+      "votes": 5571,
+      "voteShare": 2.79,
+      "marginToWinner": 90354,
+      "marginToFirstRunnerUp": 87859
+    },
     "year": 2024,
-    "totalValidVotes": 189355,
+    "totalValidVotes": 199901,
     "constituencyId": 128
   },
   {
@@ -91945,7 +91414,7 @@
     "acNo": 129,
     "constituencyName": "Pulivendla",
     "delimitationId": "4",
-    "validVotes": 170943,
+    "validVotes": 189492,
     "marginWinnerToRunnerUp1": 61687,
     "marginWinnerToRunnerUp2": 106232,
     "marginRunnerUp1ToRunnerUp2": 44545,
@@ -92025,7 +91494,7 @@
       "marginToFirstRunnerUp": 44545
     },
     "year": 2024,
-    "totalValidVotes": 170943,
+    "totalValidVotes": 189492,
     "constituencyId": 129
   },
   {
@@ -92700,10 +92169,10 @@
     "acNo": 130,
     "constituencyName": "Kamalapuram",
     "delimitationId": "4",
-    "validVotes": 165057,
+    "validVotes": 172196,
     "marginWinnerToRunnerUp1": 25357,
-    "marginWinnerToRunnerUp2": 94115,
-    "marginRunnerUp1ToRunnerUp2": 68758,
+    "marginWinnerToRunnerUp2": 92946,
+    "marginRunnerUp1ToRunnerUp2": 67589,
     "winner": {
       "name": "Putha Krishna Chaitanya Reddy",
       "party": "TDP",
@@ -92765,15 +92234,15 @@
       "age": null
     },
     "secondRunnerUp": {
-      "name": "Gali Chandra",
-      "party": "CPI",
-      "votes": 1092,
-      "voteShare": 0.63,
-      "marginToWinner": 94115,
-      "marginToFirstRunnerUp": 68758
+      "name": "Chinnarigandla Bala Chennaiah",
+      "party": "BSP",
+      "votes": 2261,
+      "voteShare": 1.31,
+      "marginToWinner": 92946,
+      "marginToFirstRunnerUp": 67589
     },
     "year": 2024,
-    "totalValidVotes": 165057,
+    "totalValidVotes": 172196,
     "constituencyId": 130
   },
   {
@@ -93434,7 +92903,7 @@
     "acNo": 131,
     "constituencyName": "Jammalamadugu",
     "delimitationId": "4",
-    "validVotes": 202089,
+    "validVotes": 213170,
     "marginWinnerToRunnerUp1": 17191,
     "marginWinnerToRunnerUp2": 105418,
     "marginRunnerUp1ToRunnerUp2": 88227,
@@ -93514,7 +92983,7 @@
       "marginToFirstRunnerUp": 88227
     },
     "year": 2024,
-    "totalValidVotes": 202089,
+    "totalValidVotes": 213170,
     "constituencyId": 131
   },
   {
@@ -94180,7 +93649,7 @@
     "acNo": 132,
     "constituencyName": "Proddatur",
     "delimitationId": "4",
-    "validVotes": 190680,
+    "validVotes": 201284,
     "marginWinnerToRunnerUp1": 22744,
     "marginWinnerToRunnerUp2": 100696,
     "marginRunnerUp1ToRunnerUp2": 77952,
@@ -94260,7 +93729,7 @@
       "marginToFirstRunnerUp": 77952
     },
     "year": 2024,
-    "totalValidVotes": 190680,
+    "totalValidVotes": 201284,
     "constituencyId": 132
   },
   {
@@ -94921,7 +94390,7 @@
     "acNo": 133,
     "constituencyName": "Mydukur",
     "delimitationId": "4",
-    "validVotes": 171412,
+    "validVotes": 180740,
     "marginWinnerToRunnerUp1": 20950,
     "marginWinnerToRunnerUp2": 91602,
     "marginRunnerUp1ToRunnerUp2": 70652,
@@ -94994,7 +94463,7 @@
       "marginToFirstRunnerUp": 70652
     },
     "year": 2024,
-    "totalValidVotes": 171412,
+    "totalValidVotes": 180740,
     "constituencyId": 133
   },
   {
@@ -95655,7 +95124,7 @@
     "acNo": 134,
     "constituencyName": "Allagadda",
     "delimitationId": "4",
-    "validVotes": 185725,
+    "validVotes": 198052,
     "marginWinnerToRunnerUp1": 12037,
     "marginWinnerToRunnerUp2": 92781,
     "marginRunnerUp1ToRunnerUp2": 80744,
@@ -95735,7 +95204,7 @@
       "marginToFirstRunnerUp": 80744
     },
     "year": 2024,
-    "totalValidVotes": 185725,
+    "totalValidVotes": 198052,
     "constituencyId": 134
   },
   {
@@ -96401,10 +95870,10 @@
     "acNo": 135,
     "constituencyName": "Srisailam",
     "delimitationId": "4",
-    "validVotes": 157013,
-    "marginWinnerToRunnerUp1": 78270,
-    "marginWinnerToRunnerUp2": 81699,
-    "marginRunnerUp1ToRunnerUp2": 75314,
+    "validVotes": 164580,
+    "marginWinnerToRunnerUp1": 6385,
+    "marginWinnerToRunnerUp2": 78270,
+    "marginRunnerUp1ToRunnerUp2": 71885,
     "winner": {
       "name": "Budda Rajasekhar Reddy",
       "party": "TDP",
@@ -96443,31 +95912,22 @@
       "age": null
     },
     "firstRunnerUp": {
-      "name": "Asar Syed Ismail",
+      "name": "Silpa Chakrapani Reddy",
+      "party": "YSRCP",
+      "votes": 75314,
+      "voteShare": 45.76,
+      "marginToWinner": 6385
+    },
+    "secondRunnerUp": {
+      "name": "Ismail.a.s",
       "party": "INC",
       "votes": 3429,
       "voteShare": 2.08,
       "marginToWinner": 78270,
-      "localizedParties": {
-        "en": "YSR Congress Party",
-        "te": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
-        "hi": "वाईएसआर कांग्रेस पार्टी",
-        "kn": "ವೈಎಸ್ಆರ್ ಕಾಂಗ್ರೆಸ್ ಪಕ್ಷ",
-        "mr": "वायएसआर काँग्रेस पार्टी",
-        "ta": "ஒய்.எஸ்.ஆர் காங்கிரஸ் கட்சி",
-        "ml": "വൈ.എസ്.ആർ കോൺഗ്രസ് പാർട്ടി",
-        "bn": "ওয়াইএসআর কংগ্রেস পার্টি",
-        "gu": "વાયએસઆર કોંગ્રેસ પાર્ટી",
-        "pa": "ਵਾਈਐਸਆਰ ਕਾਂਗਰਸ ਪਾਰਟੀ",
-        "or": "ୱାଇଏସଆର କଂଗ୍ରେସ ପାର୍ଟି",
-        "as": "ৱাইএছআৰ কংগ্ৰেছ পাৰ্টী",
-        "ne": "वाईएसआर काङ्ग्रेस पार्टी"
-      },
-      "age": null
+      "marginToFirstRunnerUp": 71885
     },
-    "secondRunnerUp": null,
     "year": 2024,
-    "totalValidVotes": 157013,
+    "totalValidVotes": 164580,
     "constituencyId": 135
   },
   {
@@ -97128,7 +96588,7 @@
     "acNo": 136,
     "constituencyName": "Nandikotkur",
     "delimitationId": "4",
-    "validVotes": 174216,
+    "validVotes": 186853,
     "marginWinnerToRunnerUp1": 9792,
     "marginWinnerToRunnerUp2": 84055,
     "marginRunnerUp1ToRunnerUp2": 74263,
@@ -97201,7 +96661,7 @@
       "marginToFirstRunnerUp": 74263
     },
     "year": 2024,
-    "totalValidVotes": 174216,
+    "totalValidVotes": 186853,
     "constituencyId": 136
   },
   {
@@ -97862,7 +97322,7 @@
     "acNo": 137,
     "constituencyName": "Kurnool",
     "delimitationId": "4",
-    "validVotes": 164504,
+    "validVotes": 178594,
     "marginWinnerToRunnerUp1": 18876,
     "marginWinnerToRunnerUp2": 82668,
     "marginRunnerUp1ToRunnerUp2": 63792,
@@ -97942,7 +97402,7 @@
       "marginToFirstRunnerUp": 63792
     },
     "year": 2024,
-    "totalValidVotes": 164504,
+    "totalValidVotes": 178594,
     "constituencyId": 137
   },
   {
@@ -98610,10 +98070,10 @@
     "acNo": 138,
     "constituencyName": "Panyam",
     "delimitationId": "4",
-    "validVotes": 241953,
-    "marginWinnerToRunnerUp1": 138191,
-    "marginWinnerToRunnerUp2": 141272,
-    "marginRunnerUp1ToRunnerUp2": 100681,
+    "validVotes": 250276,
+    "marginWinnerToRunnerUp1": 40591,
+    "marginWinnerToRunnerUp2": 138191,
+    "marginRunnerUp1ToRunnerUp2": 97600,
     "winner": {
       "name": "Gowru Charitha Reddy",
       "party": "TDP",
@@ -98659,31 +98119,22 @@
       "totalLiabilities": 1248500
     },
     "firstRunnerUp": {
-      "name": "D Gouse Desai",
+      "name": "Katasani Ramabhupal Reddy",
+      "party": "YSRCP",
+      "votes": 100681,
+      "voteShare": 40.23,
+      "marginToWinner": 40591
+    },
+    "secondRunnerUp": {
+      "name": "Gouse Desai",
       "party": "CPI(M)",
       "votes": 3081,
       "voteShare": 1.23,
       "marginToWinner": 138191,
-      "localizedParties": {
-        "en": "YSR Congress Party",
-        "te": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
-        "hi": "वाईएसआर कांग्रेस पार्टी",
-        "kn": "ವೈಎಸ್ಆರ್ ಕಾಂಗ್ರೆಸ್ ಪಕ್ಷ",
-        "mr": "वायएसआर काँग्रेस पार्टी",
-        "ta": "ஒய்.எஸ்.ஆர் காங்கிரஸ் கட்சி",
-        "ml": "വൈ.എസ്.ആർ കോൺഗ്രസ് പാർട്ടി",
-        "bn": "ওয়াইএসআর কংগ্রেস পার্টি",
-        "gu": "વાયએસઆર કોંગ્રેસ પાર્ટી",
-        "pa": "ਵਾਈਐਸਆਰ ਕਾਂਗਰਸ ਪਾਰਟੀ",
-        "or": "ୱାଇଏସଆର କଂଗ୍ରେସ ପାର୍ଟି",
-        "as": "ৱাইএছআৰ কংগ্ৰেছ পাৰ্টী",
-        "ne": "वाईएसआर काङ्ग्रेस पार्टी"
-      },
-      "age": null
+      "marginToFirstRunnerUp": 97600
     },
-    "secondRunnerUp": null,
     "year": 2024,
-    "totalValidVotes": 241953,
+    "totalValidVotes": 250276,
     "constituencyId": 138
   },
   {
@@ -99358,10 +98809,10 @@
     "acNo": 139,
     "constituencyName": "Nandyal",
     "delimitationId": "4",
-    "validVotes": 193817,
-    "marginWinnerToRunnerUp1": 96657,
-    "marginWinnerToRunnerUp2": 103075,
-    "marginRunnerUp1ToRunnerUp2": 90742,
+    "validVotes": 208578,
+    "marginWinnerToRunnerUp1": 12333,
+    "marginWinnerToRunnerUp2": 96657,
+    "marginRunnerUp1ToRunnerUp2": 84324,
     "winner": {
       "name": "N._M._D._Farooq",
       "party": "TDP",
@@ -99400,31 +98851,22 @@
       "age": null
     },
     "firstRunnerUp": {
+      "name": "Silpa Ravi Chandra Kishore Reddy",
+      "party": "YSRCP",
+      "votes": 90742,
+      "voteShare": 43.51,
+      "marginToWinner": 12333
+    },
+    "secondRunnerUp": {
       "name": "Gopavaram Gokul Krishna Reddy",
       "party": "INC",
       "votes": 6418,
       "voteShare": 3.08,
       "marginToWinner": 96657,
-      "localizedParties": {
-        "en": "YSR Congress Party",
-        "te": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
-        "hi": "वाईएसआर कांग्रेस पार्टी",
-        "kn": "ವೈಎಸ್ಆರ್ ಕಾಂಗ್ರೆಸ್ ಪಕ್ಷ",
-        "mr": "वायएसआर काँग्रेस पार्टी",
-        "ta": "ஒய்.எஸ்.ஆர் காங்கிரஸ் கட்சி",
-        "ml": "വൈ.എസ്.ആർ കോൺഗ്രസ് പാർട്ടി",
-        "bn": "ওয়াইএসআর কংগ্রেস পার্টি",
-        "gu": "વાયએસઆર કોંગ્રેસ પાર્ટી",
-        "pa": "ਵਾਈਐਸਆਰ ਕਾਂਗਰਸ ਪਾਰਟੀ",
-        "or": "ୱାଇଏସଆର କଂଗ୍ରେସ ପାର୍ଟି",
-        "as": "ৱাইএছআৰ কংগ্ৰেছ পাৰ্টী",
-        "ne": "वाईएसआर काङ्ग्रेस पार्टी"
-      },
-      "age": null
+      "marginToFirstRunnerUp": 84324
     },
-    "secondRunnerUp": null,
     "year": 2024,
-    "totalValidVotes": 193817,
+    "totalValidVotes": 208578,
     "constituencyId": 139
   },
   {
@@ -100085,79 +99527,33 @@
     "acNo": 140,
     "constituencyName": "Banaganapalle",
     "delimitationId": "4",
-    "validVotes": 195640,
-    "marginWinnerToRunnerUp1": 81693,
-    "marginWinnerToRunnerUp2": 110603,
-    "marginRunnerUp1ToRunnerUp2": 85037,
+    "validVotes": 205740,
+    "marginWinnerToRunnerUp1": 25566,
+    "marginWinnerToRunnerUp2": 107259,
+    "marginRunnerUp1ToRunnerUp2": 81693,
     "winner": {
+      "name": "B.c. Janardhan Reddy",
+      "party": "TDP",
+      "votes": 110603,
+      "voteShare": 53.76
+    },
+    "firstRunnerUp": {
       "name": "Katasani Rami Reddy",
       "party": "YSRCP",
       "votes": 85037,
       "voteShare": 41.33,
-      "localizedNames": {
-        "en": "B. C. Janardhan Reddy",
-        "hi": "ब. c. जंअरधण रेडडय",
-        "mr": "ब. c. जंअरधण रेडडय",
-        "ne": "ब. c. जंअरधण रेडडय",
-        "te": "బ. c. జంఅరధణ రేడడయ",
-        "kn": "ಬ. c. ಜಂಅರಧಣ ರೇಡಡಯ",
-        "ta": "஬. c. ஜஂஅர஧ண ரே஡஡ய",
-        "ml": "ബ. c. ജംഅരധണ രേഡഡയ",
-        "bn": "ব. c. জংঅরধণ রেডডয",
-        "as": "ব. c. জংঅরধণ রেডডয",
-        "gu": "બ. c. જંઅરધણ રેડડય",
-        "pa": "ਬ. c. ਜਂਅਰਧਣ ਰੇਡਡਯ",
-        "or": "ବ. c. ଜଂଅରଧଣ ରେଡଡଯ"
-      },
-      "localizedParties": {
-        "en": "Telugu Desam Party",
-        "te": "తెలుగుదేశం పార్టీ",
-        "hi": "तेलुगु देशम पार्टी",
-        "kn": "ತೆಲುಗು ದೇಶಂ ಪಕ್ಷ",
-        "mr": "तेलुगु देशम पार्टी",
-        "ta": "தெலுங்கு தேசம் கட்சி",
-        "ml": "തെലുങ്ക് ദേശം പാർട്ടി",
-        "bn": "তেলেগু দেশম পার্টি",
-        "gu": "તેલુગુ દેશમ પાર્ટી",
-        "pa": "ਤੇਲਗੂ ਦੇਸ਼ਮ ਪਾਰਟੀ",
-        "or": "ତେଲୁଗୁ ଦେଶମ ପାର୍ଟି",
-        "as": "তেলেগু দেশম পাৰ্টী",
-        "ne": "तेलुगु देशम पार्टी"
-      },
-      "photoUrl": "https://www.myneta.info/images_candidate/Karnataka2023/4a3af9cc97aebeae0abe7eee472df2fd92d53cdc.jpg",
-      "affidavitUrl": "https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8917",
-      "age": 56,
-      "education": "10th Pass",
-      "profession": "Business & Agriculture",
-      "criminalCases": 14,
-      "totalAssets": 2465142443
+      "marginToWinner": 25566
     },
-    "firstRunnerUp": {
-      "name": "Gutam Pullaiah",
+    "secondRunnerUp": {
+      "name": "Gutam Pullaiah (balu Yadav)",
       "party": "INC",
       "votes": 3344,
       "voteShare": 1.63,
-      "marginToWinner": 81693,
-      "localizedParties": {
-        "en": "YSR Congress Party",
-        "te": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
-        "hi": "वाईएसआर कांग्रेस पार्टी",
-        "kn": "ವೈಎಸ್ಆರ್ ಕಾಂಗ್ರೆಸ್ ಪಕ್ಷ",
-        "mr": "वायएसआर काँग्रेस पार्टी",
-        "ta": "ஒய்.எஸ்.ஆர் காங்கிரஸ் கட்சி",
-        "ml": "വൈ.എസ്.ആർ കോൺഗ്രസ് പാർട്ടി",
-        "bn": "ওয়াইএসআর কংগ্রেস পার্টি",
-        "gu": "વાયએસઆર કોંગ્રેસ પાર્ટી",
-        "pa": "ਵਾਈਐਸਆਰ ਕਾਂਗਰਸ ਪਾਰਟੀ",
-        "or": "ୱାଇଏସଆର କଂଗ୍ରେସ ପାର୍ଟି",
-        "as": "ৱাইএছআৰ কংগ্ৰেছ পাৰ্টী",
-        "ne": "वाईएसआर काङ्ग्रेस पार्टी"
-      },
-      "age": null
+      "marginToWinner": 107259,
+      "marginToFirstRunnerUp": 81693
     },
-    "secondRunnerUp": null,
     "year": 2024,
-    "totalValidVotes": 195640,
+    "totalValidVotes": 205740,
     "constituencyId": 140
   },
   {
@@ -100824,15 +100220,15 @@
     "acNo": 141,
     "constituencyName": "Dhone",
     "delimitationId": "4",
-    "validVotes": 180997,
-    "marginWinnerToRunnerUp1": 89500,
-    "marginWinnerToRunnerUp2": 93523,
-    "marginRunnerUp1ToRunnerUp2": 87474,
+    "validVotes": 190120,
+    "marginWinnerToRunnerUp1": 6049,
+    "marginWinnerToRunnerUp2": 89535,
+    "marginRunnerUp1ToRunnerUp2": 83486,
     "winner": {
       "name": "Kotla Jayasurya Prakasha Reddy",
       "party": "TDP",
       "votes": 93523,
-      "voteShare": 51,
+      "voteShare": 49.19,
       "localizedNames": {
         "en": "Kotla Jayasurya Prakasha Reddy",
         "hi": "कोटल जयसुरय परकश रेडडय",
@@ -100866,31 +100262,22 @@
       "age": null
     },
     "firstRunnerUp": {
-      "name": "Garlapati Madhileti Swami",
-      "party": "INC",
-      "votes": 4023,
-      "voteShare": 2.1,
-      "marginToWinner": 89500,
-      "localizedParties": {
-        "en": "YSR Congress Party",
-        "te": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
-        "hi": "वाईएसआर कांग्रेस पार्टी",
-        "kn": "ವೈಎಸ್ಆರ್ ಕಾಂಗ್ರೆಸ್ ಪಕ್ಷ",
-        "mr": "वायएसआर काँग्रेस पार्टी",
-        "ta": "ஒய்.எஸ்.ஆர் காங்கிரஸ் கட்சி",
-        "ml": "വൈ.എസ്.ആർ കോൺഗ്രസ് പാർട്ടി",
-        "bn": "ওয়াইএসআর কংগ্রেস পার্টি",
-        "gu": "વાયએસઆર કોંગ્રેસ પાર્ટી",
-        "pa": "ਵਾਈਐਸਆਰ ਕਾਂਗਰਸ ਪਾਰਟੀ",
-        "or": "ୱାଇଏସଆର କଂଗ୍ରେସ ପାର୍ଟି",
-        "as": "ৱাইএছআৰ কংগ্ৰেছ পাৰ্টী",
-        "ne": "वाईएसआर काङ्ग्रेस पार्टी"
-      },
-      "age": null
+      "name": "Buggana Raja Reddy",
+      "party": "YSRCP",
+      "votes": 87474,
+      "voteShare": 46.01,
+      "marginToWinner": 6049
     },
-    "secondRunnerUp": null,
+    "secondRunnerUp": {
+      "name": "Dr. Garlapati. Maddulety Swamy",
+      "party": "INC",
+      "votes": 3988,
+      "voteShare": 2.1,
+      "marginToWinner": 89535,
+      "marginToFirstRunnerUp": 83486
+    },
     "year": 2024,
-    "totalValidVotes": 180997,
+    "totalValidVotes": 190120,
     "constituencyId": 141
   },
   {
@@ -101551,10 +100938,10 @@
     "acNo": 142,
     "constituencyName": "Pattikonda",
     "delimitationId": "4",
-    "validVotes": 183487,
-    "marginWinnerToRunnerUp1": 96893,
-    "marginWinnerToRunnerUp2": 98849,
-    "marginRunnerUp1ToRunnerUp2": 84638,
+    "validVotes": 191631,
+    "marginWinnerToRunnerUp1": 14211,
+    "marginWinnerToRunnerUp2": 96893,
+    "marginRunnerUp1ToRunnerUp2": 82682,
     "winner": {
       "name": "K. E. Shyam Kumar",
       "party": "TDP",
@@ -101593,31 +100980,22 @@
       "age": null
     },
     "firstRunnerUp": {
+      "name": "Kangati Sreedevi",
+      "party": "YSRCP",
+      "votes": 84638,
+      "voteShare": 44.17,
+      "marginToWinner": 14211
+    },
+    "secondRunnerUp": {
       "name": "Ramachandraiah",
       "party": "CPI",
       "votes": 1956,
       "voteShare": 1.02,
       "marginToWinner": 96893,
-      "localizedParties": {
-        "en": "YSR Congress Party",
-        "te": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
-        "hi": "वाईएसआर कांग्रेस पार्टी",
-        "kn": "ವೈಎಸ್ಆರ್ ಕಾಂಗ್ರೆಸ್ ಪಕ್ಷ",
-        "mr": "वायएसआर काँग्रेस पार्टी",
-        "ta": "ஒய்.எஸ்.ஆர் காங்கிரஸ் கட்சி",
-        "ml": "വൈ.എസ്.ആർ കോൺഗ്രസ് പാർട്ടി",
-        "bn": "ওয়াইএসআর কংগ্রেস পার্টি",
-        "gu": "વાયએસઆર કોંગ્રેસ પાર્ટી",
-        "pa": "ਵਾਈਐਸਆਰ ਕਾਂਗਰਸ ਪਾਰਟੀ",
-        "or": "ୱାଇଏସଆର କଂଗ୍ରେସ ପାର୍ଟି",
-        "as": "ৱাইএছআৰ কংগ্ৰেছ পাৰ্টী",
-        "ne": "वाईएसआर काङ्ग्रेस पार्टी"
-      },
-      "age": null
+      "marginToFirstRunnerUp": 82682
     },
-    "secondRunnerUp": null,
     "year": 2024,
-    "totalValidVotes": 183487,
+    "totalValidVotes": 191631,
     "constituencyId": 142
   },
   {
@@ -102292,10 +101670,10 @@
     "acNo": 143,
     "constituencyName": "Kodumur",
     "delimitationId": "4",
-    "validVotes": 181823,
-    "marginWinnerToRunnerUp1": 91868,
-    "marginWinnerToRunnerUp2": 101703,
-    "marginRunnerUp1ToRunnerUp2": 80120,
+    "validVotes": 197533,
+    "marginWinnerToRunnerUp1": 21583,
+    "marginWinnerToRunnerUp2": 91868,
+    "marginRunnerUp1ToRunnerUp2": 70285,
     "winner": {
       "name": "Boggula Dastagiri",
       "party": "TDP",
@@ -102340,31 +101718,22 @@
       "totalAssets": 10734000
     },
     "firstRunnerUp": {
-      "name": "Parigela Murali Krishna",
+      "name": "Audimulapu Sathish",
+      "party": "YSRCP",
+      "votes": 80120,
+      "voteShare": 40.56,
+      "marginToWinner": 21583
+    },
+    "secondRunnerUp": {
+      "name": "P. Murali Krishna",
       "party": "INC",
       "votes": 9835,
       "voteShare": 4.98,
       "marginToWinner": 91868,
-      "localizedParties": {
-        "en": "YSR Congress Party",
-        "te": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
-        "hi": "वाईएसआर कांग्रेस पार्टी",
-        "kn": "ವೈಎಸ್ಆರ್ ಕಾಂಗ್ರೆಸ್ ಪಕ್ಷ",
-        "mr": "वायएसआर काँग्रेस पार्टी",
-        "ta": "ஒய்.எஸ்.ஆர் காங்கிரஸ் கட்சி",
-        "ml": "വൈ.എസ്.ആർ കോൺഗ്രസ് പാർട്ടി",
-        "bn": "ওয়াইএসআর কংগ্রেস পার্টি",
-        "gu": "વાયએસઆર કોંગ્રેસ પાર્ટી",
-        "pa": "ਵਾਈਐਸਆਰ ਕਾਂਗਰਸ ਪਾਰਟੀ",
-        "or": "ୱାଇଏସଆର କଂଗ୍ରେସ ପାର୍ଟି",
-        "as": "ৱাইএছআৰ কংগ্ৰেছ পাৰ্টী",
-        "ne": "वाईएसआर काङ्ग्रेस पार्टी"
-      },
-      "age": null
+      "marginToFirstRunnerUp": 70285
     },
-    "secondRunnerUp": null,
     "year": 2024,
-    "totalValidVotes": 181823,
+    "totalValidVotes": 197533,
     "constituencyId": 143
   },
   {
@@ -103032,10 +102401,10 @@
     "acNo": 144,
     "constituencyName": "Yemmiganur",
     "delimitationId": "4",
-    "validVotes": 190341,
-    "marginWinnerToRunnerUp1": 95258,
-    "marginWinnerToRunnerUp2": 103089,
-    "marginRunnerUp1ToRunnerUp2": 87252,
+    "validVotes": 203089,
+    "marginWinnerToRunnerUp1": 15837,
+    "marginWinnerToRunnerUp2": 95258,
+    "marginRunnerUp1ToRunnerUp2": 79421,
     "winner": {
       "name": "Jaya Nageswara Reddy",
       "party": "TDP",
@@ -103074,31 +102443,22 @@
       "age": null
     },
     "firstRunnerUp": {
-      "name": "M.KHASIM VALI",
+      "name": "Butta Renuka",
+      "party": "YSRCP",
+      "votes": 87252,
+      "voteShare": 42.96,
+      "marginToWinner": 15837
+    },
+    "secondRunnerUp": {
+      "name": "M.khasim Vali",
       "party": "INC",
       "votes": 7831,
       "voteShare": 3.86,
       "marginToWinner": 95258,
-      "localizedParties": {
-        "en": "YSR Congress Party",
-        "te": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
-        "hi": "वाईएसआर कांग्रेस पार्टी",
-        "kn": "ವೈಎಸ್ಆರ್ ಕಾಂಗ್ರೆಸ್ ಪಕ್ಷ",
-        "mr": "वायएसआर काँग्रेस पार्टी",
-        "ta": "ஒய்.எஸ்.ஆர் காங்கிரஸ் கட்சி",
-        "ml": "വൈ.എസ്.ആർ കോൺഗ്രസ് പാർട്ടി",
-        "bn": "ওয়াইএসআর কংগ্রেস পার্টি",
-        "gu": "વાયએસઆર કોંગ્રેસ પાર્ટી",
-        "pa": "ਵਾਈਐਸਆਰ ਕਾਂਗਰਸ ਪਾਰਟੀ",
-        "or": "ୱାଇଏସଆର କଂଗ୍ରେସ ପାର୍ଟି",
-        "as": "ৱাইএছআৰ কংগ্ৰেছ পাৰ্টী",
-        "ne": "वाईएसआर काङ्ग्रेस पार्टी"
-      },
-      "age": null
+      "marginToFirstRunnerUp": 79421
     },
-    "secondRunnerUp": null,
     "year": 2024,
-    "totalValidVotes": 190341,
+    "totalValidVotes": 203089,
     "constituencyId": 144
   },
   {
@@ -103773,7 +103133,7 @@
     "acNo": 145,
     "constituencyName": "Mantralayam",
     "delimitationId": "4",
-    "validVotes": 162519,
+    "validVotes": 176324,
     "marginWinnerToRunnerUp1": 12805,
     "marginWinnerToRunnerUp2": 83002,
     "marginRunnerUp1ToRunnerUp2": 70197,
@@ -103781,7 +103141,7 @@
       "name": "Y. Balanagi Reddy",
       "party": "YSRCP",
       "votes": 87662,
-      "voteShare": 49.29,
+      "voteShare": 49.72,
       "localizedNames": {
         "en": "Y. Balanagi Reddy",
         "hi": "य. बलंअगि रेडडय",
@@ -103852,7 +103212,7 @@
       "marginToFirstRunnerUp": 70197
     },
     "year": 2024,
-    "totalValidVotes": 162519,
+    "totalValidVotes": 176324,
     "constituencyId": 145
   },
   {
@@ -104531,10 +103891,10 @@
     "acNo": 146,
     "constituencyName": "Adoni",
     "delimitationId": "4",
-    "validVotes": 161694,
-    "marginWinnerToRunnerUp1": 82307,
-    "marginWinnerToRunnerUp2": 89929,
-    "marginRunnerUp1ToRunnerUp2": 71765,
+    "validVotes": 176133,
+    "marginWinnerToRunnerUp1": 18164,
+    "marginWinnerToRunnerUp2": 82307,
+    "marginRunnerUp1ToRunnerUp2": 64143,
     "winner": {
       "name": "P. V. Parthasarathi",
       "party": "BJP",
@@ -104573,31 +103933,22 @@
       "age": null
     },
     "firstRunnerUp": {
-      "name": "Golla Ramesh",
+      "name": "Y. Sai Prasad Reddy",
+      "party": "YSRCP",
+      "votes": 71765,
+      "voteShare": 40.74,
+      "marginToWinner": 18164
+    },
+    "secondRunnerUp": {
+      "name": "G. Ramesh Yadav",
       "party": "INC",
       "votes": 7622,
       "voteShare": 4.33,
       "marginToWinner": 82307,
-      "localizedParties": {
-        "en": "YSR Congress Party",
-        "te": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
-        "hi": "वाईएसआर कांग्रेस पार्टी",
-        "kn": "ವೈಎಸ್ಆರ್ ಕಾಂಗ್ರೆಸ್ ಪಕ್ಷ",
-        "mr": "वायएसआर काँग्रेस पार्टी",
-        "ta": "ஒய்.எஸ்.ஆர் காங்கிரஸ் கட்சி",
-        "ml": "വൈ.എസ്.ആർ കോൺഗ്രസ് പാർട്ടി",
-        "bn": "ওয়াইএসআর কংগ্রেস পার্টি",
-        "gu": "વાયએસઆર કોંગ્રેસ પાર્ટી",
-        "pa": "ਵਾਈਐਸਆਰ ਕਾਂਗਰਸ ਪਾਰਟੀ",
-        "or": "ୱାଇଏସଆର କଂଗ୍ରେସ ପାର୍ଟି",
-        "as": "ৱাইএছআৰ কংগ্ৰেছ পাৰ্টী",
-        "ne": "वाईएसआर काङ्ग्रेस पार्टी"
-      },
-      "age": null
+      "marginToFirstRunnerUp": 64143
     },
-    "secondRunnerUp": null,
     "year": 2024,
-    "totalValidVotes": 161694,
+    "totalValidVotes": 176133,
     "constituencyId": 146
   },
   {
@@ -105258,7 +104609,7 @@
     "acNo": 147,
     "constituencyName": "Alur",
     "delimitationId": "4",
-    "validVotes": 197697,
+    "validVotes": 210429,
     "marginWinnerToRunnerUp1": 2831,
     "marginWinnerToRunnerUp2": 94492,
     "marginRunnerUp1ToRunnerUp2": 91661,
@@ -105331,7 +104682,7 @@
       "marginToFirstRunnerUp": 91661
     },
     "year": 2024,
-    "totalValidVotes": 197697,
+    "totalValidVotes": 210429,
     "constituencyId": 147
   },
   {
@@ -105992,7 +105343,7 @@
     "acNo": 148,
     "constituencyName": "Rayadurg",
     "delimitationId": "4",
-    "validVotes": 218959,
+    "validVotes": 228267,
     "marginWinnerToRunnerUp1": 41659,
     "marginWinnerToRunnerUp2": 126921,
     "marginRunnerUp1ToRunnerUp2": 85262,
@@ -106072,7 +105423,7 @@
       "marginToFirstRunnerUp": 85262
     },
     "year": 2024,
-    "totalValidVotes": 218959,
+    "totalValidVotes": 228267,
     "constituencyId": 148
   },
   {
@@ -106747,87 +106098,33 @@
     "acNo": 149,
     "constituencyName": "Uravakonda",
     "delimitationId": "4",
-    "validVotes": 182388,
-    "marginWinnerToRunnerUp1": 27731,
-    "marginWinnerToRunnerUp2": 111127,
-    "marginRunnerUp1ToRunnerUp2": 83396,
+    "validVotes": 194522,
+    "marginWinnerToRunnerUp1": 21704,
+    "marginWinnerToRunnerUp2": 97517,
+    "marginRunnerUp1ToRunnerUp2": 75813,
     "winner": {
-      "name": "J.C. Asmit Reddy",
+      "name": "Payyavula Keshav",
       "party": "TDP",
-      "votes": 113755,
-      "voteShare": 54.77,
-      "localizedNames": {
-        "en": "Payyavula Keshav",
-        "hi": "पययवुल केशव",
-        "mr": "पययवुल केशव",
-        "ne": "पययवुल केशव",
-        "te": "పయయవుల కేశవ",
-        "kn": "ಪಯಯವುಲ ಕೇಶವ",
-        "ta": "பயயவுல கேஶவ",
-        "ml": "പയയവുല കേശവ",
-        "bn": "পযয঵ুল কেশ঵",
-        "as": "পযয঵ুল কেশ঵",
-        "gu": "પયયવુલ કેશવ",
-        "pa": "ਪਯਯਵੁਲ ਕੇਸ਼ਵ",
-        "or": "ପଯଯଵୁଲ କେଶଵ"
-      },
-      "localizedParties": {
-        "en": "Telugu Desam Party",
-        "te": "తెలుగుదేశం పార్టీ",
-        "hi": "तेलुगु देशम पार्टी",
-        "kn": "ತೆಲುಗು ದೇಶಂ ಪಕ್ಷ",
-        "mr": "तेलुगु देशम पार्टी",
-        "ta": "தெலுங்கு தேசம் கட்சி",
-        "ml": "തെലുങ്ക് ദേശം പാർട്ടി",
-        "bn": "তেলেগু দেশম পার্টি",
-        "gu": "તેલુગુ દેશમ પાર્ટી",
-        "pa": "ਤੇਲਗੂ ਦੇਸ਼ਮ ਪਾਰਟੀ",
-        "or": "ତେଲୁଗୁ ଦେଶମ ପାର୍ଟି",
-        "as": "তেলেগু দেশম পাৰ্টী",
-        "ne": "तेलुगु देशम पार्टी"
-      },
-      "photoUrl": "https://www.myneta.info/images_candidate/AndhraPradesh2024/c92820367f6e2574923724897c938b190d54c0de.jpg",
-      "affidavitUrl": "https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=14",
-      "age": 59,
-      "education": "Others",
-      "profession": "Member of Legislative Assembly",
-      "criminalCases": 2,
-      "totalAssets": 358738645,
-      "totalLiabilities": 87149637
+      "votes": 102046,
+      "voteShare": 52.46
     },
     "firstRunnerUp": {
-      "name": "Kethireddy Pedda Reddy",
+      "name": "Y. Visweswara Reddy",
       "party": "YSRCP",
-      "votes": 86024,
-      "voteShare": 41.42,
-      "marginToWinner": 27731,
-      "localizedParties": {
-        "en": "YSR Congress Party",
-        "te": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
-        "hi": "वाईएसआर कांग्रेस पार्टी",
-        "kn": "ವೈಎಸ್ಆರ್ ಕಾಂಗ್ರೆಸ್ ಪಕ್ಷ",
-        "mr": "वायएसआर काँग्रेस पार्टी",
-        "ta": "ஒய்.எஸ்.ஆர் காங்கிரஸ் கட்சி",
-        "ml": "വൈ.എസ്.ആർ കോൺഗ്രസ് പാർട്ടി",
-        "bn": "ওয়াইএসআর কংগ্রেস পার্টি",
-        "gu": "વાયએસઆર કોંગ્રેસ પાર્ટી",
-        "pa": "ਵਾਈਐਸਆਰ ਕਾਂਗਰਸ ਪਾਰਟੀ",
-        "or": "ୱାଇଏସଆର କଂଗ୍ରେସ ପାର୍ଟି",
-        "as": "ৱাইএছআৰ কংগ্ৰেছ পাৰ্টী",
-        "ne": "वाईएसआर काङ्ग्रेस पार्टी"
-      },
-      "age": null
+      "votes": 80342,
+      "voteShare": 41.3,
+      "marginToWinner": 21704
     },
     "secondRunnerUp": {
-      "name": "Gujjala Nagi Reddy",
+      "name": "Y. Madhusudhan Reddy",
       "party": "INC",
-      "votes": 2628,
-      "voteShare": 1.27,
-      "marginToWinner": 111127,
-      "marginToFirstRunnerUp": 83396
+      "votes": 4529,
+      "voteShare": 2.33,
+      "marginToWinner": 97517,
+      "marginToFirstRunnerUp": 75813
     },
     "year": 2024,
-    "totalValidVotes": 182388,
+    "totalValidVotes": 194522,
     "constituencyId": 149
   },
   {
@@ -107509,10 +106806,10 @@
     "acNo": 150,
     "constituencyName": "Guntakal",
     "delimitationId": "4",
-    "validVotes": 196574,
+    "validVotes": 206731,
     "marginWinnerToRunnerUp1": 6826,
-    "marginWinnerToRunnerUp2": 101700,
-    "marginRunnerUp1ToRunnerUp2": 94874,
+    "marginWinnerToRunnerUp2": 96554,
+    "marginRunnerUp1ToRunnerUp2": 89728,
     "winner": {
       "name": "Gummanur Jayaram",
       "party": "TDP",
@@ -107573,9 +106870,16 @@
       },
       "age": null
     },
-    "secondRunnerUp": null,
+    "secondRunnerUp": {
+      "name": "K. Prabhakar",
+      "party": "INC",
+      "votes": 5146,
+      "voteShare": 2.49,
+      "marginToWinner": 96554,
+      "marginToFirstRunnerUp": 89728
+    },
     "year": 2024,
-    "totalValidVotes": 196574,
+    "totalValidVotes": 206731,
     "constituencyId": 150
   },
   {
@@ -108236,15 +107540,15 @@
     "acNo": 151,
     "constituencyName": "Tadipatri",
     "delimitationId": "4",
-    "validVotes": 199779,
+    "validVotes": 207679,
     "marginWinnerToRunnerUp1": 27731,
-    "marginWinnerToRunnerUp2": 113755,
-    "marginRunnerUp1ToRunnerUp2": 86024,
+    "marginWinnerToRunnerUp2": 111127,
+    "marginRunnerUp1ToRunnerUp2": 83396,
     "winner": {
       "name": "J. C. Ashmit Reddy",
       "party": "TDP",
       "votes": 113755,
-      "voteShare": 56.94,
+      "voteShare": 54.77,
       "localizedNames": {
         "en": "J. C. Ashmit Reddy",
         "hi": "ज. c. अशमिट रेडडय",
@@ -108288,7 +107592,7 @@
       "name": "Kethireddy Pedda Reddy",
       "party": "YSRCP",
       "votes": 86024,
-      "voteShare": 43.06,
+      "voteShare": 41.42,
       "marginToWinner": 27731,
       "localizedParties": {
         "en": "YSR Congress Party",
@@ -108307,9 +107611,16 @@
       },
       "age": null
     },
-    "secondRunnerUp": null,
+    "secondRunnerUp": {
+      "name": "Gujjala Nagireddy",
+      "party": "INC",
+      "votes": 2628,
+      "voteShare": 1.27,
+      "marginToWinner": 111127,
+      "marginToFirstRunnerUp": 83396
+    },
     "year": 2024,
-    "totalValidVotes": 199779,
+    "totalValidVotes": 207679,
     "constituencyId": 151
   },
   {
@@ -108970,80 +108281,33 @@
     "acNo": 152,
     "constituencyName": "Singanamala",
     "delimitationId": "4",
-    "validVotes": 197126,
-    "marginWinnerToRunnerUp1": 90700,
-    "marginWinnerToRunnerUp2": 102957,
-    "marginRunnerUp1ToRunnerUp2": 94169,
+    "validVotes": 208233,
+    "marginWinnerToRunnerUp1": 8788,
+    "marginWinnerToRunnerUp2": 99061,
+    "marginRunnerUp1ToRunnerUp2": 90273,
     "winner": {
-      "name": "Mannepakula Veeranjaneyulu",
+      "name": "Bandaru Sravani Sree",
+      "party": "TDP",
+      "votes": 102957,
+      "voteShare": 49.44
+    },
+    "firstRunnerUp": {
+      "name": "M.veeranjaneyulu",
       "party": "YSRCP",
       "votes": 94169,
       "voteShare": 45.22,
-      "localizedNames": {
-        "en": "Bandaru Sravani Sree",
-        "hi": "बंदरु सरवंइ सरी",
-        "mr": "बंदरु सरवंइ सरी",
-        "ne": "बंदरु सरवंइ सरी",
-        "te": "బందరు సరవంఇ సరీ",
-        "kn": "ಬಂದರು ಸರವಂಇ ಸರೀ",
-        "ta": "஬ஂ஦ரு ஸரவஂஇ ஸரீ",
-        "ml": "ബംദരു സരവംഇ സരീ",
-        "bn": "বংদরু সর঵ংই সরী",
-        "as": "বংদরু সর঵ংই সরী",
-        "gu": "બંદરુ સરવંઇ સરી",
-        "pa": "ਬਂਦਰੁ ਸਰਵਂਇ ਸਰੀ",
-        "or": "ବଂଦରୁ ସରଵଂଇ ସରୀ"
-      },
-      "localizedParties": {
-        "en": "Telugu Desam Party",
-        "te": "తెలుగుదేశం పార్టీ",
-        "hi": "तेलुगु देशम पार्टी",
-        "kn": "ತೆಲುಗು ದೇಶಂ ಪಕ್ಷ",
-        "mr": "तेलुगु देशम पार्टी",
-        "ta": "தெலுங்கு தேசம் கட்சி",
-        "ml": "തെലുങ്ക് ദേശം പാർട്ടി",
-        "bn": "তেলেগু দেশম পার্টি",
-        "gu": "તેલુગુ દેશમ પાર્ટી",
-        "pa": "ਤੇਲਗੂ ਦੇਸ਼ਮ ਪਾਰਟੀ",
-        "or": "ତେଲୁଗୁ ଦେଶମ ପାର୍ଟି",
-        "as": "তেলেগু দেশম পাৰ্টী",
-        "ne": "तेलुगु देशम पार्टी"
-      },
-      "photoUrl": "https://www.myneta.info/images_candidate/AndhraPradesh2024/b0c4aa5510f2e6a953556a844ddcaab263d7ad07.jpg",
-      "affidavitUrl": "https://www.myneta.info/AndhraPradesh2024/candidate.php?candidate_id=35",
-      "age": 34,
-      "education": "Post Graduate",
-      "profession": "Social Worker",
-      "criminalCases": 0,
-      "totalAssets": 10435704,
-      "totalLiabilities": 2259600
+      "marginToWinner": 8788
     },
-    "firstRunnerUp": {
-      "name": "Sake Sailajanath",
-      "party": "INC",
-      "votes": 3469,
-      "voteShare": 1.67,
-      "marginToWinner": 90700,
-      "localizedParties": {
-        "en": "YSR Congress Party",
-        "te": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
-        "hi": "वाईएसआर कांग्रेस पार्टी",
-        "kn": "ವೈಎಸ್ಆರ್ ಕಾಂಗ್ರೆಸ್ ಪಕ್ಷ",
-        "mr": "वायएसआर काँग्रेस पार्टी",
-        "ta": "ஒய்.எஸ்.ஆர் காங்கிரஸ் கட்சி",
-        "ml": "വൈ.എസ്.ആർ കോൺഗ്രസ് പാർട്ടി",
-        "bn": "ওয়াইএসআর কংগ্রেস পার্টি",
-        "gu": "વાયએસઆર કોંગ્રેસ પાર્ટી",
-        "pa": "ਵਾਈਐਸਆਰ ਕਾਂਗਰਸ ਪਾਰਟੀ",
-        "or": "ୱାଇଏସଆର କଂଗ୍ରେସ ପାର୍ଟି",
-        "as": "ৱাইএছআৰ কংগ্ৰেছ পাৰ্টী",
-        "ne": "वाईएसआर काङ्ग्रेस पार्टी"
-      },
-      "age": null
+    "secondRunnerUp": {
+      "name": "Kundanam Gowthami",
+      "party": "BSP",
+      "votes": 3896,
+      "voteShare": 1.87,
+      "marginToWinner": 99061,
+      "marginToFirstRunnerUp": 90273
     },
-    "secondRunnerUp": null,
     "year": 2024,
-    "totalValidVotes": 197126,
+    "totalValidVotes": 208233,
     "constituencyId": 152
   },
   {
@@ -109711,10 +108975,10 @@
     "acNo": 153,
     "constituencyName": "Anantapur Urban",
     "delimitationId": "4",
-    "validVotes": 183645,
-    "marginWinnerToRunnerUp1": 100496,
-    "marginWinnerToRunnerUp2": 102025,
-    "marginRunnerUp1ToRunnerUp2": 1529,
+    "validVotes": 189575,
+    "marginWinnerToRunnerUp1": 23023,
+    "marginWinnerToRunnerUp2": 100496,
+    "marginRunnerUp1ToRunnerUp2": 77473,
     "winner": {
       "name": "Daggupati Venkateswara Prasad",
       "party": "TDP",
@@ -109753,38 +109017,22 @@
       "age": null
     },
     "firstRunnerUp": {
+      "name": "Anantha Venkatarami Reddy",
+      "party": "YSRCP",
+      "votes": 80311,
+      "voteShare": 42.36,
+      "marginToWinner": 23023
+    },
+    "secondRunnerUp": {
       "name": "C. Jaffer",
       "party": "CPI",
       "votes": 2838,
       "voteShare": 1.5,
       "marginToWinner": 100496,
-      "localizedParties": {
-        "en": "YSR Congress Party",
-        "te": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
-        "hi": "वाईएसआर कांग्रेस पार्टी",
-        "kn": "ವೈಎಸ್ಆರ್ ಕಾಂಗ್ರೆಸ್ ಪಕ್ಷ",
-        "mr": "वायएसआर काँग्रेस पार्टी",
-        "ta": "ஒய்.எஸ்.ஆர் காங்கிரஸ் கட்சி",
-        "ml": "വൈ.എസ്.ആർ കോൺഗ്രസ് പാർട്ടി",
-        "bn": "ওয়াইএসআর কংগ্রেস পার্টি",
-        "gu": "વાયએસઆર કોંગ્રેસ પાર્ટી",
-        "pa": "ਵਾਈਐਸਆਰ ਕਾਂਗਰਸ ਪਾਰਟੀ",
-        "or": "ୱାଇଏସଆର କଂଗ୍ରେସ ପାର୍ଟି",
-        "as": "ৱাইএছআৰ কংগ্ৰেছ পাৰ্টী",
-        "ne": "वाईएसआर काङ्ग्रेस पार्टी"
-      },
-      "age": null
-    },
-    "secondRunnerUp": {
-      "name": "AKULA RAGHAVENDRA",
-      "party": "JAI BHARATH NATIONAL PARTY",
-      "votes": 1309,
-      "voteShare": 0.71,
-      "marginToWinner": 102025,
-      "marginToFirstRunnerUp": 1529
+      "marginToFirstRunnerUp": 77473
     },
     "year": 2024,
-    "totalValidVotes": 183645,
+    "totalValidVotes": 189575,
     "constituencyId": 153
   },
   {
@@ -110445,7 +109693,7 @@
     "acNo": 154,
     "constituencyName": "Kalyandurg",
     "delimitationId": "4",
-    "validVotes": 200022,
+    "validVotes": 205841,
     "marginWinnerToRunnerUp1": 37734,
     "marginWinnerToRunnerUp2": 116293,
     "marginRunnerUp1ToRunnerUp2": 78559,
@@ -110525,7 +109773,7 @@
       "marginToFirstRunnerUp": 78559
     },
     "year": 2024,
-    "totalValidVotes": 200022,
+    "totalValidVotes": 205841,
     "constituencyId": 154
   },
   {
@@ -111186,7 +110434,7 @@
     "acNo": 155,
     "constituencyName": "Raptadu",
     "delimitationId": "4",
-    "validVotes": 208951,
+    "validVotes": 217157,
     "marginWinnerToRunnerUp1": 23329,
     "marginWinnerToRunnerUp2": 112684,
     "marginRunnerUp1ToRunnerUp2": 89355,
@@ -111259,7 +110507,7 @@
       "marginToFirstRunnerUp": 89355
     },
     "year": 2024,
-    "totalValidVotes": 208951,
+    "totalValidVotes": 217157,
     "constituencyId": 155
   },
   {
@@ -111932,7 +111180,7 @@
     "acNo": 156,
     "constituencyName": "Madakasira",
     "delimitationId": "4",
-    "validVotes": 159615,
+    "validVotes": 186138,
     "marginWinnerToRunnerUp1": 351,
     "marginWinnerToRunnerUp2": 62603,
     "marginRunnerUp1ToRunnerUp2": 62252,
@@ -111940,7 +111188,7 @@
       "name": "M. S. Raju",
       "party": "TDP",
       "votes": 79983,
-      "voteShare": 42.92,
+      "voteShare": 42.97,
       "localizedNames": {
         "en": "M. S. Raju",
         "hi": "म. स. रजु",
@@ -112005,7 +111253,7 @@
       "marginToFirstRunnerUp": 62252
     },
     "year": 2024,
-    "totalValidVotes": 159615,
+    "totalValidVotes": 186138,
     "constituencyId": 156
   },
   {
@@ -112680,7 +111928,7 @@
     "acNo": 157,
     "constituencyName": "Hindupur",
     "delimitationId": "4",
-    "validVotes": 181903,
+    "validVotes": 195961,
     "marginWinnerToRunnerUp1": 32597,
     "marginWinnerToRunnerUp2": 98292,
     "marginRunnerUp1ToRunnerUp2": 65695,
@@ -112758,7 +112006,7 @@
       "marginToFirstRunnerUp": 65695
     },
     "year": 2024,
-    "totalValidVotes": 181903,
+    "totalValidVotes": 195961,
     "constituencyId": 157
   },
   {
@@ -113438,10 +112686,10 @@
     "acNo": 158,
     "constituencyName": "Penukonda",
     "delimitationId": "4",
-    "validVotes": 194276,
+    "validVotes": 207615,
     "marginWinnerToRunnerUp1": 33388,
-    "marginWinnerToRunnerUp2": 109825,
-    "marginRunnerUp1ToRunnerUp2": 76437,
+    "marginWinnerToRunnerUp2": 107631,
+    "marginRunnerUp1ToRunnerUp2": 74243,
     "winner": {
       "name": "S. Savitha",
       "party": "TDP",
@@ -113510,15 +112758,15 @@
       "age": null
     },
     "secondRunnerUp": {
-      "name": "P. Narasimhappa",
-      "party": "INC",
-      "votes": 4007,
-      "voteShare": 1.93,
-      "marginToWinner": 109825,
-      "marginToFirstRunnerUp": 76437
+      "name": "M Adinarayana",
+      "party": "BSP",
+      "votes": 6201,
+      "voteShare": 2.99,
+      "marginToWinner": 107631,
+      "marginToFirstRunnerUp": 74243
     },
     "year": 2024,
-    "totalValidVotes": 194276,
+    "totalValidVotes": 207615,
     "constituencyId": 158
   },
   {
@@ -114200,7 +113448,7 @@
     "acNo": 159,
     "constituencyName": "Puttaparthi",
     "delimitationId": "4",
-    "validVotes": 174722,
+    "validVotes": 183975,
     "marginWinnerToRunnerUp1": 8760,
     "marginWinnerToRunnerUp2": 87930,
     "marginRunnerUp1ToRunnerUp2": 79170,
@@ -114273,7 +113521,7 @@
       "marginToFirstRunnerUp": 79170
     },
     "year": 2024,
-    "totalValidVotes": 174722,
+    "totalValidVotes": 183975,
     "constituencyId": 159
   },
   {
@@ -114934,7 +114182,7 @@
     "acNo": 160,
     "constituencyName": "Dharmavaram",
     "delimitationId": "4",
-    "validVotes": 209354,
+    "validVotes": 219848,
     "marginWinnerToRunnerUp1": 3734,
     "marginWinnerToRunnerUp2": 102786,
     "marginRunnerUp1ToRunnerUp2": 99052,
@@ -115007,7 +114255,7 @@
       "marginToFirstRunnerUp": 99052
     },
     "year": 2024,
-    "totalValidVotes": 209354,
+    "totalValidVotes": 219848,
     "constituencyId": 160
   },
   {
@@ -115668,10 +114916,10 @@
     "acNo": 161,
     "constituencyName": "Kadiri",
     "delimitationId": "4",
-    "validVotes": 200955,
+    "validVotes": 209152,
     "marginWinnerToRunnerUp1": 6265,
-    "marginWinnerToRunnerUp2": 103610,
-    "marginRunnerUp1ToRunnerUp2": 97345,
+    "marginWinnerToRunnerUp2": 100296,
+    "marginRunnerUp1ToRunnerUp2": 94031,
     "winner": {
       "name": "Kandikunta Venkata Prasad",
       "party": "TDP",
@@ -115739,9 +114987,16 @@
       },
       "age": null
     },
-    "secondRunnerUp": null,
+    "secondRunnerUp": {
+      "name": "K.s. Shanwaz",
+      "party": "INC",
+      "votes": 3314,
+      "voteShare": 1.58,
+      "marginToWinner": 100296,
+      "marginToFirstRunnerUp": 94031
+    },
     "year": 2024,
-    "totalValidVotes": 200955,
+    "totalValidVotes": 209152,
     "constituencyId": 161
   },
   {
@@ -116423,7 +115678,7 @@
     "acNo": 162,
     "constituencyName": "Thamballapalle",
     "delimitationId": "4",
-    "validVotes": 178169,
+    "validVotes": 187866,
     "marginWinnerToRunnerUp1": 10103,
     "marginWinnerToRunnerUp2": 90692,
     "marginRunnerUp1ToRunnerUp2": 80589,
@@ -116496,7 +115751,7 @@
       "marginToFirstRunnerUp": 80589
     },
     "year": 2024,
-    "totalValidVotes": 178169,
+    "totalValidVotes": 187866,
     "constituencyId": 162
   },
   {
@@ -117157,7 +116412,7 @@
     "acNo": 163,
     "constituencyName": "Pileru",
     "delimitationId": "4",
-    "validVotes": 186083,
+    "validVotes": 193741,
     "marginWinnerToRunnerUp1": 25081,
     "marginWinnerToRunnerUp2": 102179,
     "marginRunnerUp1ToRunnerUp2": 77098,
@@ -117230,7 +116485,7 @@
       "marginToFirstRunnerUp": 77098
     },
     "year": 2024,
-    "totalValidVotes": 186083,
+    "totalValidVotes": 193741,
     "constituencyId": 163
   },
   {
@@ -117912,7 +117167,7 @@
     "acNo": 164,
     "constituencyName": "Madanapalle",
     "delimitationId": "4",
-    "validVotes": 190451,
+    "validVotes": 202871,
     "marginWinnerToRunnerUp1": 5509,
     "marginWinnerToRunnerUp2": 91929,
     "marginRunnerUp1ToRunnerUp2": 86420,
@@ -117985,7 +117240,7 @@
       "marginToFirstRunnerUp": 86420
     },
     "year": 2024,
-    "totalValidVotes": 190451,
+    "totalValidVotes": 202871,
     "constituencyId": 164
   },
   {
@@ -118646,53 +117901,22 @@
     "acNo": 165,
     "constituencyName": "Punganur",
     "delimitationId": "4",
-    "validVotes": 195491,
-    "marginWinnerToRunnerUp1": 6619,
-    "marginWinnerToRunnerUp2": 95351,
-    "marginRunnerUp1ToRunnerUp2": 88732,
+    "validVotes": 209674,
+    "marginWinnerToRunnerUp1": 6095,
+    "marginWinnerToRunnerUp2": 96234,
+    "marginRunnerUp1ToRunnerUp2": 90139,
     "winner": {
-      "name": "Peddireddy Ramachandra Reddy",
+      "name": "Peddireddi Ramachandra Reddy",
       "party": "YSRCP",
-      "votes": 99774,
-      "voteShare": 48.07,
-      "localizedNames": {
-        "en": "Peddireddy Ramachandra Reddy",
-        "hi": "पेडडिरेडडय रमचंडर रेडडय",
-        "mr": "पेडडिरेडडय रमचंडर रेडडय",
-        "ne": "पेडडिरेडडय रमचंडर रेडडय",
-        "te": "పేడడిరేడడయ రమచండర రేడడయ",
-        "kn": "ಪೇಡಡಿರೇಡಡಯ ರಮಚಂಡರ ರೇಡಡಯ",
-        "ta": "பே஡஡ிரே஡஡ய ரமசஂ஡ர ரே஡஡ய",
-        "ml": "പേഡഡിരേഡഡയ രമചംഡര രേഡഡയ",
-        "bn": "পেডডিরেডডয রমচংডর রেডডয",
-        "as": "পেডডিরেডডয রমচংডর রেডডয",
-        "gu": "પેડડિરેડડય રમચંડર રેડડય",
-        "pa": "ਪੇਡਡਿਰੇਡਡਯ ਰਮਚਂਡਰ ਰੇਡਡਯ",
-        "or": "ପେଡଡିରେଡଡଯ ରମଚଂଡର ରେଡଡଯ"
-      },
-      "localizedParties": {
-        "en": "YSR Congress Party",
-        "te": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
-        "hi": "वाईएसआर कांग्रेस पार्टी",
-        "kn": "ವೈಎಸ್ಆರ್ ಕಾಂಗ್ರೆಸ್ ಪಕ್ಷ",
-        "mr": "वायएसआर काँग्रेस पार्टी",
-        "ta": "ஒய்.எஸ்.ஆர் காங்கிரஸ் கட்சி",
-        "ml": "വൈ.എസ്.ആർ കോൺഗ്രസ് പാർട്ടി",
-        "bn": "ওয়াইএসআর কংগ্রেস পার্টি",
-        "gu": "વાયએસઆર કોંગ્રેસ પાર્ટી",
-        "pa": "ਵਾਈਐਸਆਰ ਕਾਂਗਰਸ ਪਾਰਟੀ",
-        "or": "ୱାଇଏସଆର କଂଗ୍ରେସ ପାର୍ଟି",
-        "as": "ৱাইএছআৰ কংগ্ৰেছ পাৰ্টী",
-        "ne": "वाईएसआर काङ्ग्रेस पार्टी"
-      },
-      "age": null
+      "votes": 100793,
+      "voteShare": 48.07
     },
     "firstRunnerUp": {
       "name": "Challa Ramachandra Reddy",
       "party": "TDP",
-      "votes": 93155,
+      "votes": 94698,
       "voteShare": 45.16,
-      "marginToWinner": 6619,
+      "marginToWinner": 6095,
       "localizedParties": {
         "en": "Telugu Desam Party",
         "te": "తెలుగుదేశం పార్టీ",
@@ -118712,14 +117936,14 @@
     },
     "secondRunnerUp": {
       "name": "Bode Ramachandra Yadav",
-      "party": "BHARATA CHAITANYA YUVAJANA PARTY",
-      "votes": 4423,
+      "party": "BCYP",
+      "votes": 4559,
       "voteShare": 2.17,
-      "marginToWinner": 95351,
-      "marginToFirstRunnerUp": 88732
+      "marginToWinner": 96234,
+      "marginToFirstRunnerUp": 90139
     },
     "year": 2024,
-    "totalValidVotes": 195491,
+    "totalValidVotes": 209674,
     "constituencyId": 165
   },
   {
@@ -119385,7 +118609,7 @@
     "acNo": 166,
     "constituencyName": "Chandragiri",
     "delimitationId": "4",
-    "validVotes": 243482,
+    "validVotes": 255249,
     "marginWinnerToRunnerUp1": 43852,
     "marginWinnerToRunnerUp2": 140696,
     "marginRunnerUp1ToRunnerUp2": 96844,
@@ -119393,7 +118617,7 @@
       "name": "Pulivarthi Nani",
       "party": "TDP",
       "votes": 143667,
-      "voteShare": 56.73,
+      "voteShare": 56.29,
       "localizedNames": {
         "en": "Pullivarthi Venkata Mani Prasad",
         "hi": "पुललिवरठि वेणकत मंइ परसड",
@@ -119430,7 +118654,7 @@
       "name": "Chevireddy Mohit Reddy",
       "party": "YSRCP",
       "votes": 99815,
-      "voteShare": 34.16,
+      "voteShare": 39.1,
       "marginToWinner": 43852,
       "localizedParties": {
         "en": "YSR Congress Party",
@@ -119453,12 +118677,12 @@
       "name": "Kanuparthy Srinivasulu",
       "party": "INC",
       "votes": 2971,
-      "voteShare": 1.01,
+      "voteShare": 1.16,
       "marginToWinner": 140696,
       "marginToFirstRunnerUp": 96844
     },
     "year": 2024,
-    "totalValidVotes": 243482,
+    "totalValidVotes": 255249,
     "constituencyId": 166
   },
   {
@@ -120119,46 +119343,15 @@
     "acNo": 167,
     "constituencyName": "Tirupati",
     "delimitationId": "4",
-    "validVotes": 186258,
+    "validVotes": 193742,
     "marginWinnerToRunnerUp1": 61956,
-    "marginWinnerToRunnerUp2": 124107,
-    "marginRunnerUp1ToRunnerUp2": 62151,
+    "marginWinnerToRunnerUp2": 123169,
+    "marginRunnerUp1ToRunnerUp2": 61213,
     "winner": {
-      "name": "Arani Srinivasulu",
+      "name": "Aranii Srenevasulu(jmc)",
       "party": "JSP",
       "votes": 124107,
-      "voteShare": 64.06,
-      "localizedNames": {
-        "en": "Arani Srinivasulu",
-        "hi": "अरंइ सरिणिवसुलु",
-        "mr": "अरंइ सरिणिवसुलु",
-        "ne": "अरंइ सरिणिवसुलु",
-        "te": "అరంఇ సరిణివసులు",
-        "kn": "ಅರಂಇ ಸರಿಣಿವಸುಲು",
-        "ta": "அரஂஇ ஸரிணிவஸுலு",
-        "ml": "അരംഇ സരിണിവസുലു",
-        "bn": "অরংই সরিণি঵সুলু",
-        "as": "অরংই সরিণি঵সুলু",
-        "gu": "અરંઇ સરિણિવસુલુ",
-        "pa": "ਅਰਂਇ ਸਰਿਣਿਵਸੁਲੁ",
-        "or": "ଅରଂଇ ସରିଣିଵସୁଲୁ"
-      },
-      "localizedParties": {
-        "en": "JSP",
-        "te": "జసప",
-        "hi": "जसप",
-        "kn": "ಜಸಪ",
-        "mr": "जसप",
-        "ta": "ஜஸப",
-        "ml": "ജസപ",
-        "bn": "জসপ",
-        "gu": "જસપ",
-        "pa": "ਜਸਪ",
-        "or": "ଜସପ",
-        "as": "জসপ",
-        "ne": "जसप"
-      },
-      "age": null
+      "voteShare": 64.06
     },
     "firstRunnerUp": {
       "name": "Bhumana Abhinay Reddy",
@@ -120183,9 +119376,16 @@
       },
       "age": null
     },
-    "secondRunnerUp": null,
+    "secondRunnerUp": {
+      "name": "Aluri Srinivasulu",
+      "party": "JJSP",
+      "votes": 938,
+      "voteShare": 0.48,
+      "marginToWinner": 123169,
+      "marginToFirstRunnerUp": 61213
+    },
     "year": 2024,
-    "totalValidVotes": 186258,
+    "totalValidVotes": 193742,
     "constituencyId": 167
   },
   {
@@ -120846,80 +120046,33 @@
     "acNo": 168,
     "constituencyName": "Srikalahasti",
     "delimitationId": "4",
-    "validVotes": 199826,
-    "marginWinnerToRunnerUp1": 76288,
-    "marginWinnerToRunnerUp2": 78246,
-    "marginRunnerUp1ToRunnerUp2": 1958,
+    "validVotes": 209316,
+    "marginWinnerToRunnerUp1": 43304,
+    "marginWinnerToRunnerUp2": 118563,
+    "marginRunnerUp1ToRunnerUp2": 75259,
     "winner": {
-      "name": "Nukathoti Rajesh",
-      "party": "YSRCP",
-      "votes": 81732,
-      "voteShare": 44.29,
-      "localizedNames": {
-        "en": "Bojjala Venkata Sudhir Reddy",
-        "hi": "बोजजल वेणकत सुढिर रेडडय",
-        "mr": "बोजजल वेणकत सुढिर रेडडय",
-        "ne": "बोजजल वेणकत सुढिर रेडडय",
-        "te": "బోజజల వేణకత సుఢిర రేడడయ",
-        "kn": "ಬೋಜಜಲ ವೇಣಕತ ಸುಢಿರ ರೇಡಡಯ",
-        "ta": "஬ோஜஜல வேணகத ஸு஢ிர ரே஡஡ய",
-        "ml": "ബോജജല വേണകത സുഢിര രേഡഡയ",
-        "bn": "বোজজল ঵েণকত সুঢির রেডডয",
-        "as": "বোজজল ঵েণকত সুঢির রেডডয",
-        "gu": "બોજજલ વેણકત સુઢિર રેડડય",
-        "pa": "ਬੋਜਜਲ ਵੇਣਕਤ ਸੁਢਿਰ ਰੇਡਡਯ",
-        "or": "ବୋଜଜଲ ଵେଣକତ ସୁଢିର ରେଡଡଯ"
-      },
-      "localizedParties": {
-        "en": "Telugu Desam Party",
-        "te": "తెలుగుదేశం పార్టీ",
-        "hi": "तेलुगु देशम पार्टी",
-        "kn": "ತೆಲುಗು ದೇಶಂ ಪಕ್ಷ",
-        "mr": "तेलुगु देशम पार्टी",
-        "ta": "தெலுங்கு தேசம் கட்சி",
-        "ml": "തെലുങ്ക് ദേശം പാർട്ടി",
-        "bn": "তেলেগু দেশম পার্টি",
-        "gu": "તેલુગુ દેશમ પાર્ટી",
-        "pa": "ਤੇਲਗੂ ਦੇਸ਼ਮ ਪਾਰਟੀ",
-        "or": "ତେଲୁଗୁ ଦେଶମ ପାର୍ଟି",
-        "as": "তেলেগু দেশম পাৰ্টী",
-        "ne": "तेलुगु देशम पार्टी"
-      },
-      "age": null
+      "name": "Bojjala Venkata Sudhir Reddy",
+      "party": "TDP",
+      "votes": 121565,
+      "voteShare": 58.08
     },
     "firstRunnerUp": {
-      "name": "Balaguruvam Babu",
-      "party": "INC",
-      "votes": 5444,
-      "voteShare": 2.95,
-      "marginToWinner": 76288,
-      "localizedParties": {
-        "en": "YSR Congress Party",
-        "te": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
-        "hi": "वाईएसआर कांग्रेस पार्टी",
-        "kn": "ವೈಎಸ್ಆರ್ ಕಾಂಗ್ರೆಸ್ ಪಕ್ಷ",
-        "mr": "वायएसआर काँग्रेस पार्टी",
-        "ta": "ஒய்.எஸ்.ஆர் காங்கிரஸ் கட்சி",
-        "ml": "വൈ.എസ്.ആർ കോൺഗ്രസ് പാർട്ടി",
-        "bn": "ওয়াইএসআর কংগ্রেস পার্টি",
-        "gu": "વાયએસઆર કોંગ્રેસ પાર્ટી",
-        "pa": "ਵਾਈਐਸਆਰ ਕਾਂਗਰਸ ਪਾਰਟੀ",
-        "or": "ୱାଇଏସଆର କଂଗ୍ରେସ ପାର୍ଟି",
-        "as": "ৱাইএছআৰ কংগ্ৰেছ পাৰ্টী",
-        "ne": "वाईएसआर काङ्ग्रेस पार्टी"
-      },
-      "age": null
+      "name": "Biyyapu Madhusudhan Reddy",
+      "party": "YSRCP",
+      "votes": 78261,
+      "voteShare": 37.39,
+      "marginToWinner": 43304
     },
     "secondRunnerUp": {
-      "name": "Yathati Ramesh Babu",
-      "party": "INDEPENDENT",
-      "votes": 3486,
-      "voteShare": 1.89,
-      "marginToWinner": 78246,
-      "marginToFirstRunnerUp": 1958
+      "name": "Dr. Pothugunta Rajesh Naidu",
+      "party": "INC",
+      "votes": 3002,
+      "voteShare": 1.43,
+      "marginToWinner": 118563,
+      "marginToFirstRunnerUp": 75259
     },
     "year": 2024,
-    "totalValidVotes": 199826,
+    "totalValidVotes": 209316,
     "constituencyId": 168
   },
   {
@@ -121580,15 +120733,15 @@
     "acNo": 169,
     "constituencyName": "Sathyavedu",
     "delimitationId": "4",
-    "validVotes": 167203,
+    "validVotes": 184522,
     "marginWinnerToRunnerUp1": 3739,
-    "marginWinnerToRunnerUp2": 85471,
-    "marginRunnerUp1ToRunnerUp2": 81732,
+    "marginWinnerToRunnerUp2": 80027,
+    "marginRunnerUp1ToRunnerUp2": 76288,
     "winner": {
       "name": "Koneti Adimulam",
       "party": "TDP",
       "votes": 85471,
-      "voteShare": 51.12,
+      "voteShare": 46.32,
       "localizedNames": {
         "en": "Koneti Adimulam",
         "hi": "कोणेटि अडिमुलम",
@@ -121631,7 +120784,7 @@
       "name": "Nukatoti Rajesh",
       "party": "YSRCP",
       "votes": 81732,
-      "voteShare": 48.88,
+      "voteShare": 44.29,
       "marginToWinner": 3739,
       "localizedParties": {
         "en": "YSR Congress Party",
@@ -121650,9 +120803,16 @@
       },
       "age": null
     },
-    "secondRunnerUp": null,
+    "secondRunnerUp": {
+      "name": "Balaguravam. Babu",
+      "party": "INC",
+      "votes": 5444,
+      "voteShare": 2.95,
+      "marginToWinner": 80027,
+      "marginToFirstRunnerUp": 76288
+    },
     "year": 2024,
-    "totalValidVotes": 167203,
+    "totalValidVotes": 184522,
     "constituencyId": 169
   },
   {
@@ -122320,10 +121480,10 @@
     "acNo": 170,
     "constituencyName": "Nagari",
     "delimitationId": "4",
-    "validVotes": 170590,
-    "marginWinnerToRunnerUp1": 45003,
+    "validVotes": 178530,
+    "marginWinnerToRunnerUp1": 45004,
     "marginWinnerToRunnerUp2": 103246,
-    "marginRunnerUp1ToRunnerUp2": 58243,
+    "marginRunnerUp1ToRunnerUp2": 58242,
     "winner": {
       "name": "Gali Bhanu Prakash",
       "party": "TDP",
@@ -122364,9 +121524,9 @@
     "firstRunnerUp": {
       "name": "R.K. Roja",
       "party": "YSRCP",
-      "votes": 62794,
+      "votes": 62793,
       "voteShare": 35.17,
-      "marginToWinner": 45003,
+      "marginToWinner": 45004,
       "localizedParties": {
         "en": "YSR Congress Party",
         "te": "వైఎస్సార్ కాంగ్రెస్ పార్టీ",
@@ -122390,10 +121550,10 @@
       "votes": 4551,
       "voteShare": 2.55,
       "marginToWinner": 103246,
-      "marginToFirstRunnerUp": 58243
+      "marginToFirstRunnerUp": 58242
     },
     "year": 2024,
-    "totalValidVotes": 170590,
+    "totalValidVotes": 178530,
     "constituencyId": 170
   },
   {
@@ -123054,7 +122214,7 @@
     "acNo": 171,
     "constituencyName": "Gangadhara Nellore",
     "delimitationId": "4",
-    "validVotes": 176341,
+    "validVotes": 183221,
     "marginWinnerToRunnerUp1": 26011,
     "marginWinnerToRunnerUp2": 98494,
     "marginRunnerUp1ToRunnerUp2": 72483,
@@ -123127,7 +122287,7 @@
       "marginToFirstRunnerUp": 72483
     },
     "year": 2024,
-    "totalValidVotes": 176341,
+    "totalValidVotes": 183221,
     "constituencyId": 171
   },
   {
@@ -123788,7 +122948,7 @@
     "acNo": 172,
     "constituencyName": "Chittoor",
     "delimitationId": "4",
-    "validVotes": 161528,
+    "validVotes": 167789,
     "marginWinnerToRunnerUp1": 14604,
     "marginWinnerToRunnerUp2": 84802,
     "marginRunnerUp1ToRunnerUp2": 70198,
@@ -123856,12 +123016,12 @@
       "name": "G Tikaraam",
       "party": "INC",
       "votes": 3264,
-      "voteShare": 1.94,
+      "voteShare": 1.95,
       "marginToWinner": 84802,
       "marginToFirstRunnerUp": 70198
     },
     "year": 2024,
-    "totalValidVotes": 161528,
+    "totalValidVotes": 167789,
     "constituencyId": 172
   },
   {
@@ -124522,7 +123682,7 @@
     "acNo": 173,
     "constituencyName": "Puthalapattu",
     "delimitationId": "4",
-    "validVotes": 188640,
+    "validVotes": 195018,
     "marginWinnerToRunnerUp1": 15634,
     "marginWinnerToRunnerUp2": 99317,
     "marginRunnerUp1ToRunnerUp2": 83683,
@@ -124595,7 +123755,7 @@
       "marginToFirstRunnerUp": 83683
     },
     "year": 2024,
-    "totalValidVotes": 188640,
+    "totalValidVotes": 195018,
     "constituencyId": 173
   },
   {
@@ -125256,7 +124416,7 @@
     "acNo": 174,
     "constituencyName": "Palamaner",
     "delimitationId": "4",
-    "validVotes": 226342,
+    "validVotes": 236556,
     "marginWinnerToRunnerUp1": 20122,
     "marginWinnerToRunnerUp2": 119217,
     "marginRunnerUp1ToRunnerUp2": 99095,
@@ -125329,7 +124489,7 @@
       "marginToFirstRunnerUp": 99095
     },
     "year": 2024,
-    "totalValidVotes": 226342,
+    "totalValidVotes": 236556,
     "constituencyId": 174
   },
   {
@@ -125990,7 +125150,7 @@
     "acNo": 175,
     "constituencyName": "Kuppam",
     "delimitationId": "4",
-    "validVotes": 195852,
+    "validVotes": 203367,
     "marginWinnerToRunnerUp1": 48006,
     "marginWinnerToRunnerUp2": 119355,
     "marginRunnerUp1ToRunnerUp2": 71349,
@@ -126070,7 +125230,7 @@
       "marginToFirstRunnerUp": 71349
     },
     "year": 2024,
-    "totalValidVotes": 195852,
+    "totalValidVotes": 203367,
     "constituencyId": 175
   },
   {

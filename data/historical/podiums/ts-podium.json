@@ -3,7 +3,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 136751,
+      "totalValidVotes": 186880,
       "constituencyName": "Sirpur",
       "marginWinnerToRunnerUp1": 3088,
       "marginWinnerToRunnerUp2": 19056,
@@ -718,7 +718,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 152523,
+      "totalValidVotes": 152230,
       "constituencyName": "Chennur",
       "marginWinnerToRunnerUp1": 37515,
       "marginWinnerToRunnerUp2": 84166,
@@ -1426,7 +1426,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 143604,
+      "totalValidVotes": 141863,
       "constituencyName": "Bellampalli",
       "marginWinnerToRunnerUp1": 36878,
       "marginWinnerToRunnerUp2": 78405,
@@ -1888,7 +1888,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 153618,
+      "totalValidVotes": 192510,
       "constituencyName": "Mancherial",
       "marginWinnerToRunnerUp1": 66116,
       "marginWinnerToRunnerUp2": 67956,
@@ -2596,7 +2596,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 132155,
+      "totalValidVotes": 184666,
       "constituencyName": "Asifabad",
       "marginWinnerToRunnerUp1": 22810,
       "marginWinnerToRunnerUp2": 66583,
@@ -2670,7 +2670,7 @@
       },
       "secondRunnerUp": {
         "name": "Kotnaka Vijay Kumar",
-        "party": "INDEPENDENT POLITICIAN",
+        "party": "IND",
         "votes": 16469,
         "voteShare": 8.92,
         "marginToWinner": 66583,
@@ -3311,16 +3311,16 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 135424,
+      "totalValidVotes": 174239,
       "constituencyName": "Khanapur",
-      "marginWinnerToRunnerUp1": 8946,
-      "marginWinnerToRunnerUp2": 72185,
-      "marginRunnerUp1ToRunnerUp2": 63239,
+      "marginWinnerToRunnerUp1": 4702,
+      "marginWinnerToRunnerUp2": 6472,
+      "marginRunnerUp1ToRunnerUp2": 1770,
       "winner": {
         "name": "Vedma Bhojju",
         "party": "INC",
-        "votes": 72185,
-        "voteShare": 53.3,
+        "votes": 58870,
+        "voteShare": 33.79,
         "localizedNames": {
           "en": "Vedma Bhojju",
           "hi": "वेडम भोजजु",
@@ -3363,9 +3363,9 @@
       "firstRunnerUp": {
         "name": "Johnson Naik Bhukya",
         "party": "BRS",
-        "votes": 63239,
-        "voteShare": 46.7,
-        "marginToWinner": 8946,
+        "votes": 54168,
+        "voteShare": 31.09,
+        "marginToWinner": 4702,
         "localizedParties": {
           "en": "Bharat Rashtra Samithi",
           "te": "భారత్ రాష్ట్ర సమితి",
@@ -3383,7 +3383,14 @@
         },
         "age": null
       },
-      "secondRunnerUp": null
+      "secondRunnerUp": {
+        "name": "Ramesh Rathod",
+        "party": "BJP",
+        "votes": 52398,
+        "voteShare": 30.07,
+        "marginToWinner": 6472,
+        "marginToFirstRunnerUp": 1770
+      }
     },
     {
       "year": 2018,
@@ -4005,7 +4012,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 145211,
+      "totalValidVotes": 188652,
       "constituencyName": "Adilabad",
       "marginWinnerToRunnerUp1": 6692,
       "marginWinnerToRunnerUp2": 19884,
@@ -4725,7 +4732,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 127615,
+      "totalValidVotes": 174018,
       "constituencyName": "Boath",
       "marginWinnerToRunnerUp1": 22800,
       "marginWinnerToRunnerUp2": 43995,
@@ -5438,7 +5445,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 153252,
+      "totalValidVotes": 196931,
       "constituencyName": "Nirmal",
       "marginWinnerToRunnerUp1": 50703,
       "marginWinnerToRunnerUp2": 77758,
@@ -6160,7 +6167,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 143868,
+      "totalValidVotes": 202202,
       "constituencyName": "Mudhole",
       "marginWinnerToRunnerUp1": 23999,
       "marginWinnerToRunnerUp2": 82664,
@@ -6860,7 +6867,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 156915,
+      "totalValidVotes": 161826,
       "constituencyName": "Armur",
       "marginWinnerToRunnerUp1": 29669,
       "marginWinnerToRunnerUp2": 33263,
@@ -7561,7 +7568,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 158467,
+      "totalValidVotes": 171929,
       "constituencyName": "Bodhan",
       "marginWinnerToRunnerUp1": 3062,
       "marginWinnerToRunnerUp2": 33408,
@@ -8255,7 +8262,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 144708,
+      "totalValidVotes": 164539,
       "constituencyName": "Jukkal",
       "marginWinnerToRunnerUp1": 1152,
       "marginWinnerToRunnerUp2": 36052,
@@ -8956,7 +8963,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 175210,
+      "totalValidVotes": 160079,
       "constituencyName": "Banswada",
       "marginWinnerToRunnerUp1": 23464,
       "marginWinnerToRunnerUp2": 52593,
@@ -9656,7 +9663,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 150061,
+      "totalValidVotes": 184800,
       "constituencyName": "Yellareddy",
       "marginWinnerToRunnerUp1": 24001,
       "marginWinnerToRunnerUp2": 59989,
@@ -10357,7 +10364,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 160044,
+      "totalValidVotes": 192889,
       "constituencyName": "Kamareddy",
       "marginWinnerToRunnerUp1": 6741,
       "marginWinnerToRunnerUp2": 11736,
@@ -11065,7 +11072,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 165991,
+      "totalValidVotes": 184332,
       "constituencyName": "Nizamabad Urban",
       "marginWinnerToRunnerUp1": 15387,
       "marginWinnerToRunnerUp2": 30411,
@@ -11766,7 +11773,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 149199,
+      "totalValidVotes": 195018,
       "constituencyName": "Nizamabad Rural",
       "marginWinnerToRunnerUp1": 21963,
       "marginWinnerToRunnerUp2": 28655,
@@ -12474,7 +12481,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 167824,
+      "totalValidVotes": 174839,
       "constituencyName": "Balkonda",
       "marginWinnerToRunnerUp1": 4533,
       "marginWinnerToRunnerUp2": 40167,
@@ -12943,7 +12950,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 166839,
+      "totalValidVotes": 183590,
       "constituencyName": "Koratla",
       "marginWinnerToRunnerUp1": 10305,
       "marginWinnerToRunnerUp2": 32468,
@@ -13644,7 +13651,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 160798,
+      "totalValidVotes": 176359,
       "constituencyName": "Jagtial",
       "marginWinnerToRunnerUp1": 15822,
       "marginWinnerToRunnerUp2": 28105,
@@ -14359,16 +14366,16 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 143964,
+      "totalValidVotes": 181690,
       "constituencyName": "Dharmapuri",
-      "marginWinnerToRunnerUp1": 19482,
-      "marginWinnerToRunnerUp2": 81723,
-      "marginRunnerUp1ToRunnerUp2": 62241,
+      "marginWinnerToRunnerUp1": 22039,
+      "marginWinnerToRunnerUp2": 84048,
+      "marginRunnerUp1ToRunnerUp2": 62009,
       "winner": {
         "name": "Adluri Laxman Kumar",
         "party": "INC",
-        "votes": 81723,
-        "voteShare": 56.77,
+        "votes": 91393,
+        "voteShare": 50.3,
         "localizedNames": {
           "en": "Adluri Laxman Kumar",
           "hi": "अडलुरि लxमं कुमर",
@@ -14410,9 +14417,9 @@
       "firstRunnerUp": {
         "name": "Koppula Eshwar",
         "party": "BRS",
-        "votes": 62241,
-        "voteShare": 43.23,
-        "marginToWinner": 19482,
+        "votes": 69354,
+        "voteShare": 38.17,
+        "marginToWinner": 22039,
         "localizedParties": {
           "en": "Bharat Rashtra Samithi",
           "te": "భారత్ రాష్ట్ర సమితి",
@@ -14430,7 +14437,14 @@
         },
         "age": null
       },
-      "secondRunnerUp": null
+      "secondRunnerUp": {
+        "name": "Kumar. S",
+        "party": "BJP",
+        "votes": 7345,
+        "voteShare": 4.04,
+        "marginToWinner": 84048,
+        "marginToFirstRunnerUp": 62009
+      }
     },
     {
       "year": 2018,
@@ -15070,7 +15084,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 149713,
+      "totalValidVotes": 152988,
       "constituencyName": "Ramagundam",
       "marginWinnerToRunnerUp1": 56794,
       "marginWinnerToRunnerUp2": 79261,
@@ -15784,7 +15798,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 152073,
+      "totalValidVotes": 196543,
       "constituencyName": "Manthani",
       "marginWinnerToRunnerUp1": 31380,
       "marginWinnerToRunnerUp2": 98043,
@@ -16513,7 +16527,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 151229,
+      "totalValidVotes": 207944,
       "constituencyName": "Peddapalle",
       "marginWinnerToRunnerUp1": 55108,
       "marginWinnerToRunnerUp2": 108573,
@@ -16522,7 +16536,7 @@
         "name": "Chinthakunta Vijaya Ramana Rao",
         "party": "INC",
         "votes": 118888,
-        "voteShare": 57.41,
+        "voteShare": 57.17,
         "localizedNames": {
           "en": "Chinthakunta Vijaya Ramana Rao",
           "hi": "चिणथकुणत विजय रमंअ रओ",
@@ -16559,7 +16573,7 @@
         "name": "Dasari Manohar Reddy",
         "party": "BRS",
         "votes": 63780,
-        "voteShare": 30.8,
+        "voteShare": 30.67,
         "marginToWinner": 55108,
         "localizedParties": {
           "en": "Bharat Rashtra Samithi",
@@ -16582,7 +16596,7 @@
         "name": "Dasari Usha",
         "party": "BSP",
         "votes": 10315,
-        "voteShare": 4.98,
+        "voteShare": 4.96,
         "marginToWinner": 108573,
         "marginToFirstRunnerUp": 53465
       }
@@ -17207,7 +17221,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 174397,
+      "totalValidVotes": 229774,
       "constituencyName": "Karimnagar",
       "marginWinnerToRunnerUp1": 3163,
       "marginWinnerToRunnerUp2": 52122,
@@ -17946,7 +17960,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 140428,
+      "totalValidVotes": 182188,
       "constituencyName": "Choppadandi",
       "marginWinnerToRunnerUp1": 37439,
       "marginWinnerToRunnerUp2": 63726,
@@ -18654,7 +18668,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 150962,
+      "totalValidVotes": 174145,
       "constituencyName": "Vemulawada",
       "marginWinnerToRunnerUp1": 14581,
       "marginWinnerToRunnerUp2": 41741,
@@ -19369,7 +19383,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 155023,
+      "totalValidVotes": 188740,
       "constituencyName": "Sircilla",
       "marginWinnerToRunnerUp1": 29687,
       "marginWinnerToRunnerUp2": 70916,
@@ -20084,7 +20098,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 142292,
+      "totalValidVotes": 185829,
       "constituencyName": "Manakondur",
       "marginWinnerToRunnerUp1": 32365,
       "marginWinnerToRunnerUp2": 81894,
@@ -20093,7 +20107,7 @@
         "name": "Dr. Kavvampally Satyanarayana",
         "party": "INC",
         "votes": 96773,
-        "voteShare": 52.64,
+        "voteShare": 52.08,
         "localizedNames": {
           "en": "Kavvampally Satyanarayana",
           "hi": "कववमपललय सटयंअरयंअ",
@@ -20130,7 +20144,7 @@
         "name": "Erupula Balakishan Rasamayi",
         "party": "BRS",
         "votes": 64408,
-        "voteShare": 35.04,
+        "voteShare": 34.66,
         "marginToWinner": 32365,
         "localizedParties": {
           "en": "Bharat Rashtra Samithi",
@@ -20153,7 +20167,7 @@
         "name": "Arepally Mohan",
         "party": "BJP",
         "votes": 14879,
-        "voteShare": 8.09,
+        "voteShare": 8.01,
         "marginToWinner": 81894,
         "marginToFirstRunnerUp": 49529
       }
@@ -20778,7 +20792,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 159478,
+      "totalValidVotes": 209311,
       "constituencyName": "Huzurabad",
       "marginWinnerToRunnerUp1": 16873,
       "marginWinnerToRunnerUp2": 27169,
@@ -21500,7 +21514,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 153017,
+      "totalValidVotes": 206698,
       "constituencyName": "Husnabad",
       "marginWinnerToRunnerUp1": 19344,
       "marginWinnerToRunnerUp2": 92617,
@@ -22201,7 +22215,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 182843,
+      "totalValidVotes": 181403,
       "constituencyName": "Siddipet",
       "marginWinnerToRunnerUp1": 82308,
       "marginWinnerToRunnerUp2": 82313,
@@ -22670,7 +22684,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 146078,
+      "totalValidVotes": 186863,
       "constituencyName": "Medak",
       "marginWinnerToRunnerUp1": 10157,
       "marginWinnerToRunnerUp2": 73469,
@@ -23370,7 +23384,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 148919,
+      "totalValidVotes": 194036,
       "constituencyName": "Narayankhed",
       "marginWinnerToRunnerUp1": 6547,
       "marginWinnerToRunnerUp2": 83550,
@@ -24083,7 +24097,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 142127,
+      "totalValidVotes": 212750,
       "constituencyName": "Andole",
       "marginWinnerToRunnerUp1": 28193,
       "marginWinnerToRunnerUp2": 108623,
@@ -24798,7 +24812,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 157743,
+      "totalValidVotes": 198062,
       "constituencyName": "Narsapur",
       "marginWinnerToRunnerUp1": 8855,
       "marginWinnerToRunnerUp2": 65545,
@@ -25492,7 +25506,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 153740,
+      "totalValidVotes": 209089,
       "constituencyName": "Zahirabad",
       "marginWinnerToRunnerUp1": 12790,
       "marginWinnerToRunnerUp2": 83560,
@@ -26214,7 +26228,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 162633,
+      "totalValidVotes": 187506,
       "constituencyName": "Sangareddy",
       "marginWinnerToRunnerUp1": 8217,
       "marginWinnerToRunnerUp2": 62191,
@@ -26290,7 +26304,7 @@
         "name": "Pulimamidi Raju",
         "party": "BJP",
         "votes": 20921,
-        "voteShare": 11.15,
+        "voteShare": 11.16,
         "marginToWinner": 62191,
         "marginToFirstRunnerUp": 53974
       }
@@ -26929,7 +26943,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 171092,
+      "totalValidVotes": 276881,
       "constituencyName": "Patancheru",
       "marginWinnerToRunnerUp1": 7091,
       "marginWinnerToRunnerUp2": 59225,
@@ -27637,7 +27651,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 159007,
+      "totalValidVotes": 174765,
       "constituencyName": "Dubbak",
       "marginWinnerToRunnerUp1": 53513,
       "marginWinnerToRunnerUp2": 72644,
@@ -28293,7 +28307,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 191090,
+      "totalValidVotes": 232417,
       "constituencyName": "Gajwel",
       "marginWinnerToRunnerUp1": 45031,
       "marginWinnerToRunnerUp2": 79116,
@@ -29008,7 +29022,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 167690,
+      "totalValidVotes": 400516,
       "constituencyName": "Medchal",
       "marginWinnerToRunnerUp1": 33419,
       "marginWinnerToRunnerUp2": 135482,
@@ -29709,7 +29723,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 155821,
+      "totalValidVotes": 265411,
       "constituencyName": "Malkajgiri",
       "marginWinnerToRunnerUp1": 49530,
       "marginWinnerToRunnerUp2": 69622,
@@ -30164,7 +30178,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 160909,
+      "totalValidVotes": 401667,
       "constituencyName": "Quthbullapur",
       "marginWinnerToRunnerUp1": 85576,
       "marginWinnerToRunnerUp2": 86445,
@@ -30633,7 +30647,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 173713,
+      "totalValidVotes": 250794,
       "constituencyName": "Kukatpally",
       "marginWinnerToRunnerUp1": 70387,
       "marginWinnerToRunnerUp2": 95805,
@@ -30699,8 +30713,8 @@
         "age": null
       },
       "secondRunnerUp": {
-        "name": "Mummareddy Prem Kumar",
-        "party": "JSP",
+        "name": "Mummareddy Prema Kumar",
+        "party": "JnP",
         "votes": 39830,
         "voteShare": 15.88,
         "marginToWinner": 95805,
@@ -31081,15 +31095,15 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 152958,
+      "totalValidVotes": 275039,
       "constituencyName": "Uppal",
-      "marginWinnerToRunnerUp1": 49030,
-      "marginWinnerToRunnerUp2": 85595,
-      "marginRunnerUp1ToRunnerUp2": 36565,
+      "marginWinnerToRunnerUp1": 49029,
+      "marginWinnerToRunnerUp2": 85589,
+      "marginRunnerUp1ToRunnerUp2": 36560,
       "winner": {
         "name": "Bandari Lakshma Reddy",
         "party": "BRS",
-        "votes": 132927,
+        "votes": 132929,
         "voteShare": 48.33,
         "localizedNames": {
           "en": "Bandari Lakshma Reddy",
@@ -31124,35 +31138,19 @@
         "age": null
       },
       "firstRunnerUp": {
-        "name": "M. Parmeshwar Reddy",
+        "name": "Parameshwar Reddy Mandumula",
         "party": "INC",
-        "votes": 83897,
-        "voteShare": 30.51,
-        "marginToWinner": 49030,
-        "localizedParties": {
-          "en": "Indian National Congress",
-          "te": "భారత జాతీయ కాంగ్రెస్",
-          "hi": "भारतीय राष्ट्रीय कांग्रेस",
-          "kn": "ಭಾರತೀಯ ರಾಷ್ಟ್ರೀಯ ಕಾಂಗ್ರೆಸ್",
-          "mr": "भारतीय राष्ट्रीय काँग्रेस",
-          "ta": "இந்திய தேசிய காங்கிரஸ்",
-          "ml": "ഇന്ത്യൻ നാഷണൽ കോൺഗ്രസ്",
-          "bn": "ভারতীয় জাতীয় কংগ্রেস",
-          "gu": "ભારતીય રાષ્ટ્રીય કોંગ્રેસ",
-          "pa": "ਭਾਰਤੀ ਰਾਸ਼ਟਰੀ ਕਾਂਗਰਸ",
-          "or": "ଭାରତୀୟ ଜାତୀୟ କଂଗ୍ରେସ",
-          "as": "ভাৰতীয় জাতীয় কংগ্ৰেছ",
-          "ne": "भारतीय राष्ट्रिय काङ्ग्रेस"
-        },
-        "age": null
+        "votes": 83900,
+        "voteShare": 30.5,
+        "marginToWinner": 49029
       },
       "secondRunnerUp": {
         "name": "N. V. S. S. Prabhakar",
         "party": "BJP",
-        "votes": 47332,
+        "votes": 47340,
         "voteShare": 17.21,
-        "marginToWinner": 85595,
-        "marginToFirstRunnerUp": 36565
+        "marginToWinner": 85589,
+        "marginToFirstRunnerUp": 36560
       }
     },
     {
@@ -31529,7 +31527,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 152786,
+      "totalValidVotes": 248461,
       "constituencyName": "Ibrahimpatnam",
       "marginWinnerToRunnerUp1": 36700,
       "marginWinnerToRunnerUp2": 110716,
@@ -32223,61 +32221,23 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 159060,
+      "totalValidVotes": 295131,
       "constituencyName": "L. B. Nagar",
-      "marginWinnerToRunnerUp1": 5634,
-      "marginWinnerToRunnerUp2": 82347,
-      "marginRunnerUp1ToRunnerUp2": 76713,
+      "marginWinnerToRunnerUp1": 22305,
+      "marginWinnerToRunnerUp2": 28107,
+      "marginRunnerUp1ToRunnerUp2": 5802,
       "winner": {
-        "name": "Devireddy Sudheer Reddy",
+        "name": "Devireddy Sudhir Reddy",
         "party": "BRS",
-        "votes": 82347,
-        "voteShare": 51.77,
-        "localizedNames": {
-          "en": "Devireddy Sudheer Reddy",
-          "hi": "डेविरेडडय सुढीर रेडडय",
-          "mr": "डेविरेडडय सुढीर रेडडय",
-          "ne": "डेविरेडडय सुढीर रेडडय",
-          "te": "డేవిరేడడయ సుఢీర రేడడయ",
-          "kn": "ಡೇವಿರೇಡಡಯ ಸುಢೀರ ರೇಡಡಯ",
-          "ta": "஡ேவிரே஡஡ய ஸு஢ீர ரே஡஡ய",
-          "ml": "ഡേവിരേഡഡയ സുഢീര രേഡഡയ",
-          "bn": "ডে঵িরেডডয সুঢীর রেডডয",
-          "as": "ডে঵িরেডডয সুঢীর রেডডয",
-          "gu": "ડેવિરેડડય સુઢીર રેડડય",
-          "pa": "ਡੇਵਿਰੇਡਡਯ ਸੁਢੀਰ ਰੇਡਡਯ",
-          "or": "ଡେଵିରେଡଡଯ ସୁଢୀର ରେଡଡଯ"
-        },
-        "localizedParties": {
-          "en": "Bharat Rashtra Samithi",
-          "te": "భారత్ రాష్ట్ర సమితి",
-          "hi": "भारत राष्ट्र समिति",
-          "kn": "ಭಾರತ್ ರಾಷ್ಟ್ರ ಸಮಿತಿ",
-          "mr": "भारत राष्ट्र समिती",
-          "ta": "பாரத் ராஷ்டிர சமிதி",
-          "ml": "ഭാരത് രാഷ്ട്ര സമിതി",
-          "bn": "ভারত রাষ্ট্র সমিতি",
-          "gu": "ભારત રાષ્ટ્ર સમિતિ",
-          "pa": "ਭਾਰਤ ਰਾਸ਼ਟਰ ਸਮਿਤੀ",
-          "or": "ଭାରତ ରାଷ୍ଟ୍ର ସମିତି",
-          "as": "ভাৰত ৰাষ্ট্ৰ সমিতি",
-          "ne": "भारत राष्ट्र समिति"
-        },
-        "photoUrl": "https://www.myneta.info/images_candidate/Telangana2023/a906d32eea2b051d3f0062d65e899cf1d1ec4ebe.jpg",
-        "affidavitUrl": "https://www.myneta.info/Telangana2023/candidate.php?candidate_id=161",
-        "age": 61,
-        "education": "Graduate",
-        "profession": "Agriculture and Business",
-        "criminalCases": 2,
-        "totalAssets": 215835581,
-        "totalLiabilities": 21308317
+        "votes": 111380,
+        "voteShare": 37.74
       },
       "firstRunnerUp": {
         "name": "Sama Ranga Reddy",
         "party": "BJP",
-        "votes": 76713,
-        "voteShare": 48.23,
-        "marginToWinner": 5634,
+        "votes": 89075,
+        "voteShare": 30.18,
+        "marginToWinner": 22305,
         "localizedParties": {
           "en": "Bharatiya Janata Party",
           "te": "భారతీయ జనతా పార్టీ",
@@ -32295,7 +32255,14 @@
         },
         "age": null
       },
-      "secondRunnerUp": null
+      "secondRunnerUp": {
+        "name": "Madhu Yaskhi Goud",
+        "party": "INC",
+        "votes": 83273,
+        "voteShare": 28.22,
+        "marginToWinner": 28107,
+        "marginToFirstRunnerUp": 5802
+      }
     },
     {
       "year": 2018,
@@ -32931,7 +32898,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 175655,
+      "totalValidVotes": 306334,
       "constituencyName": "Maheshwaram",
       "marginWinnerToRunnerUp1": 26187,
       "marginWinnerToRunnerUp2": 54921,
@@ -33391,61 +33358,23 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 166962,
+      "totalValidVotes": 328193,
       "constituencyName": "Rajendranagar",
-      "marginWinnerToRunnerUp1": -1984,
-      "marginWinnerToRunnerUp2": 5597,
+      "marginWinnerToRunnerUp1": 32096,
+      "marginWinnerToRunnerUp2": 39677,
       "marginRunnerUp1ToRunnerUp2": 7581,
       "winner": {
-        "name": "T. Prakash Goud{{efn",
+        "name": "T. Prakash Goud",
         "party": "BRS",
-        "votes": 87654,
-        "voteShare": 52.5,
-        "localizedNames": {
-          "en": "T. Prakash Goud",
-          "hi": "ट. परकश गोउड",
-          "mr": "ट. परकश गोउड",
-          "ne": "ट. परकश गोउड",
-          "te": "ట. పరకశ గోఉడ",
-          "kn": "ಟ. ಪರಕಶ ಗೋಉಡ",
-          "ta": "ட. பரகஶ ஗ோஉ஡",
-          "ml": "ട. പരകശ ഗോഉഡ",
-          "bn": "ট. পরকশ গোউড",
-          "as": "ট. পরকশ গোউড",
-          "gu": "ટ. પરકશ ગોઉડ",
-          "pa": "ਟ. ਪਰਕਸ਼ ਗੋਉਡ",
-          "or": "ଟ. ପରକଶ ଗୋଉଡ"
-        },
-        "localizedParties": {
-          "en": "Bharat Rashtra Samithi",
-          "te": "భారత్ రాష్ట్ర సమితి",
-          "hi": "भारत राष्ट्र समिति",
-          "kn": "ಭಾರತ್ ರಾಷ್ಟ್ರ ಸಮಿತಿ",
-          "mr": "भारत राष्ट्र समिती",
-          "ta": "பாரத் ராஷ்டிர சமிதி",
-          "ml": "ഭാരത് രാഷ്ട്ര സമിതി",
-          "bn": "ভারত রাষ্ট্র সমিতি",
-          "gu": "ભારત રાષ્ટ્ર સમિતિ",
-          "pa": "ਭਾਰਤ ਰਾਸ਼ਟਰ ਸਮਿਤੀ",
-          "or": "ଭାରତ ରାଷ୍ଟ୍ର ସମିତି",
-          "as": "ভাৰত ৰাষ্ট্ৰ সমিতি",
-          "ne": "भारत राष्ट्र समिति"
-        },
-        "photoUrl": "https://www.myneta.info/images_candidate/Telangana2023/bf9bd2614094f3a2f1e44aba41d9e1b56f5ec79d.jpg",
-        "affidavitUrl": "https://www.myneta.info/Telangana2023/candidate.php?candidate_id=277",
-        "age": 64,
-        "education": "5th Pass",
-        "profession": "Politician & Agriculture",
-        "criminalCases": 9,
-        "totalAssets": 181507981,
-        "totalLiabilities": 584000
+        "votes": 121734,
+        "voteShare": 37.09
       },
       "firstRunnerUp": {
         "name": "Thokala Srinivas Reddy",
         "party": "BJP",
         "votes": 89638,
         "voteShare": 27.31,
-        "marginToWinner": -1984,
+        "marginToWinner": 32096,
         "localizedParties": {
           "en": "Bharatiya Janata Party",
           "te": "భారతీయ జనతా పార్టీ",
@@ -33468,7 +33397,7 @@
         "party": "INC",
         "votes": 82057,
         "voteShare": 25,
-        "marginToWinner": 5597,
+        "marginToWinner": 39677,
         "marginToFirstRunnerUp": 7581
       }
     },
@@ -33860,7 +33789,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 174831,
+      "totalValidVotes": 357830,
       "constituencyName": "Serilingampally",
       "marginWinnerToRunnerUp1": 46552,
       "marginWinnerToRunnerUp2": 77184,
@@ -34329,7 +34258,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 156476,
+      "totalValidVotes": 196802,
       "constituencyName": "Chevella",
       "marginWinnerToRunnerUp1": 268,
       "marginWinnerToRunnerUp2": 37763,
@@ -35051,15 +34980,15 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 151290,
+      "totalValidVotes": 201433,
       "constituencyName": "Pargi",
-      "marginWinnerToRunnerUp1": 24013,
-      "marginWinnerToRunnerUp2": 81883,
-      "marginRunnerUp1ToRunnerUp2": 57870,
+      "marginWinnerToRunnerUp1": 24033,
+      "marginWinnerToRunnerUp2": 81912,
+      "marginRunnerUp1ToRunnerUp2": 57879,
       "winner": {
         "name": "T. Ram Mohan Reddy",
         "party": "INC",
-        "votes": 98536,
+        "votes": 98570,
         "voteShare": 48.93,
         "localizedNames": {
           "en": "Tammannagari Ram Mohan Reddy",
@@ -35101,35 +35030,19 @@
         "totalLiabilities": 45492863
       },
       "firstRunnerUp": {
-        "name": "Koppula Mahesh Reddy",
+        "name": "K. Mahesh Reddy",
         "party": "BRS",
-        "votes": 74523,
-        "voteShare": 37.01,
-        "marginToWinner": 24013,
-        "localizedParties": {
-          "en": "Bharat Rashtra Samithi",
-          "te": "భారత్ రాష్ట్ర సమితి",
-          "hi": "भारत राष्ट्र समिति",
-          "kn": "ಭಾರತ್ ರಾಷ್ಟ್ರ ಸಮಿತಿ",
-          "mr": "भारत राष्ट्र समिती",
-          "ta": "பாரத் ராஷ்டிர சமிதி",
-          "ml": "ഭാരത് രാഷ്ട്ര സമിതി",
-          "bn": "ভারত রাষ্ট্র সমিতি",
-          "gu": "ભારત રાષ્ટ્ર સમિતિ",
-          "pa": "ਭਾਰਤ ਰਾਸ਼ਟਰ ਸਮਿਤੀ",
-          "or": "ଭାରତ ରାଷ୍ଟ୍ର ସମିତି",
-          "as": "ভাৰত ৰাষ্ট্ৰ সমিতি",
-          "ne": "भारत राष्ट्र समिति"
-        },
-        "age": null
+        "votes": 74537,
+        "voteShare": 37,
+        "marginToWinner": 24033
       },
       "secondRunnerUp": {
         "name": "Booneti Maruthi Kiran",
         "party": "BJP",
-        "votes": 16653,
+        "votes": 16658,
         "voteShare": 8.27,
-        "marginToWinner": 81883,
-        "marginToFirstRunnerUp": 57870
+        "marginToWinner": 81912,
+        "marginToFirstRunnerUp": 57879
       }
     },
     {
@@ -35759,16 +35672,16 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 143359,
+      "totalValidVotes": 174282,
       "constituencyName": "Vicarabad",
-      "marginWinnerToRunnerUp1": 14527,
-      "marginWinnerToRunnerUp2": 78943,
-      "marginRunnerUp1ToRunnerUp2": 64416,
+      "marginWinnerToRunnerUp1": 12893,
+      "marginWinnerToRunnerUp2": 79753,
+      "marginRunnerUp1ToRunnerUp2": 66860,
       "winner": {
         "name": "Gaddam Prasad Kumar",
         "party": "INC",
-        "votes": 78943,
-        "voteShare": 55.07,
+        "votes": 86885,
+        "voteShare": 49.85,
         "localizedNames": {
           "en": "Gaddam Prasad Kumar",
           "hi": "गडदम परसड कुमर",
@@ -35809,29 +35722,20 @@
         "totalLiabilities": 983500
       },
       "firstRunnerUp": {
-        "name": "Methuku Anand",
+        "name": "Dr. Anand Methuku",
         "party": "BRS",
-        "votes": 64416,
-        "voteShare": 44.93,
-        "marginToWinner": 14527,
-        "localizedParties": {
-          "en": "Bharat Rashtra Samithi",
-          "te": "భారత్ రాష్ట్ర సమితి",
-          "hi": "भारत राष्ट्र समिति",
-          "kn": "ಭಾರತ್ ರಾಷ್ಟ್ರ ಸಮಿತಿ",
-          "mr": "भारत राष्ट्र समिती",
-          "ta": "பாரத் ராஷ்டிர சமிதி",
-          "ml": "ഭാരത് രാഷ്ട്ര സമിതി",
-          "bn": "ভারত রাষ্ট্র সমিতি",
-          "gu": "ભારત રાષ્ટ્ર સમિતિ",
-          "pa": "ਭਾਰਤ ਰਾਸ਼ਟਰ ਸਮਿਤੀ",
-          "or": "ଭାରତ ରାଷ୍ଟ୍ର ସମିତି",
-          "as": "ভাৰত ৰাষ্ট্ৰ সমিতি",
-          "ne": "भारत राष्ट्र समिति"
-        },
-        "age": null
+        "votes": 73992,
+        "voteShare": 42.46,
+        "marginToWinner": 12893
       },
-      "secondRunnerUp": null
+      "secondRunnerUp": {
+        "name": "P. Naveen Kumar",
+        "party": "BJP",
+        "votes": 7132,
+        "voteShare": 4.09,
+        "marginToWinner": 79753,
+        "marginToFirstRunnerUp": 66860
+      }
     },
     {
       "year": 2018,
@@ -36460,11 +36364,11 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 145007,
+      "totalValidVotes": 175225,
       "constituencyName": "Tandur",
       "marginWinnerToRunnerUp1": 6583,
-      "marginWinnerToRunnerUp2": 82575,
-      "marginRunnerUp1ToRunnerUp2": 75992,
+      "marginWinnerToRunnerUp2": 80575,
+      "marginRunnerUp1ToRunnerUp2": 73992,
       "winner": {
         "name": "B.Manohar Reddy",
         "party": "INC",
@@ -36533,12 +36437,12 @@
         "age": null
       },
       "secondRunnerUp": {
-        "name": "N. Shankar Goud",
-        "party": "JSP",
-        "votes": 2087,
-        "voteShare": 1.93,
-        "marginToWinner": 82575,
-        "marginToFirstRunnerUp": 75992
+        "name": "Nemuri Shanker Goud",
+        "party": "JnP",
+        "votes": 4087,
+        "voteShare": 2.33,
+        "marginToWinner": 80575,
+        "marginToFirstRunnerUp": 73992
       }
     },
     {
@@ -37161,7 +37065,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 141451,
+      "totalValidVotes": 153252,
       "constituencyName": "Musheerabad",
       "marginWinnerToRunnerUp1": 37797,
       "marginWinnerToRunnerUp2": 39784,
@@ -37170,7 +37074,7 @@
         "name": "Muta Gopal",
         "party": "BRS",
         "votes": 75207,
-        "voteShare": 51.49,
+        "voteShare": 49.07,
         "localizedNames": {
           "en": "Muta Gopal",
           "hi": "मुत गोपल",
@@ -37207,7 +37111,7 @@
         "name": "M. Anjan Kumar Yadav",
         "party": "INC",
         "votes": 37410,
-        "voteShare": 48.51,
+        "voteShare": 24.41,
         "marginToWinner": 37797,
         "localizedParties": {
           "en": "Indian National Congress",
@@ -37230,7 +37134,7 @@
         "name": "Poosa Raju",
         "party": "BJP",
         "votes": 35423,
-        "voteShare": 0,
+        "voteShare": 23.11,
         "marginToWinner": 39784,
         "marginToFirstRunnerUp": 1987
       }
@@ -37855,7 +37759,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 134278,
+      "totalValidVotes": 132024,
       "constituencyName": "Malakpet",
       "marginWinnerToRunnerUp1": 26106,
       "marginWinnerToRunnerUp2": 32074,
@@ -38570,7 +38474,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 133956,
+      "totalValidVotes": 146488,
       "constituencyName": "Amberpet",
       "marginWinnerToRunnerUp1": 24537,
       "marginWinnerToRunnerUp2": 56412,
@@ -39305,7 +39209,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 146799,
+      "totalValidVotes": 154924,
       "constituencyName": "Khairatabad",
       "marginWinnerToRunnerUp1": 22010,
       "marginWinnerToRunnerUp2": 29274,
@@ -40055,7 +39959,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 140785,
+      "totalValidVotes": 183312,
       "constituencyName": "Jubilee Hills",
       "marginWinnerToRunnerUp1": 16337,
       "marginWinnerToRunnerUp2": 54683,
@@ -40776,7 +40680,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 143112,
+      "totalValidVotes": 128263,
       "constituencyName": "Sanathnagar",
       "marginWinnerToRunnerUp1": 41827,
       "marginWinnerToRunnerUp2": 50065,
@@ -41488,7 +41392,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 125409,
+      "totalValidVotes": 152300,
       "constituencyName": "Nampally",
       "marginWinnerToRunnerUp1": 2037,
       "marginWinnerToRunnerUp2": 46765,
@@ -41497,7 +41401,7 @@
         "name": "Mohammad Majid Hussain",
         "party": "AIMIM",
         "votes": 62185,
-        "voteShare": 40.96,
+        "voteShare": 40.83,
         "localizedNames": {
           "en": "Mohammad Majid Hussain",
           "hi": "मोहममड मजिड हुससैण",
@@ -41541,7 +41445,7 @@
         "name": "Mohammad Feroz Khan",
         "party": "INC",
         "votes": 60148,
-        "voteShare": 39.61,
+        "voteShare": 39.49,
         "marginToWinner": 2037,
         "localizedParties": {
           "en": "Indian National Congress",
@@ -41564,7 +41468,7 @@
         "name": "Anand Kumar Goud",
         "party": "BRS",
         "votes": 15420,
-        "voteShare": 10.15,
+        "voteShare": 10.12,
         "marginToWinner": 46765,
         "marginToFirstRunnerUp": 44728
       }
@@ -42203,7 +42107,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 132916,
+      "totalValidVotes": 175836,
       "constituencyName": "Karwan",
       "marginWinnerToRunnerUp1": 41986,
       "marginWinnerToRunnerUp2": 54194,
@@ -43622,7 +43526,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 123239,
+      "totalValidVotes": 98103,
       "constituencyName": "Charminar",
       "marginWinnerToRunnerUp1": 22853,
       "marginWinnerToRunnerUp2": 38204,
@@ -44330,7 +44234,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 129015,
+      "totalValidVotes": 153771,
       "constituencyName": "Chandrayangutta",
       "marginWinnerToRunnerUp1": 81660,
       "marginWinnerToRunnerUp2": 83362,
@@ -45052,7 +44956,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 110474,
+      "totalValidVotes": 140434,
       "constituencyName": "Yakutpura",
       "marginWinnerToRunnerUp1": 878,
       "marginWinnerToRunnerUp2": 23799,
@@ -45096,7 +45000,7 @@
       },
       "firstRunnerUp": {
         "name": "Amjed Ullah Khan",
-        "party": "MAJLIS BACHAO TEHREEK",
+        "party": "MBT",
         "votes": 45275,
         "voteShare": 32.24,
         "marginToWinner": 878,
@@ -45746,7 +45650,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 118100,
+      "totalValidVotes": 143725,
       "constituencyName": "Bahadurpura",
       "marginWinnerToRunnerUp1": 67025,
       "marginWinnerToRunnerUp2": 75003,
@@ -46200,7 +46104,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 138626,
+      "totalValidVotes": 141148,
       "constituencyName": "Secunderabad",
       "marginWinnerToRunnerUp1": 45240,
       "marginWinnerToRunnerUp2": 53021,
@@ -46742,7 +46646,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 132276,
+      "totalValidVotes": 124517,
       "constituencyName": "Secunderabad Cantonment",
       "marginWinnerToRunnerUp1": 17169,
       "marginWinnerToRunnerUp2": 38232,
@@ -46751,7 +46655,7 @@
         "name": "G. Lasya Nanditha",
         "party": "BRS",
         "votes": 59057,
-        "voteShare": 47.52,
+        "voteShare": 47.43,
         "localizedNames": {
           "en": "G. Lasya Nanditha",
           "hi": "ग. लसय नणडिथ",
@@ -47197,7 +47101,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 159280,
+      "totalValidVotes": 195163,
       "constituencyName": "Kodangal",
       "marginWinnerToRunnerUp1": 32532,
       "marginWinnerToRunnerUp2": 103441,
@@ -47881,85 +47785,31 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 145926,
+      "totalValidVotes": 182899,
       "constituencyName": "Narayanpet",
-      "marginWinnerToRunnerUp1": 12893,
-      "marginWinnerToRunnerUp2": 79753,
-      "marginRunnerUp1ToRunnerUp2": 66860,
+      "marginWinnerToRunnerUp1": 7951,
+      "marginWinnerToRunnerUp2": 69630,
+      "marginRunnerUp1ToRunnerUp2": 61679,
       "winner": {
-        "name": "Gaddam Prasad Kumar",
+        "name": "Chittem Parnika Reddy",
         "party": "INC",
-        "votes": 86885,
-        "voteShare": 49.85,
-        "localizedNames": {
-          "en": "Chittem Parnika Reddy",
-          "hi": "चिटटेम परणिक रेडडय",
-          "mr": "चिटटेम परणिक रेडडय",
-          "ne": "चिटटेम परणिक रेडडय",
-          "te": "చిటటేమ పరణిక రేడడయ",
-          "kn": "ಚಿಟಟೇಮ ಪರಣಿಕ ರೇಡಡಯ",
-          "ta": "சிடடேம பரணிக ரே஡஡ய",
-          "ml": "ചിടടേമ പരണിക രേഡഡയ",
-          "bn": "চিটটেম পরণিক রেডডয",
-          "as": "চিটটেম পরণিক রেডডয",
-          "gu": "ચિટટેમ પરણિક રેડડય",
-          "pa": "ਚਿਟਟੇਮ ਪਰਣਿਕ ਰੇਡਡਯ",
-          "or": "ଚିଟଟେମ ପରଣିକ ରେଡଡଯ"
-        },
-        "localizedParties": {
-          "en": "Indian National Congress",
-          "te": "భారత జాతీయ కాంగ్రెస్",
-          "hi": "भारतीय राष्ट्रीय कांग्रेस",
-          "kn": "ಭಾರತೀಯ ರಾಷ್ಟ್ರೀಯ ಕಾಂಗ್ರೆಸ್",
-          "mr": "भारतीय राष्ट्रीय काँग्रेस",
-          "ta": "இந்திய தேசிய காங்கிரஸ்",
-          "ml": "ഇന്ത്യൻ നാഷണൽ കോൺഗ്രസ്",
-          "bn": "ভারতীয় জাতীয় কংগ্রেস",
-          "gu": "ભારતીય રાષ્ટ્રીય કોંગ્રેસ",
-          "pa": "ਭਾਰਤੀ ਰਾਸ਼ਟਰੀ ਕਾਂਗਰਸ",
-          "or": "ଭାରତୀୟ ଜାତୀୟ କଂଗ୍ରେସ",
-          "as": "ভাৰতীয় জাতীয় কংগ্ৰেছ",
-          "ne": "भारतीय राष्ट्रिय काङ्ग्रेस"
-        },
-        "photoUrl": "https://www.myneta.info/images_candidate/Telangana2023/9f080e756872af25900cfe16a085a8149bb8a2a2.jpg",
-        "affidavitUrl": "https://www.myneta.info/Telangana2023/candidate.php?candidate_id=236",
-        "age": 30,
-        "education": "Graduate Professional",
-        "profession": "Student Post Graduation",
-        "criminalCases": 0,
-        "totalAssets": 33420393,
-        "totalLiabilities": 2763636
+        "votes": 84708,
+        "voteShare": 46.31
       },
       "firstRunnerUp": {
-        "name": "Methuku Anand",
+        "name": "S.rajender Reddy",
         "party": "BRS",
-        "votes": 73992,
-        "voteShare": 42.46,
-        "marginToWinner": 12893,
-        "localizedParties": {
-          "en": "Bharat Rashtra Samithi",
-          "te": "భారత్ రాష్ట్ర సమితి",
-          "hi": "भारत राष्ट्र समिति",
-          "kn": "ಭಾರತ್ ರಾಷ್ಟ್ರ ಸಮಿತಿ",
-          "mr": "भारत राष्ट्र समिती",
-          "ta": "பாரத் ராஷ்டிர சமிதி",
-          "ml": "ഭാരത് രാഷ്ട്ര സമിതി",
-          "bn": "ভারত রাষ্ট্র সমিতি",
-          "gu": "ભારત રાષ્ટ્ર સમિતિ",
-          "pa": "ਭਾਰਤ ਰਾਸ਼ਟਰ ਸਮਿਤੀ",
-          "or": "ଭାରତ ରାଷ୍ଟ୍ର ସମିତି",
-          "as": "ভাৰত ৰাষ্ট্ৰ সমিতি",
-          "ne": "भारत राष्ट्र समिति"
-        },
-        "age": null
+        "votes": 76757,
+        "voteShare": 41.97,
+        "marginToWinner": 7951
       },
       "secondRunnerUp": {
-        "name": "Peddinti Naveen Kumar",
+        "name": "K. Rathanga Pandu Reddy",
         "party": "BJP",
-        "votes": 7132,
-        "voteShare": 4.09,
-        "marginToWinner": 79753,
-        "marginToFirstRunnerUp": 66860
+        "votes": 15078,
+        "voteShare": 8.24,
+        "marginToWinner": 69630,
+        "marginToFirstRunnerUp": 61679
       }
     },
     {
@@ -48336,11 +48186,11 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 153078,
+      "totalValidVotes": 181572,
       "constituencyName": "Mahbubnagar",
       "marginWinnerToRunnerUp1": 18738,
-      "marginWinnerToRunnerUp2": 66308,
-      "marginRunnerUp1ToRunnerUp2": 47570,
+      "marginWinnerToRunnerUp2": 67308,
+      "marginRunnerUp1ToRunnerUp2": 48570,
       "winner": {
         "name": "Yennam Srinivas Reddy",
         "party": "INC",
@@ -48411,10 +48261,10 @@
       "secondRunnerUp": {
         "name": "A. P. Mithun Kumar Reddy",
         "party": "BJP",
-        "votes": 20919,
+        "votes": 19919,
         "voteShare": 10.97,
-        "marginToWinner": 66308,
-        "marginToFirstRunnerUp": 47570
+        "marginToWinner": 67308,
+        "marginToFirstRunnerUp": 48570
       }
     },
     {
@@ -49044,7 +48894,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 152000,
+      "totalValidVotes": 180640,
       "constituencyName": "Jadcherla",
       "marginWinnerToRunnerUp1": 15171,
       "marginWinnerToRunnerUp2": 83553,
@@ -49760,7 +49610,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 149869,
+      "totalValidVotes": 195423,
       "constituencyName": "Devarkadra",
       "marginWinnerToRunnerUp1": 1392,
       "marginWinnerToRunnerUp2": 75387,
@@ -50461,7 +50311,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 148008,
+      "totalValidVotes": 187834,
       "constituencyName": "Makthal",
       "marginWinnerToRunnerUp1": 17525,
       "marginWinnerToRunnerUp2": 29462,
@@ -51169,7 +51019,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 148665,
+      "totalValidVotes": 213164,
       "constituencyName": "Wanaparthy",
       "marginWinnerToRunnerUp1": 25320,
       "marginWinnerToRunnerUp2": 97930,
@@ -51870,7 +51720,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 153652,
+      "totalValidVotes": 214872,
       "constituencyName": "Gadwal",
       "marginWinnerToRunnerUp1": 7036,
       "marginWinnerToRunnerUp2": 80643,
@@ -52606,7 +52456,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 145277,
+      "totalValidVotes": 196797,
       "constituencyName": "Alampur",
       "marginWinnerToRunnerUp1": 30573,
       "marginWinnerToRunnerUp2": 97978,
@@ -53307,11 +53157,11 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 153823,
+      "totalValidVotes": 184616,
       "constituencyName": "Nagarkurnool",
       "marginWinnerToRunnerUp1": 5248,
-      "marginWinnerToRunnerUp2": 85206,
-      "marginRunnerUp1ToRunnerUp2": 79958,
+      "marginWinnerToRunnerUp2": 82247,
+      "marginRunnerUp1ToRunnerUp2": 76999,
       "winner": {
         "name": "Dr. Kuchkulla Rajesh Reddy",
         "party": "INC",
@@ -53380,12 +53230,12 @@
         "age": null
       },
       "secondRunnerUp": {
-        "name": "Vanga Lakshman Goud",
-        "party": "JSP",
-        "votes": 1955,
-        "voteShare": 1.06,
-        "marginToWinner": 85206,
-        "marginToFirstRunnerUp": 79958
+        "name": "K Kumar",
+        "party": "BSP",
+        "votes": 4914,
+        "voteShare": 2.66,
+        "marginToWinner": 82247,
+        "marginToFirstRunnerUp": 76999
       }
     },
     {
@@ -54008,7 +53858,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 143650,
+      "totalValidVotes": 195620,
       "constituencyName": "Achampet",
       "marginWinnerToRunnerUp1": 49326,
       "marginWinnerToRunnerUp2": 111070,
@@ -54723,7 +54573,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 152287,
+      "totalValidVotes": 202752,
       "constituencyName": "Kalwakurthy",
       "marginWinnerToRunnerUp1": 5410,
       "marginWinnerToRunnerUp2": 33011,
@@ -55424,7 +55274,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 157950,
+      "totalValidVotes": 195555,
       "constituencyName": "Shadnagar",
       "marginWinnerToRunnerUp1": 7128,
       "marginWinnerToRunnerUp2": 46166,
@@ -56125,7 +55975,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 153897,
+      "totalValidVotes": 192228,
       "constituencyName": "Kollapur",
       "marginWinnerToRunnerUp1": 29931,
       "marginWinnerToRunnerUp2": 73220,
@@ -56854,11 +56704,11 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 149456,
+      "totalValidVotes": 213881,
       "constituencyName": "Devarakonda",
-      "marginWinnerToRunnerUp1": 30112,
+      "marginWinnerToRunnerUp1": 30021,
       "marginWinnerToRunnerUp2": 101529,
-      "marginRunnerUp1ToRunnerUp2": 71417,
+      "marginRunnerUp1ToRunnerUp2": 71508,
       "winner": {
         "name": "Nenavath Balu Naik",
         "party": "INC",
@@ -56905,9 +56755,9 @@
       "firstRunnerUp": {
         "name": "Ravindra Kumar Ramavath",
         "party": "BRS",
-        "votes": 81232,
+        "votes": 81323,
         "voteShare": 38.02,
-        "marginToWinner": 30112,
+        "marginToWinner": 30021,
         "localizedParties": {
           "en": "Bharat Rashtra Samithi",
           "te": "భారత్ రాష్ట్ర సమితి",
@@ -56931,7 +56781,7 @@
         "votes": 9815,
         "voteShare": 4.59,
         "marginToWinner": 101529,
-        "marginToFirstRunnerUp": 71417
+        "marginToFirstRunnerUp": 71508
       }
     },
     {
@@ -57566,7 +57416,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 152121,
+      "totalValidVotes": 202088,
       "constituencyName": "Nagarjuna Sagar",
       "marginWinnerToRunnerUp1": 55849,
       "marginWinnerToRunnerUp2": 113340,
@@ -58267,16 +58117,16 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 156007,
+      "totalValidVotes": 193741,
       "constituencyName": "Miryalaguda",
-      "marginWinnerToRunnerUp1": 22461,
-      "marginWinnerToRunnerUp2": 89234,
-      "marginRunnerUp1ToRunnerUp2": 66773,
+      "marginWinnerToRunnerUp1": 48782,
+      "marginWinnerToRunnerUp2": 111228,
+      "marginRunnerUp1ToRunnerUp2": 62446,
       "winner": {
         "name": "Bathula Laxma Reddy",
         "party": "INC",
-        "votes": 89234,
-        "voteShare": 57.2,
+        "votes": 114462,
+        "voteShare": 59.08,
         "localizedNames": {
           "en": "Bathula Laxma Reddy",
           "hi": "बठुल लxम रेडडय",
@@ -58319,9 +58169,9 @@
       "firstRunnerUp": {
         "name": "Nallamothu Bhaskar Rao",
         "party": "BRS",
-        "votes": 66773,
-        "voteShare": 42.8,
-        "marginToWinner": 22461,
+        "votes": 65680,
+        "voteShare": 33.9,
+        "marginToWinner": 48782,
         "localizedParties": {
           "en": "Bharat Rashtra Samithi",
           "te": "భారత్ రాష్ట్ర సమితి",
@@ -58339,7 +58189,14 @@
         },
         "age": null
       },
-      "secondRunnerUp": null
+      "secondRunnerUp": {
+        "name": "Julakanti Ranga Reddy",
+        "party": "CPI(M)",
+        "votes": 3234,
+        "voteShare": 1.67,
+        "marginToWinner": 111228,
+        "marginToFirstRunnerUp": 62446
+      }
     },
     {
       "year": 2018,
@@ -58961,7 +58818,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 215287,
+      "totalValidVotes": 215298,
       "constituencyName": "Huzurnagar",
       "marginWinnerToRunnerUp1": 44888,
       "marginWinnerToRunnerUp2": 108427,
@@ -59437,7 +59294,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 150089,
+      "totalValidVotes": 208992,
       "constituencyName": "Kodad",
       "marginWinnerToRunnerUp1": 58172,
       "marginWinnerToRunnerUp2": 122414,
@@ -60138,7 +59995,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 174041,
+      "totalValidVotes": 206669,
       "constituencyName": "Suryapet",
       "marginWinnerToRunnerUp1": 4606,
       "marginWinnerToRunnerUp2": 34736,
@@ -60857,7 +60714,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 155274,
+      "totalValidVotes": 204027,
       "constituencyName": "Nalgonda",
       "marginWinnerToRunnerUp1": 54332,
       "marginWinnerToRunnerUp2": 80309,
@@ -61579,7 +61436,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 155925,
+      "totalValidVotes": 233608,
       "constituencyName": "Munugode",
       "marginWinnerToRunnerUp1": 40590,
       "marginWinnerToRunnerUp2": 97305,
@@ -62287,7 +62144,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 155278,
+      "totalValidVotes": 196077,
       "constituencyName": "Bhongir",
       "marginWinnerToRunnerUp1": 26201,
       "marginWinnerToRunnerUp2": 93542,
@@ -62988,7 +62845,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 147641,
+      "totalValidVotes": 219033,
       "constituencyName": "Nakrekal",
       "marginWinnerToRunnerUp1": 68839,
       "marginWinnerToRunnerUp2": 127872,
@@ -63703,7 +63560,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 147345,
+      "totalValidVotes": 225170,
       "constituencyName": "Thungathurthi",
       "marginWinnerToRunnerUp1": 51094,
       "marginWinnerToRunnerUp2": 125123,
@@ -63712,7 +63569,7 @@
         "name": "Mandula Samuel",
         "party": "INC",
         "votes": 129535,
-        "voteShare": 54.19,
+        "voteShare": 57.53,
         "localizedNames": {
           "en": "Mandula Samuel",
           "hi": "मंडुल समुएल",
@@ -63749,7 +63606,7 @@
         "name": "Gadari Kishore",
         "party": "BRS",
         "votes": 78441,
-        "voteShare": 45.81,
+        "voteShare": 34.84,
         "marginToWinner": 51094,
         "localizedParties": {
           "en": "Bharat Rashtra Samithi",
@@ -63772,7 +63629,7 @@
         "name": "Kadiyam Ramachandraiah",
         "party": "BJP",
         "votes": 4412,
-        "voteShare": 0,
+        "voteShare": 1.96,
         "marginToWinner": 125123,
         "marginToFirstRunnerUp": 74029
       }
@@ -64397,7 +64254,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 151678,
+      "totalValidVotes": 212761,
       "constituencyName": "Alair",
       "marginWinnerToRunnerUp1": 49636,
       "marginWinnerToRunnerUp2": 112481,
@@ -65105,7 +64962,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 163230,
+      "totalValidVotes": 203600,
       "constituencyName": "Jangaon",
       "marginWinnerToRunnerUp1": 15783,
       "marginWinnerToRunnerUp2": 91241,
@@ -65806,7 +65663,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 154089,
+      "totalValidVotes": 215755,
       "constituencyName": "Ghanpur Station",
       "marginWinnerToRunnerUp1": 7779,
       "marginWinnerToRunnerUp2": 96712,
@@ -66514,7 +66371,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 149012,
+      "totalValidVotes": 220156,
       "constituencyName": "Palakurthi",
       "marginWinnerToRunnerUp1": 47634,
       "marginWinnerToRunnerUp2": 122702,
@@ -66588,7 +66445,7 @@
       },
       "secondRunnerUp": {
         "name": "Madavapeddi Venkat Reddy",
-        "party": "INDEPENDENT",
+        "party": "IND",
         "votes": 4146,
         "voteShare": 1.88,
         "marginToWinner": 122702,
@@ -67215,7 +67072,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 141852,
+      "totalValidVotes": 192623,
       "constituencyName": "Dornakal",
       "marginWinnerToRunnerUp1": 53131,
       "marginWinnerToRunnerUp2": 112814,
@@ -67282,7 +67139,7 @@
       },
       "secondRunnerUp": {
         "name": "Ratna Azmeera",
-        "party": "INDEPENDENT",
+        "party": "IND",
         "votes": 2773,
         "voteShare": 1.44,
         "marginToWinner": 112814,
@@ -67871,85 +67728,31 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 139795,
+      "totalValidVotes": 210328,
       "constituencyName": "Mahabubabad",
-      "marginWinnerToRunnerUp1": 19458,
-      "marginWinnerToRunnerUp2": 94421,
-      "marginRunnerUp1ToRunnerUp2": 74963,
+      "marginWinnerToRunnerUp1": 50171,
+      "marginWinnerToRunnerUp2": 99606,
+      "marginRunnerUp1ToRunnerUp2": 49435,
       "winner": {
-        "name": "K. R. Nagaraj",
+        "name": "Dr. Murali Naik Bhukya",
         "party": "INC",
-        "votes": 106696,
-        "voteShare": 48.77,
-        "localizedNames": {
-          "en": "Murali Naik Bhukya",
-          "hi": "मुरलि निक भुकय",
-          "mr": "मुरलि निक भुकय",
-          "ne": "मुरलि निक भुकय",
-          "te": "మురలి నిక భుకయ",
-          "kn": "ಮುರಲಿ ನಿಕ ಭುಕಯ",
-          "ta": "முரலி நிக ஭ுகய",
-          "ml": "മുരലി നിക ഭുകയ",
-          "bn": "মুরলি নিক ভুকয",
-          "as": "মুরলি নিক ভুকয",
-          "gu": "મુરલિ નિક ભુકય",
-          "pa": "ਮੁਰਲਿ ਨਿਕ ਭੁਕਯ",
-          "or": "ମୁରଲି ନିକ ଭୁକଯ"
-        },
-        "localizedParties": {
-          "en": "Indian National Congress",
-          "te": "భారత జాతీయ కాంగ్రెస్",
-          "hi": "भारतीय राष्ट्रीय कांग्रेस",
-          "kn": "ಭಾರತೀಯ ರಾಷ್ಟ್ರೀಯ ಕಾಂಗ್ರೆಸ್",
-          "mr": "भारतीय राष्ट्रीय काँग्रेस",
-          "ta": "இந்திய தேசிய காங்கிரஸ்",
-          "ml": "ഇന്ത്യൻ നാഷണൽ കോൺഗ്രസ്",
-          "bn": "ভারতীয় জাতীয় কংগ্রেস",
-          "gu": "ભારતીય રાષ્ટ્રીય કોંગ્રેસ",
-          "pa": "ਭਾਰਤੀ ਰਾਸ਼ਟਰੀ ਕਾਂਗਰਸ",
-          "or": "ଭାରତୀୟ ଜାତୀୟ କଂଗ୍ରେସ",
-          "as": "ভাৰতীয় জাতীয় কংগ্ৰেছ",
-          "ne": "भारतीय राष्ट्रिय काङ्ग्रेस"
-        },
-        "photoUrl": "https://www.myneta.info/images_candidate/Telangana2023/2935cddbea8c7390649becc6dc98bfa1d2f25553.jpg",
-        "affidavitUrl": "https://www.myneta.info/Telangana2023/candidate.php?candidate_id=168",
-        "age": 57,
-        "education": "Post Graduate",
-        "profession": "Medical Practitioner",
-        "criminalCases": 7,
-        "totalAssets": 62194707,
-        "totalLiabilities": 3587411
+        "votes": 116644,
+        "voteShare": 55.46
       },
       "firstRunnerUp": {
-        "name": "Aroori Ramesh",
+        "name": "Banoth Shankar Naik",
         "party": "BRS",
-        "votes": 87238,
-        "voteShare": 39.88,
-        "marginToWinner": 19458,
-        "localizedParties": {
-          "en": "Bharat Rashtra Samithi",
-          "te": "భారత్ రాష్ట్ర సమితి",
-          "hi": "भारत राष्ट्र समिति",
-          "kn": "ಭಾರತ್ ರಾಷ್ಟ್ರ ಸಮಿತಿ",
-          "mr": "भारत राष्ट्र समिती",
-          "ta": "பாரத் ராஷ்டிர சமிதி",
-          "ml": "ഭാരത് രാഷ്ട്ര സമിതി",
-          "bn": "ভারত রাষ্ট্র সমিতি",
-          "gu": "ભારત રાષ્ટ્ર સમિતિ",
-          "pa": "ਭਾਰਤ ਰਾਸ਼ਟਰ ਸਮਿਤੀ",
-          "or": "ଭାରତ ରାଷ୍ଟ୍ର ସମିତି",
-          "as": "ভাৰত ৰাষ্ট্ৰ সমিতি",
-          "ne": "भारत राष्ट्र समिति"
-        },
-        "age": null
+        "votes": 66473,
+        "voteShare": 31.6,
+        "marginToWinner": 50171
       },
       "secondRunnerUp": {
-        "name": "Kondeti Shridhar",
+        "name": "Hussain Naik Jatothu",
         "party": "BJP",
-        "votes": 12275,
-        "voteShare": 5.61,
-        "marginToWinner": 94421,
-        "marginToFirstRunnerUp": 74963
+        "votes": 17038,
+        "voteShare": 8.1,
+        "marginToWinner": 99606,
+        "marginToFirstRunnerUp": 49435
       }
     },
     {
@@ -68572,7 +68375,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 153630,
+      "totalValidVotes": 205386,
       "constituencyName": "Narsampet",
       "marginWinnerToRunnerUp1": 18889,
       "marginWinnerToRunnerUp2": 101123,
@@ -69294,7 +69097,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 149869,
+      "totalValidVotes": 188681,
       "constituencyName": "Parkal",
       "marginWinnerToRunnerUp1": 7941,
       "marginWinnerToRunnerUp2": 33838,
@@ -70001,7 +69804,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 153963,
+      "totalValidVotes": 167025,
       "constituencyName": "Warangal West",
       "marginWinnerToRunnerUp1": 15331,
       "marginWinnerToRunnerUp2": 41823,
@@ -70709,7 +70512,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 156234,
+      "totalValidVotes": 171687,
       "constituencyName": "Warangal East",
       "marginWinnerToRunnerUp1": 15652,
       "marginWinnerToRunnerUp2": 24974,
@@ -71422,54 +71225,23 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 145012,
+      "totalValidVotes": 218776,
       "constituencyName": "Wardhannapet",
-      "marginWinnerToRunnerUp1": 13456,
-      "marginWinnerToRunnerUp2": 79234,
-      "marginRunnerUp1ToRunnerUp2": 65778,
+      "marginWinnerToRunnerUp1": 19458,
+      "marginWinnerToRunnerUp2": 94421,
+      "marginRunnerUp1ToRunnerUp2": 74963,
       "winner": {
-        "name": "K. R. Nagaraj",
+        "name": "K.r.nagaraj.k",
         "party": "INC",
-        "votes": 79234,
-        "voteShare": 54.64,
-        "localizedNames": {
-          "en": "K. R. Nagaraj",
-          "hi": "क. र. नगरज",
-          "mr": "क. र. नगरज",
-          "ne": "क. र. नगरज",
-          "te": "క. ర. నగరజ",
-          "kn": "ಕ. ರ. ನಗರಜ",
-          "ta": "க. ர. ந஗ரஜ",
-          "ml": "ക. ര. നഗരജ",
-          "bn": "ক. র. নগরজ",
-          "as": "ক. র. নগরজ",
-          "gu": "ક. ર. નગરજ",
-          "pa": "ਕ. ਰ. ਨਗਰਜ",
-          "or": "କ. ର. ନଗରଜ"
-        },
-        "localizedParties": {
-          "en": "Indian National Congress",
-          "te": "భారత జాతీయ కాంగ్రెస్",
-          "hi": "भारतीय राष्ट्रीय कांग्रेस",
-          "kn": "ಭಾರತೀಯ ರಾಷ್ಟ್ರೀಯ ಕಾಂಗ್ರೆಸ್",
-          "mr": "भारतीय राष्ट्रीय काँग्रेस",
-          "ta": "இந்திய தேசிய காங்கிரஸ்",
-          "ml": "ഇന്ത്യൻ നാഷണൽ കോൺഗ്രസ്",
-          "bn": "ভারতীয় জাতীয় কংগ্রেস",
-          "gu": "ભારતીય રાષ્ટ્રીય કોંગ્રેસ",
-          "pa": "ਭਾਰਤੀ ਰਾਸ਼ਟਰੀ ਕਾਂਗਰਸ",
-          "or": "ଭାରତୀୟ ଜାତୀୟ କଂଗ୍ରେସ",
-          "as": "ভাৰতীয় জাতীয় কংগ্ৰেছ",
-          "ne": "भारतीय राष्ट्रिय काङ्ग्रेस"
-        },
-        "age": null
+        "votes": 106696,
+        "voteShare": 48.77
       },
       "firstRunnerUp": {
         "name": "Aroori Ramesh",
         "party": "BRS",
-        "votes": 65778,
-        "voteShare": 45.36,
-        "marginToWinner": 13456,
+        "votes": 87238,
+        "voteShare": 39.88,
+        "marginToWinner": 19458,
         "localizedParties": {
           "en": "Bharat Rashtra Samithi",
           "te": "భారత్ రాష్ట్ర సమితి",
@@ -71487,7 +71259,14 @@
         },
         "age": null
       },
-      "secondRunnerUp": null
+      "secondRunnerUp": {
+        "name": "Kondeti Shridhar",
+        "party": "BJP",
+        "votes": 12275,
+        "voteShare": 5.61,
+        "marginToWinner": 94421,
+        "marginToFirstRunnerUp": 74963
+      }
     },
     {
       "year": 2018,
@@ -72115,7 +71894,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 151678,
+      "totalValidVotes": 225688,
       "constituencyName": "Bhupalpalle",
       "marginWinnerToRunnerUp1": 52699,
       "marginWinnerToRunnerUp2": 108385,
@@ -72823,7 +72602,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 146012,
+      "totalValidVotes": 187583,
       "constituencyName": "Mulug",
       "marginWinnerToRunnerUp1": 33700,
       "marginWinnerToRunnerUp2": 96879,
@@ -73271,7 +73050,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 142389,
+      "totalValidVotes": 159883,
       "constituencyName": "Pinapaka",
       "marginWinnerToRunnerUp1": 34506,
       "marginWinnerToRunnerUp2": 87883,
@@ -73747,7 +73526,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 133456,
+      "totalValidVotes": 178339,
       "constituencyName": "Yellandu",
       "marginWinnerToRunnerUp1": 57309,
       "marginWinnerToRunnerUp2": 106603,
@@ -74195,7 +73974,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 160678,
+      "totalValidVotes": 236224,
       "constituencyName": "Khammam",
       "marginWinnerToRunnerUp1": 49381,
       "marginWinnerToRunnerUp2": 131976,
@@ -74269,7 +74048,7 @@
       },
       "secondRunnerUp": {
         "name": "Miriyala Ramakrishna",
-        "party": "JSP",
+        "party": "JnP",
         "votes": 4040,
         "voteShare": 1.71,
         "marginToWinner": 131976,
@@ -74896,11 +74675,11 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 149621,
+      "totalValidVotes": 216851,
       "constituencyName": "Palair",
       "marginWinnerToRunnerUp1": 56650,
-      "marginWinnerToRunnerUp2": 125725,
-      "marginRunnerUp1ToRunnerUp2": 69075,
+      "marginWinnerToRunnerUp2": 122512,
+      "marginRunnerUp1ToRunnerUp2": 65862,
       "winner": {
         "name": "Ponguleti Srinivas Reddy",
         "party": "INC",
@@ -74969,12 +74748,12 @@
         "age": null
       },
       "secondRunnerUp": {
-        "name": "Allika Venkateswar Rao",
-        "party": "BSP",
-        "votes": 2095,
-        "voteShare": 0.97,
-        "marginToWinner": 125725,
-        "marginToFirstRunnerUp": 69075
+        "name": "Veerabhadram Thammineni",
+        "party": "CPI(M)",
+        "votes": 5308,
+        "voteShare": 2.45,
+        "marginToWinner": 122512,
+        "marginToFirstRunnerUp": 65862
       }
     },
     {
@@ -75597,7 +75376,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 154567,
+      "totalValidVotes": 196364,
       "constituencyName": "Madhira",
       "marginWinnerToRunnerUp1": 35452,
       "marginWinnerToRunnerUp2": 102395,
@@ -76315,7 +76094,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 146234,
+      "totalValidVotes": 169407,
       "constituencyName": "Wyra",
       "marginWinnerToRunnerUp1": 33045,
       "marginWinnerToRunnerUp2": 89474,
@@ -77016,7 +76795,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 143234,
+      "totalValidVotes": 215349,
       "constituencyName": "Sathupalli",
       "marginWinnerToRunnerUp1": 19440,
       "marginWinnerToRunnerUp2": 109363,
@@ -77716,61 +77495,23 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 144852,
+      "totalValidVotes": 187920,
       "constituencyName": "Kothagudem",
-      "marginWinnerToRunnerUp1": 22754,
-      "marginWinnerToRunnerUp2": 38988,
+      "marginWinnerToRunnerUp1": 26547,
+      "marginWinnerToRunnerUp2": 42781,
       "marginRunnerUp1ToRunnerUp2": 16234,
       "winner": {
-        "name": "Kunamneni Sambasiva Rao{{efn",
+        "name": "Kunamneni Sambasiva Rao",
         "party": "CPI",
-        "votes": 76543,
-        "voteShare": 52.84,
-        "localizedNames": {
-          "en": "Kunamneni Sambasiva Rao",
-          "hi": "कुनमणेणि समबसिव रओ",
-          "mr": "कुनमणेणि समबसिव रओ",
-          "ne": "कुनमणेणि समबसिव रओ",
-          "te": "కునమణేణి సమబసివ రఓ",
-          "kn": "ಕುನಮಣೇಣಿ ಸಮಬಸಿವ ರಓ",
-          "ta": "குநமணேணி ஸம஬ஸிவ ரஓ",
-          "ml": "കുനമണേണി സമബസിവ രഓ",
-          "bn": "কুনমণেণি সমবসি঵ রও",
-          "as": "কুনমণেণি সমবসি঵ রও",
-          "gu": "કુનમણેણિ સમબસિવ રઓ",
-          "pa": "ਕੁਨਮਣੇਣਿ ਸਮਬਸਿਵ ਰਓ",
-          "or": "କୁନମଣେଣି ସମବସିଵ ରଓ"
-        },
-        "localizedParties": {
-          "en": "Communist Party of India",
-          "te": "కమ్యూనిస్టు పార్టీ ఆఫ్ ఇండియా",
-          "hi": "भारतीय कम्युनिस्ट पार्टी",
-          "kn": "ಕಮ್ಯುನಿಸ್ಟ್ ಪಾರ್ಟಿ ಆಫ್ ಇಂಡಿಯಾ",
-          "mr": "भारतीय कम्युनिस्ट पक्ष",
-          "ta": "இந்திய கம்யூனிஸ்ட் கட்சி",
-          "ml": "കമ്മ്യൂണിസ്റ്റ് പാർട്ടി ഓഫ് ഇന്ത്യ",
-          "bn": "ভারতের কমিউনিস্ট পার্টি",
-          "gu": "કમ્યુનિસ્ટ પાર્ટી ઓફ ઇન્ડિયા",
-          "pa": "ਕਮਿਊਨਿਸਟ ਪਾਰਟੀ ਆਫ਼ ਇੰਡੀਆ",
-          "or": "ଭାରତୀୟ କମ୍ୟୁନିଷ୍ଟ ପାର୍ଟି",
-          "as": "ভাৰতীয় কমিউনিষ্ট পাৰ্টী",
-          "ne": "भारतीय कम्युनिष्ट पार्टी"
-        },
-        "photoUrl": "https://www.myneta.info/images_candidate/Telangana2023/5976f3b515f2cc0f4f6d459071600cf6cf8c527a.jpg",
-        "affidavitUrl": "https://www.myneta.info/Telangana2023/candidate.php?candidate_id=156",
-        "age": 67,
-        "education": "Graduate",
-        "profession": "Social Service",
-        "criminalCases": 10,
-        "totalAssets": 23339376,
-        "totalLiabilities": 432246
+        "votes": 80336,
+        "voteShare": 42.75
       },
       "firstRunnerUp": {
         "name": "Jalagam Venkat Rao",
         "party": "AIFB",
         "votes": 53789,
         "voteShare": 28.62,
-        "marginToWinner": 22754,
+        "marginToWinner": 26547,
         "localizedParties": {
           "en": "Indian National Congress",
           "te": "భారత జాతీయ కాంగ్రెస్",
@@ -77793,7 +77534,7 @@
         "party": "BRS",
         "votes": 37555,
         "voteShare": 19.98,
-        "marginToWinner": 38988,
+        "marginToWinner": 42781,
         "marginToFirstRunnerUp": 16234
       }
     },
@@ -78424,7 +78165,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 137186,
+      "totalValidVotes": 136224,
       "constituencyName": "Aswaraopeta",
       "marginWinnerToRunnerUp1": 28905,
       "marginWinnerToRunnerUp2": 72505,
@@ -79125,7 +78866,7 @@
     {
       "year": 2023,
       "delimitationId": "4",
-      "totalValidVotes": 138623,
+      "totalValidVotes": 118129,
       "constituencyName": "Bhadrachalam",
       "marginWinnerToRunnerUp1": 5719,
       "marginWinnerToRunnerUp2": 47392,

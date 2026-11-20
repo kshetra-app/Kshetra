@@ -487,6 +487,7 @@ export interface GeographicCapability {
 export interface StateDataInfo {
   code: string;
   name: string;
+  rulingParty?: string | null;
   totalSeats: number;
   loadedCount: number;
   dataStatus: 'full' | 'stub' | 'planned';
@@ -1037,6 +1038,7 @@ export async function getCanonicalStateInfo(stateCode: string): Promise<StateDat
         return {
           ...baseInfo,
           name: dbState.name,
+          rulingParty: dbState.rulingParty,
           totalSeats: dbState.totalSeats > 0 ? dbState.totalSeats : baseInfo.totalSeats,
         };
       }
@@ -1064,6 +1066,7 @@ export async function getAllCanonicalStatesInfo(): Promise<StateDataInfo[]> {
             return {
               ...info,
               name: match.name,
+              rulingParty: match.rulingParty,
               totalSeats: match.totalSeats > 0 ? match.totalSeats : info.totalSeats,
             };
           }

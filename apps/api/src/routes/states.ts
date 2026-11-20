@@ -28,6 +28,7 @@ const getStateSchema = {
       properties: {
         code: { type: 'string' },
         name: { type: 'string' },
+        rulingParty: { type: 'string', nullable: true },
         totalSeats: { type: 'number' },
         dataStatus: { type: 'string' },
         hasGeoJSON: { type: 'boolean' },
