@@ -21,6 +21,7 @@ import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 import { useAuthStore } from './auth';
 import { apiClient } from '../lib/api';
 import { ApiAuthError, ApiError } from '../lib/api/errors';
+import type { IssueCommentCursor } from '../lib/api/endpoints/civic';
 
 let issueLoadRequestSequence = 0;
 const pendingIssueActions = new Set<string>();
@@ -774,6 +775,7 @@ interface CivicState {
   headlines: Headline[];
   sentiment: ConstituencySentiment[];
   comments: IssueComment[];
+  commentPages: Record<string, { next: IssueCommentCursor | null; loading: boolean; error: boolean }>;
   statusHistory: IssueStatusChange[];
   issueFilter: IssueCategory | 'all';
   statusFilter: IssueStatus | 'all';
@@ -803,6 +805,9 @@ interface CivicState {
   // Actions — issue lifecycle
   addIssue: (issue: CivicIssue) => Promise<string>;
   loadIssueDetails: (id: string) => Promise<boolean>;
+  loadIssueComments: (id: string, older?: boolean) => Promise<void>;
+  editIssueComment: (id: string, commentId: string, body: string) => Promise<boolean>;
+  deleteIssueComment: (id: string, commentId: string) => Promise<boolean>;
   toggleUpvote: (issueId: string) => Promise<boolean>;
   toggleFollow: (issueId: string) => Promise<boolean>;
   addComment: (issueId: string, body: string, userName: string, imageUrl?: string) => Promise<boolean>;
@@ -846,6 +851,7 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
   headlines: IS_LIVE_ENVIRONMENT ? [] : SEED_HEADLINES,
   sentiment: IS_LIVE_ENVIRONMENT ? [] : SEED_SENTIMENT,
   comments: IS_LIVE_ENVIRONMENT ? [] : SEED_COMMENTS,
+  commentPages: {},
   statusHistory: IS_LIVE_ENVIRONMENT ? [] : SEED_STATUS_HISTORY,
   issueFilter: 'all',
   statusFilter: 'all',
@@ -934,9 +940,65 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
       throw new Error('Failed to post comment to server');
     }
     if (!res.id) throw new Error('The server did not confirm your comment.');
-    await get().loadIssueDetails(issueId).catch(() => undefined);
+    await get().loadIssueComments(issueId);
     return true;
   },
+
+  loadIssueComments: async (id, older = false) => {
+    if (!IS_LIVE_ENVIRONMENT) return;
+    const previous = get().commentPages[id];
+    const cursor = older ? previous?.next : null;
+    if (previous?.loading || (older && !cursor)) return;
+    const paging = { next: cursor ?? null, loading: true, error: false };
+    set((state) => ({ commentPages: { ...state.commentPages, [id]: paging } }));
+    try {
+      const { data } = await apiClient.civic.getIssueComments(id, paging.next);
+      const comments: IssueComment[] = data.comments.map((row) => ({
+        id: String(row.id),
+        issueId: id,
+        userId: String(row.user_id ?? row.userId ?? ''),
+        userName: String(row.user_name ?? row.userName ?? 'Anonymous'),
+        body: String(row.body ?? ''),
+        imageUrl: (row.image_url ?? row.imageUrl) as string | undefined,
+        isOfficial: Boolean(row.is_official ?? row.isOfficial),
+        createdAt: String(row.created_at ?? row.createdAt),
+      }));
+      set((state) => {
+        const existing = older ? state.comments : state.comments.filter((entry) => entry.issueId !== id);
+        const merged = new Map([...existing, ...comments].map((comment) => [comment.id, comment]));
+        return {
+          comments: [...merged.values()],
+          issues: state.issues.map((issue) =>
+            issue.id === id && Number.isFinite(data.total) ? { ...issue, commentCount: data.total } : issue,
+          ),
+          commentPages: { ...state.commentPages, [id]: { next: data.next ?? null, loading: false, error: false } },
+        };
+      });
+    } catch {
+      set((state) => ({
+        commentPages: { ...state.commentPages, [id]: { next: paging.next, loading: false, error: true } },
+      }));
+    }
+  },
+
+  editIssueComment: (id, commentId, body) => runIssueAction(`comment:${commentId}`, async () => {
+    const saved = await apiClient.civic.editIssueComment(id, commentId, body);
+    if (!saved.success || saved.id !== commentId) return false;
+    set((state) => ({
+      comments: state.comments.map((comment) =>
+        comment.id === commentId && comment.issueId === id ? { ...comment, body: saved.body } : comment,
+      ),
+    }));
+    return true;
+  }),
+
+  deleteIssueComment: (id, commentId) => runIssueAction(`comment:${commentId}`, async () => {
+    const removed = await apiClient.civic.deleteIssueComment(id, commentId);
+    if (!removed.success || removed.id !== commentId) return false;
+    set((state) => ({ comments: state.comments.filter((comment) => comment.id !== commentId || comment.issueId !== id) }));
+    await get().loadIssueDetails(id).catch(() => undefined);
+    return true;
+  }),
 
   addEvidence: (issueId, imageUrl, userName, caption) => {
     set((state) => ({
@@ -974,28 +1036,17 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
     if (!IS_LIVE_ENVIRONMENT) return Boolean(get().getIssueById(id));
     const userId = useAuthStore.getState().user?.id;
     try {
-      const [requestedDetail, replies, timeline] = await Promise.all([
+      const [requestedDetail, timeline] = await Promise.all([
         apiClient.civic.getIssue(id, Boolean(userId)).catch((error: unknown) => {
           if (!userId || !(error instanceof ApiAuthError)) throw error;
           return apiClient.civic.getIssue(id, false);
         }),
-        apiClient.civic.getIssueComments(id),
         apiClient.civic.getIssueHistory(id),
       ]);
       const detail = userId && userId !== useAuthStore.getState().user?.id
         ? await apiClient.civic.getIssue(id, false)
         : requestedDetail;
       const issue = mapServerIssue(detail.data.issue);
-      const comments: IssueComment[] = replies.data.comments.map((row) => ({
-        id: String(row.id),
-        issueId: id,
-        userId: String(row.user_id ?? row.userId ?? ''),
-        userName: String(row.user_name ?? row.userName ?? 'Anonymous'),
-        body: String(row.body ?? ''),
-        imageUrl: (row.image_url ?? row.imageUrl) as string | undefined,
-        isOfficial: Boolean(row.is_official ?? row.isOfficial),
-        createdAt: String(row.created_at ?? row.createdAt),
-      }));
       set((state) => {
         const index = state.issues.findIndex((row) => row.id === id);
         const issues = [...state.issues];
@@ -1003,7 +1054,6 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
         else issues[index] = issue;
         return {
           issues,
-          comments: [...state.comments.filter((row) => row.issueId !== id), ...comments],
           statusHistory: [...state.statusHistory.filter((row) => row.issueId !== id), ...timeline.data.history],
         };
       });

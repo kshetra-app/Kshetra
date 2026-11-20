@@ -283,6 +283,13 @@ async function drainQueue(): Promise<{ processed: number; failed: number }> {
         continue;
       }
     }
+    if (IS_LIVE_ENVIRONMENT && op.type === 'follow_promise') {
+      const { useAuthStore } = require('../stores/auth');
+      if (!op.payload.userId || op.payload.userId !== useAuthStore.getState().user?.id) {
+        remaining.push(op);
+        continue;
+      }
+    }
     const clientToken = op.clientToken ?? (op.payload?.clientToken as string) ?? op.id;
     notifySyncStateChange({
       opType: op.type,

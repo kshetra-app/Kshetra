@@ -424,13 +424,13 @@ export async function deletePostComment(
 
 export async function followPromise(
   promiseId: string,
-  _userId: string,
+  userId: string,
   follow: boolean,
 ): Promise<boolean> {
   if (!guard()) return false;
   try {
     addBreadcrumb('promises', follow ? 'follow_promise' : 'unfollow_promise', { promiseId });
-    const res = await apiClient.promises.followPromise(promiseId, follow);
+    const res = await apiClient.promises.followPromise(promiseId, follow, userId);
     return res.success;
   } catch (err) {
     captureException(err as Error, { op: 'follow_promise', promiseId });
@@ -1136,14 +1136,16 @@ export async function fetchFeedForState(
   }
 }
 
-export async function fetchPromisesForState(stateCode: string): Promise<any[] | null> {
+export async function fetchPromisesForState(stateCode: string, viewerId?: string): Promise<any[] | null> {
   if (!guard()) return null;
   try {
-    const { data, error } = await supabase
+    let query = supabase
       .from('election_promises')
-      .select('*, promise_updates(*)')
+      .select(viewerId ? '*, promise_updates(*), viewer_follow:promise_follows(user_id)' : '*, promise_updates(*)')
       .eq('state_code', stateCode)
       .order('created_at', { ascending: false });
+    if (viewerId) query = query.eq('viewer_follow.user_id', viewerId);
+    const { data, error } = await query;
     if (error) throw error;
     return data;
   } catch (err) {

@@ -641,7 +641,7 @@ function ShortPageItem({
                     </Pressable>
                   </View>
                 ) : (
-                  <Text style={styles.commentsEmpty}>{t('feed.noComments', { defaultValue: 'No comments yet.' })}</Text>
+                  <Text style={styles.commentsEmpty}>{t('shortsPlayer.noComments')}</Text>
                 )
               }
               ListFooterComponent={

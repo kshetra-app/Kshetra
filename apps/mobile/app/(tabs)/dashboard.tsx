@@ -27,6 +27,7 @@ import { useTranslation } from 'react-i18next';
 import { useActiveStateStore } from '../../stores/activeState';
 import { resolveConstituencyForState, useMyConstituencyStore } from '../../stores/myConstituency';
 import { usePromiseStore } from '../../stores/promises';
+import { useAuthStore } from '../../stores/auth';
 import { STATES } from '@kshetra/shared';
 import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
 import i18n from '../../i18n';
@@ -135,6 +136,9 @@ function DashboardContent() {
   const promiseLoadStatus = usePromiseStore((s) => s.promiseLoadStatus);
   const promiseRefreshing = usePromiseStore((s) => s.promiseRefreshing);
   const promiseRefreshError = usePromiseStore((s) => s.promiseRefreshError);
+  const promiseViewer = usePromiseStore((s) => s.promiseLoadViewerId);
+  const pendingPromiseFollows = usePromiseStore((s) => s.pendingPromiseFollows);
+  const viewerId = useAuthStore((s) => s.user?.id ?? null);
   const toggleFollowPromise = usePromiseStore((s) => s.toggleFollowPromise);
   const loadPromisesForState = usePromiseStore((s) => s.loadForState);
 
@@ -169,21 +173,21 @@ function DashboardContent() {
       if (!(scopeFilter === 'constituency' && !constituencyId)) {
         void loadIssuesForScope(scopeFilter, stateCode, constituencyId).catch(() => undefined);
       }
-      if (activeTab === 'promises' && promiseQueryState) {
-        void loadPromisesForState(promiseQueryState, false, true);
-      }
     }, [
-      activeTab,
       constituencyId,
       issueFilter,
       statusFilter,
       loadIssuesForScope,
-      loadPromisesForState,
-      promiseQueryState,
       scopeFilter,
       stateCode,
     ]),
   );
+
+  useFocusEffect(useCallback(() => {
+    if (IS_LIVE_ENVIRONMENT && activeTab === 'promises') {
+      void loadPromisesForState(promiseQueryState, true, true);
+    }
+  }, [activeTab, loadPromisesForState, promiseQueryState, viewerId]));
 
   const [activity, setActivity] = useState<{ key: string; total: number | null }>();
   const activityScope = getCivicIssueScopeKey(scopeFilter, stateCode, constituencyId);
@@ -685,9 +689,18 @@ function DashboardContent() {
                   .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))[0];
                 return <PromiseCard
                   key={promise.id}
-                  promise={promise}
+                  promise={promiseViewer === viewerId ? promise : { ...promise, userFollowing: false }}
+                  followPending={pendingPromiseFollows[promise.id] || (viewerId !== null && promiseViewer !== viewerId)}
                   statusEvidence={evidence?.sourceUrl ? { sourceUrl: evidence.sourceUrl, createdAt: evidence.createdAt } : undefined}
-                  onFollow={() => toggleFollowPromise(promise.id)}
+                  onFollow={async () => {
+                    if (!viewerId) {
+                      router.push('/auth/sign-in');
+                      return;
+                    }
+                    if (!await toggleFollowPromise(promise.id)) {
+                      Alert.alert(t('common.error'), t('issueDetail.actionFailed', { defaultValue: 'The change could not be saved. Please try again.' }));
+                    }
+                  }}
                 />;
               })
             )}

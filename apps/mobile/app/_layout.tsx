@@ -19,6 +19,8 @@ import '../i18n';
 
 const KYCVerificationSheet = lazy(() => import('../components/KYCVerificationSheet'));
 
+export const unstable_settings = { initialRouteName: '(tabs)' };
+
 export default function RootLayout() {
   const initializeAuth = useAuthStore((s) => s.initialize);
   const user = useAuthStore((s) => s.user);

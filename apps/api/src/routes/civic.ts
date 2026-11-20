@@ -623,6 +623,14 @@ const getIssueCommentsSchema = {
     required: ['id'],
     properties: { id: { type: 'string', minLength: 1 } },
   },
+  querystring: {
+    type: 'object',
+    properties: {
+      limit: { type: 'integer', minimum: 1, maximum: 50 },
+      beforeId: { type: 'string', maxLength: 36 },
+      beforeAt: { type: 'string', maxLength: 35 },
+    },
+  },
   response: {
     200: {
       type: 'object',
@@ -2630,20 +2638,60 @@ export async function civicRoutes(app: FastifyInstance) {
   /** 24. GET /api/v1/civic/issues/:id/comments — list issue comments */
   app.get<{
     Params: { id: string };
+    Querystring: { limit?: number; beforeId?: string; beforeAt?: string };
   }>(
     '/api/v1/civic/issues/:id/comments',
     {
       schema: getIssueCommentsSchema,
     },
-    async (request) => {
+    async (request, reply) => {
       const { id } = request.params;
+      const { limit, beforeId, beforeAt } = request.query;
+      if (
+        Boolean(beforeId) !== Boolean(beforeAt) ||
+        (beforeId && (!limit || !uuidPattern.test(beforeId))) ||
+        (beforeAt &&
+          (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/.test(
+            beforeAt,
+          ) ||
+            !Number.isFinite(Date.parse(beforeAt))))
+      ) {
+        return sendApiError(reply, request, 400, 'Bad Request', 'Invalid comment page');
+      }
       if (isSupabaseConfigured && uuidPattern.test(id)) {
-        const { data, error } = await supabase
+        let query = supabase
           .from('issue_comments')
-          .select('id,issue_id,user_id,user_name,body,image_url,is_official,created_at')
+          .select('id,issue_id,user_id,user_name,body,image_url,is_official,created_at', {
+            count: beforeId ? undefined : 'exact',
+          })
           .eq('issue_id', id)
-          .order('created_at', { ascending: true });
-        if (!error) return { comments: data ?? [], total: data?.length ?? 0 };
+          .order('created_at', { ascending: !limit })
+          .order('id', { ascending: !limit });
+        if (limit) query = query.limit(limit + 1);
+        if (beforeId && beforeAt) {
+          query = query.or(
+            `created_at.lt.${beforeAt},and(created_at.eq.${beforeAt},id.lt.${beforeId})`,
+          );
+        }
+        const [page, totalRead] = await Promise.all([
+          query,
+          beforeId
+            ? supabase
+                .from('issue_comments')
+                .select('id', { count: 'exact', head: true })
+                .eq('issue_id', id)
+            : null,
+        ]);
+        const total = totalRead ? totalRead.count : page.count;
+        if (!page.error && !totalRead?.error && page.data && total !== null) {
+          const comments = limit ? page.data.slice(0, limit) : page.data;
+          const last = comments.at(-1);
+          const next =
+            limit && last && page.data.length > limit
+              ? { beforeId: last.id, beforeAt: last.created_at }
+              : null;
+          return { comments, total, ...(limit ? { next } : {}) };
+        }
       }
       if (isProductionRuntime()) {
         if (!uuidPattern.test(id)) return { comments: [], total: 0 };
@@ -2651,6 +2699,100 @@ export async function civicRoutes(app: FastifyInstance) {
       }
       const comments = await civicService.listComments(id);
       return { comments, total: comments.length };
+    },
+  );
+
+  app.patch<{ Params: { id: string; commentId: string }; Body: { body: string } }>(
+    '/api/v1/civic/issues/:id/comments/:commentId',
+    {
+      schema: {
+        body: {
+          type: 'object',
+          required: ['body'],
+          properties: { body: { type: 'string', minLength: 1, maxLength: 1000 } },
+        },
+      },
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth)
+        return sendApiError(reply, request, 401, 'Unauthorized', 'Sign in to edit a comment');
+      if (!isSupabaseConfigured)
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable');
+      const { id, commentId } = request.params;
+      if (!uuidPattern.test(id) || !uuidPattern.test(commentId))
+        return sendApiError(reply, request, 400, 'Bad Request', 'Invalid comment');
+      if (!(await verifiedCivicContributor(auth.userId)))
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Verification required',
+          'Complete contributor verification to edit.',
+        );
+      const body = request.body.body.trim();
+      if (!body || (await checkContentModeration(body)).flagged)
+        return sendApiError(
+          reply,
+          request,
+          422,
+          'Unprocessable Entity',
+          'Enter a comment that follows the community rules',
+        );
+      const { data, error } = await supabase
+        .from('issue_comments')
+        .update({ body })
+        .eq('id', commentId)
+        .eq('issue_id', id)
+        .eq('user_id', auth.userId)
+        .eq('is_official', false)
+        .select('id,body')
+        .maybeSingle();
+      if (error)
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'The edit could not be saved',
+        );
+      if (!data)
+        return sendApiError(reply, request, 404, 'Not Found', 'Editable comment not found');
+      return { success: true, id: data.id, body: data.body };
+    },
+  );
+
+  app.delete<{ Params: { id: string; commentId: string } }>(
+    '/api/v1/civic/issues/:id/comments/:commentId',
+    async (request, reply) => {
+      const auth = await resolveAuthUser(request);
+      if (!auth)
+        return sendApiError(reply, request, 401, 'Unauthorized', 'Sign in to remove a comment');
+      if (!isSupabaseConfigured)
+        return sendApiError(reply, request, 503, 'Service Unavailable', 'Database is unavailable');
+      const { id, commentId } = request.params;
+      if (!uuidPattern.test(id) || !uuidPattern.test(commentId))
+        return sendApiError(reply, request, 400, 'Bad Request', 'Invalid comment');
+      const { data, error } = await supabase
+        .from('issue_comments')
+        .delete()
+        .eq('id', commentId)
+        .eq('issue_id', id)
+        .eq('user_id', auth.userId)
+        .eq('is_official', false)
+        .select('id')
+        .maybeSingle();
+      if (error)
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'The comment could not be removed',
+        );
+      if (!data)
+        return sendApiError(reply, request, 404, 'Not Found', 'Removable comment not found');
+      return { success: true, id: data.id };
     },
   );
 

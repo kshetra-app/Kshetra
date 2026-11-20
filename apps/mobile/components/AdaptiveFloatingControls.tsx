@@ -419,7 +419,7 @@ export default function AdaptiveFloatingControls({
                 </Animated.View>
               </View>
 
-              <Text style={[styles.actionButtonLabel, { color: '#FCD34D', fontWeight: '800' }]} numberOfLines={1}>
+              <Text style={[styles.actionButtonLabel, styles.resetLabel]}>
                 {t('common.reset', { defaultValue: 'Reset' })}
               </Text>
             </Pressable>
@@ -716,5 +716,10 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.95)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
+  },
+  resetLabel: {
+    alignSelf: 'stretch',
+    color: '#FCD34D',
+    fontWeight: '800',
   },
 });

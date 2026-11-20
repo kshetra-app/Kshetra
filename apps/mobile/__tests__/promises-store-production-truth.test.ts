@@ -1,6 +1,8 @@
 describe('production promise dashboard data', () => {
   let usePromiseStore: any;
   let fetchPromisesForState: jest.Mock;
+  let saveFollow: jest.Mock;
+  let viewerId: string | null;
 
   const promiseRow = (stateCode: string, id = 'promise-1') => ({
     id,
@@ -37,14 +39,17 @@ describe('production promise dashboard data', () => {
 
   beforeEach(() => {
     jest.resetModules();
+    viewerId = null;
+    saveFollow = jest.fn();
     jest.doMock('../lib/environment', () => ({ IS_LIVE_ENVIRONMENT: true }));
     jest.doMock('../lib/supabaseDataService', () => ({
       fetchPromisesForState: jest.fn(),
     }));
     jest.doMock('../stores/auth', () => ({
-      useAuthStore: { getState: () => ({ user: null }) },
+      useAuthStore: { getState: () => ({ user: viewerId ? { id: viewerId } : null }) },
     }));
-    jest.doMock('../lib/offlineSync', () => ({ enqueue: jest.fn() }));
+    jest.doMock('../lib/offlineSync', () => ({ enqueue: jest.fn(), getPendingOps: () => [] }));
+    jest.doMock('../lib/api', () => ({ apiClient: { promises: { followPromise: saveFollow } } }));
 
     usePromiseStore = require('../stores/promises').usePromiseStore;
     fetchPromisesForState = require('../lib/supabaseDataService').fetchPromisesForState;
@@ -55,7 +60,52 @@ describe('production promise dashboard data', () => {
     jest.dontMock('../lib/supabaseDataService');
     jest.dontMock('../stores/auth');
     jest.dontMock('../lib/offlineSync');
+    jest.dontMock('../lib/api');
     jest.resetModules();
+  });
+
+  it('restores persisted follows per account after sign-out and repeat sign-ins', async () => {
+    const followedBy = new Set<string>();
+    fetchPromisesForState.mockImplementation(async (stateCode: string, viewer?: string) => [{
+      ...promiseRow(stateCode),
+      follow_count: followedBy.size,
+      viewer_follow: viewer && followedBy.has(viewer) ? [{ user_id: viewer }] : [],
+    }]);
+    saveFollow.mockImplementation(async (promiseId: string, following: boolean, viewer: string) => {
+      if (following) followedBy.add(viewer);
+      else followedBy.delete(viewer);
+      return { success: true, promiseId, following, followCount: followedBy.size };
+    });
+
+    const load = () => usePromiseStore.getState().loadForState('TS');
+    const toggle = () => usePromiseStore.getState().toggleFollowPromise('promise-1');
+    const current = () => usePromiseStore.getState().promises[0];
+    viewerId = 'account-1';
+    await load();
+    expect(await toggle()).toBe(true);
+    expect(current()).toMatchObject({ userFollowing: true, followCount: 1 });
+
+    viewerId = null;
+    await load();
+    expect(current()).toMatchObject({ userFollowing: false, followCount: 1 });
+    expect(await toggle()).toBe(false);
+    viewerId = 'account-2';
+    await load();
+    expect(current()).toMatchObject({ userFollowing: false, followCount: 1 });
+    viewerId = 'account-1';
+    await load();
+    expect(current()).toMatchObject({ userFollowing: true, followCount: 1 });
+    expect(await toggle()).toBe(true);
+
+    viewerId = 'account-2';
+    await load();
+    viewerId = 'account-1';
+    await load();
+    expect(current()).toMatchObject({ userFollowing: false, followCount: 0 });
+    expect(saveFollow.mock.calls).toEqual([
+      ['promise-1', true, 'account-1'],
+      ['promise-1', false, 'account-1'],
+    ]);
   });
 
   it('starts without fixtures and loads persisted promises and status history', async () => {

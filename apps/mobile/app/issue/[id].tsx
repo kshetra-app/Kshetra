@@ -6,6 +6,8 @@ import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useCivicStore } from '../../stores/civic';
+import { useAuthStore } from '../../stores/auth';
+import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
 import {
   ISSUE_CATEGORY_CONFIG,
   SEVERITY_CONFIG,
@@ -47,6 +49,11 @@ export default function IssueDetailScreen() {
 
   const issues = useCivicStore((s) => s.issues);
   const loadIssueDetails = useCivicStore((s) => s.loadIssueDetails);
+  const loadIssueComments = useCivicStore((s) => s.loadIssueComments);
+  const editIssueComment = useCivicStore((s) => s.editIssueComment);
+  const deleteIssueComment = useCivicStore((s) => s.deleteIssueComment);
+  const commentPage = useCivicStore((s) => s.commentPages[id ?? '']);
+  const viewerId = useAuthStore((s) => s.user?.id);
   const allComments = useCivicStore((s) => s.comments);
   const allHistory = useCivicStore((s) => s.statusHistory);
   const toggleUpvote = useCivicStore((s) => s.toggleUpvote);
@@ -59,7 +66,7 @@ export default function IssueDetailScreen() {
 
   const issue = useMemo(() => issues.find((i) => i.id === id), [issues, id]);
   const comments = useMemo(
-    () => allComments.filter((c) => c.issueId === id).sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()),
+    () => allComments.filter((comment) => comment.issueId === id),
     [allComments, id],
   );
   const statusHistory = useMemo(
@@ -68,12 +75,16 @@ export default function IssueDetailScreen() {
   );
 
   const [commentText, setCommentText] = useState('');
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [commentError, setCommentError] = useState<string | null>(null);
   const [submittingComment, setSubmittingComment] = useState(false);
   const [showAllMedia, setShowAllMedia] = useState(false);
   const [helpVisible, setHelpVisible] = useState(false);
   const insets = useSafeAreaInsets();
   const scrollViewRef = useRef<ScrollView>(null);
+  const commentsTop = useRef(0);
+  const commentInputRef = useRef<TextInput>(null);
+  const commentWriteInProgress = useRef(false);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
   useEffect(() => {
@@ -101,7 +112,22 @@ export default function IssueDetailScreen() {
       .then((found) => { if (current) setLoadState({ id, status: found ? 'loaded' : 'missing' }); })
       .catch(() => { if (current) setLoadState({ id, status: 'error' }); });
     return () => { current = false; };
-  }, [id, loadIssueDetails, reload]));
+  }, [id, loadIssueDetails, reload, viewerId]));
+
+  useFocusEffect(useCallback(() => {
+    if (id) void loadIssueComments(id);
+  }, [id, loadIssueComments]));
+
+  useEffect(() => {
+    setEditingCommentId(null);
+    setCommentText('');
+    setCommentError(null);
+  }, [id, viewerId]);
+
+  const goBack = () => {
+    if (router.canGoBack()) router.back();
+    else router.replace('/(tabs)/dashboard');
+  };
 
   const status = loadState?.id === id ? loadState.status : 'loading';
   if (!issue || status !== 'loaded') {
@@ -113,7 +139,7 @@ export default function IssueDetailScreen() {
           ? t('issueDetail.loadFailed', { defaultValue: 'This issue could not be loaded.' })
           : t('issueDetail.notFound', { defaultValue: 'Issue not found' })}</Text>
         {status === 'error' && <Pressable onPress={() => setReload((n) => n + 1)}><Text style={{ color: colors.primary }}>{t('common.retry', { defaultValue: 'Retry' })}</Text></Pressable>}
-        <Pressable style={[styles.backButton, { backgroundColor: colors.surfaceElevated }]} onPress={() => router.back()}>
+        <Pressable style={[styles.backButton, { backgroundColor: colors.surfaceElevated }]} onPress={goBack}>
           <Text style={[styles.backButtonText, { color: colors.primary }]}>{t('common.back')}</Text>
         </Pressable>
       </View>
@@ -197,28 +223,62 @@ export default function IssueDetailScreen() {
   };
 
   const handleSubmitComment = async () => {
-    if (!commentText.trim() || submittingComment) return;
+    if (!commentText.trim() || commentWriteInProgress.current || commentPage?.loading) return;
     if (!gateContentAction('create_comment')) return;
+    commentWriteInProgress.current = true;
     setSubmittingComment(true);
     setCommentError(null);
     try {
       const commentContent = commentText.trim();
-      await addComment(issue.id, commentContent, 'You');
-      logContentAction('create_comment', {
-        type: 'civic_issue_comment',
-        id: issue.id,
-        body: commentContent,
-        screenName: 'issue_detail',
-      });
+      if (editingCommentId) {
+        if (!await editIssueComment(issue.id, editingCommentId, commentContent)) throw new Error('Comment edit failed');
+        setEditingCommentId(null);
+      } else {
+        await addComment(issue.id, commentContent, 'You');
+        void logContentAction('create_comment', {
+          type: 'civic_issue_comment',
+          id: issue.id,
+          body: commentContent,
+          screenName: 'issue_detail',
+        });
+        scrollViewRef.current?.scrollTo({ y: commentsTop.current, animated: true });
+      }
       setCommentText('');
-      setTimeout(() => {
-        scrollViewRef.current?.scrollToEnd({ animated: true });
-      }, 200);
-    } catch (err: any) {
-      setCommentError('Could not post comment. Please try again.');
+      Keyboard.dismiss();
+    } catch {
+      setCommentError(editingCommentId
+        ? t('postDetail.editCommentFailed')
+        : t('postDetail.commentFailed', { defaultValue: 'Comment not sent' }));
     } finally {
+      commentWriteInProgress.current = false;
       setSubmittingComment(false);
     }
+  };
+
+  const confirmDeleteComment = (commentId: string) => {
+    Alert.alert(t('postDetail.deleteComment'), t('postDetail.deleteCommentConfirm'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      { text: t('common.delete'), style: 'destructive', onPress: async () => {
+        if (commentWriteInProgress.current) return;
+        commentWriteInProgress.current = true;
+        setSubmittingComment(true);
+        setCommentError(null);
+        try {
+          if (!await deleteIssueComment(issue.id, commentId)) {
+            setCommentError(t('postDetail.deleteCommentFailed', { defaultValue: 'The comment could not be removed.' }));
+            return;
+          }
+          if (editingCommentId === commentId) {
+            setEditingCommentId(null);
+            setCommentText('');
+            Keyboard.dismiss();
+          }
+        } finally {
+          commentWriteInProgress.current = false;
+          setSubmittingComment(false);
+        }
+      } },
+    ]);
   };
 
   const mediaUrls = issue.mediaUrls ?? [];
@@ -336,7 +396,7 @@ export default function IssueDetailScreen() {
             }}
           >
             <Ionicons name={issue.userUpvoted ? 'arrow-up-circle' : 'arrow-up-circle-outline'} size={18} color={issue.userUpvoted ? '#059669' : '#64748B'} />
-            <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.actionBtnText, issue.userUpvoted && { color: '#059669' }]}>
+            <Text style={[styles.actionBtnText, issue.userUpvoted && { color: '#059669' }]}>
               {t('issueDetail.upvote', { defaultValue: 'Upvote' })}
             </Text>
           </Pressable>
@@ -357,13 +417,13 @@ export default function IssueDetailScreen() {
             }}
           >
             <Ionicons name={issue.userFollowing ? 'notifications' : 'notifications-outline'} size={18} color={issue.userFollowing ? '#002B7F' : '#64748B'} />
-            <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.actionBtnText, issue.userFollowing && { color: '#002B7F' }]}>
+            <Text style={[styles.actionBtnText, issue.userFollowing && { color: '#002B7F' }]}>
               {issue.userFollowing ? t('common.following', { defaultValue: 'Following' }) : t('common.follow', { defaultValue: 'Follow' })}
             </Text>
           </Pressable>
           <Pressable style={styles.actionBtn} onPress={handleShare}>
             <Ionicons name="share-outline" size={18} color="#64748B" />
-            <Text numberOfLines={1} ellipsizeMode="tail" style={styles.actionBtnText}>
+            <Text style={styles.actionBtnText}>
               {t('common.share', { defaultValue: 'Share' })}
             </Text>
           </Pressable>
@@ -372,7 +432,7 @@ export default function IssueDetailScreen() {
             onPress={handleTagMLA}
           >
             <Ionicons name="megaphone" size={18} color={issue.mlaTagged ? '#D97706' : '#64748B'} />
-            <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.actionBtnText, issue.mlaTagged && { color: '#D97706' }]}>
+            <Text style={[styles.actionBtnText, issue.mlaTagged && { color: '#D97706' }]}>
               {issue.mlaTagged ? t('issueDetail.flagged', { defaultValue: 'Flagged in Poligram' }) : t('issueDetail.flagForRepresentative', { defaultValue: 'Flag issue' })}
             </Text>
           </Pressable>
@@ -515,21 +575,40 @@ export default function IssueDetailScreen() {
         )}
 
         {/* ── Comments ── */}
-        <View style={styles.section}>
+        <View style={styles.section} onLayout={(event) => { commentsTop.current = event.nativeEvent.layout.y; }}>
           <View style={styles.sectionHeader}>
             <Ionicons name="chatbubbles" size={16} color="#3B82F6" />
-            <Text style={styles.sectionTitle}>Comments ({comments.length})</Text>
+            <Text style={styles.sectionTitle}>{t('postDetail.comments')} ({issue.commentCount})</Text>
           </View>
 
-          {comments.length === 0 ? (
+          {comments.length === 0 && (!IS_LIVE_ENVIRONMENT || (commentPage && !commentPage.loading && !commentPage.error)) && (
             <View style={styles.emptyComments}>
               <Ionicons name="chatbubble-outline" size={32} color="#374151" />
-              <Text style={styles.emptyCommentsText}>No comments yet. Be the first!</Text>
+              <Text style={styles.emptyCommentsText}>{t('postDetail.noComments')}</Text>
             </View>
-          ) : (
-            comments.map((cmt) => (
-              <CommentCard key={cmt.id} comment={cmt} />
-            ))
+          )}
+          {comments.map((comment) => (
+            <CommentCard
+              key={comment.id}
+              comment={comment}
+              disabled={submittingComment || commentPage?.loading}
+              onEdit={viewerId === comment.userId && !comment.isOfficial ? () => {
+                setEditingCommentId(comment.id);
+                setCommentText(comment.body);
+                setCommentError(null);
+                commentInputRef.current?.focus();
+              } : undefined}
+              onRemove={viewerId === comment.userId && !comment.isOfficial ? () => confirmDeleteComment(comment.id) : undefined}
+            />
+          ))}
+          {commentPage?.loading ? <ActivityIndicator color={colors.primary} /> : (commentPage?.next || commentPage?.error) && (
+            <Pressable accessibilityRole="button" disabled={submittingComment}
+              style={styles.commentControl}
+              onPress={() => void loadIssueComments(issue.id, Boolean(commentPage.next))}>
+              <Text style={{ color: colors.primary }}>
+                {t(commentPage.error ? 'postDetail.retryComments' : 'postDetail.olderComments')}
+              </Text>
+            </Pressable>
           )}
         </View>
 
@@ -544,6 +623,17 @@ export default function IssueDetailScreen() {
         </View>
       ) : null}
 
+      {editingCommentId && (
+        <View style={[styles.commentActions, { paddingHorizontal: 12, backgroundColor: colors.surface }]}>
+          <Text style={{ color: colors.text }}>{t('postDetail.editingComment')}</Text>
+          <Pressable accessibilityRole="button" disabled={submittingComment} onPress={() => {
+            setEditingCommentId(null);
+            setCommentText('');
+            setCommentError(null);
+            Keyboard.dismiss();
+          }}><Text style={{ color: colors.primary }}>{t('common.cancel')}</Text></Pressable>
+        </View>
+      )}
       {/* ── Comment Input ── */}
       <View
         style={[
@@ -556,6 +646,7 @@ export default function IssueDetailScreen() {
         ]}
       >
         <TextInput
+          ref={commentInputRef}
           style={[
             styles.commentInput,
             {
@@ -564,17 +655,12 @@ export default function IssueDetailScreen() {
               borderColor: colors.border || '#E8DED1',
             },
           ]}
-          placeholder="Add a comment..."
+          placeholder={t('postDetail.replyPlaceholder')}
           placeholderTextColor="#6B7280"
           value={commentText}
           onChangeText={(text) => {
             setCommentText(text);
             if (commentError) setCommentError(null);
-          }}
-          onFocus={() => {
-            setTimeout(() => {
-              scrollViewRef.current?.scrollToEnd({ animated: true });
-            }, 250);
           }}
           multiline
           maxLength={1000}
@@ -582,7 +668,9 @@ export default function IssueDetailScreen() {
         <Pressable
           style={[styles.sendBtn, (!commentText.trim() || submittingComment) && styles.sendBtnDisabled]}
           onPress={handleSubmitComment}
-          disabled={!commentText.trim() || submittingComment}
+          accessibilityRole="button"
+          accessibilityLabel={t(editingCommentId ? 'common.save' : 'common.send')}
+          disabled={!commentText.trim() || submittingComment || commentPage?.loading}
         >
           {submittingComment ? (
             <ActivityIndicator size="small" color="#3B82F6" />
@@ -603,7 +691,14 @@ export default function IssueDetailScreen() {
 
 // ─── Comment Card sub-component ───
 
-function CommentCard({ comment }: { comment: IssueComment }) {
+function CommentCard({ comment, disabled, onEdit, onRemove }: {
+  comment: IssueComment;
+  disabled?: boolean;
+  onEdit?: () => void;
+  onRemove?: () => void;
+}) {
+  const { t } = useTranslation();
+  const { colors } = useTheme();
   return (
     <View style={[styles.commentCard, comment.isOfficial && styles.commentCardOfficial]}>
       <View style={styles.commentHeader}>
@@ -626,6 +721,16 @@ function CommentCard({ comment }: { comment: IssueComment }) {
       <Text style={styles.commentBody}>{comment.body}</Text>
       {comment.imageUrl && (
         <Image source={{ uri: comment.imageUrl }} style={styles.commentImage} contentFit="cover" />
+      )}
+      {onEdit && onRemove && (
+        <View style={styles.commentActions}>
+          <Pressable accessibilityRole="button" disabled={disabled} style={styles.commentControl} onPress={onEdit}>
+            <Text style={{ color: colors.primary }}>{t('postDetail.editComment')}</Text>
+          </Pressable>
+          <Pressable accessibilityRole="button" disabled={disabled} style={styles.commentControl} onPress={onRemove}>
+            <Text style={{ color: colors.primary }}>{t('postDetail.deleteComment')}</Text>
+          </Pressable>
+        </View>
       )}
     </View>
   );
@@ -664,8 +769,8 @@ const styles = StyleSheet.create({
   statLabel: { fontSize: 10, color: '#8E7B6F', fontWeight: '600' },
 
   // Actions
-  actionRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 6, paddingVertical: 10, marginTop: 8, marginHorizontal: 16, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 12, gap: 4 },
-  actionBtn: { flex: 1, minWidth: 0, alignItems: 'center', justifyContent: 'center', gap: 3, paddingHorizontal: 4, paddingVertical: 6, borderRadius: 8 },
+  actionRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'stretch', paddingHorizontal: 6, paddingVertical: 10, marginTop: 8, marginHorizontal: 16, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 12, gap: 4 },
+  actionBtn: { flexGrow: 1, flexBasis: 72, alignItems: 'center', justifyContent: 'center', gap: 3, paddingHorizontal: 4, paddingVertical: 6, borderRadius: 8 },
   actionBtnActive: { backgroundColor: '#EEF2FF' },
   actionBtnText: { fontSize: 10, fontWeight: '700', color: '#475569', textAlign: 'center' },
 
@@ -724,8 +829,10 @@ const styles = StyleSheet.create({
   commentHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
   commentAvatar: { width: 28, height: 28, borderRadius: 14, backgroundColor: '#F5EFE4', justifyContent: 'center', alignItems: 'center' },
   commentAvatarText: { fontSize: 12, fontWeight: '700', color: '#6D5549' },
-  commentNameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  commentName: { fontSize: 13, fontWeight: '600', color: '#241814' },
+  commentNameRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 6 },
+  commentName: { fontSize: 13, fontWeight: '600', color: '#241814', flexShrink: 1 },
+  commentActions: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 12 },
+  commentControl: { minHeight: 44, justifyContent: 'center', paddingVertical: 6 },
   officialBadge: { flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: '#FBE8E7', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 },
   officialBadgeText: { fontSize: 9, fontWeight: '700', color: '#A8201A' },
   commentTime: { fontSize: 10, color: '#8E7B6F' },

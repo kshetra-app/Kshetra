@@ -186,7 +186,7 @@ describe('Track 3: Mobile API Strangler - Feed & Social Mutations', () => {
       const res = await dataService.followPromise('prom-1', 'usr-1', true);
       expect(mockPost).toHaveBeenCalledWith(
         '/api/v1/promises/prom-1/follow',
-        { follow: true },
+        { follow: true, userId: 'usr-1' },
         expect.objectContaining({ authPolicy: 'authenticated' }),
       );
       expect(res).toBe(true);

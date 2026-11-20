@@ -16,7 +16,8 @@ import type {
 } from '../lib/promiseTypes';
 import { computePDI, buildReportCard } from '../lib/promiseTypes';
 import * as dataService from '../lib/supabaseDataService';
-import { enqueue } from '../lib/offlineSync';
+import { enqueue, flushQueue, getPendingOps } from '../lib/offlineSync';
+import { apiClient } from '../lib/api';
 import { useAuthStore } from './auth';
 import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 
@@ -26,6 +27,8 @@ interface PromiseState {
   evidence: PromiseEvidence[];
   promiseLoadStatus: 'idle' | 'loading' | 'loaded' | 'error';
   promiseLoadStateCode: string | null;
+  promiseLoadViewerId: string | null;
+  pendingPromiseFollows: Record<string, boolean>;
   promiseRefreshing: boolean;
   promiseRefreshError: boolean;
 
@@ -42,7 +45,7 @@ interface PromiseState {
 
   // Actions
   loadForState: (stateCode: string, force?: boolean, preserveLoadedData?: boolean) => Promise<void>;
-  toggleFollowPromise: (promiseId: string) => Promise<void>;
+  toggleFollowPromise: (promiseId: string) => Promise<boolean>;
   submitEvidence: (evidence: Omit<PromiseEvidence, 'id' | 'upvotes' | 'createdAt'>) => Promise<void>;
 }
 
@@ -542,6 +545,7 @@ function mapServerPromiseRows(serverPromises: any[]): {
     deliveryPercentage: Number(row.delivery_percentage ?? 0),
     electionYear: Number(row.election_year),
     followCount: Number(row.follow_count ?? 0),
+    userFollowing: Array.isArray(row.viewer_follow) && row.viewer_follow.length > 0,
     verificationCount: Number(row.verification_count ?? 0),
     disputeCount: Number(row.dispute_count ?? 0),
   }));
@@ -567,18 +571,22 @@ export const usePromiseStore = create<PromiseState>()((set, get) => ({
   evidence: IS_LIVE_ENVIRONMENT ? [] : SEED_EVIDENCE,
   promiseLoadStatus: 'idle',
   promiseLoadStateCode: null,
+  promiseLoadViewerId: null,
+  pendingPromiseFollows: {},
   promiseRefreshing: false,
   promiseRefreshError: false,
 
   loadForState: async (stateCode, force = false, preserveLoadedData = false) => {
     const code = stateCode.trim().toUpperCase();
     if (!code) return;
+    const viewerId = useAuthStore.getState().user?.id ?? null;
 
     const current = get();
-    const sameLoadedState = current.promiseLoadStateCode === code && current.promiseLoadStatus === 'loaded';
+    const sameScope = current.promiseLoadStateCode === code && current.promiseLoadViewerId === viewerId;
+    const sameLoadedState = sameScope && current.promiseLoadStatus === 'loaded';
     if (
       !force &&
-      current.promiseLoadStateCode === code &&
+      sameScope &&
       (current.promiseLoadStatus === 'loading' || current.promiseRefreshing)
     ) {
       return;
@@ -590,9 +598,7 @@ export const usePromiseStore = create<PromiseState>()((set, get) => ({
     ) return;
 
     const requestSequence = ++promiseLoadRequestSequence;
-    const keepCurrentData = preserveLoadedData &&
-      current.promiseLoadStateCode === code &&
-      current.promiseLoadStatus === 'loaded';
+    const keepCurrentData = preserveLoadedData && sameLoadedState;
     const previewPromises = IS_LIVE_ENVIRONMENT && !keepCurrentData ? [] : current.promises;
     const previewUpdates = IS_LIVE_ENVIRONMENT && !keepCurrentData ? [] : current.updates;
     set({
@@ -600,13 +606,16 @@ export const usePromiseStore = create<PromiseState>()((set, get) => ({
       updates: previewUpdates,
       promiseLoadStatus: keepCurrentData ? 'loaded' : 'loading',
       promiseLoadStateCode: code,
+      promiseLoadViewerId: viewerId,
       promiseRefreshing: keepCurrentData,
       promiseRefreshError: false,
     });
 
     try {
-      const rows = await dataService.fetchPromisesForState(code);
-      if (requestSequence !== promiseLoadRequestSequence) return;
+      const rows = viewerId
+        ? await dataService.fetchPromisesForState(code, viewerId)
+        : await dataService.fetchPromisesForState(code);
+      if (requestSequence !== promiseLoadRequestSequence || viewerId !== (useAuthStore.getState().user?.id ?? null)) return;
       if (rows === null) {
         set({
           promises: previewPromises,
@@ -631,7 +640,7 @@ export const usePromiseStore = create<PromiseState>()((set, get) => ({
         promiseRefreshError: false,
       }));
     } catch {
-      if (requestSequence !== promiseLoadRequestSequence) return;
+      if (requestSequence !== promiseLoadRequestSequence || viewerId !== (useAuthStore.getState().user?.id ?? null)) return;
       set({
         promises: previewPromises,
         updates: previewUpdates,
@@ -697,31 +706,40 @@ export const usePromiseStore = create<PromiseState>()((set, get) => ({
 
   toggleFollowPromise: async (promiseId: string) => {
     const promise = get().promises.find((p) => p.id === promiseId);
-    if (!promise) return;
-    const nextFollowing = !promise.userFollowing;
-
-    set((state) => ({
-      promises: state.promises.map((p) =>
-        p.id === promiseId
-          ? {
-              ...p,
-              userFollowing: nextFollowing,
-              followCount: nextFollowing ? p.followCount + 1 : Math.max(0, p.followCount - 1),
-            }
-          : p,
-      ),
-    }));
-
     const userId = useAuthStore.getState().user?.id;
-    if (userId) {
-      try {
-        const ok = await dataService.followPromise(promiseId, userId, nextFollowing);
-        if (!ok) {
-          enqueue('follow_promise', { promiseId, userId, follow: nextFollowing });
-        }
-      } catch {
-        enqueue('follow_promise', { promiseId, userId, follow: nextFollowing });
+    if (!promise || !userId || get().promiseLoadViewerId !== userId || get().pendingPromiseFollows[promiseId]) return false;
+    const nextFollowing = !promise.userFollowing;
+    const hasEarlierFollow = () => getPendingOps().some((operation) =>
+      operation.type === 'follow_promise' && operation.payload.userId === userId && operation.payload.promiseId === promiseId,
+    );
+    set((state) => ({ pendingPromiseFollows: { ...state.pendingPromiseFollows, [promiseId]: true } }));
+    try {
+      if (hasEarlierFollow()) {
+        await flushQueue();
+        if (hasEarlierFollow()) return false;
       }
+      if (useAuthStore.getState().user?.id !== userId) return false;
+      const saved = await apiClient.promises.followPromise(promiseId, nextFollowing, userId);
+      if (!saved.success || saved.promiseId !== promiseId || saved.following !== nextFollowing) return false;
+      if (useAuthStore.getState().user?.id === userId && get().promiseLoadStateCode === promise.stateCode) {
+        set((state) => ({
+          promises: state.promises.map((item) => item.id === promiseId ? {
+            ...item,
+            userFollowing: saved.following,
+            followCount: saved.followCount ?? item.followCount,
+          } : item),
+        }));
+        await get().loadForState(promise.stateCode, true, true);
+      }
+      return true;
+    } catch {
+      return false;
+    } finally {
+      set((state) => {
+        const pendingPromiseFollows = { ...state.pendingPromiseFollows };
+        delete pendingPromiseFollows[promiseId];
+        return { pendingPromiseFollows };
+      });
     }
   },
 

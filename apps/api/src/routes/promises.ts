@@ -64,7 +64,7 @@ export async function promiseRoutes(app: FastifyInstance) {
             .from('promise_follows')
             .upsert(
               { promise_id: promiseId, user_id: auth.userId },
-              { onConflict: 'promise_id,user_id' },
+              { onConflict: 'promise_id,user_id', ignoreDuplicates: true },
             );
 
           if (error) {
@@ -85,7 +85,17 @@ export async function promiseRoutes(app: FastifyInstance) {
           }
         }
 
-        return reply.send({ success: true, promiseId, following: follow });
+        const { data: promise } = await supabase
+          .from('election_promises')
+          .select('follow_count')
+          .eq('id', promiseId)
+          .maybeSingle();
+        return reply.send({
+          success: true,
+          promiseId,
+          following: follow,
+          followCount: promise?.follow_count ?? null,
+        });
       } catch (err: any) {
         return sendApiError(
           reply,

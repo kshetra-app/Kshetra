@@ -39,6 +39,11 @@ export interface ReportIssueRequestDTO {
   submissionId?: string;
 }
 
+export interface IssueCommentCursor {
+  beforeId: string;
+  beforeAt: string;
+}
+
 export interface CivicIssueListFilters {
   scope: 'constituency' | 'state' | 'national';
   stateCode: string;
@@ -515,11 +520,29 @@ export class CivicEndpoint {
     );
   }
 
-  getIssueComments(id: string) {
-    return this.client.get<{ comments: Record<string, unknown>[] }>(
-      `/api/v1/civic/issues/${encodeURIComponent(id)}/comments`,
+  getIssueComments(id: string, cursor: IssueCommentCursor | null = null) {
+    const query = new URLSearchParams({ limit: '25', ...(cursor ?? {}) });
+    return this.client.get<{ comments: Record<string, unknown>[]; total: number; next?: IssueCommentCursor | null }>(
+      `/api/v1/civic/issues/${encodeURIComponent(id)}/comments?${query}`,
       { authPolicy: 'public' },
     );
+  }
+
+  async editIssueComment(issueId: string, commentId: string, body: string) {
+    const result = await this.client.patch<{ success: boolean; id: string; body: string }>(
+      `/api/v1/civic/issues/${encodeURIComponent(issueId)}/comments/${encodeURIComponent(commentId)}`,
+      { body },
+      { authPolicy: 'authenticated' },
+    );
+    return result.data;
+  }
+
+  async deleteIssueComment(issueId: string, commentId: string) {
+    const result = await this.client.delete<{ success: boolean; id: string }>(
+      `/api/v1/civic/issues/${encodeURIComponent(issueId)}/comments/${encodeURIComponent(commentId)}`,
+      { authPolicy: 'authenticated' },
+    );
+    return result.data;
   }
 
   getIssueHistory(id: string) {

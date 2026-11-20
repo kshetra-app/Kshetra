@@ -11,6 +11,13 @@
 import type { ApiClient } from '../client';
 import { ApiValidationError } from '../errors';
 
+interface PromiseFollowResponse {
+  success: boolean;
+  promiseId: string;
+  following: boolean;
+  followCount?: number | null;
+}
+
 export interface SubmitEvidenceRequestDTO {
   title?: string;
   description?: string;
@@ -27,13 +34,13 @@ export class PromisesEndpoint {
   /**
    * 1. Follow / unfollow promise
    */
-  async followPromise(promiseId: string, follow: boolean = true): Promise<{ success: boolean; promiseId: string; following: boolean }> {
+  async followPromise(promiseId: string, follow: boolean = true, userId?: string): Promise<PromiseFollowResponse> {
     if (!promiseId) {
       throw new ApiValidationError('Invalid follow promise: promiseId is required');
     }
-    const res = await this.client.post<{ success: boolean; promiseId: string; following: boolean }>(
+    const res = await this.client.post<PromiseFollowResponse>(
       `/api/v1/promises/${encodeURIComponent(promiseId)}/follow`,
-      { follow },
+      { follow, ...(userId ? { userId } : {}) },
       { authPolicy: 'authenticated' },
     );
     return res.data;
