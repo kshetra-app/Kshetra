@@ -20,7 +20,7 @@ import { type SyncStatus, retryFailedOp } from '../lib/offlineSync';
 import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 import { useAuthStore } from './auth';
 import { apiClient } from '../lib/api';
-import { ApiError } from '../lib/api/errors';
+import { ApiAuthError, ApiError } from '../lib/api/errors';
 
 let issueLoadRequestSequence = 0;
 const pendingIssueActions = new Set<string>();
@@ -974,14 +974,17 @@ export const useCivicStore = create<CivicState>()((set, get) => ({
     if (!IS_LIVE_ENVIRONMENT) return Boolean(get().getIssueById(id));
     const userId = useAuthStore.getState().user?.id;
     try {
-      const [detail, replies, timeline] = await Promise.all([
-        apiClient.civic.getIssue(id, Boolean(userId)),
+      const [requestedDetail, replies, timeline] = await Promise.all([
+        apiClient.civic.getIssue(id, Boolean(userId)).catch((error: unknown) => {
+          if (!userId || !(error instanceof ApiAuthError)) throw error;
+          return apiClient.civic.getIssue(id, false);
+        }),
         apiClient.civic.getIssueComments(id),
         apiClient.civic.getIssueHistory(id),
       ]);
-      if (userId !== useAuthStore.getState().user?.id) {
-        throw new Error('The signed-in account changed. Please reopen the report.');
-      }
+      const detail = userId && userId !== useAuthStore.getState().user?.id
+        ? await apiClient.civic.getIssue(id, false)
+        : requestedDetail;
       const issue = mapServerIssue(detail.data.issue);
       const comments: IssueComment[] = replies.data.comments.map((row) => ({
         id: String(row.id),

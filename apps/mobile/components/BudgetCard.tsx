@@ -3,11 +3,17 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import type { StateBudgetSummary } from '../lib/civicMetricsTypes';
 import { validWebLink } from '../lib/feedAttachments';
-import { BUDGET_CATEGORY_CONFIG, getUtilizationColor, formatCrores } from '../lib/civicMetricsTypes';
+import { BUDGET_CATEGORY_CONFIG, getUtilizationColor } from '../lib/civicMetricsTypes';
 
 interface BudgetCardProps {
   summary: StateBudgetSummary;
   onPress?: () => void;
+}
+
+const budgetAmount = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 });
+
+function formatCrores(crores: number): string {
+  return `₹${budgetAmount.format(crores)} Cr`;
 }
 
 export default function BudgetCard({ summary, onPress }: BudgetCardProps) {

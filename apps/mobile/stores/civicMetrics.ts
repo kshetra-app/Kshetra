@@ -10,7 +10,6 @@ import type {
   ConstituencyDevelopmentIndex,
   RTIStatus,
 } from '../lib/civicMetricsTypes';
-import { parseStateBudgetSummary } from '../lib/civicMetricsTypes';
 import { apiClient } from '../lib/api';
 import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 
@@ -350,10 +349,9 @@ export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => {
     set({ budgetLoadStatus: 'loading', budgetLoadStateCode: stateCode });
 
     try {
-      const row = await apiClient.civic.getStateBudgetSummary(stateCode);
+      const summary = await apiClient.civic.getStateBudgetSummary(stateCode);
       if (requestSequence !== budgetRequestSequence) return;
 
-      const summary = row ? parseStateBudgetSummary(row, stateCode) : null;
       set((state) => ({
         budgetSummaries: summary
           ? [...state.budgetSummaries.filter((item) => item.stateCode !== stateCode), summary]

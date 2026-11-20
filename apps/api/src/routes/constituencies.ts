@@ -1,6 +1,10 @@
 import type { FastifyInstance } from 'fastify';
 import type { ConstituencyBrief } from '@kshetra/shared';
-import { findConstituencyAtPoint, computeElectionAnalytics } from '@kshetra/shared';
+import {
+  findConstituencyAtPoint,
+  computeElectionAnalytics,
+  PARTIES_13_LANG,
+} from '@kshetra/shared';
 import type { ConstituencyRecord } from '@kshetra/shared';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -919,7 +923,7 @@ export async function constituencyRoutes(app: FastifyInstance) {
   const PODIUM_DIR = path.resolve(__dirname, '../../../../data/historical/podiums');
   const telanganaResultSources = new Map([
     [1999, 'https://www.electionawaaz.org/wp-content/uploads/2021/03/1999.pdf'],
-    [2004, 'https://www.electionawaaz.org/wp-content/uploads/2021/03/2004.pdf'],
+    [2004, 'https://ceotelangana.nic.in/GE_2004/Statistical_Report_2004.pdf'],
     [
       2023,
       'https://www.eci.gov.in/eci-backend/public/all_files/full-statistical-reports/telangana/2023/Detailed_Results.pdf',
@@ -940,6 +944,14 @@ export async function constituencyRoutes(app: FastifyInstance) {
           for (const contest of contests) {
             const source = telanganaResultSources.get(contest?.year);
             if (source && !contest.resultSourceUrl) contest.resultSourceUrl = source;
+            // Old archive exports used the current name as the translation of the recorded TRS code.
+            for (const candidate of [
+              contest?.winner,
+              contest?.firstRunnerUp,
+              contest?.secondRunnerUp,
+            ]) {
+              if (candidate?.party === 'TRS') candidate.localizedParties = PARTIES_13_LANG.TRS;
+            }
           }
         }
       }

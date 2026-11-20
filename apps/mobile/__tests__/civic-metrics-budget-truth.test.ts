@@ -84,6 +84,14 @@ describe('production civic budget data', () => {
       revenueDeficitCrores: null,
       debtToGDPRatio: null,
       updatedAt: null,
+      budgetBasis: 'gross_expenditure_estimate',
+      sourceUrl: 'https://budget.example.gov.in/estimates.pdf',
+      priorEstimates: [{
+        fiscalYear: '2025-26',
+        original: 1000,
+        revised: 950.25,
+        sourceUrl: 'https://budget.example.gov.in/previous-estimates.pdf',
+      }],
     };
     const request = jest.spyOn(apiClient.civic, 'getStateBudgetSummary').mockResolvedValue(loadedSummary);
 

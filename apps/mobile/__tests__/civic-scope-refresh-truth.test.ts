@@ -1,10 +1,14 @@
 jest.mock('../lib/environment', () => ({ IS_LIVE_ENVIRONMENT: true }));
-jest.mock('../lib/api', () => ({ apiClient: { civic: { listIssues: jest.fn() } } }));
+jest.mock('../lib/api', () => ({
+  apiClient: { civic: { listIssues: jest.fn(), getIssue: jest.fn(), getIssueComments: jest.fn(), getIssueHistory: jest.fn() } },
+}));
 jest.mock('../lib/supabaseDataService', () => ({}));
 jest.mock('../lib/offlineSync', () => ({ enqueue: jest.fn(), retryFailedOp: jest.fn() }));
-jest.mock('../stores/auth', () => ({ useAuthStore: { getState: () => ({ user: null }) } }));
+jest.mock('../stores/auth', () => ({ useAuthStore: { getState: jest.fn() } }));
 
 import { apiClient } from '../lib/api';
+import { ApiAuthError } from '../lib/api/errors';
+import { useAuthStore } from '../stores/auth';
 import { useCivicStore } from '../stores/civic';
 
 const issueRow = (id: string) => ({
@@ -30,6 +34,7 @@ const issueRow = (id: string) => ({
 describe('civic issue scope refresh', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    (useAuthStore.getState as jest.Mock).mockReturnValue({ user: null });
     useCivicStore.setState({
       issues: [],
       issueLoadStatus: 'idle',
@@ -39,6 +44,33 @@ describe('civic issue scope refresh', () => {
       issueRefreshing: false,
       issueRefreshError: false,
     });
+  });
+
+  it('opens a public issue even when the account finishes loading during the request', async () => {
+    const read = apiClient.civic.getIssue as jest.Mock;
+    read.mockImplementationOnce(async () => {
+      (useAuthStore.getState as jest.Mock).mockReturnValue({ user: { id: 'user-1' } });
+      return { data: { issue: issueRow('linked-report') } };
+    });
+    (apiClient.civic.getIssueComments as jest.Mock).mockResolvedValueOnce({ data: { comments: [] } });
+    (apiClient.civic.getIssueHistory as jest.Mock).mockResolvedValueOnce({ data: { history: [] } });
+
+    await expect(useCivicStore.getState().loadIssueDetails('linked-report')).resolves.toBe(true);
+    expect(read).toHaveBeenCalledTimes(1);
+    expect(read).toHaveBeenCalledWith('linked-report', false);
+    expect(useCivicStore.getState().getIssueById('linked-report')?.title).toBe('Road repair needed');
+  });
+
+  it('retries a public issue read when a restored session cannot authenticate', async () => {
+    (useAuthStore.getState as jest.Mock).mockReturnValue({ user: { id: 'user-1' } });
+    const read = apiClient.civic.getIssue as jest.Mock;
+    read.mockRejectedValueOnce(new ApiAuthError('Session expired'))
+      .mockResolvedValueOnce({ data: { issue: issueRow('linked-report') } });
+    (apiClient.civic.getIssueComments as jest.Mock).mockResolvedValueOnce({ data: { comments: [] } });
+    (apiClient.civic.getIssueHistory as jest.Mock).mockResolvedValueOnce({ data: { history: [] } });
+
+    await expect(useCivicStore.getState().loadIssueDetails('linked-report')).resolves.toBe(true);
+    expect(read.mock.calls).toEqual([['linked-report', true], ['linked-report', false]]);
   });
 
   it('refreshes an expired scope while retaining last good issues when the request fails', async () => {
