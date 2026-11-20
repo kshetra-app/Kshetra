@@ -9,7 +9,7 @@ import {
 } from '../../lib/historicalPodiumStore';
 import { loadHistoricalResultsForState, getHistoricalResults } from '../../lib/seedDataLoader';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform, Pressable, Share, Image, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Platform, Pressable, Share, Image, Alert, Linking, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -76,7 +76,10 @@ export default function ConstituencyDetailScreen() {
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const router = useRouter();
-  const { id, view } = useLocalSearchParams<{ id: string; view?: string }>();
+  const { id, view, year, recordedName, contestType } = useLocalSearchParams<{
+    id: string; view?: string; year?: string; recordedName?: string; contestType?: string;
+  }>();
+  const viewingArchive = view === 'archived-election';
   const stateCodeStore = useActiveStateStore((s) => s.stateCode);
   const setStateCode = useActiveStateStore((s) => s.setStateCode);
 
@@ -490,7 +493,7 @@ export default function ConstituencyDetailScreen() {
   }, []);
 
   useEffect(() => {
-    if (constituency) {
+    if (constituency && !viewingArchive) {
       addRecent({
         acNo: constituency.acNo,
         name: constituency.name,
@@ -499,7 +502,40 @@ export default function ConstituencyDetailScreen() {
         stateCode: stateCode,
       });
     }
-  }, [constituency, addRecent, stateCode, currentRepresentativeParty]);
+  }, [constituency, addRecent, stateCode, currentRepresentativeParty, viewingArchive]);
+
+  if (viewingArchive) {
+    const archived = historicalContests.find((contest) =>
+      contest.year === Number(year) &&
+      contest.constituencyName?.trim() === recordedName &&
+      (contest.electionType === 'BYPOLL') === (contestType === 'by-election'),
+    );
+    const archiveTitle = t('more.tiles.electionResults', { defaultValue: 'Election Results' });
+    return (
+      <ScrollView style={[styles.container, { backgroundColor: colors.background }]}
+        contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 24 }}>
+        <Stack.Screen options={{ headerShown: true, title: archiveTitle }} />
+        {archived ? (
+          <>
+            <Text style={[styles.sectionTitle, { color: colors.text, marginBottom: 12 }]}>
+              {archived.constituencyName} · {archived.year}
+              {archived.electionType === 'BYPOLL' ? ' · ' + t('electionArchive.byElection', { defaultValue: 'By-election' }) : ''}
+            </Text>
+            <PodiumHistoryCard item={contestToItem(archived, stateCode, acNo)} />
+            {archived.resultSourceUrl && /^https:\/\//i.test(archived.resultSourceUrl) && (
+              <Pressable accessibilityRole="link" style={{ paddingVertical: 12 }} onPress={() => {
+                void Linking.openURL(archived.resultSourceUrl!).catch(() => Alert.alert(t('common.error')));
+              }}>
+                <Text style={{ color: colors.primary }}>{t('electionArchive.officialDocument', { defaultValue: 'Official result document' })} ↗</Text>
+              </Pressable>
+            )}
+          </>
+        ) : loadingHistory ? <ActivityIndicator color={colors.primary} /> : (
+          <Text style={{ color: colors.textSecondary }}>{t('constituency.resultUnavailable', { defaultValue: 'This election result could not be loaded.' })}</Text>
+        )}
+      </ScrollView>
+    );
+  }
 
   if (!constituency && !apiDetail && apiLoading) {
     return (

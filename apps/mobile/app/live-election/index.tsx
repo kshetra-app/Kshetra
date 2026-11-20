@@ -93,7 +93,11 @@ export default function ElectionResultsScreen() {
           </Text>}
           renderItem={({ item }) => (
             <Pressable accessibilityRole="button" style={[styles.row, { borderColor: colors.border }]}
-              onPress={() => router.push({ pathname: '/constituency/[id]', params: { id: `${stateCode}-AC-${item.acNo}`, view: 'history' } })}>
+              onPress={() => router.push({ pathname: '/constituency/[id]', params: {
+                id: `${stateCode}-AC-${item.acNo}`, view: 'archived-election',
+                year: String(item.year), recordedName: item.constituencyName,
+                contestType: item.electionType === 'BYPOLL' ? 'by-election' : 'general',
+              } })}>
               <Text style={[styles.link, { color: colors.text }]}>{item.constituencyName}</Text>
               <Text style={{ color: colors.textSecondary }}>{item.year} · {item.electionType === 'BYPOLL' ? t('electionArchive.byElection', { defaultValue: 'By-election' }) + ' · ' : ''}{item.winnerName} · {item.winnerParty}</Text>
               {item.margin != null && <Text style={{ color: colors.textSecondary }}>{t('electionArchive.margin', { defaultValue: 'Margin {{votes}} votes', votes: item.margin.toLocaleString(i18n.language) })}</Text>}
