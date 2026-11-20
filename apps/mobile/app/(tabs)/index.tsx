@@ -1533,23 +1533,23 @@ function FullMapScreen() {
           }}
         >
           <View style={styles.headerTop}>
-            <View style={{ flex: 1, minWidth: 0, marginRight: 6, justifyContent: 'center' }}>
-              <View style={{ alignSelf: 'flex-start', width: 126, height: 42, backgroundColor: '#FFF8EA', borderRadius: 8, marginBottom: 4, overflow: 'hidden' }}>
+            <View style={styles.headerBrand}>
+              <View style={styles.headerLogoPlate}>
                 <Image
                   source={require('../../assets/poligram_logo_lockup_transparent.png')}
-                  style={{ width: 126, height: 42 }}
+                  style={styles.headerLogo}
                   resizeMode="contain"
                   accessibilityLabel="Poligram"
                   accessible
                 />
               </View>
-              <Text style={styles.headerSubtitle} numberOfLines={1} ellipsizeMode="tail">
+              <Text style={styles.headerSubtitle}>
                 {stateCode === 'IN'
                   ? t('mapExtended.nationalOverview')
                   : getLocalizedStateName(stateCode, i18n.language) || currentState?.name || stateCode}
               </Text>
             </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5, flexShrink: 0 }}>
+            <View style={styles.headerControls}>
               {/* Archived until further notice: Full/UI toggle (screen touch auto-hide replaces manual toggle) */}
               {/*
               <Pressable
