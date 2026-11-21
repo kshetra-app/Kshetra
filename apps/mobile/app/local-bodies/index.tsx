@@ -38,7 +38,11 @@ function LocalBodiesDirectory({ stateCode }: { stateCode: string }) {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const setStateCode = useActiveStateStore((s) => s.setStateCode);
-  const stateName = getHierarchyConfig(stateCode)?.stateName ?? stateCode;
+  const stateName = stateCode === 'TS'
+    ? t('localBodies.telanganaName', { defaultValue: 'Telangana' })
+    : stateCode === 'AP'
+      ? t('localBodies.andhraPradeshName', { defaultValue: 'Andhra Pradesh' })
+      : getHierarchyConfig(stateCode)?.stateName ?? stateCode;
 
   const [level, setLevel] = useState<Level>('districts');
   const [district, setDistrict] = useState<DistrictSummary | null>(null);
@@ -242,7 +246,7 @@ function LocalBodiesDirectory({ stateCode }: { stateCode: string }) {
     <View style={s.container}>
       <Stack.Screen
         options={{
-          title: `${stateName} — ${t('localBodies.screenTitle', { defaultValue: 'Local Bodies' })}`,
+          title: t('localBodies.screenTitle', { defaultValue: 'Local Bodies' }),
           gestureEnabled: level === 'districts',
           headerLeft: level === 'districts' ? undefined : () => (
             <Pressable accessibilityRole="button" accessibilityLabel={t('common.back')}
@@ -278,7 +282,7 @@ function LocalBodiesDirectory({ stateCode }: { stateCode: string }) {
           }}
         >
           <Text style={[s.stateTabBtnText, { color: stateCode === 'TS' ? colors.primary : colors.textSecondary }]}>
-            {t('localBodies.telangana', { defaultValue: 'Telangana' })}
+            {t('localBodies.telanganaName', { defaultValue: 'Telangana' })}
           </Text>
           {stateCode === 'TS' && <View style={[s.activeDot, { backgroundColor: colors.primary }]} />}
         </Pressable>
@@ -294,7 +298,7 @@ function LocalBodiesDirectory({ stateCode }: { stateCode: string }) {
           }}
         >
           <Text style={[s.stateTabBtnText, { color: stateCode === 'AP' ? colors.primary : colors.textSecondary }]}>
-            {t('localBodies.andhraPradesh', { defaultValue: 'Andhra Pradesh' })}
+            {t('localBodies.andhraPradeshName', { defaultValue: 'Andhra Pradesh' })}
           </Text>
           {stateCode === 'AP' && <View style={[s.activeDot, { backgroundColor: colors.primary }]} />}
         </Pressable>
