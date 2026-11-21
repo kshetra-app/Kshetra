@@ -179,7 +179,7 @@ export default function CivicMetricsScreen() {
       </View>
 
       <View style={styles.statePicker}>
-        <StateSwitcher />
+        <StateSwitcher allowWideLabel />
       </View>
 
       {/* Tab Bar */}

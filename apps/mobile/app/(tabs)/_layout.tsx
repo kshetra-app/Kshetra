@@ -1,4 +1,5 @@
 import { Tabs } from 'expo-router';
+import { StyleSheet, Text, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useNotificationsStore } from '../../stores/notifications';
@@ -31,10 +32,12 @@ export default function TabLayout() {
   const mapOnlyMode = useActiveStateStore((s) => s.mapOnlyMode);
   const isScreenImmersive = useActiveStateStore((s) => s.isScreenImmersive);
   const broadcastMode = usePreferencesStore((s) => s.broadcastMode);
+  const { fontScale } = useWindowDimensions();
 
   // Adapt tab bar to device: bottom inset covers gesture bar / soft nav
   const tabBarPaddingBottom = Math.max(insets.bottom, 6);
-  const tabBarHeight = Math.max(62, 56 + tabBarPaddingBottom);
+  const labelSpace = Math.ceil(moderateScale(12) * 2 * fontScale);
+  const tabBarHeight = Math.max(62, 36 + labelSpace + tabBarPaddingBottom);
 
   return (
     <Tabs
@@ -57,14 +60,11 @@ export default function TabLayout() {
           shadowOpacity: 0.08,
           shadowRadius: 10,
         },
-        tabBarLabelStyle: {
-          fontSize: moderateScale(10),
-          fontWeight: '700',
-          letterSpacing: 0,
-          includeFontPadding: false,
-          textAlignVertical: 'center',
-          marginTop: 2,
-        },
+        tabBarLabel: ({ children, color }) => (
+          <Text numberOfLines={2} style={[styles.tabLabel, { color, fontSize: moderateScale(10) }]}>
+            {children}
+          </Text>
+        ),
       }}
     >
       <Tabs.Screen
@@ -128,3 +128,12 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  tabLabel: {
+    alignSelf: 'stretch',
+    fontWeight: '700',
+    textAlign: 'center',
+    marginTop: 2,
+  },
+});

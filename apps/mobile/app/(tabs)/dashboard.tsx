@@ -316,7 +316,7 @@ function DashboardContent() {
       </View>
 
       <View style={styles.statePicker}>
-        <StateSwitcher />
+        <StateSwitcher allowWideLabel />
       </View>
 
       {/* ── Scope Toggle (horizontal scroll) ── */}

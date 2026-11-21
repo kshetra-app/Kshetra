@@ -16,7 +16,7 @@ import { usePrefetchState } from '../lib/usePrefetchState';
 import { useTheme } from '../lib/theme';
 import { getLocalizedStateName } from '../lib/seedTranslations';
 
-export default function StateSwitcher() {
+export default function StateSwitcher({ allowWideLabel = false }: { allowWideLabel?: boolean }) {
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const [visible, setVisible] = useState(false);
@@ -41,9 +41,15 @@ export default function StateSwitcher() {
 
   return (
     <>
-      <Pressable style={[styles.trigger, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]} onPress={() => setVisible(true)}>
+      <Pressable
+        style={[styles.trigger, allowWideLabel && styles.wideTrigger, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}
+        onPress={() => setVisible(true)}
+        accessibilityRole="button"
+        accessibilityLabel={triggerLabel}
+        accessibilityHint={t('stateSwitcher.selectState')}
+      >
         <Ionicons name="location" size={14} color={colors.primary} />
-        <Text style={[styles.triggerText, { color: colors.text }]} numberOfLines={1} ellipsizeMode="tail">{triggerLabel}</Text>
+        <Text style={[styles.triggerText, allowWideLabel && styles.wideTriggerText, { color: colors.text }]} numberOfLines={allowWideLabel ? undefined : 1}>{triggerLabel}</Text>
         <Ionicons name="chevron-down" size={12} color={colors.textSecondary} />
       </Pressable>
 
@@ -166,6 +172,8 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
     textAlignVertical: 'center',
   },
+  wideTrigger: { maxWidth: '100%', minHeight: 44 },
+  wideTriggerText: { maxWidth: undefined, flexShrink: 1 },
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
