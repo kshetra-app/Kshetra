@@ -1713,6 +1713,9 @@ const hi = {
     "simulationNote": "संदेश सिमुलेशन हैं, वास्तव में नहीं भेजे जाते"
   },
   "civicMetrics": {
+    "sourceVerifiedOn": "अंतिम सत्यापन {{date}}",
+    "showingSavedRecords": "रीफ़्रेश नहीं हो सका। पिछली बार लोड किए गए रिकॉर्ड दिख रहे हैं।",
+    "officialHearingNotice": "सुनवाई की आधिकारिक सूचना",
     "screenTitle": "नागरिक प्रदर्शन एवं मीट्रिक्स",
     "screenSubtitle": "बजट, विधेयक, योजनाएँ और सुनवाई",
     "stateBudgetOverview": "राज्य बजट अवलोकन",

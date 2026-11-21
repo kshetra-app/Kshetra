@@ -12,6 +12,7 @@ import {
   Platform,
   Share,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -402,7 +403,22 @@ function DashboardContent() {
       </View>
 
       {/* ── Content ── */}
-      <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scroll}
+        showsVerticalScrollIndicator={false}
+        alwaysBounceVertical={activeTab === 'promises'}
+        refreshControl={activeTab === 'promises' ? (
+          <RefreshControl
+            refreshing={promiseScopeLoaded && promiseRefreshing}
+            onRefresh={() => {
+              if (!promiseRefreshing) void loadPromisesForState(promiseQueryState, true, true);
+            }}
+            colors={[colors.primary]}
+            tintColor={colors.primary}
+            accessibilityLabel={t('common.refresh')}
+          />
+        ) : undefined}
+      >
         <View style={styles.quickLinks}>
           {[
             { tKey: 'dashboardExtended.civicMetrics', icon: 'bar-chart', color: colors.teal, route: '/civic-metrics' },

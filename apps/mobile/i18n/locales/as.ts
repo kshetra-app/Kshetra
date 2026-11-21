@@ -1704,6 +1704,9 @@ const as = {
     "simulationNote": "সংদেশ সিমুলেশন হৈং, ৱাস্তৱ মেং নহীং ভেজে জাতে"
   },
   "civicMetrics": {
+    "sourceVerifiedOn": "শেষবাৰ যাচাই {{date}}",
+    "showingSavedRecords": "ৰিফ্ৰেছ কৰিব পৰা নগ’ল। শেষবাৰ লোড কৰা নথিসমূহ দেখুওৱা হৈছে।",
+    "officialHearingNotice": "শুনানিৰ চৰকাৰী জাননী",
     "screenTitle": "নাগৰিক প্ৰদৰ্শন আৰু মেট্ৰিক্স",
     "screenSubtitle": "বাজেট, বিধেয়ক, আঁচনি আৰু শুনানি",
     "stateBudgetOverview": "ৰাজ্যিক বাজেট পৰ্যালোচনা",

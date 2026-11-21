@@ -1704,6 +1704,9 @@ const kn = {
     "simulationNote": "ಸಂದೇಶಗಳನ್ನು ಸಿಮ್ಯುಲೇಟ್ ಮಾಡಲಾಗಿದೆ, ನಿಜವಾಗಿ ಕಳುಹಿಸಲಾಗಿಲ್ಲ"
   },
   "civicMetrics": {
+    "sourceVerifiedOn": "ಕೊನೆಯ ಪರಿಶೀಲನೆ {{date}}",
+    "showingSavedRecords": "ರಿಫ್ರೆಶ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಕೊನೆಯದಾಗಿ ಲೋಡ್ ಮಾಡಿದ ದಾಖಲೆಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ.",
+    "officialHearingNotice": "ವಿಚಾರಣೆಯ ಅಧಿಕೃತ ಸೂಚನೆ",
     "screenTitle": "ನಾಗರಿಕ ಸಾಧನೆ ಮತ್ತು ಅಂಕಿಅಂಶಗಳು",
     "screenSubtitle": "ಬಜೆಟ್, ಮಸೂದೆಗಳು, ಯೋಜನೆಗಳು ಮತ್ತು ವಿಚಾರಣೆಗಳು",
     "stateBudgetOverview": "ರಾಜ್ಯ ಬಜೆಟ್ ಅವಲೋಕನ",

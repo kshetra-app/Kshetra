@@ -3,6 +3,8 @@
 // bill/legislation tracker, government scheme tracker, development projects,
 // public hearing calendar, comparative constituency metrics
 
+import { readCivicVerificationDate } from './civicMetricsDisplay';
+
 // ─── Enums ───
 
 export type BudgetCategory = 'education' | 'healthcare' | 'infrastructure' | 'agriculture' | 'social_welfare' | 'law_enforcement' | 'rural_development' | 'urban_development' | 'environment' | 'industry' | 'defence' | 'debt_servicing' | 'salaries' | 'other';
@@ -128,8 +130,9 @@ export interface StateBudgetSummary {
   debtToGDPRatio: number | null;
   updatedAt?: string | null;
   sourceUrl?: string;
+  sourceVerifiedOn?: string;
   budgetBasis?: string;
-  priorEstimates?: { fiscalYear: string; original: number; revised: number | null; sourceUrl?: string }[];
+  priorEstimates?: { fiscalYear: string; original: number; revised: number | null; sourceUrl?: string; sourceVerifiedOn?: string }[];
 }
 
 type StateBudgetSummaryRow = Record<string, unknown>;
@@ -200,6 +203,7 @@ export function parseStateBudgetSummary(
     revenueDeficitCrores: readFiniteNumber(readBudgetField(row, 'revenue_deficit_crores', 'revenueDeficitCrores')),
     debtToGDPRatio: readFiniteNumber(readBudgetField(row, 'debt_to_gdp_ratio', 'debtToGDPRatio')),
     updatedAt: typeof updatedAt === 'string' ? updatedAt : null,
+    sourceVerifiedOn: readCivicVerificationDate(readBudgetField(row, 'source_verified_on', 'sourceVerifiedOn')),
     ...(typeof row.source_url === 'string' ? { sourceUrl: row.source_url } : {}),
     ...(typeof row.budget_basis === 'string' ? { budgetBasis: row.budget_basis } : {}),
     ...(Array.isArray(row.priorEstimates) ? { priorEstimates: row.priorEstimates.flatMap((entry) => {
@@ -207,6 +211,7 @@ export function parseStateBudgetSummary(
       return original !== null && typeof entry?.fiscal_year === 'string' ? [{
         fiscalYear: entry.fiscal_year, original, revised: readFiniteNumber(entry.total_revised_crores),
         sourceUrl: typeof entry.source_url === 'string' ? entry.source_url : undefined,
+        sourceVerifiedOn: readCivicVerificationDate(entry.source_verified_on),
       }] : [];
     }) } : {}),
   };
@@ -253,6 +258,7 @@ export interface Bill {
   lastActionDate: string | null;
   summary: string;
   fullTextUrl?: string;
+  sourceVerifiedOn?: string;
   committeeReportUrl?: string;
   relatedDepartments: string[];
   tags: string[];
@@ -288,6 +294,7 @@ export interface GovernmentScheme {
   districtWiseCoverage?: { districtName: string; beneficiaries: number | null; target: number | null }[];
   constituencyWiseCoverage?: { acNo: number; acName: string; beneficiaries: number | null }[];
   documents: { title: string; url: string }[];
+  sourceVerifiedOn?: string;
   updatedAt: string | null;
 }
 
@@ -318,6 +325,7 @@ export interface DevelopmentProject {
   issues: string[];
   lastInspection?: { date: string; by: string; findings: string };
   source: string | null;
+  sourceVerifiedOn?: string;
   updatedAt: string | null;
 }
 
@@ -335,6 +343,8 @@ export interface PublicHearing {
   time: string;
   isOpen: boolean | null;
   registrationUrl?: string;
+  sourceUrl?: string;
+  sourceVerifiedOn?: string;
   agendaItems: string[];
   minutesUrl?: string;
   outcome?: string;

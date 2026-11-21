@@ -1704,6 +1704,9 @@ const ne = {
     "simulationNote": "संदेश सिमुलेशन छन्, वास्तव में नहीं भेजे जाते"
   },
   "civicMetrics": {
+    "sourceVerifiedOn": "पछिल्लो प्रमाणीकरण {{date}}",
+    "showingSavedRecords": "रिफ्रेस गर्न सकिएन। पछिल्लो पटक लोड गरिएका अभिलेखहरू देखाइँदैछन्।",
+    "officialHearingNotice": "सुनुवाइको आधिकारिक सूचना",
     "screenTitle": "नागरिक प्रदर्शन र मेट्रिक्स",
     "screenSubtitle": "बजेट, विधेयक, योजना र सुनुवाइ",
     "stateBudgetOverview": "राज्य बजेट अवलोकन",

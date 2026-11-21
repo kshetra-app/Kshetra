@@ -16,6 +16,8 @@ const hearingRow = {
   time: '10:00 AM',
   is_open: true,
   registration_url: 'https://example.org/register',
+  source_url: 'https://example.org/official-notice',
+  source_verified_on: '2026-11-21',
   agenda_items: ['Project review'],
   attendee_count: 999,
   minutes_url: null,
@@ -47,6 +49,8 @@ describe('production civic public hearing data', () => {
         constituencyAcNo: 66,
         isOpen: true,
         date: '2099-06-15',
+        sourceUrl: 'https://example.org/official-notice',
+        sourceVerifiedOn: '2026-11-21',
       });
       expect(response.items[0]).not.toHaveProperty('attendeeCount');
     } finally {
@@ -79,7 +83,7 @@ describe('production civic public hearing data', () => {
   it('preserves missing registration and ingestion metadata as unknown', async () => {
     const get = jest.spyOn(apiClient, 'get').mockResolvedValue({
       data: {
-        hearings: [{ ...hearingRow, is_open: null, created_at: null }],
+        hearings: [{ ...hearingRow, is_open: null, created_at: null, source_verified_on: null }],
         total: 1,
       },
       statusCode: 200,
@@ -91,6 +95,7 @@ describe('production civic public hearing data', () => {
       const response = await apiClient.civic.listPublicHearings('TS');
       expect(response.items[0].isOpen).toBeNull();
       expect(response.items[0].createdAt).toBeNull();
+      expect(response.items[0].sourceVerifiedOn).toBeUndefined();
     } finally {
       get.mockRestore();
     }
@@ -123,7 +128,9 @@ describe('production civic public hearing data', () => {
     });
     const list = jest.spyOn(apiClient.civic, 'listPublicHearings')
       .mockResolvedValueOnce({ items: [first], total: 2 })
-      .mockResolvedValueOnce({ items: [first, second], total: 2 });
+      .mockResolvedValueOnce({ items: [first, second], total: 2 })
+      .mockRejectedValueOnce(new Error('Offline'))
+      .mockResolvedValueOnce({ items: [{ ...first, sourceVerifiedOn: '2026-11-22' }], total: 1 });
 
     try {
       await useCivicMetricsStore.getState().loadHearingsByState('TS');
@@ -135,6 +142,15 @@ describe('production civic public hearing data', () => {
         'hearing-page-2',
       ]);
       expect(useCivicMetricsStore.getState().hearingPage).toBe(2);
+
+      await useCivicMetricsStore.getState().loadHearingsByState('TS', true);
+      expect(useCivicMetricsStore.getState().hearingLoadStatus).toBe('error');
+      expect(useCivicMetricsStore.getState().getUpcomingHearings('TS')).toEqual([first, second]);
+
+      await useCivicMetricsStore.getState().loadHearingsByState('TS', true);
+      expect(useCivicMetricsStore.getState().hearingLoadStatus).toBe('loaded');
+      expect(useCivicMetricsStore.getState().getUpcomingHearings('TS'))
+        .toEqual([{ ...first, sourceVerifiedOn: '2026-11-22' }]);
     } finally {
       list.mockRestore();
       useCivicMetricsStore.setState({

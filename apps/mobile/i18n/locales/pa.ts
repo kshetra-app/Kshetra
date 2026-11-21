@@ -1704,6 +1704,9 @@ const pa = {
     "simulationNote": "ਸਂਦੇਸ਼ ਸਿਮੁਲੇਸ਼ਨ ਹੈਂ, ਵਾਸ੍ਤਵ ਮੇਂ ਨਹੀਂ ਭੇਜੇ ਜਾਤੇ"
   },
   "civicMetrics": {
+    "sourceVerifiedOn": "ਆਖ਼ਰੀ ਤਸਦੀਕ {{date}}",
+    "showingSavedRecords": "ਰਿਫ੍ਰੈਸ਼ ਨਹੀਂ ਹੋ ਸਕਿਆ। ਪਿਛਲੀ ਵਾਰ ਲੋਡ ਹੋਏ ਰਿਕਾਰਡ ਦਿਖਾਏ ਜਾ ਰਹੇ ਹਨ।",
+    "officialHearingNotice": "ਸੁਣਵਾਈ ਦਾ ਅਧਿਕਾਰਤ ਨੋਟਿਸ",
     "screenTitle": "ਨਾਗਰਿਕ ਕਾਰਗੁਜ਼ਾਰੀ ਅਤੇ ਮੈਟ੍ਰਿਕਸ",
     "screenSubtitle": "ਬਜਟ, ਬਿੱਲ, ਯੋਜਨਾਵਾਂ ਅਤੇ ਸੁਣਵਾਈਆਂ",
     "stateBudgetOverview": "ਰਾਜ ਬਜਟ ਸੰਖੇਪ",

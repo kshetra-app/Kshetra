@@ -1704,6 +1704,9 @@ const mr = {
     "simulationNote": "संदेश सिम्युलेटेड आहेत आणि प्रत्यक्षात पाठवले जात नाहीत"
   },
   "civicMetrics": {
+    "sourceVerifiedOn": "शेवटची पडताळणी {{date}}",
+    "showingSavedRecords": "रीफ्रेश करता आले नाही. शेवटच्या लोड केलेल्या नोंदी दाखवल्या आहेत.",
+    "officialHearingNotice": "सुनावणीची अधिकृत सूचना",
     "screenTitle": "नागरी कार्यक्षमता आणि मापदंड",
     "screenSubtitle": "अर्थसंकल्प, विधेयके, योजना आणि सुनावण्या",
     "stateBudgetOverview": "राज्य अर्थसंकल्प आढावा",

@@ -45,6 +45,7 @@ export interface ElectionPromise {
   category: PromiseCategory;
   source: PromiseSource;
   sourceUrl?: string;
+  sourceVerifiedOn?: string;
   promisedDate: string;
   deadline?: string;
   status: PromiseStatus;

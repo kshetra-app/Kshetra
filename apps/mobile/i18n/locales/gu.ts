@@ -1704,6 +1704,9 @@ const gu = {
     "simulationNote": "સંદેશ સિમુલેશન હૈં, વાસ્તવ મેં નહીં ભેજે જાતે"
   },
   "civicMetrics": {
+    "sourceVerifiedOn": "છેલ્લી ચકાસણી {{date}}",
+    "showingSavedRecords": "રિફ્રેશ થઈ શક્યું નથી. છેલ્લે લોડ થયેલા રેકોર્ડ દેખાય છે.",
+    "officialHearingNotice": "સુનાવણીની સત્તાવાર સૂચના",
     "screenTitle": "નાગરિક કામગીરી અને મેટ્રિક્સ",
     "screenSubtitle": "બજેટ, બિલ, યોજનાઓ અને સુનાવણીઓ",
     "stateBudgetOverview": "રાજ્ય બજેટ ઝાંખી",

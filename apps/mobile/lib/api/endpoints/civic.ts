@@ -17,6 +17,7 @@
 import type { ApiClient } from '../client';
 import { ApiValidationError } from '../errors';
 import { trackProductEvent } from '../../analytics';
+import { readCivicVerificationDate } from '../../civicMetricsDisplay';
 import {
   parseStateBudgetSummary,
   type Bill,
@@ -147,6 +148,7 @@ function parseBill(value: unknown): Bill | null {
     lastActionDate: typeof row.lastActionDate === 'string' ? row.lastActionDate : null,
     summary: typeof row.summary === 'string' ? row.summary : '',
     fullTextUrl: typeof row.fullTextUrl === 'string' ? row.fullTextUrl : undefined,
+    sourceVerifiedOn: readCivicVerificationDate(row.sourceVerifiedOn),
     committeeReportUrl: typeof row.committeeReportUrl === 'string' ? row.committeeReportUrl : undefined,
     relatedDepartments: departments,
     tags,
@@ -281,6 +283,7 @@ function parseGovernmentScheme(value: unknown): GovernmentScheme | null {
     districtWiseCoverage: districtWiseCoverage as NonNullable<GovernmentScheme['districtWiseCoverage']>,
     constituencyWiseCoverage: constituencyWiseCoverage as NonNullable<GovernmentScheme['constituencyWiseCoverage']>,
     documents: documents as GovernmentScheme['documents'],
+    sourceVerifiedOn: readCivicVerificationDate(row.sourceVerifiedOn),
     updatedAt: civicDate(row.updatedAt),
   };
 }
@@ -360,6 +363,7 @@ function parseDevelopmentProject(value: unknown): DevelopmentProject | null {
     milestones: milestones as DevelopmentProject['milestones'],
     issues: issuesRaw,
     source: typeof row.source === 'string' && row.source.trim() !== '' ? row.source : null,
+    sourceVerifiedOn: readCivicVerificationDate(row.sourceVerifiedOn),
     updatedAt: civicDate(row.updatedAt),
   };
 }
@@ -502,6 +506,8 @@ function parsePublicHearing(value: unknown): PublicHearing | null {
     time: row.time,
     isOpen,
     registrationUrl: optionalString('registrationUrl'),
+    sourceUrl: optionalString('sourceUrl'),
+    sourceVerifiedOn: readCivicVerificationDate(row.sourceVerifiedOn),
     agendaItems,
     minutesUrl: optionalString('minutesUrl'),
     outcome: optionalString('outcome'),

@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import type { StateBudgetSummary } from '../lib/civicMetricsTypes';
 import { validWebLink } from '../lib/feedAttachments';
 import { BUDGET_CATEGORY_CONFIG, getUtilizationColor } from '../lib/civicMetricsTypes';
+import CivicVerificationDate from './CivicVerificationDate';
 
 interface BudgetCardProps {
   summary: StateBudgetSummary;
@@ -89,6 +90,7 @@ export default function BudgetCard({ summary, onPress }: BudgetCardProps) {
           </Text>
         </View>}
       </View>
+      <CivicVerificationDate date={summary.sourceVerifiedOn} />
       {summary.sourceUrl && validWebLink(summary.sourceUrl) && (
         <Pressable accessibilityRole="link" onPress={() => { void Linking.openURL(summary.sourceUrl!).catch(() => undefined); }}>
           <Text style={styles.source}>{t('civicMetrics.viewBudgetSource', { defaultValue: 'Official budget publication' })} ↗</Text>
@@ -99,6 +101,7 @@ export default function BudgetCard({ summary, onPress }: BudgetCardProps) {
           <Text style={styles.title}>{entry.fiscalYear}</Text>
           <Text style={styles.subtitle}>{t('civicMetrics.originalEstimate', { defaultValue: 'Original estimate' })} · {formatCrores(entry.original)}</Text>
           {entry.revised !== null && <Text style={styles.subtitle}>{t('civicMetrics.revisedEstimate', { defaultValue: 'Revised estimate' })} · {formatCrores(entry.revised)}</Text>}
+          <CivicVerificationDate date={entry.sourceVerifiedOn} />
           {entry.sourceUrl && validWebLink(entry.sourceUrl) && <Pressable accessibilityRole="link" onPress={() => { void Linking.openURL(entry.sourceUrl!).catch(() => undefined); }}>
             <Text style={styles.source}>{t('civicMetrics.viewBudgetSource', { defaultValue: 'Official budget publication' })} ↗</Text>
           </Pressable>}

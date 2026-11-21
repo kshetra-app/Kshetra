@@ -2,6 +2,7 @@
  * PromiseCard — Displays an election promise with status, progress bar, engagement.
  */
 import React from 'react';
+import CivicVerificationDate from './CivicVerificationDate';
 import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -63,6 +64,7 @@ export default React.memo(function PromiseCard({ promise, onFollow, followPendin
 
       {/* Description */}
       <Text style={styles.description} numberOfLines={2}>{promise.description}</Text>
+      <CivicVerificationDate date={promise.sourceVerifiedOn} />
 
       {promise.promisedDate && <Text style={styles.sourceText}>{t('promiseCard.promisedOn', { defaultValue: 'Pledged {{date}}', date: new Date(promise.promisedDate).toLocaleDateString() })}</Text>}
       {promise.sourceUrl && validWebLink(promise.sourceUrl) && (

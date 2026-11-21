@@ -1704,6 +1704,9 @@ const bn = {
     "simulationNote": "সংদেশ সিমুলেশন হৈং, বাস্তব মেং নহীং ভেজে জাতে"
   },
   "civicMetrics": {
+    "sourceVerifiedOn": "সর্বশেষ যাচাই {{date}}",
+    "showingSavedRecords": "রিফ্রেশ করা যায়নি। সর্বশেষ লোড করা রেকর্ড দেখানো হচ্ছে।",
+    "officialHearingNotice": "শুনানির সরকারি বিজ্ঞপ্তি",
     "screenTitle": "নাগরিক পারফরম্যান্স ও মেট্রিক্স",
     "screenSubtitle": "বাজেট, বিল, প্রকল্প ও শুনানি",
     "stateBudgetOverview": "রাজ্য বাজেট পর্যালোচনা",

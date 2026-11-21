@@ -5,6 +5,7 @@
  * Seed data based on INC's "6 Guarantees" (Telangana 2023) + other key promises.
  */
 import { create } from 'zustand';
+import { readCivicVerificationDate } from '../lib/civicMetricsDisplay';
 import type {
   ElectionPromise,
   PromiseUpdate,
@@ -539,6 +540,7 @@ function mapServerPromiseRows(serverPromises: any[]): {
     category: row.category as PromiseCategory,
     source: row.source,
     sourceUrl: row.source_url ?? undefined,
+    sourceVerifiedOn: readCivicVerificationDate(row.source_verified_on),
     promisedDate: row.promised_date,
     deadline: row.deadline ?? undefined,
     status: row.status as PromiseStatus,

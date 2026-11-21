@@ -1704,6 +1704,9 @@ const ml = {
     "simulationNote": "സംദേശാലു സിമ്യുലേട് ചേയബഡ്ഡായി, നിജംഗാ പംപബഡവു"
   },
   "civicMetrics": {
+    "sourceVerifiedOn": "അവസാനം പരിശോധിച്ചത് {{date}}",
+    "showingSavedRecords": "പുതുക്കാൻ കഴിഞ്ഞില്ല. അവസാനം ലഭിച്ച രേഖകൾ കാണിക്കുന്നു.",
+    "officialHearingNotice": "ഹിയറിങ്ങിന്റെ ഔദ്യോഗിക അറിയിപ്പ്",
     "screenTitle": "പൗര പ്രകടനവും അളവുകോലുകളും",
     "screenSubtitle": "ബജറ്റ്, ബില്ലുകൾ, പദ്ധതികൾ, ഹിയറിംഗുകൾ",
     "stateBudgetOverview": "സംസ്ഥാന ബജറ്റ് അവലോകനം",

@@ -266,16 +266,16 @@ interface CivicMetricsState {
   getCDI: (acNo: number, stateCode: string) => ConstituencyDevelopmentIndex | undefined;
 
   // Actions
-  loadBudgetSummary: (stateCode: string) => Promise<void>;
-  loadBillsByState: (stateCode: string) => Promise<void>;
+  loadBudgetSummary: (stateCode: string, preserveLoadedData?: boolean) => Promise<void>;
+  loadBillsByState: (stateCode: string, preserveLoadedData?: boolean) => Promise<void>;
   loadMoreBillsByState: (stateCode: string) => Promise<void>;
-  loadSchemesByState: (stateCode: string) => Promise<void>;
+  loadSchemesByState: (stateCode: string, preserveLoadedData?: boolean) => Promise<void>;
   loadMoreSchemesByState: (stateCode: string) => Promise<void>;
-  loadProjectsByState: (stateCode: string) => Promise<void>;
+  loadProjectsByState: (stateCode: string, preserveLoadedData?: boolean) => Promise<void>;
   loadMoreProjectsByState: (stateCode: string) => Promise<void>;
-  loadPublicRTIs: (stateCode: string) => Promise<void>;
+  loadPublicRTIs: (stateCode: string, preserveLoadedData?: boolean) => Promise<void>;
   loadMorePublicRTIs: (stateCode: string) => Promise<void>;
-  loadHearingsByState: (stateCode: string) => Promise<void>;
+  loadHearingsByState: (stateCode: string, preserveLoadedData?: boolean) => Promise<void>;
   loadMoreHearingsByState: (stateCode: string) => Promise<void>;
   fileRTI: (rti: Partial<RTIRequest>) => Promise<boolean>;
   upvoteRTI: (rtiId: string) => Promise<boolean>;
@@ -344,7 +344,8 @@ export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => {
     .sort((left, right) => left.date.localeCompare(right.date)),
   getCDI: (acNo, stateCode) => get().cdiList.find((c) => c.constituencyAcNo === acNo && c.stateCode === stateCode),
 
-  loadBudgetSummary: async (stateCode) => {
+  loadBudgetSummary: async (stateCode, preserveLoadedData = false) => {
+    const keepCurrentData = preserveLoadedData && get().budgetLoadStateCode === stateCode;
     const requestSequence = ++budgetRequestSequence;
     set({ budgetLoadStatus: 'loading', budgetLoadStateCode: stateCode });
 
@@ -363,6 +364,10 @@ export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => {
       }));
     } catch {
       if (requestSequence !== budgetRequestSequence) return;
+      if (keepCurrentData) {
+        set({ budgetLoadStatus: 'error' });
+        return;
+      }
       set((state) => ({
         budgetSummaries: IS_LIVE_ENVIRONMENT
           ? state.budgetSummaries.filter((item) => item.stateCode !== stateCode)
@@ -373,7 +378,8 @@ export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => {
     }
   },
 
-  loadBillsByState: async (stateCode) => {
+  loadBillsByState: async (stateCode, preserveLoadedData = false) => {
+    const keepCurrentData = preserveLoadedData && get().billLoadStateCode === stateCode;
     const requestSequence = ++billRequestSequence;
     set({ billLoadStatus: 'loading', billLoadStateCode: stateCode });
 
@@ -398,6 +404,10 @@ export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => {
       });
     } catch {
       if (requestSequence !== billRequestSequence) return;
+      if (keepCurrentData) {
+        set({ billLoadStatus: 'error' });
+        return;
+      }
       set((state) => {
         const nextBills = IS_LIVE_ENVIRONMENT
           ? state.bills.filter((bill) => bill.stateCode !== stateCode)
@@ -449,7 +459,8 @@ export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => {
     }
   },
 
-  loadSchemesByState: async (stateCode) => {
+  loadSchemesByState: async (stateCode, preserveLoadedData = false) => {
+    const keepCurrentData = preserveLoadedData && get().schemeLoadStateCode === stateCode;
     const requestSequence = ++schemeRequestSequence;
     set({ schemeLoadStatus: 'loading', schemeLoadStateCode: stateCode });
 
@@ -482,6 +493,10 @@ export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => {
       });
     } catch {
       if (requestSequence !== schemeRequestSequence) return;
+      if (keepCurrentData) {
+        set({ schemeLoadStatus: 'error' });
+        return;
+      }
       set((state) => {
         const nextSchemes = IS_LIVE_ENVIRONMENT
           ? state.schemes.filter((scheme) =>
@@ -538,7 +553,8 @@ export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => {
     }
   },
 
-  loadProjectsByState: async (stateCode) => {
+  loadProjectsByState: async (stateCode, preserveLoadedData = false) => {
+    const keepCurrentData = preserveLoadedData && get().projectLoadStateCode === stateCode;
     const requestSequence = ++projectRequestSequence;
     set({ projectLoadStatus: 'loading', projectLoadStateCode: stateCode });
 
@@ -563,6 +579,10 @@ export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => {
       });
     } catch {
       if (requestSequence !== projectRequestSequence) return;
+      if (keepCurrentData) {
+        set({ projectLoadStatus: 'error' });
+        return;
+      }
       set((state) => {
         const nextProjects = IS_LIVE_ENVIRONMENT
           ? state.projects.filter((project) => project.stateCode !== stateCode)
@@ -614,7 +634,8 @@ export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => {
     }
   },
 
-  loadHearingsByState: async (stateCode) => {
+  loadHearingsByState: async (stateCode, preserveLoadedData = false) => {
+    const keepCurrentData = preserveLoadedData && get().hearingLoadStateCode === stateCode;
     const requestSequence = ++hearingRequestSequence;
     set({ hearingLoadStatus: 'loading', hearingLoadStateCode: stateCode });
 
@@ -639,6 +660,10 @@ export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => {
       });
     } catch {
       if (requestSequence !== hearingRequestSequence) return;
+      if (keepCurrentData) {
+        set({ hearingLoadStatus: 'error' });
+        return;
+      }
       set((state) => ({
         hearings: IS_LIVE_ENVIRONMENT
           ? state.hearings.filter((hearing) => hearing.stateCode !== stateCode)
@@ -687,7 +712,8 @@ export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => {
     }
   },
 
-  loadPublicRTIs: async (stateCode) => {
+  loadPublicRTIs: async (stateCode, preserveLoadedData = false) => {
+    const keepCurrentData = preserveLoadedData && get().rtiLoadStateCode === stateCode;
     const requestSequence = ++rtiRequestSequence;
     set({ rtiLoadStatus: 'loading', rtiLoadStateCode: stateCode });
 
@@ -719,6 +745,10 @@ export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => {
       });
     } catch {
       if (requestSequence !== rtiRequestSequence) return;
+      if (keepCurrentData) {
+        set({ rtiLoadStatus: 'error' });
+        return;
+      }
       set((state) => {
         const nextRequests = IS_LIVE_ENVIRONMENT
           ? state.rtiRequests.filter((request) =>

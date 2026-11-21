@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import type { GovernmentScheme } from '../lib/civicMetricsTypes';
 import { SCHEME_CATEGORY_CONFIG, formatCrores } from '../lib/civicMetricsTypes';
+import CivicVerificationDate from './CivicVerificationDate';
 
 interface SchemeCardProps {
   scheme: GovernmentScheme;
@@ -65,6 +66,7 @@ export default function SchemeCard({ scheme, onPress }: SchemeCardProps) {
         </View>
       </View>
 
+      <CivicVerificationDate date={scheme.sourceVerifiedOn} />
       {scheme.applicationUrl && (
         <View style={styles.applyRow}>
           <Ionicons name="open" size={12} color="#4F8EF7" />

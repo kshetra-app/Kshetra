@@ -1715,6 +1715,9 @@ const en =  {
     "simulationNote": "Messages are simulated and not actually sent"
   },
   "civicMetrics": {
+    "sourceVerifiedOn": "Last verified {{date}}",
+    "showingSavedRecords": "Couldn’t refresh. Showing the last loaded records.",
+    "officialHearingNotice": "Official hearing notice",
     "screenTitle": "Civic Performance & Metrics",
     "screenSubtitle": "Budget, bills, schemes and hearings",
     "stateBudgetOverview": "State Budget Overview",

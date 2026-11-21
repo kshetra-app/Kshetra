@@ -909,7 +909,7 @@ export async function civicRoutes(app: FastifyInstance) {
         const priorEstimates = data?.source_url
           ? await supabase
               .from('state_budget_summaries')
-              .select('fiscal_year,total_budget_crores,total_revised_crores,source_url')
+              .select('fiscal_year,total_budget_crores,total_revised_crores,source_url,source_verified_on')
               .eq('state_code', stateCode)
               .lt('fiscal_year', data.fiscal_year)
               .not('source_url', 'is', null)
@@ -1605,7 +1605,7 @@ export async function civicRoutes(app: FastifyInstance) {
         let query = supabase
           .from('public_hearings')
           .select(
-            'id,type,title,description,organizer,state_code,district_name,constituency_ac_no,venue,date,time,is_open,registration_url,agenda_items,minutes_url,outcome,related_project_id,created_at',
+            'id,type,title,description,organizer,state_code,district_name,constituency_ac_no,venue,date,time,is_open,registration_url,source_url,source_verified_on,agenda_items,minutes_url,outcome,related_project_id,created_at',
             { count: 'exact' },
           );
         if (state) query = query.eq('state_code', state);

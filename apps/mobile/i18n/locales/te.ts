@@ -1713,6 +1713,9 @@ const te = {
     "simulationNote": "సందేశాలు సిమ్యులేట్ చేయబడ్డాయి, నిజంగా పంపబడవు"
   },
   "civicMetrics": {
+    "sourceVerifiedOn": "చివరిగా ధృవీకరించిన తేదీ {{date}}",
+    "showingSavedRecords": "తాజా వివరాలను పొందలేకపోయాం. చివరిగా పొందిన రికార్డులు చూపిస్తున్నాం.",
+    "officialHearingNotice": "విచారణకు సంబంధించిన అధికారిక నోటీసు",
     "screenTitle": "పౌర పనితీరు & కొలమానాలు",
     "screenSubtitle": "బడ్జెట్, బిల్లులు, పథకాలు మరియు విచారణలు",
     "stateBudgetOverview": "రాష్ట్ర బడ్జెట్ అవలోకనం",

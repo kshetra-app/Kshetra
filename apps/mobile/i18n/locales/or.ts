@@ -1704,6 +1704,9 @@ const or = {
     "simulationNote": "ସଂଦେଶ ସିମୁଲେଶନ ହୈଂ, ୱାସ୍ତୱ ମେଂ ନହୀଂ ଭେଜେ ଜାତେ"
   },
   "civicMetrics": {
+    "sourceVerifiedOn": "ଶେଷ ଯାଞ୍ଚ {{date}}",
+    "showingSavedRecords": "ରିଫ୍ରେସ୍ ହୋଇପାରିଲା ନାହିଁ। ଶେଷରେ ଲୋଡ୍ ହୋଇଥିବା ରେକର୍ଡ ଦେଖାଯାଉଛି।",
+    "officialHearingNotice": "ଶୁଣାଣିର ଆଧିକାରିକ ସୂଚନା",
     "screenTitle": "ନାଗରିକ ପ୍ରଦର୍ଶନ ଓ ମେଟ୍ରିକ୍ସ",
     "screenSubtitle": "ବଜେଟ୍, ବିଲ୍, ଯୋଜନା ଏବଂ ଶୁଣାଣି",
     "stateBudgetOverview": "ରାଜ୍ୟ ବଜେଟ୍ ସମୀକ୍ଷା",

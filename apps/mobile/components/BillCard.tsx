@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import type { Bill } from '../lib/civicMetricsTypes';
 import { getBillStatusLabel } from '../lib/civicMetricsTypes';
+import CivicVerificationDate from './CivicVerificationDate';
 
 interface BillCardProps {
   bill: Bill;
@@ -45,6 +46,7 @@ export default function BillCard({ bill, onPress, onSupport, onOppose }: BillCar
       </Text>
 
       <Text style={styles.summary} numberOfLines={3}>{bill.summary}</Text>
+      <CivicVerificationDate date={bill.sourceVerifiedOn} />
 
       {/* Timeline */}
       {bill.timeline.length > 0 && (

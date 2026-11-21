@@ -2,6 +2,14 @@ export type CivicMetricsLoadStatus = 'idle' | 'loading' | 'loaded' | 'error';
 
 export type CivicMetricsEmptyState = 'loading' | 'unavailable' | 'empty';
 
+export function readCivicVerificationDate(value: unknown): string | undefined {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return undefined;
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value
+    ? value
+    : undefined;
+}
+
 /** Keeps a confirmed empty response distinct from a failed data request. */
 export function getCivicMetricsEmptyState(
   status: CivicMetricsLoadStatus,

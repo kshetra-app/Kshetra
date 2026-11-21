@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import type { DevelopmentProject } from '../lib/civicMetricsTypes';
 import { PROJECT_CATEGORY_CONFIG, PROJECT_PHASE_CONFIG, formatCrores } from '../lib/civicMetricsTypes';
+import CivicVerificationDate from './CivicVerificationDate';
 
 interface ProjectCardProps {
   project: DevelopmentProject;
@@ -31,6 +32,7 @@ export default function ProjectCard({ project, onPress }: ProjectCardProps) {
       <Text style={styles.name}>{project.name}</Text>
       <Text style={styles.location}>{project.districtName}, {project.stateCode}{project.constituencyAcNo ? ` · AC #${project.constituencyAcNo}` : ''}</Text>
       <Text style={styles.description} numberOfLines={2}>{project.description}</Text>
+      <CivicVerificationDate date={project.sourceVerifiedOn} />
 
       {/* Progress bars */}
       <View style={styles.progressSection}>
