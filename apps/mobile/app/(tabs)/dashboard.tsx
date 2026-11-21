@@ -274,7 +274,15 @@ function DashboardContent() {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* ── Compact Header ── */}
       <View style={[styles.header, { paddingTop: insets.top + 8, borderBottomColor: colors.border }]}>
-        <View>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('common.back', { defaultValue: 'Back' })}
+          style={styles.dashboardBack}
+          onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/more')}
+        >
+          <Ionicons name="arrow-back" size={23} color={colors.text} />
+        </Pressable>
+        <View style={styles.dashboardHeading}>
           <Text style={[styles.headerTitle, { color: colors.text }]}>{t('dashboard.title')}</Text>
           <View style={styles.scopeIndicator}>
             <Ionicons name="funnel" size={10} color={colors.textMuted} />
@@ -310,7 +318,7 @@ function DashboardContent() {
       <ScrollView horizontal showsHorizontalScrollIndicator style={styles.scopeScroll} contentContainerStyle={styles.scopeScrollContent}>
         {SCOPE_OPTIONS.map((opt) => {
           const active = scopeFilter === opt.key;
-          const disabled = (opt.key === 'constituency' && !myHome) || (stateCode === 'IN' && (opt.key === 'state' || opt.key === 'constituency'));
+          const disabled = (opt.key === 'constituency' && !home) || (stateCode === 'IN' && (opt.key === 'state' || opt.key === 'constituency'));
           return (
             <Pressable
               key={opt.key}
@@ -355,6 +363,8 @@ function DashboardContent() {
               key={tab.key}
               style={[styles.tab, active && { backgroundColor: colors.primary }]}
               onPress={() => setActiveTab(tab.key)}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: active }}
             >
               <Ionicons name={tab.icon as any} size={15} color={active ? '#FFF' : colors.textSecondary} />
               <Text style={[styles.tabLabel, { color: colors.textSecondary }, active && styles.tabLabelActive]}>{t(tab.tKey, tab.key === 'activity' ? { defaultValue: 'Activity' } : {})}</Text>
@@ -365,32 +375,25 @@ function DashboardContent() {
 
       {/* ── Content ── */}
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
-        {/* Quick Nav: Gold Standard Pillars */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: 12, marginBottom: 8 }} contentContainerStyle={{ gap: 8 }}>
+        <View style={styles.quickLinks}>
           {[
             { tKey: 'dashboardExtended.civicMetrics', icon: 'bar-chart', color: colors.teal, route: '/civic-metrics' },
             { tKey: 'more.tiles.electionResults', icon: 'stats-chart', color: colors.primary, route: '/live-election' },
           ].map((item) => (
             <Pressable
               key={item.route}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 6,
+              style={[styles.quickLink, {
                 backgroundColor: colors.surface,
-                paddingHorizontal: 14,
-                paddingVertical: 10,
-                borderRadius: 12,
-                borderWidth: 1,
                 borderColor: colors.goldBorder || colors.border,
-              }}
+              }]}
+              accessibilityRole="button"
               onPress={() => router.push(item.route as any)}
             >
               <Ionicons name={item.icon as any} size={16} color={item.color} />
-              <Text style={{ fontSize: 12, fontWeight: '700', color: colors.text }}>{t(item.tKey)}</Text>
+              <Text style={[styles.quickLinkLabel, { color: colors.text }]}>{t(item.tKey)}</Text>
             </Pressable>
           ))}
-        </ScrollView>
+        </View>
 
         {activeTab === 'issues' && (
           <View style={styles.tabContent}>
@@ -680,6 +683,17 @@ function DashboardContent() {
               <View style={styles.emptyState}>
                 <Ionicons name="ribbon-outline" size={48} color="#1F2937" />
                 <Text style={styles.emptyTitle}>{t('dashboardExtended.noPromisesTracked')}</Text>
+                {scopeFilter !== 'state' && stateCode !== 'IN' && (
+                  <Pressable
+                    accessibilityRole="button"
+                    style={[styles.retryButton, { backgroundColor: colors.primary }]}
+                    onPress={() => setScopeFilter('state')}
+                  >
+                    <Text style={{ color: '#FFFFFF', fontWeight: '700' }}>
+                      {t('common.scopes.myState')} · {STATES[stateCode]?.name ?? stateCode}
+                    </Text>
+                  </Pressable>
+                )}
               </View>
             ) : (
               scopedPromises.map((promise) => {
@@ -859,7 +873,6 @@ const styles = StyleSheet.create({
   },
   tab: {
     flex: 1,
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 8,
@@ -873,7 +886,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     color: '#6D5549',
+    textAlign: 'center',
+    paddingHorizontal: 3,
   },
+  dashboardHeading: { flex: 1, minWidth: 0 },
+  dashboardBack: { width: 44, minHeight: 44, justifyContent: 'center' },
+  quickLinks: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginHorizontal: 12, marginBottom: 8 },
+  quickLink: {
+    flexGrow: 1, flexBasis: '42%', flexDirection: 'row', alignItems: 'center', gap: 8,
+    minHeight: 44, paddingVertical: 9, paddingHorizontal: 12, borderRadius: 12, borderWidth: 1,
+  },
+  quickLinkLabel: { flex: 1, fontSize: 12, fontWeight: '700' },
   tabLabelActive: {
     color: '#FFFFFF',
   },

@@ -181,6 +181,7 @@ export function validateNewsFeedResponse(data: unknown): NewsFeedResponseDTO {
       breaking: it.breaking === true,
       scope: it.scope as NewsItemDTO['scope'],
       stateCode: it.stateCode as string | undefined,
+      stateCodes: Array.isArray(it.stateCodes) ? it.stateCodes.filter((code): code is string => typeof code === 'string') : undefined,
       constituencyId: it.constituencyId as string | undefined,
       publishedAt: it.publishedAt,
       video: validatedVideo,
@@ -229,6 +230,7 @@ export function mapNewsFeedDTOToNewsFeed(dto: NewsFeedResponseDTO): NewsFeed {
     breaking: it.breaking,
     scope: it.scope as NewsScope,
     stateCode: it.stateCode,
+    stateCodes: it.stateCodes,
     constituencyId: it.constituencyId,
     publishedAt: it.publishedAt,
     video: it.video
@@ -263,6 +265,8 @@ export class NewsEndpoint {
       if (filters.lang) query.lang = filters.lang;
       if (filters.scope) query.scope = filters.scope;
       if (filters.state) query.state = filters.state;
+      if (filters.constituencyId) query.constituencyId = filters.constituencyId;
+      if (filters.refresh) query.refresh = 'true';
       if (filters.category) query.category = filters.category;
       if (filters.limit !== undefined) query.limit = filters.limit;
     }
@@ -270,6 +274,7 @@ export class NewsEndpoint {
     const response = await this.client.get<unknown>('/api/v1/news/feed', {
       authPolicy: 'public',
       query,
+      ...(filters?.refresh ? { timeoutMs: 18_000, totalBudgetMs: 18_000, retries: 0 } : {}),
     });
     const validatedDTO = validateNewsFeedResponse(response.data);
     return mapNewsFeedDTOToNewsFeed(validatedDTO);

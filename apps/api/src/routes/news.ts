@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { getFeed, refreshNews, type FeedFilters } from '../services/news/newsService';
+import { ensureFreshNews, getFeed, type FeedFilters } from '../services/news/newsService';
 import { sendApiError } from '../lib/replyHelper';
 
 const newsSourceSchema = {
@@ -25,6 +25,7 @@ const newsFeedSchema = {
       constituencyId: { type: 'string', maxLength: 40 },
       category: { type: 'string', maxLength: 30 },
       limit: { type: 'integer', minimum: 1, maximum: 100 },
+      refresh: { type: 'boolean' },
     },
   },
   response: {
@@ -64,6 +65,7 @@ const newsFeedSchema = {
               },
               scope: { type: 'string' },
               stateCode: { type: 'string' },
+              stateCodes: { type: 'array', items: { type: 'string' } },
               constituencyId: { type: 'string' },
               publishedAt: { type: 'string' },
             },
@@ -103,30 +105,48 @@ const newsRefreshSchema = {
 /**
  * News aggregation endpoints.
  *
- * GET /api/v1/news/feed        → the cached NewsFeed (refreshed hourly).
+ * GET /api/v1/news/feed        → the cached NewsFeed, optionally revalidated.
  *   Query: lang, scope (national|state|constituency), state, constituencyId, category, limit
- * POST /api/v1/news/refresh    → force a re-scrape (admin/manual trigger).
+ * POST /api/v1/news/refresh    → legacy entry point for the same bounded refresh.
  */
 export async function newsRoutes(app: FastifyInstance) {
   app.get('/api/v1/news/feed', { schema: newsFeedSchema }, async (request, reply) => {
-    const q = request.query as Record<string, string | undefined>;
+    const q = request.query as Omit<FeedFilters, 'limit'> & { refresh?: boolean; limit?: number };
     const filters: FeedFilters = {
       lang: q.lang,
       scope: q.scope,
       state: q.state,
       constituencyId: q.constituencyId,
       category: q.category,
-      limit: q.limit ? parseInt(q.limit, 10) : undefined,
+      limit: q.limit,
     };
-    const feed = getFeed(filters);
-    // Let clients/CDN cache for a few minutes; the scraper runs hourly.
-    reply.header('Cache-Control', 'public, max-age=300, s-maxage=300');
-    return feed;
+    reply.header('Cache-Control', q.refresh ? 'no-store' : 'public, max-age=30, s-maxage=30');
+    try {
+      const previous = getFeed(filters);
+      if (q.refresh || Date.parse(previous.generatedAt) === 0) {
+        await ensureFreshNews();
+        return getFeed(filters);
+      }
+      return previous;
+    } catch {
+      reply.header('Cache-Control', 'no-store');
+      return sendApiError(
+        reply,
+        request,
+        503,
+        'Service Unavailable',
+        'News could not be refreshed. Try again shortly.',
+        {
+          code: 'NEWS_REFRESH_ERROR',
+        },
+      );
+    }
   });
 
   app.post('/api/v1/news/refresh', { schema: newsRefreshSchema }, async (request, reply) => {
     try {
-      const feed = await refreshNews();
+      await ensureFreshNews();
+      const feed = getFeed();
       return {
         ok: true,
         generatedAt: feed.generatedAt,

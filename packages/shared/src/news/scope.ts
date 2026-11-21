@@ -3,6 +3,7 @@ export type NewsGeographicScope = 'national' | 'state' | 'constituency';
 export interface NewsGeography {
   scope: NewsGeographicScope;
   stateCode?: string;
+  stateCodes?: readonly string[];
   constituencyId?: string;
 }
 
@@ -19,15 +20,17 @@ export function filterNewsByScope<T extends NewsGeography>(
 ): T[] {
   if (scope === 'national') return items.filter((item) => item.scope === 'national');
 
+  const matchesState = (item: T) =>
+    Boolean(stateCode) &&
+    item.scope === 'state' &&
+    (item.stateCode === stateCode || item.stateCodes?.includes(stateCode!) === true);
   if (scope === 'state') {
-    return stateCode
-      ? items.filter((item) => item.scope === 'state' && item.stateCode === stateCode)
-      : [];
+    return items.filter(matchesState);
   }
 
   return items.filter(
     (item) =>
-      (Boolean(stateCode) && item.scope === 'state' && item.stateCode === stateCode) ||
+      matchesState(item) ||
       (Boolean(constituencyId) &&
         item.scope === 'constituency' &&
         item.constituencyId === constituencyId),

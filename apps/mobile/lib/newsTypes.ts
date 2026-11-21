@@ -75,6 +75,7 @@ export interface NewsItem {
   scope: NewsScope;
   /** ISO state code the item is relevant to (undefined = national). */
   stateCode?: string;
+  stateCodes?: string[];
   /** Constituency id (`{STATE}-AC-{n}`) when the item is hyper-local. */
   constituencyId?: string;
   /** ISO timestamp the source published the item. */

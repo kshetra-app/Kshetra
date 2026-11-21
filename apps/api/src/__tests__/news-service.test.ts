@@ -74,12 +74,11 @@ describe('News Service (newsService.ts)', () => {
       expect(feed.items.some((item) => item.sourceUrl.endsWith('/undated-1'))).toBe(false);
     });
 
-    it('returns existing cache when refresh is already in progress', async () => {
-      // Simulate concurrent refresh calls
+    it('shares the same pending publisher refresh across concurrent callers', async () => {
       const p1 = refreshNews();
       const p2 = refreshNews();
-      const [res1, res2] = await Promise.all([p1, p2]);
-      expect(res1.version).toBe(res2.version);
+      expect(p1).toBe(p2);
+      await expect(p2).resolves.toMatchObject({ version: 1 });
     });
   });
 

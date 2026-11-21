@@ -16,7 +16,7 @@ import { useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNewsStore } from '../../stores/news';
+import { newsQueryKey, useNewsStore } from '../../stores/news';
 import { useActiveStateStore } from '../../stores/activeState';
 import {
   homeConstituencyBelongsToState,
@@ -49,6 +49,8 @@ export default function NewsScreen() {
   const generatedAt = useNewsStore((s) => s.generatedAt);
   const loading = useNewsStore((s) => s.loading);
   const loaded = useNewsStore((s) => s.loaded);
+  const loadedQueryKey = useNewsStore((s) => s.queryKey);
+  const refreshFailed = useNewsStore((s) => s.refreshFailed);
   const language = useNewsStore((s) => s.language);
   const category = useNewsStore((s) => s.category);
   const bookmarks = useNewsStore((s) => s.bookmarks);
@@ -73,9 +75,10 @@ export default function NewsScreen() {
   const userConstituencyId =
     myHomeBelongsToState && myHome ? `${stateCode}-AC-${myHome.acNo}` : undefined;
 
-  const [scope, setScope] = useState<NewsGeographicScope>(
+  const [selectedScope, setScope] = useState<NewsGeographicScope>(
     stateCode === 'IN' ? 'national' : 'state',
   );
+  const scope = stateCode === 'IN' ? 'national' : selectedScope;
   const [showBookmarks, setShowBookmarks] = useState(false);
 
   useEffect(() => {
@@ -85,28 +88,38 @@ export default function NewsScreen() {
   // Revalidate when this tab is opened, when the app resumes, and periodically
   // while visible. Respect the server's refresh interval and avoid duplicate
   // requests from a focus + foreground event firing together.
-  const lastAutoRefreshAt = useRef(0);
+  const query = useMemo(() => ({
+    scope,
+    state: scope === 'national' ? undefined : stateCode,
+    constituencyId: scope === 'constituency' ? userConstituencyId : undefined,
+  }), [scope, stateCode, userConstituencyId]);
+  const queryKey = newsQueryKey(language, query);
+  const lastAutoRefresh = useRef({ key: '', time: 0 });
   const refreshIfStale = useCallback(() => {
     const current = useNewsStore.getState();
     const generatedAtMs = Date.parse(current.generatedAt);
     const maxAgeMs = Math.max(1, current.refreshIntervalMin) * 60_000;
     const now = Date.now();
     const isStale =
-      !Number.isFinite(generatedAtMs) ||
+      current.queryKey !== queryKey || current.refreshFailed || !Number.isFinite(generatedAtMs) ||
       generatedAtMs > now + 5 * 60_000 ||
       now - generatedAtMs >= maxAgeMs;
 
     if (
       !isStale ||
-      current.loading ||
-      now - lastAutoRefreshAt.current < 30_000
+      (lastAutoRefresh.current.key === queryKey &&
+        (current.loading || now - lastAutoRefresh.current.time < 30_000))
     ) {
       return;
     }
 
-    lastAutoRefreshAt.current = now;
-    void current.refresh();
-  }, []);
+    lastAutoRefresh.current = { key: queryKey, time: now };
+    void current.refresh(query);
+  }, [query, queryKey]);
+  const refreshFromPublishers = useCallback(() => {
+    lastAutoRefresh.current = { key: queryKey, time: Date.now() };
+    void refresh(query, true);
+  }, [query, queryKey, refresh]);
 
   useFocusEffect(
     useCallback(() => {
@@ -123,12 +136,8 @@ export default function NewsScreen() {
     }, [refreshIfStale]),
   );
 
-  // National-only mode locks scope to national.
-  useEffect(() => {
-    if (stateCode === 'IN' && scope !== 'national') setScope('national');
-  }, [stateCode, scope]);
-
   const filtered = useMemo(() => {
+    if (loadedQueryKey !== queryKey) return [];
     let list = [...items];
 
     // Language consumption preference
@@ -146,20 +155,20 @@ export default function NewsScreen() {
 
     // Most-local first, then newest.
     const scopeRank = (i: NewsItem) =>
-      i.constituencyId === userConstituencyId ? 0 : i.stateCode === stateCode ? 1 : 2;
+      userConstituencyId && i.constituencyId === userConstituencyId ? 0 : i.scope === 'state' ? 1 : 2;
     return list.sort((a, b) => {
       const r = scopeRank(a) - scopeRank(b);
       if (r !== 0) return r;
       return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
     });
-  }, [items, language, scope, category, showBookmarks, bookmarks, stateCode, userConstituencyId]);
+  }, [items, loadedQueryKey, queryKey, language, scope, category, showBookmarks, bookmarks, stateCode, userConstituencyId]);
 
   const stateName = (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode;
   const hasContentFilters = language !== null || category !== 'top' || showBookmarks;
   const generatedAtMs = Date.parse(generatedAt);
   const hasFeedSnapshot =
-    Number.isFinite(generatedAtMs) && generatedAtMs <= Date.now() + 5 * 60_000;
-  const feedUnavailable = loaded && !loading && !hasFeedSnapshot;
+    loadedQueryKey === queryKey && Number.isFinite(generatedAtMs) && generatedAtMs <= Date.now() + 5 * 60_000;
+  const feedUnavailable = loaded && !loading && loadedQueryKey === queryKey && !hasFeedSnapshot;
 
   const stateOptions = useMemo(() => Object.values(STATES)
     .filter((state) => state.code !== 'IN' &&
@@ -173,7 +182,7 @@ export default function NewsScreen() {
   }, [language, t]);
 
   const currentScopeLabel = useMemo(() => {
-    if (scope === 'national') return 'National';
+    if (scope === 'national') return t('common.scopes.national');
     if (scope === 'state') return stateName;
     return myHomeBelongsToState && myHome
       ? myHome.name
@@ -197,7 +206,9 @@ export default function NewsScreen() {
             />
             <Text style={[styles.updatedText, { color: colors.textMuted }]}>
               {hasFeedSnapshot
-                ? `Updated ${formatRelativeTime(generatedAt)}`
+                ? refreshFailed
+                  ? t('news.refreshFailed', { defaultValue: 'Refresh failed. Showing recent saved stories.' })
+                  : t('news.lastUpdated', { time: formatRelativeTime(generatedAt), defaultValue: 'Updated {{time}}' })
                 : loading || !loaded
                   ? t('common.loading')
                   : t('common.newsUnavailable', { defaultValue: 'News is unavailable right now.' })}
@@ -361,10 +372,11 @@ export default function NewsScreen() {
             )}
           </View>
         )}
-        refreshControl={<RefreshControl refreshing={loading} onRefresh={refresh} tintColor={colors.primary} />}
-        contentContainerStyle={{ paddingBottom: 100 }}
+        refreshControl={<RefreshControl refreshing={loading} onRefresh={refreshFromPublishers} tintColor={colors.primary} />}
+        alwaysBounceVertical
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}
         ListEmptyComponent={
-          !showBookmarks && (loading || !loaded) ? (
+          !showBookmarks && (loading || !loaded || loadedQueryKey !== queryKey) ? (
             <View style={styles.empty}>
               <ActivityIndicator size="large" color={colors.primary} />
               <Text style={[styles.emptyText, { color: colors.textSecondary }]}>{t('common.loading')}</Text>
@@ -380,7 +392,7 @@ export default function NewsScreen() {
                     : category === 'breaking'
                       ? t('news.noBreaking', { defaultValue: 'No recent stories marked breaking match these filters.' })
                     : hasContentFilters
-                    ? 'No stories match these filters'
+                    ? t('common.noResults')
                     : scope === 'constituency'
                       ? 'No stories are available for this area yet'
                       : scope === 'state'
@@ -392,14 +404,14 @@ export default function NewsScreen() {
                   style={[styles.resetEmptyBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
                   onPress={() => {
                     tapLight();
-                    void refresh();
+                    refreshFromPublishers();
                   }}
                   accessibilityRole="button"
                   accessibilityLabel="Retry loading news"
                 >
                   <Text style={[styles.resetEmptyBtnText, { color: colors.primary }]}>{t('common.retry')}</Text>
                 </Pressable>
-              ) : (hasContentFilters || scope !== 'national') && (
+              ) : hasContentFilters && (
                 <Pressable
                   style={[styles.resetEmptyBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
                   onPress={() => {
@@ -407,18 +419,24 @@ export default function NewsScreen() {
                     setLanguage(null);
                     setCategory('top');
                     setShowBookmarks(false);
-                    if (scope === 'constituency') setScope('state');
-                    else if (scope === 'state') setScope('national');
                   }}
                 >
                   <Text style={[styles.resetEmptyBtnText, { color: colors.primary }]}>
+                    {showBookmarks
+                      ? t('news.showLatest', { defaultValue: 'Show latest news' })
+                      : t('common.resetFilters')}
+                  </Text>
+                </Pressable>
+              )}
+              {!feedUnavailable && !showBookmarks && scope !== 'national' && (
+                <Pressable
+                  style={[styles.resetEmptyBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                  onPress={() => setScope(scope === 'constituency' ? 'state' : 'national')}
+                >
+                  <Text style={[styles.resetEmptyBtnText, { color: colors.primary }]}>
                     {scope === 'constituency'
-                      ? `Show ${stateName} news`
-                      : scope === 'state'
-                        ? 'Show All India news'
-                        : showBookmarks
-                          ? 'Show latest news'
-                          : 'Clear filters'}
+                      ? t('news.showState', { state: stateName, defaultValue: 'Show {{state}} news' })
+                      : t('news.showNational', { defaultValue: 'Show All India news' })}
                   </Text>
                 </Pressable>
               )}
@@ -533,7 +551,7 @@ export default function NewsScreen() {
                         language === null && { fontWeight: '700' },
                       ]}
                     >
-                      All Languages
+                      {t('common.allLanguages')}
                     </Text>
                   </View>
                   {language === null && <Ionicons name="checkmark-circle" size={18} color={colors.gold || colors.primary} />}

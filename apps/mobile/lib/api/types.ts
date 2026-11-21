@@ -87,6 +87,7 @@ export interface NewsItemDTO {
   category: 'top' | 'politics' | 'elections' | 'economy' | 'governance' | 'regional' | 'video';
   scope: 'national' | 'state' | 'constituency';
   stateCode?: string;
+  stateCodes?: string[];
   constituencyId?: string;
   publishedAt: string;
   video?: {
@@ -100,6 +101,8 @@ export interface NewsFeedFiltersDTO {
   lang?: string;
   scope?: string;
   state?: string;
+  constituencyId?: string;
+  refresh?: boolean;
   category?: string;
   limit?: number;
 }

@@ -107,6 +107,16 @@ describe('news refresh ordering', () => {
     expect(scrapeNewsOnDevice).not.toHaveBeenCalled();
   });
 
+  it('requests publisher revalidation for the selected geography and language', async () => {
+    useNewsStore.setState({ language: 'te' });
+    (apiClient.news.getFeed as jest.Mock).mockResolvedValue(makeFeed('refreshed'));
+    await useNewsStore.getState().refresh({ scope: 'state', state: 'TS' }, true);
+    expect(apiClient.news.getFeed).toHaveBeenCalledWith({
+      scope: 'state', state: 'TS', lang: 'te', refresh: true,
+    });
+    expect(useNewsStore.getState().queryKey).toBe('te:state:TS');
+  });
+
   it('removes expired on-device news cache instead of reviving stale headlines', async () => {
     const storage = jest.requireMock('../lib/storage').mmkvStorage;
     const expiredCache = JSON.stringify({
