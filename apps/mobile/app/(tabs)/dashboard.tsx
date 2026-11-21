@@ -19,10 +19,10 @@ import { getCivicIssueScopeKey, useCivicStore } from '../../stores/civic';
 import IssueCard from '../../components/IssueCard';
 import ReportIssueSheet from '../../components/ReportIssueSheet';
 import ExportSheet from '../../components/ExportSheet';
-import { ISSUE_CATEGORY_CONFIG } from '../../lib/civicTypes';
+import { ISSUE_CATEGORY_CONFIG, resolvePromiseScope } from '../../lib/civicTypes';
 import { useResponsive } from '../../lib/responsive';
 import PromiseCard from '../../components/PromiseCard';
-import type { IssueCategory, IssueStatus, CivicScope } from '../../lib/civicTypes';
+import type { IssueCategory, IssueStatus, CivicScope, PromiseScopeSelection } from '../../lib/civicTypes';
 import { useTranslation } from 'react-i18next';
 import { useActiveStateStore } from '../../stores/activeState';
 import { resolveConstituencyForState, useMyConstituencyStore } from '../../stores/myConstituency';
@@ -102,6 +102,7 @@ function DashboardContent() {
   const { colors } = useTheme();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<DashboardTab>('issues');
+  const [promiseSelection, setPromiseSelection] = useState<PromiseScopeSelection | null>(null);
   const [reportVisible, setReportVisible] = useState(false);
   const [exportVisible, setExportVisible] = useState(false);
   const [helpVisible, setHelpVisible] = useState(false);
@@ -136,6 +137,7 @@ function DashboardContent() {
   const allPromises = usePromiseStore((s) => s.promises);
   const promiseUpdates = usePromiseStore((s) => s.updates);
   const promiseLoadStatus = usePromiseStore((s) => s.promiseLoadStatus);
+  const promiseLoadState = usePromiseStore((s) => s.promiseLoadStateCode);
   const promiseRefreshing = usePromiseStore((s) => s.promiseRefreshing);
   const promiseRefreshError = usePromiseStore((s) => s.promiseRefreshError);
   const promiseViewer = usePromiseStore((s) => s.promiseLoadViewerId);
@@ -155,7 +157,23 @@ function DashboardContent() {
     issueLoadStatus === 'idle' || issueLoadScopeKey !== issueScopeKey;
   const hasMoreIssues = IS_LIVE_ENVIRONMENT && issueLoadTotal !== null &&
     issueLoadPage * issueLoadLimit < issueLoadTotal;
-  const promiseQueryState = scopeFilter === 'national' ? 'NATIONAL' : stateCode;
+  const promiseScope = resolvePromiseScope(stateCode, Boolean(home), promiseSelection);
+  const promiseQueryState = promiseScope === 'national' ? 'NATIONAL' : stateCode;
+  const promiseScopeLoaded = promiseLoadState === promiseQueryState && promiseViewer === viewerId;
+  const displayedScope = activeTab === 'promises' ? promiseScope : scopeFilter;
+
+  const selectDisplayedScope = (scope: CivicScope) => {
+    if (activeTab === 'promises') {
+      setPromiseSelection({ stateCode, scope });
+    } else {
+      setScopeFilter(scope);
+    }
+  };
+
+  const selectDashboardState = (code: string) => {
+    setPromiseSelection(null);
+    setScopeFilter(code === 'IN' ? 'national' : 'state');
+  };
 
   useEffect(() => {
     setCivicIssueRealtimeScope(scopeFilter, stateCode, constituencyId);
@@ -210,16 +228,16 @@ function DashboardContent() {
     const datedPromises = IS_LIVE_ENVIRONMENT
       ? allPromises.filter((promise) => promise.sourceUrl && validWebLink(promise.sourceUrl) && Number.isFinite(Date.parse(promise.promisedDate)))
       : allPromises;
-    if (scopeFilter === 'constituency') {
+    if (promiseScope === 'constituency') {
       return home
         ? datedPromises.filter((p) => p.stateCode === stateCode && p.constituencyAcNo === home.acNo)
         : [];
     }
-    if (scopeFilter === 'national') {
+    if (promiseScope === 'national') {
       return datedPromises.filter((p) => p.stateCode === 'NATIONAL');
     }
     return datedPromises.filter((p) => p.stateCode === stateCode && p.constituencyAcNo == null);
-  }, [allPromises, scopeFilter, stateCode, home]);
+  }, [allPromises, promiseScope, stateCode, home]);
 
   // Scope-filtered data — derive in useMemo from raw arrays
   const { issues, headlines } = useMemo(() => {
@@ -247,9 +265,11 @@ function DashboardContent() {
 
   const currentStateName = getLocalizedStateName(stateCode, translations.language, STATES[stateCode]?.name ?? stateCode);
 
-  let scopeLabel = t('common.scopes.allIndia');
-  if (scopeFilter === 'constituency' && home) scopeLabel = home.name;
-  if (scopeFilter === 'state') scopeLabel = currentStateName;
+  const labelForScope = (scope: CivicScope) => {
+    if (scope === 'constituency' && home) return home.name;
+    return scope === 'state' ? currentStateName : t('common.scopes.allIndia');
+  };
+  const scopeLabel = labelForScope(displayedScope);
   const issueCount = IS_LIVE_ENVIRONMENT ? (issueScopeReady ? issueLoadTotal : null) : issues.length;
 
   const issueStats = useMemo(() => {
@@ -316,13 +336,13 @@ function DashboardContent() {
       </View>
 
       <View style={styles.statePicker}>
-        <StateSwitcher allowWideLabel />
+        <StateSwitcher allowWideLabel onStateSelected={selectDashboardState} />
       </View>
 
       {/* ── Scope Toggle (horizontal scroll) ── */}
       <ScrollView horizontal showsHorizontalScrollIndicator style={styles.scopeScroll} contentContainerStyle={styles.scopeScrollContent}>
         {SCOPE_OPTIONS.map((opt) => {
-          const active = scopeFilter === opt.key;
+          const active = displayedScope === opt.key;
           const disabled = (opt.key === 'constituency' && !home) || (stateCode === 'IN' && (opt.key === 'state' || opt.key === 'constituency'));
           return (
             <Pressable
@@ -333,7 +353,10 @@ function DashboardContent() {
                 active && { backgroundColor: colors.primary, borderColor: colors.primary },
                 disabled && styles.scopeChipDisabled,
               ]}
-              onPress={() => !disabled && setScopeFilter(opt.key)}
+              accessibilityRole="button"
+              accessibilityState={{ selected: active, disabled }}
+              disabled={disabled}
+              onPress={() => selectDisplayedScope(opt.key)}
             >
               <Ionicons
                 name={opt.icon as any}
@@ -651,7 +674,7 @@ function DashboardContent() {
 
         {activeTab === 'promises' && (
           <View style={styles.tabContent}>
-            {(promiseRefreshing || promiseRefreshError) && (
+            {promiseScopeLoaded && (promiseRefreshing || promiseRefreshError) && (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8 }}>
                 {promiseRefreshing && <ActivityIndicator size="small" color={colors.primary} />}
                 <Text style={{ color: promiseRefreshError ? colors.textMuted : colors.text, fontSize: 12 }}>
@@ -669,7 +692,7 @@ function DashboardContent() {
               </View>
             )}
             {/* Promise list */}
-            {IS_LIVE_ENVIRONMENT && promiseLoadStatus === 'loading' ? (
+            {IS_LIVE_ENVIRONMENT && (!promiseScopeLoaded || promiseLoadStatus === 'idle' || promiseLoadStatus === 'loading') ? (
               <View style={styles.emptyState}>
                 <Text style={[styles.emptyTitle, { color: colors.textMuted }]}>{t('common.loading')}</Text>
               </View>
@@ -688,11 +711,12 @@ function DashboardContent() {
               <View style={styles.emptyState}>
                 <Ionicons name="ribbon-outline" size={48} color="#1F2937" />
                 <Text style={styles.emptyTitle}>{t('dashboardExtended.noPromisesTracked')}</Text>
-                {scopeFilter !== 'state' && stateCode !== 'IN' && (
+                <Text style={{ color: colors.textMuted }}>{scopeLabel}</Text>
+                {promiseScope !== 'state' && stateCode !== 'IN' && (
                   <Pressable
                     accessibilityRole="button"
                     style={[styles.retryButton, { backgroundColor: colors.primary }]}
-                    onPress={() => setScopeFilter('state')}
+                    onPress={() => selectDisplayedScope('state')}
                   >
                     <Text style={{ color: '#FFFFFF', fontWeight: '700' }}>
                       {t('common.scopes.myState')} · {currentStateName}
@@ -766,7 +790,7 @@ function DashboardContent() {
         visible={exportVisible}
         onClose={() => setExportVisible(false)}
         issues={issueScopeReady ? issues : []}
-        scopeLabel={scopeLabel}
+        scopeLabel={labelForScope(scopeFilter)}
         coverage={t('export.loadedIssueCoverage', {
           defaultValue: '{{matched}} of {{total}} matching reports loaded for this area and these filters.',
           matched: issues.length, total: issueLoadTotal ?? 0,

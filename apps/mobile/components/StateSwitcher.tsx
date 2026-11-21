@@ -16,7 +16,13 @@ import { usePrefetchState } from '../lib/usePrefetchState';
 import { useTheme } from '../lib/theme';
 import { getLocalizedStateName } from '../lib/seedTranslations';
 
-export default function StateSwitcher({ allowWideLabel = false }: { allowWideLabel?: boolean }) {
+export default function StateSwitcher({
+  allowWideLabel = false,
+  onStateSelected,
+}: {
+  allowWideLabel?: boolean;
+  onStateSelected?: (code: string) => void;
+}) {
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const [visible, setVisible] = useState(false);
@@ -27,6 +33,7 @@ export default function StateSwitcher({ allowWideLabel = false }: { allowWideLab
 
   const handleSelect = (code: string) => {
     setStateCode(code);
+    onStateSelected?.(code);
     setVisible(false);
   };
 

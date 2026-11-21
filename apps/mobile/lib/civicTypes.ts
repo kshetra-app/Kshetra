@@ -24,6 +24,20 @@ export type IssueStatus = 'open' | 'acknowledged' | 'in_progress' | 'resolved' |
 /** Scope level for filtering civic dashboard content */
 export type CivicScope = 'constituency' | 'state' | 'national';
 
+export type PromiseScopeSelection = { stateCode: string; scope: CivicScope };
+
+/** A state selection opens its promise list. National remains an explicit option. */
+export function resolvePromiseScope(
+  stateCode: string,
+  hasConstituency: boolean,
+  selection: PromiseScopeSelection | null,
+): CivicScope {
+  if (stateCode === 'IN') return 'national';
+  if (selection?.stateCode !== stateCode) return 'state';
+  if (selection.scope === 'constituency' && !hasConstituency) return 'state';
+  return selection.scope;
+}
+
 export type HeadlineCategory =
   | 'politics'
   | 'governance'
