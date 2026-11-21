@@ -197,6 +197,7 @@ export const FEED_SOURCES: FeedSource[] = [
     category: 'elections',
     scope: 'national',
     rssUrl: 'https://indianexpress.com/section/elections/feed/',
+    articlePath: /^\/(?:article\/)?elections\//,
   },
 
   // ── NDTV ──
@@ -223,17 +224,6 @@ export const FEED_SOURCES: FeedSource[] = [
     category: 'top',
     scope: 'national',
     rssUrl: 'https://timesofindia.indiatimes.com/rssfeeds/-2128936835.cms',
-  },
-  {
-    sourceId: 'toi',
-    sourceName: 'Times of India',
-    domain: 'timesofindia.indiatimes.com',
-    accent: '#EA1D25',
-    verified: true,
-    language: 'en',
-    category: 'elections',
-    scope: 'national',
-    rssUrl: 'https://timesofindia.indiatimes.com/rssfeeds/54829575.cms',
   },
 
   // ── Hindi (Hindustan / Aaj Tak / News18) ──

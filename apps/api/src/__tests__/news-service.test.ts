@@ -83,6 +83,30 @@ describe('News Service (newsService.ts)', () => {
   });
 
   describe('getFeed filtering capabilities', () => {
+    it('accepts election section articles and excludes sports mixed into that feed', async () => {
+      const date = new Date(Date.now() - 60_000).toUTCString();
+      jest
+        .spyOn(rssParser, 'fetchFeedXml')
+        .mockImplementation(async (url) =>
+          url === 'https://indianexpress.com/section/elections/feed/'
+            ? '<rss><channel>' +
+              '<item><title>Panchayat election date announced</title>' +
+              '<link>https://indianexpress.com/elections/announcement/</link><pubDate>' +
+              date +
+              '</pubDate></item>' +
+              '<item><title>Cricket score</title>' +
+              '<link>https://indianexpress.com/sports/cricket/score/</link><pubDate>' +
+              date +
+              '</pubDate></item>' +
+              '</channel></rss>'
+            : null,
+        );
+      await refreshNews();
+      expect(getFeed({ category: 'elections' }).items.map((item) => item.title)).toEqual([
+        'Panchayat election date announced',
+      ]);
+    });
+
     it('returns Telugu Telangana publisher video and only fresh publisher-marked breaking news', async () => {
       const recent = new Date(Date.now() - 30 * 60 * 1000).toUTCString();
       const older = new Date(Date.now() - 12 * 60 * 60 * 1000).toUTCString();
