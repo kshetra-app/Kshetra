@@ -25,6 +25,7 @@ export interface RegisterAspirantRequestDTO {
   targetConstituencyId?: string;
   partyAffiliation?: string;
   isIndependent?: boolean;
+  isPublic?: boolean;
   manifestoUrl?: string;
   visionSummary?: string;
   userId?: string;
@@ -98,6 +99,14 @@ export class AspirantEndpoint {
     const res = await this.client.get<{ success: boolean; profile?: any | null }>(
       '/api/v1/aspirant/me',
       { authPolicy: 'authenticated' },
+    );
+    return res.data;
+  }
+
+  async setProfileVisibility(isPublic: boolean): Promise<{ success: boolean; profile?: any }> {
+    const res = await this.client.request<{ success: boolean; profile?: any }>(
+      '/api/v1/aspirant/me/visibility',
+      { method: 'PATCH', body: { isPublic }, authPolicy: 'authenticated' },
     );
     return res.data;
   }

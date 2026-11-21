@@ -34,6 +34,7 @@ test('JOB 047: Aspirant Public Profile & Aggregated Timeline', async (t) => {
     targetElectionYear: 2028,
     partyAffiliation: 'Independent',
     isIndependent: true,
+    isPublic: true,
     handle,
   });
 
@@ -101,5 +102,32 @@ test('JOB 047: Aspirant Public Profile & Aggregated Timeline', async (t) => {
     assert.equal(res.statusCode, 404);
     const body = JSON.parse(res.payload);
     assert.equal(body.code, 'ASPIRANT_NOT_FOUND');
+  });
+
+  await t.test('5. Keeps an unlisted aspirant private by ID and handle', async () => {
+    const privateProfile = await AspirantService.registerAspirant('other-user', {
+      displayName: 'Private applicant',
+      stateCode: 'TS',
+      handle: 'private-applicant',
+    });
+    assert.equal(privateProfile.isPublic, false);
+    for (const id of [privateProfile.id, privateProfile.handle]) {
+      const response = await app.inject({ url: `/api/v1/aspirant/profile/${id}` });
+      assert.equal(response.statusCode, 404);
+    }
+
+    await AspirantService.setProfileVisibility('other-user', true);
+    assert.equal((await AspirantService.getMyProfile('other-user')).isPublic, true);
+    assert.equal(
+      (await app.inject({ url: '/api/v1/aspirant/profile/private-applicant' })).statusCode,
+      200,
+    );
+
+    await AspirantService.setProfileVisibility('other-user', false);
+    assert.equal((await AspirantService.getMyProfile('other-user')).isPublic, false);
+    assert.equal(
+      (await app.inject({ url: '/api/v1/aspirant/profile/private-applicant' })).statusCode,
+      404,
+    );
   });
 });

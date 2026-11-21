@@ -208,6 +208,19 @@ export default function ProfileScreen() {
         </View>
       </View>
 
+      {userId && (
+        <View style={styles.section}>
+          <Pressable
+            accessibilityRole="button"
+            style={styles.editProfileButton}
+            onPress={() => router.push({ pathname: '/user/[userId]', params: { userId } })}
+          >
+            <Ionicons name="person-circle-outline" size={18} color="#4F8EF7" />
+            <Text style={styles.editProfileText}>{t('pages.openMyPage')}</Text>
+          </Pressable>
+        </View>
+      )}
+
       {/* User Profile Card */}
       {activeUserProfile && (
         <View style={styles.section}>

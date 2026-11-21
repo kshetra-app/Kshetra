@@ -38,6 +38,13 @@ export interface FeedCommentCursor {
   beforeAt: string;
 }
 
+export interface PostSubmission {
+  id: string;
+  content: string;
+  reviewStatus: 'pending' | 'rejected';
+  updatedAt: string;
+}
+
 interface PollChoiceResponse {
   success: boolean;
   pollId: string;
@@ -48,6 +55,14 @@ interface PollChoiceResponse {
 
 export class FeedEndpoint {
   constructor(private readonly client: ApiClient) {}
+
+  async listMySubmissions(offset = 0): Promise<{ submissions: PostSubmission[]; nextOffset: number | null }> {
+    const response = await this.client.get<{ submissions: PostSubmission[]; nextOffset: number | null }>(
+      '/api/v1/feed/my-submissions',
+      { authPolicy: 'authenticated', query: { offset: String(offset) } },
+    );
+    return response.data;
+  }
 
   /**
    * 1. Compose post

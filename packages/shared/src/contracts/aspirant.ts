@@ -8,10 +8,19 @@ export type AspirantVerificationTier = 'tier1' | 'tier2';
 export type AspirantVerificationStatus = 'unverified' | 'pending' | 'verified' | 'rejected';
 
 export type KYCDocumentType =
-  'voter_id' | 'aadhaar_masked' | 'pan' | 'election_affidavit' | 'party_letter';
+  | 'voter_id'
+  | 'aadhaar_masked'
+  | 'pan'
+  | 'election_affidavit'
+  | 'party_letter';
 
 export type PageEventType =
-  'townhall' | 'rally' | 'volunteer_meet' | 'webinar' | 'press_conference' | 'door_to_door';
+  | 'townhall'
+  | 'rally'
+  | 'volunteer_meet'
+  | 'webinar'
+  | 'press_conference'
+  | 'door_to_door';
 
 export type PageEventRsvpStatus = 'going' | 'interested' | 'cancelled';
 
@@ -40,6 +49,7 @@ export interface AspirantRegistrationRequest {
   targetElectionYear?: number;
   partyAffiliation?: string;
   isIndependent?: boolean;
+  isPublic?: boolean;
   manifestoUrl?: string;
   visionSummary?: string;
   hasCriminalCases?: boolean;

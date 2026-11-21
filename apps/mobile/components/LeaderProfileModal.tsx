@@ -7,7 +7,6 @@ import {
   Pressable,
   Modal,
   Share,
-  TextInput,
   Alert,
 } from 'react-native';
 import { Image } from 'expo-image';
@@ -21,14 +20,9 @@ import { useFeedStore } from '../stores/feed';
 import { useAuthStore } from '../stores/auth';
 import { useAspirantStore } from '../stores/aspirant';
 import { useDMStore } from '../stores/dmStore';
-import PostCard from './PostCard';
-import type { Post } from '../lib/feedTypes';
 import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 import { fetchUserFollowerCount } from '../lib/supabaseDataService';
-import {
-  canManageLeaderProfile,
-  getLeaderProfilePosts,
-} from '../lib/leaderProfileTruth';
+import { canManageLeaderProfile } from '../lib/leaderProfileTruth';
 
 interface LeaderProfileModalProps {
   visible: boolean;
@@ -52,15 +46,11 @@ export default function LeaderProfileModal({
   const router = useRouter();
 
   const [activeSubTab, setActiveSubTab] = useState<LeaderSubTab>('posts');
-  const [newPostText, setNewPostText] = useState('');
-  const [votedPolls, setVotedPolls] = useState<Record<string, number>>({});
   const [visionVotes, setVisionVotes] = useState<Record<string, number>>({});
   const [volunteerJoined, setVolunteerJoined] = useState(false);
   const [liveFollowerCount, setLiveFollowerCount] = useState<number | null>(null);
 
   const authUser = useAuthStore((s) => s.user);
-  const feedPosts = useFeedStore((s) => s.posts);
-  const addFeedPost = useFeedStore((s) => s.addPost);
   const followUser = useFeedStore((s) => s.followUser);
   const unfollowUser = useFeedStore((s) => s.unfollowUser);
   const isFollowing = useFeedStore((s) =>
@@ -94,116 +84,6 @@ export default function LeaderProfileModal({
       active = false;
     };
   }, [aspirant?.userId, isFollowing, visible]);
-
-  // Filter posts created by this aspirant/leader
-  const leaderPosts = useMemo(
-    () => getLeaderProfilePosts(feedPosts, aspirant, IS_LIVE_ENVIRONMENT),
-    [feedPosts, aspirant],
-  );
-
-  // Seed posts are limited to non-live previews; production shows only stored posts.
-  const effectivePosts: Post[] = useMemo(() => {
-    if (leaderPosts.length > 0) return leaderPosts;
-    if (!aspirant || IS_LIVE_ENVIRONMENT) return [];
-    const authorId = aspirant.userId || aspirant.id;
-    const authorName = aspirant.displayName;
-    const constName = aspirant.targetConstituencyName || 'Constituency';
-
-    if (isTelugu) {
-      return [
-        {
-          id: `post-seed-${aspirant.id}-1`,
-          author: {
-            id: authorId,
-            displayName: authorName,
-            avatarUrl: aspirant.avatarUrl,
-            isVerified: true,
-          },
-          stateCode: aspirant.stateCode || 'TS',
-          constituencyId: aspirant.targetConstituencyAcNo ? `${aspirant.stateCode}-AC-${aspirant.targetConstituencyAcNo}` : undefined,
-          constituencyName: constName,
-          content: `ఈరోజు ${constName} మండల పరిధిలోని రైతులతో సమావేశమై సాగునీటి సరఫరా మరియు ధాన్యం కొనుగోలు కేంద్రాల సమస్యలపై చర్చించడం జరిగింది. సమస్యల పరిష్కారం కోసం ఉన్నతాధికారుల దృష్టికి తీసుకెళ్తామని హామీ ఇచ్చాము.`,
-          type: 'field_update' as any,
-          replyCount: 18,
-          reactionCount: 245,
-          isPinned: true,
-          isDeleted: false,
-          language: 'te',
-          createdAt: new Date(Date.now() - 3600000 * 5).toISOString(),
-          updatedAt: new Date(Date.now() - 3600000 * 5).toISOString(),
-          hashtags: [constName.replace(/\s+/g, ''), 'రైతుసంక్షేమం', 'క్షేత్రసేవ'],
-        },
-        {
-          id: `post-seed-${aspirant.id}-2`,
-          author: {
-            id: authorId,
-            displayName: authorName,
-            avatarUrl: aspirant.avatarUrl,
-            isVerified: true,
-          },
-          stateCode: aspirant.stateCode || 'TS',
-          constituencyId: aspirant.targetConstituencyAcNo ? `${aspirant.stateCode}-AC-${aspirant.targetConstituencyAcNo}` : undefined,
-          constituencyName: constName,
-          content: `${constName} పట్టణంలోని ప్రధాన రహదారి గుంతల మరమ్మత్తులపై మున్సిపల్ అధికారులకు వినతిపత్రం సమర్పించాము. త్వరలోనే పనులు ప్రారంభిస్తామని స్పష్టం చేశారు.`,
-          type: 'civic' as any,
-          replyCount: 9,
-          reactionCount: 132,
-          isPinned: false,
-          isDeleted: false,
-          language: 'te',
-          createdAt: new Date(Date.now() - 3600000 * 28).toISOString(),
-          updatedAt: new Date(Date.now() - 3600000 * 28).toISOString(),
-          hashtags: [constName.replace(/\s+/g, ''), 'మౌలికవసతులు'],
-        },
-      ];
-    }
-    return [
-      {
-        id: `post-seed-${aspirant.id}-1`,
-        author: {
-          id: authorId,
-          displayName: authorName,
-          avatarUrl: aspirant.avatarUrl,
-          isVerified: true,
-        },
-        stateCode: aspirant.stateCode || 'TS',
-        constituencyId: aspirant.targetConstituencyAcNo ? `${aspirant.stateCode}-AC-${aspirant.targetConstituencyAcNo}` : undefined,
-        constituencyName: constName,
-        content: `Met with local farmers and community leaders in ${constName} today to inspect irrigation canals and discuss direct procurement center operations. Committed to resolving their grievances promptly with authorities.`,
-        type: 'field_update' as any,
-        replyCount: 18,
-        reactionCount: 245,
-        isPinned: true,
-        isDeleted: false,
-        language: 'en',
-        createdAt: new Date(Date.now() - 3600000 * 5).toISOString(),
-        updatedAt: new Date(Date.now() - 3600000 * 5).toISOString(),
-        hashtags: [constName.replace(/\s+/g, ''), 'FarmersFirst', 'FieldService'],
-      },
-      {
-        id: `post-seed-${aspirant.id}-2`,
-        author: {
-          id: authorId,
-          displayName: authorName,
-          avatarUrl: aspirant.avatarUrl,
-          isVerified: true,
-        },
-        stateCode: aspirant.stateCode || 'TS',
-        constituencyId: aspirant.targetConstituencyAcNo ? `${aspirant.stateCode}-AC-${aspirant.targetConstituencyAcNo}` : undefined,
-        constituencyName: constName,
-        content: `Submitted an official memorandum regarding bypass road resurfacing and municipal drainage repairs in ${constName}. Authorities have committed to expedited field inspection this week.`,
-        type: 'civic' as any,
-        replyCount: 9,
-        reactionCount: 132,
-        isPinned: false,
-        isDeleted: false,
-        language: 'en',
-        createdAt: new Date(Date.now() - 3600000 * 28).toISOString(),
-        updatedAt: new Date(Date.now() - 3600000 * 28).toISOString(),
-        hashtags: [constName.replace(/\s+/g, ''), 'CivicAction', 'Infrastructure'],
-      },
-    ];
-  }, [leaderPosts, aspirant, isTelugu]);
 
   // Bilingual strings resolution
   const effectiveMotto = useMemo(() => {
@@ -259,30 +139,6 @@ export default function LeaderProfileModal({
     ];
   }, [isTelugu]);
 
-  const pollData = useMemo(() => {
-    if (IS_LIVE_ENVIRONMENT) return null;
-    if (isTelugu) {
-      return {
-        question: `${aspirant?.targetConstituencyName || 'నియోజకవర్గం'}లో వచ్చే ఆర్థిక సంవత్సరంలో అత్యవసరంగా చేపట్టాల్సిన మొదటి ప్రాజెక్ట్ ఏది అని మీరు భావిస్తున్నారు?`,
-        options: [
-          { id: 'opt-1', label: '1. మంచినీటి పైప్‌లైన్ విస్తరణ', pct: 62, votes: 1412 },
-          { id: 'opt-2', label: '2. బైపాస్ రోడ్డు గుంతల మరమ్మత్తు', pct: 24, votes: 546 },
-          { id: 'opt-3', label: '3. ప్రభుత్వ ఆసుపత్రి అప్‌గ్రేడేషన్', pct: 14, votes: 318 },
-        ],
-        footerNote: 'మొత్తం ఓట్లు: 2,276 · పోల్ ముగియడానికి ఇంకా 2 రోజులు ఉంది',
-      };
-    }
-    return {
-      question: `Which priority infrastructure project should be undertaken first in ${aspirant?.targetConstituencyName || 'this constituency'}?`,
-      options: [
-        { id: 'opt-1', label: '1. Drinking water pipeline expansion & household taps', pct: 62, votes: 1412 },
-        { id: 'opt-2', label: '2. Bypass road repair & streetlight modernization', pct: 24, votes: 546 },
-        { id: 'opt-3', label: '3. Primary Health Center (PHC) & hospital upgrade', pct: 14, votes: 318 },
-      ],
-      footerNote: 'Total Votes: 2,276 · 2 days remaining',
-    };
-  }, [isTelugu, aspirant]);
-
   const displayedInitiatives = useMemo(() => {
     if (aspirant?.fieldInitiatives) return aspirant.fieldInitiatives;
     if (IS_LIVE_ENVIRONMENT) return [];
@@ -293,6 +149,13 @@ export default function LeaderProfileModal({
   }, [aspirant]);
 
   const displayedPledges = aspirant?.visionPledges ?? defaultPledges;
+  const showVision = displayedPledges.length > 0;
+  const showInitiatives = displayedInitiatives.length > 0;
+  const showStudio = isUserOwner && Boolean(aspirant?.privateTelemetry);
+
+  useEffect(() => {
+    if (visible) setActiveSubTab('posts');
+  }, [visible, aspirant?.id]);
 
   if (!aspirant) return null;
 
@@ -326,58 +189,6 @@ export default function LeaderProfileModal({
     } catch (error) {
       Alert.alert(error instanceof Error ? error.message : unavailableLabel);
     }
-  };
-
-  const handleCreatePost = async () => {
-    if (!newPostText.trim()) return;
-    if (IS_LIVE_ENVIRONMENT && (!authUser?.id || authUser.id !== aspirant.userId)) {
-      Alert.alert(isTelugu ? 'దయచేసి సైన్ ఇన్ చేయండి' : 'Sign in before publishing a post.');
-      return;
-    }
-    const stateCode = aspirant.stateCode.trim().toUpperCase();
-    if (IS_LIVE_ENVIRONMENT && !/^[A-Z]{2}$/.test(stateCode)) {
-      Alert.alert(unavailableLabel);
-      return;
-    }
-    const newPost: Post = {
-      id: `post-${Date.now()}`,
-      author: {
-        id: authUser?.id || aspirant.userId || 'current-user',
-        displayName: aspirant.displayName,
-        avatarUrl: aspirant.avatarUrl,
-        isVerified: false,
-      },
-      stateCode: stateCode || (IS_LIVE_ENVIRONMENT ? '' : 'IN'),
-      constituencyId: stateCode && aspirant.targetConstituencyAcNo
-        ? `${stateCode}-AC-${aspirant.targetConstituencyAcNo}`
-        : undefined,
-      constituencyName: aspirant.targetConstituencyName,
-      content: newPostText.trim(),
-      type: 'discussion',
-      replyCount: 0,
-      reactionCount: 1,
-      isPinned: false,
-      isDeleted: false,
-      language: i18n.language.split('-')[0] || 'en',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      hashtags: [aspirant.targetConstituencyName?.replace(/\s+/g, '') || 'CivicLeader'],
-    };
-    const outcome = await addFeedPost(newPost);
-    if (outcome === 'failed') {
-      Alert.alert(useFeedStore.getState().lastError || unavailableLabel);
-      return;
-    }
-    setNewPostText('');
-    Alert.alert(isTelugu ? 'పోస్ట్' : 'Post', outcome === 'queued'
-      ? (isTelugu ? 'కనెక్షన్ అందుబాటులోకి వచ్చినప్పుడు పోస్ట్ పంపబడుతుంది.' : 'Your post will be sent when the connection is available.')
-      : outcome === 'local'
-        ? (isTelugu ? 'ఇది స్థానిక ప్రివ్యూ మాత్రమే; ప్రచురించబడలేదు.' : 'This is a local preview; it was not published.')
-        : (isTelugu ? 'పోస్ట్ ప్రచురించబడింది.' : 'Your post was published.'));
-  };
-
-  const handleVotePoll = (pollId: string, optIndex: number) => {
-    setVotedPolls((prev) => ({ ...prev, [pollId]: optIndex }));
   };
 
   const handleSupportVision = (pledgeId: string) => {
@@ -626,7 +437,7 @@ export default function LeaderProfileModal({
               </Pressable>
 
               {/* Tab 3: Vision & Manifesto */}
-              <Pressable
+              {showVision && <Pressable
                 style={[styles.subTabPill, activeSubTab === 'vision' && styles.subTabPillActive]}
                 onPress={() => setActiveSubTab('vision')}
               >
@@ -634,10 +445,10 @@ export default function LeaderProfileModal({
                 <Text style={[styles.subTabPillText, activeSubTab === 'vision' && styles.subTabPillTextActive]}>
                   {t('pages.tabVision', { defaultValue: 'విజన్ & ప్రణాళిక' })}
                 </Text>
-              </Pressable>
+              </Pressable>}
 
               {/* Tab 4: Field Initiatives */}
-              <Pressable
+              {showInitiatives && <Pressable
                 style={[styles.subTabPill, activeSubTab === 'initiatives' && styles.subTabPillActive]}
                 onPress={() => setActiveSubTab('initiatives')}
               >
@@ -645,10 +456,10 @@ export default function LeaderProfileModal({
                 <Text style={[styles.subTabPillText, activeSubTab === 'initiatives' && styles.subTabPillTextActive]}>
                   {t('pages.tabInitiatives', { defaultValue: 'క్షేత్ర సేవా రికార్డు' })}
                 </Text>
-              </Pressable>
+              </Pressable>}
 
               {/* Tab 5: Values & Disclosures */}
-              <Pressable
+              {!IS_LIVE_ENVIRONMENT && <Pressable
                 style={[styles.subTabPill, activeSubTab === 'values' && styles.subTabPillActive]}
                 onPress={() => setActiveSubTab('values')}
               >
@@ -656,10 +467,10 @@ export default function LeaderProfileModal({
                 <Text style={[styles.subTabPillText, activeSubTab === 'values' && styles.subTabPillTextActive]}>
                   {t('pages.tabValues', { defaultValue: 'నైతిక విలువలు & హామీ' })}
                 </Text>
-              </Pressable>
+              </Pressable>}
 
               {/* Gated Studio Tab (Only for Owner / Admin) */}
-              {isUserOwner && (
+              {showStudio && (
                 <Pressable
                   style={[styles.subTabPill, styles.subTabStudioPill, activeSubTab === 'studio' && styles.subTabStudioPillActive]}
                   onPress={() => setActiveSubTab('studio')}
@@ -678,85 +489,39 @@ export default function LeaderProfileModal({
           {/* ═══════════════════════════════════════════════════════════════ */}
           {activeSubTab === 'posts' && (
             <View style={styles.tabSection}>
-              {/* Post Composer for the candidate */}
-              {isUserOwner && (
-                <View style={styles.composerCard}>
-                  <Text style={styles.composerHeading}>
-                    {t('pages.postUpdate', { defaultValue: 'నియోజకవర్గ ప్రజలతో తాజా సమాచారాన్ని పంచుకోండి' })}
-                  </Text>
-                  <TextInput
-                    style={styles.composerInput}
-                    placeholder={t('pages.postPlaceholder', { defaultValue: 'ఈరోజు క్షేత్రస్థాయి పరిశీలన లేదా మీ ఆలోచనలను పంచుకోండి...' })}
-                    placeholderTextColor="#94A3B8"
-                    value={newPostText}
-                    onChangeText={setNewPostText}
-                    multiline
-                  />
-                  <View style={styles.composerFooter}>
-                    <Pressable style={styles.composerPublishBtn} onPress={handleCreatePost}>
-                      <Text style={styles.composerPublishText}>
-                        {t('pages.postBtn', { defaultValue: 'పోస్ట్ చేయండి' })}
-                      </Text>
+              {aspirant.userId ? (
+                <View style={styles.activityCard}>
+                  <Pressable
+                    accessibilityRole="button"
+                    style={styles.activityAction}
+                    onPress={() => {
+                      onClose();
+                      router.push({ pathname: '/user/[userId]', params: { userId: aspirant.userId } });
+                    }}
+                  >
+                    <Ionicons name="reader-outline" size={18} color="#FFFFFF" />
+                    <Text style={styles.activityActionText}>
+                      {isUserOwner ? t('pages.openMyPage') : t('pages.openPersonalPage')}
+                    </Text>
+                  </Pressable>
+                  {isUserOwner && (
+                    <Pressable
+                      accessibilityRole="button"
+                      style={styles.activityAction}
+                      onPress={() => {
+                        onClose();
+                        router.push({ pathname: '/user/[userId]', params: { userId: aspirant.userId, compose: '1' } });
+                      }}
+                    >
+                      <Ionicons name="add-circle-outline" size={18} color="#FFFFFF" />
+                      <Text style={styles.activityActionText}>{t('profile.createPost')}</Text>
                     </Pressable>
-                  </View>
+                  )}
                 </View>
-              )}
-
-              {/* Render Leader's Verified Field Posts & Activity */}
-              {effectivePosts.map((post) => (
-                <View key={post.id} style={{ marginBottom: 12 }}>
-                  <PostCard post={post} />
+              ) : (
+                <View style={styles.emptyFeedBox}>
+                  <Text style={styles.emptyFeedText}>{t('profile.unavailable')}</Text>
                 </View>
-              ))}
-
-              {/* The local poll preview is not a production poll service. */}
-              {pollData && (
-              <View style={styles.pollCard}>
-                <View style={styles.pollHeaderRow}>
-                  <View style={styles.avatarImgSmall}>
-                    <Text style={{ fontWeight: '800', color: '#002B7F', fontSize: 13 }}>
-                      {aspirant.displayName.charAt(0)}
-                    </Text>
-                  </View>
-                  <View style={{ flex: 1, marginLeft: 8 }}>
-                    <Text style={styles.pollAuthorName}>{aspirant.displayName}</Text>
-                    <Text style={styles.pollCategoryLabel}>
-                      {t('pages.citizenPoll', { defaultValue: isTelugu ? '📊 ప్రజాభిప్రాయ సేకరణ (Citizen Poll)' : '📊 Citizen Poll' })}
-                    </Text>
-                  </View>
-                </View>
-
-                <Text style={styles.pollQuestion}>
-                  {pollData.question}
-                </Text>
-
-                <View style={styles.pollOptionsContainer}>
-                  {pollData.options.map((opt, idx) => {
-                    const isSelected = votedPolls['leader-poll-1'] === idx;
-                    return (
-                      <Pressable
-                        key={opt.id}
-                        style={[styles.pollOptionBtn, isSelected && styles.pollOptionBtnSelected]}
-                        onPress={() => handleVotePoll('leader-poll-1', idx)}
-                      >
-                        <View style={[styles.pollProgressFill, { width: `${opt.pct}%` }]} />
-                        <View style={styles.pollOptionContentRow}>
-                          <Text style={[styles.pollOptionText, isSelected && { fontWeight: '800', color: '#002B7F' }]}>
-                            {opt.label}
-                          </Text>
-                          <Text style={styles.pollOptionPctText}>
-                            {opt.pct}% ({opt.votes + (isSelected ? 1 : 0)})
-                          </Text>
-                        </View>
-                      </Pressable>
-                    );
-                  })}
-                </View>
-
-                <Text style={styles.pollFooterNote}>
-                  {pollData.footerNote}
-                </Text>
-              </View>
               )}
             </View>
           )}
@@ -937,7 +702,7 @@ export default function LeaderProfileModal({
           {/* ═══════════════════════════════════════════════════════════════ */}
           {/* PRIVATE TAB: LEADER ANALYTICS STUDIO (Candidate/Admin Only)    */}
           {/* ═══════════════════════════════════════════════════════════════ */}
-          {activeSubTab === 'studio' && isUserOwner && (
+          {activeSubTab === 'studio' && showStudio && (
             <View style={styles.tabSection}>
               <View style={styles.privateNoticeBox}>
                 <Ionicons name="lock-closed" size={16} color="#92400E" />
@@ -1375,56 +1140,19 @@ const styles = StyleSheet.create({
   tabSection: {
     gap: 10,
   },
-  composerCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    gap: 8,
-  },
-  composerHeading: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: '#002B7F',
-  },
-  composerInput: {
-    fontSize: 12,
-    color: '#0F172A',
-    minHeight: 52,
-    textAlignVertical: 'top',
-    backgroundColor: '#F8FAFC',
-    borderRadius: 8,
-    padding: 8,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  composerFooter: {
+  activityCard: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  activityAction: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: 4,
-  },
-  composerToolIcons: {
-    flexDirection: 'row',
+    minHeight: 46,
+    maxWidth: '100%',
+    borderRadius: 12,
+    paddingHorizontal: 13,
+    paddingVertical: 9,
     gap: 8,
-  },
-  composerIconBtn: {
-    padding: 6,
-    borderRadius: 6,
-    backgroundColor: '#F1F5F9',
-  },
-  composerPublishBtn: {
     backgroundColor: '#002B7F',
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 8,
   },
-  composerPublishText: {
-    color: '#FFFFFF',
-    fontSize: 11.5,
-    fontWeight: '800',
-  },
+  activityActionText: { color: '#FFFFFF', fontWeight: '700', flexShrink: 1 },
   emptyFeedBox: {
     backgroundColor: '#FFFFFF',
     borderRadius: 14,

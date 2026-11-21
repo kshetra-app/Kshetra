@@ -446,6 +446,14 @@ const en =  {
     }
   },
   "profile": {
+    "createPost": "Create post",
+    "submissions": "Submissions",
+    "submissionPending": "Awaiting review",
+    "submissionRejected": "Rejected",
+    "noSubmissions": "No posts awaiting review or rejected.",
+    "submissionsUnavailable": "Could not load submissions. Tap to retry.",
+    "noPublicPosts": "No published posts yet.",
+    "olderPosts": "Load older posts",
     "title": "Profile",
     "signIn": "Sign In",
     "signOut": "Sign Out",
@@ -467,6 +475,11 @@ const en =  {
     "following": "Following"
   },
   "editProfile": {
+    "removePhoto": "Remove photo",
+    "photoRequirements": "Choose a JPEG, PNG or WebP image up to 5 MB.",
+    "photoUnavailable": "Could not open your photos. Please try again.",
+    "photoUploadFailed": "Could not upload the photo. Check the file and try again.",
+    "saveFailed": "Could not save your profile. Please try again.",
     "title": "Edit Profile",
     "changePhoto": "Change Photo",
     "displayName": "Display Name",
@@ -3151,6 +3164,17 @@ const en =  {
     }
   },
   "pages": {
+      "personalPageTitle": "Personal page",
+      "personalPageDescription": "Your profile and published posts, together in one place.",
+      "openMyPage": "Open my page",
+      "openPersonalPage": "Open personal page",
+      "aspirantProfileTitle": "Civic aspirant profile",
+      "aspirantOptInDescription": "Planning to stand for election? Register your interest and choose whether to appear in the directory.",
+      "aspirantListed": "Visible in the Civic Aspirants directory.",
+      "aspirantPrivate": "Private to your account.",
+      "visibilitySaveFailed": "Could not save directory visibility. Please try again.",
+      "openAspirantProfile": "Open aspirant profile",
+      "noPublicAspirants": "No aspirants have chosen to appear in the directory yet.",
       "screenTitle": "Pages & Leaders",
       "tabAspirants": "Civic Aspirants",
       "tabPoliticians": "Representatives",

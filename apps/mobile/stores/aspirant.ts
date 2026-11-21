@@ -20,6 +20,10 @@ import * as dataService from '../lib/supabaseDataService';
 import { enqueue } from '../lib/offlineSync';
 import { useAuthStore } from './auth';
 import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
+import { SequenceGuard } from '../lib/staleResponseGuard';
+
+const profileReadGuard = new SequenceGuard();
+const directoryReadGuard = new SequenceGuard();
 
 interface AspirantState {
   // Current user aspirant profile (null if not registered)
@@ -57,6 +61,7 @@ interface AspirantState {
   endorseAspirant: (aspirantId: string, endorserId?: string) => Promise<void>;
   hydrateAspirants: (stateCode?: string, acNo?: number) => Promise<void>;
   hydrateAspirantProfile: () => Promise<void>;
+  setProfileVisibility: (isPublic: boolean) => Promise<boolean>;
   hydrateAcademyBadges: () => Promise<void>;
   hydrateAcademy: () => Promise<void>;
   submitModuleQuiz: (moduleId: string, answers: Array<{ questionId: string; selectedIndex: number }>) => Promise<any>;
@@ -460,6 +465,7 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
 
   hydrateAspirantProfile: async () => {
     const userId = useAuthStore.getState().user?.id;
+    const request = profileReadGuard.startRequest(userId ?? 'signed-out');
     if (!userId) {
       set({ profile: null, profileStatus: 'ready' });
       return;
@@ -467,6 +473,7 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
 
     set({ profileStatus: 'loading' });
     const result = await dataService.fetchMyAspirantProfile();
+    if (request.isStale() || useAuthStore.getState().user?.id !== userId) return;
     if (!result.success) {
       if (IS_LIVE_ENVIRONMENT) set({ profile: null, profileStatus: 'error' });
       else set({ profileStatus: 'error' });
@@ -504,6 +511,26 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
       isPublic: row.isPublic,
     };
     set({ profile, profileStatus: 'ready' });
+  },
+
+  setProfileVisibility: async (isPublic) => {
+    const userId = useAuthStore.getState().user?.id;
+    const profile = get().profile;
+    if (!userId || profile?.userId !== userId) return false;
+
+    const result = await dataService.saveAspirantVisibility(isPublic);
+    if (!result.success || result.profile?.id !== profile.id || result.profile?.isPublic !== isPublic) {
+      return false;
+    }
+    if (useAuthStore.getState().user?.id !== userId) return false;
+    profileReadGuard.reset();
+    set((state) => ({
+      profile: state.profile?.id === profile.id ? { ...state.profile, isPublic } : state.profile,
+      publicAspirants: state.publicAspirants.filter((item) => item.id !== profile.id),
+      profileStatus: 'ready',
+    }));
+    await get().hydrateAspirants();
+    return true;
   },
 
   hydrateAcademyBadges: async () => {
@@ -597,12 +624,18 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
         targetElectionYear: profileData.targetElectionYear,
         partyAffiliation: profileData.partyAffiliation,
         isIndependent: profileData.isIndependent,
+        isPublic: profileData.isPublic,
       });
       if (res.success && res.id) {
+        if (IS_LIVE_ENVIRONMENT && useAuthStore.getState().user?.id !== profileData.userId) {
+          throw new Error('Account changed during aspirant registration');
+        }
+        profileReadGuard.reset();
         set({
           profile: { ...newProfile, ...(res.profile ?? {}), id: res.id },
           profileStatus: 'ready',
         });
+        await get().hydrateAspirants();
         return;
       }
       if (IS_LIVE_ENVIRONMENT) {
@@ -836,9 +869,11 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
   },
 
   hydrateAspirants: async (stateCode, acNo) => {
+    const request = directoryReadGuard.startRequest(JSON.stringify([stateCode, acNo]));
     set({ publicAspirantsStatus: 'loading' });
     try {
       const remoteAspirants = await dataService.fetchPublicAspirants(stateCode, acNo);
+      if (request.isStale()) return;
       if (remoteAspirants !== null) {
         const mapped: AspirantProfile[] = remoteAspirants.map((r: any) => ({
           id: r.id,
@@ -871,6 +906,7 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
         set({ publicAspirantsStatus: 'error' });
       }
     } catch {
+      if (request.isStale()) return;
       if (IS_LIVE_ENVIRONMENT) set({ publicAspirants: [], publicAspirantsStatus: 'error' });
       else set({ publicAspirantsStatus: 'error' });
     }

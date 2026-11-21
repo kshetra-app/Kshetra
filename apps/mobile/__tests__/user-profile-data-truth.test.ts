@@ -41,16 +41,19 @@ describe('public user profile data truth', () => {
   it('distinguishes a confirmed empty post list from an unavailable post query', async () => {
     const query: any = {
       eq: jest.fn(() => query),
+      is: jest.fn(() => query),
       not: jest.fn(() => query),
       order: jest.fn(() => query),
-      limit: jest.fn().mockResolvedValue({ data: [], error: null }),
+      range: jest.fn().mockResolvedValue({ data: [], error: null }),
     };
     mockFrom.mockReturnValue({ select: () => query });
 
     await expect(fetchPostsByAuthor('user-1')).resolves.toEqual({ status: 'loaded', posts: [] });
     expect(query.not).toHaveBeenCalledWith('id', 'in', LEGACY_SYNTHETIC_POSTS_FILTER);
 
-    query.limit.mockRejectedValueOnce(new Error('Database unavailable'));
+    expect(query.eq).toHaveBeenCalledWith('author_id', 'user-1');
+    expect(query.is).toHaveBeenCalledWith('parent_id', null);
+    query.range.mockRejectedValueOnce(new Error('Database unavailable'));
     await expect(fetchPostsByAuthor('user-1')).resolves.toEqual({ status: 'unavailable' });
   });
 });

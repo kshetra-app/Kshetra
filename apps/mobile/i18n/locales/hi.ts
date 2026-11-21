@@ -445,6 +445,14 @@ const hi = {
     }
   },
   "profile": {
+    "createPost": "पोस्ट लिखें",
+    "submissions": "समीक्षा के लिए भेजी गई पोस्ट",
+    "submissionPending": "समीक्षा बाकी है",
+    "submissionRejected": "अस्वीकृत",
+    "noSubmissions": "समीक्षा के लिए लंबित या अस्वीकृत पोस्ट नहीं हैं।",
+    "submissionsUnavailable": "भेजी गई पोस्ट लोड नहीं हो सकीं। फिर कोशिश करें।",
+    "noPublicPosts": "अभी तक कोई पोस्ट प्रकाशित नहीं हुई है।",
+    "olderPosts": "पुरानी पोस्ट दिखाएँ",
     "title": "प्रोफ़ाइल",
     "signIn": "साइन इन",
     "signOut": "साइन आउट",
@@ -466,6 +474,11 @@ const hi = {
     "following": "अनुसरण"
   },
   "editProfile": {
+    "removePhoto": "फ़ोटो हटाएँ",
+    "photoRequirements": "5 MB तक की JPEG, PNG या WebP तस्वीर चुनें।",
+    "photoUnavailable": "आपकी फ़ोटो नहीं खुल सकीं। फिर से कोशिश करें।",
+    "photoUploadFailed": "फ़ोटो अपलोड नहीं हो सकी। फ़ाइल जाँचकर फिर कोशिश करें।",
+    "saveFailed": "आपकी प्रोफ़ाइल सहेजी नहीं जा सकी। फिर से कोशिश करें।",
     "title": "प्रोफ़ाइल संपादित करें",
     "changePhoto": "फ़ोटो बदलें",
     "displayName": "प्रदर्शन नाम",
@@ -3131,6 +3144,17 @@ const hi = {
     }
   },
   "pages": {
+      "personalPageTitle": "व्यक्तिगत पेज",
+      "personalPageDescription": "आपकी प्रोफ़ाइल और प्रकाशित पोस्ट एक ही जगह।",
+      "openMyPage": "मेरा पेज खोलें",
+      "openPersonalPage": "व्यक्तिगत पेज खोलें",
+      "aspirantProfileTitle": "चुनाव के इच्छुक नागरिक की प्रोफ़ाइल",
+      "aspirantOptInDescription": "चुनाव लड़ने की योजना है? पंजीकरण करें और तय करें कि आपकी प्रोफ़ाइल निर्देशिका में दिखे या नहीं।",
+      "aspirantListed": "चुनाव के इच्छुक नागरिकों की निर्देशिका में दिखती है।",
+      "aspirantPrivate": "केवल आपके खाते में दिखती है।",
+      "visibilitySaveFailed": "निर्देशिका की दृश्यता सहेजी नहीं जा सकी। फिर कोशिश करें।",
+      "openAspirantProfile": "इच्छुक नागरिक की प्रोफ़ाइल खोलें",
+      "noPublicAspirants": "अभी तक किसी ने निर्देशिका में अपनी प्रोफ़ाइल दिखाने का विकल्प नहीं चुना है।",
     "tabPosts": "पोस्ट और गतिविधियाँ",
     "tabProfile": "प्रोफ़ाइल और सफ़र",
     "tabVision": "दृष्टि और घोषणापत्र",

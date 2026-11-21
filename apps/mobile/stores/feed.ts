@@ -41,7 +41,7 @@ function getFeedRefreshKey(
   return JSON.stringify([userId, stateCode, constituencyId, period]);
 }
 
-function mapSupabasePost(post: any): Post {
+export function mapSupabasePost(post: any): Post {
   return {
     id: post.id,
     author: {
@@ -1387,11 +1387,11 @@ interface FeedState {
 
   // Post Actions
   addPost: (post: Post) => Promise<PostSubmissionOutcome>;
-  editPost: (postId: string, content: string) => Promise<boolean | 'pending'>;
-  deletePost: (postId: string) => Promise<boolean>;
+  editPost: (postId: string, content: string, timelinePost?: Post) => Promise<boolean | 'pending'>;
+  deletePost: (postId: string, timelinePost?: Post) => Promise<boolean>;
   addMediaToPost: (postId: string, media: PostMedia) => void;
-  toggleReaction: (postId: string, reaction: ReactionType) => Promise<boolean>;
-  votePoll: (postId: string, optionId: string | null) => Promise<boolean>;
+  toggleReaction: (postId: string, reaction: ReactionType, timelinePost?: Post) => Promise<boolean>;
+  votePoll: (postId: string, optionId: string | null, timelinePost?: Post) => Promise<boolean>;
   loadCommentPage: (postId: string, cursor: FeedCommentCursor | null) => Promise<FeedCommentCursor | null>;
   editComment: (postId: string, commentId: string, content: string) => Promise<boolean>;
 
@@ -1406,6 +1406,7 @@ interface FeedState {
   followUser: (userId: string, stateCode?: string, constituencyId?: string | null) => Promise<boolean>;
   unfollowUser: (userId: string, stateCode?: string, constituencyId?: string | null) => Promise<boolean>;
   isFollowing: (userId: string) => boolean;
+  hydrateFollowing: () => Promise<boolean>;
 
   // Sync & Realtime
   refreshFeed: (
@@ -1595,8 +1596,8 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
     }
   },
 
-  editPost: async (postId, content) => {
-    const post = get().posts.find((item) => item.id === postId);
+  editPost: async (postId, content, timelinePost) => {
+    const post = timelinePost?.id === postId ? timelinePost : get().posts.find((item) => item.id === postId);
     if (!post || !content.trim()) return false;
     const userId = useAuthStore.getState().user?.id;
     if (IS_LIVE_ENVIRONMENT && !userId) {
@@ -1635,8 +1636,8 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
     return true;
   },
 
-  deletePost: async (postId) => {
-    const post = get().posts.find((item) => item.id === postId);
+  deletePost: async (postId, timelinePost) => {
+    const post = timelinePost?.id === postId ? timelinePost : get().posts.find((item) => item.id === postId);
     if (!post) return false;
     const userId = useAuthStore.getState().user?.id;
     if (IS_LIVE_ENVIRONMENT && !userId) {
@@ -1671,8 +1672,8 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
       ),
     })),
 
-  toggleReaction: async (postId, reaction) => {
-    const post = get().posts.find((p) => p.id === postId);
+  toggleReaction: async (postId, reaction, timelinePost) => {
+    const post = timelinePost?.id === postId ? timelinePost : get().posts.find((p) => p.id === postId);
     if (!post) return false;
     const userId = useAuthStore.getState().user?.id;
     if (IS_LIVE_ENVIRONMENT && !userId) {
@@ -1732,8 +1733,8 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
     }
   },
 
-  votePoll: async (postId, optionId) => {
-    const poll = get().posts.find((post) => post.id === postId)?.poll;
+  votePoll: async (postId, optionId, timelinePost) => {
+    const poll = (timelinePost?.id === postId ? timelinePost : get().posts.find((post) => post.id === postId))?.poll;
     if (!poll || poll.isClosed || (poll.expiresAt && Date.parse(poll.expiresAt) <= Date.now()) ||
       (optionId !== null && !poll.options.some((option) => option.id === optionId))) return false;
     const userId = useAuthStore.getState().user?.id;
@@ -2015,14 +2016,15 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
       set({ lastError: 'You cannot follow your own account.' });
       return false;
     }
-    if (get().followedUserIds.includes(userId)) return true;
+    if (get().isFollowing(userId)) return true;
     if (authUserId && !await dataService.followUser(authUserId, userId)) {
       set({ lastError: 'Could not follow this account. Please try again.' });
       return false;
     }
 
+    if (useAuthStore.getState().user?.id !== authUserId) return false;
     set((state) => ({
-      followedUserIds: [...state.followedUserIds, userId],
+      followedUserIds: [...(state.followedUserOwnerId === (authUserId ?? null) ? state.followedUserIds : []), userId],
       followedUserOwnerId: authUserId ?? null,
       lastError: null,
     }));
@@ -2037,12 +2039,13 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
       set({ lastError: 'Sign in to unfollow this account.' });
       return false;
     }
-    if (!get().followedUserIds.includes(userId)) return true;
+    if (!get().isFollowing(userId)) return true;
     if (authUserId && !await dataService.unfollowUser(authUserId, userId)) {
       set({ lastError: 'Could not unfollow this account. Please try again.' });
       return false;
     }
 
+    if (useAuthStore.getState().user?.id !== authUserId) return false;
     set((state) => ({
       followedUserIds: state.followedUserIds.filter((id) => id !== userId),
       followedUserOwnerId: authUserId ?? null,
@@ -2053,7 +2056,18 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
   },
 
   isFollowing: (userId: string) => {
-    return get().followedUserIds.includes(userId);
+    const owner = useAuthStore.getState().user?.id ?? null;
+    return get().followedUserOwnerId === owner && get().followedUserIds.includes(userId);
+  },
+
+  hydrateFollowing: async () => {
+    const owner = useAuthStore.getState().user?.id;
+    if (!owner) return false;
+    const before = get().followedUserIds;
+    const ids = await dataService.fetchFollowedUserIds(owner);
+    if (!ids || useAuthStore.getState().user?.id !== owner) return false;
+    if (before === get().followedUserIds) set({ followedUserIds: ids, followedUserOwnerId: owner });
+    return true;
   },
 
   refreshFeedIfStale: async (stateCode = 'TS', constituencyId = null, requestedPeriod) => {

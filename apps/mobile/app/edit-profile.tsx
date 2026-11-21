@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -8,13 +8,16 @@ import {
   Pressable,
   Platform,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useUserProfileStore } from '../stores/userProfile';
+import { selectUserProfileForAccount, useUserProfileStore } from '../stores/userProfile';
 import { useAuthStore } from '../stores/auth';
-import { updateMyProfile } from '../lib/supabaseDataService';
-import { ROLE_CONFIG, type UserRole } from '../lib/moderationTypes';
+import { fetchUserProfile, updateUserProfile } from '../lib/supabaseDataService';
+import { Image } from 'expo-image';
+import * as ImagePicker from 'expo-image-picker';
+import { PROFILE_PHOTO_MAX_BYTES, removeReplacedProfilePhoto, uploadProfilePhoto } from '../lib/profilePhoto';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../lib/theme';
 import DiscoveryHubSheet from '../components/DiscoveryHubSheet';
@@ -34,27 +37,66 @@ const INTEREST_OPTIONS = [
   'Youth Politics',
 ];
 
-const ROLE_OPTIONS: { key: UserRole; label: string; desc: string }[] = [
-  { key: 'citizen', label: 'Citizen', desc: 'Regular voter and community member' },
-  { key: 'journalist', label: 'Journalist', desc: 'Media professional covering politics' },
-  { key: 'activist', label: 'Activist', desc: 'Social/political activist' },
-  { key: 'politician', label: 'Politician', desc: 'Current or aspiring political leader' },
-];
-
 export default function EditProfileScreen() {
+  const userId = useAuthStore((s) => s.user?.id);
+  return <EditProfile key={userId} userId={userId} />;
+}
+
+function EditProfile({ userId }: { userId?: string }) {
   const router = useRouter();
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const profile = useUserProfileStore((s) => s.profile);
+  const profile = useUserProfileStore((s) => selectUserProfileForAccount(s.profile, userId ?? null));
   const updateProfile = useUserProfileStore((s) => s.updateProfile);
-  const authUser = useAuthStore((s) => s.user);
-
-  const [displayName, setDisplayName] = useState(profile?.displayName ?? '');
-  const [bio, setBio] = useState(profile?.bio ?? '');
-  const [role, setRole] = useState<UserRole>(profile?.role ?? 'citizen');
+  const [displayName, setDisplayName] = useState('');
+  const [bio, setBio] = useState('');
   const [interests, setInterests] = useState<string[]>(profile?.interests ?? []);
   const [isSaving, setIsSaving] = useState(false);
   const [helpVisible, setHelpVisible] = useState(false);
+  const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [retry, setRetry] = useState(0);
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [savedPhoto, setSavedPhoto] = useState<string | null>(null);
+  const [selectedPhoto, setSelectedPhoto] = useState<ImagePicker.ImagePickerAsset | null>(null);
+  const draftUpload = useRef<{ uri: string; url: string } | null>(null);
+  const saving = useRef(false);
+
+  useEffect(() => {
+    if (!userId) return;
+    let active = true;
+    setLoadState('loading');
+    void fetchUserProfile(userId).then((result) => {
+      if (!active) return;
+      if (result.status !== 'found') {
+        setLoadState('error');
+        return;
+      }
+      const row = result.profile;
+      const avatar = typeof row.avatar_url === 'string' ? row.avatar_url : null;
+      setDisplayName(typeof row.display_name === 'string' ? row.display_name : '');
+      setBio(typeof row.bio === 'string' ? row.bio : '');
+      setPhoto(avatar);
+      setSavedPhoto(avatar);
+      setLoadState('ready');
+    });
+    return () => { active = false; };
+  }, [userId, retry]);
+
+  const choosePhoto = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: true, aspect: [1, 1], quality: 0.85 });
+      if (result.canceled || !result.assets[0]) return;
+      const asset = result.assets[0];
+      if ((asset.fileSize ?? 0) > PROFILE_PHOTO_MAX_BYTES || (asset.mimeType && !['image/jpeg', 'image/png', 'image/webp'].includes(asset.mimeType))) {
+        Alert.alert(t('editProfile.photoRequirements'));
+        return;
+      }
+      setSelectedPhoto(asset);
+      setPhoto(asset.uri);
+    } catch {
+      Alert.alert(t('editProfile.photoUnavailable'));
+    }
+  };
 
   const toggleInterest = (interest: string) => {
     setInterests((prev) =>
@@ -63,31 +105,51 @@ export default function EditProfileScreen() {
   };
 
   const handleSave = useCallback(async () => {
+    if (!userId || loadState !== 'ready' || saving.current) return;
     if (!displayName.trim()) {
       Alert.alert(t('editProfile.nameRequired', { defaultValue: 'Required' }), t('editProfile.nameRequiredMsg', { defaultValue: 'Please enter a display name' }));
       return;
     }
+    saving.current = true;
     setIsSaving(true);
     try {
-      if (authUser?.id) {
-        await updateMyProfile(authUser.id, {
-          displayName: displayName.trim(),
-          bio: bio.trim(),
-        });
+      let avatarUrl = photo;
+      if (selectedPhoto) {
+        try {
+          if (draftUpload.current?.uri !== selectedPhoto.uri) {
+            const url = await uploadProfilePhoto(userId, selectedPhoto.uri, selectedPhoto.mimeType);
+            draftUpload.current = { uri: selectedPhoto.uri, url };
+          }
+          avatarUrl = draftUpload.current.url;
+        } catch {
+          Alert.alert(t('editProfile.photoUploadFailed'));
+          return;
+        }
       }
+      if (useAuthStore.getState().user?.id !== userId) return;
+      const updated = await updateUserProfile(userId, {
+        displayName: displayName.trim(),
+        bio: bio.trim(),
+        ...(avatarUrl !== savedPhoto ? { avatarUrl } : {}),
+      });
+      if (!updated) {
+        Alert.alert(t('editProfile.saveFailed'));
+        return;
+      }
+      if (useAuthStore.getState().user?.id !== userId) return;
       updateProfile({
         displayName: displayName.trim(),
         bio: bio.trim(),
-        role,
+        avatarUrl,
         interests,
       });
+      if (savedPhoto && savedPhoto !== avatarUrl) void removeReplacedProfilePhoto(userId, savedPhoto).catch(() => {});
       router.back();
-    } catch {
-      Alert.alert(t('common.error'), t('common.error'));
     } finally {
+      saving.current = false;
       setIsSaving(false);
     }
-  }, [displayName, bio, role, interests, authUser, updateProfile, router, t]);
+  }, [displayName, bio, interests, userId, loadState, photo, selectedPhoto, savedPhoto, updateProfile, router, t]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -107,7 +169,7 @@ export default function EditProfileScreen() {
               >
                 <Ionicons name="help-circle-outline" size={22} color={colors.primary} />
               </Pressable>
-              <Pressable onPress={handleSave} hitSlop={8} disabled={isSaving} style={{ opacity: isSaving ? 0.5 : 1 }}>
+              <Pressable accessibilityRole="button" onPress={handleSave} hitSlop={8} disabled={isSaving || loadState !== 'ready'} style={{ opacity: isSaving || loadState !== 'ready' ? 0.5 : 1 }}>
                 <Text style={[styles.saveButton, { color: colors.primary }]}>
                   {isSaving ? t('common.loading') : t('common.save')}
                 </Text>
@@ -117,15 +179,31 @@ export default function EditProfileScreen() {
         }}
       />
 
-      <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+      {!userId || loadState !== 'ready' ? (
+        <View style={styles.avatarSection}>
+          {userId && loadState === 'loading' ? <ActivityIndicator color={colors.primary} /> : (
+            <>
+              <Text style={{ color: colors.text, textAlign: 'center' }}>{t(userId ? 'profile.unavailable' : 'auth.signInToSync')}</Text>
+              <Pressable accessibilityRole="button" style={styles.changePhotoButton} onPress={() => userId ? setRetry((value) => value + 1) : router.replace('/auth/sign-in')}>
+                <Text style={styles.changePhotoText}>{t(userId ? 'common.retry' : 'auth.signIn')}</Text>
+              </Pressable>
+            </>
+          )}
+        </View>
+      ) : <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
         {/* Avatar */}
         <View style={styles.avatarSection}>
           <View style={styles.avatarCircle}>
-            <Ionicons name="person" size={40} color="#4F8EF7" />
+            {photo ? <Image source={photo} style={styles.avatarPhoto} contentFit="cover" /> : <Ionicons name="person" size={40} color={colors.primary} />}
           </View>
-          <Pressable style={styles.changePhotoButton}>
+          <Pressable accessibilityRole="button" style={styles.changePhotoButton} onPress={() => void choosePhoto()} disabled={isSaving}>
             <Text style={styles.changePhotoText}>{t('editProfile.changePhoto', { defaultValue: 'Change Photo' })}</Text>
           </Pressable>
+          {!!photo && (
+            <Pressable accessibilityRole="button" style={styles.changePhotoButton} disabled={isSaving} onPress={() => { setSelectedPhoto(null); setPhoto(null); }}>
+              <Text style={styles.changePhotoText}>{t('editProfile.removePhoto')}</Text>
+            </Pressable>
+          )}
         </View>
 
         {/* Display Name */}
@@ -158,37 +236,6 @@ export default function EditProfileScreen() {
           <Text style={styles.charCount}>{bio.length}/200</Text>
         </View>
 
-        {/* Role */}
-        <View style={styles.field}>
-          <Text style={styles.fieldLabel}>{t('editProfile.rolePrompt', { defaultValue: 'I am a...' })}</Text>
-          <View style={styles.roleGrid}>
-            {ROLE_OPTIONS.map((opt) => {
-              const config = ROLE_CONFIG[opt.key];
-              const active = role === opt.key;
-              return (
-                <Pressable
-                  key={opt.key}
-                  style={[styles.roleCard, active && { borderColor: config.color, backgroundColor: config.color + '10' }]}
-                  onPress={() => setRole(opt.key)}
-                >
-                  <Ionicons
-                    name={config.icon as any}
-                    size={20}
-                    color={active ? config.color : '#6B7280'}
-                  />
-                  <Text style={[styles.roleLabel, active && { color: config.color }]}>{opt.label}</Text>
-                  <Text style={styles.roleDesc}>{opt.desc}</Text>
-                  {active && (
-                    <View style={[styles.roleCheck, { backgroundColor: config.color }]}>
-                      <Ionicons name="checkmark" size={12} color="#FFFFFF" />
-                    </View>
-                  )}
-                </Pressable>
-              );
-            })}
-          </View>
-        </View>
-
         {/* Interests */}
         <View style={styles.field}>
           <Text style={styles.fieldLabel}>{t('editProfile.interests', { defaultValue: 'Interests' })}</Text>
@@ -212,7 +259,7 @@ export default function EditProfileScreen() {
         </View>
 
         <View style={styles.bottomPadding} />
-      </ScrollView>
+      </ScrollView>}
       <DiscoveryHubSheet
         visible={helpVisible}
         onClose={() => setHelpVisible(false)}
@@ -247,6 +294,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderWidth: 2,
   },
+  avatarPhoto: { width: '100%', height: '100%', borderRadius: 50 },
   changePhotoButton: {
     paddingHorizontal: 16,
     paddingVertical: 8,

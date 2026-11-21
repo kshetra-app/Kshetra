@@ -14,7 +14,7 @@ import { trackProductEvent } from '../../analytics';
 
 export interface UpdateProfileRequestDTO {
   displayName?: string;
-  avatarUrl?: string;
+  avatarUrl?: string | null;
   bio?: string;
   constituencyId?: string;
   preferredLanguage?: string;

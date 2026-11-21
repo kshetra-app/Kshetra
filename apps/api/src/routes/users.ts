@@ -363,7 +363,7 @@ export async function userRoutes(app: FastifyInstance) {
   app.patch<{
     Body: {
       displayName?: string;
-      avatarUrl?: string;
+      avatarUrl?: string | null;
       bio?: string;
       constituencyId?: string;
       preferredLanguage?: string;
@@ -378,7 +378,7 @@ export async function userRoutes(app: FastifyInstance) {
           type: 'object',
           properties: {
             displayName: { type: 'string', minLength: 1, maxLength: 100 },
-            avatarUrl: { type: 'string' },
+            avatarUrl: { type: ['string', 'null'], maxLength: 2048 },
             bio: { type: 'string', maxLength: 500 },
             constituencyId: { type: 'string' },
             preferredLanguage: { type: 'string' },
@@ -433,6 +433,9 @@ export async function userRoutes(app: FastifyInstance) {
           });
         }
 
+        if (!data) {
+          return sendApiError(reply, request, 404, 'Not Found', 'User profile not found');
+        }
         return reply.send({ success: true, profile: data });
       } catch (err: any) {
         return sendApiError(

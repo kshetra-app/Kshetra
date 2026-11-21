@@ -6,7 +6,8 @@ import {
   ScrollView,
   Pressable,
   RefreshControl,
-  Share,
+  Alert,
+  Switch,
   Modal,
   ActivityIndicator,
 } from 'react-native';
@@ -24,8 +25,6 @@ import { useTheme } from '../../lib/theme';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import { useAspirantStore } from '../../stores/aspirant';
 import { useAuthStore } from '../../stores/auth';
-import { useUserProfileStore } from '../../stores/userProfile';
-import { canCreatePage } from '../../lib/pageGating';
 import { fetchVerifiedPoliticians } from '../../lib/supabaseDataService';
 import RegisterAspirantModal from '../../components/RegisterAspirantModal';
 import CivicScoreCard from '../../components/CivicScoreCard';
@@ -55,6 +54,7 @@ export default function PagesScreen() {
   const [loadingPoliticians, setLoadingPoliticians] = useState(false);
   const [selectedAspirant, setSelectedAspirant] = useState<AspirantProfile | null>(null);
   const [myPageModalVisible, setMyPageModalVisible] = useState(false);
+  const [savingVisibility, setSavingVisibility] = useState(false);
 
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const stateSeats = useMemo(() => {
@@ -73,12 +73,14 @@ export default function PagesScreen() {
   const stateName = (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode;
 
   const authUser = useAuthStore((s) => s.user);
-  const userProfile = useUserProfileStore((s) => s.profile);
 
   // Aspirant store
-  const aspirantProfile = useAspirantStore((s) => s.profile);
+  const storedAspirant = useAspirantStore((s) => s.profile);
+  const aspirantProfile = authUser && storedAspirant?.userId === authUser.id ? storedAspirant : null;
+  const setProfileVisibility = useAspirantStore((s) => s.setProfileVisibility);
   const aspirantProfileStatus = useAspirantStore((s) => s.profileStatus);
   const publicAspirants = useAspirantStore((s) => s.publicAspirants);
+  const publicAspirantsStatus = useAspirantStore((s) => s.publicAspirantsStatus);
   const getCivicScore = useAspirantStore((s) => s.getCivicScore);
   const badges = useAspirantStore((s) => s.badges);
   const endorseAspirant = useAspirantStore((s) => s.endorseAspirant);
@@ -114,19 +116,19 @@ export default function PagesScreen() {
     setRefreshing(false);
   }, [hydrateAspirants, hydrateAspirantProfile, hydrateAcademyBadges, loadPoliticians]);
 
-  const isEmailVerified = authUser ? Boolean(authUser.email_confirmed_at) : false;
-  const userCanCreate = canCreatePage(userProfile?.role, isEmailVerified);
   const civicScore = getCivicScore();
 
-  const handleInviteEndorsements = useCallback(async () => {
+  const changeVisibility = async (isPublic: boolean) => {
+    if (savingVisibility) return;
+    setSavingVisibility(true);
     try {
-      await Share.share({
-        message: `Support my civic journey as an aspirant on Poligram! Check out my profile and endorse my vision for ${aspirantProfile?.targetConstituencyName || 'our community'}: https://poligram.app/aspirant/${aspirantProfile?.id || ''}`,
-      });
-    } catch {
-      // User cancelled or share dismissed
+      if (!(await setProfileVisibility(isPublic))) {
+        Alert.alert(t('pages.visibilitySaveFailed', { defaultValue: 'Could not save directory visibility. Please try again.' }));
+      }
+    } finally {
+      setSavingVisibility(false);
     }
-  }, [aspirantProfile]);
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: '#F8FAFC' }]}>
@@ -246,24 +248,27 @@ export default function PagesScreen() {
               </View>
               <Pressable
                 style={[styles.btnRegister, { backgroundColor: colors.primary }]}
-                onPress={() => {
-                  if (aspirantProfile) {
-                    setActiveTab('my_page'); // go view the existing profile, don't reopen the create form
-                  } else {
-                    setRegisterVisible(true);
-                  }
-                }}
+                onPress={() => setActiveTab('my_page')}
               >
                 <Text style={styles.btnRegisterText}>
-                  {aspirantProfile ? t('pages.viewProfile', { defaultValue: 'My Profile' }) : t('pages.becomeAspirant', { defaultValue: 'Join Directory' })}
+                  {aspirantProfile ? t('pages.aspirantProfileTitle') : t('pages.registerAsAspirantBtn')}
                 </Text>
               </Pressable>
             </View>
 
             {/* Aspirants Directory */}
             <Text style={[styles.sectionHeading, { color: colors.text }]}>
-              {t('pages.verifiedAspirants', { defaultValue: 'Verified Civic Aspirants' })} ({publicAspirants.length})
+              {t('pages.tabAspirants')}
             </Text>
+            {publicAspirantsStatus === 'loading' ? (
+              <ActivityIndicator color={colors.primary} />
+            ) : publicAspirantsStatus === 'error' ? (
+              <Pressable accessibilityRole="button" onPress={() => void hydrateAspirants()}>
+                <Text style={{ color: colors.primary }}>{t('common.error')} · {t('common.retry')}</Text>
+              </Pressable>
+            ) : publicAspirantsStatus === 'ready' && publicAspirants.length === 0 ? (
+              <Text style={{ color: colors.textSecondary }}>{t('pages.noPublicAspirants')}</Text>
+            ) : null}
 
             {publicAspirants.map((asp) => {
               const isEndorsed = endorsedIds.includes(asp.id);
@@ -520,7 +525,24 @@ export default function PagesScreen() {
         {/* ─── TAB 3: MY PAGE ─── */}
         {activeTab === 'my_page' && (
           <View style={styles.tabContent}>
-            {aspirantProfileStatus === 'loading' ? (
+            <View style={[styles.personalPageCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+              <View style={styles.personalPageIntro}>
+                <Ionicons name="person-circle-outline" size={38} color={colors.primary} />
+                <View style={styles.personalPageText}>
+                  <Text style={[styles.profileMetaName, { color: colors.text }]}>{t('pages.personalPageTitle')}</Text>
+                  <Text style={[styles.personalPageDescription, { color: colors.textSecondary }]}>{t('pages.personalPageDescription')}</Text>
+                </View>
+              </View>
+              <Pressable
+                accessibilityRole="button"
+                style={[styles.btnActionPrimary, { backgroundColor: colors.primary }]}
+                onPress={() => authUser ? router.push({ pathname: '/user/[userId]', params: { userId: authUser.id } }) : router.push('/auth/sign-in')}
+              >
+                <Text style={styles.btnActionPrimaryText}>{authUser ? t('pages.openMyPage') : t('auth.signIn')}</Text>
+                <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />
+              </Pressable>
+            </View>
+            {!authUser ? null : aspirantProfileStatus === 'loading' ? (
               <View style={[styles.createPromptCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                 <ActivityIndicator color={colors.primary} />
                 <Text style={[styles.promptDesc, { color: colors.textSecondary }]}>{t('common.loading')}</Text>
@@ -535,10 +557,9 @@ export default function PagesScreen() {
                   <Text style={styles.btnActionPrimaryText}>{t('common.retry')}</Text>
                 </Pressable>
               </View>
-            ) : aspirantProfile || userCanCreate ? (
+            ) : aspirantProfile ? (
               <>
-                {aspirantProfile ? (
-                  <>
+                    <Text style={[styles.sectionHeading, { color: colors.text }]}>{t('pages.aspirantProfileTitle')}</Text>
                     {civicScore ? (
                       <CivicScoreCard score={civicScore} displayName={aspirantProfile.displayName} />
                     ) : (
@@ -560,6 +581,22 @@ export default function PagesScreen() {
                       </View>
                     </View>
 
+                    <View style={[styles.visibilityCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                      <View style={styles.personalPageText}>
+                        <Text style={[styles.profileMetaName, { color: colors.text }]}>{t('aspirantReg.listInDirectory')}</Text>
+                        <Text style={[styles.personalPageDescription, { color: colors.textSecondary }]}>
+                          {aspirantProfile.isPublic ? t('pages.aspirantListed') : t('pages.aspirantPrivate')}
+                        </Text>
+                      </View>
+                      {savingVisibility && <ActivityIndicator color={colors.primary} />}
+                      <Switch
+                        accessibilityLabel={t('aspirantReg.listInDirectory')}
+                        disabled={savingVisibility}
+                        value={Boolean(aspirantProfile.isPublic)}
+                        onValueChange={(value) => void changeVisibility(value)}
+                      />
+                    </View>
+
                     {/* Launch Full Leader Dossier & Studio */}
                     <Pressable
                       style={[styles.btnOpenDossier, { backgroundColor: '#002B7F' }]}
@@ -567,7 +604,7 @@ export default function PagesScreen() {
                     >
                       <Ionicons name="sparkles" size={16} color="#FFFFFF" />
                       <Text style={styles.btnOpenDossierText}>
-                        {t('pages.openFullDossier', { defaultValue: 'పూర్తి లీడర్ పేజీ & ప్రైవేట్ స్టూడియో తెరవండి' })}
+                        {t('pages.openAspirantProfile')}
                       </Text>
                       <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />
                     </Pressable>
@@ -636,58 +673,16 @@ export default function PagesScreen() {
                         <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
                       </Pressable>
 
-                      {/* Action 3: Invite Endorsement */}
-                      <Pressable
-                        style={[styles.nextStepItem, { borderTopColor: colors.border }]}
-                        onPress={handleInviteEndorsements}
-                      >
-                        <View style={[styles.nextStepIconWrap, { backgroundColor: '#10B98115' }]}>
-                          <Ionicons name="people-outline" size={20} color="#10B981" />
-                        </View>
-                        <View style={{ flex: 1 }}>
-                          <Text style={[styles.nextStepItemTitle, { color: colors.text }]}>
-                            {t('pages.actionEndorse', { defaultValue: 'Invite Your First Endorsement' })}
-                          </Text>
-                          <Text style={[styles.nextStepItemDesc, { color: colors.textMuted }]}>
-                            {t('pages.actionEndorseDesc', { defaultValue: 'Share your civic profile with voters to unlock the Community Champion badge.' })}
-                          </Text>
-                        </View>
-                        <Ionicons name="share-social-outline" size={16} color={colors.textMuted} />
-                      </Pressable>
                     </View>
-                  </>
-                ) : (
-                  <View style={[styles.createPromptCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                    <Ionicons name="create-outline" size={40} color={colors.primary} />
-                    <Text style={[styles.promptTitle, { color: colors.text }]}>
-                      {t('pages.claimPageTitle', { defaultValue: 'Launch Your Official Page' })}
-                    </Text>
-                    <Text style={[styles.promptDesc, { color: colors.textSecondary }]}>
-                      {t('pages.claimPageDesc', {
-                        defaultValue: 'You are eligible to create an official candidate or public representative page on Poligram.',
-                      })}
-                    </Text>
-                    <Pressable
-                      style={[styles.btnActionPrimary, { backgroundColor: colors.primary }]}
-                      onPress={() => setRegisterVisible(true)}
-                    >
-                      <Text style={styles.btnActionPrimaryText}>
-                        {t('pages.createPageBtn', { defaultValue: 'Create Official Page' })}
-                      </Text>
-                    </Pressable>
-                  </View>
-                )}
               </>
             ) : (
               <View style={[styles.createPromptCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                <Ionicons name="lock-closed-outline" size={40} color={colors.textMuted} />
+                <Ionicons name="flag-outline" size={32} color={colors.primary} />
                 <Text style={[styles.promptTitle, { color: colors.text }]}>
-                  {t('pages.citizenAccount', { defaultValue: 'Citizen Profile' })}
+                  {t('pages.aspirantProfileTitle')}
                 </Text>
                 <Text style={[styles.promptDesc, { color: colors.textSecondary }]}>
-                  {t('pages.citizenAccountDesc', {
-                    defaultValue: 'Page creation is available to Candidates, Aspirants, Parties, and Journalists. Want to run for office in your constituency?',
-                  })}
+                  {t('pages.aspirantOptInDescription')}
                 </Text>
                 <Pressable
                   style={[styles.btnActionPrimary, { backgroundColor: colors.primary }]}
@@ -705,10 +700,9 @@ export default function PagesScreen() {
         <View style={{ height: insets.bottom + 100 }} />
       </ScrollView>
 
-      <RegisterAspirantModal
-        visible={registerVisible}
-        onClose={() => setRegisterVisible(false)}
-      />
+      {registerVisible && authUser && (
+        <RegisterAspirantModal key={authUser.id} visible onClose={() => setRegisterVisible(false)} />
+      )}
 
       {/* Contextual Guidance */}
       <DiscoveryHubSheet
@@ -719,7 +713,7 @@ export default function PagesScreen() {
 
       {/* Interactive Leader Dossier & Activity Modal */}
       <LeaderProfileModal
-        visible={!!selectedAspirant || myPageModalVisible}
+        visible={!!selectedAspirant || Boolean(myPageModalVisible && aspirantProfile)}
         aspirant={selectedAspirant || aspirantProfile}
         onClose={() => {
           setSelectedAspirant(null);
@@ -733,6 +727,11 @@ export default function PagesScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  personalPageCard: { padding: 16, borderRadius: 18, borderWidth: 1, gap: 14, marginBottom: 16 },
+  personalPageIntro: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  personalPageText: { flex: 1, gap: 5 },
+  personalPageDescription: { fontSize: 14, lineHeight: 20 },
+  visibilityCard: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 14, borderRadius: 14, borderWidth: 1, marginBottom: 12 },
   tabBar: {
     flexDirection: 'row',
     borderBottomWidth: 1,
@@ -760,8 +759,8 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 16,
     borderWidth: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    gap: 12,
     marginBottom: 16,
   },
   heroTitle: { fontSize: 16, fontWeight: '800', marginBottom: 4 },
@@ -770,7 +769,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 8,
-    marginLeft: 12,
+    maxWidth: '100%',
   },
   btnRegisterText: { color: '#FFFFFF', fontSize: 12, fontWeight: '700' },
   sectionHeading: { fontSize: 15, fontWeight: '800', marginBottom: 12 },
@@ -935,6 +934,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 13,
     fontWeight: '800',
+    flexShrink: 1,
   },
   createPromptCard: {
     borderRadius: 14,
@@ -953,11 +953,15 @@ const styles = StyleSheet.create({
   promptTitle: { fontSize: 17, fontWeight: '800', marginTop: 12, marginBottom: 6 },
   promptDesc: { fontSize: 13, textAlign: 'center', lineHeight: 18, marginBottom: 18 },
   btnActionPrimary: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
   },
-  btnActionPrimaryText: { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
+  btnActionPrimaryText: { color: '#FFFFFF', fontSize: 13, fontWeight: '700', textAlign: 'center', flexShrink: 1 },
   nextStepsCard: {
     borderRadius: 14,
     padding: 16,

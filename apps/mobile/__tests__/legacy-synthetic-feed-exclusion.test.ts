@@ -19,7 +19,7 @@ const mockFrom = supabase.from as jest.Mock;
 
 function makeFeedQuery() {
   const query: Record<string, jest.Mock> = {};
-  for (const method of ['eq', 'not', 'lt', 'gte', 'order']) {
+  for (const method of ['eq', 'is', 'not', 'lt', 'gte', 'order']) {
     query[method] = jest.fn(() => query);
   }
   query.limit = jest.fn().mockResolvedValue({ data: [], error: null });

@@ -32,6 +32,7 @@ export async function aspirantRoutes(app: FastifyInstance) {
       targetElectionYear?: number;
       partyAffiliation?: string;
       isIndependent?: boolean;
+      isPublic?: boolean;
       manifestoUrl?: string;
       visionSummary?: string;
       hasCriminalCases?: boolean;
@@ -56,6 +57,7 @@ export async function aspirantRoutes(app: FastifyInstance) {
             targetElectionYear: { type: 'number' },
             partyAffiliation: { type: 'string' },
             isIndependent: { type: 'boolean' },
+            isPublic: { type: 'boolean' },
             manifestoUrl: { type: 'string' },
             visionSummary: { type: 'string', maxLength: 2000 },
             hasCriminalCases: { type: 'boolean' },
@@ -83,6 +85,7 @@ export async function aspirantRoutes(app: FastifyInstance) {
         targetElectionYear: body.targetElectionYear,
         partyAffiliation: body.partyAffiliation,
         isIndependent: body.isIndependent,
+        isPublic: body.isPublic,
         manifestoUrl: body.manifestoUrl,
         visionSummary: body.visionSummary,
         hasCriminalCases: body.hasCriminalCases,
@@ -120,6 +123,43 @@ export async function aspirantRoutes(app: FastifyInstance) {
       });
     }
   });
+
+  app.patch<{ Body: { isPublic: boolean } }>(
+    '/api/v1/aspirant/me/visibility',
+    {
+      schema: {
+        body: {
+          type: 'object',
+          required: ['isPublic'],
+          properties: { isPublic: { type: 'boolean' } },
+        },
+      },
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthenticatedUser(request, reply);
+      if (!auth) return;
+
+      try {
+        const profile = await AspirantService.setProfileVisibility(
+          auth.userId,
+          request.body.isPublic,
+        );
+        if (!profile) {
+          return sendApiError(reply, request, 404, 'Not Found', 'Aspirant profile not found');
+        }
+        return reply.send({ success: true, profile });
+      } catch (error) {
+        request.log.error({ err: error }, 'Could not update aspirant profile visibility');
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Could not save visibility',
+        );
+      }
+    },
+  );
 
   /**
    * 2. POST /api/v1/aspirant/kyc/submit — Submit KYC verification document (JOB 046 - DEC-177 Decision 1)

@@ -7,7 +7,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { createHash } from 'node:crypto';
 import { CONTENT_LIMITS, exceedsFeedMediaLimit } from '@kshetra/shared';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, isUsingServiceRole } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
 import { resolveAuthenticatedUser, assertActingUserMatch } from '../lib/userAuth';
 
@@ -62,6 +62,67 @@ async function savePollChoice(
 }
 
 export async function feedRoutes(app: FastifyInstance) {
+  app.get<{ Querystring: { offset?: number } }>(
+    '/api/v1/feed/my-submissions',
+    {
+      schema: {
+        querystring: {
+          type: 'object',
+          properties: { offset: { type: 'integer', minimum: 0 } },
+        },
+      },
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthenticatedUser(request, reply);
+      if (!auth) return;
+      reply.header('Cache-Control', 'private, no-store');
+
+      if (!isSupabaseConfigured || !isUsingServiceRole) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Post review status is unavailable',
+        );
+      }
+
+      const offset = request.query.offset ?? 0;
+      const pageSize = 20;
+      const { data, error } = await supabase
+        .from('posts')
+        .select('id,content,review_status,created_at,updated_at')
+        .eq('author_id', auth.userId)
+        .eq('is_deleted', false)
+        .is('parent_id', null)
+        .in('review_status', ['pending', 'rejected'])
+        .order('updated_at', { ascending: false })
+        .order('id', { ascending: false })
+        .range(offset, offset + pageSize);
+
+      if (error) {
+        request.log.error({ err: error }, 'Could not load author post submissions');
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Post review status is unavailable',
+        );
+      }
+      const rows = data ?? [];
+      return reply.send({
+        submissions: rows.slice(0, pageSize).map((row) => ({
+          id: row.id,
+          content: row.content,
+          reviewStatus: row.review_status,
+          updatedAt: row.updated_at,
+        })),
+        nextOffset: rows.length > pageSize ? offset + pageSize : null,
+      });
+    },
+  );
+
   /**
    * 1. POST /api/v1/feed/posts — Compose post
    */

@@ -246,7 +246,14 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
           )}
 
           {/* Public toggle */}
-          <Pressable style={styles.toggleRow} onPress={() => setIsPublic((v) => !v)}>
+          <Pressable
+            accessibilityRole="switch"
+            accessibilityState={{ checked: isPublic, disabled: isSubmitting }}
+            accessibilityLabel={t('aspirantReg.listInDirectory')}
+            disabled={isSubmitting}
+            style={styles.toggleRow}
+            onPress={() => setIsPublic((v) => !v)}
+          >
             <View style={{ flex: 1 }}>
               <Text style={styles.toggleTitle}>{t('aspirantReg.listInDirectory')}</Text>
               <Text style={styles.toggleSub}>{t('aspirantReg.listInDirectoryDesc')}</Text>

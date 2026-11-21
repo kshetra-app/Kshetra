@@ -46,6 +46,7 @@ interface PostDetailModalProps {
   autoFocusReply?: boolean;
   onClose: () => void;
   onEditPost?: (post: Post) => void;
+  onPostChanged?: (change: 'updated' | 'deleted') => void;
 }
 
 export default function PostDetailModal({
@@ -54,11 +55,13 @@ export default function PostDetailModal({
   autoFocusReply = false,
   onClose,
   onEditPost,
+  onPostChanged,
 }: PostDetailModalProps) {
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
-  const post = useFeedStore((state) => state.posts.find((entry) => entry.id === initialPost?.id) ?? initialPost);
+  const feedPost = useFeedStore((state) => state.posts.find((entry) => entry.id === initialPost?.id));
+  const post = onPostChanged ? initialPost : feedPost ?? initialPost;
   const [commentText, setCommentText] = useState('');
   const [isSendingComment, setIsSendingComment] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -214,7 +217,7 @@ export default function PostDetailModal({
           text: t('postCard.delete'),
           style: 'destructive',
           onPress: async () => {
-            const deleted = await deletePost(post.id);
+            const deleted = await deletePost(post.id, onPostChanged ? post : undefined);
             if (!deleted) {
               Alert.alert(t('feed.deleteFailed', { defaultValue: 'Could not delete this post. Check your connection and try again.' }));
               return;
@@ -225,6 +228,7 @@ export default function PostDetailModal({
               screenName: 'post_detail',
             });
             onClose();
+            onPostChanged?.('deleted');
           },
         },
       ],
@@ -387,7 +391,7 @@ export default function PostDetailModal({
                     poll={displayPost.poll}
                     onVote={async (optId) => {
                       if (!gateContentAction('vote_poll')) return;
-                      const saved = await votePoll(displayPost.id, optId);
+                      const saved = await votePoll(displayPost.id, optId, onPostChanged ? post : undefined);
                       if (!saved) {
                         Alert.alert(t('feed.voteFailed', { defaultValue: 'Could not record your vote. Check your connection and try again.' }));
                         return;
@@ -398,6 +402,7 @@ export default function PostDetailModal({
                         body: optId ?? '',
                         screenName: 'post_detail',
                       });
+                      onPostChanged?.('updated');
                     }}
                   />
                 </View>
@@ -416,7 +421,7 @@ export default function PostDetailModal({
                   style={styles.metricItem}
                   onPress={async () => {
                     if (!gateContentAction('react_post')) return;
-                    const saved = await toggleReaction(post.id, 'like');
+                    const saved = await toggleReaction(post.id, 'like', onPostChanged ? post : undefined);
                     if (!saved) {
                       Alert.alert(t('feed.reactionFailed', { defaultValue: 'Could not update your reaction. Check your connection and try again.' }));
                       return;
@@ -427,6 +432,7 @@ export default function PostDetailModal({
                       body: 'like',
                       screenName: 'post_detail',
                     });
+                    onPostChanged?.('updated');
                   }}
                   hitSlop={8}
                 >

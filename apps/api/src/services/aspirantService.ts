@@ -262,7 +262,7 @@ export class AspirantService {
       modulesCompleted: row.modules_completed ?? row.modulesCompleted ?? 0,
       challengesCompleted: row.challenges_completed ?? row.challengesCompleted ?? 0,
       metricAvailability,
-      isPublic: row.is_public ?? row.isPublic ?? true,
+      isPublic: row.is_public ?? row.isPublic ?? false,
       badges: row.badges ?? [],
       upcomingEvents: row.upcomingEvents ?? [],
       createdAt: row.created_at ?? row.createdAt ?? new Date().toISOString(),
@@ -280,12 +280,13 @@ export class AspirantService {
       throw new Error('STATE_CODE_REQUIRED');
     }
 
+    const useDatabase = this.shouldUseDatabaseAcademy();
     const now = new Date().toISOString();
     const cleanHandle = req.handle ? req.handle.trim().toLowerCase().replace(/^@/, '') : undefined;
 
     // Check handle uniqueness
     if (cleanHandle) {
-      if (isSupabaseConfigured) {
+      if (useDatabase) {
         const { data: existing } = await supabase
           .from('aspirant_profiles')
           .select('id, user_id')
@@ -319,12 +320,11 @@ export class AspirantService {
       has_criminal_cases: req.hasCriminalCases ?? false,
       criminal_cases_details: req.criminalCasesDetails || null,
       handle: cleanHandle || null,
-      verification_tier: 'tier1',
-      verification_status: 'unverified',
+      ...(typeof req.isPublic === 'boolean' ? { is_public: req.isPublic } : {}),
       updated_at: now,
     };
 
-    if (isSupabaseConfigured) {
+    if (useDatabase) {
       const { data, error } = await supabase
         .from('aspirant_profiles')
         .upsert(record, { onConflict: 'user_id' })
@@ -338,7 +338,8 @@ export class AspirantService {
     }
 
     // In-memory fallback
-    const id = this.mockProfiles.get(userId)?.id || `asp-${Date.now()}`;
+    const previousProfile = this.mockProfiles.get(userId);
+    const id = previousProfile?.id || `asp-${userId}`;
     const saved = {
       id,
       userId,
@@ -355,14 +356,16 @@ export class AspirantService {
       hasCriminalCases: req.hasCriminalCases ?? false,
       criminalCasesDetails: req.criminalCasesDetails || null,
       handle: cleanHandle || null,
-      verificationTier: 'tier1',
-      verificationStatus: 'unverified',
+      verificationTier:
+        previousProfile?.verification_tier ?? previousProfile?.verificationTier ?? 'tier1',
+      verificationStatus:
+        previousProfile?.verification_status ?? previousProfile?.verificationStatus ?? 'unverified',
       civicScore: this.mockProfiles.get(userId)?.civicScore || 0,
       issuesReported: this.mockProfiles.get(userId)?.issuesReported || 0,
       issuesResolved: this.mockProfiles.get(userId)?.issuesResolved || 0,
       communityEndorsements: this.mockProfiles.get(userId)?.communityEndorsements || 0,
       modulesCompleted: this.mockProfiles.get(userId)?.modulesCompleted || 0,
-      isPublic: true,
+      isPublic: req.isPublic ?? previousProfile?.isPublic ?? false,
       createdAt: this.mockProfiles.get(userId)?.createdAt || now,
     };
     this.mockProfiles.set(userId, saved);
@@ -378,6 +381,25 @@ export class AspirantService {
       .from('aspirant_profiles')
       .select('*')
       .eq('user_id', userId)
+      .maybeSingle();
+    if (error) throw academyError(error.message, 'DATABASE_ERROR');
+    return this.mapProfileRow(data);
+  }
+
+  static async setProfileVisibility(userId: string, isPublic: boolean): Promise<any | null> {
+    if (!this.shouldUseDatabaseAcademy()) {
+      const profile = this.mockProfiles.get(userId);
+      if (!profile) return null;
+      profile.is_public = isPublic;
+      profile.isPublic = isPublic;
+      return this.mapProfileRow(profile);
+    }
+
+    const { data, error } = await supabase
+      .from('aspirant_profiles')
+      .update({ is_public: isPublic, updated_at: new Date().toISOString() })
+      .eq('user_id', userId)
+      .select('*')
       .maybeSingle();
     if (error) throw academyError(error.message, 'DATABASE_ERROR');
     return this.mapProfileRow(data);
@@ -520,15 +542,16 @@ export class AspirantService {
   static async getPublicProfile(idOrHandle: string): Promise<AspirantPublicProfileDTO | null> {
     let profile: any = null;
 
-    if (isSupabaseConfigured) {
+    if (this.shouldUseDatabaseAcademy()) {
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
         idOrHandle,
       );
-      const query = supabase.from('aspirant_profiles').select('*');
-      const { data } = isUuid
+      const query = supabase.from('aspirant_profiles').select('*').eq('is_public', true);
+      const { data, error } = isUuid
         ? await query.eq('id', idOrHandle).maybeSingle()
         : await query.eq('handle', idOrHandle.toLowerCase().replace(/^@/, '')).maybeSingle();
 
+      if (error) throw academyError(error.message, 'DATABASE_ERROR');
       if (!data) return null;
       profile = data;
 
@@ -589,7 +612,10 @@ export class AspirantService {
 
     // In-memory fallback
     for (const p of this.mockProfiles.values()) {
-      if (p.id === idOrHandle || p.handle === idOrHandle.toLowerCase().replace(/^@/, '')) {
+      if (
+        p.isPublic &&
+        (p.id === idOrHandle || p.handle === idOrHandle.toLowerCase().replace(/^@/, ''))
+      ) {
         profile = p;
         break;
       }

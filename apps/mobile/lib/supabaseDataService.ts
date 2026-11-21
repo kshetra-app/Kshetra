@@ -567,7 +567,7 @@ export async function updateUserProfile(
   updates: {
     displayName?: string;
     bio?: string;
-    avatarUrl?: string;
+    avatarUrl?: string | null;
     role?: string;
     stateCode?: string;
     constituencyId?: string;
@@ -584,14 +584,6 @@ export async function updateUserProfile(
   }
 }
 
-export async function updateMyProfile(
-  userId: string,
-  updates: { displayName?: string; bio?: string },
-): Promise<void> {
-  if (!guard()) return;
-  await updateUserProfile(userId, updates);
-}
-
 // ─── Aspirant / Leadership Academy ───────────────────────────────────
 
 export async function registerAspirant(
@@ -605,6 +597,7 @@ export async function registerAspirant(
     targetElectionYear?: number;
     partyAffiliation?: string;
     isIndependent?: boolean;
+    isPublic?: boolean;
   },
 ): Promise<{ id: string | null; success: boolean; profile?: any }> {
   if (!guard()) return { id: null, success: false };
@@ -624,6 +617,15 @@ export async function fetchMyAspirantProfile(): Promise<{ success: boolean; prof
     return { success: result.success, profile: result.profile ?? null };
   } catch (err) {
     captureException(err as Error, { op: 'fetch_my_aspirant_profile' });
+    return { success: false };
+  }
+}
+
+export async function saveAspirantVisibility(isPublic: boolean): Promise<{ success: boolean; profile?: any }> {
+  try {
+    return await apiClient.aspirant.setProfileVisibility(isPublic);
+  } catch (err) {
+    captureException(err as Error, { op: 'save_aspirant_visibility' });
     return { success: false };
   }
 }
@@ -969,19 +971,16 @@ export async function fetchUserProfile(userId: string): Promise<UserProfileLooku
   }
 }
 
-export async function fetchPostsByAuthor(authorId: string, limit = 30): Promise<UserPostsLookup> {
+export async function fetchPostsByAuthor(
+  authorId: string,
+  limit = CONTENT_PAGE_SIZE,
+  offset = 0,
+  viewerId?: string,
+): Promise<UserPostsLookup> {
   if (!authorId || !guard()) return { status: 'unavailable' };
   try {
-    const { data, error } = await supabase
-      .from('posts')
-      .select('*')
-      .eq('author_id', authorId)
-      .eq('is_deleted', false)
-      .not('id', 'in', LEGACY_SYNTHETIC_POSTS_FILTER)
-      .order('created_at', { ascending: false })
-      .limit(limit);
-    if (error) throw error;
-    return { status: 'loaded', posts: (data ?? []) as Record<string, unknown>[] };
+    const posts = await fetchPostTimeline(viewerId, { authorId }, limit, offset);
+    return { status: 'loaded', posts };
   } catch (err) {
     captureException(err as Error, { op: 'fetch_posts_by_author', authorId });
     return { status: 'unavailable' };
@@ -1031,12 +1030,34 @@ export async function fetchBlendedFeed(
       followedIds = (await fetchFollowedUserIds(viewerId)) ?? [];
     }
 
+    return await fetchPostTimeline(viewerId, { stateCode, constituencyId, followedIds, period }, limit, offset);
+  } catch (err) {
+    captureException(err as Error, { op: 'fetch_blended_feed' });
+    return null;
+  }
+}
+
+async function fetchPostTimeline(
+  viewerId: string | null | undefined,
+  scope: { authorId: string } | {
+    stateCode?: string | null;
+    constituencyId?: string | null;
+    followedIds: string[];
+    period: ContentPeriod;
+  },
+  limit: number,
+  offset: number,
+) {
     let query = supabase
       .from('posts')
       .select('id,author_id,constituency_id,state_code,content,type,parent_id,reply_count,reaction_count,is_pinned,is_deleted,language,created_at,updated_at,post_media(id,media_type,url,alt_text,sort_order),polls(id,question,total_votes,is_closed,expires_at,poll_options(id,label,vote_count,sort_order))')
       .eq('is_deleted', false)
       .not('id', 'in', LEGACY_SYNTHETIC_POSTS_FILTER);
 
+    if ('authorId' in scope) {
+      query = query.eq('author_id', scope.authorId).is('parent_id', null);
+    } else {
+    const { stateCode, constituencyId, followedIds, period } = scope;
     if (stateCode === 'IN') {
       query = query.is('state_code', null);
     } else if (followedIds.length > 0 && constituencyId) {
@@ -1056,6 +1077,7 @@ export async function fetchBlendedFeed(
 
     const cutoff = getContentArchiveCutoff();
     query = period === 'archive' ? query.lt('created_at', cutoff) : query.gte('created_at', cutoff);
+    }
 
     const { data, error } = await query
       .order('created_at', { ascending: false })
@@ -1071,7 +1093,7 @@ export async function fetchBlendedFeed(
     });
     const paths = [...new Set(data.flatMap((post) => post.post_media.filter((m) => m.media_type !== 'link' && !/^https?:\/\//i.test(m.url)).map((m) => m.url as string)))];
     const [profiles, votes, reactions, signed] = await Promise.all([
-      supabase.from('user_profiles').select('user_id,display_name,avatar_url').in('user_id', authors),
+      supabase.from('user_profiles').select('user_id,display_name,avatar_url,verification_status').in('user_id', authors),
       viewerId && pollIds.length
         ? supabase.from('poll_votes').select('poll_id,option_id').eq('user_id', viewerId).in('poll_id', pollIds)
         : Promise.resolve({ data: [] }),
@@ -1093,6 +1115,7 @@ export async function fetchBlendedFeed(
         ...post,
         author_display_name: profile?.display_name,
         author_avatar_url: profile?.avatar_url,
+        author_is_verified: profile?.verification_status === 'verified',
         user_reaction: reactionByPost.get(post.id),
         media: [...post.post_media].sort((a,b) => a.sort_order-b.sort_order).map((m) => ({
           id: m.id, mediaType: m.media_type, altText: m.alt_text,
@@ -1108,10 +1131,6 @@ export async function fetchBlendedFeed(
         },
       };
     });
-  } catch (err) {
-    captureException(err as Error, { op: 'fetch_blended_feed' });
-    return null;
-  }
 }
 
 export async function fetchFeedForState(

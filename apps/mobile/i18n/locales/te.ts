@@ -445,6 +445,14 @@ const te = {
     }
   },
   "profile": {
+    "createPost": "పోస్ట్ రాయండి",
+    "submissions": "సమర్పణలు",
+    "submissionPending": "సమీక్ష కోసం వేచి ఉంది",
+    "submissionRejected": "తిరస్కరించబడింది",
+    "noSubmissions": "సమీక్ష కోసం వేచి ఉన్న లేదా తిరస్కరించిన పోస్ట్‌లు లేవు.",
+    "submissionsUnavailable": "సమర్పణలను చూపలేకపోయాం. మళ్లీ ప్రయత్నించండి.",
+    "noPublicPosts": "ఇంకా ప్రచురించిన పోస్ట్‌లు లేవు.",
+    "olderPosts": "పాత పోస్ట్‌లను చూపండి",
     "title": "ప్రొఫైల్",
     "signIn": "సైన్ ఇన్",
     "signOut": "సైన్ అవుట్",
@@ -466,6 +474,11 @@ const te = {
     "following": "ఫాలో అవుతున్నవి"
   },
   "editProfile": {
+    "removePhoto": "ఫోటోను తీసివేయండి",
+    "photoRequirements": "5 MB లోపు JPEG, PNG లేదా WebP చిత్రాన్ని ఎంచుకోండి.",
+    "photoUnavailable": "మీ ఫోటోలు తెరవలేకపోయాం. మళ్లీ ప్రయత్నించండి.",
+    "photoUploadFailed": "ఫోటోను అప్‌లోడ్ చేయలేకపోయాం. ఫైల్‌ను పరిశీలించి మళ్లీ ప్రయత్నించండి.",
+    "saveFailed": "మీ ప్రొఫైల్‌ను సేవ్ చేయలేకపోయాం. మళ్లీ ప్రయత్నించండి.",
     "title": "ప్రొఫైల్ మార్చండి",
     "changePhoto": "ఫోటో మార్చండి",
     "displayName": "ప్రదర్శన పేరు",
@@ -3134,6 +3147,17 @@ const te = {
     }
   },
   "pages": {
+      "personalPageTitle": "వ్యక్తిగత పేజీ",
+      "personalPageDescription": "మీ ప్రొఫైల్, ప్రచురించిన పోస్ట్‌లు ఒకే చోట.",
+      "openMyPage": "నా పేజీని తెరవండి",
+      "openPersonalPage": "వ్యక్తిగత పేజీని తెరవండి",
+      "aspirantProfileTitle": "పౌర ఆకాంక్షి ప్రొఫైల్",
+      "aspirantOptInDescription": "ఎన్నికల్లో పోటీ చేయాలనుకుంటున్నారా? నమోదు చేసుకుని మీ ప్రొఫైల్ డైరెక్టరీలో కనిపించాలో ఎంచుకోండి.",
+      "aspirantListed": "పౌర ఆకాంక్షుల డైరెక్టరీలో కనిపిస్తుంది.",
+      "aspirantPrivate": "మీ ఖాతాకు మాత్రమే కనిపిస్తుంది.",
+      "visibilitySaveFailed": "డైరెక్టరీ గోప్యత సెట్టింగ్‌ను సేవ్ చేయలేకపోయాం. మళ్లీ ప్రయత్నించండి.",
+      "openAspirantProfile": "ఆకాంక్షి ప్రొఫైల్‌ను తెరవండి",
+      "noPublicAspirants": "డైరెక్టరీలో కనిపించడానికి ఇంకా ఎవరూ ఎంచుకోలేదు.",
       "screenTitle": "పేజీలు & నాయకులు",
       "tabAspirants": "పౌర ఆశావాదులు",
       "tabPoliticians": "ప్రజాప్రతినిధులు",
