@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, TextInput, ActivityIndicator, Keyboard, BackHandler } from 'react-native';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -55,9 +55,24 @@ function LocalBodiesDirectory({ stateCode }: { stateCode: string }) {
   const [gps, setGps] = useState<GpNode[]>([]);
   const [mptcs, setMptcs] = useState<Representative[]>([]);
   const [zptcs, setZptcs] = useState<Representative[]>([]);
+  const loadedDirectoryViews = useRef(new Set<string>());
 
   useEffect(() => {
     if (!hasRepresentativeData(stateCode) || level === 'gp') return;
+    const viewKey = level === 'districts'
+      ? `districts:${stateCode}`
+      : level === 'mandals' && district
+        ? `mandals:${stateCode}:${district.districtKey}`
+        : level === 'gps' && district && mandal
+          ? `gps:${stateCode}:${district.districtKey}:${mandal.mandalKey}`
+          : null;
+    if (!viewKey) return;
+    const loadedViewKey = viewKey;
+    if (loadedDirectoryViews.current.has(loadedViewKey)) {
+      setLoading(false);
+      setLoadError(false);
+      return;
+    }
     let active = true;
     setLoading(true);
     setLoadError(false);
@@ -72,6 +87,7 @@ function LocalBodiesDirectory({ stateCode }: { stateCode: string }) {
           if (active) {
             setDistricts(items);
             setElectionYear(coverage.electionYear);
+            loadedDirectoryViews.current.add(loadedViewKey);
           }
         } else if (level === 'mandals' && district) {
           const [items, members] = await Promise.all([
@@ -81,6 +97,7 @@ function LocalBodiesDirectory({ stateCode }: { stateCode: string }) {
           if (active) {
             setMandals(items);
             setZptcs(members);
+            loadedDirectoryViews.current.add(loadedViewKey);
           }
         } else if (level === 'gps' && district && mandal) {
           const [items, members] = await Promise.all([
@@ -90,6 +107,7 @@ function LocalBodiesDirectory({ stateCode }: { stateCode: string }) {
           if (active) {
             setGps(items);
             setMptcs(members);
+            loadedDirectoryViews.current.add(loadedViewKey);
           }
         }
       } catch {
