@@ -2791,7 +2791,7 @@ const te = {
     "verifiedTsec": "ధృవీకరించబడిన టిఎస్ఈసి రికార్డులు",
     "tsStatsSummary": "31 జిల్లాలు · 12,705 గ్రామ పంచాయతీలు",
     "tsRecordsSummary": "72,134 ధృవీకరించబడిన సర్పంచ్ & వార్డు సభ్యుల రికార్డులు",
-    "verifiedApsec": "Verified APSEC",
+    "verifiedApsec": "ధృవీకరించిన ఏపీఎస్ఈసీ రికార్డులు",
     "apStatsSummary": "13 Districts · 13,079 Gram Panchayats",
     "apRecordsSummary": "152,646 verified Sarpanch, Ward, MPTC & ZPTC records",
     "chooseAnotherState": "Or choose another state:",
