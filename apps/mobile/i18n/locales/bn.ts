@@ -3,6 +3,16 @@
  */
 const bn = {
   "common": {
+    "newsCategories": {
+      "top": "শীর্ষ",
+      "politics": "রাজনীতি",
+      "elections": "নির্বাচন",
+      "governance": "শাসন",
+      "economy": "অর্থনীতি",
+      "regional": "আঞ্চলিক",
+      "breaking": "ব্রেকিং",
+      "video": "ভিডিও"
+    },
     "appName": "পলিগ্রাম",
     "loading": "লোড হচ্ছে…",
     "error": "কিছু ভুল হয়েছে",

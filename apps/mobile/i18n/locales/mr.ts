@@ -3,6 +3,16 @@
  */
 const mr = {
   "common": {
+    "newsCategories": {
+      "top": "प्रमुख",
+      "politics": "राजकारण",
+      "elections": "निवडणुका",
+      "governance": "प्रशासन",
+      "economy": "अर्थव्यवस्था",
+      "regional": "प्रादेशिक",
+      "breaking": "ब्रेकिंग",
+      "video": "व्हिडिओ"
+    },
     "appName": "पॉलीग्राम",
     "loading": "लोड होत आहे…",
     "error": "काहीतरी चूक झाली",

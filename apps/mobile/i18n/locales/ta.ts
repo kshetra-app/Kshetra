@@ -3,6 +3,16 @@
  */
 const ta = {
   "common": {
+    "newsCategories": {
+      "top": "முக்கியம்",
+      "politics": "அரசியல்",
+      "elections": "தேர்தல்",
+      "governance": "நிர்வாகம்",
+      "economy": "பொருளாதாரம்",
+      "regional": "வட்டாரம்",
+      "breaking": "உடனடி செய்தி",
+      "video": "காணொளி"
+    },
     "appName": "பாலிகிராம்",
     "loading": "ஏற்றப்படுகிறது…",
     "error": "ஏதோ தவறு நடந்துவிட்டது",

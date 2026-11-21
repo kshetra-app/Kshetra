@@ -3,6 +3,16 @@
  */
 const pa = {
   "common": {
+    "newsCategories": {
+      "top": "ਮੁੱਖ",
+      "politics": "ਰਾਜਨੀਤੀ",
+      "elections": "ਚੋਣਾਂ",
+      "governance": "ਪ੍ਰਸ਼ਾਸਨ",
+      "economy": "ਅਰਥਵਿਵਸਥਾ",
+      "regional": "ਖੇਤਰੀ",
+      "breaking": "ਬ੍ਰੇਕਿੰਗ",
+      "video": "ਵੀਡੀਓ"
+    },
     "appName": "ਪੋਲੀਗ੍ਰਾਮ",
     "loading": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ…",
     "error": "ਕੁਝ ਗਲਤ ਹੋ ਗਿਆ",

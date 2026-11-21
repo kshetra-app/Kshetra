@@ -3,6 +3,16 @@
  */
 const as = {
   "common": {
+    "newsCategories": {
+      "top": "মুখ্য",
+      "politics": "ৰাজনীতি",
+      "elections": "নিৰ্বাচন",
+      "governance": "শাসন",
+      "economy": "অৰ্থনীতি",
+      "regional": "আঞ্চলিক",
+      "breaking": "জৰুৰী খবৰ",
+      "video": "ভিডিঅ’"
+    },
     "appName": "পলিগ্ৰাম",
     "loading": "লোড হৈ আছে…",
     "error": "কিবা ভুল হ’ল",

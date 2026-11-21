@@ -3,6 +3,16 @@
  */
 const hi = {
   "common": {
+    "newsCategories": {
+      "top": "प्रमुख",
+      "politics": "राजनीति",
+      "elections": "चुनाव",
+      "governance": "शासन",
+      "economy": "अर्थव्यवस्था",
+      "regional": "क्षेत्रीय",
+      "breaking": "ब्रेकिंग",
+      "video": "वीडियो"
+    },
     "send": "भेजें",
     "appName": "पॉलीग्राम",
     "loading": "लोड हो रहा है…",

@@ -3,6 +3,16 @@
  */
 const gu = {
   "common": {
+    "newsCategories": {
+      "top": "મુખ્ય",
+      "politics": "રાજકારણ",
+      "elections": "ચૂંટણી",
+      "governance": "શાસન",
+      "economy": "અર્થતંત્ર",
+      "regional": "પ્રાદેશિક",
+      "breaking": "બ્રેકિંગ",
+      "video": "વિડિયો"
+    },
     "appName": "પોલિગ્રામ",
     "loading": "લોડ થઈ રહ્યું છે…",
     "error": "કંઈક ખોટું થયું",

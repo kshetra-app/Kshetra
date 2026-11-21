@@ -3,6 +3,16 @@
  */
 const ne = {
   "common": {
+    "newsCategories": {
+      "top": "प्रमुख",
+      "politics": "राजनीति",
+      "elections": "निर्वाचन",
+      "governance": "शासन",
+      "economy": "अर्थतन्त्र",
+      "regional": "क्षेत्रीय",
+      "breaking": "ताजा खबर",
+      "video": "भिडियो"
+    },
     "appName": "पोलिग्राम",
     "loading": "लोड हुँदैछ…",
     "error": "केही गलत भयो",

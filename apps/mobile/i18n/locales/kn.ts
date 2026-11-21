@@ -3,6 +3,16 @@
  */
 const kn = {
   "common": {
+    "newsCategories": {
+      "top": "ಮುಖ್ಯ",
+      "politics": "ರಾಜಕೀಯ",
+      "elections": "ಚುನಾವಣೆ",
+      "governance": "ಆಡಳಿತ",
+      "economy": "ಆರ್ಥಿಕತೆ",
+      "regional": "ಪ್ರಾದೇಶಿಕ",
+      "breaking": "ತುರ್ತು ಸುದ್ದಿ",
+      "video": "ವೀಡಿಯೊ"
+    },
     "appName": "ಪಾಲಿಗ್ರಾಮ್",
     "loading": "ಲೋಡ್ ಆಗುತ್ತಿದೆ…",
     "error": "ಏನೋ ತಪ್ಪಾಗಿದೆ",

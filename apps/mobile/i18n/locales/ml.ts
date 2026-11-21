@@ -3,6 +3,16 @@
  */
 const ml = {
   "common": {
+    "newsCategories": {
+      "top": "പ്രധാനം",
+      "politics": "രാഷ്ട്രീയം",
+      "elections": "തിരഞ്ഞെടുപ്പ്",
+      "governance": "ഭരണം",
+      "economy": "സമ്പദ്‌വ്യവസ്ഥ",
+      "regional": "പ്രാദേശികം",
+      "breaking": "ബ്രേക്കിംഗ്",
+      "video": "വീഡിയോ"
+    },
     "appName": "പോളിഗ്രാം",
     "loading": "ശേഖരിക്കുന്നു…",
     "error": "എന്തോ തകരാർ സംഭവിച്ചു",

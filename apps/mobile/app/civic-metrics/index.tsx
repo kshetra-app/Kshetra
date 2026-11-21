@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import StateSwitcher from '../../components/StateSwitcher';
 import { View, Text, StyleSheet, ScrollView, Pressable, StatusBar, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -177,6 +178,10 @@ export default function CivicMetricsScreen() {
         </Pressable>
       </View>
 
+      <View style={styles.statePicker}>
+        <StateSwitcher />
+      </View>
+
       {/* Tab Bar */}
       <ScrollView horizontal showsHorizontalScrollIndicator keyboardShouldPersistTaps="handled"
         style={[styles.tabBar, { borderBottomColor: colors.border }]} contentContainerStyle={styles.tabBarContent}>
@@ -216,7 +221,9 @@ export default function CivicMetricsScreen() {
             ) : budgetSummary ? <BudgetCard summary={budgetSummary} /> : (
               <View style={styles.empty}>
                 <Text style={styles.emptyText}>
-                  {budgetLoadStatus === 'error' ? noConnectedData : t('civicMetrics.noBudgetData')}
+                  {activeState === 'IN'
+                    ? t('stateSwitcher.selectState')
+                    : budgetLoadStatus === 'error' ? noConnectedData : t('civicMetrics.noBudgetData')}
                 </Text>
               </View>
             )}
@@ -477,6 +484,7 @@ const styles = StyleSheet.create({
   backBtn: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
   headerTitle: { fontSize: 18, fontWeight: '900' },
   headerSub: { fontSize: 11, fontWeight: '600' },
+  statePicker: { alignItems: 'flex-start', marginHorizontal: 16, marginBottom: 6 },
   tabBar: { flexGrow: 0, borderBottomWidth: 1 },
   tabBarContent: { paddingHorizontal: 12, gap: 4, alignItems: 'center' },
   tab: { flexDirection: 'row', alignItems: 'center', gap: 4, minHeight: 44, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20 },

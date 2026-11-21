@@ -3,6 +3,16 @@
  */
 const or = {
   "common": {
+    "newsCategories": {
+      "top": "ପ୍ରମୁଖ",
+      "politics": "ରାଜନୀତି",
+      "elections": "ନିର୍ବାଚନ",
+      "governance": "ଶାସନ",
+      "economy": "ଅର୍ଥନୀତି",
+      "regional": "ଆଞ୍ଚଳିକ",
+      "breaking": "ତାଜା ଖବର",
+      "video": "ଭିଡିଓ"
+    },
     "appName": "ପୋଲିଗ୍ରାମ୍",
     "loading": "ଲୋଡ୍ ହେଉଛି...",
     "error": "କିଛି ଭୁଲ୍ ହୋଇଗଲା",

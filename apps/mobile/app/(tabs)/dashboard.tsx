@@ -35,6 +35,8 @@ import { useTheme } from '../../lib/theme';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import { gateContentAction, logContentAction } from '../../lib/contentAccountability';
 import { setCivicIssueRealtimeScope } from '../../lib/realtimeService';
+import StateSwitcher from '../../components/StateSwitcher';
+import { getLocalizedStateName } from '../../lib/seedTranslations';
 
 const SCOPE_OPTIONS: { key: CivicScope; icon: string; tKey: string }[] = [
   { key: 'constituency', icon: 'location', tKey: 'common.scopes.myConstituency' },
@@ -76,7 +78,7 @@ type DashboardTab = 'issues' | 'activity' | 'promises';
 const TAB_KEYS: { key: DashboardTab; tKey: string; icon: string }[] = [
   { key: 'issues', tKey: 'dashboard.tabs.issues', icon: 'alert-circle' },
   { key: 'promises', tKey: 'dashboard.tabs.promises', icon: 'ribbon' },
-  { key: 'activity', tKey: 'dashboard.tabs.activity', icon: 'pulse' },
+  { key: 'activity', tKey: 'profileExtended.activity', icon: 'pulse' },
 ];
 
 const STATUS_FILTER_KEYS: { key: IssueStatus | 'all'; tKey: string }[] = [
@@ -96,7 +98,7 @@ export default function DashboardScreen() {
 }
 
 function DashboardContent() {
-  const { t } = useTranslation();
+  const { t, i18n: translations } = useTranslation();
   const { colors } = useTheme();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<DashboardTab>('issues');
@@ -243,12 +245,12 @@ function DashboardContent() {
     return { issues: filteredIssues, headlines: filteredHeadlines };
   }, [allIssues, allHeadlines, scopeFilter, stateCode, constituencyId, issueFilter, statusFilter]);
 
-  // Scope label
-  const scopeLabel = useMemo(() => {
-    if (scopeFilter === 'constituency' && home) return home.name;
-    if (scopeFilter === 'state') return (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode;
-    return t('common.scopes.allIndia');
-  }, [scopeFilter, stateCode, myHome, t]);
+  const currentStateName = getLocalizedStateName(stateCode, translations.language, STATES[stateCode]?.name ?? stateCode);
+
+  let scopeLabel = t('common.scopes.allIndia');
+  if (scopeFilter === 'constituency' && home) scopeLabel = home.name;
+  if (scopeFilter === 'state') scopeLabel = currentStateName;
+  const issueCount = IS_LIVE_ENVIRONMENT ? (issueScopeReady ? issueLoadTotal : null) : issues.length;
 
   const issueStats = useMemo(() => {
     const open = issues.filter((i) => i.status === 'open').length;
@@ -287,11 +289,10 @@ function DashboardContent() {
           <View style={styles.scopeIndicator}>
             <Ionicons name="funnel" size={10} color={colors.textMuted} />
             <Text style={[styles.scopeIndicatorText, { color: colors.textMuted }]}>
-              {scopeLabel} · {IS_LIVE_ENVIRONMENT
-                ? issueScopeReady ? issueLoadTotal ?? 0 : '…'
-                : issues.length} {IS_LIVE_ENVIRONMENT || issues.length !== 1
-                  ? t('common.items')
-                  : t('common.item')}
+              {scopeLabel}
+              {activeTab === 'issues' && issueCount !== null
+                ? ` · ${issueCount} ${t(issueCount === 1 ? 'common.item' : 'common.items')}`
+                : ''}
             </Text>
           </View>
         </View>
@@ -312,6 +313,10 @@ function DashboardContent() {
             </Pressable>
           )}
         </View>
+      </View>
+
+      <View style={styles.statePicker}>
+        <StateSwitcher />
       </View>
 
       {/* ── Scope Toggle (horizontal scroll) ── */}
@@ -344,7 +349,7 @@ function DashboardContent() {
                 ]}
               >
                 {opt.key === 'state'
-                  ? (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode
+                  ? stateCode === 'IN' ? t(opt.tKey) : currentStateName
                   : opt.key === 'constituency' && myHome
                     ? myHome.name
                     : t(opt.tKey)}
@@ -690,7 +695,7 @@ function DashboardContent() {
                     onPress={() => setScopeFilter('state')}
                   >
                     <Text style={{ color: '#FFFFFF', fontWeight: '700' }}>
-                      {t('common.scopes.myState')} · {STATES[stateCode]?.name ?? stateCode}
+                      {t('common.scopes.myState')} · {currentStateName}
                     </Text>
                   </Pressable>
                 )}
@@ -891,6 +896,7 @@ const styles = StyleSheet.create({
   },
   dashboardHeading: { flex: 1, minWidth: 0 },
   dashboardBack: { width: 44, minHeight: 44, justifyContent: 'center' },
+  statePicker: { alignItems: 'flex-start', marginHorizontal: 16, marginBottom: 4 },
   quickLinks: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginHorizontal: 12, marginBottom: 8 },
   quickLink: {
     flexGrow: 1, flexBasis: '42%', flexDirection: 'row', alignItems: 'center', gap: 8,

@@ -3,6 +3,16 @@
  */
 const en =  {
   "common": {
+    "newsCategories": {
+      "top": "Top",
+      "politics": "Politics",
+      "elections": "Elections",
+      "governance": "Governance",
+      "economy": "Economy",
+      "regional": "Regional",
+      "breaking": "Breaking",
+      "video": "Video"
+    },
     "send": "Send",
     "appName": "Poligram",
     "loading": "Loading…",

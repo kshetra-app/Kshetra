@@ -3,6 +3,16 @@
  */
 const te = {
   "common": {
+    "newsCategories": {
+      "top": "ప్రధాన",
+      "politics": "రాజకీయం",
+      "elections": "ఎన్నికలు",
+      "governance": "పాలన",
+      "economy": "ఆర్థికం",
+      "regional": "ప్రాంతీయ",
+      "breaking": "బ్రేకింగ్",
+      "video": "వీడియో"
+    },
     "send": "పంపండి",
     "appName": "పాలిగ్రామ్",
     "loading": "లోడ్ అవుతోంది…",
