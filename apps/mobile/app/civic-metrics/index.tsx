@@ -159,7 +159,9 @@ export default function CivicMetricsScreen() {
 
       {/* Custom Header */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
-        <Pressable onPress={() => router.back()} style={[styles.backBtn, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
+        <Pressable accessibilityRole="button" accessibilityLabel={t('common.back')}
+          onPress={() => { if (router.canGoBack()) router.back(); else router.replace('/(tabs)/dashboard'); }}
+          style={[styles.backBtn, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
           <Ionicons name="arrow-back" size={22} color={colors.primary} />
         </Pressable>
         <View style={{ flex: 1 }}>
@@ -176,7 +178,8 @@ export default function CivicMetricsScreen() {
       </View>
 
       {/* Tab Bar */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={[styles.tabBar, { borderBottomColor: colors.border }]} contentContainerStyle={styles.tabBarContent}>
+      <ScrollView horizontal showsHorizontalScrollIndicator keyboardShouldPersistTaps="handled"
+        style={[styles.tabBar, { borderBottomColor: colors.border }]} contentContainerStyle={styles.tabBarContent}>
         {TAB_KEYS.map((tab) => (
           <Pressable 
             key={tab.key} 
@@ -186,6 +189,8 @@ export default function CivicMetricsScreen() {
               activeTab === tab.key && { backgroundColor: colors.primary, borderColor: colors.primary }
             ]} 
             onPress={() => setActiveTab(tab.key)}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: activeTab === tab.key }}
           >
             <Ionicons name={(activeTab === tab.key ? tab.icon : `${tab.icon}-outline`) as any} size={15} color={activeTab === tab.key ? '#FFFFFF' : colors.textMuted} />
             <Text style={[styles.tabLabel, { color: colors.textSecondary }, activeTab === tab.key && { color: '#FFFFFF', fontWeight: '700' }]}>{t(tab.i18nKey)}</Text>
@@ -196,7 +201,7 @@ export default function CivicMetricsScreen() {
       <ScrollView
         style={styles.content}
         contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator
       >
         {officialResource && (
           <Pressable accessibilityRole="link" style={styles.empty} onPress={() => { void Linking.openURL(officialResource.url).catch(() => undefined); }}>
@@ -472,9 +477,9 @@ const styles = StyleSheet.create({
   backBtn: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
   headerTitle: { fontSize: 18, fontWeight: '900' },
   headerSub: { fontSize: 11, fontWeight: '600' },
-  tabBar: { maxHeight: 48, borderBottomWidth: 1 },
+  tabBar: { flexGrow: 0, borderBottomWidth: 1 },
   tabBarContent: { paddingHorizontal: 12, gap: 4, alignItems: 'center' },
-  tab: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20 },
+  tab: { flexDirection: 'row', alignItems: 'center', gap: 4, minHeight: 44, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20 },
   tabActive: {},
   tabLabel: { fontSize: 11, fontWeight: '600' },
   tabLabelActive: { fontWeight: '700' },

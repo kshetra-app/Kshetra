@@ -473,7 +473,7 @@ export default function ParliamentScreen() {
                 </Pressable>
               </View>
 
-              <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.modalBody}>
+              <ScrollView showsVerticalScrollIndicator contentContainerStyle={styles.modalBody}>
                 {/* Hero Header */}
                 <View style={styles.modalHero}>
                   <CandidateAvatar
@@ -666,12 +666,14 @@ const styles = StyleSheet.create({
 
   tabRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     paddingHorizontal: 16,
     paddingVertical: 10,
     gap: 8,
   },
   tabBtn: {
-    flex: 1,
+    flexGrow: 1,
+    flexBasis: 84,
     paddingVertical: 8,
     borderRadius: 10,
     alignItems: 'center',
@@ -679,6 +681,7 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: 12,
     fontWeight: '600',
+    textAlign: 'center',
   },
   tabTextActive: {
     fontWeight: '800',
@@ -690,7 +693,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginVertical: 8,
     paddingHorizontal: 12,
-    height: 42,
+    minHeight: 42,
     borderRadius: 10,
     borderWidth: 1,
     gap: 8,

@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, TextInput, ActivityIndicator, Keyboard } from 'react-native';
-import { Stack, useRouter } from 'expo-router';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Pressable, TextInput, ActivityIndicator, Keyboard, BackHandler } from 'react-native';
+import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -112,6 +112,28 @@ function LocalBodiesDirectory({ stateCode }: { stateCode: string }) {
   const goGps = (m: MandalSummary) => { setGps([]); setMptcs([]); setMandal(m); setGpNode(null); setQuery(''); setLevel('gps'); };
   const goGp = (g: GpNode) => { setGpNode(g); setQuery(''); setLevel('gp'); };
 
+  const goUpLevel = useCallback(() => {
+    if (level === 'districts') return false;
+    Keyboard.dismiss();
+    setQuery('');
+    setGpNode(null);
+    if (level === 'gp') setLevel('gps');
+    else if (level === 'gps') {
+      setMandal(null);
+      setLevel('mandals');
+    } else {
+      setDistrict(null);
+      setMandal(null);
+      setLevel('districts');
+    }
+    return true;
+  }, [level]);
+
+  useFocusEffect(useCallback(() => {
+    const subscription = BackHandler.addEventListener('hardwareBackPress', goUpLevel);
+    return () => subscription.remove();
+  }, [goUpLevel]));
+
   const openRep = (rep: Representative, jurisdictionName: string) => {
     router.push({
       pathname: '/representative/[id]',
@@ -199,6 +221,13 @@ function LocalBodiesDirectory({ stateCode }: { stateCode: string }) {
       <Stack.Screen
         options={{
           title: `${stateName} — ${t('localBodies.screenTitle', { defaultValue: 'Local Bodies' })}`,
+          gestureEnabled: level === 'districts',
+          headerLeft: level === 'districts' ? undefined : () => (
+            <Pressable accessibilityRole="button" accessibilityLabel={t('common.back')}
+              hitSlop={10} style={{ paddingEnd: 12 }} onPress={goUpLevel}>
+              <Ionicons name="arrow-back" size={24} color={colors.primary} />
+            </Pressable>
+          ),
           headerRight: () => (
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
               <Pressable
@@ -251,7 +280,7 @@ function LocalBodiesDirectory({ stateCode }: { stateCode: string }) {
 
       {/* Breadcrumb */}
       <View style={[s.breadcrumbBar, { borderBottomColor: colors.border }]}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.breadcrumb}>
+        <ScrollView horizontal showsHorizontalScrollIndicator contentContainerStyle={s.breadcrumb}>
           <Crumb colors={colors} label={stateName} active={level === 'districts'} onPress={goDistricts} />
           {district && (
             <>
@@ -299,6 +328,7 @@ function LocalBodiesDirectory({ stateCode }: { stateCode: string }) {
       )}
 
       <ScrollView
+        key={level}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
         contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 32 }}
@@ -485,7 +515,7 @@ function filterByName<T>(items: T[], query: string, getName: (t: T) => string): 
 function Crumb({ colors, label, active, onPress }: { colors: any; label: string; active: boolean; onPress?: () => void }) {
   return (
     <Pressable onPress={onPress} disabled={active} style={{ maxWidth: 160 }}>
-      <Text numberOfLines={1} style={{ fontSize: 13, fontWeight: '700', color: active ? colors.text : colors.primary }}>{label}</Text>
+      <Text style={{ fontSize: 13, fontWeight: '700', color: active ? colors.text : colors.primary }}>{label}</Text>
     </Pressable>
   );
 }

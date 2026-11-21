@@ -41,7 +41,11 @@ describe('production promise dashboard data', () => {
     jest.resetModules();
     viewerId = null;
     saveFollow = jest.fn();
-    jest.doMock('../lib/environment', () => ({ IS_LIVE_ENVIRONMENT: true }));
+    jest.doMock('../lib/environment', () => ({
+      IS_LIVE_ENVIRONMENT: true,
+      CURRENT_ENVIRONMENT: 'staging',
+      resolveApiBaseUrl: () => 'https://kshetra-api-staging.up.railway.app',
+    }));
     jest.doMock('../lib/supabaseDataService', () => ({
       fetchPromisesForState: jest.fn(),
     }));
