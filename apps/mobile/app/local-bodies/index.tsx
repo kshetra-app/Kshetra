@@ -190,7 +190,9 @@ function LocalBodiesDirectory({ stateCode }: { stateCode: string }) {
               </View>
               <View style={{ flex: 1 }}>
                 <View style={s.stateLaunchTitleRow}>
-                  <Text style={[s.stateLaunchTitle, { color: colors.text }]}>Telangana</Text>
+                  <Text style={[s.stateLaunchTitle, { color: colors.text }]}>
+                    {t('localBodies.telanganaName', { defaultValue: 'Telangana' })}
+                  </Text>
                   <View style={[s.verifiedPill, { backgroundColor: '#10B98118', borderColor: '#10B98150' }]}>
                     <Ionicons name="checkmark-circle" size={12} color="#10B981" />
                     <Text style={[s.verifiedPillText, { color: '#10B981' }]}>{t('localBodies.verifiedTsec', { defaultValue: 'Verified TSEC' })}</Text>
@@ -209,7 +211,9 @@ function LocalBodiesDirectory({ stateCode }: { stateCode: string }) {
               </View>
               <View style={{ flex: 1 }}>
                 <View style={s.stateLaunchTitleRow}>
-                  <Text style={[s.stateLaunchTitle, { color: colors.text }]}>Andhra Pradesh</Text>
+                  <Text style={[s.stateLaunchTitle, { color: colors.text }]}>
+                    {t('localBodies.andhraPradeshName', { defaultValue: 'Andhra Pradesh' })}
+                  </Text>
                   <View style={[s.verifiedPill, { backgroundColor: '#10B98118', borderColor: '#10B98150' }]}>
                     <Ionicons name="checkmark-circle" size={12} color="#10B981" />
                     <Text style={[s.verifiedPillText, { color: '#10B981' }]}>{t('localBodies.verifiedApsec', { defaultValue: 'Verified APSEC' })}</Text>
