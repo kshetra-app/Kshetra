@@ -24,6 +24,8 @@ import { useActiveStateStore } from '../stores/activeState';
 import { useMyConstituencyStore } from '../stores/myConstituency';
 import { useAuthStore } from '../stores/auth';
 import { STATES } from '@kshetra/shared';
+import PartyDirectory from './PartyDirectory';
+import type { RegistryParty } from '../lib/partyRegistry';
 
 interface RegisterAspirantModalProps {
   visible: boolean;
@@ -56,7 +58,8 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
   const [affiliation, setAffiliation] = useState<'independent' | 'party' | null>(null);
   const isIndependent = affiliation === 'independent';
   const isPartyMember = affiliation === 'party';
-  const [party, setParty] = useState('');
+  const [party, setParty] = useState<RegistryParty | null>(null);
+  const [choosingParty, setChoosingParty] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -92,7 +95,7 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
       );
       return;
     }
-    if (isPartyMember && !party.trim()) {
+    if (isPartyMember && !party) {
       Alert.alert(t('aspirantReg.partyRequired'), t('aspirantReg.partyRequiredMsg'));
       return;
     }
@@ -114,7 +117,7 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
         targetConstituencyName: constituency,
         targetElectionYear: year,
         isIndependent,
-        partyAffiliation: isIndependent ? undefined : party.trim(),
+        partyId: isIndependent ? undefined : party?.id,
         isPublic,
       });
 
@@ -235,14 +238,27 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
             </Pressable>
           </View>
           {isPartyMember && (
-            <TextInput
-              style={[styles.input, { marginTop: 10 }]}
-              value={party}
-              onChangeText={setParty}
-              placeholder={t('aspirantReg.partyPlaceholder')}
-              placeholderTextColor="#4B5563"
-              autoCapitalize="characters"
-            />
+            <>
+              <Pressable accessibilityRole="button" style={[styles.input, { marginTop: 10 }]}
+                onPress={() => setChoosingParty(true)}>
+                <Text>{party?.local_name ?? party?.name ?? t('partyRegistry.choose', { defaultValue: 'Choose a political party' })}</Text>
+              </Pressable>
+              <Text style={{ marginTop: 6, color: '#475569' }}>
+                {t('partyRegistry.aspirantIntent', { defaultValue: 'This declares your intention to run. Official candidacy is recorded from election filings.' })}
+              </Text>
+              <Modal visible={choosingParty} animationType="slide" onRequestClose={() => setChoosingParty(false)}>
+                <View style={{ flex: 1, paddingTop: insets.top + 8, paddingBottom: insets.bottom }}>
+                  <Pressable accessibilityRole="button" onPress={() => setChoosingParty(false)}
+                    style={{ padding: 16, minHeight: 44 }}>
+                    <Text>{t('common.cancel', { defaultValue: 'Cancel' })}</Text>
+                  </Pressable>
+                  <PartyDirectory selectedId={party?.id} onSelect={(item) => {
+                    setParty(item);
+                    setChoosingParty(false);
+                  }} />
+                </View>
+              </Modal>
+            </>
           )}
 
           {/* Public toggle */}

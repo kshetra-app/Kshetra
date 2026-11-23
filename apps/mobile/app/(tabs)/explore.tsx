@@ -468,6 +468,14 @@ export default function ExploreScreen() {
           </View>
         </View>
 
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => router.push('/parties')}
+          style={{ minHeight: 44, paddingHorizontal: 16, justifyContent: 'center' }}
+        >
+          <Text style={{ color: colors.primary, fontWeight: '700' }}>{t('partyRegistry.title', { defaultValue: 'Political parties' })}</Text>
+        </Pressable>
+
         {/* Platform Discovery & Directory Card */}
         <Pressable
           style={{

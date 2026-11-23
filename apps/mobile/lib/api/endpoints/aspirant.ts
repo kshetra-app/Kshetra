@@ -24,6 +24,7 @@ export interface RegisterAspirantRequestDTO {
   targetElectionYear?: number;
   targetConstituencyId?: string;
   partyAffiliation?: string;
+  partyId?: string;
   isIndependent?: boolean;
   isPublic?: boolean;
   manifestoUrl?: string;

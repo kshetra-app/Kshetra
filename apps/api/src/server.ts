@@ -36,6 +36,7 @@ import { lmxRoutes } from './routes/lmx';
 import { configRoutes } from './routes/config';
 import { manageRoutes } from './routes/manage';
 import { pagesRoutes } from './routes/pages';
+import { partyRoutes } from './routes/parties';
 import { policyRoutes } from './routes/policy';
 import { randomUUID } from 'crypto';
 import { isIsolatedTestRuntime } from './lib/runtimeEnvironment';
@@ -259,6 +260,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(configRoutes);
   await app.register(manageRoutes);
   await app.register(pagesRoutes);
+  await app.register(partyRoutes);
   await app.register(policyRoutes);
   await app.register(dmRoutes);
   await app.register(politicalAdsRoutes);

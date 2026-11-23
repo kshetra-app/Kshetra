@@ -1032,7 +1032,11 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
       },
     },
     async (request, reply) => {
-      const auth = await resolveAuthenticatedUser(request, reply).catch(() => null);
+      const auth =
+        request.headers.authorization || (!isProductionRuntime() && request.headers['x-user-id'])
+          ? await resolveAuthenticatedUser(request, reply)
+          : null;
+      if (reply.sent) return;
       const { id } = request.params;
 
       try {

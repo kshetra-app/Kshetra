@@ -623,6 +623,7 @@ export const useAspirantStore = create<AspirantState>()((set, get) => ({
         targetConstituencyName: profileData.targetConstituencyName,
         targetElectionYear: profileData.targetElectionYear,
         partyAffiliation: profileData.partyAffiliation,
+        partyId: profileData.partyId,
         isIndependent: profileData.isIndependent,
         isPublic: profileData.isPublic,
       });

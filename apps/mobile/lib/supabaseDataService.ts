@@ -596,6 +596,7 @@ export async function registerAspirant(
     targetConstituencyName?: string;
     targetElectionYear?: number;
     partyAffiliation?: string;
+    partyId?: string;
     isIndependent?: boolean;
     isPublic?: boolean;
   },

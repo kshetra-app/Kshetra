@@ -131,6 +131,7 @@ export interface ChallengeParticipation {
 // ─── ASPIRANT PROFILE ───
 
 export interface AspirantProfile {
+  partyId?: string;
   id: string;
   userId: string;
   displayName: string;

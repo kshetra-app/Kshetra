@@ -244,6 +244,7 @@ export class AspirantService {
         row.target_constituency_name ?? row.targetConstituencyName ?? undefined,
       targetElectionYear: row.target_election_year ?? row.targetElectionYear ?? undefined,
       partyAffiliation: row.party_affiliation ?? row.partyAffiliation ?? undefined,
+      partyId: row.party_id ?? undefined,
       isIndependent: row.is_independent ?? row.isIndependent ?? true,
       manifestoUrl: row.manifesto_url ?? row.manifestoUrl ?? undefined,
       visionSummary: row.vision_summary ?? row.visionSummary ?? undefined,
@@ -283,6 +284,21 @@ export class AspirantService {
     const useDatabase = this.shouldUseDatabaseAcademy();
     const now = new Date().toISOString();
     const cleanHandle = req.handle ? req.handle.trim().toLowerCase().replace(/^@/, '') : undefined;
+    const isIndependent = req.isIndependent ?? !req.partyId;
+    if (req.partyId && isIndependent) throw new Error('INVALID_DECLARED_PARTY');
+    let declaredParty = isIndependent ? null : req.partyAffiliation?.trim() || null;
+    if (req.partyId && useDatabase) {
+      const { data, error } = await supabase
+        .from('political_organizations')
+        .select('name')
+        .eq('id', req.partyId)
+        .eq('org_type', 'political_party')
+        .not('provenance_id', 'is', null)
+        .maybeSingle();
+      if (error) throw new Error('Party registry is temporarily unavailable.');
+      if (!data) throw new Error('INVALID_DECLARED_PARTY');
+      declaredParty = data.name;
+    }
 
     // Check handle uniqueness
     if (cleanHandle) {
@@ -313,8 +329,9 @@ export class AspirantService {
       target_constituency_ac_no: req.targetConstituencyAcNo || null,
       target_constituency_name: req.targetConstituencyName || null,
       target_election_year: req.targetElectionYear ?? null,
-      party_affiliation: req.partyAffiliation?.trim() || null,
-      is_independent: req.isIndependent ?? true,
+      party_affiliation: declaredParty,
+      ...(req.partyId || isIndependent ? { party_id: req.partyId ?? null } : {}),
+      is_independent: isIndependent,
       manifesto_url: req.manifestoUrl || null,
       vision_summary: req.visionSummary || null,
       has_criminal_cases: req.hasCriminalCases ?? false,
@@ -349,8 +366,8 @@ export class AspirantService {
       targetConstituencyAcNo: req.targetConstituencyAcNo || null,
       targetConstituencyName: req.targetConstituencyName || null,
       targetElectionYear: req.targetElectionYear ?? null,
-      partyAffiliation: req.partyAffiliation?.trim() || null,
-      isIndependent: req.isIndependent ?? true,
+      partyAffiliation: declaredParty,
+      isIndependent,
       manifestoUrl: req.manifestoUrl || null,
       visionSummary: req.visionSummary || null,
       hasCriminalCases: req.hasCriminalCases ?? false,
@@ -766,6 +783,16 @@ export class AspirantService {
         : await query.eq('handle', idOrHandle.toLowerCase().replace(/^@/, '')).maybeSingle();
 
       if (!data) return null;
+      if (data.role === 'party') {
+        const { data: claim, error } = await supabase
+          .from('political_organizations')
+          .select('party_page_claims!inner(id)')
+          .eq('page_id', data.id)
+          .eq('party_page_claims.status', 'approved')
+          .maybeSingle();
+        if (error) throw new Error('PARTY_VERIFICATION_UNAVAILABLE');
+        if (!claim) return null;
+      }
 
       let isFollowing = false;
       if (currentUserId) {
@@ -819,24 +846,14 @@ export class AspirantService {
     follow: boolean,
   ): Promise<{ pageId: string; isFollowing: boolean; followerCount: number }> {
     if (isSupabaseConfigured) {
-      if (follow) {
-        await supabase
-          .from('page_followers')
-          .upsert({ page_id: pageId, user_id: userId }, { onConflict: 'page_id,user_id' });
-      } else {
-        await supabase.from('page_followers').delete().eq('page_id', pageId).eq('user_id', userId);
-      }
-
-      const { data: pg } = await supabase
-        .from('pages')
-        .select('follower_count')
-        .eq('id', pageId)
-        .single();
-      return {
-        pageId,
-        isFollowing: follow,
-        followerCount: pg?.follower_count || 0,
-      };
+      const { data, error } = await supabase.rpc('set_page_follow', {
+        p_page: pageId,
+        p_actor: userId,
+        p_follow: follow,
+      });
+      if (error)
+        throw new Error(error.code === 'P0002' ? 'PAGE_NOT_FOUND' : 'PAGE_FOLLOW_UNAVAILABLE');
+      return data;
     }
 
     const key = `${pageId}:${userId}`;

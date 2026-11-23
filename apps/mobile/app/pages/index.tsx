@@ -151,6 +151,14 @@ export default function PagesScreen() {
         }}
       />
 
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => router.push('/parties')}
+        style={{ minHeight: 44, paddingHorizontal: 16, justifyContent: 'center' }}
+      >
+        <Text style={{ color: '#002B7F', fontWeight: '700' }}>{t('partyRegistry.title', { defaultValue: 'Political parties' })}</Text>
+      </Pressable>
+
       {/* Tabs in Navy Blue & White */}
       <View style={[styles.tabBar, { backgroundColor: '#FFFFFF', borderBottomColor: '#E2E8F0' }]}>
         <Pressable

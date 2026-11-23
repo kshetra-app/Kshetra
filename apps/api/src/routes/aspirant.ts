@@ -31,6 +31,7 @@ export async function aspirantRoutes(app: FastifyInstance) {
       targetConstituencyId?: string;
       targetElectionYear?: number;
       partyAffiliation?: string;
+      partyId?: string;
       isIndependent?: boolean;
       isPublic?: boolean;
       manifestoUrl?: string;
@@ -56,6 +57,7 @@ export async function aspirantRoutes(app: FastifyInstance) {
             targetConstituencyId: { type: 'string' },
             targetElectionYear: { type: 'number' },
             partyAffiliation: { type: 'string' },
+            partyId: { type: 'string', maxLength: 100, pattern: '^ORG-PARTY-[A-Z0-9_-]+$' },
             isIndependent: { type: 'boolean' },
             isPublic: { type: 'boolean' },
             manifestoUrl: { type: 'string' },
@@ -84,6 +86,7 @@ export async function aspirantRoutes(app: FastifyInstance) {
         targetConstituencyName: body.targetConstituencyName || body.targetConstituencyId,
         targetElectionYear: body.targetElectionYear,
         partyAffiliation: body.partyAffiliation,
+        partyId: body.partyId,
         isIndependent: body.isIndependent,
         isPublic: body.isPublic,
         manifestoUrl: body.manifestoUrl,
@@ -97,6 +100,15 @@ export async function aspirantRoutes(app: FastifyInstance) {
         const profile = await AspirantService.registerAspirant(auth.userId, regReq);
         return reply.status(201).send({ success: true, profile });
       } catch (err: any) {
+        if (err.message === 'INVALID_DECLARED_PARTY') {
+          return sendApiError(
+            reply,
+            request,
+            422,
+            'INVALID_DECLARED_PARTY',
+            'Choose a party from the registry or select Independent.',
+          );
+        }
         if (err.message === 'HANDLE_ALREADY_TAKEN') {
           return sendApiError(reply, request, 409, 'Conflict', 'Handle is already taken', {
             code: 'HANDLE_CONFLICT',

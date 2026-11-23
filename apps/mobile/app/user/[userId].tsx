@@ -21,6 +21,7 @@ import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import PostCard from '../../components/PostCard';
 import PostDetailModal from '../../components/PostDetailModal';
 import { apiClient } from '../../lib/api';
+import { getPublicPartyDeclaration } from '../../lib/partyRegistry';
 import type { PostSubmission } from '../../lib/api/endpoints/feed';
 import { gateContentAction, logContentAction } from '../../lib/contentAccountability';
 import type { Post, ReactionType } from '../../lib/feedTypes';
@@ -67,6 +68,7 @@ function PersonalPage({
   const [postsFailed, setPostsFailed] = useState(false);
   const [nextOffset, setNextOffset] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  const [affiliation, setAffiliation] = useState<Awaited<ReturnType<typeof getPublicPartyDeclaration>>>(null);
   const [loadingMore, setLoadingMore] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
   const [followingLoaded, setFollowingLoaded] = useState(false);
@@ -145,6 +147,10 @@ function PersonalPage({
     let active = true;
     void loadPage();
     void loadSubmissions();
+    setAffiliation(null);
+    void getPublicPartyDeclaration(userId).then((declaration) => {
+      if (active) setAffiliation(declaration);
+    }).catch(() => {});
     if (viewerId && !isSelf) {
       void useFeedStore.getState().hydrateFollowing().then((loaded) => {
         if (active) setFollowingLoaded(loaded);
@@ -155,7 +161,7 @@ function PersonalPage({
       requestId.current++;
       submissionsRequestId.current++;
     };
-  }, [loadPage, loadSubmissions, viewerId, isSelf]));
+  }, [loadPage, loadSubmissions, userId, viewerId, isSelf]));
 
   const refreshPost = useCallback((change: 'updated' | 'deleted') => {
     if (!detail || change === 'deleted') {
@@ -357,6 +363,15 @@ function PersonalPage({
                     </View>
                   </View>
                   {!!bio && <Text style={[styles.bio, { color: colors.textSecondary }]}>{bio}</Text>}
+                  {affiliation && affiliation.political_organizations && (
+                    <Pressable accessibilityRole="button" onPress={() => router.push({
+                      pathname: '/parties/[id]', params: { id: affiliation.organization_id },
+                    })}>
+                      <Text style={{ color: colors.primary }}>{t('partyRegistry.publicAffiliation', {
+                        defaultValue: 'Self-declared affiliation: {{party}}', party: affiliation.political_organizations.name,
+                      })}</Text>
+                    </Pressable>
+                  )}
                   {typeof profile.constituency_id === 'string' && (
                     <Text style={{ color: colors.textSecondary }}>{profile.constituency_id}</Text>
                   )}
