@@ -664,6 +664,10 @@ export class AspirantService {
   // ─── 4. ASPIRANT PAGES & EVENT DISPATCHING ENGINE (JOB 048 - DEC-177 Decision 2) ───
 
   static async createPage(userId: string, req: PageCreateRequest): Promise<PageDTO> {
+    if (req.role === 'party') {
+      throw new Error('PARTY_PAGE_CLAIM_REQUIRED');
+    }
+
     if (!req.title || req.title.trim().length < 2) {
       throw new Error('PAGE_TITLE_REQUIRED');
     }

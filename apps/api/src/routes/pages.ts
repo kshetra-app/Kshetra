@@ -993,6 +993,16 @@ export const pagesRoutes: FastifyPluginAsync = async (app) => {
         const page = await AspirantService.createPage(auth.userId, request.body);
         return reply.status(201).send({ success: true, page });
       } catch (err: any) {
+        if (err.message === 'PARTY_PAGE_CLAIM_REQUIRED') {
+          return sendApiError(
+            reply,
+            request,
+            403,
+            'Forbidden',
+            'A verified organization claim is required for an official party Page.',
+            { code: 'PARTY_PAGE_CLAIM_REQUIRED' },
+          );
+        }
         if (err.message === 'PAGE_HANDLE_ALREADY_EXISTS') {
           return sendApiError(reply, request, 409, 'Conflict', 'Handle is already taken', {
             code: 'HANDLE_CONFLICT',

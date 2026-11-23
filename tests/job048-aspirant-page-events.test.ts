@@ -25,6 +25,24 @@ test('JOB 048: Aspirant Page, Followers & Event Dispatching Engine', async (t) =
   let createdPageId: string;
   let createdEventId: string;
 
+  await t.test('Ordinary Page creation requires a separate verified process for party Pages', async () => {
+    for (const role of ['citizen', 'admin']) {
+      const result = await app.inject({
+        method: 'POST',
+        url: '/api/v1/pages',
+        headers: { 'x-user-id': ownerId, 'x-user-role': role },
+        payload: {
+          title: 'Party Page test',
+          handle: 'party-page-test',
+          role: 'party',
+        },
+      });
+      assert.equal(result.statusCode, 403);
+      assert.equal(result.json().code, 'PARTY_PAGE_CLAIM_REQUIRED');
+    }
+    assert.equal(await AspirantService.getPage('party-page-test'), null);
+  });
+
   await t.test('1. Successfully creates an official aspirant page', async () => {
     const res = await app.inject({
       method: 'POST',
