@@ -74,6 +74,22 @@ BEGIN
     RAISE EXCEPTION 'Submission audit did not persist';
   END IF;
 
+  PERFORM public.set_page_follow(test_page_id, reviewer_id, true);
+  PERFORM set_config('request.jwt.claim.sub', reviewer_id::text, true);
+  IF NOT EXISTS (SELECT FROM public.feed_posts_with_publisher WHERE id = entry.id AND follows_publisher) THEN
+    RAISE EXCEPTION 'The approved post did not appear in its follower feed';
+  END IF;
+  PERFORM set_config('request.jwt.claim.sub', owner_id::text, true);
+  IF EXISTS (SELECT FROM public.feed_posts_with_publisher WHERE id = entry.id AND follows_publisher) THEN
+    RAISE EXCEPTION 'One member inherited another member''s Page follows';
+  END IF;
+  PERFORM public.set_page_follow(test_page_id, reviewer_id, false);
+  PERFORM set_config('request.jwt.claim.sub', reviewer_id::text, true);
+  IF EXISTS (SELECT FROM public.feed_posts_with_publisher WHERE id = entry.id AND follows_publisher) THEN
+    RAISE EXCEPTION 'Unfollow did not remove the approved post from the followed Page feed';
+  END IF;
+  PERFORM set_config('request.jwt.claim.sub', '', true);
+
   PERFORM public.set_party_page_team_role(org_id,owner_id,publisher_id,NULL);
   BEGIN
     UPDATE public.posts SET content = 'Unauthorized edit after revocation' WHERE id = entry.id;
