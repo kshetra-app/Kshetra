@@ -81,6 +81,7 @@ const constituencyBriefSchema = {
     district: { type: 'string' },
     reservationStatus: { type: 'string' },
     currentParty: { type: 'string' },
+    currentPartyId: { type: 'string' },
     currentMLA: { type: 'string' },
   },
   required: [
@@ -139,6 +140,7 @@ const getConstituencyDetailSchema = {
         district: { type: 'string' },
         reservationStatus: { type: 'string' },
         currentParty: { type: 'string' },
+        currentPartyId: { type: 'string' },
         currentMLA: { type: 'string' },
         recentElection: {
           type: ['object', 'null'],

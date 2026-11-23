@@ -173,6 +173,7 @@ export default function ConstituencyDetailScreen() {
   const effectiveReservation = apiDetail?.reservationStatus || constituency?.type || '';
   const currentRepresentativeName = apiDetail?.currentMLA?.trim() || constituency?.currentMLA?.trim() || '';
   const currentRepresentativeParty = apiDetail?.currentParty?.trim() || constituency?.currentParty?.trim() || '';
+  const currentRepresentativePartyId = apiDetail ? apiDetail.currentPartyId : constituency?.currentPartyId;
   const effectiveWinnerParty = (constituency?.winnerParty && constituency.winnerParty.trim()) || apiDetail?.recentElection?.winner || '';
   const effectiveWinnerName = (constituency?.winnerName && constituency.winnerName.trim()) || apiDetail?.recentElection?.winnerName || '';
   const effectiveWinnerVotes = constituency?.winnerVotes ?? apiDetail?.recentElection?.winnerVotes ?? null;
@@ -685,6 +686,16 @@ export default function ConstituencyDetailScreen() {
                           ? getLocalizedPartyName(currentRepresentativeParty, i18n.language) || currentRepresentativeParty
                           : t('constituencyDirectory.partyUnavailable', { defaultValue: 'Party unavailable' })}
                       </Text>
+                      {currentRepresentativePartyId && (
+                        <Pressable
+                          accessibilityRole="link"
+                          onPress={() => router.push({ pathname: '/parties/[id]', params: { id: currentRepresentativePartyId } })}
+                        >
+                          <Text style={[styles.resultParty, { color: colors.primary }]}>
+                            {t('partyRegistry.openParty', { defaultValue: 'View party profile' })}
+                          </Text>
+                        </Pressable>
+                      )}
                     </View>
                   </View>
                 </View>

@@ -68,6 +68,8 @@ export interface Poll {
 }
 
 export interface Post {
+  publisherPageId?: string;
+  publisherPartyId?: string;
   id: string;
   author: PostAuthor;
   constituencyId?: string;

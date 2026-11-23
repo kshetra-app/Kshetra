@@ -138,6 +138,7 @@ export async function feedRoutes(app: FastifyInstance) {
       hashtags?: string[];
       pollOptions?: string[];
       clientToken?: string;
+      publisherPageId?: string;
       media?: { mediaType: 'image' | 'video' | 'link'; url: string; altText?: string }[];
     };
   }>(
@@ -160,6 +161,7 @@ export async function feedRoutes(app: FastifyInstance) {
             language: { type: 'string' },
             hashtags: { type: 'array', items: { type: 'string' } },
             clientToken: { type: 'string', minLength: 1, maxLength: 128 },
+            publisherPageId: { type: 'string', format: 'uuid' },
             media: {
               type: 'array',
               maxItems: CONTENT_LIMITS.feedMedia.total,
@@ -202,8 +204,18 @@ export async function feedRoutes(app: FastifyInstance) {
         hashtags,
         pollOptions,
         clientToken,
+        publisherPageId,
       } = request.body;
       const media = request.body.media ?? [];
+      if (publisherPageId && parentId) {
+        return sendApiError(
+          reply,
+          request,
+          422,
+          'INVALID_PAGE_POST',
+          'Use the Page composer to submit a new post.',
+        );
+      }
       if (exceedsFeedMediaLimit(media)) {
         return sendApiError(
           reply,
@@ -341,6 +353,7 @@ export async function feedRoutes(app: FastifyInstance) {
             language,
             hashtags: normalizedHashtags,
             pollOptions: normalizedPollOptions ?? null,
+            ...(publisherPageId ? { publisherPageId } : {}),
             ...(media.length ? { media } : {}),
           }),
         )
@@ -466,6 +479,7 @@ export async function feedRoutes(app: FastifyInstance) {
           constituency_id: constituencyId ?? null,
           parent_id: parentId ?? null,
           language,
+          ...(publisherPageId ? { publisher_page_id: publisherPageId } : {}),
           ...(clientToken ? { client_token: clientToken, request_hash: requestHash } : {}),
         };
         const { data: post, error: postErr } = media.length
@@ -475,6 +489,15 @@ export async function feedRoutes(app: FastifyInstance) {
           : await supabase.from('posts').insert(postRow).select('*').single();
 
         if (postErr || !post) {
+          if (publisherPageId && postErr?.code === '42501') {
+            return sendApiError(
+              reply,
+              request,
+              403,
+              'PAGE_PUBLISHING_REQUIRED',
+              'Your account does not have active publishing access to this Page.',
+            );
+          }
           if (postErr?.code === '22023')
             return sendApiError(
               reply,
@@ -732,6 +755,15 @@ export async function feedRoutes(app: FastifyInstance) {
           .single();
 
         if (updateErr) {
+          if (updateErr.code === '42501') {
+            return sendApiError(
+              reply,
+              request,
+              403,
+              'PAGE_PUBLISHING_REQUIRED',
+              'Your account does not have active publishing access to this Page.',
+            );
+          }
           return sendApiError(reply, request, 500, 'Internal Server Error', updateErr.message, {
             code: 'DATABASE_ERROR',
           });
@@ -796,7 +828,7 @@ export async function feedRoutes(app: FastifyInstance) {
       try {
         const { data: existing, error: fetchErr } = await supabase
           .from('posts')
-          .select('author_id')
+          .select('author_id,publisher_page_id')
           .eq('id', id)
           .maybeSingle();
 
@@ -825,6 +857,29 @@ export async function feedRoutes(app: FastifyInstance) {
               code: 'FORBIDDEN',
             },
           );
+        }
+
+        if (existing.publisher_page_id && !isPrivileged) {
+          const access = await supabase.rpc('can_publish_for_party_page', {
+            p_page: existing.publisher_page_id,
+            p_actor: auth.userId,
+          });
+          if (access.error)
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'PAGE_PERMISSION_UNAVAILABLE',
+              'Could not check Page permissions.',
+            );
+          if (!access.data)
+            return sendApiError(
+              reply,
+              request,
+              403,
+              'PAGE_PUBLISHING_REQUIRED',
+              'Your account does not have active publishing access to this Page.',
+            );
         }
 
         const { error: deleteErr } = await supabase

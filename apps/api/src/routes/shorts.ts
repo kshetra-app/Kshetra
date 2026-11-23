@@ -17,6 +17,7 @@ const SHORT_ID_PATTERN =
 
 interface ShortSubmission {
   id?: string;
+  publisherPageId?: string;
   title: string;
   videoPath?: string;
   rightsConfirmed?: boolean;
@@ -37,6 +38,7 @@ export function toMediaShort(row: Record<string, unknown>) {
   return {
     id: row.id,
     creatorId: row.uploaded_by,
+    publisherPageId: row.publisher_page_id,
     title: row.title,
     description: row.description,
     videoUrl: row.video_url,
@@ -104,6 +106,15 @@ export async function submitCreatorShort(
           return sendApiError(reply, request, 404, 'Not Found', 'Short not found', {
             code: 'SHORT_NOT_FOUND',
           });
+        }
+        if ((existing.publisher_page_id ?? null) !== (body.publisherPageId ?? null)) {
+          return sendApiError(
+            reply,
+            request,
+            409,
+            'SHORT_PUBLISHER_CONFLICT',
+            'This upload belongs to a different publishing identity.',
+          );
         }
         return reply.send({
           success: true,
@@ -230,6 +241,32 @@ export async function submitCreatorShort(
       );
     }
 
+    let channelName = profile?.display_name?.trim() || 'Verified contributor';
+    if (body.publisherPageId) {
+      const { data: publisher, error: pageError } = await supabase
+        .from('pages')
+        .select('title')
+        .eq('id', body.publisherPageId)
+        .eq('role', 'party')
+        .maybeSingle();
+      if (pageError)
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'PAGE_LOOKUP_FAILED',
+          'Publishing access could not be checked.',
+        );
+      if (!publisher)
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'PAGE_PUBLISHING_REQUIRED',
+          'This Page is unavailable.',
+        );
+      channelName = publisher.title;
+    }
     const { data, error } = await supabase
       .from('political_shorts')
       .insert({
@@ -239,7 +276,8 @@ export async function submitCreatorShort(
         status: 'pending',
         thumbnail_url: null,
         description: body.description?.trim() || null,
-        channel_name: profile?.display_name?.trim() || 'Verified contributor',
+        channel_name: channelName,
+        ...(body.publisherPageId ? { publisher_page_id: body.publisherPageId } : {}),
         channel_verified: true,
         state_code: stateCode,
         state_name: STATES[stateCode].name,
@@ -258,6 +296,15 @@ export async function submitCreatorShort(
       .single();
 
     if (error || !data) {
+      if (body.publisherPageId && error?.code === '42501') {
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'PAGE_PUBLISHING_REQUIRED',
+          'Your account does not have active publishing access to this Page.',
+        );
+      }
       if (error?.code === '23505') {
         const { data: saved } = await supabase
           .from('political_shorts')
@@ -265,7 +312,7 @@ export async function submitCreatorShort(
           .eq('id', body.id)
           .eq('uploaded_by', auth.userId)
           .maybeSingle();
-        if (saved)
+        if (saved && (saved.publisher_page_id ?? null) === (body.publisherPageId ?? null))
           return reply.send({
             success: true,
             id: saved.id,
@@ -905,6 +952,7 @@ export async function shortsRoutes(app: FastifyInstance) {
             id: { type: 'string', pattern: SHORT_ID_PATTERN.source },
             title: { type: 'string', minLength: 1, maxLength: CONTENT_LIMITS.short.title },
             videoPath: { type: 'string', minLength: 1, maxLength: 80 },
+            publisherPageId: { type: 'string', format: 'uuid' },
             rightsConfirmed: { const: true },
             language: {
               type: 'string',

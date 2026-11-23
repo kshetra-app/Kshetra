@@ -88,6 +88,10 @@ export async function getPartyPage(pageId: string, signedIn: boolean) {
   })).data.page;
 }
 
+export async function canPublishForParty(id: string) {
+  return (await apiClient.get<{ canPublish: boolean }>(path(id) + '/publishing-access', account)).data.canPublish;
+}
+
 export async function setPartyPageFollow(pageId: string, follow: boolean) {
   const endpoint = '/api/v1/pages/' + pageId + '/follow';
   return (follow

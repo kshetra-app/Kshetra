@@ -44,6 +44,8 @@ function getFeedRefreshKey(
 export function mapSupabasePost(post: any): Post {
   return {
     id: post.id,
+    publisherPageId: post.publisher_page_id ?? undefined,
+    publisherPartyId: post.publisher_party_id ?? undefined,
     author: {
       id: post.author_id,
       displayName: post.author_display_name || post.author_name || 'Citizen',
@@ -1537,6 +1539,7 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
     }
     const payload = {
       ...(media ? { media } : {}),
+      publisherPageId: post.publisherPageId,
       content: post.content,
       type: post.type,
       stateCode: post.stateCode === 'NATIONAL' ? 'IN' : post.stateCode,

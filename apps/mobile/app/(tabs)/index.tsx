@@ -113,6 +113,7 @@ interface SelectedConstituency {
   type: string | null;
   localName?: string;
   currentParty?: string;
+  currentPartyId?: string;
   currentMLA?: string;
   electionYear: number | null;
 }
@@ -609,6 +610,7 @@ function FullMapScreen() {
         type: seed?.type ?? null,
         localName: seed?.localName,
         currentParty: seed?.currentParty,
+        currentPartyId: seed?.currentPartyId,
         currentMLA: seed?.currentMLA,
         electionYear: seed?.electionYear ?? null,
       };
@@ -2399,6 +2401,16 @@ function FullMapScreen() {
                           ? `${t('constituencyDirectory.currentRepresentative', { defaultValue: 'Current representative' })}: ${getLocalizedCandidateName(selected.currentMLA, i18n.language) || selected.currentMLA}${selected.currentParty ? ` · ${getLocalizedPartyName(selected.currentParty, i18n.language) || selected.currentParty}` : ''}`
                           : t('constituencyDirectory.officeholderUnavailable', { defaultValue: 'Representative details unavailable' })}
                       </Text>
+                    )}
+                    {IS_LIVE_ENVIRONMENT && selected.currentPartyId && (
+                      <Pressable
+                        accessibilityRole="link"
+                        onPress={() => router.push({ pathname: '/parties/[id]', params: { id: selected.currentPartyId! } })}
+                      >
+                        <Text style={styles.sheetSubtitle}>
+                          {t('partyRegistry.openParty', { defaultValue: 'View party profile' })}
+                        </Text>
+                      </Pressable>
                     )}
                   </View>
                   <View style={styles.sheetLatestTag}>

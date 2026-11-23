@@ -93,6 +93,7 @@ export interface UnifiedConstituency {
   margin: number | null;
   /** Current verified party of sitting representative */
   currentParty: string;
+  currentPartyId?: string;
   /** Classifies the recorded post-election party change when known. */
   currentPartyChangeType?: 'defection' | 'by-election';
   /** Current sitting representative name */

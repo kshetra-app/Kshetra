@@ -3,7 +3,10 @@ import { ActivityIndicator, Alert, Linking, RefreshControl, ScrollView, StyleShe
 import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { PartyAction, PartyField } from '../../components/PartyActions';
+import ComposeSheet from '../../components/ComposeSheet';
+import PartyPagePosts from '../../components/PartyPagePosts';
 import {
+  canPublishForParty,
   clearPartyDeclaration, getParty, getPartyAccount, getPartyPage, listPartyTeam,
   savePartyDeclaration, setPartyPageFollow, submitPartyClaim, updatePartyTeam,
   type PartyAccount, type PartyPageState, type PartyTeamMember, type PartyTeamRole,
@@ -23,6 +26,8 @@ export default function PartyProfileScreen() {
   const [party, setParty] = useState<Awaited<ReturnType<typeof getParty>> | null>(null);
   const [account, setAccount] = useState<PartyAccount | null>(null);
   const [page, setPage] = useState<PartyPageState | null>(null);
+  const [canPublish, setCanPublish] = useState(false);
+  const [compose, setCompose] = useState(false);
   const [team, setTeam] = useState<PartyTeamMember[]>([]);
   const [visible, setVisible] = useState(false);
   const [evidence, setEvidence] = useState('');
@@ -41,6 +46,7 @@ export default function PartyProfileScreen() {
     setFailed(false);
     setAccount(null);
     setPage(null);
+    setCanPublish(false);
     setTeam([]);
     setVisible(false);
     setClaimForm(false);
@@ -50,14 +56,16 @@ export default function PartyProfileScreen() {
         const ownsPage = Boolean(details.page_id && personal?.claims.some(
           (claim) => claim.organization_id === id && claim.status === 'approved',
         ));
-        const [follow, members] = await Promise.all([
+        const [follow, members, publish] = await Promise.all([
           details.page_id ? getPartyPage(details.page_id, signedIn) : null,
           ownsPage ? listPartyTeam(id) : [],
+          details.page_id && signedIn ? canPublishForParty(id) : false,
         ]);
         if (!current) return;
         setParty(details);
         setAccount(personal?.accountId === userId ? personal : null);
         setPage(follow);
+        setCanPublish(publish);
         setTeam(members);
         setVisible(Boolean(personal?.declaration?.organization_id === id && personal.declaration.is_public));
       } catch {
@@ -129,6 +137,10 @@ export default function PartyProfileScreen() {
                   disabled={working}
                   label={page.isFollowing ? t('partyRegistry.unfollow', { defaultValue: 'Unfollow Page' }) : t('partyRegistry.follow', { defaultValue: 'Follow Page' })}
                   onPress={() => void perform(() => setPartyPageFollow(officialPage, !page.isFollowing))}
+                />}
+                {canPublish && <PartyAction
+                  label={t('partyRegistry.createAsPage', { defaultValue: 'Create as this Page' })}
+                  onPress={() => setCompose(true)}
                 />}
               </>
             )}
@@ -231,6 +243,17 @@ export default function PartyProfileScreen() {
           )}
           {!signedIn && <PartyAction label={t('partyRegistry.signIn', { defaultValue: 'Sign in to follow or declare an affiliation' })}
             onPress={() => router.push('/auth/sign-in')} />}
+          {officialPage && (
+            <PartyPagePosts key={officialPage + ':' + userId} pageId={officialPage} viewerId={signedIn ? userId : undefined} />
+          )}
+          {officialPage && canPublish && (
+            <ComposeSheet
+              key={'compose:' + officialPage + ':' + userId}
+              visible={compose}
+              onClose={() => setCompose(false)}
+              publishingPage={{ id: officialPage, name: party.name }}
+            />
+          )}
         </>
       )}
     </ScrollView>

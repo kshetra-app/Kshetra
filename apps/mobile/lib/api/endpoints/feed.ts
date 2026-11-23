@@ -20,6 +20,7 @@ import type { ApiClient } from '../client';
 import { ApiValidationError } from '../errors';
 
 export interface ComposePostRequestDTO {
+  publisherPageId?: string;
   media?: import('../../feedAttachments').SubmittedAttachment[];
   content: string;
   type?: 'discussion' | 'news' | 'opinion' | 'question' | 'alert' | 'poll';

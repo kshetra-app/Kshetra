@@ -251,6 +251,7 @@ export function validateConstituencyBrief(data: unknown, context: string): Const
     district: c.district,
     reservationStatus: c.reservationStatus as 'GEN' | 'SC' | 'ST',
     currentParty: c.currentParty,
+    currentPartyId: typeof c.currentPartyId === 'string' ? c.currentPartyId : undefined,
     currentMLA: c.currentMLA,
   };
 }

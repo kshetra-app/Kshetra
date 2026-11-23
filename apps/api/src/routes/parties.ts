@@ -132,6 +132,24 @@ export const partyRoutes: FastifyPluginAsync = async (app) => {
     };
   });
 
+  app.get<{ Params: { id: string } }>(
+    root + '/:id/publishing-access',
+    { schema: { params: partyParam } },
+    async (request, reply) => {
+      const actor = await resolveAuthenticatedUser(request, reply);
+      if (!actor) return;
+      const party = await lookupParty(request.params.id);
+      if (party.error) return dbError(reply, request, party.error);
+      if (!party.data?.page_id) return { canPublish: false };
+      const { data, error } = await supabase.rpc('can_publish_for_party_page', {
+        p_page: party.data.page_id,
+        p_actor: actor.userId,
+      });
+      if (error) return dbError(reply, request, error);
+      return reply.header('Cache-Control', 'private, no-store').send({ canPublish: data === true });
+    },
+  );
+
   app.put<{ Body: { partyId: string; public: boolean } }>(
     root + '/me/declaration',
     {

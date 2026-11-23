@@ -74,6 +74,7 @@ export interface CanonicalConstituencyRecord {
   eciAcCode?: string | null;
   nameTe?: string | null;
   currentParty?: string | null;
+  currentPartyId?: string;
   currentMLA?: string | null;
 }
 
@@ -403,11 +404,24 @@ export class CanonicalGeographyService {
    */
   private async getCurrentTenureMap(
     constituencyIds: string[],
-  ): Promise<Map<string, { currentParty: string; currentMLA: string; gender: 'M' | 'F' | null }>> {
-    const result = new Map<
+  ): Promise<
+    Map<
       string,
-      { currentParty: string; currentMLA: string; gender: 'M' | 'F' | null }
-    >();
+      {
+        currentParty: string;
+        currentPartyId?: string;
+        currentMLA: string;
+        gender: 'M' | 'F' | null;
+      }
+    >
+  > {
+    type CurrentTenure = {
+      currentParty: string;
+      currentPartyId?: string;
+      currentMLA: string;
+      gender: 'M' | 'F' | null;
+    };
+    const result = new Map<string, CurrentTenure>();
     const ids = [...new Set(constituencyIds.filter((id) => typeof id === 'string' && id.trim()))];
     if (!ids.length) return result;
 
@@ -415,7 +429,7 @@ export class CanonicalGeographyService {
       const { data, error } = await supabase
         .from('elected_tenures')
         .select(
-          'jurisdiction_id, current_party, canonical_persons(canonical_name, gender), party:political_organizations!elected_tenures_current_party_fkey(ec_party_code, short_name)',
+          'jurisdiction_id, current_party, canonical_persons(canonical_name, gender), party:political_organizations!elected_tenures_current_party_fkey(id, org_type, ec_party_code, short_name)',
         )
         .eq('jurisdiction_type', 'assembly_constituency')
         .eq('office_type', 'mla')
@@ -424,18 +438,16 @@ export class CanonicalGeographyService {
 
       if (error || !Array.isArray(data)) return result;
 
-      const candidates = new Map<
-        string,
-        Array<{ currentParty: string; currentMLA: string; gender: 'M' | 'F' | null }>
-      >();
+      const candidates = new Map<string, CurrentTenure[]>();
       for (const row of data as any[]) {
         if (!row || typeof row.jurisdiction_id !== 'string') continue;
         const party = Array.isArray(row.party) ? row.party[0] : row.party;
         const person = Array.isArray(row.canonical_persons)
           ? row.canonical_persons[0]
           : row.canonical_persons;
-        const value: { currentParty: string; currentMLA: string; gender: 'M' | 'F' | null } = {
+        const value: CurrentTenure = {
           currentParty: party?.ec_party_code || party?.short_name || '',
+          currentPartyId: party?.org_type === 'political_party' ? party.id : undefined,
           currentMLA: person?.canonical_name || '',
           gender: person?.gender === 'male' ? 'M' : person?.gender === 'female' ? 'F' : null,
         };
@@ -574,6 +586,7 @@ export class CanonicalGeographyService {
         district: row.district || '',
         reservationStatus: (row.reservation_status as ReservationStatus) || 'GEN',
         currentParty,
+        currentPartyId: override ? undefined : tenure?.currentPartyId,
         currentMLA,
       };
     });
@@ -620,6 +633,7 @@ export class CanonicalGeographyService {
       district: data.district || '',
       reservationStatus: (data.reservation_status as ReservationStatus) || 'GEN',
       currentParty,
+      currentPartyId: override ? undefined : tenure?.currentPartyId,
       currentMLA,
     };
   }
@@ -673,6 +687,7 @@ export class CanonicalGeographyService {
         district: row.district || '',
         reservationStatus: (row.reservation_status as ReservationStatus) || 'GEN',
         currentParty,
+        currentPartyId: override ? undefined : tenure?.currentPartyId,
         currentMLA,
       };
     });

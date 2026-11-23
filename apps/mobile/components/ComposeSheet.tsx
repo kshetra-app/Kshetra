@@ -36,6 +36,7 @@ import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 import { getUnifiedConstituenciesForState } from '../lib/stateDataAdapter';
 
 interface ComposeSheetProps {
+  publishingPage?: { id: string; name: string };
   visible: boolean;
   onClose: () => void;
   initialKind?: 'post' | 'short';
@@ -76,6 +77,7 @@ export default function ComposeSheet({
   visible,
   onClose,
   initialKind = 'post',
+  publishingPage,
   onSubmit = (post) => useFeedStore.getState().addPost(post),
   onEditSubmit,
   editPost,
@@ -283,6 +285,7 @@ export default function ComposeSheet({
       if (!gateContentAction('create_post')) return;
       if (stateCode === 'IN' || !user?.id || !shortVideo || !shortTerms || !shortTitle.trim()) return;
       const short = {
+        publisherPageId: publishingPage?.id,
         title: shortTitle.trim(),
         description: shortDescription.trim(),
         rightsConfirmed: shortTerms,
@@ -351,6 +354,7 @@ export default function ComposeSheet({
 
     const clientToken = `client_post_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
     const newPost: Post = {
+      publisherPageId: publishingPage?.id,
       id: clientToken,
       clientToken,
       syncStatus: 'SYNCING',
@@ -492,6 +496,11 @@ export default function ComposeSheet({
           </View>
 
           <ScrollView style={styles.scroll} keyboardShouldPersistTaps="handled">
+            {publishingPage && (
+              <Text style={{ color: colors.primary, fontWeight: '700', margin: 16 }}>
+                {t('partyRegistry.publishingAs', { defaultValue: 'Publishing as {{page}}', page: publishingPage.name })}
+              </Text>
+            )}
             {!replyTo && !isEditMode && (
               <View style={styles.typeRow}>
                 {(['post','short'] as const).map((value) => (

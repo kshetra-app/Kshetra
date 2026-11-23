@@ -15,6 +15,7 @@ import { ApiAuthError, ApiValidationError } from '../errors';
 import { CONTENT_LIMITS } from '@kshetra/shared';
 
 export interface UploadShortRequestDTO {
+  publisherPageId?: string;
   /** Existing persisted ID used only to safely replay a queued legacy upload. */
   id?: string;
   title: string;

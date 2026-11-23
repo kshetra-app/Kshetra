@@ -121,6 +121,7 @@ export interface ConstituencyBrief {
   district: string;
   reservationStatus: ReservationStatus;
   currentParty: string;
+  currentPartyId?: string;
   currentMLA: string;
   officeholderStatus?: 'INCUMBENT_ACTIVE' | 'BY_ELECTION_SEATED' | 'VACANT' | 'UNRESOLVED';
 }

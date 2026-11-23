@@ -64,6 +64,13 @@ export default function PostCard({
   const typeInfo = TYPE_CONFIG[displayPost.type] ?? TYPE_CONFIG.discussion;
   const userReaction = displayPost.userReaction;
   const reactionMeta = userReaction ? REACTION_CONFIG[userReaction] : null;
+  const openPublisher = () => {
+    if (displayPost.publisherPartyId) {
+      router.push({ pathname: '/parties/[id]', params: { id: displayPost.publisherPartyId } });
+    } else if (!displayPost.publisherPageId && displayPost.author.id) {
+      router.push(`/user/${displayPost.author.id}` as any);
+    }
+  };
 
   return (
     <>
@@ -87,11 +94,7 @@ export default function PostCard({
         <View style={styles.header}>
           <Pressable
             style={[styles.avatar, { backgroundColor: colors.primaryLight }]}
-            onPress={() => {
-              if (displayPost.author.id) {
-                router.push(`/user/${displayPost.author.id}` as any);
-              }
-            }}
+            onPress={openPublisher}
             hitSlop={6}
           >
             <Text style={[styles.avatarText, { color: colors.primary }]}>
@@ -101,11 +104,7 @@ export default function PostCard({
           <View style={styles.headerInfo}>
             <Pressable
               style={styles.nameRow}
-              onPress={() => {
-                if (displayPost.author.id) {
-                  router.push(`/user/${displayPost.author.id}` as any);
-                }
-              }}
+              onPress={openPublisher}
               hitSlop={6}
             >
               <Text style={[styles.authorName, { color: colors.text }]} numberOfLines={1}>

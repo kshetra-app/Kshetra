@@ -260,6 +260,7 @@ export async function removeReaction(postId: string, _userId?: string): Promise<
 }
 
 export async function composePost(post: {
+  publisherPageId?: string;
   media?: import('./feedAttachments').SubmittedAttachment[];
   content: string;
   type: string;
@@ -276,6 +277,7 @@ export async function composePost(post: {
   try {
     addBreadcrumb('feed', 'compose_post', { type: post.type });
     const res = await apiClient.feed.composePost({
+      publisherPageId: post.publisherPageId,
       media: post.media,
       content: post.content,
       type: post.type as any,
@@ -483,6 +485,7 @@ export async function toggleFavorite(
 // ─── Political Shorts ────────────────────────────────────────────────
 
 export async function uploadShort(short: {
+  publisherPageId?: string;
   id?: string;
   title: string;
   videoPath?: string;
@@ -503,6 +506,7 @@ export async function uploadShort(short: {
   try {
     addBreadcrumb('shorts', 'upload', { title: short.title });
     const res = await apiClient.shorts.uploadShort({
+      publisherPageId: short.publisherPageId,
       id: isValidUuid(short.id) ? short.id : undefined,
       title: short.title,
       videoPath: short.videoPath,
@@ -1040,7 +1044,7 @@ export async function fetchBlendedFeed(
 
 async function fetchPostTimeline(
   viewerId: string | null | undefined,
-  scope: { authorId: string } | {
+  scope: { authorId: string } | { publisherPageId: string } | {
     stateCode?: string | null;
     constituencyId?: string | null;
     followedIds: string[];
@@ -1050,31 +1054,26 @@ async function fetchPostTimeline(
   offset: number,
 ) {
     let query = supabase
-      .from('posts')
-      .select('id,author_id,constituency_id,state_code,content,type,parent_id,reply_count,reaction_count,is_pinned,is_deleted,language,created_at,updated_at,post_media(id,media_type,url,alt_text,sort_order),polls(id,question,total_votes,is_closed,expires_at,poll_options(id,label,vote_count,sort_order))')
+      .from('feed_posts_with_publisher')
+      .select('id,author_id,publisher_page_id,publisher_party_id,publisher_title,publisher_avatar_url,publisher_verified,constituency_id,state_code,content,type,parent_id,reply_count,reaction_count,is_pinned,is_deleted,language,created_at,updated_at,post_media(id,media_type,url,alt_text,sort_order),polls(id,question,total_votes,is_closed,expires_at,poll_options(id,label,vote_count,sort_order))')
       .eq('is_deleted', false)
       .not('id', 'in', LEGACY_SYNTHETIC_POSTS_FILTER);
 
-    if ('authorId' in scope) {
-      query = query.eq('author_id', scope.authorId).is('parent_id', null);
+    if ('publisherPageId' in scope) {
+      query = query.eq('publisher_page_id', scope.publisherPageId).is('parent_id', null);
+    } else if ('authorId' in scope) {
+      query = query.eq('author_id', scope.authorId).is('publisher_page_id', null).is('parent_id', null);
     } else {
     const { stateCode, constituencyId, followedIds, period } = scope;
+    const filters = ['follows_publisher.eq.true'];
     if (stateCode === 'IN') {
-      query = query.is('state_code', null);
-    } else if (followedIds.length > 0 && constituencyId) {
-      const orFilter = `author_id.in.(${followedIds.join(',')}),constituency_id.eq.${constituencyId}`;
-      query = query.or(orFilter);
-    } else if (followedIds.length > 0) {
-      if (stateCode) {
-        query = query.or(`author_id.in.(${followedIds.join(',')}),state_code.eq.${stateCode}`);
-      } else {
-        query = query.in('author_id', followedIds);
-      }
-    } else if (constituencyId) {
-      query = query.eq('constituency_id', constituencyId);
-    } else if (stateCode) {
-      query = query.eq('state_code', stateCode);
+      filters.push('state_code.is.null');
+    } else {
+      if (followedIds.length) filters.push(`and(author_id.in.(${followedIds.join(',')}),publisher_page_id.is.null)`);
+      if (constituencyId) filters.push(`constituency_id.eq.${constituencyId}`);
+      else if (stateCode) filters.push(`state_code.eq.${stateCode}`);
     }
+    if (filters.length > 1) query = query.or(filters.join(','));
 
     const cutoff = getContentArchiveCutoff();
     query = period === 'archive' ? query.lt('created_at', cutoff) : query.gte('created_at', cutoff);
@@ -1114,9 +1113,9 @@ async function fetchPostTimeline(
       const poll = Array.isArray(post.polls) ? post.polls[0] : post.polls;
       return {
         ...post,
-        author_display_name: profile?.display_name,
-        author_avatar_url: profile?.avatar_url,
-        author_is_verified: profile?.verification_status === 'verified',
+        author_display_name: post.publisher_page_id ? post.publisher_title ?? 'Party Page' : profile?.display_name,
+        author_avatar_url: post.publisher_page_id ? post.publisher_avatar_url : profile?.avatar_url,
+        author_is_verified: post.publisher_page_id ? post.publisher_verified : profile?.verification_status === 'verified',
         user_reaction: reactionByPost.get(post.id),
         media: [...post.post_media].sort((a,b) => a.sort_order-b.sort_order).map((m) => ({
           id: m.id, mediaType: m.media_type, altText: m.alt_text,
@@ -1132,6 +1131,10 @@ async function fetchPostTimeline(
         },
       };
     });
+}
+
+export async function fetchPartyPagePosts(pageId: string, viewerId: string | undefined, limit: number, offset: number) {
+  return fetchPostTimeline(viewerId, { publisherPageId: pageId }, limit, offset);
 }
 
 export async function fetchFeedForState(

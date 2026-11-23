@@ -793,6 +793,7 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
   const localizedType = getLocalizedReservation(item.type || '', i18n.language) || item.type;
   const localizedWinnerParty = getLocalizedPartyName(representativeParty, i18n.language) || representativeParty;
   const localizedWinnerName = getLocalizedCandidateName(representativeName, i18n.language) || representativeName;
+  const partyRouter = useRouter();
 
   // Rich data badges from affidavit store
   const winnerAffidavit = item.stateCode && item.electionYear != null
@@ -825,7 +826,15 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
           #{item.acNo} · {localizedDistrict} · {localizedType}
         </Text>
         <View style={styles.cardWinnerRow}>
-          {representativeParty ? (
+          {IS_LIVE_ENVIRONMENT && item.currentPartyId && representativeParty ? (
+            <Pressable
+              accessibilityRole="link"
+              style={[styles.partyBadge, { backgroundColor: partyColor }]}
+              onPress={() => partyRouter.push({ pathname: '/parties/[id]', params: { id: item.currentPartyId! } })}
+            >
+              <Text style={styles.partyBadgeText}>{localizedWinnerParty}</Text>
+            </Pressable>
+          ) : representativeParty ? (
             <View style={[styles.partyBadge, { backgroundColor: partyColor }]}>
               <Text style={styles.partyBadgeText}>{localizedWinnerParty}</Text>
             </View>
