@@ -1,5 +1,6 @@
 import { apiClient } from './api';
 import { authManager } from './api/authManager';
+import type { KYCStatus } from './contentAccountabilityTypes';
 
 export interface RegistryParty {
   id: string;
@@ -26,6 +27,7 @@ export interface PartyClaim {
 export interface PartyAccount {
   accountId: string;
   canReviewClaims: boolean;
+  contributorStatus: KYCStatus | null;
   declaration: PartyDeclaration | null;
   claims: PartyClaim[];
 }

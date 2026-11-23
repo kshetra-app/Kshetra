@@ -12,6 +12,10 @@ const reviewRoles = new Set(['admin', 'super_admin', 'compliance_officer']);
 const claimFields =
   'id,organization_id,claimant_id,evidence_url,authority_summary,status,review_note,reviewed_at,created_at';
 
+function findContributorStatus(userId: string) {
+  return supabase.from('creator_kyc_records').select('status').eq('user_id', userId).maybeSingle();
+}
+
 function dbError(
   reply: FastifyReply,
   request: FastifyRequest,
@@ -40,6 +44,9 @@ async function lookupParty(id: string) {
     .eq('id', id)
     .eq('org_type', 'political_party')
     .not('provenance_id', 'is', null)
+    .order('is_preferred', { referencedTable: 'organization_multilingual_names', ascending: false })
+    .order('is_official', { referencedTable: 'organization_multilingual_names', ascending: false })
+    .order('name_value', { referencedTable: 'organization_multilingual_names' })
     .maybeSingle();
 }
 
@@ -92,13 +99,29 @@ export const partyRoutes: FastifyPluginAsync = async (app) => {
             .maybeSingle()
         : { data: null, error: null };
       if (claimError) return dbError(reply, request, claimError);
+      let sourceUrl =
+        (provenance as { metadata?: { sourceUrl?: string } } | null)?.metadata?.sourceUrl ?? null;
+      if (!sourceUrl) {
+        const { data: citation, error: citationError } = await supabase
+          .from('organization_aliases')
+          .select('source_url')
+          .eq('organization_id', party.id)
+          .eq('confidence', 'VERIFIED')
+          .not('source_url', 'is', null)
+          .order('valid_from', { ascending: false })
+          .order('source_url')
+          .limit(1)
+          .maybeSingle();
+        if (citationError)
+          request.log.warn({ code: citationError.code }, 'Party citation lookup unavailable');
+        sourceUrl = citation?.source_url ?? null;
+      }
       const today = new Date().toISOString().slice(0, 10);
       return {
         ...party,
         page_id: verification ? linkedPage : null,
         verifiedAt: verification?.reviewed_at ?? null,
-        sourceUrl:
-          (provenance as { metadata?: { sourceUrl?: string } } | null)?.metadata?.sourceUrl ?? null,
+        sourceUrl,
         names: names
           .filter((name) => name.valid_from <= today && (!name.valid_to || name.valid_to >= today))
           .map(({ language_code, name_value }) => ({ language_code, name_value })),
@@ -110,7 +133,7 @@ export const partyRoutes: FastifyPluginAsync = async (app) => {
     const actor = await resolveAuthenticatedUser(request, reply);
     if (!actor) return;
     reply.header('Cache-Control', 'private, no-store');
-    const [declaration, claims] = await Promise.all([
+    const [declaration, claims, contributor] = await Promise.all([
       supabase
         .from('user_party_declarations')
         .select('organization_id,is_public')
@@ -121,12 +144,15 @@ export const partyRoutes: FastifyPluginAsync = async (app) => {
         .select('id,organization_id,status,reviewed_at')
         .eq('claimant_id', actor.userId)
         .order('created_at', { ascending: false }),
+      findContributorStatus(actor.userId),
     ]);
     if (declaration.error) return dbError(reply, request, declaration.error);
     if (claims.error) return dbError(reply, request, claims.error);
+    if (contributor.error) return dbError(reply, request, contributor.error);
     return {
       accountId: actor.userId,
       canReviewClaims: reviewRoles.has(actor.role),
+      contributorStatus: contributor.data?.status ?? null,
       declaration: declaration.data,
       claims: claims.data,
     };
@@ -250,6 +276,17 @@ export const partyRoutes: FastifyPluginAsync = async (app) => {
       if (party.error) return dbError(reply, request, party.error);
       if (!party.data)
         return sendApiError(reply, request, 404, 'PARTY_NOT_FOUND', 'Party not found.');
+      const contributor = await findContributorStatus(actor.userId);
+      if (contributor.error) return dbError(reply, request, contributor.error);
+      if (contributor.data?.status !== 'verified') {
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'CONTRIBUTOR_VERIFICATION_REQUIRED',
+          'Complete contributor verification before applying for official Page access.',
+        );
+      }
       const { data, error } = await supabase
         .from('party_page_claims')
         .insert({

@@ -47,7 +47,7 @@ export default function PartyDirectory({ onSelect, selectedId }: Props) {
   return (
     <View style={[styles.directory, { backgroundColor: colors.background }]}>
       <View style={[styles.search, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-        <Ionicons name="search-outline" size={20} color={colors.textMuted} />
+        <Ionicons name="search-outline" size={20} color={colors.textMuted} accessible={false} />
         <TextInput
           style={[styles.input, { color: colors.text }]}
           placeholder={t('partyRegistry.search', { defaultValue: 'Search by name or abbreviation' })}
@@ -74,7 +74,10 @@ export default function PartyDirectory({ onSelect, selectedId }: Props) {
         renderItem={({ item }) => (
           <Pressable
             accessibilityRole="button"
-            accessibilityState={{ selected: selectedId === item.id }}
+            accessibilityLabel={item.short_name === (item.local_name ?? item.name)
+              ? item.short_name
+              : [item.local_name ?? item.name, item.short_name].join(', ')}
+            accessibilityState={selectedId ? { selected: selectedId === item.id } : undefined}
             onPress={() => onSelect(item)}
             style={[styles.row, { borderColor: colors.border, backgroundColor: colors.surface }]}
           >
@@ -88,6 +91,7 @@ export default function PartyDirectory({ onSelect, selectedId }: Props) {
               name={selectedId === item.id ? 'checkmark-circle' : 'chevron-forward'}
               color={colors.primary}
               size={20}
+              accessible={false}
             />
           </Pressable>
         )}

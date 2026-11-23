@@ -1,7 +1,8 @@
 import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, Alert, Linking, RefreshControl, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, KeyboardAvoidingView, Linking, Modal, Platform, RefreshControl, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PartyAction, PartyField } from '../../components/PartyActions';
 import ComposeSheet from '../../components/ComposeSheet';
 import PartyPagePosts from '../../components/PartyPagePosts';
@@ -13,6 +14,7 @@ import {
 } from '../../lib/partyRegistry';
 import { useTheme } from '../../lib/theme';
 import { useAuthStore } from '../../stores/auth';
+import { useContributorVerificationStore } from '../../stores/contributorVerification';
 
 const roles: PartyTeamRole[] = ['editor', 'approver', 'publisher', 'moderator'];
 
@@ -21,7 +23,10 @@ export default function PartyProfileScreen() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   const userId = useAuthStore((state) => state.user?.id);
+  const showVerification = useContributorVerificationStore((state) => state.showKYCSheet);
+  const setShowVerification = useContributorVerificationStore((state) => state.setShowKYCSheet);
   const signedIn = Boolean(userId && userId !== 'anon');
   const [party, setParty] = useState<Awaited<ReturnType<typeof getParty>> | null>(null);
   const [account, setAccount] = useState<PartyAccount | null>(null);
@@ -37,6 +42,7 @@ export default function PartyProfileScreen() {
   const [selectedRole, setSelectedRole] = useState<PartyTeamRole | null>(null);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
+  const [controlsUnavailable, setControlsUnavailable] = useState(false);
   const [working, setWorking] = useState(false);
   const [revision, setRevision] = useState(0);
 
@@ -44,6 +50,7 @@ export default function PartyProfileScreen() {
     let current = true;
     setLoading(true);
     setFailed(false);
+    setControlsUnavailable(false);
     setAccount(null);
     setPage(null);
     setCanPublish(false);
@@ -52,21 +59,31 @@ export default function PartyProfileScreen() {
     setClaimForm(false);
     async function load() {
       try {
-        const [details, personal] = await Promise.all([getParty(id), signedIn ? getPartyAccount() : null]);
+        const [details, accountResult] = await Promise.all([
+          getParty(id),
+          signedIn ? getPartyAccount().then(
+            (value) => ({ value, available: true }),
+            () => ({ value: null, available: false }),
+          ) : { value: null, available: true },
+        ]);
+        const personal = accountResult.value?.accountId === userId ? accountResult.value : null;
         const ownsPage = Boolean(details.page_id && personal?.claims.some(
           (claim) => claim.organization_id === id && claim.status === 'approved',
         ));
-        const [follow, members, publish] = await Promise.all([
+        const [follow, members, publish] = await Promise.allSettled([
           details.page_id ? getPartyPage(details.page_id, signedIn) : null,
           ownsPage ? listPartyTeam(id) : [],
           details.page_id && signedIn ? canPublishForParty(id) : false,
         ]);
         if (!current) return;
         setParty(details);
-        setAccount(personal?.accountId === userId ? personal : null);
-        setPage(follow);
-        setCanPublish(publish);
-        setTeam(members);
+        setControlsUnavailable(!accountResult.available || [follow, members, publish].some(
+          (result) => result.status === 'rejected',
+        ));
+        setAccount(personal);
+        setPage(follow.status === 'fulfilled' ? follow.value : null);
+        setCanPublish(publish.status === 'fulfilled' && publish.value);
+        setTeam(members.status === 'fulfilled' ? members.value : []);
         setVisible(Boolean(personal?.declaration?.organization_id === id && personal.declaration.is_public));
       } catch {
         if (current) setFailed(true);
@@ -76,7 +93,7 @@ export default function PartyProfileScreen() {
     }
     void load();
     return () => { current = false; };
-  }, [id, revision, signedIn, userId]));
+  }, [id, revision, signedIn, userId, showVerification]));
 
   async function perform(action: () => Promise<unknown>) {
     if (working) return;
@@ -99,6 +116,7 @@ export default function PartyProfileScreen() {
     (claim) => claim.organization_id === id && claim.status === 'approved',
   ));
   const officialPage = party?.page_id;
+  const showClaimOption = !ownsPage && !officialPage && ownClaim?.status !== 'pending' && !claimForm;
   const memberId = member.trim();
   const validMember = /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(memberId);
   const roleTitle = (role: PartyTeamRole) => t('partyRegistry.role.' + role, { defaultValue: role });
@@ -146,6 +164,12 @@ export default function PartyProfileScreen() {
             )}
           </View>
 
+          {controlsUnavailable && (
+            <PartyAction
+              label={t('partyRegistry.retryControls')}
+              onPress={() => setRevision((previous) => previous + 1)}
+            />
+          )}
           {account && (
             <>
               <View style={[styles.panel, { backgroundColor: colors.surface, borderColor: colors.border }]}>
@@ -189,26 +213,19 @@ export default function PartyProfileScreen() {
                 {ownsPage && <Text style={{ color: colors.textMuted }}>
                   {t('partyRegistry.teamHelp', { defaultValue: 'Assign one role to a verified member using their Poligram account ID.' })}
                 </Text>}
-                {!ownsPage && !officialPage && ownClaim?.status !== 'pending' && !claimForm && (
-                  <PartyAction label={t('partyRegistry.claimPage', { defaultValue: 'Request official Page access' })} onPress={() => setClaimForm(true)} />
+                {showClaimOption && account.contributorStatus === 'verified' && (
+                  <PartyAction label={t('partyRegistry.claimPage')} onPress={() => setClaimForm(true)} />
                 )}
-                {claimForm && (
-                  <>
-                    <Text style={{ color: colors.textMuted }}>{t('partyRegistry.claimHelp', { defaultValue: 'A reviewer checks your contributor identity and authority to represent this party. Share a link the reviewer can verify.' })}</Text>
-                    <PartyField accessibilityLabel={t('partyRegistry.evidence', { defaultValue: 'Authority evidence URL' })}
-                      placeholder={t('partyRegistry.evidence', { defaultValue: 'Authority evidence URL' })}
-                      value={evidence} onChangeText={setEvidence} autoCapitalize="none" keyboardType="url" maxLength={2000} />
-                    <PartyField accessibilityLabel={t('partyRegistry.summary', { defaultValue: 'Explain your authority' })}
-                      placeholder={t('partyRegistry.summary', { defaultValue: 'Explain your authority' })}
-                      value={summary} onChangeText={setSummary} multiline maxLength={1200} />
-                    <PartyAction disabled={working || !evidence.trim().startsWith('https://') || summary.trim().length < 20}
-                      label={t('partyRegistry.submitClaim', { defaultValue: 'Submit for verification' })}
-                      onPress={() => void perform(async () => {
-                        await submitPartyClaim(id, evidence.trim(), summary.trim());
-                        setEvidence('');
-                        setSummary('');
-                      })} />
-                  </>
+                {showClaimOption && account.contributorStatus !== 'verified' && (
+                  account.contributorStatus === null || account.contributorStatus === 'rejected' ? (
+                    <PartyAction label={t('partyRegistry.verifyToClaim')} onPress={() => setShowVerification(true)} />
+                  ) : (
+                    <Text style={{ color: colors.textMuted }}>
+                      {t(account.contributorStatus === 'pending'
+                        ? 'partyRegistry.contributorPending'
+                        : 'partyRegistry.contributorAccessUnavailable')}
+                    </Text>
+                  )
                 )}
                 {ownsPage && <>
                   {team.map((person) => (
@@ -236,7 +253,7 @@ export default function PartyProfileScreen() {
                     })} />
                 </>}
                 <Text selectable style={{ color: colors.textMuted }}>
-                  {t('partyRegistry.myAccountId', { defaultValue: 'My account ID: {{id}}', id: account.accountId })}
+                  {t('partyRegistry.myAccountId', { id: account.accountId })}
                 </Text>
               </View>
             </>
@@ -254,6 +271,48 @@ export default function PartyProfileScreen() {
               publishingPage={{ id: officialPage, name: party.name }}
             />
           )}
+          <Modal
+            visible={claimForm}
+            animationType="slide"
+            onRequestClose={() => { if (!working) setClaimForm(false); }}
+          >
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+              style={{ flex: 1, backgroundColor: colors.background }}
+            >
+              <ScrollView
+                keyboardShouldPersistTaps="handled"
+                contentContainerStyle={[styles.screen, {
+                  paddingTop: insets.top + 16,
+                  paddingBottom: insets.bottom + 24,
+                }]}
+              >
+                <Text accessibilityRole="header" style={[styles.heading, { color: colors.text }]}>
+                  {t('partyRegistry.claimPage')}
+                </Text>
+                <Text style={{ color: colors.textMuted }}>{party.name}</Text>
+                <Text style={{ color: colors.textMuted }}>{t('partyRegistry.claimHelp')}</Text>
+                <PartyField accessibilityLabel={t('partyRegistry.evidence')}
+                  placeholder={t('partyRegistry.evidence')}
+                  value={evidence} onChangeText={setEvidence} autoCapitalize="none" autoCorrect={false}
+                  keyboardType="url" maxLength={2000} />
+                <PartyField accessibilityLabel={t('partyRegistry.summary')}
+                  placeholder={t('partyRegistry.summary')}
+                  value={summary} onChangeText={setSummary} multiline maxLength={1200} />
+                <PartyAction
+                  disabled={working || !/^https:\/\/[^\s]+$/i.test(evidence.trim()) || summary.trim().length < 20}
+                  label={t('partyRegistry.submitClaim')}
+                  onPress={() => void perform(async () => {
+                    await submitPartyClaim(id, evidence.trim(), summary.trim());
+                    setEvidence('');
+                    setSummary('');
+                    setClaimForm(false);
+                  })}
+                />
+                <PartyAction disabled={working} label={t('common.cancel')} onPress={() => setClaimForm(false)} />
+              </ScrollView>
+            </KeyboardAvoidingView>
+          </Modal>
         </>
       )}
     </ScrollView>

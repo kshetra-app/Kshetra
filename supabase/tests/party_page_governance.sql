@@ -45,7 +45,9 @@ BEGIN
     RAISE EXCEPTION 'Unprivileged reviewer was accepted';
   EXCEPTION WHEN insufficient_privilege THEN NULL;
   END;
+  SET LOCAL ROLE service_role;
   test_page_id := public.review_party_page_claim(claim_id,reviewer_id,'approved','Verified within the rollback transaction only');
+  RESET ROLE;
   IF test_page_id IS NULL THEN RAISE EXCEPTION 'Approval did not link a Page'; END IF;
   PERFORM public.set_party_page_team_role(org_id,owner_id,member_id,'publisher');
   IF NOT EXISTS (SELECT FROM public.party_page_team t WHERE t.page_id = test_page_id AND t.user_id = member_id AND t.role = 'publisher') THEN
