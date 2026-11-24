@@ -4,8 +4,10 @@ import {
   facebookAuthorizationUrl,
   facebookLoginState,
   getFacebookStagingConfig,
+  getFacebookVideoPublication,
   hashFacebookLoginState,
   openFacebookToken,
+  publishFacebookPageContent,
   publishFacebookStagingTest,
   sealFacebookToken,
   type FacebookStagingConfig,
@@ -144,6 +146,49 @@ describe('Facebook Staging publishing', () => {
     expect((url as URL).pathname).toBe('/v27.0/34567/feed');
     expect(init?.method).toBe('POST');
     expect((init?.body as URLSearchParams).get('message')).toContain('Poligram Staging test.');
+  });
+
+  it('records a photo post receipt separately from the uploaded photo ID', async () => {
+    const fetcher = jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(Response.json({ id: '1234', post_id: '34567_1235' }));
+    await expect(
+      publishFacebookPageContent(config, 'page-token', {
+        message: 'Photo caption',
+        media: { type: 'image', signedUrl: 'https://storage.example.test/signed' },
+      }),
+    ).resolves.toBe('34567_1235');
+    const [url, request] = fetcher.mock.calls[0];
+    expect((url as URL).pathname).toBe('/v27.0/34567/photos');
+    expect((request?.body as URLSearchParams).get('caption')).toBe('Photo caption');
+    expect((request?.body as URLSearchParams).get('url')).toBe(
+      'https://storage.example.test/signed',
+    );
+  });
+
+  it('waits for Facebook to confirm a video is published', async () => {
+    const fetcher = jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(Response.json({ id: '1234' }))
+      .mockResolvedValueOnce(
+        Response.json({ id: '1234', status: { video_status: 'ready' }, published: false }),
+      )
+      .mockResolvedValueOnce(
+        Response.json({ id: '1234', status: { video_status: 'ready' }, published: true }),
+      );
+    await expect(
+      publishFacebookPageContent(config, 'page-token', {
+        message: 'Video caption',
+        media: { type: 'video', signedUrl: 'https://storage.example.test/signed' },
+      }),
+    ).resolves.toBe('1234');
+    expect((fetcher.mock.calls[0][0] as URL).pathname).toBe('/v27.0/34567/videos');
+    await expect(getFacebookVideoPublication(config, 'page-token', '1234')).resolves.toBe(
+      'processing',
+    );
+    await expect(getFacebookVideoPublication(config, 'page-token', '1234')).resolves.toBe(
+      'published',
+    );
   });
 
   it('distinguishes a provider rejection from an uncertain publication result', async () => {

@@ -2,6 +2,7 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { resolveAuthenticatedUser } from '../lib/userAuth';
 import { sendApiError } from '../lib/replyHelper';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { registerCampaignFacebookPublications } from './campaignFacebookPublications';
 import {
   FACEBOOK_STAGING_CALLBACK,
   FACEBOOK_STAGING_MESSAGE,
@@ -90,6 +91,7 @@ export function registerCampaignFacebookStaging(app: FastifyInstance, isOwner: O
         .select(receiptFields)
         .eq('campaign_id', campaignId)
         .eq('page_id', config.pageId)
+        .is('client_request_id', null)
         .maybeSingle(),
     ]);
     if (connection.error || receipt.error) {
@@ -102,6 +104,7 @@ export function registerCampaignFacebookStaging(app: FastifyInstance, isOwner: O
       available: true,
       page,
       receipt: post && { ...post, status: stale ? 'verifying' : post.status },
+      publishingEnabled: process.env.FACEBOOK_CAMPAIGN_PUBLISHING_ENABLED === 'true',
       testMessage: FACEBOOK_STAGING_MESSAGE,
     };
   });
@@ -284,6 +287,7 @@ export function registerCampaignFacebookStaging(app: FastifyInstance, isOwner: O
           .select(receiptFields)
           .eq('page_id', config.pageId)
           .eq('campaign_id', campaignId)
+          .is('client_request_id', null)
           .maybeSingle();
         if (existing.error)
           return failure(reply, request, 503, 'Could not read the existing test receipt.');
@@ -301,6 +305,7 @@ export function registerCampaignFacebookStaging(app: FastifyInstance, isOwner: O
           .update({ status: 'sending', submitted_by: actor.userId, requested_at: now })
           .eq('campaign_id', campaignId)
           .eq('page_id', config.pageId)
+          .is('client_request_id', null)
           .eq('status', 'rejected')
           .select('page_id')
           .maybeSingle();
@@ -320,6 +325,7 @@ export function registerCampaignFacebookStaging(app: FastifyInstance, isOwner: O
           .update({ status: rejected ? 'rejected' : 'verifying' })
           .eq('page_id', config.pageId)
           .eq('campaign_id', campaignId)
+          .is('client_request_id', null)
           .eq('requested_at', now);
         if (rejected && error.expiredAuthorization) {
           await supabase
@@ -353,6 +359,7 @@ export function registerCampaignFacebookStaging(app: FastifyInstance, isOwner: O
         })
         .eq('page_id', config.pageId)
         .eq('campaign_id', campaignId)
+        .is('client_request_id', null)
         .eq('requested_at', now)
         .select(receiptFields)
         .single();
@@ -375,4 +382,6 @@ export function registerCampaignFacebookStaging(app: FastifyInstance, isOwner: O
       return { receipt: { ...saved.data, permalink_url: permalink } };
     },
   );
+
+  registerCampaignFacebookPublications(app, owner, isOwner);
 }

@@ -247,16 +247,63 @@ export async function connectFacebookStagingPage(config: FacebookStagingConfig, 
 }
 
 export async function publishFacebookStagingTest(config: FacebookStagingConfig, token: string) {
-  const receipt = await graph<{ id?: string }>(
-    graphUrl(`${config.pageId}/feed`),
+  return publishFacebookPageContent(config, token, { message: FACEBOOK_STAGING_MESSAGE });
+}
+
+type FacebookPageContent = {
+  message: string;
+  media?: { type: 'image' | 'video'; signedUrl: string };
+};
+
+export async function publishFacebookPageContent(
+  config: FacebookStagingConfig,
+  token: string,
+  { message, media }: FacebookPageContent,
+) {
+  const edge = media?.type === 'image' ? 'photos' : media?.type === 'video' ? 'videos' : 'feed';
+  const body = new URLSearchParams();
+  if (media?.type === 'image') {
+    body.set('url', media.signedUrl);
+    body.set('caption', message);
+  } else if (media?.type === 'video') {
+    body.set('file_url', media.signedUrl);
+    body.set('description', message);
+    body.set('published', 'true');
+  } else {
+    body.set('message', message);
+  }
+
+  const receipt = await graph<{ id?: string; post_id?: string }>(
+    graphUrl(`${config.pageId}/${edge}`),
     config,
     token,
-    new URLSearchParams({ message: FACEBOOK_STAGING_MESSAGE }),
+    body,
   );
-  if (typeof receipt.id !== 'string' || !/^\d+(?:_\d+)?$/.test(receipt.id)) {
+  const id = edge === 'photos' ? receipt.post_id : receipt.id;
+  if (typeof id !== 'string' || !/^\d+(?:_\d+)?$/.test(id)) {
     throw new Error('Facebook did not return a usable post receipt.');
   }
-  return receipt.id;
+  return id;
+}
+
+export async function getFacebookVideoPublication(
+  config: FacebookStagingConfig,
+  token: string,
+  id: string,
+) {
+  const url = graphUrl(id);
+  url.searchParams.set('fields', 'id,status,published');
+  const video = await graph<{
+    id?: string;
+    published?: boolean;
+    status?: { video_status?: string; publishing_phase?: { status?: string } };
+  }>(url, config, token);
+  if (video.id !== id) throw new Error('Facebook returned a different video.');
+  const state = video.status;
+  if (state?.video_status === 'error' || state?.publishing_phase?.status === 'error') {
+    return 'rejected';
+  }
+  return state?.video_status === 'ready' && video.published === true ? 'published' : 'processing';
 }
 
 export async function findFacebookStagingPermalink(

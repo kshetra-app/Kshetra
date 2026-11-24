@@ -3,6 +3,7 @@ import { ActivityIndicator, Alert, AppState, Linking, Pressable, StyleSheet, Tex
 import { useTranslation } from 'react-i18next';
 import { apiClient } from '../../lib/api';
 import { useTheme } from '../../lib/theme';
+import CampaignFacebookComposer from './CampaignFacebookComposer';
 
 interface Receipt {
   status: 'sending' | 'published' | 'rejected' | 'verifying';
@@ -15,6 +16,7 @@ type PublishingStatus = { available: false } | {
   page: { page_id: string; page_name: string } | null;
   receipt: Receipt | null;
   testMessage: string;
+  publishingEnabled?: boolean;
 };
 
 export default function FacebookStagingPublishing({ campaignId }: { campaignId?: string | null }) {
@@ -138,7 +140,7 @@ export default function FacebookStagingPublishing({ campaignId }: { campaignId?:
                 <Text style={{ color: colors.textSecondary }}>
                   {t('campaignManager.facebookAwaitingConfirmation', { defaultValue: 'The test post is awaiting Facebook confirmation. Check the Page before taking further action.' })}
                 </Text>
-              ) : connected && (
+              ) : connected && !status.publishingEnabled && (
                 <>
                   <Text style={{ color: colors.textSecondary }}>{status.testMessage}</Text>
                   {receipt?.status === 'rejected' && (
@@ -159,6 +161,9 @@ export default function FacebookStagingPublishing({ campaignId }: { campaignId?:
                     );
                   })}
                 </>
+              )}
+              {status.publishingEnabled && (
+                <CampaignFacebookComposer path={path} pageName={connected ? connected.page_name : null} />
               )}
               {action(t('common.refresh', { defaultValue: 'Refresh' }), () => void refresh())}
             </>
