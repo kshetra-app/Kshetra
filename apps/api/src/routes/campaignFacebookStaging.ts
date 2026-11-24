@@ -5,6 +5,7 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import {
   FACEBOOK_STAGING_CALLBACK,
   FACEBOOK_STAGING_MESSAGE,
+  FacebookConnectionError,
   FacebookRequestRejected,
   connectFacebookStagingPage,
   facebookAuthorizationUrl,
@@ -150,6 +151,7 @@ export function registerCampaignFacebookStaging(app: FastifyInstance, isOwner: O
 
       const stateHash = hashFacebookLoginState(state);
       let campaignId: string | undefined;
+      let step = 'claim_authorization';
       try {
         const now = new Date().toISOString();
         const { data, error } = await supabase
@@ -175,7 +177,9 @@ export function registerCampaignFacebookStaging(app: FastifyInstance, isOwner: O
           return browserResult(reply, 400, 'Facebook authorization was not completed.');
         }
 
+        step = 'connect_page';
         const page = await connectFacebookStagingPage(config, code);
+        step = 'save_connection';
         const saved = await supabase
           .from('campaign_facebook_connections')
           .update({
@@ -193,7 +197,17 @@ export function registerCampaignFacebookStaging(app: FastifyInstance, isOwner: O
         if (!saved.data)
           return browserResult(reply, 409, 'This connection request was cancelled or replaced.');
         return browserResult(reply, 200, 'The Poligram Staging Facebook Page is connected.');
-      } catch {
+      } catch (error) {
+        const failure = error instanceof FacebookConnectionError ? error : undefined;
+        app.log.warn(
+          {
+            step: failure?.step ?? step,
+            httpStatus: failure?.graphError?.httpStatus,
+            graphCode: failure?.graphError?.graphCode,
+            graphSubcode: failure?.graphError?.graphSubcode,
+          },
+          'Facebook Staging connection failed',
+        );
         return browserResult(
           reply,
           422,

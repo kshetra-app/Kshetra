@@ -101,9 +101,39 @@ export function openFacebookToken(
   return Buffer.concat([decipher.update(ciphertext), decipher.final()]).toString('utf8');
 }
 
-export class FacebookRequestRejected extends Error {
-  constructor(readonly expiredAuthorization: boolean) {
-    super('Facebook rejected the request.');
+class FacebookGraphError extends Error {
+  constructor(
+    readonly httpStatus: number,
+    readonly graphCode: number | undefined,
+    readonly graphSubcode: number | undefined,
+  ) {
+    super('Facebook did not confirm the request.');
+  }
+}
+
+export class FacebookRequestRejected extends FacebookGraphError {
+  get expiredAuthorization() {
+    return this.graphCode === 190;
+  }
+}
+
+type FacebookConnectionStep =
+  | 'exchange_code'
+  | 'extend_user_token'
+  | 'list_pages'
+  | 'page_identity'
+  | 'page_not_granted'
+  | 'page_publish_task_missing';
+
+export class FacebookConnectionError extends Error {
+  readonly graphError: FacebookGraphError | undefined;
+
+  constructor(
+    readonly step: FacebookConnectionStep,
+    error?: unknown,
+  ) {
+    super('The selected test Page did not grant publishing access.');
+    this.graphError = error instanceof FacebookGraphError ? error : undefined;
   }
 }
 
@@ -132,20 +162,31 @@ async function graph<T>(
   });
   const result = await response.json();
   if (!response.ok || result?.error) {
-    if (
+    const code = Number.isInteger(result?.error?.code) ? (result.error.code as number) : undefined;
+    const subcode = Number.isInteger(result?.error?.error_subcode)
+      ? (result.error.error_subcode as number)
+      : undefined;
+    const rejected =
       response.status >= 400 &&
       response.status < 500 &&
-      definitiveRejectionCodes.has(result?.error?.code) &&
-      result.error.is_transient !== true
-    ) {
-      throw new FacebookRequestRejected(result.error.code === 190);
-    }
-    throw new Error('Facebook did not confirm the request.');
+      code !== undefined &&
+      definitiveRejectionCodes.has(code) &&
+      result.error.is_transient !== true;
+    const Failure = rejected ? FacebookRequestRejected : FacebookGraphError;
+    throw new Failure(response.status, code, subcode);
   }
   return result as T;
 }
 
 export async function connectFacebookStagingPage(config: FacebookStagingConfig, code: string) {
+  async function request<T>(step: FacebookConnectionStep, url: URL, token?: string) {
+    try {
+      return await graph<T>(url, config, token);
+    } catch (error) {
+      throw new FacebookConnectionError(step, error);
+    }
+  }
+
   const exchange = graphUrl('oauth/access_token');
   exchange.search = new URLSearchParams({
     client_id: config.appId,
@@ -153,8 +194,11 @@ export async function connectFacebookStagingPage(config: FacebookStagingConfig, 
     redirect_uri: config.redirectUri,
     code,
   }).toString();
-  const { access_token: shortToken } = await graph<{ access_token?: string }>(exchange, config);
-  if (!shortToken) throw new Error('Missing Facebook user token');
+  const { access_token: shortToken } = await request<{ access_token?: string }>(
+    'exchange_code',
+    exchange,
+  );
+  if (!shortToken) throw new FacebookConnectionError('exchange_code');
 
   const extension = graphUrl('oauth/access_token');
   extension.search = new URLSearchParams({
@@ -163,8 +207,11 @@ export async function connectFacebookStagingPage(config: FacebookStagingConfig, 
     client_secret: config.appSecret,
     fb_exchange_token: shortToken,
   }).toString();
-  const { access_token: userToken } = await graph<{ access_token?: string }>(extension, config);
-  if (!userToken) throw new Error('Missing Facebook user authorization');
+  const { access_token: userToken } = await request<{ access_token?: string }>(
+    'extend_user_token',
+    extension,
+  );
+  if (!userToken) throw new FacebookConnectionError('extend_user_token');
 
   const accounts = graphUrl('me/accounts');
   accounts.searchParams.set('fields', 'id,name,access_token,tasks');
@@ -172,28 +219,31 @@ export async function connectFacebookStagingPage(config: FacebookStagingConfig, 
   let after: string | undefined;
   for (let page = 0; page < 10; page++) {
     if (after) accounts.searchParams.set('after', after);
-    const result = await graph<{
+    const result = await request<{
       data?: { id: string; name: string; access_token?: string; tasks?: string[] }[];
       paging?: { next?: string; cursors?: { after?: string } };
-    }>(accounts, config, userToken);
+    }>('list_pages', accounts, userToken);
     const target = result.data?.find((entry) => entry.id === config.pageId);
-    if (
-      target?.name &&
-      target.access_token &&
-      target.tasks?.some(
-        (task) => task === 'CREATE_CONTENT' || task === 'PROFILE_PLUS_CREATE_CONTENT',
-      )
-    ) {
+    if (target) {
+      if (!target.name || !target.access_token)
+        throw new FacebookConnectionError('page_not_granted');
+      if (
+        !target.tasks?.some(
+          (task) => task === 'CREATE_CONTENT' || task === 'PROFILE_PLUS_CREATE_CONTENT',
+        )
+      ) {
+        throw new FacebookConnectionError('page_publish_task_missing');
+      }
       const identity = graphUrl('me');
       identity.searchParams.set('fields', 'id');
-      const { id } = await graph<{ id?: string }>(identity, config, target.access_token);
-      if (id === config.pageId) return { name: target.name, token: target.access_token };
-      break;
+      const { id } = await request<{ id?: string }>('page_identity', identity, target.access_token);
+      if (id !== config.pageId) throw new FacebookConnectionError('page_identity');
+      return { name: target.name, token: target.access_token };
     }
     after = result.paging?.next ? result.paging.cursors?.after : undefined;
-    if (target || !after) break;
+    if (!after) break;
   }
-  throw new Error('The selected test Page did not grant publishing access.');
+  throw new FacebookConnectionError('page_not_granted');
 }
 
 export async function publishFacebookStagingTest(config: FacebookStagingConfig, token: string) {
