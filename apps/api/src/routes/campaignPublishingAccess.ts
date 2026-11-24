@@ -241,6 +241,8 @@ export function registerCampaignPublishingAccess(
         if (Date.parse(order.checkout_expires_at) <= Date.now())
           return failure(reply, request, 410, 'Checkout expired.');
         const nonce = randomBytes(18).toString('base64');
+      // Razorpay's bank authorization popup must be able to return its result to Checkout.
+      reply.header('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
         reply.header(
           'Content-Security-Policy',
           "default-src 'none'; script-src 'nonce-" +
