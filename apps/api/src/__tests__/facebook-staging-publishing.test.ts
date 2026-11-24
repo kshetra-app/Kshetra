@@ -1,5 +1,6 @@
 import {
   FacebookRequestRejected,
+  connectFacebookCampaignPage,
   connectFacebookStagingPage,
   facebookAuthorizationUrl,
   facebookLoginState,
@@ -135,6 +136,63 @@ describe('Facebook Staging publishing', () => {
     await expect(connectFacebookStagingPage(config, 'one-time-code')).rejects.toThrow(
       'did not grant publishing access',
     );
+  });
+
+  it('uses the one eligible Page selected by the campaign owner', async () => {
+    jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(Response.json({ access_token: 'short-token' }))
+      .mockResolvedValueOnce(Response.json({ access_token: 'long-token' }))
+      .mockResolvedValueOnce(
+        Response.json({
+          data: [
+            {
+              id: '98765',
+              name: 'Another allowed Page',
+              tasks: ['PROFILE_PLUS_CREATE_CONTENT'],
+              access_token: 'own-page-token',
+            },
+            {
+              id: '99999',
+              name: 'Unlisted Page',
+              tasks: ['CREATE_CONTENT'],
+              access_token: 'outside',
+            },
+          ],
+        }),
+      )
+      .mockResolvedValueOnce(Response.json({ id: '98765' }));
+    await expect(
+      connectFacebookCampaignPage(config, 'code', new Set([config.pageId, '98765'])),
+    ).resolves.toEqual({ id: '98765', name: 'Another allowed Page', token: 'own-page-token' });
+  });
+
+  it('requires an unambiguous Page choice when an owner grants two eligible Pages', async () => {
+    jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(Response.json({ access_token: 'short-token' }))
+      .mockResolvedValueOnce(Response.json({ access_token: 'long-token' }))
+      .mockResolvedValueOnce(
+        Response.json({
+          data: [
+            {
+              id: config.pageId,
+              name: 'Staging Page',
+              tasks: ['CREATE_CONTENT'],
+              access_token: 'one',
+            },
+            {
+              id: '98765',
+              name: 'Another allowed Page',
+              tasks: ['CREATE_CONTENT'],
+              access_token: 'two',
+            },
+          ],
+        }),
+      );
+    await expect(
+      connectFacebookCampaignPage(config, 'code', new Set([config.pageId, '98765'])),
+    ).rejects.toMatchObject({ step: 'multiple_pages_granted' });
   });
 
   it('sends the test message to the configured Page and returns the provider receipt', async () => {

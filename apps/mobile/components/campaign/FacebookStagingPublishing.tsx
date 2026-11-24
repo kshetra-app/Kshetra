@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { apiClient } from '../../lib/api';
 import { useTheme } from '../../lib/theme';
 import CampaignFacebookComposer from './CampaignFacebookComposer';
+import CampaignPublishingAccess from './CampaignPublishingAccess';
 
 interface Receipt {
   status: 'sending' | 'published' | 'rejected' | 'verifying';
@@ -163,7 +164,10 @@ export default function FacebookStagingPublishing({ campaignId }: { campaignId?:
                 </>
               )}
               {status.publishingEnabled && (
-                <CampaignFacebookComposer path={path} pageName={connected ? connected.page_name : null} />
+                <>
+                  <CampaignPublishingAccess path={path} />
+                  <CampaignFacebookComposer path={path} pageName={connected ? connected.page_name : null} />
+                </>
               )}
               {action(t('common.refresh', { defaultValue: 'Refresh' }), () => void refresh())}
             </>

@@ -3,14 +3,16 @@ import { resolveAuthenticatedUser } from '../lib/userAuth';
 import { sendApiError } from '../lib/replyHelper';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { registerCampaignFacebookPublications } from './campaignFacebookPublications';
+import { registerCampaignPublishingAccess } from './campaignPublishingAccess';
 import {
   FACEBOOK_STAGING_CALLBACK,
   FACEBOOK_STAGING_MESSAGE,
   FacebookConnectionError,
   FacebookRequestRejected,
-  connectFacebookStagingPage,
+  connectFacebookCampaignPage,
   facebookAuthorizationUrl,
   facebookLoginState,
+  facebookStagingPageIds,
   findFacebookStagingPermalink,
   getFacebookStagingConfig,
   hashFacebookLoginState,
@@ -97,7 +99,10 @@ export function registerCampaignFacebookStaging(app: FastifyInstance, isOwner: O
     if (connection.error || receipt.error) {
       return failure(reply, request, 503, 'Facebook publishing status could not be loaded.');
     }
-    const page = connection.data?.page_id === config.pageId ? connection.data : null;
+    const page =
+      connection.data?.page_id && facebookStagingPageIds(config).has(connection.data.page_id)
+        ? connection.data
+        : null;
     const post = receipt.data;
     const stale = post?.status === 'sending' && Date.now() - Date.parse(post.requested_at) > 60_000;
     return {
@@ -181,15 +186,23 @@ export function registerCampaignFacebookStaging(app: FastifyInstance, isOwner: O
         }
 
         step = 'connect_page';
-        const page = await connectFacebookStagingPage(config, code);
+        const page = await connectFacebookCampaignPage(
+          config,
+          code,
+          facebookStagingPageIds(config),
+        );
         step = 'save_connection';
         const saved = await supabase
           .from('campaign_facebook_connections')
           .update({
             ...clearAuthorization,
-            page_id: config.pageId,
+            page_id: page.id,
             page_name: page.name,
-            sealed_page_token: sealFacebookToken(config, data.campaign_id, page.token),
+            sealed_page_token: sealFacebookToken(
+              { ...config, pageId: page.id },
+              data.campaign_id,
+              page.token,
+            ),
             connected_at: new Date().toISOString(),
           })
           .eq('campaign_id', data.campaign_id)
@@ -214,7 +227,9 @@ export function registerCampaignFacebookStaging(app: FastifyInstance, isOwner: O
         return browserResult(
           reply,
           422,
-          'Could not authorize the configured Facebook Page. Check that you selected the test Page and granted publishing access.',
+          failure?.step === 'multiple_pages_granted'
+            ? 'Facebook shared more than one eligible Page. Open Edit settings in Facebook and select just this campaign’s Page.'
+            : 'Could not authorize the selected Facebook Page. Check that the Page is enabled on Staging and you granted publishing access.',
         );
       } finally {
         if (campaignId) {
@@ -384,4 +399,5 @@ export function registerCampaignFacebookStaging(app: FastifyInstance, isOwner: O
   );
 
   registerCampaignFacebookPublications(app, owner, isOwner);
+  registerCampaignPublishingAccess(app, owner, isOwner);
 }

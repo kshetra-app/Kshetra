@@ -123,6 +123,7 @@ type FacebookConnectionStep =
   | 'list_pages'
   | 'page_identity'
   | 'page_not_granted'
+  | 'multiple_pages_granted'
   | 'page_publish_task_missing';
 
 export class FacebookConnectionError extends Error {
@@ -179,6 +180,25 @@ async function graph<T>(
 }
 
 export async function connectFacebookStagingPage(config: FacebookStagingConfig, code: string) {
+  const result = await connectFacebookCampaignPage(config, code, new Set([config.pageId]));
+  return { name: result.name, token: result.token };
+}
+
+export function facebookStagingPageIds(config: FacebookStagingConfig) {
+  const extraIds = (process.env.FACEBOOK_STAGING_ALLOWED_PAGE_IDS ?? '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter((value) => numericId.test(value));
+  return new Set([config.pageId, ...extraIds]);
+}
+
+type GrantedPage = { id: string; name: string; access_token?: string; tasks?: string[] };
+
+export async function connectFacebookCampaignPage(
+  config: FacebookStagingConfig,
+  code: string,
+  allowedPages: ReadonlySet<string>,
+) {
   async function request<T>(step: FacebookConnectionStep, url: URL, token?: string) {
     try {
       return await graph<T>(url, config, token);
@@ -217,33 +237,37 @@ export async function connectFacebookStagingPage(config: FacebookStagingConfig, 
   accounts.searchParams.set('fields', 'id,name,access_token,tasks');
   accounts.searchParams.set('limit', '100');
   let after: string | undefined;
+  let granted: GrantedPage | undefined;
   for (let page = 0; page < 10; page++) {
     if (after) accounts.searchParams.set('after', after);
     const result = await request<{
-      data?: { id: string; name: string; access_token?: string; tasks?: string[] }[];
+      data?: GrantedPage[];
       paging?: { next?: string; cursors?: { after?: string } };
     }>('list_pages', accounts, userToken);
-    const target = result.data?.find((entry) => entry.id === config.pageId);
-    if (target) {
-      if (!target.name || !target.access_token)
-        throw new FacebookConnectionError('page_not_granted');
-      if (
-        !target.tasks?.some(
-          (task) => task === 'CREATE_CONTENT' || task === 'PROFILE_PLUS_CREATE_CONTENT',
-        )
-      ) {
-        throw new FacebookConnectionError('page_publish_task_missing');
-      }
-      const identity = graphUrl('me');
-      identity.searchParams.set('fields', 'id');
-      const { id } = await request<{ id?: string }>('page_identity', identity, target.access_token);
-      if (id !== config.pageId) throw new FacebookConnectionError('page_identity');
-      return { name: target.name, token: target.access_token };
+    for (const entry of result.data ?? []) {
+      if (!allowedPages.has(entry.id)) continue;
+      if (granted && granted.id !== entry.id)
+        throw new FacebookConnectionError('multiple_pages_granted');
+      granted = entry;
     }
     after = result.paging?.next ? result.paging.cursors?.after : undefined;
-    if (!after) break;
+    if (!after || (granted && allowedPages.size === 1)) break;
   }
-  throw new FacebookConnectionError('page_not_granted');
+  if (!granted?.name || !granted.access_token)
+    throw new FacebookConnectionError('page_not_granted');
+  if (after && allowedPages.size > 1) throw new FacebookConnectionError('multiple_pages_granted');
+  if (
+    !granted.tasks?.some(
+      (task) => task === 'CREATE_CONTENT' || task === 'PROFILE_PLUS_CREATE_CONTENT',
+    )
+  ) {
+    throw new FacebookConnectionError('page_publish_task_missing');
+  }
+  const identity = graphUrl('me');
+  identity.searchParams.set('fields', 'id');
+  const { id } = await request<{ id?: string }>('page_identity', identity, granted.access_token);
+  if (id !== granted.id) throw new FacebookConnectionError('page_identity');
+  return { id, name: granted.name, token: granted.access_token };
 }
 
 export async function publishFacebookStagingTest(config: FacebookStagingConfig, token: string) {

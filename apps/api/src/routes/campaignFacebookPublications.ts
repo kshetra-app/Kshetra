@@ -2,8 +2,10 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { randomUUID } from 'node:crypto';
 import { sendApiError } from '../lib/replyHelper';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
+import { publicationCovered } from './campaignPublishingAccess';
 import {
   FacebookRequestRejected,
+  facebookStagingPageIds,
   findFacebookStagingPermalink,
   getFacebookStagingConfig,
   getFacebookVideoPublication,
@@ -115,9 +117,8 @@ async function connectionFor(config: FacebookStagingConfig, campaignId: string) 
     .eq('campaign_id', campaignId)
     .maybeSingle();
   if (record.error) throw new Error('Could not read Facebook connection.');
-  return record.data?.page_id === config.pageId
-    ? (record.data.sealed_page_token as string | null)
-    : null;
+  const { page_id: pageId, sealed_page_token: sealed } = record.data ?? {};
+  return pageId && sealed && facebookStagingPageIds(config).has(pageId) ? { pageId, sealed } : null;
 }
 
 async function updatePublication(id: string, status: string, changes: Record<string, unknown>) {
@@ -150,13 +151,15 @@ async function publishOne(
     if (
       !row.campaign_id ||
       !row.submitted_by ||
-      row.page_id !== config.pageId ||
-      !(await isOwner(row.campaign_id, row.submitted_by))
+      !facebookStagingPageIds(config).has(row.page_id) ||
+      !(await isOwner(row.campaign_id, row.submitted_by)) ||
+      !(await publicationCovered(row.campaign_id, Date.now()))
     ) {
       await updatePublication(row.id, 'sending', { status: 'rejected' });
       return;
     }
-    const sealed = await connectionFor(config, row.campaign_id);
+    const connection = await connectionFor(config, row.campaign_id);
+    const pageConfig = { ...config, pageId: row.page_id };
     const signedUrl =
       row.media_path && row.media_type
         ? await signAttachment(
@@ -166,13 +169,13 @@ async function publishOne(
             row.media_type,
           )
         : null;
-    if (!sealed || (row.media_type && !signedUrl)) {
+    if (connection?.pageId !== row.page_id || (row.media_type && !signedUrl)) {
       await updatePublication(row.id, 'sending', { status: 'rejected' });
       return;
     }
-    const token = openFacebookToken(config, row.campaign_id, sealed);
+    const token = openFacebookToken(pageConfig, row.campaign_id, connection.sealed);
     externalWriteStarted = true;
-    const providerPostId = await publishFacebookPageContent(config, token, {
+    const providerPostId = await publishFacebookPageContent(pageConfig, token, {
       message: row.message,
       media: signedUrl && row.media_type ? { type: row.media_type, signedUrl } : undefined,
     });
@@ -189,7 +192,7 @@ async function publishOne(
       provider_post_id: providerPostId,
       published_at: new Date().toISOString(),
     });
-    const link = await findFacebookStagingPermalink(config, token, providerPostId);
+    const link = await findFacebookStagingPermalink(pageConfig, token, providerPostId);
     if (link) await updatePublication(row.id, 'published', { permalink_url: link });
   } catch (failure) {
     await updatePublication(row.id, 'sending', {
@@ -205,7 +208,7 @@ async function checkVideo(config: FacebookStagingConfig, row: QueuedPublication)
   if (
     !row.campaign_id ||
     !row.provider_post_id ||
-    row.page_id !== config.pageId ||
+    !facebookStagingPageIds(config).has(row.page_id) ||
     !row.claimed_at ||
     Date.now() - Date.parse(row.claimed_at) > maxVideoProcessingMs
   ) {
@@ -213,12 +216,13 @@ async function checkVideo(config: FacebookStagingConfig, row: QueuedPublication)
     return;
   }
   try {
-    const sealed = await connectionFor(config, row.campaign_id);
-    if (sealed) {
-      const token = openFacebookToken(config, row.campaign_id, sealed);
-      const state = await getFacebookVideoPublication(config, token, row.provider_post_id);
+    const connection = await connectionFor(config, row.campaign_id);
+    if (connection?.pageId === row.page_id) {
+      const pageConfig = { ...config, pageId: row.page_id };
+      const token = openFacebookToken(pageConfig, row.campaign_id, connection.sealed);
+      const state = await getFacebookVideoPublication(pageConfig, token, row.provider_post_id);
       if (state === 'published') {
-        const link = await findFacebookStagingPermalink(config, token, row.provider_post_id);
+        const link = await findFacebookStagingPermalink(pageConfig, token, row.provider_post_id);
         await updatePublication(row.id, 'processing', {
           status: 'published',
           next_check_at: null,
@@ -286,6 +290,9 @@ export function registerCampaignFacebookPublications(
       if (!config)
         return error(reply, request, 503, 'Facebook campaign publishing is unavailable.');
       try {
+        if (!(await publicationCovered(request.params.campaignId, Date.now()))) {
+          return error(reply, request, 402, 'Activate campaign publishing access to attach media.');
+        }
         if (!(await connectionFor(config, request.params.campaignId))) {
           return error(reply, request, 409, 'Connect the Facebook Page first.');
         }
@@ -347,8 +354,16 @@ export function registerCampaignFacebookPublications(
         return error(reply, request, 400, 'Choose a future time within 30 days.');
       }
       try {
-        if (!(await connectionFor(config, campaignId)))
-          return error(reply, request, 409, 'Connect the Facebook Page first.');
+        if (!(await publicationCovered(campaignId, when))) {
+          return error(
+            reply,
+            request,
+            402,
+            'Choose a time within the campaign publishing access period.',
+          );
+        }
+        const connection = await connectionFor(config, campaignId);
+        if (!connection) return error(reply, request, 409, 'Connect the Facebook Page first.');
         if (
           attachment &&
           !(await signAttachment(actor.userId, requestId, attachment.path, attachment.type))
@@ -364,7 +379,7 @@ export function registerCampaignFacebookPublications(
           .from(publications)
           .insert({
             campaign_id: campaignId,
-            page_id: config.pageId,
+            page_id: connection.pageId,
             submitted_by: actor.userId,
             client_request_id: requestId,
             status: 'scheduled',
