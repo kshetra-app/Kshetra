@@ -19,6 +19,7 @@ import {
 import { PaymentProviderError, RazorpayProvider } from '../providers/razorpayProvider';
 import { TelecomProvider } from '../providers/telecomProvider';
 import type { PaymentProvider, VoiceObdProvider } from '../providers/types';
+import { registerCampaignFacebookStaging } from './campaignFacebookStaging';
 
 function isProductionRuntime(): boolean {
   return isProductionLikeRuntime();
@@ -973,6 +974,14 @@ async function resolveEffectivePoliticianId(
 export async function campaignRoutes(app: FastifyInstance) {
   const paymentProvider: PaymentProvider = new RazorpayProvider();
   const voiceObdProvider: VoiceObdProvider = new TelecomProvider();
+  registerCampaignFacebookStaging(app, async (campaignId, userId) => {
+    if (!isSupabaseConfigured || !isProductionRuntime()) return false;
+    const [campaign, profileId] = await Promise.all([
+      findCampaignById(campaignId),
+      findPoliticianProfileIdForUser(userId),
+    ]);
+    return Boolean(profileId && campaign?.politician_id === profileId);
+  });
 
   /**
    * GET /api/v1/campaign/pricing

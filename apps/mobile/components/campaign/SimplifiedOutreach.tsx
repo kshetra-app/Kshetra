@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../lib/theme';
 import { useCampaignStore } from '../../stores/campaign';
 import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
+import FacebookStagingPublishing from './FacebookStagingPublishing';
 
 type ServiceTab = 'whatsapp' | 'voice' | 'meta';
 
@@ -45,6 +46,7 @@ export default function SimplifiedOutreach() {
   const [isRecharging, setIsRecharging] = useState(false);
 
   const pricing = useCampaignStore((s) => s.pricing);
+  const selectedCampaignId = useCampaignStore((s) => s.selectedCampaignId);
   const pricingAvailable = useCampaignStore((s) => s.pricingAvailable);
   const booths = useCampaignStore((s) => s.booths);
   const boothsAvailable = useCampaignStore((s) => s.boothsAvailable);
@@ -109,29 +111,6 @@ export default function SimplifiedOutreach() {
     }
   };
 
-  // Handler: Meta Publish & Boost
-  const handleMetaPublish = (pkgId?: string) => {
-    if (IS_LIVE_ENVIRONMENT) {
-      Alert.alert(
-        t('campaignManager.providerUnavailableTitle', { defaultValue: 'Publishing unavailable' }),
-        t('campaignManager.providerUnavailableDescription', { defaultValue: 'No external publishing provider is connected. Nothing was published or scheduled.' }),
-      );
-      return;
-    }
-
-    setIsSending(true);
-    setTimeout(() => {
-      setIsSending(false);
-      Alert.alert(
-        t('campaignManager.metaPublishSuccess', { defaultValue: 'Published to Facebook Page!' }),
-        t('campaignManager.metaPublishSuccessDesc', {
-          defaultValue: pkgId
-            ? 'Your campaign post and boost package have been scheduled. Voters in your selected ward will see this in their feed.'
-            : 'Your update has been published to your official Facebook Page.',
-        }),
-      );
-    }, 1200);
-  };
 
   // Handler: Voice OBD Call Dispatch
   const handleVoiceCallDispatch = async () => {
@@ -727,100 +706,8 @@ export default function SimplifiedOutreach() {
         </View>
       )}
 
-      {/* ══════════════════════════════════════════════════════════
-          SERVICE 3: META GRAPH API (FACEBOOK & INSTAGRAM)
-         ══════════════════════════════════════════════════════════ */}
       {activeService === 'meta' && (
-        <View>
-          {IS_LIVE_ENVIRONMENT ? (
-            <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-              <Ionicons name="information-circle-outline" size={28} color={colors.textSecondary} />
-              <Text style={[styles.cardHeading, { color: colors.text }]}>
-                {t('campaignManager.providerUnavailableTitle', { defaultValue: 'Publishing unavailable' })}
-              </Text>
-              <Text style={[styles.cardSub, { color: colors.textSecondary }]}>
-                {t('campaignManager.providerUnavailableDescription', { defaultValue: 'No external publishing provider is connected. Nothing can be published, boosted, or reported here yet.' })}
-              </Text>
-            </View>
-          ) : (
-            <>
-          {/* Pricing Box */}
-          <View style={[styles.pricingCard, { backgroundColor: '#EFF6FF', borderColor: '#BFDBFE' }]}>
-            <View style={styles.pricingHeader}>
-              <View style={[styles.badgeFree, { backgroundColor: '#2563EB' }]}>
-                <Text style={styles.badgeFreeText}>ORGANIC + BOOST</Text>
-              </View>
-              <Text style={[styles.pricingTitle, { color: '#1E40AF' }]}>
-                {t('campaignManager.metaPublishTitle', { defaultValue: 'Organic Publishing (₹0) + Optional Boost' })}
-              </Text>
-            </View>
-            <Text style={[styles.pricingDesc, { color: '#1E3A8A' }]}>
-              {t('campaignManager.metaPublishDesc', {
-                defaultValue: 'Publish speeches and rally photos directly to your connected Facebook Page and Instagram with optional audience boost.',
-              })}
-            </Text>
-          </View>
-
-          {/* Guidance Box */}
-          <View style={[styles.guidanceBox, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <View style={styles.guidanceTitleRow}>
-              <Ionicons name="information-circle" size={20} color="#2563EB" />
-              <Text style={[styles.guidanceTitle, { color: colors.text }]}>
-                {t('campaignManager.metaGuidanceTitle', { defaultValue: 'Meta Rules & Political Verification' })}
-              </Text>
-            </View>
-            <Text style={[styles.guidanceBody, { color: colors.textSecondary }]}>
-              {pricing.metaPublishing.guidance.howItWorks}
-            </Text>
-
-            <View style={styles.doDontRow}>
-              <View style={[styles.doCol, { backgroundColor: '#F0FDF4' }]}>
-                <Text style={styles.doHeader}>✓ {t('campaignManager.dos', { defaultValue: 'DOs' })}</Text>
-                {pricing.metaPublishing.guidance.dos.map((item, idx) => (
-                  <Text key={idx} style={styles.bulletText}>• {item}</Text>
-                ))}
-              </View>
-              <View style={[styles.dontCol, { backgroundColor: '#FEF2F2' }]}>
-                <Text style={styles.dontHeader}>✗ {t('campaignManager.donts', { defaultValue: "DON'Ts" })}</Text>
-                {pricing.metaPublishing.guidance.donts.map((item, idx) => (
-                  <Text key={idx} style={styles.bulletText}>• {item}</Text>
-                ))}
-              </View>
-            </View>
-          </View>
-
-          {/* Packages */}
-          <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={[styles.cardHeading, { color: colors.text }]}>
-              {t('campaignManager.metaPackagesHeading', { defaultValue: 'Choose a Targeted Boost Package' })}
-            </Text>
-
-            {pricing.metaPublishing.boostPackages.map((pkg) => (
-              <View key={pkg.id} style={styles.metaPackageCard}>
-                <View style={styles.metaPackageHeader}>
-                  <Text style={styles.metaPackageName}>{pkg.label}</Text>
-                  <Text style={styles.metaPackagePrice}>₹{pkg.totalPriceINR.toLocaleString('en-IN')}</Text>
-                </View>
-                <Text style={styles.metaPackageAudience}>🎯 {pkg.targetAudience}</Text>
-                <Text style={styles.metaPackageReach}>👁️ {pkg.estReach}</Text>
-                <Text style={styles.metaPackageMargin}>
-                  Targeted ad campaign with full analytics & delivery report
-                </Text>
-
-                <Pressable
-                  style={styles.btnMetaSelect}
-                  onPress={() => handleMetaPublish(pkg.id)}
-                >
-                  <Text style={styles.btnMetaSelectText}>
-                    {t('campaignManager.selectPackageBtn', { defaultValue: 'Boost Post with this Package' })}
-                  </Text>
-                </Pressable>
-              </View>
-            ))}
-          </View>
-            </>
-          )}
-        </View>
+        <FacebookStagingPublishing key={selectedCampaignId} campaignId={selectedCampaignId} />
       )}
 
       {/* ─── Modal: Wallet Recharge ─── */}
@@ -1126,28 +1013,6 @@ const styles = StyleSheet.create({
   statBox: { alignItems: 'center', flex: 1 },
   statBoxNum: { fontSize: 14, fontWeight: '900', color: '#10B981' },
   statBoxLabel: { fontSize: 10, color: '#6B7280', marginTop: 1 },
-  metaPackageCard: {
-    backgroundColor: '#F9FAFB',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    padding: 12,
-    marginBottom: 8,
-  },
-  metaPackageHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  metaPackageName: { fontSize: 13, fontWeight: '800', color: '#1F2937' },
-  metaPackagePrice: { fontSize: 15, fontWeight: '900', color: '#2563EB' },
-  metaPackageAudience: { fontSize: 11, color: '#4B5563', marginTop: 4 },
-  metaPackageReach: { fontSize: 11, fontWeight: '700', color: '#059669', marginTop: 2 },
-  metaPackageMargin: { fontSize: 10, color: '#6B7280', marginTop: 2 },
-  btnMetaSelect: {
-    backgroundColor: '#2563EB',
-    paddingVertical: 8,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  btnMetaSelectText: { color: '#FFFFFF', fontWeight: '800', fontSize: 12 },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',

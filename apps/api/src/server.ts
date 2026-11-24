@@ -68,6 +68,7 @@ import { adminRoutes } from './routes/admin';
 import { dataPipelineRoutes } from './routes/dataPipelines';
 import { systemAuditRoutes } from './routes/systemAudit';
 import { startNewsScheduler } from './services/news/newsService';
+import { FACEBOOK_STAGING_CALLBACK } from './providers/facebookStagingProvider';
 
 const envToLogger: Record<string, object | boolean> = {
   development: {
@@ -185,7 +186,10 @@ export async function buildApp(): Promise<FastifyInstance> {
       error,
       statusCode,
       requestId: request.id,
-      url: request.url,
+      url:
+        request.url.split('?')[0] === FACEBOOK_STAGING_CALLBACK
+          ? FACEBOOK_STAGING_CALLBACK
+          : request.url,
       method: request.method,
       logger: request.log,
     });
