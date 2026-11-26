@@ -71,12 +71,26 @@ EXPO_PUBLIC_MEDIA_INGEST_PROTOCOL=rtmp   # rtmp | srt | whip
 `startLiveEvent()` then calls `selectPipeline()` and writes the correct
 `mediaIngestUrl` / `mediaPlaybackHls` / `mediaPlaybackWebrtc` onto the event.
 
-## The one missing link: mobile publishing
+## Hosted browser studio
 
-These servers handle everything **after** the phone. Pushing the captured feed
-live from React Native needs a native broadcaster — **RTMP**
-(`react-native-nodemediaclient`) or **WebRTC-WHIP** (small native module). That is
-the only piece that can't be pure JS and needs a dev/prebuild step.
+Poligram's Live tab uses the existing `live_events` records and the browser
+studio served by the API. The browser captures the camera and microphone over
+WebRTC. MediaMTX and FFmpeg deliver H.264/AAC over HLS to the app's existing
+player and write recordings to `/recordings` for replay. The Android build
+uses the system browser and its existing WebView without a native WebRTC library.
+
+Deploy `mediamtx/Dockerfile` as a separate media service. Keep its HTTP listeners
+for ingest, playback, recordings, and control on the private network. Mount a
+persistent volume at `/recordings`. On Railway, forward a public TCP proxy to
+port `8189`. Set `MTX_WEBRTCADDITIONALHOSTS` to the proxy host, disable the
+public UDP candidate, and configure the API with the assigned public port.
+
+The API reads `LIVE_MEDIA_PRIVATE_HOST`, `LIVE_MEDIA_PUBLIC_TCP_PORT`,
+`LIVE_STUDIO_ORIGIN`, `LIVE_MEDIA_CONTROL_PASSWORD`, and
+`LIVE_STUDIO_SIGNING_KEY`. The last two are secrets. Reference the media
+service's `MTX_AUTHINTERNALUSERS_1_PASS` for the control password and limit
+the private control API to the server. Go Live becomes available after the
+API confirms a connection to that service.
 
 ## Production hardening (not enabled by default)
 

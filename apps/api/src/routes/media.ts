@@ -10,6 +10,7 @@ import { resolveAuthenticatedUser, assertActingUserMatch } from '../lib/userAuth
 import { submitCreatorShort, toMediaShort } from './shorts';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { MediaService } from '../services/mediaService';
+import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import type {
   RepresentativeCivicResponseCreateRequest,
   NewsArticleCreateRequest,
@@ -322,6 +323,10 @@ export async function mediaRoutes(app: FastifyInstance) {
   });
 
   // ─── 5. LIVE STREAMING & BROADCAST STUDIO (JOB 051, 052, 053) ───
+
+  // These historical fixtures have no durable stream or media behind them.
+  // Deployed clients use the Live Media Exchange routes for the whole lifecycle.
+  if (isProductionLikeRuntime()) return;
 
   app.get<{
     Querystring: { constituencyId?: string };
