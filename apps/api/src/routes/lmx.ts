@@ -713,6 +713,26 @@ export async function lmxRoutes(app: FastifyInstance) {
 
       const hosts = getMediaHosts();
       const hosted = getHostedLiveConfig();
+      if (hosted) {
+        const { data: verification, error } = await supabase
+          .from('creator_kyc_records')
+          .select('status')
+          .eq('user_id', userId)
+          .maybeSingle();
+        if (error) return reply.code(503).send();
+        if (verification?.status !== 'verified') {
+          return sendApiError(
+            reply,
+            request,
+            403,
+            'Forbidden',
+            'Verify your contributor profile to broadcast.',
+            {
+              code: 'UNVERIFIED',
+            },
+          );
+        }
+      }
       if (
         (hosted && !(await isHostedLiveReady(hosted))) ||
         (!hosted && isProductionRuntime() && !isMediaPipelineConfigured(hosts))
