@@ -3033,7 +3033,7 @@ const gu = {
         "desc": "ટૂંકા નાગરિક વિડિયો અપડેટ્સ"
       },
       "pagesLeaders": {
-        "desc": "ઉમેદવાર પ્રોફાઇલ અને ચકાસાયેલ પૃષ્ઠો"
+        "desc": "જનપ્રતિનિધિઓની પ્રોફાઇલ અને નાગરિક નેતૃત્વમાં રસ ધરાવતા લોકોને જુઓ"
       },
       "leadershipAcademy": {
         "desc": "નાગરિક અભ્યાસક્રમ અને ઝુંબેશ કુશળતા"
@@ -3183,7 +3183,12 @@ const gu = {
       "registeredPoliticians": "ચુંટાયેલા પ્રતિનિધિઓ અને નેતાઓ",
       "sittingMlas": "હાલના ધારાસભ્યો અને અધિકારીઓ",
       "viewDossier": "દસ્તાવેજ અને ટ્રેક રેકોર્ડ જુઓ",
-      "verifiedLeaders": "ચકાસાયેલ પક્ષ પ્રોફાઇલ્સ",
+      "verifiedLeaders": "ચકાસાયેલા નેતાઓની પ્રોફાઇલ",
+      "selectStateForRepresentatives": "હાલના જનપ્રતિનિધિઓની યાદી જોવા રાજ્ય પસંદ કરો.",
+      "noCurrentRepresentatives": "{{state}} માટે હાલના જનપ્રતિનિધિઓનાં નામ ઉપલબ્ધ નથી.",
+      "browseConstituencies": "મતવિસ્તારો જુઓ",
+      "currentRepresentativesUnavailable": "હાલના જનપ્રતિનિધિઓની યાદી લોડ થઈ શકી નથી.",
+      "verifiedProfilesUnavailable": "ચકાસાયેલા નેતાઓની પ્રોફાઇલ લોડ થઈ શકી નથી.",
       "verifiedOfficial": "ચકાસાયેલ પ્રતિનિધિ",
       "civicStandingScore": "નાગરિક દરજ્જો સ્કોર",
       "directMessage": "ઉમેદવારને સંદેશ મોકલો",

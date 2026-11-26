@@ -1281,18 +1281,27 @@ export async function fetchPublicAspirants(stateCode?: string, acNo?: number): P
   }
 }
 
-export async function fetchVerifiedPoliticians(stateCode?: string, acNo?: number): Promise<any[] | null> {
+export interface VerifiedPoliticianProfile {
+  user_id: string;
+  display_name: string;
+  bio: string | null;
+  state_code: string | null;
+}
+
+export async function fetchVerifiedPoliticians(
+  stateCode?: string,
+): Promise<VerifiedPoliticianProfile[] | null> {
   if (!guard()) return null;
   try {
     let query = supabase
       .from('user_profiles')
-      .select('id, user_id, display_name, role, verification_status, bio, avatar_url, constituency, state, updated_at')
+      .select('user_id, display_name, bio, state_code')
       .eq('role', 'politician')
       .eq('verification_status', 'verified')
       .order('display_name', { ascending: true })
       .limit(50);
     if (stateCode) {
-      query = query.eq('state', stateCode);
+      query = query.eq('state_code', stateCode);
     }
     const { data, error } = await query;
     if (error) throw error;

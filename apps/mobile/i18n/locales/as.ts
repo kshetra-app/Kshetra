@@ -3033,7 +3033,7 @@ const as = {
         "desc": "চুটি নাগৰিক ভিডিঅ' আপডেট"
       },
       "pagesLeaders": {
-        "desc": "প্ৰাৰ্থীৰ প্ৰফাইল আৰু পৰীক্ষিত পেজ"
+        "desc": "জনপ্ৰতিনিধিৰ প্ৰফাইল আৰু নাগৰিক নেতৃত্বত আগ্ৰহীসকল চাওক"
       },
       "leadershipAcademy": {
         "desc": "নাগৰিক পাঠ্যক্ৰম আৰু প্ৰচাৰ দক্ষতা"
@@ -3183,7 +3183,12 @@ const as = {
       "registeredPoliticians": "নিৰ্বাচিত প্ৰতিনিধি আৰু নেতা",
       "sittingMlas": "বৰ্তমান বিধায়ক আৰু বিষয়াসকল",
       "viewDossier": "নথি আৰু ৰেকৰ্ড চাওক",
-      "verifiedLeaders": "পৰীক্ষিত দল প্ৰফাইল",
+      "verifiedLeaders": "সত্যাপিত নেতাৰ প্ৰফাইল",
+      "selectStateForRepresentatives": "বৰ্তমানৰ জনপ্ৰতিনিধিৰ তালিকা চাবলৈ এখন ৰাজ্য বাছক।",
+      "noCurrentRepresentatives": "{{state}}ৰ বৰ্তমানৰ জনপ্ৰতিনিধিৰ নাম উপলব্ধ নহয়।",
+      "browseConstituencies": "নিৰ্বাচনী সমষ্টিসমূহ চাওক",
+      "currentRepresentativesUnavailable": "বৰ্তমানৰ জনপ্ৰতিনিধিৰ তালিকা লোড কৰিব পৰা নগ'ল।",
+      "verifiedProfilesUnavailable": "সত্যাপিত নেতাৰ প্ৰফাইল লোড কৰিব পৰা নগ'ল।",
       "verifiedOfficial": "পৰীক্ষিত প্ৰতিনিধি",
       "civicStandingScore": "নাগৰিক স্থিতি স্ক'ৰ",
       "directMessage": "প্ৰাৰ্থীলৈ বাৰ্তা প্ৰেৰণ কৰক",

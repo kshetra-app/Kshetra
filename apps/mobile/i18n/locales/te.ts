@@ -3137,7 +3137,7 @@ const te = {
         "desc": "చిన్న పౌర వీడియో నవీకరణలు మరియు ముఖ్యాంశాలు"
       },
       "pagesLeaders": {
-        "desc": "అభ్యర్థి ప్రొఫైల్‌లు మరియు మ్యానిఫెస్టోలు"
+        "desc": "ప్రజాప్రతినిధుల ప్రొఫైల్‌లు మరియు పౌర నాయకత్వంలో ఆసక్తి ఉన్నవారిని చూడండి"
       },
       "leadershipAcademy": {
         "desc": "పౌర పాఠ్యాంశాలు మరియు నాయకత్వ శిక్షణ"
@@ -3238,6 +3238,10 @@ const te = {
       "openAspirantProfile": "ఆకాంక్షి ప్రొఫైల్‌ను తెరవండి",
       "noPublicAspirants": "డైరెక్టరీలో కనిపించడానికి ఇంకా ఎవరూ ఎంచుకోలేదు.",
       "screenTitle": "పేజీలు & నాయకులు",
+      "selectStateForRepresentatives": "ప్రస్తుత ప్రజాప్రతినిధుల జాబితాను చూడటానికి రాష్ట్రాన్ని ఎంచుకోండి.",
+      "noCurrentRepresentatives": "{{state}} కోసం ప్రస్తుత ప్రజాప్రతినిధుల పేర్లు అందుబాటులో లేవు.",
+      "browseConstituencies": "నియోజకవర్గాలను చూడండి",
+      "verifiedProfilesUnavailable": "ధృవీకరించిన నాయకుల ప్రొఫైల్‌లు లోడ్ కాలేదు.",
       "tabAspirants": "పౌర ఆశావాదులు",
       "tabPoliticians": "ప్రజాప్రతినిధులు",
       "tabMyPage": "నా పేజీ",
@@ -3264,7 +3268,8 @@ const te = {
       "registeredPoliticians": "ఎన్నికైన ప్రజాప్రతినిధులు & నాయకులు",
       "sittingMlas": "సిట్టింగ్ ఎమ్మెల్యేలు & అధికారులు",
       "viewDossier": "డాక్యుమెంట్ & రికార్డును చూడండి",
-      "verifiedLeaders": "ధృవీకరించబడిన పార్టీ ప్రొఫైళ్లు",
+      "verifiedLeaders": "ధృవీకరించిన నాయకుల ప్రొఫైల్‌లు",
+      "currentRepresentativesUnavailable": "ప్రస్తుత ప్రజాప్రతినిధుల జాబితా లోడ్ కాలేదు.",
       "verifiedOfficial": "ధృవీకరించబడిన ప్రజాప్రతినిధి",
       "civicStandingScore": "పౌర గుర్తింపు స్కోర్",
       "directMessage": "అభ్యర్థికి సందేశం పంపండి",

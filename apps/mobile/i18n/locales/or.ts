@@ -3033,7 +3033,7 @@ const or = {
         "desc": "କ୍ଷୁଦ୍ର ଭିଡିଓ ଅପଡେଟ୍"
       },
       "pagesLeaders": {
-        "desc": "ପ୍ରାର୍ଥୀ ପ୍ରୋଫାଇଲ୍ ଏବଂ ଯାଞ୍ଚ ହୋଇଥିବା ପୃଷ୍ଠା"
+        "desc": "ଜନପ୍ରତିନିଧିଙ୍କ ପ୍ରୋଫାଇଲ୍ ଏବଂ ନାଗରିକ ନେତୃତ୍ୱରେ ଆଗ୍ରହୀଙ୍କୁ ଦେଖନ୍ତୁ"
       },
       "leadershipAcademy": {
         "desc": "ନାଗରିକ ପାଠ୍ୟକ୍ରମ ଏବଂ ଅଭିଯାନ ଦକ୍ଷତା"
@@ -3183,7 +3183,12 @@ const or = {
       "registeredPoliticians": "ନିର୍ବାଚିତ ପ୍ରତିନିଧି ଓ ନେତା",
       "sittingMlas": "ବିଧାୟକ ଏବଂ ଅଧିକାରୀ",
       "viewDossier": "ଦଲିଲ ଏବଂ ରେକର୍ଡ ଦେଖନ୍ତୁ",
-      "verifiedLeaders": "ଯାଞ୍ଚ ହୋଇଥିବା ଦଳ ପ୍ରୋଫାଇଲ୍",
+      "verifiedLeaders": "ଯାଞ୍ଚ ହୋଇଥିବା ନେତାଙ୍କ ପ୍ରୋଫାଇଲ୍",
+      "selectStateForRepresentatives": "ବର୍ତ୍ତମାନର ଜନପ୍ରତିନିଧିଙ୍କ ତାଲିକା ଦେଖିବାକୁ ଏକ ରାଜ୍ୟ ବାଛନ୍ତୁ।",
+      "noCurrentRepresentatives": "{{state}}ର ବର୍ତ୍ତମାନର ଜନପ୍ରତିନିଧିଙ୍କ ନାମ ଉପଲବ୍ଧ ନାହିଁ।",
+      "browseConstituencies": "ନିର୍ବାଚନମଣ୍ଡଳୀ ଦେଖନ୍ତୁ",
+      "currentRepresentativesUnavailable": "ବର୍ତ୍ତମାନର ଜନପ୍ରତିନିଧିଙ୍କ ତାଲିକା ଖୋଲିଲା ନାହିଁ।",
+      "verifiedProfilesUnavailable": "ଯାଞ୍ଚ ହୋଇଥିବା ନେତାଙ୍କ ପ୍ରୋଫାଇଲ୍ ଖୋଲିଲା ନାହିଁ।",
       "verifiedOfficial": "ଯାଞ୍ଚ ହୋଇଥିବା ପ୍ରତିନିଧି",
       "civicStandingScore": "ନାଗରିକ ମାନ୍ୟତା ସ୍କୋର",
       "directMessage": "ପ୍ରାର୍ଥୀଙ୍କୁ ବାର୍ତ୍ତା ପଠାନ୍ତୁ",

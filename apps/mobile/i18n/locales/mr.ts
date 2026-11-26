@@ -3033,7 +3033,7 @@ const mr = {
         "desc": "लहान नागरी व्हिडिओ अपडेट्स आणि कार्यक्रम हायलाइट्स"
       },
       "pagesLeaders": {
-        "desc": "उमेदवार प्रोफाइल, निवडणूक जाहीरनामे आणि सत्यापित पृष्ठे"
+        "desc": "लोकप्रतिनिधींची प्रोफाइल आणि नागरी नेतृत्वासाठी इच्छुक व्यक्ती पाहा"
       },
       "leadershipAcademy": {
         "desc": "नागरी अभ्यासक्रम, मोहीम कौशल्ये आणि इच्छुक गुण"
@@ -3183,7 +3183,12 @@ const mr = {
       "registeredPoliticians": "निवडून आलेले प्रतिनिधी आणि नेते",
       "sittingMlas": "विद्यमान आमदार आणि अधिकारी",
       "viewDossier": "दस्तऐवज आणि ट्रॅक रेकॉर्ड पहा",
-      "verifiedLeaders": "सत्यापित पक्ष प्रोफाइल",
+      "verifiedLeaders": "सत्यापित नेत्यांची प्रोफाइल",
+      "selectStateForRepresentatives": "सध्याच्या लोकप्रतिनिधींची यादी पाहण्यासाठी राज्य निवडा.",
+      "noCurrentRepresentatives": "{{state}}मधील सध्याच्या लोकप्रतिनिधींची नावे उपलब्ध नाहीत.",
+      "browseConstituencies": "मतदारसंघ पहा",
+      "currentRepresentativesUnavailable": "सध्याच्या लोकप्रतिनिधींची यादी उघडता आली नाही.",
+      "verifiedProfilesUnavailable": "सत्यापित नेत्यांची प्रोफाइल उघडता आली नाही.",
       "verifiedOfficial": "सत्यापित प्रतिनिधी",
       "civicStandingScore": "नागरी दर्जा स्कोअर",
       "directMessage": "उमेदवाराला संदेश पाठवा",

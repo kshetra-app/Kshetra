@@ -3033,7 +3033,7 @@ const ne = {
         "desc": "छोटो नागरिक भिडियो अपडेटहरू"
       },
       "pagesLeaders": {
-        "desc": "उम्मेदवार प्रोफाइल र प्रमाणित पृष्ठहरू"
+        "desc": "जनप्रतिनिधिहरूको प्रोफाइल र नागरिक नेतृत्वमा इच्छुक व्यक्तिहरू हेर्नुहोस्"
       },
       "leadershipAcademy": {
         "desc": "नागरिक पाठ्यक्रम र अभियान कौशल"
@@ -3183,7 +3183,12 @@ const ne = {
       "registeredPoliticians": "निर्वाचित प्रतिनिधि र नेताहरू",
       "sittingMlas": "वर्तमान सांसद र अधिकारीहरू",
       "viewDossier": "कागजात र ट्र्याक रेकर्ड हेर्नुहोस्",
-      "verifiedLeaders": "प्रमाणित दल प्रोफाइल",
+      "verifiedLeaders": "प्रमाणित नेताहरूका प्रोफाइल",
+      "selectStateForRepresentatives": "हालका जनप्रतिनिधिहरूको सूची हेर्न राज्य छान्नुहोस्।",
+      "noCurrentRepresentatives": "{{state}} का हालका जनप्रतिनिधिहरूको नाम उपलब्ध छैन।",
+      "browseConstituencies": "निर्वाचन क्षेत्रहरू हेर्नुहोस्",
+      "currentRepresentativesUnavailable": "हालका जनप्रतिनिधिहरूको सूची खुल्न सकेन।",
+      "verifiedProfilesUnavailable": "प्रमाणित नेताहरूका प्रोफाइल खुल्न सकेनन्।",
       "verifiedOfficial": "प्रमाणित प्रतिनिधि",
       "civicStandingScore": "नागरिक स्थिति स्कोर",
       "directMessage": "उम्मेदवारलाई सन्देश पठाउनुहोस्",

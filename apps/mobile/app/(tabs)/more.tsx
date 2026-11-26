@@ -1,12 +1,5 @@
 import { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Pressable,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -14,19 +7,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNotificationsStore } from '../../stores/notifications';
 import { useAuthStore } from '../../stores/auth';
 import { selectOwnedUnreadCount } from '../../lib/notificationInboxOwnership';
-import { DevFeatureSwitcher } from '../../components/DevFeatureSwitcher';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import { useTheme } from '../../lib/theme';
 import { tapLight } from '../../lib/haptics';
-
-interface HubItem {
-  label: string;
-  subtitle?: string;
-  icon: keyof typeof Ionicons.glyphMap;
-  color: string;
-  route: string;
-  badge?: number;
-}
+import {
+  getFeaturedMoreItem,
+  getMoreMenuSections,
+  type FeatureDirectoryItem,
+} from '../../lib/discoveryCatalog';
 
 export default function MoreScreen() {
   const { t } = useTranslation();
@@ -35,171 +23,28 @@ export default function MoreScreen() {
   const insets = useSafeAreaInsets();
   const userId = useAuthStore((s) => s.user?.id ?? null);
   const unread = useNotificationsStore((s) => selectOwnedUnreadCount(s, userId));
-  const [showDevModal, setShowDevModal] = useState(false);
   const [showDiscoveryHub, setShowDiscoveryHub] = useState(false);
 
-  const go = (route: string) => {
+  const featuredPagesAndLeaders = getFeaturedMoreItem();
+  const moreSections = getMoreMenuSections().map(({ category, items }) => ({
+    key: category,
+    title: t(`discovery.categories.${category}`, { defaultValue: 'More' }),
+    items,
+  }));
+
+  const go = (item: FeatureDirectoryItem) => {
     tapLight();
-    if (route === '__dev_switches__') {
-      setShowDevModal(true);
-      return;
-    }
-    if (route === '/candidate-xray') {
-      Alert.alert(
-        t('more.tiles.candidateXRay', { defaultValue: 'Candidate X-Ray' }),
-        t('discovery.features.candidateXRay.notice', {
-          defaultValue:
-            'Candidate X-Ray is an affidavit and criminal/wealth scanner. Please select a candidate from Legislator Profiles, Representatives, or Election results to inspect their verified records.',
-        }),
-      );
-      return;
-    }
-    router.push(route as any);
+    router.push(item.route as any);
   };
-
-  // 1. Civic & Electoral Architecture
-  const civicItems: HubItem[] = [
-    {
-      label: t('more.tiles.civicDashboard', { defaultValue: 'Civic Dashboard' }),
-      subtitle: t('discovery.features.dashboard.desc', { defaultValue: 'Constituency analytics & status' }),
-      icon: 'pulse',
-      color: colors.teal || '#14B8A6',
-      route: '/dashboard',
-      badge: unread || undefined,
-    },
-    {
-      label: t('more.tiles.delimitation', { defaultValue: 'Delimitation' }),
-      subtitle: t('discovery.features.delimitation.desc', { defaultValue: 'Seat projections & boundaries' }),
-      icon: 'git-branch',
-      color: colors.gold || '#C5A059',
-      route: '/delimitation',
-    },
-    {
-      label: t('more.tiles.electionResults', { defaultValue: 'Election Results' }),
-      subtitle: t('electionArchive.menuDescription', { defaultValue: 'Assembly results and official counting updates' }),
-      icon: 'stats-chart',
-      color: colors.primary || '#3B82F6',
-      route: '/live-election',
-    },
-    {
-      label: t('profileExtended.parliamentMPs', { defaultValue: 'Parliament' }),
-      subtitle: t('parliament.directoryDescription', { defaultValue: 'Lok Sabha and Rajya Sabha member profiles' }),
-      icon: 'business',
-      color: colors.gold || '#C5A059',
-      route: '/parliament',
-    },
-    {
-      label: t('discovery.features.localBodies.title', { defaultValue: 'Local Bodies' }),
-      subtitle: t('localBodies.ruralDirectoryDescription', { defaultValue: 'Rural election records for Andhra Pradesh and Telangana' }),
-      icon: 'git-network',
-      color: colors.primary || '#3B82F6',
-      route: '/local-bodies',
-    },
-  ];
-
-  // 2. Leadership & Representation (Zero duplication: Pages & Leaders is featured above)
-  const leadershipItems: HubItem[] = [
-    {
-      label: t('more.tiles.campaignManager', { defaultValue: 'Campaign Manager' }),
-      subtitle: t('discovery.features.campaignManager.desc', { defaultValue: 'Voter outreach & operations' }),
-      icon: 'megaphone',
-      color: colors.teal || '#14B8A6',
-      route: '/campaign-manager',
-    },
-    {
-      label: t('more.tiles.leadershipAcademy', { defaultValue: 'Leadership Academy' }),
-      subtitle: t('discovery.features.leadershipAcademy.desc', { defaultValue: 'Civic courses & certification' }),
-      icon: 'school',
-      color: colors.gold || '#C5A059',
-      route: '/leadership-academy',
-    },
-    {
-      label: t('discovery.features.politicianPortal.title', { defaultValue: 'Politician Portal' }),
-      subtitle: t('discovery.features.politicianPortal.desc', { defaultValue: 'Elected leader tools' }),
-      icon: 'briefcase',
-      color: colors.primary || '#3B82F6',
-      route: '/politician-portal',
-    },
-    {
-      label: t('more.tiles.candidateXRay', { defaultValue: 'Candidate X-Ray' }),
-      subtitle: t('discovery.features.candidateXRay.desc', { defaultValue: 'Affidavits & wealth verification' }),
-      icon: 'scan',
-      color: colors.teal || '#14B8A6',
-      route: '/candidate-xray',
-    },
-  ];
-
-  // 3. Media & Broadcasting
-  const mediaItems: HubItem[] = [
-    {
-      label: t('more.tiles.kshetraLive', { defaultValue: 'Poligram Live' }),
-      subtitle: t('discovery.features.live.desc', { defaultValue: 'Broadcast streams & debriefs' }),
-      icon: 'videocam',
-      color: colors.primary || '#3B82F6',
-      route: '/live',
-    },
-    {
-      label: t('discovery.features.newsroom.title', { defaultValue: 'Newsroom' }),
-      subtitle: t('discovery.features.newsroom.desc', { defaultValue: 'Journalist workspace & dispatch' }),
-      icon: 'mic',
-      color: colors.teal || '#14B8A6',
-      route: '/journalist',
-    },
-    {
-      label: t('tabs.shorts', { defaultValue: 'Shorts' }),
-      subtitle: t('discovery.features.shorts.desc', { defaultValue: 'Bite-sized political clips' }),
-      icon: 'play-circle',
-      color: colors.gold || '#C5A059',
-      route: '/shorts',
-    },
-  ];
-
-  // 4. Tools, Messages & Account (Consolidated notifications)
-  const accountItems: HubItem[] = [
-    {
-      label: t('more.tiles.aiAssistant', { defaultValue: 'AI Assistant' }),
-      subtitle: t('discovery.features.aiChat.desc', { defaultValue: 'Civic intelligence & Q&A' }),
-      icon: 'sparkles',
-      color: colors.gold || '#C5A059',
-      route: '/ai-chat',
-    },
-    {
-      label: t('more.tiles.profile', { defaultValue: 'Profile' }),
-      subtitle: t('discovery.features.profile.desc', { defaultValue: 'Preferences, bio & settings' }),
-      icon: 'person',
-      color: colors.primary || '#3B82F6',
-      route: '/profile',
-    },
-    {
-      label: t('profile.notifications', { defaultValue: 'Notifications' }),
-      subtitle: t('profileExtended.notificationSettings', { defaultValue: 'Alerts & notification preferences' }),
-      icon: 'notifications',
-      color: colors.teal || '#14B8A6',
-      route: '/notifications',
-      badge: unread || undefined,
-    },
-    {
-      label: t('discovery.features.messages.title', { defaultValue: 'Messages' }),
-      subtitle: t('discovery.features.messages.desc', { defaultValue: 'Direct civic messaging' }),
-      icon: 'mail',
-      color: colors.primary || '#3B82F6',
-      route: '/messages',
-    },
-    {
-      label: t('more.tiles.moderation', { defaultValue: 'Moderation Queue' }),
-      subtitle: t('discovery.features.moderation.desc', { defaultValue: 'Community guidelines review' }),
-      icon: 'shield-half',
-      color: colors.teal || '#14B8A6',
-      route: '/moderation',
-    },
-  ];
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + 8, borderBottomColor: colors.border }]}>
+      <View
+        style={[styles.header, { paddingTop: insets.top + 8, borderBottomColor: colors.border }]}
+      >
         <View style={styles.headerRow}>
-          <View>
+          <View style={styles.rowTextWrap}>
             <Text style={[styles.title, { color: colors.text }]}>
               {t('more.title', { defaultValue: t('tabs.more', { defaultValue: 'More' }) })}
             </Text>
@@ -228,64 +73,41 @@ export default function MoreScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 110, paddingTop: 8 }}
       >
-        {/* Featured Card: Pages & Leaders (Single Canonical Entry) */}
-        <Pressable
-          style={[
-            styles.featuredCard,
-            { backgroundColor: colors.primary, borderColor: colors.goldBorder || colors.gold },
-          ]}
-          onPress={() => go('/pages')}
-        >
-          <View style={styles.featuredGlow} />
-          <View style={styles.featuredContent}>
-            <View style={[styles.featuredIconWrap, { backgroundColor: 'rgba(255, 255, 255, 0.2)' }]}>
-              <Ionicons name="people" size={24} color="#FFFFFF" />
+        {featuredPagesAndLeaders && (
+          <Pressable
+            accessibilityRole="button"
+            style={[
+              styles.featuredCard,
+              { backgroundColor: colors.primary, borderColor: colors.goldBorder || colors.gold },
+            ]}
+            onPress={() => go(featuredPagesAndLeaders)}
+          >
+            <View style={styles.featuredGlow} />
+            <View style={styles.featuredContent}>
+              <View
+                style={[styles.featuredIconWrap, { backgroundColor: 'rgba(255, 255, 255, 0.2)' }]}
+              >
+                <Ionicons name="people" size={24} color="#FFFFFF" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.featuredTitle}>{t(featuredPagesAndLeaders.titleKey)}</Text>
+                <Text style={styles.featuredSub}>{t(featuredPagesAndLeaders.descKey)}</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color="#FFFFFF" />
             </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.featuredTitle}>
-                {t('more.pagesHQTitle', { defaultValue: 'Pages & Leaders' })}
-              </Text>
-              <Text style={styles.featuredSub}>
-                {t('more.pagesHQDesc', { defaultValue: 'Discover civic aspirants, representatives, manifestos & campaigns' })}
-              </Text>
-            </View>
-            <Ionicons name="chevron-forward" size={18} color="#FFFFFF" />
-          </View>
-        </Pressable>
+          </Pressable>
+        )}
 
-        {/* 1. Civic & Electoral Section */}
-        <GroupedSection
-          title={t('discovery.categories.civic', { defaultValue: 'Civic & Electoral' })}
-          items={civicItems}
-          onPress={go}
-        />
-
-        {/* 2. Leadership & Campaigns Section */}
-        <GroupedSection
-          title={t('discovery.categories.leadership', { defaultValue: 'Leadership & Campaigns' })}
-          items={leadershipItems}
-          onPress={go}
-        />
-
-        {/* 3. Media & Broadcasting Section */}
-        <GroupedSection
-          title={t('discovery.categories.media', { defaultValue: 'Community & Media' })}
-          items={mediaItems}
-          onPress={go}
-        />
-
-        {/* 4. Tools, Messages & Account Section */}
-        <GroupedSection
-          title={t('discovery.categories.tools', { defaultValue: 'Account & Services' })}
-          items={accountItems}
-          onPress={go}
-        />
+        {moreSections.map((section) => (
+          <GroupedSection
+            key={section.key}
+            title={section.title}
+            items={section.items}
+            onPress={go}
+            unread={unread}
+          />
+        ))}
       </ScrollView>
-
-      <DevFeatureSwitcher
-        visible={showDevModal}
-        onClose={() => setShowDevModal(false)}
-      />
 
       <DiscoveryHubSheet
         visible={showDiscoveryHub}
@@ -300,11 +122,14 @@ function GroupedSection({
   title,
   items,
   onPress,
+  unread,
 }: {
   title: string;
-  items: HubItem[];
-  onPress: (r: string) => void;
+  items: FeatureDirectoryItem[];
+  onPress: (item: FeatureDirectoryItem) => void;
+  unread: number;
 }) {
+  const { t } = useTranslation();
   const { colors } = useTheme();
 
   return (
@@ -318,34 +143,37 @@ function GroupedSection({
       >
         {items.map((item, idx) => {
           const isLast = idx === items.length - 1;
+          const subtitle = t(item.descKey, { defaultValue: '' });
+          const badge = item.id === 'notifications' && unread > 0 ? unread : undefined;
           return (
             <Pressable
-              key={item.route}
+              key={item.id}
+              accessibilityRole="button"
               style={[
                 styles.rowItem,
                 !isLast && { borderBottomWidth: 1, borderBottomColor: colors.border + '60' },
               ]}
-              onPress={() => onPress(item.route)}
+              onPress={() => onPress(item)}
             >
               <View style={[styles.rowIconWrap, { backgroundColor: item.color + '15' }]}>
-                <Ionicons name={item.icon} size={18} color={item.color} />
+                <Ionicons
+                  name={item.icon as keyof typeof Ionicons.glyphMap}
+                  size={18}
+                  color={item.color}
+                />
               </View>
 
               <View style={styles.rowTextWrap}>
-                <Text style={[styles.rowTitle, { color: colors.text }]}>
-                  {item.label}
-                </Text>
-                {item.subtitle && (
-                  <Text style={[styles.rowSubtitle, { color: colors.textMuted }]}>
-                    {item.subtitle}
-                  </Text>
-                )}
+                <Text style={[styles.rowTitle, { color: colors.text }]}>{t(item.titleKey)}</Text>
+                {subtitle ? (
+                  <Text style={[styles.rowSubtitle, { color: colors.textMuted }]}>{subtitle}</Text>
+                ) : null}
               </View>
 
               <View style={styles.rowRight}>
-                {item.badge ? (
+                {badge ? (
                   <View style={[styles.badgePill, { backgroundColor: colors.primary }]}>
-                    <Text style={styles.badgeText}>{item.badge > 9 ? '9+' : item.badge}</Text>
+                    <Text style={styles.badgeText}>{badge > 9 ? '9+' : badge}</Text>
                   </View>
                 ) : (
                   <Ionicons name="chevron-forward" size={15} color={colors.textMuted} />
@@ -372,6 +200,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: 12,
   },
   title: {
     fontSize: 24,

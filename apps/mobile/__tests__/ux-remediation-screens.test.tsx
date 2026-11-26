@@ -28,17 +28,16 @@ describe('Mobile UX Remediation Specification Verification (Batches 1-7)', () =>
     expect(newsCode).toContain('sourceScreen="news"');
   });
 
-  it('verifies more.tsx reorganizes into 4 groups and secures Candidate X-Ray from ID-less navigation', () => {
+  it('uses four catalog sections and preserves the contextual route to Candidate X-Ray', () => {
     const moreCode = fs.readFileSync(path.join(mobileRoot, 'app/(tabs)/more.tsx'), 'utf-8');
     expect(moreCode).toContain('DiscoveryHubSheet');
     expect(moreCode).toContain('showDiscoveryHub');
-    expect(moreCode).toContain('civic');
-    expect(moreCode).toContain('media');
-    expect(moreCode).toContain('campaign');
-    expect(moreCode).toContain('account');
-    // Candidate X-Ray route protection
-    expect(moreCode).toContain("route === '/candidate-xray'");
-    expect(moreCode).toContain('Alert.alert');
+    expect(moreCode).toContain('getMoreMenuSections()');
+    const { getMoreMenuSections } = require('../lib/discoveryCatalog') as typeof import('../lib/discoveryCatalog');
+    const sections = getMoreMenuSections();
+    expect(sections.map(({ category }) => category)).toEqual(['civic', 'leadership', 'media', 'tools']);
+    expect(sections.flatMap(({ items }) => items.map(({ route }) => route))).not.toContain('/candidate-xray');
+    expect(fs.existsSync(path.join(mobileRoot, 'app/candidate-xray/[id].tsx'))).toBe(true);
   });
 
   it('verifies profile.tsx has merged About section without duplicate headings', () => {

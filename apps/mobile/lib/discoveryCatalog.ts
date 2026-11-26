@@ -26,6 +26,8 @@ export interface FeatureDirectoryItem {
   route: string;
   isDynamic?: boolean;
   featureFlag?: string;
+  /** Where this feature appears in the primary More menu. */
+  morePlacement?: 'featured' | 'section';
   status: 'available' | 'auth_required' | 'role_required' | 'compatibility_only';
 }
 
@@ -106,6 +108,7 @@ export const FEATURE_DIRECTORY: FeatureDirectoryItem[] = [
     icon: 'pulse',
     color: '#0D9488',
     route: '/dashboard',
+    morePlacement: 'section',
     status: 'available',
   },
   {
@@ -116,6 +119,7 @@ export const FEATURE_DIRECTORY: FeatureDirectoryItem[] = [
     icon: 'business',
     color: '#C5A059',
     route: '/parliament',
+    morePlacement: 'section',
     status: 'available',
   },
   {
@@ -126,6 +130,7 @@ export const FEATURE_DIRECTORY: FeatureDirectoryItem[] = [
     icon: 'bar-chart',
     color: '#059669',
     route: '/civic-metrics',
+    morePlacement: 'section',
     status: 'available',
   },
   {
@@ -136,6 +141,7 @@ export const FEATURE_DIRECTORY: FeatureDirectoryItem[] = [
     icon: 'git-network',
     color: '#D97706',
     route: '/local-bodies',
+    morePlacement: 'section',
     status: 'available',
   },
   {
@@ -156,6 +162,7 @@ export const FEATURE_DIRECTORY: FeatureDirectoryItem[] = [
     icon: 'git-branch',
     color: '#B45309',
     route: '/delimitation',
+    morePlacement: 'section',
     status: 'available',
   },
   {
@@ -166,6 +173,7 @@ export const FEATURE_DIRECTORY: FeatureDirectoryItem[] = [
     icon: 'radio',
     color: '#E11D48',
     route: '/live-election',
+    morePlacement: 'section',
     status: 'available',
   },
 
@@ -198,6 +206,7 @@ export const FEATURE_DIRECTORY: FeatureDirectoryItem[] = [
     icon: 'mic',
     color: '#0284C7',
     route: '/journalist',
+    morePlacement: 'section',
     status: 'available',
   },
   {
@@ -208,6 +217,7 @@ export const FEATURE_DIRECTORY: FeatureDirectoryItem[] = [
     icon: 'videocam',
     color: '#DC2626',
     route: '/(tabs)/live',
+    morePlacement: 'section',
     status: 'available',
   },
   {
@@ -218,18 +228,20 @@ export const FEATURE_DIRECTORY: FeatureDirectoryItem[] = [
     icon: 'play-circle',
     color: '#7C3AED',
     route: '/(tabs)/shorts',
+    morePlacement: 'section',
     status: 'available',
   },
 
   // Leadership & Campaigns
   {
     id: 'pages_leaders',
-    titleKey: 'more.pagesHQTitle',
+    titleKey: 'pages.screenTitle',
     descKey: 'discovery.features.pagesLeaders.desc',
     category: 'leadership',
     icon: 'people',
     color: '#2563EB',
     route: '/pages',
+    morePlacement: 'featured',
     status: 'available',
   },
   {
@@ -240,6 +252,7 @@ export const FEATURE_DIRECTORY: FeatureDirectoryItem[] = [
     icon: 'school',
     color: '#D97706',
     route: '/leadership-academy',
+    morePlacement: 'section',
     status: 'available',
   },
   {
@@ -250,6 +263,7 @@ export const FEATURE_DIRECTORY: FeatureDirectoryItem[] = [
     icon: 'briefcase',
     color: '#059669',
     route: '/politician-portal',
+    morePlacement: 'section',
     status: 'role_required',
   },
   {
@@ -260,18 +274,8 @@ export const FEATURE_DIRECTORY: FeatureDirectoryItem[] = [
     icon: 'megaphone',
     color: '#4F8EF7',
     route: '/campaign-manager',
+    morePlacement: 'section',
     status: 'role_required',
-  },
-  {
-    id: 'candidate_xray',
-    titleKey: 'more.tiles.candidateXRay',
-    descKey: 'discovery.features.candidateXRay.desc',
-    category: 'leadership',
-    icon: 'scan',
-    color: '#0D9488',
-    route: '/candidate-xray',
-    isDynamic: true,
-    status: 'compatibility_only',
   },
 
   // Tools & Account
@@ -293,6 +297,7 @@ export const FEATURE_DIRECTORY: FeatureDirectoryItem[] = [
     icon: 'sparkles',
     color: '#F59E0B',
     route: '/ai-chat',
+    morePlacement: 'section',
     status: 'available',
   },
   {
@@ -303,6 +308,7 @@ export const FEATURE_DIRECTORY: FeatureDirectoryItem[] = [
     icon: 'person',
     color: '#4F8EF7',
     route: '/(tabs)/profile',
+    morePlacement: 'section',
     status: 'available',
   },
   {
@@ -313,6 +319,7 @@ export const FEATURE_DIRECTORY: FeatureDirectoryItem[] = [
     icon: 'mail',
     color: '#2563EB',
     route: '/messages',
+    morePlacement: 'section',
     status: 'auth_required',
   },
   {
@@ -323,6 +330,7 @@ export const FEATURE_DIRECTORY: FeatureDirectoryItem[] = [
     icon: 'notifications',
     color: '#F59E0B',
     route: '/notifications',
+    morePlacement: 'section',
     status: 'available',
   },
   {
@@ -343,9 +351,25 @@ export const FEATURE_DIRECTORY: FeatureDirectoryItem[] = [
     icon: 'shield-half',
     color: '#EC4899',
     route: '/moderation',
+    morePlacement: 'section',
     status: 'role_required',
   },
 ];
+
+export const MORE_MENU_CATEGORIES = ['civic', 'leadership', 'media', 'tools'] as const;
+
+export function getMoreMenuSections() {
+  return MORE_MENU_CATEGORIES.map((category) => ({
+    category,
+    items: FEATURE_DIRECTORY.filter(
+      (item) => item.morePlacement === 'section' && item.category === category,
+    ),
+  }));
+}
+
+export function getFeaturedMoreItem(): FeatureDirectoryItem | undefined {
+  return FEATURE_DIRECTORY.find((item) => item.morePlacement === 'featured');
+}
 
 export const SCREEN_GUIDES: Record<string, ScreenGuideEntry> = {
   // Primary Tabs

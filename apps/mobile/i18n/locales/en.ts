@@ -3154,7 +3154,7 @@ const en =  {
         "desc": "Short civic video updates, youth commentary, and event highlights"
       },
       "pagesLeaders": {
-        "desc": "Candidate profiles, election manifestos, and verified aspirant pages"
+        "desc": "Browse representative profiles and civic aspirants"
       },
       "leadershipAcademy": {
         "desc": "Civic curriculum, grassroots campaign skills, and aspirant scores"
@@ -3255,6 +3255,10 @@ const en =  {
       "openAspirantProfile": "Open aspirant profile",
       "noPublicAspirants": "No aspirants have chosen to appear in the directory yet.",
       "screenTitle": "Pages & Leaders",
+      "selectStateForRepresentatives": "Select a state to see its current representative directory.",
+      "noCurrentRepresentatives": "No named current representatives are available for {{state}}.",
+      "browseConstituencies": "Browse constituencies",
+      "verifiedProfilesUnavailable": "Verified leader profiles could not be loaded.",
       "tabAspirants": "Civic Aspirants",
       "tabPoliticians": "Representatives",
       "tabMyPage": "My Page",
@@ -3281,7 +3285,8 @@ const en =  {
       "registeredPoliticians": "Elected Representatives & Leaders",
       "sittingMlas": "Sitting MLAs & Officials",
       "viewDossier": "View Dossier & Track Record",
-      "verifiedLeaders": "Verified Party Profiles",
+      "verifiedLeaders": "Verified Leader Profiles",
+      "currentRepresentativesUnavailable": "The current representatives directory could not be loaded.",
       "verifiedOfficial": "Verified Representative",
       "civicStandingScore": "Civic Standing Score",
       "directMessage": "Message Candidate",

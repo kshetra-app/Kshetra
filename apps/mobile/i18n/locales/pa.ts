@@ -3033,7 +3033,7 @@ const pa = {
         "desc": "ਛੋਟੇ ਨਾਗਰਿਕ ਵੀਡੀਓ ਅੱਪਡੇਟ"
       },
       "pagesLeaders": {
-        "desc": "ਉਮੀਦਵਾਰ ਪ੍ਰੋਫਾਈਲ ਅਤੇ ਪ੍ਰਮਾਣਿਤ ਪੰਨੇ"
+        "desc": "ਜਨ-ਪ੍ਰਤੀਨਿਧੀਆਂ ਦੇ ਪ੍ਰੋਫ਼ਾਈਲ ਅਤੇ ਨਾਗਰਿਕ ਆਗੂ ਬਣਨ ਦੇ ਇੱਛੁਕ ਲੋਕ ਵੇਖੋ"
       },
       "leadershipAcademy": {
         "desc": "ਨਾਗਰਿਕ ਪਾਠਕ੍ਰਮ ਅਤੇ ਮੁਹਿੰਮ ਦੇ ਹੁਨਰ"
@@ -3183,7 +3183,12 @@ const pa = {
       "registeredPoliticians": "ਚੁਣੇ ਹੋਏ ਨੁਮਾਇੰਦੇ ਅਤੇ ਆਗੂ",
       "sittingMlas": "ਮੌਜੂਦਾ ਵਿਧਾਇਕ ਅਤੇ ਅਧਿਕਾਰੀ",
       "viewDossier": "ਦਸਤਾਵੇਜ਼ ਅਤੇ ਰਿਕਾਰਡ ਦੇਖੋ",
-      "verifiedLeaders": "ਤਸਦੀਕਸ਼ੁਦਾ ਪਾਰਟੀ ਪ੍ਰੋਫਾਈਲ",
+      "verifiedLeaders": "ਤਸਦੀਕਸ਼ੁਦਾ ਆਗੂਆਂ ਦੇ ਪ੍ਰੋਫਾਈਲ",
+      "selectStateForRepresentatives": "ਮੌਜੂਦਾ ਲੋਕ ਨੁਮਾਇੰਦਿਆਂ ਦੀ ਸੂਚੀ ਦੇਖਣ ਲਈ ਰਾਜ ਚੁਣੋ।",
+      "noCurrentRepresentatives": "{{state}} ਦੇ ਮੌਜੂਦਾ ਲੋਕ ਨੁਮਾਇੰਦਿਆਂ ਦੇ ਨਾਂ ਉਪਲਬਧ ਨਹੀਂ ਹਨ।",
+      "browseConstituencies": "ਚੋਣ ਹਲਕੇ ਦੇਖੋ",
+      "currentRepresentativesUnavailable": "ਮੌਜੂਦਾ ਲੋਕ ਨੁਮਾਇੰਦਿਆਂ ਦੀ ਸੂਚੀ ਲੋਡ ਨਹੀਂ ਹੋ ਸਕੀ।",
+      "verifiedProfilesUnavailable": "ਤਸਦੀਕਸ਼ੁਦਾ ਆਗੂਆਂ ਦੇ ਪ੍ਰੋਫਾਈਲ ਲੋਡ ਨਹੀਂ ਹੋ ਸਕੇ।",
       "verifiedOfficial": "ਤਸਦੀਕਸ਼ੁਦਾ ਨੁਮਾਇੰਦਾ",
       "civicStandingScore": "ਨਾਗਰਿਕ ਰੁਤਬਾ ਸਕੋਰ",
       "directMessage": "ਉਮੀਦਵਾਰ ਨੂੰ ਸੁਨੇਹਾ ਭੇਜੋ",

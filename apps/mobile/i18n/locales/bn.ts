@@ -3033,7 +3033,7 @@ const bn = {
         "desc": "সংক্ষিপ্ত নাগরিক ভিডিও আপডেট"
       },
       "pagesLeaders": {
-        "desc": "প্রার্থী প্রোফাইল, ইশতেহার ও যাচাইকৃত পেজ"
+        "desc": "জনপ্রতিনিধিদের প্রোফাইল ও নাগরিক নেতৃত্বে আগ্রহীদের দেখুন"
       },
       "leadershipAcademy": {
         "desc": "নাগরিক পাঠ্যক্রম ও প্রচারণা দক্ষতা"
@@ -3183,7 +3183,12 @@ const bn = {
       "registeredPoliticians": "নির্বাচিত প্রতিনিধি ও নেতৃবৃন্দ",
       "sittingMlas": "বর্তমান বিধায়ক ও কর্মকর্তাবৃন্দ",
       "viewDossier": "নথি ও ট্র্যাক রেকর্ড দেখুন",
-      "verifiedLeaders": "যাচাইকৃত দলের প্রোফাইল",
+      "verifiedLeaders": "যাচাইকৃত নেতাদের প্রোফাইল",
+      "selectStateForRepresentatives": "বর্তমান জনপ্রতিনিধিদের তালিকা দেখতে একটি রাজ্য বেছে নিন।",
+      "noCurrentRepresentatives": "{{state}}-এর বর্তমান জনপ্রতিনিধিদের নাম পাওয়া যায়নি।",
+      "browseConstituencies": "নির্বাচনী কেন্দ্র দেখুন",
+      "currentRepresentativesUnavailable": "বর্তমান জনপ্রতিনিধিদের তালিকা লোড করা যায়নি।",
+      "verifiedProfilesUnavailable": "যাচাইকৃত নেতাদের প্রোফাইল লোড করা যায়নি।",
       "verifiedOfficial": "যাচাইকৃত প্রতিনিধি",
       "civicStandingScore": "নাগরিক মর্যাদা স্কোর",
       "directMessage": "প্রার্থীকে বার্তা পাঠান",

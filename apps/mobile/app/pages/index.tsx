@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,6 @@ import {
   Modal,
   ActivityIndicator,
 } from 'react-native';
-import { getUnifiedConstituenciesForState } from '../../lib/stateDataAdapter';
 import { STATES } from '@kshetra/shared';
 import { useActiveStateStore } from '../../stores/activeState';
 import StateSwitcher from '../../components/StateSwitcher';
@@ -25,16 +24,27 @@ import { useTheme } from '../../lib/theme';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import { useAspirantStore } from '../../stores/aspirant';
 import { useAuthStore } from '../../stores/auth';
-import { fetchVerifiedPoliticians } from '../../lib/supabaseDataService';
+import { fetchVerifiedPoliticians, type VerifiedPoliticianProfile } from '../../lib/supabaseDataService';
+import { useConstituencyDirectory } from '../../lib/useConstituencyDirectory';
+import {
+  getLocalizedConstituencyName,
+  getLocalizedDistrictName,
+  getLocalizedPartyName,
+  getLocalizedStateName,
+} from '../../lib/stateTranslations';
+import { getLocalizedCandidateName } from '../../lib/historicalPodiumStore';
 import RegisterAspirantModal from '../../components/RegisterAspirantModal';
 import CivicScoreCard from '../../components/CivicScoreCard';
 import CivicBadgeGrid from '../../components/CivicBadgeGrid';
 import LeaderProfileModal from '../../components/LeaderProfileModal';
 
 type PageTab = 'aspirants' | 'politicians' | 'my_page';
+type VerifiedProfilesResult =
+  | { stateCode: string; status: 'loading' | 'error' }
+  | { stateCode: string; status: 'ready'; profiles: VerifiedPoliticianProfile[] };
 
 export default function PagesScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const unavailableLabel = t('constituency.dataUnavailable', { defaultValue: 'Unavailable' });
   const { colors } = useTheme();
   const router = useRouter();
@@ -45,32 +55,37 @@ export default function PagesScreen() {
     if (tab === 'my_page' || tab === 'aspirants' || tab === 'politicians') {
       return tab;
     }
-    return 'aspirants';
+    return 'politicians';
   });
   const [refreshing, setRefreshing] = useState(false);
   const [registerVisible, setRegisterVisible] = useState(false);
   const [helpVisible, setHelpVisible] = useState(false);
-  const [verifiedPoliticians, setVerifiedPoliticians] = useState<any[]>([]);
-  const [loadingPoliticians, setLoadingPoliticians] = useState(false);
+  const [verifiedProfiles, setVerifiedProfiles] = useState<VerifiedProfilesResult>();
+  const politiciansRequestSequence = useRef(0);
   const [selectedAspirant, setSelectedAspirant] = useState<AspirantProfile | null>(null);
   const [myPageModalVisible, setMyPageModalVisible] = useState(false);
   const [savingVisibility, setSavingVisibility] = useState(false);
 
   const stateCode = useActiveStateStore((s) => s.stateCode);
-  const stateSeats = useMemo(() => {
-    return stateCode === 'IN' ? [] : getUnifiedConstituenciesForState(stateCode);
-  }, [stateCode]);
+  const {
+    constituencies: stateSeats,
+    status: directoryStatus,
+    refresh: refreshDirectory,
+  } = useConstituencyDirectory(stateCode);
   const stateRepresentatives = useMemo(
     () =>
       stateSeats.filter(
         (constituency) =>
           Boolean(constituency.currentMLA?.trim()) &&
-          (constituency.officeholderStatus === 'INCUMBENT_ACTIVE' ||
-            constituency.officeholderStatus === 'BY_ELECTION_SEATED'),
+          constituency.officeholderStatus !== 'VACANT',
       ),
     [stateSeats],
   );
-  const stateName = (STATES as Record<string, { name: string }>)[stateCode]?.name ?? stateCode;
+  const stateNameFor = (code: string) =>
+    getLocalizedStateName(code, i18n.language) ??
+    (STATES as Record<string, { name: string }>)[code]?.name ??
+    code;
+  const visibleProfiles = verifiedProfiles?.stateCode === stateCode ? verifiedProfiles : undefined;
 
   const authUser = useAuthStore((s) => s.user);
 
@@ -91,18 +106,24 @@ export default function PagesScreen() {
   const academyBadgesStatus = useAspirantStore((s) => s.academyBadgesStatus);
 
   const loadPoliticians = useCallback(async () => {
-    setLoadingPoliticians(true);
-    const data = await fetchVerifiedPoliticians();
-    setVerifiedPoliticians(data ?? []);
-    setLoadingPoliticians(false);
-  }, []);
+    const requestSequence = ++politiciansRequestSequence.current;
+    setVerifiedProfiles({ stateCode, status: 'loading' });
+    const data = await fetchVerifiedPoliticians(stateCode === 'IN' ? undefined : stateCode);
+    if (requestSequence !== politiciansRequestSequence.current) return;
+    setVerifiedProfiles(data === null
+      ? { stateCode, status: 'error' }
+      : { stateCode, status: 'ready', profiles: data });
+  }, [stateCode]);
 
   useEffect(() => {
     hydrateAspirants();
     hydrateAspirantProfile();
     hydrateAcademyBadges();
-    loadPoliticians();
-  }, [hydrateAspirants, hydrateAspirantProfile, hydrateAcademyBadges, loadPoliticians, authUser?.id]);
+  }, [hydrateAspirants, hydrateAspirantProfile, hydrateAcademyBadges, authUser?.id]);
+
+  useEffect(() => {
+    void loadPoliticians();
+  }, [loadPoliticians, authUser?.id]);
 
   useEffect(() => {
     if (tab === 'my_page' || tab === 'aspirants' || tab === 'politicians') {
@@ -112,9 +133,18 @@ export default function PagesScreen() {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await Promise.all([hydrateAspirants(), hydrateAspirantProfile(), hydrateAcademyBadges(), loadPoliticians()]);
-    setRefreshing(false);
-  }, [hydrateAspirants, hydrateAspirantProfile, hydrateAcademyBadges, loadPoliticians]);
+    try {
+      refreshDirectory();
+      await Promise.all([
+        hydrateAspirants(),
+        hydrateAspirantProfile(),
+        hydrateAcademyBadges(),
+        loadPoliticians(),
+      ]);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [hydrateAspirants, hydrateAspirantProfile, hydrateAcademyBadges, loadPoliticians, refreshDirectory]);
 
   const civicScore = getCivicScore();
 
@@ -162,6 +192,8 @@ export default function PagesScreen() {
       {/* Tabs in Navy Blue & White */}
       <View style={[styles.tabBar, { backgroundColor: '#FFFFFF', borderBottomColor: '#E2E8F0' }]}>
         <Pressable
+          accessibilityRole="tab"
+          accessibilityState={{ selected: activeTab === 'aspirants' }}
           style={[
             styles.tab,
             activeTab === 'aspirants' && { borderBottomColor: '#002B7F', borderBottomWidth: 2.5 },
@@ -178,14 +210,14 @@ export default function PagesScreen() {
               styles.tabLabel,
               { color: activeTab === 'aspirants' ? '#002B7F' : '#64748B', fontWeight: activeTab === 'aspirants' ? '900' : '600' },
             ]}
-            numberOfLines={1}
-            ellipsizeMode="tail"
           >
             {t('pages.tabAspirants', { defaultValue: 'Civic Aspirants' })}
           </Text>
         </Pressable>
 
         <Pressable
+          accessibilityRole="tab"
+          accessibilityState={{ selected: activeTab === 'politicians' }}
           style={[
             styles.tab,
             activeTab === 'politicians' && { borderBottomColor: '#002B7F', borderBottomWidth: 2.5 },
@@ -202,14 +234,14 @@ export default function PagesScreen() {
               styles.tabLabel,
               { color: activeTab === 'politicians' ? '#002B7F' : '#64748B', fontWeight: activeTab === 'politicians' ? '900' : '600' },
             ]}
-            numberOfLines={1}
-            ellipsizeMode="tail"
           >
             {t('pages.tabPoliticians', { defaultValue: 'Representatives' })}
           </Text>
         </Pressable>
 
         <Pressable
+          accessibilityRole="tab"
+          accessibilityState={{ selected: activeTab === 'my_page' }}
           style={[
             styles.tab,
             activeTab === 'my_page' && { borderBottomColor: '#002B7F', borderBottomWidth: 2.5 },
@@ -226,8 +258,6 @@ export default function PagesScreen() {
               styles.tabLabel,
               { color: activeTab === 'my_page' ? '#002B7F' : '#64748B', fontWeight: activeTab === 'my_page' ? '900' : '600' },
             ]}
-            numberOfLines={1}
-            ellipsizeMode="tail"
           >
             {t('pages.tabMyPage', { defaultValue: 'My Page' })}
           </Text>
@@ -268,17 +298,42 @@ export default function PagesScreen() {
             <Text style={[styles.sectionHeading, { color: colors.text }]}>
               {t('pages.tabAspirants')}
             </Text>
-            {publicAspirantsStatus === 'loading' ? (
-              <ActivityIndicator color={colors.primary} />
-            ) : publicAspirantsStatus === 'error' ? (
-              <Pressable accessibilityRole="button" onPress={() => void hydrateAspirants()}>
-                <Text style={{ color: colors.primary }}>{t('common.error')} · {t('common.retry')}</Text>
-              </Pressable>
-            ) : publicAspirantsStatus === 'ready' && publicAspirants.length === 0 ? (
-              <Text style={{ color: colors.textSecondary }}>{t('pages.noPublicAspirants')}</Text>
-            ) : null}
 
-            {publicAspirants.map((asp) => {
+            {(publicAspirantsStatus === 'idle' || publicAspirantsStatus === 'loading') && (
+              <View style={[styles.emptyDirectoryCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <ActivityIndicator color={colors.primary} />
+                <Text style={[styles.aspirantBio, { color: colors.textSecondary }]}>
+                  {t('leadershipAcademy.loadingAspirants', { defaultValue: 'Loading public aspirants…' })}
+                </Text>
+              </View>
+            )}
+
+            {publicAspirantsStatus === 'error' && (
+              <View style={[styles.emptyDirectoryCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <Ionicons name="cloud-offline-outline" size={28} color={colors.textMuted} />
+                <Text style={[styles.aspirantBio, { color: colors.textSecondary }]}>
+                  {t('leadershipAcademy.aspirantsUnavailable', { defaultValue: 'The public aspirant directory is unavailable right now.' })}
+                </Text>
+                <Pressable
+                  accessibilityRole="button"
+                  style={[styles.btnActionPrimary, { backgroundColor: colors.primary }]}
+                  onPress={() => void hydrateAspirants()}
+                >
+                  <Text style={styles.btnActionPrimaryText}>{t('common.retry')}</Text>
+                </Pressable>
+              </View>
+            )}
+
+            {publicAspirantsStatus === 'ready' && publicAspirants.length === 0 && (
+              <View style={[styles.emptyDirectoryCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <Ionicons name="people-outline" size={28} color={colors.primary} />
+                <Text style={[styles.aspirantBio, { color: colors.textSecondary }]}>
+                  {t('pages.noPublicAspirants')}
+                </Text>
+              </View>
+            )}
+
+            {publicAspirantsStatus === 'ready' && publicAspirants.map((asp) => {
               const isEndorsed = endorsedIds.includes(asp.id);
               return (
                 <Pressable
@@ -407,37 +462,64 @@ export default function PagesScreen() {
               <View style={[styles.emptyDirectoryCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                 <Ionicons name="map-outline" size={24} color={colors.primary} />
                 <Text style={[styles.aspirantBio, { color: colors.textSecondary }]}>
-                  Select a state to view current representative records.
+                  {t('pages.selectStateForRepresentatives', {
+                    defaultValue: 'Select a state to see its current representative directory.',
+                  })}
                 </Text>
               </View>
+            ) : directoryStatus === 'LOADING' ? (
+              <View style={[styles.emptyDirectoryCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <ActivityIndicator color={colors.primary} />
+                <Text style={[styles.aspirantBio, { color: colors.textSecondary }]}>{t('common.loading')}</Text>
+              </View>
+            ) : directoryStatus === 'UNAVAILABLE' ? (
+              <Pressable
+                style={[styles.emptyDirectoryCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                accessibilityRole="button"
+                onPress={refreshDirectory}
+              >
+                <Text style={[styles.aspirantBio, { color: colors.textSecondary }]}>{t('pages.currentRepresentativesUnavailable')}</Text>
+                <Text style={[styles.btnViewPageText, { color: colors.primary }]}>{t('common.retry')}</Text>
+              </Pressable>
             ) : stateRepresentatives.length === 0 ? (
               <View style={[styles.emptyDirectoryCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                 <Ionicons name="information-circle-outline" size={24} color={colors.primary} />
                 <Text style={[styles.aspirantBio, { color: colors.textSecondary }]}>
-                  {`No current representative records are available for ${stateName}. The constituency directory has ${stateSeats.length} seats, but its current data does not include named officeholders.`}
+                  {t('pages.noCurrentRepresentatives', {
+                    state: stateNameFor(stateCode),
+                  })}
                 </Text>
                 <Pressable
                   style={[styles.btnViewPage, { borderColor: colors.primary }]}
                   onPress={() => router.push('/(tabs)/explore' as any)}
                   accessibilityRole="button"
-                  accessibilityLabel="Browse constituencies"
                 >
                   <Ionicons name="search-outline" size={14} color={colors.primary} />
-                  <Text style={[styles.btnViewPageText, { color: colors.primary }]}>Browse constituencies</Text>
+                  <Text style={[styles.btnViewPageText, { color: colors.primary }]}>
+                    {t('pages.browseConstituencies', { defaultValue: 'Browse constituencies' })}
+                  </Text>
                 </Pressable>
               </View>
             ) : (
               <View style={{ marginBottom: 16 }}>
+                {directoryStatus === 'STALE_DATABASE_RECORDS' && (
+                  <Text style={[styles.aspirantBio, { color: colors.textSecondary }]}>
+                    {t('civicMetrics.showingSavedRecords')}
+                  </Text>
+                )}
                 <Text style={{ fontSize: 11, fontWeight: '700', color: colors.textMuted, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 }}>
                   {t('pages.sittingMlas', { defaultValue: 'Sitting MLAs & Officials' })} ({stateRepresentatives.length})
                 </Text>
                 {stateRepresentatives.map((c) => {
-                  const repName = c.currentMLA!.trim();
-                  const partyName = c.currentParty?.trim();
+                  const repName = getLocalizedCandidateName(c.currentMLA?.trim(), i18n.language);
+                  const partyName = getLocalizedPartyName(c.currentParty, i18n.language);
+                  const constituencyName = getLocalizedConstituencyName(c.acNo, c.stateCode, c.name, i18n.language);
+                  const districtName = getLocalizedDistrictName(c.district, i18n.language);
                   const legislatorId = `${c.stateCode}-AC-${c.acNo}`;
                   return (
                     <Pressable
                       key={c.acNo}
+                      accessibilityRole="button"
                       style={[styles.aspirantCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
                       onPress={() => router.push(`/legislator/${legislatorId}` as any)}
                     >
@@ -450,7 +532,7 @@ export default function PagesScreen() {
                         <View style={{ flex: 1, marginLeft: 12 }}>
                           <Text style={[styles.aspirantName, { color: colors.text }]}>{repName}</Text>
                           <Text style={[styles.aspirantSeat, { color: colors.textMuted }]}>
-                            {c.name} ({c.district}) · MLA
+                            {constituencyName}{districtName ? ` · ${districtName}` : ''}
                           </Text>
                         </View>
                         {partyName ? (
@@ -463,15 +545,14 @@ export default function PagesScreen() {
                       </View>
 
                       <View style={styles.cardActions}>
-                        <Pressable
+                        <View
                           style={[styles.btnEndorse, { backgroundColor: colors.primary, borderColor: colors.primary }]}
-                          onPress={() => router.push(`/legislator/${legislatorId}` as any)}
                         >
                           <Ionicons name="document-text-outline" size={14} color="#FFFFFF" />
                           <Text style={[styles.btnEndorseText, { color: '#FFFFFF' }]}>
                             {t('pages.viewDossier', { defaultValue: 'View Dossier & Track Record' })}
                           </Text>
-                        </Pressable>
+                        </View>
                       </View>
                     </Pressable>
                   );
@@ -479,32 +560,55 @@ export default function PagesScreen() {
               </View>
             )}
 
-            {/* Verified Supabase Politicians if any */}
-            {verifiedPoliticians.length > 0 && (
+            {(!visibleProfiles || visibleProfiles.status === 'loading') && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                <ActivityIndicator size="small" color={colors.primary} />
+                <Text style={{ color: colors.textMuted }}>{t('common.loading')}</Text>
+              </View>
+            )}
+
+            {visibleProfiles?.status === 'error' && (
+              <Pressable
+                style={[styles.emptyDirectoryCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                onPress={() => void loadPoliticians()}
+                accessibilityRole="button"
+              >
+                <Ionicons name="cloud-offline-outline" size={24} color={colors.textMuted} />
+                <Text style={[styles.aspirantBio, { color: colors.textSecondary }]}>
+                  {t('pages.verifiedProfilesUnavailable', {
+                    defaultValue: 'Verified leader profiles could not be loaded.',
+                  })}
+                </Text>
+                <Text style={[styles.btnViewPageText, { color: colors.primary }]}>{t('common.retry')}</Text>
+              </Pressable>
+            )}
+
+            {visibleProfiles?.status === 'ready' && visibleProfiles.profiles.length > 0 && (
               <View>
                 <Text style={{ fontSize: 11, fontWeight: '700', color: colors.textMuted, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                  {t('pages.verifiedLeaders', { defaultValue: 'Verified Party Profiles' })}
+                  {t('pages.verifiedLeaders')}
                 </Text>
-                {verifiedPoliticians.map((p) => (
+                {visibleProfiles.profiles.map((p) => (
                   <Pressable
-                    key={p.id || p.user_id}
+                    key={p.user_id}
+                    accessibilityRole="button"
                     style={[styles.aspirantCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
                     onPress={() => router.push(`/user/${p.user_id}` as any)}
                   >
                     <View style={styles.aspirantTopRow}>
                       <View style={[styles.aspirantAvatar, { backgroundColor: colors.primary }]}>
                         <Text style={[styles.avatarInitial, { color: '#FFFFFF' }]}>
-                          {(p.display_name || 'R').charAt(0).toUpperCase()}
+                          {p.display_name.charAt(0).toUpperCase()}
                         </Text>
                       </View>
                       <View style={{ flex: 1, marginLeft: 12 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                          <Text style={[styles.aspirantName, { color: colors.text }]}>{p.display_name}</Text>
+                          <Text style={[styles.aspirantName, { color: colors.text, flexShrink: 1 }]}>{p.display_name}</Text>
                           <Ionicons name="checkmark-circle" size={16} color="#10B981" style={{ marginLeft: 4 }} />
                         </View>
-                        <Text style={[styles.aspirantSeat, { color: colors.textMuted }]}>
-                          {p.constituency ? `${p.constituency} · ` : ''}{p.state || t('pages.verifiedOfficial', { defaultValue: 'Verified Representative' })}
-                        </Text>
+                        {p.state_code && (
+                          <Text style={[styles.aspirantSeat, { color: colors.textMuted }]}>{stateNameFor(p.state_code)}</Text>
+                        )}
                       </View>
                     </View>
                     {p.bio ? (
@@ -513,15 +617,14 @@ export default function PagesScreen() {
                       </Text>
                     ) : null}
                     <View style={styles.cardActions}>
-                      <Pressable
+                      <View
                         style={[styles.btnEndorse, { backgroundColor: colors.primary, borderColor: colors.primary }]}
-                        onPress={() => router.push(`/user/${p.user_id}` as any)}
                       >
                         <Ionicons name="person-outline" size={14} color="#FFFFFF" />
                         <Text style={[styles.btnEndorseText, { color: '#FFFFFF' }]}>
                           {t('pages.viewProfile', { defaultValue: 'View Profile' })}
                         </Text>
-                      </Pressable>
+                      </View>
                     </View>
                   </Pressable>
                 ))}
@@ -747,10 +850,10 @@ const styles = StyleSheet.create({
   tab: {
     flex: 1,
     minWidth: 0,
+    minHeight: 48,
     paddingVertical: 10,
-    paddingHorizontal: 2,
+    paddingHorizontal: 5,
     alignItems: 'center',
-    flexDirection: 'row',
     justifyContent: 'center',
     gap: 6,
   },

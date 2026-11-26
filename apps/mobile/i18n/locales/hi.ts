@@ -3134,7 +3134,7 @@ const hi = {
         "desc": "लघु नागरिक वीडियो अपडेट और हाइलाइट्स"
       },
       "pagesLeaders": {
-        "desc": "उम्मीदवार प्रोफाइल और घोषणापत्र"
+        "desc": "जनप्रतिनिधियों की प्रोफ़ाइल और नागरिक नेतृत्व के इच्छुक लोगों को देखें"
       },
       "leadershipAcademy": {
         "desc": "नागरिक पाठ्यक्रम और नेतृत्व प्रशिक्षण"
@@ -3234,6 +3234,10 @@ const hi = {
       "visibilitySaveFailed": "निर्देशिका की दृश्यता सहेजी नहीं जा सकी। फिर कोशिश करें।",
       "openAspirantProfile": "इच्छुक नागरिक की प्रोफ़ाइल खोलें",
       "noPublicAspirants": "अभी तक किसी ने निर्देशिका में अपनी प्रोफ़ाइल दिखाने का विकल्प नहीं चुना है।",
+    "selectStateForRepresentatives": "वर्तमान जनप्रतिनिधियों की सूची देखने के लिए राज्य चुनें।",
+    "noCurrentRepresentatives": "{{state}} के लिए किसी वर्तमान जनप्रतिनिधि का नाम उपलब्ध नहीं है।",
+    "browseConstituencies": "निर्वाचन क्षेत्र देखें",
+    "verifiedProfilesUnavailable": "सत्यापित नेता प्रोफ़ाइल लोड नहीं हो सकीं।",
     "tabPosts": "पोस्ट और गतिविधियाँ",
     "tabProfile": "प्रोफ़ाइल और सफ़र",
     "tabVision": "दृष्टि और घोषणापत्र",
@@ -3294,7 +3298,8 @@ const hi = {
       "registeredPoliticians": "निर्वाचित प्रतिनिधि और नेता",
       "sittingMlas": "वर्तमान विधायक और अधिकारी",
       "viewDossier": "दस्तावेज़ और ट्रैक रिकॉर्ड देखें",
-      "verifiedLeaders": "सत्यापित पार्टी प्रोफाइल",
+      "verifiedLeaders": "सत्यापित नेताओं की प्रोफ़ाइल",
+      "currentRepresentativesUnavailable": "वर्तमान जनप्रतिनिधियों की सूची लोड नहीं हो सकी।",
       "verifiedOfficial": "सत्यापित प्रतिनिधि",
       "civicStandingScore": "नागरिक स्थिति स्कोर",
       "directMessage": "उम्मीदवार को संदेश भेजें",
