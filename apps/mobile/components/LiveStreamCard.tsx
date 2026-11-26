@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { LiveEvent } from '../lib/lmxTypes';
+import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 import {
   ISSUE_CATEGORY_CONFIG,
   TIER_CONFIG,
@@ -72,10 +73,10 @@ export function LiveStreamCard({
         </View>
 
         {/* Viewer count */}
-        <View style={styles.viewers}>
+        {!IS_LIVE_ENVIRONMENT && <View style={styles.viewers}>
           <Ionicons name="eye" size={11} color="#FFFFFF" />
           <Text style={styles.viewersText}>{t('lmx.card.viewers', { count: event.viewerCount })}</Text>
-        </View>
+        </View>}
 
         {/* Brand overlay (if streaming "as" an org) */}
         {!!orgName && (

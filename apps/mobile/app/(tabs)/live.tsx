@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -8,11 +8,12 @@ import {
   ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useShallow } from 'zustand/react/shallow';
 import { useTranslation } from 'react-i18next';
 import { useLiveExchangeStore } from '../../stores/liveExchange';
+import { useAuthStore } from '../../stores/auth';
 import { LiveStreamCard } from '../../components/LiveStreamCard';
 import type { IssueCategory, LiveEvent } from '../../lib/lmxTypes';
 import { ISSUE_CATEGORY_CONFIG } from '../../lib/lmxTypes';
@@ -47,10 +48,29 @@ export default function LiveTabScreen({ hideHeader = false, searchQuery = '' }: 
   // render produces a new reference and React infinite-loops (crashes in release).
   const events = useLiveExchangeStore(useShallow((s) => s.getLiveTabFeed()));
   const aiServiceEnabled = useLiveExchangeStore((s) => s.aiServiceEnabled);
+  const refreshEvents = useLiveExchangeStore((s) => s.refreshEvents);
+  const role = useAuthStore((s) => s.user?.app_metadata?.role);
+  const canReview = ['moderator', 'admin', 'super_admin', 'compliance_officer'].includes(role);
 
   const [category, setCategory] = useState<CategoryFilter>('all');
   const [freshness, setFreshness] = useState<FreshnessFilter>('recent');
   const [verifiedOnly, setVerifiedOnly] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [feedError, setFeedError] = useState(false);
+
+  const refresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await refreshEvents();
+      setFeedError(false);
+    } catch {
+      setFeedError(true);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refreshEvents]);
+
+  useFocusEffect(useCallback(() => { void refresh(); }, [refresh]));
 
   const filtered = useMemo(() => {
     const matches = events.filter((e) => {
@@ -189,17 +209,30 @@ export default function LiveTabScreen({ hideHeader = false, searchQuery = '' }: 
       </View>
 
       {/* Feed */}
+      {canReview && (
+        <Pressable accessibilityRole="button" onPress={() => router.push('/live/moderation-queue')} style={[styles.reviewLink, { borderColor: colors.border }]}>
+          <Ionicons name="shield-checkmark-outline" size={18} color={colors.primary} />
+          <Text style={{ color: colors.primary, fontWeight: '700' }}>{t('lmx.moderation.title')}</Text>
+        </Pressable>
+      )}
       <FlatList
         data={filtered}
         keyExtractor={(e) => e.id}
         renderItem={({ item }) => <LiveStreamCard event={item} onPress={openEvent} />}
+        refreshing={refreshing}
+        onRefresh={refresh}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.empty}>
             <Ionicons name="videocam-off" size={40} color={colors.textMuted} />
-            <Text style={[styles.emptyTitle, { color: colors.textSecondary }]}>{t('lmx.empty.title')}</Text>
-            <Text style={[styles.emptySub, { color: colors.textMuted }]}>{t('lmx.empty.subtitle')}</Text>
+            <Text style={[styles.emptyTitle, { color: colors.textSecondary }]}>
+              {refreshing ? t('common.loading') : feedError
+                ? t('lmx.empty.loadFailed', { defaultValue: 'Live could not refresh.' }) : t('lmx.empty.title')}
+            </Text>
+            <Text style={[styles.emptySub, { color: colors.textMuted }]}>
+              {feedError ? t('lmx.empty.retry', { defaultValue: 'Pull down to try again.' }) : refreshing ? '' : t('lmx.empty.subtitle')}
+            </Text>
             <Pressable
               style={{
                 flexDirection: 'row',
@@ -225,6 +258,7 @@ export default function LiveTabScreen({ hideHeader = false, searchQuery = '' }: 
 }
 
 const styles = StyleSheet.create({
+  reviewLink: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16, borderBottomWidth: StyleSheet.hairlineWidth },
   container: { flex: 1 },
   header: { paddingHorizontal: 16, paddingBottom: 10 },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },

@@ -1,8 +1,30 @@
 import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
+import { randomUUID } from 'node:crypto';
+import { Readable } from 'node:stream';
 import type { FastifyInstance } from 'fastify';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
-import { getMediaHosts, isMediaPipelineConfigured, selectPipeline } from '../lib/mediaPipeline';
+import {
+  getHostedLiveConfig,
+  hostedRecordingQuery,
+  hostedWhipAnswer,
+  getMediaHosts,
+  isHostedLiveReady,
+  isHostedStreamReady,
+  isMediaPipelineConfigured,
+  isStudioTicketValid,
+  liveEventIdPattern,
+  listHostedLivePaths,
+  liveStudioPath,
+  liveWatchPath,
+  mediaRequest,
+  selectPipeline,
+  stopHostedStream,
+  studioTicket,
+} from '../lib/mediaPipeline';
+import { resolveAdminActor } from '../lib/adminAuthorization';
+import { resolveAuthenticatedUser } from '../lib/userAuth';
+import { renderReviewPreviewHtml, renderStudioHtml } from '../modules/broadcast/studioHtml';
 import { getContentArchiveCutoff } from '@kshetra/shared';
 
 const isProductionRuntime = () => isProductionLikeRuntime();
@@ -198,11 +220,261 @@ const createDistributionSchema = {
 export async function lmxRoutes(app: FastifyInstance) {
   /** 1. GET /api/v1/lmx/status — exchange + AI availability */
   app.get('/api/v1/lmx/status', async (_request, reply) => {
+    const publishAvailable = isSupabaseConfigured && (await isHostedLiveReady());
+    reply.header('Cache-Control', 'no-store');
     return reply.send({
-      status: 'operational',
-      mediaPlane: 'self_hosted',
+      status: isSupabaseConfigured ? 'operational' : 'offline',
+      mediaPlane: publishAvailable ? 'self_hosted' : 'unavailable',
+      publishAvailable,
       aiService: 'inactive',
       supabase: isSupabaseConfigured ? 'connected' : 'offline',
+    });
+  });
+
+  app.addContentTypeParser(
+    'application/sdp',
+    { parseAs: 'string', bodyLimit: 64 * 1024 },
+    (_request, body, done) => done(null, body),
+  );
+
+  app.get<{ Params: { id: string } }>(`${liveStudioPath}/:id`, async (request, reply) => {
+    const { id } = request.params;
+    if (!getHostedLiveConfig() || !liveEventIdPattern.test(id)) return reply.code(404).send();
+    return reply
+      .type('text/html')
+      .header('Cache-Control', 'no-store')
+      .header('Referrer-Policy', 'no-referrer')
+      .header('Permissions-Policy', 'camera=(self), microphone=(self)')
+      .header(
+        'Content-Security-Policy',
+        "default-src 'none'; media-src blob:; connect-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; frame-ancestors 'none'",
+      )
+      .send(renderStudioHtml(`${liveStudioPath}/${id}`));
+  });
+
+  app.post<{ Params: { id: string }; Body: string }>(
+    `${liveStudioPath}/:id/publish`,
+    async (request, reply) => {
+      const { id } = request.params;
+      const config = getHostedLiveConfig();
+      if (!config || !liveEventIdPattern.test(id)) return reply.code(404).send();
+      if (!isStudioTicketValid(config, id, request.headers.authorization))
+        return reply.code(401).send();
+      const { data, error } = await supabase
+        .from('live_events')
+        .select('status,created_at')
+        .eq('id', id)
+        .maybeSingle();
+      if (error) return reply.code(503).send();
+      if (data?.status !== 'preparing' || Date.now() - Date.parse(data.created_at) > 10 * 60_000) {
+        return reply.code(409).send();
+      }
+      if (typeof request.body !== 'string' || !request.body.startsWith('v=0'))
+        return reply.code(400).send();
+      try {
+        const response = await mediaRequest(config, 'ingest', `/ingest/${id}/whip`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/sdp' },
+          body: request.body,
+        });
+        const location = response.headers.get('location');
+        if (!response.ok || !location) return reply.code(502).send();
+        // MediaMTX returns a relative URL for the specific WHIP publishing session.
+        const resource = location.split('/').at(-1);
+        if (
+          !resource ||
+          !liveEventIdPattern.test(resource) ||
+          location !== `/ingest/${id}/whip/${resource}`
+        ) {
+          return reply.code(502).send();
+        }
+        return reply
+          .code(201)
+          .type('application/sdp')
+          .header('Location', `${liveStudioPath}/${id}/publish/${resource}`)
+          .send(hostedWhipAnswer(config, await response.text()));
+      } catch {
+        return reply.code(503).send();
+      }
+    },
+  );
+
+  app.post<{ Params: { id: string } }>(`${liveStudioPath}/:id/ready`, async (request, reply) => {
+    const { id } = request.params;
+    const config = getHostedLiveConfig();
+    if (!config || !liveEventIdPattern.test(id)) return reply.code(404).send();
+    if (!isStudioTicketValid(config, id, request.headers.authorization))
+      return reply.code(401).send();
+    if (!(await isHostedStreamReady(config, id))) return reply.code(409).send();
+    const { data, error } = await supabase
+      .from('live_events')
+      .select('id,status,buffer_state')
+      .eq('id', id)
+      .maybeSingle();
+    if (error) return reply.code(503).send();
+    if (data?.status === 'live') return { published: data.buffer_state === 'cleared' };
+    if (data?.status !== 'preparing') return reply.code(409).send();
+    const now = new Date().toISOString();
+    const saved = await supabase
+      .from('live_events')
+      .update({ status: 'live', started_at: now, updated_at: now })
+      .eq('id', id)
+      .eq('status', 'preparing')
+      .select('id')
+      .maybeSingle();
+    if (saved.error) return reply.code(503).send();
+    if (!saved.data) return reply.code(409).send();
+    return { published: false };
+  });
+
+  app.delete<{ Params: { id: string; resource: string } }>(
+    `${liveStudioPath}/:id/publish/:resource`,
+    async (request, reply) => {
+      const { id, resource } = request.params;
+      const config = getHostedLiveConfig();
+      if (!config || !liveEventIdPattern.test(id) || !liveEventIdPattern.test(resource))
+        return reply.code(404).send();
+      if (!isStudioTicketValid(config, id, request.headers.authorization))
+        return reply.code(401).send();
+      try {
+        const response = await mediaRequest(config, 'ingest', `/ingest/${id}/whip/${resource}`, {
+          method: 'DELETE',
+        });
+        if (!response.ok && response.status !== 404) return reply.code(503).send();
+        const now = new Date().toISOString();
+        let recording = await hostedRecordingQuery(config, id);
+        for (let attempt = 0; !recording && attempt < 3; attempt++) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          recording = await hostedRecordingQuery(config, id);
+        }
+        const { error } = await supabase
+          .from('live_events')
+          .update({
+            status: 'ended',
+            ended_at: now,
+            updated_at: now,
+            raw_recording_url: recording
+              ? `${config.studioOrigin}${liveWatchPath}/${id}/replay.mp4`
+              : null,
+            retention_expiry: recording
+              ? new Date(Date.now() + 90 * 86_400_000).toISOString()
+              : null,
+          })
+          .eq('id', id)
+          .in('status', ['preparing', 'live']);
+        return reply.code(error ? 503 : 204).send();
+      } catch {
+        return reply.code(503).send();
+      }
+    },
+  );
+
+  app.get<{ Params: { id: string; segment: string }; Querystring: { session?: string } }>(
+    `${liveWatchPath}/:id/:segment`,
+    async (request, reply) => {
+      const { id, segment } = request.params;
+      const config = getHostedLiveConfig();
+      if (!config || !liveEventIdPattern.test(id)) return reply.code(404).send();
+      if (segment === 'review') {
+        return reply
+          .type('text/html')
+          .header('Cache-Control', 'no-store')
+          .header('Referrer-Policy', 'no-referrer')
+          .header(
+            'Content-Security-Policy',
+            "default-src 'none'; media-src blob:; connect-src 'self'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline'; frame-ancestors 'none'",
+          )
+          .send(renderReviewPreviewHtml(`${liveWatchPath}/${id}/index.m3u8`));
+      }
+      if (!/^[\w-]+\.(?:m3u8|mp4|m4s)$/.test(segment)) {
+        return reply.code(404).send();
+      }
+      const replay = segment === 'replay.mp4';
+      const review =
+        !replay && isStudioTicketValid(config, id, request.headers.authorization, 'review');
+      let query = supabase
+        .from('live_events')
+        .select('id,status,raw_recording_url,retention_expiry')
+        .eq('id', id)
+        .in('status', replay ? ['ended', 'archived'] : ['live'])
+        .eq('visibility_mode', 'public');
+      query = query.in(
+        'buffer_state',
+        review ? ['buffering', 'cleared', 'held'] : ['cleared', 'bypassed'],
+      );
+      const { data, error } = await query.maybeSingle();
+      if (error) return reply.code(503).send();
+      if (!data) return reply.code(404).send();
+      try {
+        if (
+          replay &&
+          (!data.raw_recording_url || !(Date.parse(data.retention_expiry) > Date.now()))
+        ) {
+          return reply.code(404).send();
+        }
+        const recording = replay ? await hostedRecordingQuery(config, id) : null;
+        if (replay && !recording) return reply.code(404).send();
+        if (recording) recording.set('format', 'mp4');
+        const session = request.query.session;
+        const playbackQuery = new URLSearchParams({ cookieCheck: '1' });
+        if (typeof session === 'string' && liveEventIdPattern.test(session)) {
+          playbackQuery.set('session', session);
+        }
+        const response = recording
+          ? await mediaRequest(config, 'recordings', `/get?${recording}`)
+          : await mediaRequest(config, 'playback', `/watch/${id}/${segment}?${playbackQuery}`);
+        if (!response.ok || !response.body)
+          return reply.code(response.status === 404 ? 404 : 502).send();
+        return reply
+          .header('Cache-Control', 'no-store')
+          .header('Access-Control-Allow-Origin', '*')
+          .type(segment.endsWith('.m3u8') ? 'application/vnd.apple.mpegurl' : 'video/mp4')
+          .send(Readable.fromWeb(response.body as Parameters<typeof Readable.fromWeb>[0]));
+      } catch {
+        return reply.code(503).send();
+      }
+    },
+  );
+
+  app.get('/api/v1/lmx/review', async (request, reply) => {
+    if (!(await resolveAdminActor(request, reply))) return;
+    const config = getHostedLiveConfig();
+    if (!config) return reply.code(503).send();
+    const { data, error } = await supabase
+      .from('live_events')
+      .select(
+        'id,stream_id,reporter_name,issue_category,accreditation_tier,state_code,started_at,status,buffer_state',
+      )
+      .eq('status', 'live')
+      .eq('visibility_mode', 'public')
+      .in('buffer_state', ['buffering', 'cleared', 'held'])
+      .order('started_at', { ascending: false })
+      .limit(50);
+    if (error) return reply.code(503).send();
+    const visible = await listHostedLivePaths(config);
+    return reply
+      .header('Cache-Control', 'no-store')
+      .send((data ?? []).filter((event) => visible.has(event.id)));
+  });
+
+  app.post<{ Params: { id: string } }>('/api/v1/lmx/review/:id/preview', async (request, reply) => {
+    if (!(await resolveAdminActor(request, reply))) return;
+    const { id } = request.params;
+    const config = getHostedLiveConfig();
+    if (!config || !liveEventIdPattern.test(id) || !(await isHostedStreamReady(config, id)))
+      return reply.code(404).send();
+    const { data, error } = await supabase
+      .from('live_events')
+      .select('id')
+      .eq('id', id)
+      .eq('status', 'live')
+      .eq('visibility_mode', 'public')
+      .in('buffer_state', ['buffering', 'cleared', 'held'])
+      .maybeSingle();
+    if (error) return reply.code(503).send();
+    if (!data) return reply.code(404).send();
+    return reply.header('Cache-Control', 'no-store').send({
+      previewUrl: `${config.studioOrigin}${liveWatchPath}/${id}/review#${studioTicket(config, id, 'review')}`,
     });
   });
 
@@ -248,7 +520,21 @@ export async function lmxRoutes(app: FastifyInstance) {
           code: 'DATABASE_ERROR',
         });
       }
-      return reply.send(data ?? []);
+      const config = getHostedLiveConfig();
+      if (!config) return reply.send(data ?? []);
+      const livePaths = await listHostedLivePaths(config);
+      return reply.header('Cache-Control', 'no-store').send(
+        (data ?? [])
+          .filter((item) => {
+            if (item.status === 'live') return livePaths.has(item.id);
+            return (
+              (item.status === 'ended' || item.status === 'archived') &&
+              item.raw_recording_url &&
+              Date.parse(item.retention_expiry) > Date.now()
+            );
+          })
+          .map(({ gps_lat, gps_lng, media_ingest_url, ...item }) => item),
+      );
     } catch (err: any) {
       return sendApiError(
         reply,
@@ -287,7 +573,27 @@ export async function lmxRoutes(app: FastifyInstance) {
             code: 'NOT_FOUND',
           });
         }
-        return reply.send(data);
+        const config = getHostedLiveConfig();
+        if (
+          (isProductionRuntime() || config) &&
+          (data.visibility_mode !== 'public' ||
+            !['cleared', 'bypassed'].includes(data.buffer_state))
+        ) {
+          return reply.code(404).send();
+        }
+        if (
+          config &&
+          (data.status === 'live'
+            ? !(await isHostedStreamReady(config, data.id))
+            : !['ended', 'archived'].includes(data.status) ||
+              !data.raw_recording_url ||
+              !(Date.parse(data.retention_expiry) > Date.now()))
+        ) {
+          return reply.code(404).send();
+        }
+        if (!config && !isProductionRuntime()) return reply.send(data);
+        const { gps_lat, gps_lng, media_ingest_url, lmx_department_alerts, ...item } = data;
+        return reply.header('Cache-Control', 'no-store').send(item);
       } catch {
         return sendApiError(reply, request, 404, 'Not Found', 'Stream not found', {
           code: 'NOT_FOUND',
@@ -405,7 +711,11 @@ export async function lmxRoutes(app: FastifyInstance) {
       }
 
       const hosts = getMediaHosts();
-      if (isProductionRuntime() && !isMediaPipelineConfigured(hosts)) {
+      const hosted = getHostedLiveConfig();
+      if (
+        (hosted && !(await isHostedLiveReady(hosted))) ||
+        (!hosted && isProductionRuntime() && !isMediaPipelineConfigured(hosts))
+      ) {
         return sendApiError(
           reply,
           request,
@@ -443,20 +753,38 @@ export async function lmxRoutes(app: FastifyInstance) {
       }
 
       try {
+        const id = hosted ? randomUUID() : undefined;
+        const playback =
+          hosted && id
+            ? `${hosted.studioOrigin}${liveWatchPath}/${id}/index.m3u8`
+            : pipeline.playbackHls;
         const { data, error } = await supabase
           .from('live_events')
           .insert({
             ...safeBody,
+            ...(id
+              ? {
+                  id,
+                  stream_id: `KX-${id}`,
+                  gps_lat: null,
+                  gps_lng: null,
+                  visibility_mode: 'public',
+                  alert_departments: [],
+                  affiliation_id: null,
+                  active_brand_kit_id: null,
+                  accreditation_tier: profile.role === 'journalist' ? 'accredited' : 'citizen',
+                }
+              : {}),
             reporter_id: userId,
             reporter_name: profile.display_name || body.reporter_name,
             credibility_score: 50,
-            media_ingest_url: pipeline.ingestUrl,
-            media_playback_hls: pipeline.playbackHls,
-            media_playback_webrtc: pipeline.playbackWebrtc,
+            media_ingest_url: hosted ? null : pipeline.ingestUrl,
+            media_playback_hls: playback,
+            media_playback_webrtc: hosted ? null : pipeline.playbackWebrtc,
             buffer_state: 'buffering',
             buffer_seconds: 20,
             human_decision: null,
-            status: 'live',
+            status: hosted ? 'preparing' : 'live',
             priority_score: 0,
             viewer_count: 0,
             peak_viewers: 0,
@@ -469,7 +797,14 @@ export async function lmxRoutes(app: FastifyInstance) {
             code: 'DATABASE_ERROR',
           });
         }
-        return reply.status(201).send(data);
+        const studioUrl =
+          hosted && id
+            ? `${hosted.studioOrigin}${liveStudioPath}/${id}#${studioTicket(hosted, id)}`
+            : undefined;
+        return reply
+          .status(201)
+          .header('Cache-Control', 'no-store')
+          .send({ ...data, studio_url: studioUrl });
       } catch (err: any) {
         return sendApiError(
           reply,
@@ -497,12 +832,22 @@ export async function lmxRoutes(app: FastifyInstance) {
     '/api/v1/lmx/live/:streamId/moderate',
     { schema: moderateStreamSchema },
     async (request, reply) => {
+      if (!(await resolveAdminActor(request, reply))) return;
       const { streamId } = request.params;
       const { decision } = request.body;
+      const hosted = getHostedLiveConfig();
+      if (
+        hosted &&
+        (!liveEventIdPattern.test(streamId) ||
+          (decision === 'allow' && !(await isHostedStreamReady(hosted, streamId))))
+      ) {
+        return reply.code(409).send();
+      }
 
       const updates: Record<string, any> = {
-        buffer_state:
-          decision === 'cut' ? 'rejected' : decision === 'allow' ? 'cleared' : 'buffered',
+        buffer_state: decision === 'cut' ? 'cut' : decision === 'allow' ? 'cleared' : 'held',
+        human_decision: decision,
+        human_decision_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
 
@@ -512,7 +857,12 @@ export async function lmxRoutes(app: FastifyInstance) {
       }
 
       try {
-        const { error } = await supabase.from('live_events').update(updates).eq('id', streamId);
+        const change = supabase.from('live_events').update(updates).eq('id', streamId);
+        const result = hosted
+          ? await change.eq('status', 'live').select('id').maybeSingle()
+          : await change;
+        const { error } = result;
+        if (hosted && !error && !result.data) return reply.code(409).send();
 
         if (error) {
           return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
@@ -520,6 +870,15 @@ export async function lmxRoutes(app: FastifyInstance) {
           });
         }
 
+        if (hosted && decision === 'cut') {
+          try {
+            await stopHostedStream(hosted, streamId);
+          } catch {
+            request.log.warn(
+              'Public playback was cut; the publisher connection could not be closed immediately',
+            );
+          }
+        }
         return reply.send({
           success: true,
           streamId,
@@ -546,11 +905,13 @@ export async function lmxRoutes(app: FastifyInstance) {
     Params: { streamId: string };
     Body: { content_hash?: string };
   }>('/api/v1/lmx/live/:streamId/end', { schema: endStreamSchema }, async (request, reply) => {
+    const actor = await resolveAuthenticatedUser(request, reply);
+    if (!actor) return;
     const { streamId } = request.params;
     const { content_hash } = request.body || {};
 
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('live_events')
         .update({
           status: 'ended',
@@ -558,7 +919,10 @@ export async function lmxRoutes(app: FastifyInstance) {
           content_hash: content_hash ?? null,
           retention_expiry: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
         })
-        .eq('id', streamId);
+        .eq('id', streamId)
+        .eq('reporter_id', actor.userId)
+        .select('id')
+        .maybeSingle();
 
       if (error) {
         return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
@@ -566,6 +930,7 @@ export async function lmxRoutes(app: FastifyInstance) {
         });
       }
 
+      if (!data) return reply.code(404).send();
       return reply.send({ success: true });
     } catch (err: any) {
       return sendApiError(

@@ -1,21 +1,26 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   Pressable,
+  Linking,
+  RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useShallow } from 'zustand/react/shallow';
 import { useTranslation } from 'react-i18next';
-import { useLiveExchangeStore } from '../../stores/liveExchange';
+import { mapDbEventToLiveEvent, useLiveExchangeStore } from '../../stores/liveExchange';
 import type { HumanDecision, LiveEvent } from '../../lib/lmxTypes';
 import { ISSUE_CATEGORY_CONFIG, TIER_CONFIG, hasAI } from '../../lib/lmxTypes';
 import { useTheme } from '../../lib/theme';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
+import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
+import { API_BASE_URL } from '../../lib/constants';
+import { apiClient } from '../../lib/api';
 
 /**
  * Human moderation buffer triage (doc Section 13 Layer 3).
@@ -35,10 +40,68 @@ export default function ModerationQueueScreen() {
   const router = useRouter();
   const { colors } = useTheme();
   const { t } = useTranslation();
-  const queue = useLiveExchangeStore(useShallow((s) => s.getModerationQueue()));
+  const localQueue = useLiveExchangeStore(useShallow((s) => s.getModerationQueue()));
   const setHumanDecision = useLiveExchangeStore((s) => s.setHumanDecision);
   const aiServiceEnabled = useLiveExchangeStore((s) => s.aiServiceEnabled);
   const [helpVisible, setHelpVisible] = useState(false);
+  const [records, setRecords] = useState<LiveEvent[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const queue = IS_LIVE_ENVIRONMENT ? records : localQueue;
+
+  const refresh = useCallback(async () => {
+    if (!IS_LIVE_ENVIRONMENT) return;
+    setRefreshing(true);
+    setError(null);
+    try {
+      const result = await apiClient.get<Record<string, unknown>[]>('/api/v1/lmx/review', { authPolicy: 'authenticated' });
+      setRecords(result.data.map(mapDbEventToLiveEvent));
+    } catch {
+      setRecords([]);
+      setError(t('lmx.moderation.loadFailed', { defaultValue: 'The review queue is unavailable. Check your access and try again.' }));
+    } finally {
+      setRefreshing(false);
+    }
+  }, [t]);
+
+  useFocusEffect(useCallback(() => { void refresh(); }, [refresh]));
+
+  async function preview(event: LiveEvent) {
+    if (!IS_LIVE_ENVIRONMENT) {
+      router.push(`/live/${event.id}` as any);
+      return;
+    }
+    setError(null);
+    try {
+      const result = await apiClient.post<{ previewUrl: string }>(`/api/v1/lmx/review/${encodeURIComponent(event.id)}/preview`, undefined, { authPolicy: 'authenticated' });
+      const url = new URL(result.data.previewUrl);
+      if (url.origin !== new URL(API_BASE_URL).origin || url.pathname !== `/api/v1/lmx/watch/${event.id}/review` || !url.hash) {
+        throw new Error('Invalid review link');
+      }
+      await Linking.openURL(url.href);
+    } catch {
+      setError(t('lmx.moderation.previewFailed', { defaultValue: 'The preview could not be opened. Refresh the queue and try again.' }));
+    }
+  }
+
+  async function decide(event: LiveEvent, decision: HumanDecision) {
+    if (!IS_LIVE_ENVIRONMENT) {
+      setHumanDecision(event.id, decision);
+      return;
+    }
+    if (saving) return;
+    setSaving(true);
+    setError(null);
+    try {
+      await apiClient.post(`/api/v1/lmx/live/${encodeURIComponent(event.id)}/moderate`, { decision }, { authPolicy: 'authenticated' });
+      await refresh();
+    } catch {
+      setError(t('lmx.moderation.saveFailed', { defaultValue: 'The review decision could not be saved.' }));
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -59,15 +122,19 @@ export default function ModerationQueueScreen() {
       <View style={styles.banner}>
         <Ionicons name="shield-half" size={15} color="#8B5CF6" />
         <Text style={styles.bannerText}>
-          {t('lmx.moderation.streamsInBuffer', { count: queue.length })}{' '}
+          {IS_LIVE_ENVIRONMENT
+            ? t('lmx.moderation.activeBroadcasts', { defaultValue: 'Active broadcasts' })
+            : t('lmx.moderation.streamsInBuffer', { count: queue.length })}{' '}
           {aiServiceEnabled
             ? t('lmx.moderation.aiScreeningActive')
             : t('lmx.moderation.aiScreeningOff')}
         </Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}>
-        {queue.length === 0 ? (
+      <ScrollView contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
+        {error ? <Text accessibilityRole="alert" style={styles.emptyText}>{error}</Text> : null}
+        {queue.length === 0 && !error && !refreshing ? (
           <View style={styles.empty}>
             <Ionicons name="checkmark-done-circle" size={44} color="#10B981" />
             <Text style={styles.emptyText}>{t('lmx.moderation.queueClear')}</Text>
@@ -77,8 +144,9 @@ export default function ModerationQueueScreen() {
             <QueueCard
               key={e.id}
               event={e}
-              onDecision={(d) => setHumanDecision(e.id, d)}
-              onOpen={() => router.push(`/live/${e.id}` as any)}
+              onDecision={(d) => void decide(e, d)}
+              onOpen={() => void preview(e)}
+              saving={saving}
             />
           ))
         )}
@@ -98,10 +166,12 @@ function QueueCard({
   event,
   onDecision,
   onOpen,
+  saving,
 }: {
   event: LiveEvent;
   onDecision: (d: HumanDecision) => void;
   onOpen: () => void;
+  saving: boolean;
 }) {
   const cat = ISSUE_CATEGORY_CONFIG[event.issueCategory];
   const tier = TIER_CONFIG[event.accreditationTier];
@@ -125,7 +195,7 @@ function QueueCard({
             {t(cat.labelKey)} · {event.locality || event.districtName || event.stateCode}
           </Text>
           <Text style={styles.cardMeta}>
-            {event.reporterName} · {event.streamId} · buffer {event.bufferSeconds}s
+            {event.reporterName} · {event.streamId}
           </Text>
         </View>
         <View style={[styles.tierBadge, { borderColor: tier.color }]}>
@@ -150,10 +220,11 @@ function QueueCard({
       </Pressable>
 
       <View style={styles.decisionRow}>
-        {DECISIONS.map((d) => (
+        {DECISIONS.filter((decision) => !IS_LIVE_ENVIRONMENT || decision.key !== 'mute').map((d) => (
           <Pressable
             key={d.key}
             onPress={() => onDecision(d.key)}
+            disabled={saving}
             style={[styles.decisionBtn, { borderColor: d.color }]}
           >
             <Ionicons name={d.icon as any} size={14} color={d.color} />

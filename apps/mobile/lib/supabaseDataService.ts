@@ -14,6 +14,7 @@
 import { supabase, isSupabaseConfigured } from './supabase';
 import { captureException, addBreadcrumb } from './errorReporting';
 import { API_BASE_URL } from './constants';
+import { IS_LIVE_ENVIRONMENT } from './environment';
 import { telemetry } from './telemetry';
 import { apiClient } from './api';
 import { ApiNetworkError, ApiServerError, ApiTimeoutError } from './api/errors';
@@ -1463,6 +1464,13 @@ export async function fetchLiveEvents(filters?: {
   stateCode?: string;
   status?: string;
 }): Promise<any[]> {
+  if (IS_LIVE_ENVIRONMENT) {
+    const result = await apiClient.get<any[]>('/api/v1/lmx/live', {
+      authPolicy: 'public',
+      query: { category: filters?.category, state: filters?.stateCode, status: filters?.status },
+    });
+    return result.data;
+  }
   if (!isSupabaseConfigured) return [];
   try {
     let query = supabase
@@ -1503,15 +1511,12 @@ export async function createLiveEvent(event: Record<string, any>): Promise<any |
 
 export async function updateLiveEvent(eventId: string, updates: Record<string, any>): Promise<boolean> {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/v1/lmx/live/${eventId}/moderate`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...telemetry.getTracingHeaders(),
-      },
-      body: JSON.stringify(updates),
-    });
-    return res.ok;
+    const res = await apiClient.post<{ success: boolean }>(
+      `/api/v1/lmx/live/${encodeURIComponent(eventId)}/moderate`,
+      { decision: updates.human_decision, reason: updates.reason },
+      { authPolicy: 'authenticated' },
+    );
+    return res.data.success;
   } catch (e) {
     console.warn('[LMX] updateLiveEvent exception:', e);
     return false;
@@ -1520,15 +1525,12 @@ export async function updateLiveEvent(eventId: string, updates: Record<string, a
 
 export async function endLiveEvent(eventId: string, contentHash: string): Promise<boolean> {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/v1/lmx/live/${eventId}/end`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...telemetry.getTracingHeaders(),
-      },
-      body: JSON.stringify({ content_hash: contentHash }),
-    });
-    return res.ok;
+    const res = await apiClient.post<{ success: boolean }>(
+      `/api/v1/lmx/live/${encodeURIComponent(eventId)}/end`,
+      contentHash ? { content_hash: contentHash } : {},
+      { authPolicy: 'authenticated' },
+    );
+    return res.data.success;
   } catch (e) {
     console.warn('[LMX] endLiveEvent exception:', e);
     return false;

@@ -8,6 +8,10 @@ import {
   selectTier,
   buildIngestUrl,
   buildWhipPublishUrl,
+  getHostedLiveConfig,
+  hostedWhipAnswer,
+  isStudioTicketValid,
+  studioTicket,
   selectPipeline,
   type PipelineSignals,
   type MediaHosts,
@@ -22,6 +26,23 @@ describe('Media Pipeline Router (mediaPipeline.ts)', () => {
 
   afterAll(() => {
     process.env = originalEnv;
+  });
+
+  it('keeps review and broadcast tickets scoped to the event and purpose', () => {
+    process.env.LIVE_MEDIA_PRIVATE_HOST = 'media.railway.internal';
+    process.env.LIVE_MEDIA_PUBLIC_TCP_PORT = '44117';
+    process.env.LIVE_STUDIO_ORIGIN = 'https://staging.example';
+    process.env.LIVE_STUDIO_SIGNING_KEY = 'a'.repeat(64);
+    process.env.LIVE_MEDIA_CONTROL_PASSWORD = 'isolated-test';
+    const config = getHostedLiveConfig()!;
+    const id = '149dc5f0-f968-4936-a1d5-2f05a1760fd2';
+    const ticket = `Bearer ${studioTicket(config, id, 'review')}`;
+    expect(isStudioTicketValid(config, id, ticket, 'review')).toBe(true);
+    expect(isStudioTicketValid(config, id, ticket)).toBe(false);
+    expect(isStudioTicketValid(config, 'another-event', ticket, 'review')).toBe(false);
+
+    const answer = 'a=candidate:1234 1 tcp 16714239 192.0.2.2 8189 typ host tcptype passive\r\n';
+    expect(hostedWhipAnswer(config, answer)).toBe(answer.replace('8189', '44117'));
   });
 
   describe('getMediaHosts', () => {

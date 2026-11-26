@@ -199,7 +199,7 @@ const SEED_EVENTS: LiveEvent[] = [
 
 // ─── Supabase row → TypeScript mappers ─────────────────────────────────
 
-function mapDbEventToLiveEvent(row: any): LiveEvent {
+export function mapDbEventToLiveEvent(row: any): LiveEvent {
   return {
     id: row.id,
     streamId: row.stream_id ?? row.id,
@@ -338,7 +338,7 @@ interface LiveExchangeState {
   setCurrentReporter: (id: string) => void;
 
   /** Go-live: build the Live Event Object, run buffer + dispatch dept alerts. */
-  startLiveEvent: (input: StartLiveInput) => Promise<LiveEvent | null>;
+  startLiveEvent: (input: StartLiveInput) => Promise<(LiveEvent & { studioUrl?: string }) | null>;
   clearBuffer: (eventId: string) => void;
   setHumanDecision: (eventId: string, decision: HumanDecision, note?: string) => void;
   incrementViewers: (eventId: string, delta?: number) => void;
@@ -353,6 +353,7 @@ interface LiveExchangeState {
   addDistribution: (dest: Omit<DistributionDestination, 'id'>) => DistributionDestination;
   subscribeDepartment: (dept: Omit<GovernmentDepartment, 'id'>) => GovernmentDepartment;
   hydrate: () => Promise<void>;
+  refreshEvents: () => Promise<void>;
   hydrateAlerts: (departmentId?: string) => Promise<void>;
 }
 
@@ -447,6 +448,12 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
           .sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime()),
 
       // ─── Actions ──────────────────────────────────────────────────────────
+
+      refreshEvents: async () => {
+        if (!isSupabaseConfigured) return;
+        const rows = await dataService.fetchLiveEvents();
+        if (IS_LIVE_ENVIRONMENT || rows.length > 0) set({ events: rows.map(mapDbEventToLiveEvent) });
+      },
 
       hydrate: async () => {
         if (!isSupabaseConfigured) return;
@@ -700,17 +707,20 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
             started_at: event.startedAt,
           });
 
-          if (IS_LIVE_ENVIRONMENT && (!persistedEvent?.id || persistedEvent.stream_id !== event.streamId)) {
+          if (IS_LIVE_ENVIRONMENT && (!persistedEvent?.id ||
+            (!persistedEvent.studio_url && persistedEvent.stream_id !== event.streamId))) {
             return null;
           }
           if (persistedEvent?.id) {
             event.id = persistedEvent.id;
+            if (typeof persistedEvent.stream_id === 'string') event.streamId = persistedEvent.stream_id;
             newAlerts.forEach((alert) => { alert.liveEventId = event.id; });
           }
           if (persistedEvent?.media_ingest_url) event.mediaIngestUrl = persistedEvent.media_ingest_url;
           if (persistedEvent?.media_playback_hls !== undefined) event.mediaPlaybackHls = persistedEvent.media_playback_hls;
           if (persistedEvent?.media_playback_webrtc !== undefined) event.mediaPlaybackWebrtc = persistedEvent.media_playback_webrtc;
           if (persistedEvent?.buffer_state) event.bufferState = persistedEvent.buffer_state;
+          if (persistedEvent?.status) event.status = persistedEvent.status;
         }
 
         set((s) => ({
@@ -735,7 +745,9 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
           }
         }
 
-        return event;
+        return typeof persistedEvent?.studio_url === 'string'
+          ? { ...event, studioUrl: persistedEvent.studio_url }
+          : event;
       },
 
       clearBuffer: (eventId) =>

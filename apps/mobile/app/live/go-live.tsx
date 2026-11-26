@@ -1,705 +1,323 @@
-import { useEffect, useMemo, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Pressable,
-  TextInput,
-} from 'react-native';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import { Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../stores/auth';
 import { useUserProfileStore } from '../../stores/userProfile';
 import { useLiveExchangeStore } from '../../stores/liveExchange';
-import { useContributorVerificationStore } from '../../stores/contributorVerification';
-import { useFeatureFlagsStore } from '../../lib/featureFlags';
 import { useActiveStateStore } from '../../stores/activeState';
 import { gateContentAction, logContentAction } from '../../lib/contentAccountability';
-import type {
-  VisibilityMode,
-  IssueCategory,
-  DepartmentType,
-  AccreditationTier,
+import {
+  ISSUE_CATEGORY_CONFIG,
+  type AccreditationTier,
+  type IssueCategory,
 } from '../../lib/lmxTypes';
 import { canAccessLive } from '../../lib/pageGating';
-import {
-  VISIBILITY_CONFIG,
-  ISSUE_CATEGORY_CONFIG,
-  DEPARTMENT_CONFIG,
-  TIER_CONFIG,
-  computeBufferSeconds,
-  isPrePollSilenceActive,
-  getActivePrePollSilence,
-  type PrePollSilenceWindow
-} from '../../lib/lmxTypes';
-import LiveBroadcaster, { isBroadcastSupported } from '../../components/LiveBroadcaster';
-import { buildWhipPublishUrl, isMediaPipelineConfigured } from '../../lib/mediaPipeline';
-import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
 import { useTheme } from '../../lib/theme';
+import { apiClient } from '../../lib/api';
+import { API_BASE_URL } from '../../lib/constants';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
 const CATEGORIES: IssueCategory[] = [
-  'emergency',
+  'general',
+  'civic',
   'breaking_news',
   'traffic',
   'weather',
-  'civic',
-  'general',
-];
-
-const DEPARTMENTS: DepartmentType[] = [
-  'police',
-  'fire',
-  'hospital',
-  'disaster_management',
-  'anti_corruption',
-  'traffic_police',
-  'municipal',
-  'collectorate',
+  'emergency',
 ];
 
 export default function GoLiveScreen() {
-  const { t } = useTranslation();
-  const authUser = useAuthStore((s) => s.user);
-  const profile = useUserProfileStore((s) => s.profile);
-  const reporter = useMemo(() => {
-    const name = profile?.displayName || authUser?.email?.split('@')[0] || t('common.guest');
-    const tier = (
-      profile?.role === 'journalist' ? 'accredited' : profile?.role === 'admin' ? 'editor' : 'citizen'
-    ) as AccreditationTier;
-    return {
-      id: authUser?.id ?? 'anonymous',
-      name,
-      tier,
-    };
-  }, [authUser?.id, authUser?.email, profile?.displayName, profile?.role, t]);
-
-  const liveAccess = useMemo(() => {
-    const isEmailVerified = authUser ? Boolean(authUser.email_confirmed_at) : false;
-    return canAccessLive(profile?.role, profile?.verificationStatus, isEmailVerified);
-  }, [profile?.role, profile?.verificationStatus, authUser?.email_confirmed_at]);
-
+  const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { colors } = useTheme();
-
-  const allAffiliations = useLiveExchangeStore((s) => s.affiliations);
-  const affiliations = useMemo(
-    () => allAffiliations.filter((a) => a.contributorId === reporter.id && a.status === 'active'),
-    [allAffiliations, reporter.id],
+  const user = useAuthStore((state) => state.user);
+  const profile = useUserProfileStore((state) => state.profile);
+  const stateCode = useActiveStateStore((state) => state.stateCode);
+  const startLiveEvent = useLiveExchangeStore((state) => state.startLiveEvent);
+  const access = useMemo(
+    () =>
+      canAccessLive(profile?.role, profile?.verificationStatus, Boolean(user?.email_confirmed_at)),
+    [profile?.role, profile?.verificationStatus, user?.email_confirmed_at],
   );
-  const startLiveEvent = useLiveExchangeStore((s) => s.startLiveEvent);
-  const aiServiceEnabled = useLiveExchangeStore((s) => s.aiServiceEnabled);
-  const requestAction = useContributorVerificationStore((s) => s.requestAction);
-
-  const stateCode = useActiveStateStore((s) => s.stateCode);
-  const PRE_POLL_WINDOWS: PrePollSilenceWindow[] = []; // Populated from election schedule in production
-  const silenceActive = isPrePollSilenceActive(PRE_POLL_WINDOWS, stateCode);
-  const activeSilenceWindow = getActivePrePollSilence(PRE_POLL_WINDOWS);
-
-  // Three orthogonal choices
-  const [affiliationId, setAffiliationId] = useState<string | null>(null); // null = Independent
-  const [visibility, setVisibility] = useState<VisibilityMode>('public');
-  const [helpVisible, setHelpVisible] = useState(false);
-  const [alertDepts, setAlertDepts] = useState<DepartmentType[]>([]);
-
+  const [available, setAvailable] = useState<boolean | null>(null);
   const [category, setCategory] = useState<IssueCategory>('general');
   const [tags, setTags] = useState('');
-  const [gps, setGps] = useState<{ lat: number; lng: number } | null>(null);
-  const [gpsStatus, setGpsStatus] = useState<'detecting' | 'ready' | 'unavailable'>('detecting');
+  const [opening, setOpening] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [helpVisible, setHelpVisible] = useState(false);
+  const processing = useRef(false);
+  const studioLink = useRef<string | null>(null);
 
-  // When set, the full-screen WebRTC-WHIP broadcaster is shown (native build only).
-  const [publishTarget, setPublishTarget] = useState<{ id: string; streamId: string } | null>(null);
-
-  // Real device camera capture (expo-image-picker). True live RTMP publish needs
-  // the managed media plane; until then this captures a real clip for look-and-feel.
-  const [capturedUri, setCapturedUri] = useState<string | null>(null);
-  const [captureSeconds, setCaptureSeconds] = useState<number | null>(null);
-  const [capturing, setCapturing] = useState(false);
-  const [captureError, setCaptureError] = useState<string | null>(null);
-  const [broadcastError, setBroadcastError] = useState<string | null>(null);
-
-  const selectedAffiliation = affiliations.find((a) => a.id === affiliationId);
-  const tier = reporter.tier;
-
-  // Capture GPS (optional — flow continues with a default if unavailable).
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const Location = await import('expo-location');
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          if (!cancelled) {
-            setGps(null);
-            setGpsStatus('unavailable');
-          }
-          return;
-        }
-        const pos = await Location.getCurrentPositionAsync({});
-        if (!cancelled) {
-          setGps({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-          setGpsStatus('ready');
-        }
-      } catch {
-        if (!cancelled) {
-          setGps(null);
-          setGpsStatus('unavailable');
-        }
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
+  const refreshAvailability = useCallback(async () => {
+    setAvailable(null);
+    try {
+      const { data } = await apiClient.get<{ publishAvailable: boolean }>('/api/v1/lmx/status', {
+        authPolicy: 'public',
+      });
+      setAvailable(data.publishAvailable === true);
+    } catch {
+      setAvailable(false);
+    }
   }, []);
 
-  const hasExclusiveOption = affiliations.some((a) => a.exclusivityFlag);
-
-  const bufferSeconds = useMemo(
-    () => computeBufferSeconds(tier, alertDepts.length > 0),
-    [tier, alertDepts.length],
+  useFocusEffect(
+    useCallback(() => {
+      void refreshAvailability();
+    }, [refreshAvailability]),
   );
 
-  const toggleDept = (d: DepartmentType) =>
-    setAlertDepts((prev) => (prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d]));
-
-  const mediaPipelineReady = !IS_LIVE_ENVIRONMENT || isMediaPipelineConfigured();
-  const canGoLive = gps !== null && isBroadcastSupported() && mediaPipelineReady;
-
-  const captureClip = async () => {
-    setCaptureError(null);
-    setCapturing(true);
-    try {
-      const ImagePicker = await import('expo-image-picker');
-      const perm = await ImagePicker.requestCameraPermissionsAsync();
-      if (!perm.granted) {
-        setCaptureError('Camera permission denied. Allow camera access before broadcasting.');
-        return;
-      }
-      const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ['videos'],
-        videoMaxDuration: 60,
-        quality: 1,
-      });
-      if (!result.canceled && result.assets?.length) {
-        const asset = result.assets[0];
-        setCapturedUri(asset.uri);
-        setCaptureSeconds(asset.duration ? Math.round(asset.duration / 1000) : null);
-      }
-    } catch {
-      setCaptureError('Camera is unavailable on this device.');
-    } finally {
-      setCapturing(false);
-    }
-  };
-
-  const handleGoLive = async () => {
-    setBroadcastError(null);
-    if (!canGoLive || silenceActive) return;
-    // KYC gate — going live is a high-severity content action.
+  async function openStudio() {
+    if (!available || !user || !access.allowed || processing.current) return;
     if (!gateContentAction('go_live')) return;
-
-    const event = await startLiveEvent({
-      reporterId: reporter.id,
-      reporterName: reporter.name,
-      accreditationTier: selectedAffiliation ? 'organization' : tier,
-      visibilityMode: visibility,
-      alertDepartments: alertDepts,
-      affiliationId,
-      issueCategory: category,
-      tags: tags.split(',').map((t) => t.trim()).filter(Boolean),
-      gpsLat: gps?.lat ?? null,
-      gpsLng: gps?.lng ?? null,
-      stateCode,
-      districtName: null,
-      locality: null,
-    });
-    if (!event) {
-      setBroadcastError(t('lmx.goLiveScreen.createFailed', {
-        defaultValue: 'The broadcast could not be created. Check your connection and verified contributor access.',
-      }));
-      return;
+    processing.current = true;
+    setOpening(true);
+    setError(null);
+    try {
+      if (!studioLink.current) {
+        const tier: AccreditationTier = profile?.role === 'journalist' ? 'accredited' : 'citizen';
+        const event = await startLiveEvent({
+          reporterId: user.id,
+          reporterName: profile?.displayName || t('common.guest'),
+          accreditationTier: tier,
+          issueCategory: category,
+          tags: tags
+            .split(',')
+            .map((tag) => tag.trim())
+            .filter(Boolean)
+            .slice(0, 8),
+          language: i18n.language,
+          stateCode,
+          visibilityMode: 'public',
+          alertDepartments: [],
+          affiliationId: null,
+        });
+        if (!event?.studioUrl) throw new Error('The server did not create a studio session');
+        const url = new URL(event.studioUrl);
+        if (
+          url.origin !== new URL(API_BASE_URL).origin ||
+          !/^\/api\/v1\/lmx\/studio\/[a-f0-9-]{36}$/.test(url.pathname) ||
+          !url.hash
+        ) {
+          throw new Error('The server returned an invalid studio link');
+        }
+        studioLink.current = url.href;
+        logContentAction('go_live', {
+          type: 'live_stream',
+          id: event.id,
+          body: category,
+          screenName: 'go_live',
+        });
+      }
+      await Linking.openURL(studioLink.current);
+      studioLink.current = null;
+      if (router.canGoBack()) router.back();
+    } catch {
+      setError(
+        t('lmx.goLiveScreen.createFailed', {
+          defaultValue:
+            'The broadcast studio could not be opened. Check your connection and try again.',
+        }),
+      );
+    } finally {
+      processing.current = false;
+      setOpening(false);
     }
-
-    logContentAction('go_live', {
-      type: 'live_stream',
-      id: event.id,
-      body: `Live: ${category} - ${tags}`,
-      screenName: 'go_live',
-    });
-
-    // If the native WebRTC module is compiled in, publish the live camera feed to
-    // the media plane over WHIP; otherwise fall straight through to the viewer page
-    // (which plays the stream via HLS).
-    if (isBroadcastSupported()) {
-      setPublishTarget({ id: event.id, streamId: event.streamId });
-    } else {
-      router.replace(`/live/${event.id}` as any);
-    }
-  };
-
-  const enableNativeLive = useFeatureFlagsStore((s) => s.enableNativeLive);
-
-  if (publishTarget) {
-    return (
-      <LiveBroadcaster
-        whipUrl={buildWhipPublishUrl(publishTarget.streamId)}
-        streamLabel={publishTarget.streamId}
-        onStop={() => router.replace(`/live/${publishTarget.id}` as any)}
-      />
-    );
   }
 
-  if (!enableNativeLive) {
-    return (
-      <View style={styles.container}>
-        <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
-          <Pressable onPress={() => router.back()} hitSlop={10}>
-            <Ionicons name="close" size={26} color="#FFFFFF" />
-          </Pressable>
-          <Text style={styles.title}>{t('lmx.goLiveScreen.title', { defaultValue: 'Live Broadcast' })}</Text>
-          <View style={{ width: 26 }} />
-        </View>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
-          <Ionicons
-            name="radio-outline"
-            size={56}
-            color={colors.primary}
-            style={{ marginBottom: 16 }}
-          />
-          <Text style={{ fontSize: 20, fontWeight: '700', color: colors.text, textAlign: 'center', marginBottom: 10 }}>
-            Live Streaming Coming Soon
-          </Text>
-          <Text style={{ fontSize: 14, color: colors.textSecondary, textAlign: 'center', lineHeight: 22, marginBottom: 24, maxWidth: 320 }}>
-            Native WebRTC and WHIP live video broadcasting is currently being finalized for high-bandwidth reliability. Live streaming will be activated shortly.
-          </Text>
-          <Pressable onPress={() => router.back()} style={{ padding: 10 }}>
-            <Text style={{ color: colors.primary, fontSize: 15, fontWeight: '600' }}>Go Back</Text>
-          </Pressable>
-        </View>
-      </View>
-    );
-  }
-
-  if (!liveAccess.allowed) {
-    const isUnverifiedRole = liveAccess.reason === 'unverified';
-    const isUnverifiedEmail = liveAccess.reason === 'unverified_email';
-    return (
-      <View style={styles.container}>
-        <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
-          <Pressable onPress={() => router.back()} hitSlop={10}>
-            <Ionicons name="close" size={26} color="#FFFFFF" />
-          </Pressable>
-          <Text style={styles.title}>{t('lmx.goLiveScreen.title', { defaultValue: 'Live Broadcast' })}</Text>
-          <View style={{ width: 26 }} />
-        </View>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
-          <Ionicons
-            name={isUnverifiedEmail ? 'mail-unread-outline' : isUnverifiedRole ? 'shield-checkmark-outline' : 'lock-closed-outline'}
-            size={56}
-            color={colors.primary}
-            style={{ marginBottom: 16 }}
-          />
-          <Text style={{ fontSize: 20, fontWeight: '700', color: colors.text, textAlign: 'center', marginBottom: 10 }}>
-            {isUnverifiedEmail
-              ? 'Email Verification Required'
-              : isUnverifiedRole
-              ? 'Verification Required for Live'
-              : 'Live Broadcast Access Restricted'}
-          </Text>
-          <Text style={{ fontSize: 14, color: colors.textSecondary, textAlign: 'center', lineHeight: 22, marginBottom: 24, maxWidth: 320 }}>
-            {isUnverifiedEmail
-              ? 'Please confirm your email address before going live. Check your inbox for the confirmation link.'
-              : isUnverifiedRole
-              ? 'Your account role qualifies for Live broadcasting, but verification is required before going on-air. Please complete identity verification to unlock Live access.'
-              : 'Live broadcasting is available to accredited journalists, verified politicians, political parties, and verified aspirants. Citizen accounts cannot broadcast live.'}
-          </Text>
-          {isUnverifiedRole ? (
-            <Pressable
-              onPress={() => router.push('/verification' as any)}
-              style={{ backgroundColor: colors.primary, paddingVertical: 12, paddingHorizontal: 28, borderRadius: 24, marginBottom: 12 }}
-            >
-              <Text style={{ color: '#FFFFFF', fontWeight: '700', fontSize: 15 }}>Get Verified</Text>
-            </Pressable>
-          ) : !isUnverifiedEmail ? (
-            <Pressable
-              onPress={() => router.push('/pages?tab=my_page' as any)}
-              style={{ backgroundColor: colors.primary, paddingVertical: 12, paddingHorizontal: 28, borderRadius: 24, marginBottom: 12 }}
-            >
-              <Text style={{ color: '#FFFFFF', fontWeight: '700', fontSize: 15 }}>Apply as Aspirant / Leader</Text>
-            </Pressable>
-          ) : null}
-          <Pressable onPress={() => router.back()} style={{ padding: 10 }}>
-            <Text style={{ color: colors.textSecondary, fontSize: 14 }}>Go Back</Text>
-          </Pressable>
-        </View>
-      </View>
-    );
-  }
+  const canOpen = available === true && access.allowed && Boolean(user);
+  const blockedMessage = !user
+    ? t('lmx.goLiveScreen.signInRequired', { defaultValue: 'Sign in to start a broadcast.' })
+    : access.reason === 'unverified_email'
+      ? t('lmx.goLiveScreen.emailRequired', {
+          defaultValue: 'Confirm your email address to broadcast.',
+        })
+      : access.reason === 'unverified'
+        ? t('lmx.goLiveScreen.verificationRequired', {
+            defaultValue: 'Verify your contributor profile to broadcast.',
+          })
+        : t('lmx.goLiveScreen.roleRequired', {
+            defaultValue:
+              'Live broadcasting is available to verified candidates, parties and journalists.',
+          });
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
-        <Pressable onPress={() => router.back()} hitSlop={10}>
-          <Ionicons name="close" size={26} color="#FFFFFF" />
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.header, { paddingTop: insets.top + 8, borderColor: colors.border }]}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('common.back', { defaultValue: 'Back' })}
+          style={styles.iconButton}
+          onPress={() => router.back()}
+        >
+          <Ionicons name="chevron-back" size={25} color={colors.primary} />
         </Pressable>
-        <Text style={styles.title}>{t('lmx.goLiveScreen.title')}</Text>
-        <View style={{ width: 26 }} />
+        <Text style={[styles.title, { color: colors.text }]}>{t('lmx.goLiveScreen.title')}</Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('discovery.pageHelp.openHelp')}
+          style={styles.iconButton}
+          onPress={() => setHelpVisible(true)}
+        >
+          <Ionicons name="help-circle-outline" size={23} color={colors.primary} />
+        </Pressable>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 140 }}>
-        {silenceActive && activeSilenceWindow && (
-          <View style={[styles.silenceBanner, { backgroundColor: '#FEF2F2' }]}>
-            <Ionicons name="alert-circle" size={20} color="#EF4444" />
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.silenceTitle, { color: '#DC2626' }]}>{t('lmx.goLiveScreen.prePollSilence')}</Text>
-              <Text style={[styles.silenceDesc, { color: '#991B1B' }]}>
-                {t('lmx.goLiveScreen.prePollSilenceDesc', {
-                  startTime: new Date(activeSilenceWindow.silenceStartsAt).toLocaleString(),
-                  endTime: new Date(activeSilenceWindow.silenceEndsAt).toLocaleString(),
-                })}
-              </Text>
-            </View>
-          </View>
-        )}
-        {/* GPS status */}
-        <View style={styles.gpsBar}>
-          <Ionicons
-            name={gpsStatus === 'ready' ? 'location' : 'location-outline'}
-            size={14}
-            color={gpsStatus === 'ready' ? '#10B981' : '#F59E0B'}
-          />
-          <Text style={styles.gpsText}>
-            {gpsStatus === 'detecting'
-              ? t('lmx.goLiveScreen.detectingLocation')
-              : gpsStatus === 'ready'
-                ? t('lmx.goLiveScreen.locationLocked', { district: gps?.lat.toFixed(3), state: gps?.lng.toFixed(3) })
-                : t('lmx.goLiveScreen.approxLocation')}
+      <ScrollView contentContainerStyle={styles.form} keyboardShouldPersistTaps="handled">
+        {available === null ? (
+          <Text accessibilityRole="text" style={{ color: colors.text }}>
+            {t('common.loading')}
           </Text>
-        </View>
-
-        {/* Camera capture */}
-        <Section
-          title={t('lmx.goLiveScreen.camera')}
-          hint="Record a clip, or go live directly: on a native build the feed publishes to the media plane over WebRTC-WHIP."
-        >
-          {capturedUri ? (
-            <View style={styles.captureDone}>
-              <Ionicons name="checkmark-circle" size={20} color="#10B981" />
-              <View style={{ flex: 1 }}>
-                <Text style={styles.captureDoneText}>Clip captured</Text>
-                <Text style={styles.captureMeta}>
-                  {captureSeconds != null ? `${captureSeconds}s · ` : ''}ready on device
-                </Text>
-              </View>
-              <Pressable onPress={captureClip} hitSlop={8}>
-                <Text style={styles.recapture}>{t('lmx.goLiveScreen.reRecord')}</Text>
-              </Pressable>
-            </View>
-          ) : (
-            <Pressable
-              style={[styles.captureBtn, capturing && { opacity: 0.6 }]}
-              onPress={captureClip}
-              disabled={capturing}
-            >
-              <Ionicons name="videocam" size={18} color="#FFFFFF" />
-              <Text style={styles.captureBtnText}>
-                {capturing ? 'Opening camera…' : t('lmx.goLiveScreen.recordClip')}
-              </Text>
+        ) : !available ? (
+          <>
+            <Text accessibilityRole="alert" style={{ color: colors.text }}>
+              {t('lmx.goLiveScreen.mediaPlaneUnavailable', {
+                defaultValue: 'Broadcasting is temporarily unavailable.',
+              })}
+            </Text>
+            <Pressable accessibilityRole="button" style={styles.tap} onPress={refreshAvailability}>
+              <Text style={[styles.label, { color: colors.primary }]}>{t('common.refresh')}</Text>
             </Pressable>
-          )}
-          {!!captureError && (
-            <View style={styles.alertNote}>
-              <Ionicons name="warning" size={13} color="#F59E0B" />
-              <Text style={styles.alertNoteText}>{captureError}</Text>
+          </>
+        ) : !canOpen ? (
+          <>
+            <Text style={{ color: colors.text }}>{blockedMessage}</Text>
+            {!user || access.reason === 'unverified' ? (
+              <Pressable
+                accessibilityRole="button"
+                style={styles.tap}
+                onPress={() => router.push(user ? '/verification' : '/auth/sign-in')}
+              >
+                <Text style={[styles.label, { color: colors.primary }]}>
+                  {user
+                    ? t('auth.getVerified', { defaultValue: 'Get verified' })
+                    : t('auth.signIn')}
+                </Text>
+              </Pressable>
+            ) : null}
+          </>
+        ) : (
+          <>
+            <Text style={[styles.label, { color: colors.text }]}>
+              {t('lmx.goLiveScreen.category')}
+            </Text>
+            <View style={styles.options}>
+              {CATEGORIES.map((item) => (
+                <Pressable
+                  key={item}
+                  accessibilityRole="radio"
+                  accessibilityState={{ checked: category === item }}
+                  disabled={opening}
+                  onPress={() => setCategory(item)}
+                  style={[
+                    styles.option,
+                    { borderColor: category === item ? colors.primary : colors.border },
+                  ]}
+                >
+                  <Text style={{ color: category === item ? colors.primary : colors.text }}>
+                    {t(ISSUE_CATEGORY_CONFIG[item].labelKey)}
+                  </Text>
+                </Pressable>
+              ))}
             </View>
-          )}
-        </Section>
-
-        {/* 1. Broadcasting as */}
-        <Section title={t('lmx.goLiveScreen.broadcastingAs')} hint="Choose an affiliation or stream independently.">
-          <OptionRow
-            active={affiliationId === null}
-            icon="person"
-            color="#6B7280"
-            label={t('lmx.goLiveScreen.independent')}
-            sub={t('lmx.goLiveScreen.neutralWatermark')}
-            onPress={() => setAffiliationId(null)}
-          />
-          {affiliations.map((a) => (
-            <OptionRow
-              key={a.id}
-              active={affiliationId === a.id}
-              icon="business"
-              color="#4F8EF7"
-              label={a.organizationName}
-              sub={a.exclusivityFlag ? 'Exclusive contract' : 'Non-exclusive'}
-              onPress={() => setAffiliationId(a.id)}
+            <TextInput
+              style={[styles.input, { color: colors.text, borderColor: colors.border }]}
+              placeholder={t('lmx.goLiveScreen.tagsLabel', {
+                defaultValue: 'Tags (optional, comma-separated)',
+              })}
+              placeholderTextColor={colors.textMuted}
+              value={tags}
+              onChangeText={setTags}
+              maxLength={160}
+              editable={!opening}
             />
-          ))}
-        </Section>
-
-        {/* 2. Visibility */}
-        <Section title={t('lmx.goLiveScreen.visibility')} hint="Who else can see this stream. Independent of department alerts.">
-          {(Object.keys(VISIBILITY_CONFIG) as VisibilityMode[]).map((v) => {
-            const cfg = VISIBILITY_CONFIG[v];
-            const disabled = v === 'exclusive_partner' && !hasExclusiveOption;
-            return (
-              <OptionRow
-                key={v}
-                active={visibility === v}
-                disabled={disabled}
-                icon={cfg.icon}
-                color={cfg.color}
-                label={t(cfg.labelKey) + (disabled ? ' (needs exclusive contract)' : '')}
-                sub={t(cfg.descriptionKey)}
-                onPress={() => !disabled && setVisibility(v)}
-              />
-            );
-          })}
-        </Section>
-
-        {/* 3. Alert to (departments) */}
-        <Section
-          title={t('lmx.goLiveScreen.alertDepartment')}
-          hint="Optional. Reporter-initiated only — a deliberate choice, never automatic."
-        >
-          <View style={styles.deptGrid}>
-            {DEPARTMENTS.map((d) => {
-              const cfg = DEPARTMENT_CONFIG[d];
-              const active = alertDepts.includes(d);
-              return (
-                <Pressable
-                  key={d}
-                  onPress={() => toggleDept(d)}
-                  style={[styles.deptChip, active && { backgroundColor: cfg.color + '22', borderColor: cfg.color }]}
-                >
-                  <Ionicons name={cfg.icon as any} size={16} color={active ? cfg.color : '#9CA3AF'} />
-                  <Text style={[styles.deptChipText, active && { color: cfg.color }]}>{t(cfg.labelKey)}</Text>
-                </Pressable>
-              );
-            })}
-          </View>
-          {alertDepts.length > 0 && (
-            <View style={styles.alertNote}>
-              <Ionicons name="information-circle" size={13} color="#F59E0B" />
-              <Text style={styles.alertNoteText}>
-                {alertDepts.length} department(s) will be alerted, resolved to the nearest subscribed
-                office by GPS. This is logged against your identity.
+            <Text style={{ color: colors.textSecondary }}>
+              {t('lmx.goLiveScreen.browserStudio', {
+                defaultValue:
+                  'Allow camera and microphone access in the browser. Keep the studio open while broadcasting.',
+              })}
+            </Text>
+            <Text style={{ color: colors.textSecondary }}>
+              {t('lmx.goLiveScreen.reviewBeforePublic', {
+                defaultValue: 'Your broadcast appears in Live after a reviewer approves it.',
+              })}
+            </Text>
+            {error && (
+              <Text accessibilityRole="alert" style={{ color: colors.text }}>
+                {error}
               </Text>
-            </View>
-          )}
-        </Section>
-
-        {/* Category + tags */}
-        <Section title={t('lmx.goLiveScreen.category')}>
-          <View style={styles.catGrid}>
-            {CATEGORIES.map((c) => {
-              const cfg = ISSUE_CATEGORY_CONFIG[c];
-              const active = category === c;
-              return (
-                <Pressable
-                  key={c}
-                  onPress={() => setCategory(c)}
-                  style={[styles.catChip, active && { backgroundColor: cfg.color + '22', borderColor: cfg.color }]}
-                >
-                  <Ionicons name={cfg.icon as any} size={14} color={active ? cfg.color : '#9CA3AF'} />
-                  <Text style={[styles.catChipText, active && { color: cfg.color }]}>{t(cfg.labelKey)}</Text>
-                </Pressable>
-              );
-            })}
-          </View>
-          <TextInput
-            style={styles.input}
-            placeholder="Tags (comma separated)"
-            placeholderTextColor="#4B5563"
-            value={tags}
-            onChangeText={setTags}
-          />
-        </Section>
-
-        {/* Moderation preview */}
-        <View style={styles.bufferPreview}>
-          <Ionicons name="shield-half" size={15} color="#8B5CF6" />
-          <Text style={styles.bufferText}>
-            {t('lmx.goLiveScreen.moderationBuffer', { seconds: bufferSeconds })}
-          </Text>
-        </View>
+            )}
+          </>
+        )}
       </ScrollView>
 
-      {/* Go Live button */}
-      <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
-        {broadcastError ? <Text style={{ color: '#FCA5A5', marginBottom: 8, textAlign: 'center' }}>{broadcastError}</Text> : null}
-        <Pressable
-          style={[styles.goBtn, (!canGoLive || silenceActive) && styles.goBtnDisabled]}
-          disabled={!canGoLive || silenceActive}
-          onPress={handleGoLive}
+      {canOpen && (
+        <View
+          style={[styles.footer, { paddingBottom: insets.bottom + 12, borderColor: colors.border }]}
         >
-          <Ionicons name="radio" size={20} color="#FFFFFF" />
-          <Text style={styles.goBtnText}>
-            {gpsStatus === 'detecting'
-              ? t('lmx.goLiveScreen.locating')
-              : !isBroadcastSupported()
-                ? t('lmx.goLiveScreen.streamingUnavailable', { defaultValue: 'Streaming is unavailable on this device.' })
-                : !mediaPipelineReady
-                  ? t('lmx.goLiveScreen.mediaPlaneUnavailable', { defaultValue: 'Live streaming service is not configured.' })
-                : gpsStatus === 'unavailable'
-                  ? t('lmx.goLiveScreen.locationRequired', { defaultValue: 'Location permission is required.' })
-                  : t('lmx.goLiveScreen.startBroadcasting')}
-          </Text>
-        </Pressable>
-        <Text style={styles.footerHint}>
-          {t(VISIBILITY_CONFIG[visibility].labelKey)}
-          {selectedAffiliation ? ` · ${selectedAffiliation.organizationName}` : ` · ${t('lmx.goLiveScreen.independent')}`}
-          {alertDepts.length > 0 ? ` · ${alertDepts.length} ${t('lmx.goLiveScreen.alertDepartment')}` : ''}
-        </Text>
-      </View>
-    </View>
-  );
-}
-
-function Section({
-  title,
-  hint,
-  children,
-}: {
-  title: string;
-  hint?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title}</Text>
-      {!!hint && <Text style={styles.sectionHint}>{hint}</Text>}
-      <View style={{ marginTop: 8, gap: 8 }}>{children}</View>
-    </View>
-  );
-}
-
-function OptionRow({
-  active,
-  disabled,
-  icon,
-  color,
-  label,
-  sub,
-  onPress,
-}: {
-  active: boolean;
-  disabled?: boolean;
-  icon: string;
-  color: string;
-  label: string;
-  sub: string;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable
-      onPress={onPress}
-      style={[
-        styles.optRow,
-        active && { borderColor: color, backgroundColor: color + '14' },
-        disabled && { opacity: 0.4 },
-      ]}
-    >
-      <View style={[styles.optIcon, { backgroundColor: color + '22' }]}>
-        <Ionicons name={icon as any} size={18} color={color} />
-      </View>
-      <View style={{ flex: 1 }}>
-        <Text style={styles.optLabel}>{label}</Text>
-        <Text style={styles.optSub}>{sub}</Text>
-      </View>
-      <Ionicons
-        name={active ? 'radio-button-on' : 'radio-button-off'}
-        size={20}
-        color={active ? color : '#4B5563'}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ disabled: opening, busy: opening }}
+            style={[styles.submit, { backgroundColor: colors.primary, opacity: opening ? 0.6 : 1 }]}
+            onPress={openStudio}
+            disabled={opening}
+          >
+            <Text style={styles.submitLabel}>
+              {opening
+                ? t('common.loading')
+                : t('lmx.goLiveScreen.openStudio', { defaultValue: 'Open broadcast studio' })}
+            </Text>
+          </Pressable>
+        </View>
+      )}
+      <DiscoveryHubSheet
+        visible={helpVisible}
+        onClose={() => setHelpVisible(false)}
+        sourceScreen="live-go-live"
       />
-    </Pressable>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    borderBottomWidth: 1,
   },
-  title: { fontSize: 18, fontWeight: '800' },
-  gpsBar: {
-    flexDirection: 'row', alignItems: 'center', gap: 6,
-    marginHorizontal: 16, marginBottom: 4, padding: 10,
-    borderRadius: 10, borderWidth: 1,
-  },
-  gpsText: { fontSize: 12, fontWeight: '600', flex: 1 },
-  section: { paddingHorizontal: 16, marginTop: 18 },
-  sectionTitle: { fontSize: 15, fontWeight: '800' },
-  sectionHint: { fontSize: 12, marginTop: 2 },
-  optRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
+  iconButton: { minHeight: 44, minWidth: 44, alignItems: 'center', justifyContent: 'center' },
+  title: { flex: 1, fontSize: 18, fontWeight: '800' },
+  form: { padding: 18, gap: 16 },
+  label: { fontSize: 15, fontWeight: '700' },
+  tap: { minHeight: 44, justifyContent: 'center', alignSelf: 'flex-start' },
+  options: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  option: {
+    minHeight: 44,
     borderWidth: 1,
-    borderRadius: 12, padding: 12,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    justifyContent: 'center',
   },
-  optIcon: { width: 38, height: 38, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
-  optLabel: { fontSize: 14, fontWeight: '700' },
-  optSub: { fontSize: 11, marginTop: 2 },
-  captureBtn: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-    paddingVertical: 13, borderRadius: 12,
-  },
-  captureBtnText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800' },
-  captureDone: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-    borderWidth: 1,
-    borderRadius: 12, padding: 12,
-  },
-  captureDoneText: { fontSize: 14, fontWeight: '700' },
-  captureMeta: { fontSize: 11, marginTop: 2 },
-  recapture: { fontSize: 12, fontWeight: '800' },
-  deptGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  deptChip: {
-    flexDirection: 'row', alignItems: 'center', gap: 6,
-    borderWidth: 1,
-    paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20,
-  },
-  deptChipText: { fontSize: 12, fontWeight: '700' },
-  alertNote: {
-    flexDirection: 'row', gap: 6, marginTop: 10, padding: 10,
-    borderRadius: 10, borderWidth: 1,
-  },
-  alertNoteText: { flex: 1, fontSize: 11, lineHeight: 16 },
-  catGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  catChip: {
-    flexDirection: 'row', alignItems: 'center', gap: 5,
-    borderWidth: 1,
-    paddingHorizontal: 12, paddingVertical: 8, borderRadius: 18,
-  },
-  catChipText: { fontSize: 12, fontWeight: '700' },
   input: {
-    marginTop: 10, borderRadius: 10,
-    borderWidth: 1, paddingHorizontal: 12, paddingVertical: 10,
-    fontSize: 14,
+    minHeight: 48,
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
   },
-  bufferPreview: {
-    flexDirection: 'row', gap: 8, marginHorizontal: 16, marginTop: 18, padding: 12,
-    borderRadius: 12, borderWidth: 1,
+  footer: { paddingHorizontal: 18, paddingTop: 12, borderTopWidth: 1 },
+  submit: {
+    minHeight: 48,
+    padding: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  bufferText: { flex: 1, fontSize: 12, lineHeight: 17 },
-  footer: {
-    position: 'absolute', bottom: 0, left: 0, right: 0,
-    paddingHorizontal: 16, paddingTop: 12,
-    borderTopWidth: 0.5,
-  },
-  goBtn: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-    backgroundColor: '#EF4444', paddingVertical: 15, borderRadius: 14,
-  },
-  goBtnDisabled: { opacity: 0.5 },
-  goBtnText: { color: '#FFFFFF', fontSize: 16, fontWeight: '800' },
-  footerHint: { fontSize: 11, textAlign: 'center', marginTop: 8, fontWeight: '600' },
-  silenceBanner: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, padding: 14, borderRadius: 12, marginBottom: 16 },
-  silenceTitle: { fontSize: 14, fontWeight: '800' },
-  silenceDesc: { fontSize: 12, marginTop: 2 },
+  submitLabel: { fontSize: 15, fontWeight: '800', color: '#FFFFFF', textAlign: 'center' },
 });

@@ -1,3 +1,4 @@
+import { createHmac, timingSafeEqual } from 'node:crypto';
 import { isProductionLikeRuntime } from './runtimeEnvironment';
 /**
  * Kshetra LMX — Media Pipeline Router (API mirror).
@@ -192,4 +193,176 @@ export function selectPipeline(
     playbackHls: `${scheme}://${edgeHost}/live/${streamId}.m3u8`,
     playbackWebrtc: `${scheme}://${srsHost}:8000/rtc/v1/whep/?app=live&stream=${streamId}`,
   };
+}
+
+export const liveEventIdPattern = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/;
+export const liveStudioPath = '/api/v1/lmx/studio';
+export const liveWatchPath = '/api/v1/lmx/watch';
+
+export function getHostedLiveConfig() {
+  const host = process.env.LIVE_MEDIA_PRIVATE_HOST;
+  const studioOrigin = process.env.LIVE_STUDIO_ORIGIN;
+  const signingKey = process.env.LIVE_STUDIO_SIGNING_KEY;
+  const controlPassword = process.env.LIVE_MEDIA_CONTROL_PASSWORD;
+  const advertisedPort = process.env.LIVE_MEDIA_PUBLIC_TCP_PORT;
+  if (
+    !host ||
+    !studioOrigin ||
+    !signingKey ||
+    !controlPassword ||
+    !/^[a-f0-9]{64}$/i.test(signingKey)
+  )
+    return null;
+  // These ports must never be exposed directly to viewers or broadcasters.
+  if (!/^[a-z\d-]+\.railway\.internal$/i.test(host) && host !== '127.0.0.1') return null;
+  const publicTcpPort =
+    advertisedPort && /^\d{1,5}$/.test(advertisedPort) ? Number(advertisedPort) : null;
+  if (host !== '127.0.0.1' && (!publicTcpPort || publicTcpPort > 65535)) return null;
+  try {
+    const url = new URL(studioOrigin);
+    if (
+      url.origin !== studioOrigin ||
+      (url.protocol !== 'https:' && url.hostname !== 'localhost')
+    ) {
+      return null;
+    }
+    return { host, studioOrigin, signingKey, controlPassword, publicTcpPort };
+  } catch {
+    return null;
+  }
+}
+
+type Config = NonNullable<ReturnType<typeof getHostedLiveConfig>>;
+
+export function hostedWhipAnswer(config: Config, answer: string) {
+  if (!config.publicTcpPort) return answer;
+  // Railway forwards its assigned public port to the fixed MediaMTX ICE listener.
+  return answer.replace(
+    /^(a=candidate:\S+ \d+ tcp \d+ \S+) 8189(?= typ host\b)/gim,
+    `$1 ${config.publicTcpPort}`,
+  );
+}
+
+export function studioTicket(
+  config: Config,
+  eventId: string,
+  use: 'broadcast' | 'review' = 'broadcast',
+) {
+  const expiresAt = Date.now() + (use === 'broadcast' ? 4 * 60 * 60_000 : 5 * 60_000);
+  const payload = `${eventId}.${expiresAt}`;
+  const proof = createHmac('sha256', config.signingKey)
+    .update(`${use}:${payload}`)
+    .digest('base64url');
+  return `${payload}.${proof}`;
+}
+
+export function isStudioTicketValid(
+  config: Config,
+  eventId: string,
+  authorization?: string,
+  use: 'broadcast' | 'review' = 'broadcast',
+) {
+  const ticket = authorization?.match(/^Bearer ([a-f0-9-]+)\.(\d{13})\.([\w-]{43})$/);
+  if (!ticket || ticket[1] !== eventId || Number(ticket[2]) <= Date.now()) return false;
+  const expected = createHmac('sha256', config.signingKey)
+    .update(`${use}:${ticket[1]}.${ticket[2]}`)
+    .digest('base64url');
+  return timingSafeEqual(Buffer.from(expected), Buffer.from(ticket[3]));
+}
+
+export async function mediaRequest(
+  config: Config,
+  service: 'control' | 'ingest' | 'playback' | 'recordings',
+  path: string,
+  init?: RequestInit,
+) {
+  const port = { control: 9997, ingest: 8889, playback: 8888, recordings: 9996 }[service];
+  const headers = new Headers(init?.headers);
+  if (service === 'control') {
+    const credential = Buffer.from(`poligram-control:${config.controlPassword}`).toString('base64');
+    headers.set('Authorization', `Basic ${credential}`);
+  }
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), service === 'playback' ? 15_000 : 8_000);
+  try {
+    return await fetch(`http://${config.host}:${port}${path}`, {
+      ...init,
+      headers,
+      redirect: 'error',
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+export async function isHostedLiveReady(config = getHostedLiveConfig()) {
+  if (!config) return false;
+  try {
+    const response = await mediaRequest(config, 'control', '/v3/paths/list');
+    if (!response.ok) return false;
+    const payload = (await response.json()) as { items?: unknown };
+    return Array.isArray(payload.items);
+  } catch {
+    return false;
+  }
+}
+
+export async function isHostedStreamReady(config: Config, id: string) {
+  try {
+    const response = await mediaRequest(config, 'control', `/v3/paths/get/watch/${id}`);
+    if (!response.ok) return false;
+    const path = (await response.json()) as { ready?: boolean };
+    return path.ready === true;
+  } catch {
+    return false;
+  }
+}
+
+export async function listHostedLivePaths(config: Config) {
+  try {
+    const response = await mediaRequest(config, 'control', '/v3/paths/list?itemsPerPage=100');
+    if (!response.ok) return new Set<string>();
+    const { items } = (await response.json()) as { items?: { name: string; ready: boolean }[] };
+    return new Set(
+      (items ?? [])
+        .filter((item) => item.ready && item.name.startsWith('watch/'))
+        .map((item) => item.name.slice('watch/'.length)),
+    );
+  } catch {
+    return new Set<string>();
+  }
+}
+
+export async function hostedRecordingQuery(config: Config, id: string) {
+  const query = new URLSearchParams({ path: `watch/${id}` });
+  try {
+    const response = await mediaRequest(config, 'recordings', `/list?${query}`);
+    if (!response.ok) return null;
+    const spans = (await response.json()) as { start: string; duration: number }[];
+    const recording = Array.isArray(spans) ? spans[0] : null;
+    if (!recording || !Number.isFinite(Date.parse(recording.start)) || !(recording.duration > 0))
+      return null;
+    query.set('start', recording.start);
+    query.set('duration', String(recording.duration));
+    return query;
+  } catch {
+    return null;
+  }
+}
+
+export async function stopHostedStream(config: Config, id: string) {
+  const path = await mediaRequest(config, 'control', `/v3/paths/get/ingest/${id}`);
+  if (path.status === 404) return;
+  if (!path.ok) throw new Error('Could not resolve the publishing session');
+  const { source } = (await path.json()) as { source?: { id?: string; type?: string } };
+  if (!source) return;
+  if (source.type !== 'webRTCSession' || !source.id || !liveEventIdPattern.test(source.id)) {
+    throw new Error('Unexpected publishing session');
+  }
+  const result = await mediaRequest(config, 'control', `/v3/webrtcsessions/kick/${source.id}`, {
+    method: 'POST',
+  });
+  if (!result.ok && result.status !== 404)
+    throw new Error('Could not close the publishing session');
 }

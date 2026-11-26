@@ -54,7 +54,8 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
       expect(body.status).toBe('operational');
-      expect(body.mediaPlane).toBe('self_hosted');
+      expect(body.mediaPlane).toBe('unavailable');
+      expect(body.publishAvailable).toBe(false);
       expect(body.supabase).toBeDefined();
     });
   });
@@ -389,6 +390,7 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/lmx/live/stream-101/moderate',
+        headers: { 'x-user-id': 'reviewer-qa', 'x-user-role': 'moderator' },
         payload: { decision: 'allow' },
       });
 
@@ -413,6 +415,7 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/lmx/live/stream-101/moderate',
+        headers: { 'x-user-id': 'reviewer-qa', 'x-user-role': 'moderator' },
         payload: { decision: 'cut', reason: 'policy violation' },
       });
 
@@ -422,21 +425,20 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
       expect(body.decision).toBe('cut');
     });
 
-    it('POST /api/v1/lmx/live/:streamId/end: ends live event with content hash', async () => {
+    it('ends the caller’s own event and returns a database confirmation', async () => {
+      const ownerFilter = jest.fn(() => ({
+        select: () => ({ maybeSingle: async () => ({ data: { id: 'stream-101' }, error: null }) }),
+      }));
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
-        if (table === 'live_events') {
-          return {
-            update: () => ({
-              eq: async () => ({ data: null, error: null }),
-            }),
-          } as any;
-        }
+        if (table === 'live_events')
+          return { update: () => ({ eq: () => ({ eq: ownerFilter }) }) } as any;
         return {} as any;
       }) as any);
 
       const res = await app.inject({
         method: 'POST',
         url: '/api/v1/lmx/live/stream-101/end',
+        headers: { 'x-user-id': 'publisher-qa' },
         payload: { content_hash: 'sha256-abc123xyz' },
       });
 
@@ -778,6 +780,7 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
       const resErr = await app.inject({
         method: 'POST',
         url: '/api/v1/lmx/live/str-1/moderate',
+        headers: { 'x-user-id': 'reviewer-qa', 'x-user-role': 'moderator' },
         payload: { decision: 'mute' },
       });
       expect(resErr.statusCode).toBe(500);
@@ -799,6 +802,7 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
       const resEx = await app.inject({
         method: 'POST',
         url: '/api/v1/lmx/live/str-1/moderate',
+        headers: { 'x-user-id': 'reviewer-qa', 'x-user-role': 'moderator' },
         payload: { decision: 'cut' },
       });
       expect(resEx.statusCode).toBe(500);
@@ -809,7 +813,13 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
         if (table === 'live_events') {
           return {
-            update: () => ({ eq: async () => ({ error: { message: 'End fail' } }) }),
+            update: () => ({
+              eq: () => ({
+                eq: () => ({
+                  select: () => ({ maybeSingle: async () => ({ error: { message: 'End fail' } }) }),
+                }),
+              }),
+            }),
           } as any;
         }
         return {} as any;
@@ -818,6 +828,7 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
       const resErr = await app.inject({
         method: 'POST',
         url: '/api/v1/lmx/live/str-1/end',
+        headers: { 'x-user-id': 'publisher-qa' },
         payload: { content_hash: 'hash-1' },
       });
       expect(resErr.statusCode).toBe(500);
@@ -839,6 +850,7 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
       const resEx = await app.inject({
         method: 'POST',
         url: '/api/v1/lmx/live/str-1/end',
+        headers: { 'x-user-id': 'publisher-qa' },
         payload: { content_hash: 'hash-1' },
       });
       expect(resEx.statusCode).toBe(500);
@@ -972,6 +984,7 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
       const resMute = await app.inject({
         method: 'POST',
         url: '/api/v1/lmx/live/str-1/moderate',
+        headers: { 'x-user-id': 'reviewer-qa', 'x-user-role': 'moderator' },
         payload: { decision: 'mute' },
       });
       expect(resMute.statusCode).toBe(200);
@@ -979,14 +992,25 @@ describe('LMX (Live Media Exchange) Routes Unit Tests', () => {
       const resEsc = await app.inject({
         method: 'POST',
         url: '/api/v1/lmx/live/str-1/moderate',
+        headers: { 'x-user-id': 'reviewer-qa', 'x-user-role': 'moderator' },
         payload: { decision: 'escalate' },
       });
       expect(resEsc.statusCode).toBe(200);
 
       // End stream with omitted content_hash
+      jest.spyOn(supabase, 'from').mockReturnValue({
+        update: () => ({
+          eq: () => ({
+            eq: () => ({
+              select: () => ({ maybeSingle: async () => ({ data: { id: 'str-1' }, error: null }) }),
+            }),
+          }),
+        }),
+      } as any);
       const resEndNoHash = await app.inject({
         method: 'POST',
         url: '/api/v1/lmx/live/str-1/end',
+        headers: { 'x-user-id': 'publisher-qa' },
         payload: {},
       });
       expect(resEndNoHash.statusCode).toBe(200);

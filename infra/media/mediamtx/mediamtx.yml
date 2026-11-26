@@ -7,6 +7,7 @@
 
 logLevel: info
 logDestinations: [stdout]
+moq: no
 
 # ── Protocol servers (all enabled so any publisher works) ──────────────────
 rtmp: yes
@@ -18,6 +19,7 @@ srtAddress: :8890
 webrtc: yes
 webrtcAddress: :8889
 webrtcLocalUDPAddress: :8189
+webrtcLocalTCPAddress: :8189
 # For a public server also set webrtcAdditionalHosts: [ "YOUR_PUBLIC_IP" ]
 
 hls: yes
@@ -29,32 +31,50 @@ rtspAddress: :8554
 
 api: yes
 apiAddress: :9997
+playback: yes
+playbackAddress: :9996
 
 # ── Auth ───────────────────────────────────────────────────────────────────
-# DEV DEFAULT = anyone can publish/read. LOCK THIS DOWN in production, e.g. per-path
-# credentials or an external auth webhook that validates the streamId + token the
-# control plane issued at go-live.
-#
-# authMethod: internal
-# authInternalUsers:
-#   - user: publisher
-#     pass: CHANGE_ME
-#     permissions: [ { action: publish } ]
-#   - user: any
-#     permissions: [ { action: read } ]
+# Ingest and playback listeners must be private on hosted deployments. The app
+# gates access before proxying them. A separate credential protects the control API.
+authMethod: internal
+authInternalUsers:
+  - user: any
+    permissions: [{ action: publish }, { action: read }, { action: playback }]
+  - user: poligram-control
+    ips: [127.0.0.1, '::1']
+    permissions: [{ action: api }]
 
 # ── Paths ────────────────────────────────────────────────────────────────────
 pathDefaults:
   # When any stream starts, relay it to SRS as RTMP so SRS becomes the HLS/DVR
   # origin. `runOnReady` runs the bundled ffmpeg. $MTX_PATH = the streamId.
-  runOnReady: >
+  runOnAvailable: >
     ffmpeg -re -i rtmp://localhost:1935/$MTX_PATH
-    -c copy -f flv rtmp://srs:1935/live/$MTX_PATH
-  runOnReadyRestart: yes
+    -c copy -f flv rtmp://srs:1935/$MTX_PATH
+  runOnAvailableRestart: yes
 
 paths:
   # Reporters publish to  rtmp://<gateway>:1935/live/<streamId>
   # (or srt://<gateway>:8890?streamid=publish:live/<streamId>, or WHIP)
   ~^live/.*$:
     # inherits pathDefaults (relay-to-SRS)
+  # App-managed inputs are private. Only the Poligram API hands out publishing access.
+  '~^ingest/([0-9a-f-]{36})$':
+    overridePublisher: no
+    runOnAvailable: >-
+      ffmpeg -nostdin -hide_banner -loglevel warning -rtsp_transport tcp
+      -i rtsp://127.0.0.1:8554/$MTX_PATH -map 0:v:0 -map 0:a:0
+      -c:v libx264 -preset ultrafast -tune zerolatency -pix_fmt yuv420p
+      -vf fps=24 -g 48 -sc_threshold 0 -af asetpts=N/SR/TB
+      -c:a aac -b:a 96k -ar 48000
+      -f rtsp -rtsp_transport tcp rtsp://127.0.0.1:8554/watch/$G1
+  '~^watch/[0-9a-f-]{36}$':
+    overridePublisher: no
+    runOnAvailable: ''
+    runOnAvailableRestart: no
+    record: yes
+    recordPath: /recordings/%path/%Y-%m-%d_%H-%M-%S-%f_%z
+    recordSegmentDuration: 1m
+    recordDeleteAfter: 2160h
   all_others:

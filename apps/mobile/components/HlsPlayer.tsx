@@ -61,19 +61,24 @@ export function HlsPlayer({
   <video id="v" ${poster ? `poster="${poster}"` : ''} playsinline webkit-playsinline
     ${muted ? 'muted' : ''} ${autoPlay ? 'autoplay' : ''} controls></video>
   <div id="err">${errorText || 'Stream unavailable right now.'}<br/>${offlineText || 'It may be offline or still starting.'}</div>
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"
+    integrity="sha384-w6Gb3fXHb5e1LUYa/hYA5Q41bEDglN5ZPCG7Jvnoo8/X90oGnlPqBlBJCe38mEMm" crossorigin="anonymous"></script>
   <script>
     (function () {
       var video = document.getElementById('v');
       var errEl = document.getElementById('err');
-      var src = ${JSON.stringify(src)};
+      var src = ${JSON.stringify(src).replace(/</g, '\\u003c')};
       function post(type, extra) {
         try { window.ReactNativeWebView.postMessage(JSON.stringify(Object.assign({ type: type }, extra || {}))); } catch (e) {}
       }
       function showError() { errEl.style.display = 'flex'; post('error'); }
       video.addEventListener('playing', function () { post('playing'); });
       video.addEventListener('waiting', function () { post('waiting'); });
-      if (window.Hls && window.Hls.isSupported()) {
+      if (src.split('?')[0].endsWith('.mp4')) {
+        video.src = src;
+        video.addEventListener('loadedmetadata', function () { post('ready'); });
+        video.addEventListener('error', showError);
+      } else if (window.Hls && window.Hls.isSupported()) {
         var hls = new window.Hls({ lowLatencyMode: true, enableWorker: true });
         hls.loadSource(src);
         hls.attachMedia(video);

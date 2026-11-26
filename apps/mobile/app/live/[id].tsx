@@ -23,6 +23,10 @@ import {
 } from '../../lib/lmxTypes';
 import { useTheme } from '../../lib/theme';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
+import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
+import { apiClient } from '../../lib/api';
+import { mapDbEventToLiveEvent } from '../../stores/liveExchange';
+import type { LiveEvent } from '../../lib/lmxTypes';
 import {
   localizeLocality,
   localizeDistrict,
@@ -42,7 +46,10 @@ export default function LivePlayerScreen() {
   const lang = i18n.language || 'en';
 
   const allEvents = useLiveExchangeStore((s) => s.events);
-  const event = useMemo(() => allEvents.find((e) => e.id === id), [allEvents, id]);
+  const cachedEvent = useMemo(() => allEvents.find((e) => e.id === id), [allEvents, id]);
+  const [confirmedEvent, setConfirmedEvent] = useState<LiveEvent | null>(null);
+  const [loading, setLoading] = useState(IS_LIVE_ENVIRONMENT);
+  const event = IS_LIVE_ENVIRONMENT ? confirmedEvent : cachedEvent;
   const allAlerts = useLiveExchangeStore((s) => s.alerts);
   const alerts = useMemo(() => allAlerts.filter((a) => a.liveEventId === id), [allAlerts, id]);
   const incrementViewers = useLiveExchangeStore((s) => s.incrementViewers);
@@ -51,6 +58,23 @@ export default function LivePlayerScreen() {
   const [helpVisible, setHelpVisible] = useState(false);
 
   useEffect(() => {
+    if (IS_LIVE_ENVIRONMENT) {
+      if (!id) return;
+      let active = true;
+      const load = async () => {
+        try {
+          const result = await apiClient.get<Record<string, unknown>>(`/api/v1/lmx/live/${encodeURIComponent(id)}`, { authPolicy: 'public' });
+          if (active) setConfirmedEvent(mapDbEventToLiveEvent(result.data));
+        } catch {
+          if (active) setConfirmedEvent(null);
+        } finally {
+          if (active) setLoading(false);
+        }
+      };
+      void load();
+      const timer = setInterval(load, 15000);
+      return () => { active = false; clearInterval(timer); };
+    }
     if (!event) return;
     incrementViewers(id, 1);
     return () => incrementViewers(id, -1);
@@ -61,7 +85,7 @@ export default function LivePlayerScreen() {
     return (
       <View style={[styles.container, styles.center, { backgroundColor: colors.background }]}>
         <Ionicons name="alert-circle" size={40} color={colors.textMuted} />
-        <Text style={[styles.notFound, { color: colors.textSecondary }]}>{t('lmx.player.streamNotFound')}</Text>
+        <Text style={[styles.notFound, { color: colors.textSecondary }]}>{t(loading ? 'common.loading' : 'lmx.player.streamNotFound')}</Text>
         <Pressable onPress={() => router.back()} style={styles.backLink}>
           <Text style={[styles.backLinkText, { color: colors.primary }]}>{t('lmx.player.goBack')}</Text>
         </Pressable>
@@ -92,9 +116,10 @@ export default function LivePlayerScreen() {
   // Only attempt real playback for actual stream URLs. Go-live events get a
   // placeholder kshetra.in URL (no media plane provisioned yet), so we show a
   // "provisioning" state for those instead of loading a URL that will 404.
+  const playableUrl = isLive || !IS_LIVE_ENVIRONMENT ? event.mediaPlaybackHls : event.rawRecordingUrl;
   const playbackSrc =
-    event.mediaPlaybackHls && !/kshetra\.in/.test(event.mediaPlaybackHls)
-      ? event.mediaPlaybackHls
+    playableUrl && !/kshetra\.in/.test(playableUrl)
+      ? playableUrl
       : null;
 
   return (
@@ -127,10 +152,10 @@ export default function LivePlayerScreen() {
             {isLive && <View style={styles.dot} />}
             <Text style={styles.liveText}>{isLive ? t('lmx.player.live') : t('lmx.player.replay')}</Text>
           </View>
-          <View style={styles.viewerBadge}>
+          {!IS_LIVE_ENVIRONMENT && <View style={styles.viewerBadge}>
             <Ionicons name="eye" size={12} color="#FFFFFF" />
             <Text style={styles.viewerText}>{t('lmx.player.viewers', { count: event.viewerCount })}</Text>
-          </View>
+          </View>}
           <Pressable
             accessibilityLabel={t('discovery.pageHelp.openHelp', { defaultValue: 'Page Help' })}
             style={[styles.viewerBadge, { marginLeft: 4 }]}
@@ -251,7 +276,7 @@ export default function LivePlayerScreen() {
         )}
 
         {/* Owner controls */}
-        {isOwner && isLive && (
+        {!IS_LIVE_ENVIRONMENT && isOwner && isLive && (
           <View style={styles.block}>
             <Pressable style={styles.endBtn} onPress={() => endEvent(event.id)}>
               <Ionicons name="stop-circle" size={20} color="#FFFFFF" />
