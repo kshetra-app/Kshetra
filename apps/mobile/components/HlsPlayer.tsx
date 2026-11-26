@@ -75,6 +75,7 @@ export function HlsPlayer({
       video.addEventListener('playing', function () { post('playing'); });
       video.addEventListener('waiting', function () { post('waiting'); });
       if (src.split('?')[0].endsWith('.mp4')) {
+        video.crossOrigin = 'anonymous';
         video.src = src;
         video.addEventListener('loadedmetadata', function () { post('ready'); });
         video.addEventListener('error', showError);

@@ -47,7 +47,6 @@ export default function LiveTabScreen({ hideHeader = false, searchQuery = '' }: 
   // a fresh array (filter+sort) must be wrapped in useShallow — otherwise every
   // render produces a new reference and React infinite-loops (crashes in release).
   const events = useLiveExchangeStore(useShallow((s) => s.getLiveTabFeed()));
-  const aiServiceEnabled = useLiveExchangeStore((s) => s.aiServiceEnabled);
   const refreshEvents = useLiveExchangeStore((s) => s.refreshEvents);
   const role = useAuthStore((s) => s.user?.app_metadata?.role);
   const canReview = ['moderator', 'admin', 'super_admin', 'compliance_officer'].includes(role);
@@ -122,9 +121,6 @@ export default function LiveTabScreen({ hideHeader = false, searchQuery = '' }: 
             <View style={[styles.subRow, hideHeader && { marginTop: 0 }]}>
               <View style={[styles.liveDot, { backgroundColor: colors.primary }]} />
               <Text style={[styles.subtitle, { color: colors.textMuted }]}>{t('lmx.liveNow', { count: liveCount })}</Text>
-              {!aiServiceEnabled && (
-                <Text style={[styles.aiOff, { color: colors.textMuted }]}>· {t('lmx.aiEnrichmentOff')}</Text>
-              )}
             </View>
           </View>
           <Pressable style={[styles.goLive, { backgroundColor: colors.primary }]} onPress={() => router.push('/live/go-live' as any)}>
@@ -266,7 +262,6 @@ const styles = StyleSheet.create({
   subRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 },
   liveDot: { width: 8, height: 8, borderRadius: 4 },
   subtitle: { fontSize: 12, fontWeight: '600' },
-  aiOff: { fontSize: 11, fontWeight: '500' },
   goLive: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     paddingHorizontal: 14, paddingVertical: 9, borderRadius: 22,

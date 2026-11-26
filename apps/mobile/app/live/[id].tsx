@@ -184,10 +184,10 @@ export default function LivePlayerScreen() {
               <Text style={[styles.tierText, { color: tier.color }]}>{t(tier.labelKey)}</Text>
             </View>
             <Text style={styles.reporter}>{reporterName}</Text>
-            <View style={styles.credPill}>
+            {!IS_LIVE_ENVIRONMENT && <View style={styles.credPill}>
               <Ionicons name="pulse" size={11} color="#10B981" />
               <Text style={styles.credText}>{Math.round(event.credibilityScore)}</Text>
-            </View>
+            </View>}
           </View>
 
           <View style={styles.chipsRow}>
@@ -233,15 +233,7 @@ export default function LivePlayerScreen() {
               )}
             </View>
           </View>
-        ) : (
-          <View style={styles.aiOff}>
-            <Ionicons name="sparkles-outline" size={14} color="#6B7280" />
-            <Text style={styles.aiOffText}>
-              AI enrichment is not active. Transcript, summary and emergency scoring will appear here
-              once an AI model is subscribed. The stream and all routing work without it.
-            </Text>
-          </View>
-        )}
+        ) : null}
 
         {/* Department alerts fired */}
         {alerts.length > 0 && (
@@ -349,8 +341,6 @@ const styles = StyleSheet.create({
   aiStat: { flex: 1, borderRadius: 10, padding: 10, alignItems: 'center', borderWidth: 1 },
   aiStatValue: { fontSize: 18, fontWeight: '800' },
   aiStatLabel: { fontSize: 10, fontWeight: '700', marginTop: 2 },
-  aiOff: { flexDirection: 'row', gap: 8, margin: 16, marginBottom: 0, padding: 12, borderRadius: 12, borderWidth: 1 },
-  aiOffText: { flex: 1, fontSize: 11, lineHeight: 16 },
   sectionTitle: { fontSize: 15, fontWeight: '800', marginBottom: 10 },
   alertRow: { flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: 12, padding: 12, marginBottom: 8, borderWidth: 1 },
   alertIcon: { width: 34, height: 34, borderRadius: 9, justifyContent: 'center', alignItems: 'center' },

@@ -428,6 +428,7 @@ export async function lmxRoutes(app: FastifyInstance) {
         return reply
           .header('Cache-Control', 'no-store')
           .header('Access-Control-Allow-Origin', '*')
+          .header('Cross-Origin-Resource-Policy', review ? 'same-origin' : 'cross-origin')
           .type(segment.endsWith('.m3u8') ? 'application/vnd.apple.mpegurl' : 'video/mp4')
           .send(Readable.fromWeb(response.body as Parameters<typeof Readable.fromWeb>[0]));
       } catch {
@@ -777,17 +778,17 @@ export async function lmxRoutes(app: FastifyInstance) {
               : {}),
             reporter_id: userId,
             reporter_name: profile.display_name || body.reporter_name,
-            credibility_score: 50,
+            credibility_score: hosted ? null : 50,
             media_ingest_url: hosted ? null : pipeline.ingestUrl,
             media_playback_hls: playback,
             media_playback_webrtc: hosted ? null : pipeline.playbackWebrtc,
             buffer_state: 'buffering',
-            buffer_seconds: 20,
+            buffer_seconds: hosted ? null : 20,
             human_decision: null,
             status: hosted ? 'preparing' : 'live',
             priority_score: 0,
-            viewer_count: 0,
-            peak_viewers: 0,
+            viewer_count: hosted ? null : 0,
+            peak_viewers: hosted ? null : 0,
           })
           .select()
           .single();
