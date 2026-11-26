@@ -609,10 +609,12 @@ export async function lmxRoutes(app: FastifyInstance) {
     { schema: createLiveEventBodySchema },
     async (request, reply) => {
       const body = request.body || {};
+      const hosted = getHostedLiveConfig();
 
       // 1. Authenticate user from session token or non-prod x-user-id header
       const authHeader = request.headers.authorization;
       let userId: string | null = null;
+      let emailConfirmed = false;
 
       if (authHeader && authHeader.startsWith('Bearer ')) {
         const token = authHeader.replace('Bearer ', '').trim();
@@ -623,6 +625,7 @@ export async function lmxRoutes(app: FastifyInstance) {
           } = await supabase.auth.getUser(token);
           if (!authErr && user) {
             userId = user.id;
+            emailConfirmed = Boolean(user.email_confirmed_at);
           }
         } catch {
           // Auth lookup failed
@@ -630,7 +633,12 @@ export async function lmxRoutes(app: FastifyInstance) {
       }
 
       // Accept explicit x-user-id header only in non-production environments
-      if (!userId && !isProductionRuntime() && typeof request.headers['x-user-id'] === 'string') {
+      if (
+        !userId &&
+        !hosted &&
+        !isProductionRuntime() &&
+        typeof request.headers['x-user-id'] === 'string'
+      ) {
         userId = request.headers['x-user-id'];
       }
 
@@ -643,6 +651,18 @@ export async function lmxRoutes(app: FastifyInstance) {
           'Unauthorized: Authentication required to create a live broadcast.',
           {
             code: 'UNAUTHORIZED',
+          },
+        );
+      }
+      if (hosted && !emailConfirmed) {
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          'Confirm your email address to broadcast.',
+          {
+            code: 'UNVERIFIED_EMAIL',
           },
         );
       }
@@ -698,7 +718,7 @@ export async function lmxRoutes(app: FastifyInstance) {
         );
       }
 
-      if (profile.verification_status !== 'verified') {
+      if (!hosted && profile.verification_status !== 'verified') {
         return sendApiError(
           reply,
           request,
@@ -712,14 +732,24 @@ export async function lmxRoutes(app: FastifyInstance) {
       }
 
       const hosts = getMediaHosts();
-      const hosted = getHostedLiveConfig();
       if (hosted) {
         const { data: verification, error } = await supabase
           .from('creator_kyc_records')
           .select('status')
           .eq('user_id', userId)
           .maybeSingle();
-        if (error) return reply.code(503).send();
+        if (error) {
+          return sendApiError(
+            reply,
+            request,
+            503,
+            'Service Unavailable',
+            'Could not check contributor verification.',
+            {
+              code: 'VERIFICATION_UNAVAILABLE',
+            },
+          );
+        }
         if (verification?.status !== 'verified') {
           return sendApiError(
             reply,

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -8,7 +8,9 @@ import { useAuthStore } from '../../stores/auth';
 import { useUserProfileStore } from '../../stores/userProfile';
 import { useLiveExchangeStore } from '../../stores/liveExchange';
 import { useActiveStateStore } from '../../stores/activeState';
+import { useContributorVerificationStore } from '../../stores/contributorVerification';
 import { gateContentAction, logContentAction } from '../../lib/contentAccountability';
+import { hydrateContributorKYC } from '../../lib/contributorKycService';
 import {
   ISSUE_CATEGORY_CONFIG,
   type AccreditationTier,
@@ -36,12 +38,19 @@ export default function GoLiveScreen() {
   const { colors } = useTheme();
   const user = useAuthStore((state) => state.user);
   const profile = useUserProfileStore((state) => state.profile);
+  const userId = user?.id;
+  const verificationState = useContributorVerificationStore((state) =>
+    state.ownerUserId === userId ? state.kycLoadState : 'idle',
+  );
+  const isVerified = useContributorVerificationStore(
+    (state) => state.ownerUserId === userId && state.kycRecord?.status === 'verified',
+  );
   const stateCode = useActiveStateStore((state) => state.stateCode);
   const startLiveEvent = useLiveExchangeStore((state) => state.startLiveEvent);
-  const access = useMemo(
-    () =>
-      canAccessLive(profile?.role, profile?.verificationStatus, Boolean(user?.email_confirmed_at)),
-    [profile?.role, profile?.verificationStatus, user?.email_confirmed_at],
+  const access = canAccessLive(
+    profile?.id === userId ? profile?.role : undefined,
+    isVerified ? 'verified' : undefined,
+    Boolean(user?.email_confirmed_at),
   );
   const [available, setAvailable] = useState<boolean | null>(null);
   const [category, setCategory] = useState<IssueCategory>('general');
@@ -50,7 +59,7 @@ export default function GoLiveScreen() {
   const [error, setError] = useState<string | null>(null);
   const [helpVisible, setHelpVisible] = useState(false);
   const processing = useRef(false);
-  const studioLink = useRef<string | null>(null);
+  const studioLink = useRef<{ href: string; ownerId: string } | null>(null);
 
   const refreshAvailability = useCallback(async () => {
     setAvailable(null);
@@ -67,17 +76,21 @@ export default function GoLiveScreen() {
   useFocusEffect(
     useCallback(() => {
       void refreshAvailability();
-    }, [refreshAvailability]),
+      if (userId) void hydrateContributorKYC(userId);
+    }, [refreshAvailability, userId]),
   );
 
+  const canOpen =
+    available === true && access.allowed && Boolean(user) && verificationState === 'ready';
+
   async function openStudio() {
-    if (!available || !user || !access.allowed || processing.current) return;
+    if (!canOpen || !user || processing.current) return;
     if (!gateContentAction('go_live')) return;
     processing.current = true;
     setOpening(true);
     setError(null);
     try {
-      if (!studioLink.current) {
+      if (studioLink.current?.ownerId !== user.id) {
         const tier: AccreditationTier = profile?.role === 'journalist' ? 'accredited' : 'citizen';
         const event = await startLiveEvent({
           reporterId: user.id,
@@ -104,7 +117,7 @@ export default function GoLiveScreen() {
         ) {
           throw new Error('The server returned an invalid studio link');
         }
-        studioLink.current = url.href;
+        studioLink.current = { href: url.href, ownerId: user.id };
         logContentAction('go_live', {
           type: 'live_stream',
           id: event.id,
@@ -112,7 +125,8 @@ export default function GoLiveScreen() {
           screenName: 'go_live',
         });
       }
-      await Linking.openURL(studioLink.current);
+      if (useAuthStore.getState().user?.id !== user.id) return;
+      await Linking.openURL(studioLink.current.href);
       studioLink.current = null;
       if (router.canGoBack()) router.back();
     } catch {
@@ -128,7 +142,6 @@ export default function GoLiveScreen() {
     }
   }
 
-  const canOpen = available === true && access.allowed && Boolean(user);
   const blockedMessage = !user
     ? t('lmx.goLiveScreen.signInRequired', { defaultValue: 'Sign in to start a broadcast.' })
     : access.reason === 'unverified_email'
@@ -180,6 +193,21 @@ export default function GoLiveScreen() {
             </Text>
             <Pressable accessibilityRole="button" style={styles.tap} onPress={refreshAvailability}>
               <Text style={[styles.label, { color: colors.primary }]}>{t('common.refresh')}</Text>
+            </Pressable>
+          </>
+        ) : userId && (verificationState === 'idle' || verificationState === 'loading') ? (
+          <Text style={{ color: colors.text }}>{t('kycSheet.checkingStatus')}</Text>
+        ) : userId && verificationState === 'unavailable' ? (
+          <>
+            <Text accessibilityRole="alert" style={{ color: colors.text }}>
+              {t('kycSheet.statusUnavailable')}
+            </Text>
+            <Pressable
+              accessibilityRole="button"
+              style={styles.tap}
+              onPress={() => void hydrateContributorKYC(userId)}
+            >
+              <Text style={[styles.label, { color: colors.primary }]}>{t('common.retry')}</Text>
             </Pressable>
           </>
         ) : !canOpen ? (
