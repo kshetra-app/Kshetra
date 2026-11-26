@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CAMPAIGN_TYPE_CONFIG, type CampaignType } from '../../lib/campaignTypes';
 import { useTheme } from '../../lib/theme';
 import { useCampaignStore } from '../../stores/campaign';
@@ -27,6 +28,7 @@ interface CreateCampaignModalProps {
 export default function CreateCampaignModal({ visible, onClose, onCreated }: CreateCampaignModalProps) {
   const { t } = useTranslation();
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   const createCampaign = useCampaignStore((state) => state.createCampaign);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -108,17 +110,17 @@ export default function CreateCampaignModal({ visible, onClose, onCreated }: Cre
         style={styles.overlay}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <View style={[styles.sheet, { backgroundColor: colors.surface }]}>
+        <View style={[styles.sheet, { backgroundColor: colors.surface, paddingBottom: insets.bottom + 16 }]}>
           <View style={styles.header}>
             <Text style={[styles.title, { color: colors.text }]}>
               {t('campaignManager.createCampaign', { defaultValue: 'Create a campaign' })}
             </Text>
-            <Pressable accessibilityLabel={t('common.close', { defaultValue: 'Close' })} onPress={onClose}>
+            <Pressable accessibilityRole="button" accessibilityLabel={t('common.close', { defaultValue: 'Close' })} onPress={onClose} style={styles.closeButton}>
               <Ionicons name="close" size={24} color={colors.textSecondary} />
             </Pressable>
           </View>
 
-          <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+          <ScrollView style={styles.form} keyboardShouldPersistTaps="handled">
             <Text style={[styles.label, { color: colors.text }]}>{t('campaignManager.campaignName', { defaultValue: 'Campaign name' })}</Text>
             <TextInput
               style={[styles.input, { color: colors.text, borderColor: colors.border }]}
@@ -214,16 +216,18 @@ export default function CreateCampaignModal({ visible, onClose, onCreated }: Cre
             <Text style={[styles.note, { color: colors.textSecondary }]}>
               {t('campaignManager.campaignDraftNote', { defaultValue: 'This creates a draft record. It does not publish ads or schedule outreach.' })}
             </Text>
-            <Pressable
-              style={[styles.createButton, { backgroundColor: colors.primary }, saving && styles.disabledButton]}
-              onPress={handleCreate}
-              disabled={saving}
-            >
-              {saving ? <ActivityIndicator color="#FFFFFF" /> : (
-                <Text style={styles.createButtonText}>{t('campaignManager.saveCampaignDraft', { defaultValue: 'Save campaign draft' })}</Text>
-              )}
-            </Pressable>
           </ScrollView>
+          <Pressable
+            style={[styles.createButton, { backgroundColor: colors.primary }, saving && styles.disabledButton]}
+            accessibilityRole="button"
+            accessibilityState={{ busy: saving, disabled: saving }}
+            onPress={handleCreate}
+            disabled={saving}
+          >
+            {saving ? <ActivityIndicator color="#FFFFFF" /> : (
+              <Text style={styles.createButtonText}>{t('campaignManager.saveCampaignDraft', { defaultValue: 'Save campaign draft' })}</Text>
+            )}
+          </Pressable>
         </View>
       </KeyboardAvoidingView>
     </Modal>
@@ -234,7 +238,9 @@ const styles = StyleSheet.create({
   overlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: '#00000066' },
   sheet: { maxHeight: '92%', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
-  title: { fontSize: 18, fontWeight: '800' },
+  title: { flex: 1, fontSize: 18, fontWeight: '800' },
+  closeButton: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  form: { flexShrink: 1 },
   label: { fontSize: 13, fontWeight: '700', marginTop: 14, marginBottom: 6 },
   input: { borderWidth: 1, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14 },
   multiline: { minHeight: 72 },
@@ -243,7 +249,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: 10 },
   flex: { flex: 1 },
   note: { fontSize: 12, lineHeight: 17, marginTop: 14 },
-  createButton: { minHeight: 46, marginTop: 16, marginBottom: 12, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  createButtonText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800' },
+  createButton: { minHeight: 46, marginTop: 16, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  createButtonText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800', textAlign: 'center' },
   disabledButton: { opacity: 0.65 },
 });

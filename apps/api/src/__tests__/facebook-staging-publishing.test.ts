@@ -4,6 +4,7 @@ import {
   connectFacebookStagingPage,
   facebookAuthorizationUrl,
   facebookLoginState,
+  findFacebookStagingPermalink,
   getFacebookStagingConfig,
   getFacebookVideoPublication,
   hashFacebookLoginState,
@@ -26,6 +27,21 @@ const config: FacebookStagingConfig = {
 afterEach(() => jest.restoreAllMocks());
 
 describe('Facebook Staging publishing', () => {
+  it.each([
+    ['/reel/1234/', 'https://www.facebook.com/reel/1234/'],
+    ['https://www.facebook.com/reel/1234/', 'https://www.facebook.com/reel/1234/'],
+    ['//external.example/reel/1234/', null],
+    ['https://external.example/reel/1234/', null],
+    ['https://name:password@www.facebook.com/reel/1234/', null],
+  ])('only accepts Facebook post links (%s)', async (permalink, expected) => {
+    jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(Response.json({ id: '1234', permalink_url: permalink }));
+    await expect(findFacebookStagingPermalink(config, 'page-token', '1234')).resolves.toBe(
+      expected,
+    );
+  });
+
   it('binds authorization to the configured app, configuration, callback and single-use state', () => {
     const state = facebookLoginState();
     const url = new URL(facebookAuthorizationUrl(config, state));

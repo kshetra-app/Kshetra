@@ -340,10 +340,15 @@ export async function findFacebookStagingPermalink(
   try {
     const post = await graph<{ id?: string; permalink_url?: string }>(url, config, token);
     if (post.id !== id || !post.permalink_url) return null;
-    const permalink = new URL(post.permalink_url);
+    const raw = post.permalink_url;
+    const permalink =
+      raw.startsWith('/') && !raw.startsWith('//')
+        ? new URL(raw, 'https://www.facebook.com')
+        : new URL(raw);
     if (
-      permalink.protocol === 'https:' &&
-      ['www.facebook.com', 'facebook.com'].includes(permalink.hostname)
+      ['https://www.facebook.com', 'https://facebook.com'].includes(permalink.origin) &&
+      !permalink.username &&
+      !permalink.password
     ) {
       return permalink.href;
     }
