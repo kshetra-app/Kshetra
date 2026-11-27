@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { get } from 'node:https';
 import type { FastifyPluginAsync } from 'fastify';
 import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import { isSupabaseConfigured, isUsingServiceRole, supabase } from '../lib/supabase';
@@ -50,27 +51,36 @@ export function fingerprintPublisherDocument(format: Publisher['format'], source
 }
 
 async function fetchFingerprint(publisher: Publisher): Promise<string> {
-  const response = await fetch(publisher.url, {
-    redirect: 'error',
-    signal: AbortSignal.timeout(15_000),
+  const source = await new Promise<string>((resolve, reject) => {
+    const request = get(
+      publisher.url,
+      {
+        family: 4,
+        signal: AbortSignal.timeout(25_000),
+        headers: { 'User-Agent': 'Poligram official civic publisher monitor' },
+      },
+      (response) => {
+        if (response.statusCode !== 200) {
+          response.destroy();
+          reject(new Error(`Publisher returned HTTP ${response.statusCode}`));
+          return;
+        }
+        const chunks: Buffer[] = [];
+        let bytes = 0;
+        response.on('data', (chunk: Buffer) => {
+          bytes += chunk.length;
+          if (bytes > responseLimit) {
+            response.destroy(new Error('Publisher response exceeds the size limit'));
+            return;
+          }
+          chunks.push(chunk);
+        });
+        response.once('error', reject);
+        response.once('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+      },
+    );
+    request.once('error', reject);
   });
-  if (!response.ok || !response.body) throw new Error(`Publisher returned HTTP ${response.status}`);
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder();
-  let source = '';
-  let bytes = 0;
-  try {
-    for (;;) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      bytes += value.byteLength;
-      if (bytes > responseLimit) throw new Error('Publisher response exceeds the size limit');
-      source += decoder.decode(value, { stream: true });
-    }
-    source += decoder.decode();
-  } finally {
-    await reader.cancel();
-  }
   return fingerprintPublisherDocument(publisher.format, source);
 }
 
@@ -96,7 +106,11 @@ export const civicPublisherMonitor: FastifyPluginAsync = async (app) => {
         if (!publisher) continue;
         const previous = row.metadata?.publisher_check ?? {};
         const wait = previous.status === 'unavailable' ? retryDelay : daily;
-        if (Date.now() - Date.parse(previous.last_attempt_at) < wait) continue;
+        if (
+          Date.now() - Date.parse(previous.last_attempt_at) < wait &&
+          (previous.status !== 'unavailable' || previous.last_error)
+        )
+          continue;
         const checkedOn = new Date().toISOString();
         let check;
         try {
@@ -107,11 +121,19 @@ export const civicPublisherMonitor: FastifyPluginAsync = async (app) => {
             fingerprint: digest,
             last_attempt_at: checkedOn,
             last_success_at: checkedOn,
+            last_error: null,
             status: changed ? 'changed' : previous.fingerprint ? 'unchanged' : 'baseline',
             ...(changed ? { last_changed_at: checkedOn, review_required: true } : {}),
           };
-        } catch {
-          check = { ...previous, last_attempt_at: checkedOn, status: 'unavailable' };
+        } catch (error) {
+          const connectionCode = (error as NodeJS.ErrnoException).code;
+          const message = error instanceof Error ? error.message : 'Unknown error';
+          check = {
+            ...previous,
+            last_attempt_at: checkedOn,
+            status: 'unavailable',
+            last_error: connectionCode ?? message,
+          };
         }
         // The publisher registry holds the durable check state. This never
         // updates a bill, project, hearing, or its content verification date.
