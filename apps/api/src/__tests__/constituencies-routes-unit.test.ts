@@ -167,6 +167,28 @@ describe('Constituencies Routes Unit Tests (Exhaustive Branch Coverage)', () => 
     expect(winners[0].caseReportUrl).toMatch(/adrindia\.org\/.+\.pdf#page=/);
   });
 
+  it('keeps recovered Karnataka filings scoped to the candidate, seat and election year', async () => {
+    const vijayanagar = await app.inject('/states/KA/constituencies/167/podium');
+    const bangaloreSouth = await app.inject('/states/KA/constituencies/176/podium');
+    expect(vijayanagar.statusCode).toBe(200);
+    expect(bangaloreSouth.statusCode).toBe(200);
+
+    const winner2018 = (response: typeof vijayanagar) =>
+      response.json().find((contest: { year: number }) => contest.year === 2018).winner;
+    expect(winner2018(vijayanagar)).toMatchObject({
+      party: 'INC',
+      affidavitUrl: expect.stringContaining('/karnataka2018/candidate.php?candidate_id=6980'),
+      totalAssets: 2_361_792_635,
+      criminalCases: 2,
+    });
+    expect(winner2018(bangaloreSouth)).toMatchObject({
+      party: 'BJP',
+      affidavitUrl: expect.stringContaining('/karnataka2018/candidate.php?candidate_id=5934'),
+      totalAssets: 819_461_682,
+      criminalCases: 0,
+    });
+  });
+
   it('keeps disclosures, portraits and citations attached to the individual podium candidate', async () => {
     const response = await app.inject('/states/TS/constituencies/1/podium');
     expect(response.statusCode).toBe(200);
