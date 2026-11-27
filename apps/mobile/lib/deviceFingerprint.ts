@@ -8,7 +8,7 @@
  *
  * Privacy notes:
  *   - IMEI is NOT accessible on modern Android (API 29+) / iOS
- *   - Uses androidId / identifierForVendor as legal device identifier
+ *   - Uses an app-scoped native identifier or a locally generated installation ID
  *   - Location requires user permission (gracefully degrades if denied)
  *   - Public IP fetched via lightweight API call
  *
@@ -23,6 +23,7 @@
  */
 
 import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import Constants from 'expo-constants';
 import type {
@@ -36,6 +37,23 @@ import type {
 // ─── Session ID (generated once per app launch) ─────────────────────────────
 
 let _sessionId: string | null = null;
+let installationId: Promise<string | null> | undefined;
+const installationIdKey = 'poligram-forensics-installation-id';
+
+function getInstallationId(): Promise<string | null> {
+  installationId ??= (async () => {
+    const existing = await AsyncStorage.getItem(installationIdKey);
+    if (existing) return existing;
+    // This value correlates records from one installation. It grants no access.
+    const id = `install_${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}_${Math.random().toString(36).slice(2)}`;
+    await AsyncStorage.setItem(installationIdKey, id);
+    return id;
+  })().catch(() => {
+    installationId = undefined;
+    return null;
+  });
+  return installationId;
+}
 
 function getSessionId(): string {
   if (!_sessionId) {
@@ -71,9 +89,10 @@ async function safeImport(moduleName: string): Promise<any | null> {
 
 export async function captureDeviceFingerprint(): Promise<DeviceFingerprint> {
   // Start with a safe fallback
+  const android = Platform.OS === 'android' ? Platform.constants : null;
   const fingerprint: DeviceFingerprint = {
-    brand: null,
-    model: null,
+    brand: android?.Brand ?? null,
+    model: android?.Model ?? null,
     os: Platform.OS === 'ios' ? 'iOS' : 'Android',
     osVersion: String(Platform.Version),
     deviceUniqueId: null,
@@ -85,8 +104,8 @@ export async function captureDeviceFingerprint(): Promise<DeviceFingerprint> {
   try {
     const Device = await safeImport('expo-device');
     if (Device) {
-      fingerprint.brand = Device.brand ?? null;
-      fingerprint.model = Device.modelName ?? null;
+      fingerprint.brand = Device.brand ?? fingerprint.brand;
+      fingerprint.model = Device.modelName ?? fingerprint.model;
       fingerprint.deviceName = Device.deviceName ?? null;
       fingerprint.totalMemoryMb = Device.totalMemory
         ? Math.round(Device.totalMemory / (1024 * 1024))
@@ -106,7 +125,7 @@ export async function captureDeviceFingerprint(): Promise<DeviceFingerprint> {
   }
 
   // Try to get unique device ID (non-critical)
-  fingerprint.deviceUniqueId = await getDeviceUniqueId();
+  fingerprint.deviceUniqueId = (await getDeviceUniqueId()) ?? (await getInstallationId());
 
   return fingerprint;
 }
@@ -277,6 +296,13 @@ export async function captureAppFingerprint(): Promise<AppFingerprint> {
     } catch {
       // ignore
     }
+  }
+
+  if (!build) {
+    const configBuild = Platform.OS === 'android'
+      ? Constants.expoConfig?.android?.versionCode
+      : Constants.expoConfig?.ios?.buildNumber;
+    build = configBuild == null ? null : String(configBuild);
   }
 
   return {
