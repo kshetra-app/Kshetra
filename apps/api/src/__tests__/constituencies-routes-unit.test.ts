@@ -54,6 +54,32 @@ describe('Constituencies Routes Unit Tests (Exhaustive Branch Coverage)', () => 
     });
   });
 
+  it('uses the corrected ECI Karnataka result in both the detailed and summary routes', async () => {
+    const [detail, summary] = await Promise.all([
+      app.inject('/states/KA/constituencies/30/podium'),
+      app.inject('/states/KA/podium-summary'),
+    ]);
+    expect(detail.statusCode).toBe(200);
+    expect(summary.statusCode).toBe(200);
+    const contest = detail.json().find((row: { year: number }) => row.year === 2023);
+    expect(contest).toMatchObject({
+      electionType: 'GENERAL',
+      totalValidVotes: 183047,
+      winner: { votes: 94201, voteShare: 51.46 },
+      secondRunnerUp: { name: 'Bandenawaz Husenasab Mahabari', votes: 459, party: 'JD(S)' },
+    });
+    expect(contest.resultSourceUrl).toContain('www.eci.gov.in');
+    const seats = summary.json().data;
+    expect(seats).toHaveLength(224);
+    expect(seats.find((seat: { acNo: number }) => seat.acNo === 30).history).toContainEqual(
+      expect.objectContaining({
+        year: 2023,
+        margin: contest.winner.votes - contest.firstRunnerUp.votes,
+        resultSourceUrl: contest.resultSourceUrl,
+      }),
+    );
+  });
+
   it('keeps disclosures, portraits and citations attached to the individual podium candidate', async () => {
     const response = await app.inject('/states/TS/constituencies/1/podium');
     expect(response.statusCode).toBe(200);
