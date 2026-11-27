@@ -71,6 +71,8 @@ export default function PostDetailModal({
   const [reportVisible, setReportVisible] = useState(false);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const inputRef = useRef<TextInput>(null);
+  const commentListRef = useRef<FlatList<Comment>>(null);
+  const commentsHeadingOffset = useRef<number | null>(null);
   const pageRequest = useRef(0);
   const loadPage = useFeedStore((state) => state.loadCommentPage);
   const editComment = useFeedStore((state) => state.editComment);
@@ -185,6 +187,10 @@ export default function PostDetailModal({
         return;
       }
       setCommentText('');
+      requestAnimationFrame(() => {
+        const offset = commentsHeadingOffset.current;
+        if (offset !== null) commentListRef.current?.scrollToOffset({ offset, animated: true });
+      });
       if (outcome === 'queued') {
         Alert.alert(
           t('postDetail.commentQueued', { defaultValue: 'Comment queued' }),
@@ -323,6 +329,7 @@ export default function PostDetailModal({
 
         {/* List: Header component is the full post, rows are comments */}
         <FlatList
+          ref={commentListRef}
           data={comments}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator
@@ -459,7 +466,12 @@ export default function PostDetailModal({
               </View>
 
               {/* Comments Section Title */}
-              <View style={styles.commentsHeader}>
+              <View
+                style={styles.commentsHeader}
+                onLayout={({ nativeEvent }) => {
+                  commentsHeadingOffset.current = nativeEvent.layout.y;
+                }}
+              >
                 <Text style={[styles.commentsTitle, { color: colors.text }]}>
                   {t('postDetail.comments')}
                 </Text>
