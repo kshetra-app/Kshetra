@@ -1,4 +1,5 @@
 import { timingSafeEqual } from 'node:crypto';
+import { legislatureCertificateChain } from './legislatureCertificateChain.ts';
 
 const publishers = {
   telangana_law_department: 'https://law.telangana.gov.in/bills',
@@ -10,6 +11,7 @@ const publishers = {
 
 const responseLimit = 2_000_000;
 const encoder = new TextEncoder();
+let legislatureClient: Deno.HttpClient | undefined;
 
 Deno.serve(async (request) => {
   if (request.method !== 'POST') return new Response(null, { status: 405 });
@@ -33,10 +35,18 @@ Deno.serve(async (request) => {
 
   const timeout = AbortSignal.timeout(15_000);
   try {
-    const upstream = await fetch(publishers[publisher as keyof typeof publishers], {
+    const source = new URL(publishers[publisher as keyof typeof publishers]);
+    // The legislature host currently omits part of its certificate chain.
+    // Complete it only for this host, with hostname verification still enabled.
+    const client =
+      source.hostname === 'kla.kar.nic.in'
+        ? (legislatureClient ??= Deno.createHttpClient({ caCerts: legislatureCertificateChain }))
+        : undefined;
+    const upstream = await fetch(source, {
       redirect: 'error',
       signal: timeout,
       headers: { 'User-Agent': 'Poligram civic publisher monitor' },
+      ...(client ? { client } : {}),
     });
     if (upstream.status !== 200 || !upstream.body) {
       await upstream.body?.cancel();
