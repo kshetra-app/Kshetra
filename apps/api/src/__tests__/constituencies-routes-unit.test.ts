@@ -124,6 +124,19 @@ describe('Constituencies Routes Unit Tests (Exhaustive Branch Coverage)', () => 
       });
       expect(seat.history[1]).toMatchObject({ year: 2023, electionType: 'GENERAL' });
     }
+
+    const detail = await app.inject('/states/KA/constituencies/24');
+    expect(detail.statusCode).toBe(200);
+    expect(detail.json()).toMatchObject({
+      recentElection: {
+        electionYear: 2026,
+        electionType: 'BYPOLL',
+        winnerName: 'Umesh Hullappa Meti',
+        winnerVotes: null,
+        margin: null,
+      },
+      election2023: { winnerName: 'Meti. Hullappa. Yamanappa', winnerVotes: 79336 },
+    });
   });
 
   it('keeps disclosures, portraits and citations attached to the individual podium candidate', async () => {

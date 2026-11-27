@@ -569,7 +569,10 @@ export async function constituencyRoutes(app: FastifyInstance) {
                   candidate.id.toLowerCase() === constituencyId.toLowerCase(),
               ) ?? null);
           if (row) {
-            const electionData = await getCanonicalConstituencyElectionData(code, row.acNo);
+            const electionData =
+              code === 'KA'
+                ? getCitedKarnatakaElectionData(row.acNo)
+                : await getCanonicalConstituencyElectionData(code, row.acNo);
             const electionRows = electionData?.elections ?? [];
             const recentElection = electionData?.recentElection ?? electionRows[0] ?? null;
             const elections = electionRows.length
@@ -577,7 +580,9 @@ export async function constituencyRoutes(app: FastifyInstance) {
               : recentElection
                 ? [recentElection]
                 : [];
-            const election2023 = toLegacyElection2023(recentElection);
+            const election2023 = toLegacyElection2023(
+              elections.find((election) => election.electionYear === 2023) ?? null,
+            );
             const statistics = row.internalId
               ? await canonicalGeographyService
                   .getConstituencyStatistics(row.internalId)
@@ -657,14 +662,19 @@ export async function constituencyRoutes(app: FastifyInstance) {
         );
       }
 
-      const electionData = getConstituencyElectionData(code, brief.acNo);
+      const electionData =
+        code === 'KA'
+          ? getCitedKarnatakaElectionData(brief.acNo)
+          : getConstituencyElectionData(code, brief.acNo);
       const electionRows = electionData?.elections ?? [];
       const recentElection = electionData?.recentElection ?? electionRows[0] ?? null;
       const elections = electionRows.length ? electionRows : recentElection ? [recentElection] : [];
 
       // @deprecated LEGACY COMPATIBILITY ALIAS (CTO Directive 085)
       // Preserved for unmigrated clients; missing result metrics remain null.
-      const election2023 = toLegacyElection2023(recentElection);
+      const election2023 = toLegacyElection2023(
+        elections.find((election) => election.electionYear === 2023) ?? null,
+      );
 
       return {
         ...brief,
@@ -1004,6 +1014,55 @@ export async function constituencyRoutes(app: FastifyInstance) {
     } catch {
       return null;
     }
+  }
+
+  function getCitedKarnatakaElectionData(acNo: number) {
+    const contests: unknown = loadServerPodium('KA')?.[acNo];
+    if (!Array.isArray(contests)) return null;
+    const elections: ConstituencyElectionSummary[] = contests
+      .filter(
+        (contest) =>
+          Number.isSafeInteger(contest?.year) &&
+          (contest.electionType === 'GENERAL' || contest.electionType === 'BYPOLL') &&
+          typeof contest.resultSourceUrl === 'string' &&
+          contest.resultSourceUrl.startsWith('https://') &&
+          typeof contest.winner?.party === 'string' &&
+          contest.winner.party.trim() &&
+          typeof contest.winner.name === 'string' &&
+          contest.winner.name.trim(),
+      )
+      .map((contest) => {
+        const winnerVotes = Number.isSafeInteger(contest.winner.votes)
+          ? contest.winner.votes
+          : null;
+        const runnerUpVotes = contest.firstRunnerUp?.votes;
+        const margin =
+          winnerVotes !== null &&
+          Number.isSafeInteger(runnerUpVotes) &&
+          runnerUpVotes >= 0 &&
+          winnerVotes >= runnerUpVotes
+            ? winnerVotes - runnerUpVotes
+            : null;
+        const marginPercent =
+          margin !== null &&
+          Number.isSafeInteger(contest.totalValidVotes) &&
+          contest.totalValidVotes > 0 &&
+          contest.totalValidVotes >= winnerVotes
+            ? Math.round((margin * 10_000) / contest.totalValidVotes) / 100
+            : null;
+        return {
+          electionYear: contest.year,
+          electionType: contest.electionType,
+          winner: contest.winner.party,
+          winnerName: contest.winner.name,
+          winnerVotes,
+          runnerUp: contest.firstRunnerUp?.party ?? '',
+          margin,
+          marginPercent,
+        };
+      })
+      .sort((a, b) => b.electionYear! - a.electionYear!);
+    return elections.length ? { recentElection: elections[0], elections } : null;
   }
 
   /** 6. GET /states/:stateCode/mla */
