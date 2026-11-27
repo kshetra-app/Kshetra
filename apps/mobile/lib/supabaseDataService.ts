@@ -1834,7 +1834,12 @@ export async function fetchUserConversations(userId: string): Promise<DMConversa
     if (!data) return [];
 
     // Resolve other participant profiles
-    const otherUserIds = data.map((c) => (c.participant_one === userId ? c.participant_two : c.participant_one));
+    const visible = data.filter((conversation) =>
+      conversation.status !== 'pending' ||
+      conversation.initiated_by === userId ||
+      Boolean(conversation.last_message_preview),
+    );
+    const otherUserIds = visible.map((c) => (c.participant_one === userId ? c.participant_two : c.participant_one));
     const uniqueIds = Array.from(new Set(otherUserIds));
 
     let profileMap = new Map<string, any>();
@@ -1849,7 +1854,7 @@ export async function fetchUserConversations(userId: string): Promise<DMConversa
       }
     }
 
-    return data.map((c) => {
+    return visible.map((c) => {
       const otherId = c.participant_one === userId ? c.participant_two : c.participant_one;
       const profile = profileMap.get(otherId);
       return {
@@ -1982,16 +1987,11 @@ export async function blockAndReportDMUser(
 
 export async function markConversationMessagesRead(conversationId: string, userId: string): Promise<boolean> {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/v1/dm/messages/read`, {
+    const res = await apiClient.request('/api/v1/dm/messages/read', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-user-id': userId,
-        ...telemetry.getTracingHeaders(),
-      },
-      body: JSON.stringify({ conversationId, userId }),
+      body: { conversationId, userId },
     });
-    return res.ok;
+    return res.statusCode >= 200 && res.statusCode < 300;
   } catch (err) {
     captureException(err as Error, { op: 'mark_messages_read', conversationId });
     return false;

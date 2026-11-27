@@ -497,6 +497,18 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
           },
         );
       }
+      if (createErr.code === 'P4111' || createErr.code === 'P4112') {
+        return sendApiError(
+          reply,
+          request,
+          409,
+          'Conflict',
+          'This conversation cannot receive another message right now.',
+          {
+            code: 'MESSAGE_REQUEST_UNAVAILABLE',
+          },
+        );
+      }
       return sendApiError(
         reply,
         request,
@@ -577,7 +589,8 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
       }
 
       const conversationId = request.params.id;
-      const { content, mediaUrl, mediaType } = request.body || {};
+      const { content: rawContent, mediaUrl, mediaType } = request.body || {};
+      const content = rawContent?.trim();
 
       if (!content && !mediaUrl) {
         return sendApiError(
@@ -643,7 +656,7 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
         conv.participant_one === auth.userId ? conv.participant_two : conv.participant_one;
 
       // Verify blocklist
-      const { data: isBlocked } = await supabase
+      const { data: isBlocked, error: blocklistErr } = await supabase
         .from('blocked_users')
         .select('blocker_id')
         .or(
@@ -651,6 +664,18 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
         )
         .maybeSingle();
 
+      if (blocklistErr) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Could not check messaging permissions.',
+          {
+            code: 'DM_SAFETY_CHECK_UNAVAILABLE',
+          },
+        );
+      }
       if (isBlocked) {
         return sendApiError(reply, request, 403, 'Forbidden', 'Cannot message a blocked user', {
           code: 'USER_BLOCKED',
@@ -681,6 +706,18 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
         .single();
 
       if (msgErr) {
+        if (msgErr.code === 'P4111' || msgErr.code === 'P4112') {
+          return sendApiError(
+            reply,
+            request,
+            409,
+            'Conflict',
+            'This conversation cannot receive another message right now.',
+            {
+              code: 'MESSAGE_REQUEST_UNAVAILABLE',
+            },
+          );
+        }
         return sendApiError(reply, request, 500, 'Internal Server Error', msgErr.message, {
           code: 'DATABASE_ERROR',
         });
@@ -781,6 +818,23 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
         });
       }
 
+      if (
+        conv.status === 'declined' ||
+        (conv.status === 'pending' &&
+          (conv.initiated_by === auth.userId || !conv.last_message_preview))
+      ) {
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          'Only the recipient can accept a received message request.',
+          {
+            code: 'INVALID_REQUEST_RECIPIENT',
+          },
+        );
+      }
+
       // Move to accepted and enable media for this participant
       const updatePayload: Record<string, any> = {
         status: 'accepted',
@@ -792,15 +846,30 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
         updatePayload.media_accepted_by_two = true;
       }
 
-      const { error } = await supabase
+      const { data: accepted, error } = await supabase
         .from('conversations')
         .update(updatePayload)
-        .eq('id', conversationId);
+        .eq('id', conversationId)
+        .eq('status', conv.status)
+        .select('id')
+        .maybeSingle();
 
       if (error) {
         return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
           code: 'DATABASE_ERROR',
         });
+      }
+      if (!accepted) {
+        return sendApiError(
+          reply,
+          request,
+          409,
+          'Conflict',
+          'The message request changed. Refresh and try again.',
+          {
+            code: 'MESSAGE_REQUEST_CHANGED',
+          },
+        );
       }
 
       // Unlock media for messages in this thread
@@ -1051,6 +1120,22 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
       }
 
       try {
+        const { data: conversation, error: lookupError } = await supabase
+          .from('conversations')
+          .select('participant_one, participant_two, status')
+          .eq('id', conversationId)
+          .maybeSingle();
+        if (lookupError) throw lookupError;
+        if (
+          !conversation ||
+          ![conversation.participant_one, conversation.participant_two].includes(userId)
+        ) {
+          return sendApiError(reply, request, 404, 'Not Found', 'Conversation not found', {
+            code: 'NOT_FOUND',
+          });
+        }
+        if (conversation.status !== 'accepted') return reply.send({ success: true });
+
         const { error } = await supabase
           .from('messages')
           .update({ read_at: now })

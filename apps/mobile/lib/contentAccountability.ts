@@ -59,10 +59,17 @@ import {
  * ```
  */
 export function gateContentAction(actionType: ContentActionType): boolean {
-  // Non-gated actions always pass
+  const userId = useAuthStore.getState().user?.id;
+  if (!userId) {
+    Alert.alert(i18n.t('kycSheet.signInRequired'), i18n.t('common.signInToContinue', {
+      defaultValue: 'Sign in to continue.',
+    }));
+    return false;
+  }
   if (!GATED_ACTIONS.includes(actionType)) return true;
 
   const store = useContributorVerificationStore.getState();
+  if (store.ownerUserId !== userId) return false;
   const result = store.requestAction(actionType);
 
   if (result.allowed) return true;
@@ -94,7 +101,10 @@ export function gateContentAction(actionType: ContentActionType): boolean {
       Alert.alert(
         'Verification Pending',
         'Your contributor verification is being reviewed. You will be able to post once verified.',
-        [{ text: 'OK' }],
+        [
+          { text: i18n.t('common.ok'), style: 'cancel' },
+          { text: i18n.t('common.refresh', { defaultValue: 'Refresh' }), onPress: () => void retryContributorStatus(userId, actionType) },
+        ],
       );
       break;
 
@@ -102,7 +112,10 @@ export function gateContentAction(actionType: ContentActionType): boolean {
       Alert.alert(
         'Verification Rejected',
         'Your contributor verification was rejected. Please contact support or re-submit with correct details.',
-        [{ text: 'OK' }],
+        [
+          { text: i18n.t('common.cancel'), style: 'cancel' },
+          { text: i18n.t('common.retry'), onPress: () => store.setShowKYCSheet(true) },
+        ],
       );
       break;
 
@@ -176,6 +189,7 @@ export async function logContentAction(
     screenName?: string;
   },
 ): Promise<ActionFingerprint | null> {
+  if (!GATED_ACTIONS.includes(actionType)) return null;
   const store = useContributorVerificationStore.getState();
   const kyc = store.kycRecord;
 

@@ -3038,6 +3038,10 @@ const en =  {
     "disputeResolution": "Dispute Resolution"
   },
   "messages": {
+    "startFailed": "Could not open this conversation. Try again.",
+    "actionFailed": "Could not update this conversation. Try again.",
+    "waitingForAccept": "Request sent. You can send another message after it is accepted.",
+    "sendFailed": "Message could not send. Your text is still here.",
     "inbox": "Direct Messages",
     "chats": "Chats",
     "requests": "Requests",

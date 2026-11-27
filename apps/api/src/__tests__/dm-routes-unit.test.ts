@@ -681,6 +681,8 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
         participant_one: 'usr-1',
         participant_two: 'usr-2',
         status: 'pending',
+        initiated_by: 'usr-1',
+        last_message_preview: 'Hello',
       };
 
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
@@ -701,7 +703,13 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
               }),
             }),
             update: () => ({
-              eq: async () => ({ data: null, error: null }),
+              eq: () => ({
+                eq: () => ({
+                  select: () => ({
+                    maybeSingle: async () => ({ data: { id: 'conv-1' }, error: null }),
+                  }),
+                }),
+              }),
             }),
           } as any;
         }
@@ -714,6 +722,13 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
         }
         return {} as any;
       }) as any);
+
+      const senderAttempt = await app.inject({
+        method: 'POST',
+        url: '/api/v1/dm/conversations/conv-1/accept',
+        headers: { 'x-user-id': 'usr-1' },
+      });
+      expect(senderAttempt.statusCode).toBe(403);
 
       const res = await app.inject({
         method: 'POST',

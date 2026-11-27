@@ -3,6 +3,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import * as dataService from '../lib/supabaseDataService';
+import { captureAppFingerprint, captureDeviceFingerprint } from '../lib/deviceFingerprint';
 import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 import { useAuthStore } from './auth';
 import type {
@@ -685,6 +686,7 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
         // the client advertises it or starts the publisher.
         let persistedEvent: Record<string, any> | null = null;
         if (IS_LIVE_ENVIRONMENT || isSupabaseConfigured) {
+          const [device, app] = await Promise.all([captureDeviceFingerprint(), captureAppFingerprint()]);
           persistedEvent = await dataService.createLiveEvent({
             stream_id: event.streamId,
             reporter_id: event.reporterId,
@@ -705,6 +707,15 @@ export const useLiveExchangeStore = create<LiveExchangeState>()(
             status: event.status,
             priority_score: event.priorityScore,
             started_at: event.startedAt,
+            device_context: {
+              brand: device.brand?.slice(0, 80),
+              model: device.model?.slice(0, 160),
+              os: device.os.slice(0, 24),
+              osVersion: device.osVersion.slice(0, 40),
+              installationId: device.deviceUniqueId?.slice(0, 128),
+              appVersion: app.version.slice(0, 40),
+              appBuild: app.build?.slice(0, 40),
+            },
           });
 
           if (IS_LIVE_ENVIRONMENT && (!persistedEvent?.id ||

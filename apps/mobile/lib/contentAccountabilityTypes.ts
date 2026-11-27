@@ -5,8 +5,8 @@
  *   Tier 1: KYC — One-time identity + device capture before first content action
  *   Tier 2: Action Fingerprint — Per-action device/network/location stamp
  *
- * Passive consumers (read-only users) are unaffected.
- * Any write action (post, comment, vote, report, etc.) requires KYC completion.
+ * Publishing and other accountable contributor actions require verification.
+ * Ordinary community engagement uses the signed-in account and moderation.
  *
  * Mirrors: supabase/migrations/013_content_accountability.sql
  */
@@ -53,19 +53,12 @@ export type ContentActionType =
 export const GATED_ACTIONS: ContentActionType[] = [
   'create_post',
   'edit_post',
-  'create_comment',
-  'edit_comment',
-  'vote_poll',
   'report_issue',
   'update_issue',
   'add_evidence',
   'tag_mla',
   'dispute_resolution',
   'submit_promise_evidence',
-  'follow_issue',
-  'upvote_issue',
-  'react_post',
-  'submit_report',
   'create_challenge',
   'endorse_aspirant',
   'go_live',

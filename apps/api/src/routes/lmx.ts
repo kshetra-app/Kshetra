@@ -105,6 +105,19 @@ const createLiveEventBodySchema = {
       raw_recording_url: { type: 'null' },
       branded_recording_url: { type: 'null' },
       retention_expiry: { type: 'null' },
+      device_context: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          brand: { type: 'string', maxLength: 80 },
+          model: { type: 'string', maxLength: 160 },
+          os: { type: 'string', maxLength: 24 },
+          osVersion: { type: 'string', maxLength: 40 },
+          installationId: { type: 'string', maxLength: 128 },
+          appVersion: { type: 'string', maxLength: 40 },
+          appBuild: { type: 'string', maxLength: 40 },
+        },
+      },
       started_at: { type: 'string', format: 'date-time' },
       ended_at: { type: 'null' },
     },
@@ -788,6 +801,7 @@ export async function lmxRoutes(app: FastifyInstance) {
       );
       const safeBody = { ...body };
       for (const field of [
+        'device_context',
         'media_ingest_url',
         'media_playback_hls',
         'media_playback_webrtc',
@@ -809,41 +823,65 @@ export async function lmxRoutes(app: FastifyInstance) {
           hosted && id
             ? `${hosted.studioOrigin}${liveWatchPath}/${id}/index.m3u8`
             : pipeline.playbackHls;
-        const { data, error } = await supabase
-          .from('live_events')
-          .insert({
-            ...safeBody,
-            ...(id
-              ? {
-                  id,
-                  stream_id: `KX-${id}`,
-                  gps_lat: null,
-                  gps_lng: null,
-                  visibility_mode: 'public',
-                  alert_departments: [],
-                  affiliation_id: null,
-                  active_brand_kit_id: null,
-                  accreditation_tier: profile.role === 'journalist' ? 'accredited' : 'citizen',
-                }
-              : {}),
-            reporter_id: userId,
-            reporter_name: profile.display_name || body.reporter_name,
-            credibility_score: hosted ? null : 50,
-            media_ingest_url: hosted ? null : pipeline.ingestUrl,
-            media_playback_hls: playback,
-            media_playback_webrtc: hosted ? null : pipeline.playbackWebrtc,
-            buffer_state: 'buffering',
-            buffer_seconds: hosted ? null : 20,
-            human_decision: null,
-            status: hosted ? 'preparing' : 'live',
-            priority_score: 0,
-            viewer_count: hosted ? null : 0,
-            peak_viewers: hosted ? null : 0,
-          })
-          .select()
-          .single();
+        const event = {
+          ...safeBody,
+          ...(id
+            ? {
+                id,
+                stream_id: `KX-${id}`,
+                gps_lat: null,
+                gps_lng: null,
+                visibility_mode: 'public',
+                alert_departments: [],
+                affiliation_id: null,
+                active_brand_kit_id: null,
+                accreditation_tier: profile.role === 'journalist' ? 'accredited' : 'citizen',
+              }
+            : {}),
+          reporter_id: userId,
+          reporter_name: profile.display_name || body.reporter_name,
+          credibility_score: hosted ? null : 50,
+          media_ingest_url: hosted ? null : pipeline.ingestUrl,
+          media_playback_hls: playback,
+          media_playback_webrtc: hosted ? null : pipeline.playbackWebrtc,
+          buffer_state: 'buffering',
+          buffer_seconds: hosted ? null : 20,
+          human_decision: null,
+          status: hosted ? 'preparing' : 'live',
+          priority_score: 0,
+          viewer_count: hosted ? null : 0,
+          peak_viewers: hosted ? null : 0,
+        };
+        const { data, error } = hosted
+          ? await supabase.rpc('create_hosted_live_event', {
+              p_reporter_id: userId,
+              p_event: event,
+              p_device_context: body.device_context ?? {},
+            })
+          : await supabase.from('live_events').insert(event).select().single();
 
         if (error) {
+          if (hosted) {
+            if (error.code === '42501') {
+              return sendApiError(
+                reply,
+                request,
+                403,
+                'Forbidden',
+                'Verify your contributor profile to broadcast.',
+                { code: 'UNVERIFIED' },
+              );
+            }
+            request.log.error({ code: error.code }, 'Could not record the hosted Live session');
+            return sendApiError(
+              reply,
+              request,
+              503,
+              'Service Unavailable',
+              'Could not open the broadcast studio.',
+              { code: 'LIVE_SESSION_UNAVAILABLE' },
+            );
+          }
           return sendApiError(reply, request, 500, 'Internal Server Error', error.message, {
             code: 'DATABASE_ERROR',
           });

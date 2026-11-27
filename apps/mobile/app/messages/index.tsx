@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -25,6 +25,7 @@ import {
 } from '../../lib/supabaseDataService';
 import { useTimeAgo } from '../../lib/useTimeAgo';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
+import { useForegroundChatRefresh } from '../../lib/useForegroundChatRefresh';
 import {
   getLocalizedContactName,
   getLocalizedContactRole,
@@ -53,23 +54,34 @@ export default function MessagesInboxScreen() {
   const [searchLoading, setSearchLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('all');
   const [startingChatId, setStartingChatId] = useState<string | null>(null);
+  const [startError, setStartError] = useState(false);
+  const startingChat = useRef(false);
 
-  const chats = useDMStore((s) => s.chats);
-  const requests = useDMStore((s) => s.requests);
+  const inboxOwner = useDMStore((s) => s.inboxUserId);
+  const savedChats = useDMStore((s) => s.chats);
+  const savedRequests = useDMStore((s) => s.requests);
   const loadInbox = useDMStore((s) => s.loadInbox);
 
-  const userId = user?.id || 'anon';
+  const userId = user?.id;
+  const chats = userId === inboxOwner ? savedChats : [];
+  const requests = userId === inboxOwner ? savedRequests : [];
+  useForegroundChatRefresh(useCallback(async () => {
+    if (userId) await loadInbox(userId);
+  }, [userId, loadInbox]));
 
-  useEffect(() => {
-    if (userId) {
-      loadInbox(userId);
+  const openContactPicker = () => {
+    if (!userId) {
+      router.push('/auth/sign-in');
+      return;
     }
-  }, [userId, loadInbox]);
+    setStartError(false);
+    setNewChatModalVisible(true);
+  };
 
   // Load contacts whenever the "New Message" modal opens or search query changes
   useEffect(() => {
     let active = true;
-    if (!newChatModalVisible) return;
+    if (!newChatModalVisible || !userId) return;
 
     const fetchContacts = async () => {
       setSearchLoading(true);
@@ -93,6 +105,7 @@ export default function MessagesInboxScreen() {
   }, [newChatModalVisible, searchQuery, userId]);
 
   const handleRefresh = async () => {
+    if (!userId) return;
     setRefreshing(true);
     await loadInbox(userId);
     setRefreshing(false);
@@ -124,8 +137,11 @@ export default function MessagesInboxScreen() {
   }, [searchResults, selectedCategory]);
 
   const handleStartConversation = async (contact: DMUserSearchResult) => {
+    if (!userId || startingChat.current) return;
+    startingChat.current = true;
     try {
       setStartingChatId(contact.id);
+      setStartError(false);
       const convId = await useDMStore.getState().startConversationWithUser(
         userId,
         {
@@ -136,11 +152,16 @@ export default function MessagesInboxScreen() {
           isVerified: contact.isVerified,
         },
       );
-      setNewChatModalVisible(false);
+      if (useAuthStore.getState().user?.id !== userId) return;
       if (convId) {
+        setNewChatModalVisible(false);
+        setSearchQuery('');
         router.push(`/messages/${convId}` as any);
+      } else {
+        setStartError(true);
       }
     } finally {
+      startingChat.current = false;
       setStartingChatId(null);
     }
   };
@@ -324,7 +345,7 @@ export default function MessagesInboxScreen() {
             {activeTab === 'chats' && (
               <Pressable
                 style={[styles.startChatCta, { backgroundColor: colors.primary }]}
-                onPress={() => setNewChatModalVisible(true)}
+                onPress={openContactPicker}
               >
                 <Ionicons name="chatbubble-ellipses-outline" size={18} color="#FFFFFF" style={{ marginRight: 8 }} />
                 <Text style={styles.startChatCtaText}>
@@ -333,17 +354,6 @@ export default function MessagesInboxScreen() {
               </Pressable>
             )}
 
-            {activeTab === 'requests' && (
-              <Pressable
-                style={[styles.startChatCta, { backgroundColor: colors.surfaceElevated, borderWidth: 1, borderColor: colors.border }]}
-                onPress={() => useDMStore.getState().simulateIncomingRequest()}
-              >
-                <Ionicons name="mail-unread-outline" size={18} color={colors.primary} style={{ marginRight: 8 }} />
-                <Text style={[styles.startChatCtaText, { color: colors.primary }]}>
-                  {t('messages.simulateRequest', { defaultValue: 'Receive Sample Request' })}
-                </Text>
-              </Pressable>
-            )}
           </View>
         }
       />
@@ -357,7 +367,7 @@ export default function MessagesInboxScreen() {
             bottom: insets.bottom + 20,
           },
         ]}
-        onPress={() => setNewChatModalVisible(true)}
+        onPress={openContactPicker}
         accessibilityRole="button"
         accessibilityLabel={t('messages.newChat', { defaultValue: 'New conversation' })}
       >
@@ -408,6 +418,12 @@ export default function MessagesInboxScreen() {
               )}
             </View>
           </View>
+
+          {startError && (
+            <Text accessibilityRole="alert" style={[styles.emptySubtitle, { color: colors.text, margin: 12 }]}>
+              {t('messages.startFailed', { defaultValue: 'Could not open this conversation. Try again.' })}
+            </Text>
+          )}
 
           {/* Category Tabs */}
           <View style={styles.categoryRail}>
@@ -480,7 +496,7 @@ export default function MessagesInboxScreen() {
                       { backgroundColor: colors.surface, borderColor: colors.border },
                     ]}
                     onPress={() => handleStartConversation(item)}
-                    disabled={isSelected}
+                    disabled={startingChatId !== null}
                   >
                     {/* Avatar */}
                     <View style={[styles.contactAvatar, { backgroundColor: colors.primaryLight }]}>

@@ -9,7 +9,7 @@ import { useUserProfileStore } from '../../stores/userProfile';
 import { useLiveExchangeStore } from '../../stores/liveExchange';
 import { useActiveStateStore } from '../../stores/activeState';
 import { useContributorVerificationStore } from '../../stores/contributorVerification';
-import { gateContentAction, logContentAction } from '../../lib/contentAccountability';
+import { gateContentAction } from '../../lib/contentAccountability';
 import { hydrateContributorKYC } from '../../lib/contributorKycService';
 import {
   ISSUE_CATEGORY_CONFIG,
@@ -118,12 +118,6 @@ export default function GoLiveScreen() {
           throw new Error('The server returned an invalid studio link');
         }
         studioLink.current = { href: url.href, ownerId: user.id };
-        logContentAction('go_live', {
-          type: 'live_stream',
-          id: event.id,
-          body: category,
-          screenName: 'go_live',
-        });
       }
       if (useAuthStore.getState().user?.id !== user.id) return;
       await Linking.openURL(studioLink.current.href);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useCallback, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -23,6 +23,7 @@ import { REPORT_REASONS, type ReportReason } from '../../lib/moderationTypes';
 import type { DMMessageItem } from '../../lib/supabaseDataService';
 import { useTimeAgo } from '../../lib/useTimeAgo';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
+import { useForegroundChatRefresh } from '../../lib/useForegroundChatRefresh';
 import {
   getLocalizedContactName,
   getLocalizedDMPreview,
@@ -36,12 +37,14 @@ export default function ConversationThreadScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const user = useAuthStore((s) => s.user);
-  const currentUserId = user?.id || 'anon';
+  const currentUserId = user?.id;
+  const inboxOwner = useDMStore((s) => s.inboxUserId);
 
   const chats = useDMStore((s) => s.chats);
   const requests = useDMStore((s) => s.requests);
   const activeMessages = useDMStore((s) => s.activeMessages);
   const loadThread = useDMStore((s) => s.loadThread);
+  const loadInbox = useDMStore((s) => s.loadInbox);
   const sendMessage = useDMStore((s) => s.sendMessage);
   const acceptRequest = useDMStore((s) => s.acceptRequest);
   const declineRequest = useDMStore((s) => s.declineRequest);
@@ -53,9 +56,15 @@ export default function ConversationThreadScreen() {
   const [reportDescription, setReportDescription] = useState('');
   const [unlockedMediaIds, setUnlockedMediaIds] = useState<Set<string>>(new Set());
   const [helpVisible, setHelpVisible] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [sendFailed, setSendFailed] = useState(false);
+  const sendingMessage = useRef(false);
 
-  const conv = chats.find((c) => c.id === conversationId) || requests.find((c) => c.id === conversationId);
+  const conv = currentUserId === inboxOwner
+    ? chats.find((c) => c.id === conversationId) || requests.find((c) => c.id === conversationId)
+    : undefined;
   const isPending = conv?.status === 'pending';
+  const isIncomingRequest = isPending && conv.initiated_by !== currentUserId;
   const otherUser = conv?.otherUser || {
     id: conv?.participant_two || '',
     displayName: 'Poligram User',
@@ -64,30 +73,48 @@ export default function ConversationThreadScreen() {
   };
   const localizedOtherName = getLocalizedContactName(otherUser.displayName, i18n.language);
 
-  const messages = (conversationId ? activeMessages[conversationId] : []) || [];
+  const messages = (conversationId && currentUserId === inboxOwner ? activeMessages[conversationId] : []) || [];
+  const waitingForAccept = isPending && !isIncomingRequest && Boolean(conv.last_message_preview || messages.length);
+  const canSend = Boolean(currentUserId && conv && !isIncomingRequest && !waitingForAccept);
   const flatListRef = useRef<FlatList>(null);
+  const atLatest = useRef(true);
 
-  useEffect(() => {
-    if (conversationId) {
-      loadThread(conversationId, currentUserId);
-    }
-  }, [conversationId, currentUserId, loadThread]);
+  useForegroundChatRefresh(useCallback(async () => {
+    if (!conversationId || !currentUserId) return;
+    await loadInbox(currentUserId, true);
+    const accepted = useDMStore.getState().chats.some((chat) => chat.id === conversationId);
+    await loadThread(conversationId, currentUserId, accepted);
+  }, [conversationId, currentUserId, loadInbox, loadThread]));
 
   const handleSend = async () => {
-    if (!inputContent.trim() || !conversationId) return;
-    const text = inputContent.trim();
-    setInputContent('');
-    await sendMessage(conversationId, currentUserId, text);
-    setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
+    if (!canSend || !inputContent.trim() || !conversationId || !currentUserId || sendingMessage.current) return;
+    sendingMessage.current = true;
+    setSending(true);
+    setSendFailed(false);
+    atLatest.current = true;
+    try {
+      const result = await sendMessage(conversationId, currentUserId, inputContent.trim());
+      if (result) setInputContent('');
+      else setSendFailed(true);
+    } finally {
+      sendingMessage.current = false;
+      setSending(false);
+    }
+  };
+
+  const showActionError = () => {
+    Alert.alert(
+      t('messages.actionFailed', { defaultValue: 'Could not update this conversation. Try again.' }),
+    );
   };
 
   const handleAccept = async () => {
-    if (!conversationId) return;
-    await acceptRequest(conversationId, currentUserId);
+    if (!conversationId || !currentUserId || !isIncomingRequest) return;
+    if (!(await acceptRequest(conversationId, currentUserId))) showActionError();
   };
 
   const handleDecline = async () => {
-    if (!conversationId) return;
+    if (!conversationId || !currentUserId || !isIncomingRequest) return;
     Alert.alert(
       t('messages.declineTitle', { defaultValue: 'Decline Message Request' }),
       t('messages.declineConfirm', { defaultValue: 'This conversation will be removed. The sender will not be notified.' }),
@@ -97,8 +124,8 @@ export default function ConversationThreadScreen() {
           text: t('messages.decline', { defaultValue: 'Decline' }),
           style: 'destructive',
           onPress: async () => {
-            await declineRequest(conversationId, currentUserId);
-            router.back();
+            if (await declineRequest(conversationId, currentUserId)) router.back();
+            else showActionError();
           },
         },
       ],
@@ -106,6 +133,7 @@ export default function ConversationThreadScreen() {
   };
 
   const handleBlockReportPrompt = () => {
+    if (!currentUserId || !otherUser.id) return;
     Alert.alert(
       t('messages.safetyOptions', { defaultValue: 'Safety & Moderation' }),
       t('messages.safetyDesc', { defaultValue: `Options for conversation with ${otherUser.displayName}:` }),
@@ -124,8 +152,9 @@ export default function ConversationThreadScreen() {
                   text: t('messages.block', { defaultValue: 'Block' }),
                   style: 'destructive',
                   onPress: async () => {
-                    await blockAndReport(currentUserId, otherUser.id, 'blocked_by_user', undefined, conversationId);
-                    router.back();
+                    if (await blockAndReport(currentUserId, otherUser.id, 'blocked_by_user', undefined, conversationId)) {
+                      router.back();
+                    } else showActionError();
                   },
                 },
               ],
@@ -141,7 +170,11 @@ export default function ConversationThreadScreen() {
   };
 
   const submitReport = async () => {
-    await blockAndReport(currentUserId, otherUser.id, reportReason, reportDescription, conversationId);
+    if (!currentUserId || !otherUser.id) return;
+    if (!(await blockAndReport(currentUserId, otherUser.id, reportReason, reportDescription, conversationId))) {
+      showActionError();
+      return;
+    }
     setReportModalVisible(false);
     Alert.alert(
       t('messages.reportedTitle', { defaultValue: 'Report Submitted' }),
@@ -268,7 +301,7 @@ export default function ConversationThreadScreen() {
       </View>
 
       {/* Pending Message Request Banner (Ticket 3.6) */}
-      {isPending && (
+      {isIncomingRequest && (
         <View style={[styles.requestBanner, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
           <View style={styles.requestBannerTextRow}>
             <Ionicons name="mail-unread-outline" size={18} color={colors.primary} />
@@ -298,6 +331,11 @@ export default function ConversationThreadScreen() {
           </View>
         </View>
       )}
+      {waitingForAccept && (
+        <Text style={[styles.requestBanner, { color: colors.textSecondary }]}>
+          {t('messages.waitingForAccept', { defaultValue: 'Request sent. You can send another message after it is accepted.' })}
+        </Text>
+      )}
 
       {/* Message List */}
       <FlatList
@@ -306,17 +344,30 @@ export default function ConversationThreadScreen() {
         keyExtractor={(item) => item.id}
         renderItem={renderMessageItem}
         contentContainerStyle={[styles.listContent, { paddingBottom: 20 }]}
-        onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: false })}
+        onScroll={({ nativeEvent: { contentOffset, contentSize, layoutMeasurement } }) => {
+          atLatest.current = contentSize.height - contentOffset.y - layoutMeasurement.height < 100;
+        }}
+        scrollEventThrottle={80}
+        onContentSizeChange={() => {
+          if (atLatest.current) flatListRef.current?.scrollToEnd({ animated: false });
+        }}
       />
 
       {/* Input Bar */}
-      <View style={[styles.inputBar, { paddingBottom: Math.max(insets.bottom, 8) + 4, borderTopColor: colors.border, backgroundColor: colors.surface }]}>
+      {sendFailed && (
+        <Text accessibilityRole="alert" style={[styles.requestBanner, { color: colors.text }]}>
+          {t('messages.sendFailed', { defaultValue: 'Message could not send. Your text is still here.' })}
+        </Text>
+      )}
+      {canSend && <View style={[styles.inputBar, { paddingBottom: Math.max(insets.bottom, 8) + 4, borderTopColor: colors.border, backgroundColor: colors.surface }]}>
         <TextInput
           style={[styles.input, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
           placeholder={t('messages.typePlaceholder', { defaultValue: 'Send a direct message...' })}
           placeholderTextColor={colors.textMuted}
           value={inputContent}
           onChangeText={setInputContent}
+          editable={!sending}
+          maxLength={isPending ? 2000 : 5000}
           multiline
         />
         <Pressable
@@ -325,11 +376,13 @@ export default function ConversationThreadScreen() {
             { backgroundColor: inputContent.trim() ? colors.primary : colors.textMuted },
           ]}
           onPress={handleSend}
-          disabled={!inputContent.trim()}
+          disabled={sending || !inputContent.trim()}
+          accessibilityRole="button"
+          accessibilityLabel={t('common.send', { defaultValue: 'Send' })}
         >
           <Ionicons name="arrow-up" size={18} color="#FFFFFF" />
         </Pressable>
-      </View>
+      </View>}
 
       {/* Report Modal */}
       <Modal visible={reportModalVisible} transparent animationType="slide">

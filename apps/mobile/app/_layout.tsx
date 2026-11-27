@@ -136,7 +136,7 @@ export default function RootLayout() {
           <OfflineBanner />
           {showKYCSheet && (
             <Suspense fallback={null}>
-              <KYCVerificationSheet />
+              <KYCVerificationSheet key={user?.id} />
             </Suspense>
           )}
           <Stack

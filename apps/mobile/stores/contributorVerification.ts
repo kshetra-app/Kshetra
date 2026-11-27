@@ -46,6 +46,7 @@ interface ContributorVerificationState {
   setOwnerUserId: (userId: string | null) => void;
   setKYCLoadState: (userId: string, state: 'loading' | 'ready' | 'unavailable') => void;
   setKYCRecord: (record: ContributorKYCStatusRecord) => void;
+  clearServerStatus: (userId: string) => void;
   setKYCSubmission: (submission: KYCSubmission | null) => void;
   setShowKYCSheet: (show: boolean) => void;
   setKYCLoading: (loading: boolean) => void;
@@ -131,9 +132,18 @@ export const useContributorVerificationStore = create<ContributorVerificationSta
         set({ kycRecord: record, kycLoadState: 'ready' });
       },
 
+      clearServerStatus: (userId) => {
+        if (get().ownerUserId === userId) set({ kycRecord: null, kycLoadState: 'ready' });
+      },
       setKYCSubmission: (submission) => set({ kycSubmission: submission }),
 
-      setShowKYCSheet: (show) => set({ showKYCSheet: show }),
+      setShowKYCSheet: (show) => set((state) => {
+        const status = state.kycRecord?.status;
+        return {
+          showKYCSheet: show && !!state.ownerUserId && state.kycLoadState === 'ready' &&
+            (!status || status === 'rejected'),
+        };
+      }),
 
       setKYCLoading: (loading) => set({ kycLoading: loading }),
 
@@ -174,6 +184,7 @@ export const useContributorVerificationStore = create<ContributorVerificationSta
 
       requestAction: (action: ContentActionType) => {
         const kyc = get().kycRecord;
+        if (canPerformAction(kyc, action)) return { allowed: true, reason: 'verified' as const };
 
         if (!kyc) {
           const loadState = get().kycLoadState;

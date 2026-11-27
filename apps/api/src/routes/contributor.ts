@@ -356,6 +356,19 @@ export async function contributorRoutes(app: FastifyInstance) {
       const body = request.body;
       const now = new Date().toISOString();
 
+      if (body.actionType === 'go_live') {
+        return sendApiError(
+          reply,
+          request,
+          403,
+          'Forbidden',
+          'Broadcast audit records are written by Live Studio.',
+          {
+            code: 'LIVE_AUDIT_SERVER_OWNED',
+          },
+        );
+      }
+
       if (!isSupabaseConfigured) {
         return sendApiError(
           reply,
@@ -377,7 +390,7 @@ export async function contributorRoutes(app: FastifyInstance) {
           content_id: body.contentId ?? null,
           content_hash: body.contentHash ?? null,
           device_unique_id: body.deviceUniqueId ?? null,
-          timestamp: now,
+          action_at: now,
         });
 
         if (error) {

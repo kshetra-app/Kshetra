@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 import { apiClient } from '../lib/api';
+import { useAuthStore } from './auth';
 import {
   type DMConversationItem,
   type DMMessageItem,
@@ -23,8 +24,8 @@ interface DMState {
   unreadCount: number;
   inboxUserId: string | null;
 
-  loadInbox: (userId: string) => Promise<void>;
-  loadThread: (conversationId: string, currentUserId?: string) => Promise<void>;
+  loadInbox: (userId: string, background?: boolean) => Promise<void>;
+  loadThread: (conversationId: string, currentUserId: string, markRead: boolean) => Promise<void>;
   refreshUnreadCount: (userId: string, token?: string | null) => Promise<void>;
   sendMessage: (
     conversationId: string,
@@ -47,8 +48,11 @@ interface DMState {
     recipient: { id: string; displayName: string; avatarUrl?: string | null; role?: string; isVerified?: boolean },
     initialText?: string,
   ) => Promise<string | null>;
-  simulateIncomingRequest: () => void;
 }
+
+let inboxRevision = 0;
+let messageRevision = 0;
+const isCurrentUser = (userId: string) => useAuthStore.getState().user?.id === userId;
 
 const DEFAULT_SAMPLE_CHATS: DMConversationItem[] = [
   {
@@ -127,16 +131,19 @@ export const useDMStore = create<DMState>((set, get) => ({
   inboxUserId: null,
 
   refreshUnreadCount: async (userId: string, token?: string | null) => {
-    if (!userId) return;
+    if (!isCurrentUser(userId)) return;
     try {
       const count = await fetchDMUnreadCount(userId, token);
-      set({ unreadCount: count });
+      if (isCurrentUser(userId)) set({ unreadCount: count });
     } catch {
       // Ignore count fetch errors
     }
   },
 
-  loadInbox: async (userId: string) => {
+  loadInbox: async (userId: string, background = false) => {
+    if (!isCurrentUser(userId)) return;
+    const revision = ++inboxRevision;
+    const isCurrent = () => isCurrentUser(userId) && revision === inboxRevision;
     if (get().inboxUserId !== userId) {
       const hasPreviousOwner = get().inboxUserId !== null;
       set({
@@ -147,9 +154,10 @@ export const useDMStore = create<DMState>((set, get) => ({
         unreadCount: 0,
       });
     }
-    set({ loading: true });
+    if (!background) set({ loading: true });
     try {
       const all = await fetchUserConversations(userId);
+      if (!isCurrent()) return;
       if (all !== null) {
         const chats = all.filter((c) => c.status === 'accepted');
         const requests = all.filter((c) => c.status === 'pending');
@@ -166,6 +174,7 @@ export const useDMStore = create<DMState>((set, get) => ({
       }
       await get().refreshUnreadCount(userId);
     } catch {
+      if (!isCurrent()) return;
       if (IS_LIVE_ENVIRONMENT) set({ loading: false });
       else set((s) => ({
           chats: s.chats.length > 0 ? s.chats : DEFAULT_SAMPLE_CHATS,
@@ -175,11 +184,18 @@ export const useDMStore = create<DMState>((set, get) => ({
     }
   },
 
-  loadThread: async (conversationId: string, currentUserId?: string) => {
+  loadThread: async (conversationId: string, currentUserId: string, markRead: boolean) => {
+    if (!isCurrentUser(currentUserId) || get().inboxUserId !== currentUserId) return;
+    const revision = messageRevision;
     set({ activeConversationId: conversationId });
     try {
       const messages = await fetchConversationMessages(conversationId);
-      if (messages === null) return;
+      if (
+        messages === null ||
+        !isCurrentUser(currentUserId) ||
+        revision !== messageRevision ||
+        get().activeConversationId !== conversationId
+      ) return;
       set((s) => ({
         activeMessages: {
           ...s.activeMessages,
@@ -188,7 +204,7 @@ export const useDMStore = create<DMState>((set, get) => ({
       }));
 
       // If user opened the thread, mark incoming messages as read and decrement/refresh badge
-      if (currentUserId) {
+      if (markRead && messages.some((message) => message.sender_id !== currentUserId && !message.read_at)) {
         await markConversationMessagesRead(conversationId, currentUserId);
         await get().refreshUnreadCount(currentUserId);
       }
@@ -198,50 +214,22 @@ export const useDMStore = create<DMState>((set, get) => ({
   },
 
   sendMessage: async (conversationId, senderId, content, mediaUrl, mediaType) => {
-    const optimisticMsg: DMMessageItem = {
-      id: `opt-${Date.now()}`,
-      conversation_id: conversationId,
-      sender_id: senderId,
-      content,
-      media_url: mediaUrl,
-      media_type: mediaType,
-      is_media_locked: false,
-      created_at: new Date().toISOString(),
-    };
-
-    // Optimistic insert
-    set((s) => ({
-      activeMessages: {
-        ...s.activeMessages,
-        [conversationId]: [...(s.activeMessages[conversationId] || []), optimisticMsg],
-      },
-    }));
-
+    if (!isCurrentUser(senderId) || get().inboxUserId !== senderId) return null;
     const result = await sendDirectMessageToConversation(conversationId, senderId, content, mediaUrl, mediaType);
-    if (result) {
-      // Replace optimistic message
-      set((s) => ({
-        activeMessages: {
-          ...s.activeMessages,
-          [conversationId]: (s.activeMessages[conversationId] || []).map((m) =>
-            m.id === optimisticMsg.id ? result : m,
-          ),
-        },
-      }));
-      return result;
-    }
-    set((s) => ({
-      activeMessages: {
-        ...s.activeMessages,
-        [conversationId]: (s.activeMessages[conversationId] || []).filter((m) => m.id !== optimisticMsg.id),
-      },
-    }));
-    return null;
+    if (!result || !isCurrentUser(senderId)) return null;
+    ++messageRevision;
+    set((s) => {
+      const messages = s.activeMessages[conversationId] || [];
+      if (messages.some((message) => message.id === result.id)) return s;
+      return { activeMessages: { ...s.activeMessages, [conversationId]: [...messages, result] } };
+    });
+    return result;
   },
 
   acceptRequest: async (conversationId, userId) => {
     const accepted = await acceptDMRequest(conversationId, userId).catch(() => false);
-    if (!accepted && IS_LIVE_ENVIRONMENT) return false;
+    if (!isCurrentUser(userId) || (!accepted && IS_LIVE_ENVIRONMENT)) return false;
+    ++inboxRevision;
     set((s) => {
       const item = s.requests.find((r) => r.id === conversationId);
       if (!item) return s;
@@ -255,56 +243,19 @@ export const useDMStore = create<DMState>((set, get) => ({
 
   declineRequest: async (conversationId, userId) => {
     const declined = await declineDMRequest(conversationId, userId).catch(() => false);
-    if (!declined && IS_LIVE_ENVIRONMENT) return false;
+    if (!isCurrentUser(userId) || (!declined && IS_LIVE_ENVIRONMENT)) return false;
+    ++inboxRevision;
     set((s) => ({
       requests: s.requests.filter((r) => r.id !== conversationId),
     }));
     return true;
   },
 
-  simulateIncomingRequest: () => {
-    if (IS_LIVE_ENVIRONMENT) return;
-    const newReqId = `conv-req-${Date.now()}`;
-    const newReq: DMConversationItem = {
-      id: newReqId,
-      participant_one: 'user-citizen-demo',
-      participant_two: 'current-user',
-      status: 'pending',
-      initiated_by: 'user-citizen-demo',
-      last_message_at: new Date().toISOString(),
-      last_message_preview: 'Namaste! Can you help raise the sanitation issue on Main Road?',
-      media_accepted_by_one: false,
-      media_accepted_by_two: false,
-      otherUser: {
-        id: 'user-citizen-demo',
-        displayName: 'Ananya Sharma',
-        avatarUrl: null,
-        role: 'citizen',
-        isVerified: false,
-      },
-    };
-    set((s) => ({
-      requests: [newReq, ...s.requests],
-      activeMessages: {
-        ...s.activeMessages,
-        [newReqId]: [
-          {
-            id: `msg-${Date.now()}`,
-            conversation_id: newReqId,
-            sender_id: 'user-citizen-demo',
-            content: 'Namaste! Can you help raise the sanitation issue on Main Road? It has been pending for 2 weeks.',
-            is_media_locked: false,
-            read_at: null,
-            created_at: new Date().toISOString(),
-          },
-        ],
-      },
-    }));
-  },
-
   blockAndReport: async (userId, targetUserId, reason, description, conversationId) => {
     const success = await blockAndReportDMUser(userId, targetUserId, reason, description, conversationId);
+    if (!isCurrentUser(userId)) return false;
     if (success) {
+      ++inboxRevision;
       set((s) => ({
         chats: s.chats.filter((c) => c.otherUser?.id !== targetUserId),
         requests: s.requests.filter((r) => r.otherUser?.id !== targetUserId),
@@ -314,6 +265,7 @@ export const useDMStore = create<DMState>((set, get) => ({
   },
 
   startConversationWithUser: async (currentUserId, recipient, initialText) => {
+    if (!isCurrentUser(currentUserId)) return null;
     try {
       const clientToken = initialText?.trim()
         ? `dm_${Date.now()}_${Math.random().toString(36).slice(2, 14)}`
@@ -327,6 +279,7 @@ export const useDMStore = create<DMState>((set, get) => ({
         },
       });
 
+      if (!isCurrentUser(currentUserId)) return null;
       if (res.statusCode >= 200 && res.statusCode < 300 && res.data?.conversation?.id) {
         await get().loadInbox(currentUserId);
         return res.data.conversation.id;
