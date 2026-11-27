@@ -1026,7 +1026,7 @@ export default function ConstituencyDetailScreen() {
         )}
 
         {/* Administrative Hierarchy drill-down (Booth → Panchayat → Mandal) */}
-        {hasHierarchyData(stateCode, acNo) && (
+        {(IS_LIVE_ENVIRONMENT || hasHierarchyData(stateCode, acNo)) && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t('constituencyExtended.administrativeHierarchy')}</Text>
             <Pressable
@@ -1584,7 +1584,6 @@ export default function ConstituencyDetailScreen() {
         {/* ═══ TAB: DEMOGRAPHICS (reference data) ═══ */}
         {/* ═══════════════════════════════════════════════════════════════ */}
         {activeTab === 'demographics' && (<>
-          {/* Reference dataset summary; per-record official provenance is not yet attached. */}
           <View style={styles.section}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
               <Text style={styles.sectionTitle}>
@@ -1592,7 +1591,30 @@ export default function ConstituencyDetailScreen() {
               </Text>
             </View>
 
-            {/* Quick Metrics Cards */}
+            {apiDetail?.electoralStatistics && (
+              <Pressable
+                accessibilityRole="link"
+                onPress={() => {
+                  const sourceUrl = apiDetail.electoralStatistics?.sourceUrl;
+                  if (sourceUrl) void Linking.openURL(sourceUrl).catch(() => Alert.alert(t('common.error')));
+                }}
+                style={[styles.demoCard, { marginBottom: 12 }]}
+              >
+                <Text style={styles.demoSubTitle}>
+                  ECI · {apiDetail.electoralStatistics.year} <Ionicons name="open-outline" size={14} />
+                </Text>
+                <View style={styles.statsRow}>
+                  <View style={styles.statItem}>
+                    <Text style={styles.statValue}>{apiDetail.electoralStatistics.registeredElectors.toLocaleString('en-IN')}</Text>
+                    <Text style={styles.statLabel}>{t('constituency.totalVoters')}</Text>
+                  </View>
+                  <View style={styles.statItem}>
+                    <Text style={styles.statValue}>{apiDetail.electoralStatistics.turnoutPercent}%</Text>
+                    <Text style={styles.statLabel}>{t('constituency.turnout')}</Text>
+                  </View>
+                </View>
+              </Pressable>
+            )}
             {(demo && (demo.totalVoters > 0 || demo.turnout2023 > 0)) || Boolean(localizedReservation) ? (
               <View style={styles.statsRow}>
                 {demo && demo.totalVoters > 0 && <View style={styles.statItem}>

@@ -142,6 +142,17 @@ const getConstituencyDetailSchema = {
         currentParty: { type: 'string' },
         currentPartyId: { type: 'string' },
         currentMLA: { type: 'string' },
+        electoralStatistics: {
+          type: 'object',
+          properties: {
+            year: { type: 'integer' },
+            registeredElectors: { type: 'integer' },
+            votesPolled: { type: 'integer' },
+            turnoutPercent: { type: 'number' },
+            sourceUrl: { type: 'string' },
+          },
+          required: ['year', 'registeredElectors', 'votesPolled', 'turnoutPercent', 'sourceUrl'],
+        },
         recentElection: {
           type: ['object', 'null'],
           properties: {
@@ -550,12 +561,24 @@ export async function constituencyRoutes(app: FastifyInstance) {
                 ? [recentElection]
                 : [];
             const election2023 = toLegacyElection2023(recentElection);
+            const electoralStatistics = row.internalId
+              ? await canonicalGeographyService
+                  .getElectoralStatistics(row.internalId)
+                  .catch((error: unknown) => {
+                    app.log.warn(
+                      { err: error, code, acNo },
+                      'Constituency electoral statistics unavailable',
+                    );
+                    return null;
+                  })
+              : null;
 
             return {
               ...row,
               recentElection,
               elections,
               election2023,
+              ...(electoralStatistics ? { electoralStatistics } : {}),
             };
           }
           if (isProductionLikeRuntime()) {

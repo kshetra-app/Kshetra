@@ -658,7 +658,11 @@ describe('Canonical Geography Service & Decoupled State Data Adapter', () => {
       };
       const queryCalls: Record<string, Array<{ eq: jest.Mock; in: jest.Mock }>> = {};
       jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
-        const eq = jest.fn().mockResolvedValue({ data: rowsByTable[table] ?? [], error: null });
+        const result = { data: rowsByTable[table] ?? [], error: null };
+        const eq =
+          table === 'polling_booths'
+            ? jest.fn().mockReturnValue({ order: jest.fn().mockResolvedValue(result) })
+            : jest.fn().mockResolvedValue(result);
         const inFilter = jest
           .fn()
           .mockResolvedValue({ data: rowsByTable[table] ?? [], error: null });
@@ -695,11 +699,15 @@ describe('Canonical Geography Service & Decoupled State Data Adapter', () => {
         currentParty: '',
         currentMLA: '',
       });
+      const verifiedOnly = jest.fn().mockResolvedValue({
+        data: null,
+        error: new Error('hierarchy table unavailable'),
+      });
       jest.spyOn(supabase, 'from').mockImplementation((() => ({
         select: jest.fn(() => ({
-          eq: jest
-            .fn()
-            .mockResolvedValue({ data: null, error: new Error('hierarchy table unavailable') }),
+          eq: jest.fn().mockReturnValue({
+            order: jest.fn().mockReturnValue({ in: verifiedOnly }),
+          }),
         })),
       })) as any);
 
@@ -707,6 +715,7 @@ describe('Canonical Geography Service & Decoupled State Data Adapter', () => {
         await expect(
           canonicalGeographyService.getSubConstituencyHierarchy('TS', 1),
         ).rejects.toThrow('hierarchy table unavailable');
+        expect(verifiedOnly).toHaveBeenCalledWith('data_status', ['OFFICIAL', 'VERIFIED']);
       } finally {
         if (previousAppEnv === undefined) delete process.env.APP_ENV;
         else process.env.APP_ENV = previousAppEnv;

@@ -7,7 +7,7 @@
  */
 import { useEffect, useMemo, useState, type ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ScrollView, Pressable, ActivityIndicator, Linking } from 'react-native';
 import { useLocalSearchParams, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -74,6 +74,15 @@ export default function HierarchyScreen() {
   const [liveReloadToken, setLiveReloadToken] = useState(0);
   const [liveBodyKey, setLiveBodyKey] = useState<string | null>(null);
   const [liveWardKey, setLiveWardKey] = useState<string | null>(null);
+  const [boothSearch, setBoothSearch] = useState('');
+  const [visibleBooths, setVisibleBooths] = useState(30);
+
+  useEffect(() => {
+    setBoothSearch('');
+    setVisibleBooths(30);
+    setLiveBodyKey(null);
+    setLiveWardKey(null);
+  }, [stateCode, acNo]);
 
   useEffect(() => {
     if (parsedStateCode && parsedStateCode !== 'IN' && parsedStateCode !== stateCodeStore) {
@@ -183,6 +192,10 @@ export default function HierarchyScreen() {
     const atBodyList = !liveSelectedBody;
     const atWardList = !!liveSelectedBody && !liveSelectedWard;
     const bodyTitle = liveSelectedBody?.name ?? liveConstituency?.name ?? `AC ${acNo}`;
+    const boothQuery = boothSearch.trim().toLocaleLowerCase();
+    const matchingBooths = liveBoothsWithoutBody.filter((booth) =>
+      `${booth.boothNumber} ${booth.boothName} ${booth.pollingStationName ?? ''} ${booth.pollingStationAddress ?? ''}`.toLocaleLowerCase().includes(boothQuery),
+    );
 
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -201,13 +214,33 @@ export default function HierarchyScreen() {
             ),
           }}
         />
-        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 32 }}>
+        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 32 }}>
           <View style={styles.pendingHeader}>
             <Ionicons name="git-branch-outline" size={40} color={colors.textMuted} />
             <Text style={[styles.emptyTitle, { color: colors.text }]}>
               {bodyTitle}
             </Text>
           </View>
+          <Pressable
+            accessibilityRole="link"
+            style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
+            onPress={() => void Linking.openURL('https://electoralsearch.eci.gov.in/')}
+          >
+            <Text style={[styles.cardTitle, { color: colors.primary }]}>
+              {t('hierarchy.findMyPollingStation', { defaultValue: 'Find my polling station (ECI)' })}
+            </Text>
+          </Pressable>
+          {liveData?.pollingStationList && (
+            <Pressable
+              accessibilityRole="link"
+              style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
+              onPress={() => void Linking.openURL(liveData.pollingStationList!.sourceUrl)}
+            >
+              <Text style={[styles.cardTitle, { color: colors.primary }]}>
+                {t('hierarchy.publishedPollingList', { defaultValue: 'Published polling-station list' })} · {liveData.pollingStationList.publishedOn}
+              </Text>
+            </Pressable>
+          )}
 
           {liveHierarchy.status === 'loading' ? (
             <View style={{ paddingVertical: 28, alignItems: 'center' }}>
@@ -316,9 +349,20 @@ export default function HierarchyScreen() {
                   {liveBoothsWithoutBody.length > 0 ? (
                     <View style={{ marginTop: 10 }}>
                       <Text style={[styles.cardTitle, { color: colors.text, marginBottom: 8 }]}>
-                        {t('hierarchy.unassigned', { defaultValue: 'Booths without a linked local body' })}
+                        {liveBodies.length === 0 ? t('hierarchy.booths') : t('hierarchy.unassigned', { defaultValue: 'Booths without a linked local body' })}
                       </Text>
-                      {liveBoothsWithoutBody.map((booth) => (
+                      <TextInput
+                        accessibilityLabel={t('hierarchy.searchPollingStations', { defaultValue: 'Search by booth number or name' })}
+                        placeholder={t('hierarchy.searchPollingStations', { defaultValue: 'Search by booth number or name' })}
+                        placeholderTextColor={colors.textMuted}
+                        style={[styles.card, { color: colors.text, backgroundColor: colors.surface, borderColor: colors.border }]}
+                        value={boothSearch}
+                        onChangeText={(value) => { setBoothSearch(value); setVisibleBooths(30); }}
+                      />
+                      {matchingBooths.length === 0 && (
+                        <Text style={{ color: colors.textSecondary }}>{t('hierarchy.noMatchingBooths', { defaultValue: 'No polling stations match your search.' })}</Text>
+                      )}
+                      {matchingBooths.slice(0, visibleBooths).map((booth) => (
                         <LiveBoothCard
                           key={booth.id}
                           booth={booth}
@@ -327,9 +371,20 @@ export default function HierarchyScreen() {
                           registeredVotersLabel={t('hierarchy.registeredVoters')}
                         />
                       ))}
+                      {matchingBooths.length > visibleBooths && (
+                        <Pressable
+                          accessibilityRole="button"
+                          style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                          onPress={() => setVisibleBooths((count) => count + 30)}
+                        >
+                          <Text style={[styles.cardTitle, { color: colors.primary }]}>
+                            {t('hierarchy.moreBooths', { defaultValue: 'Show more polling stations' })}
+                          </Text>
+                        </Pressable>
+                      )}
                     </View>
                   ) : null}
-                  {liveBodies.length === 0 && liveBooths.length > 0 ? (
+                  {liveBodies.length === 0 && liveBooths.length > 0 && !liveData.pollingStationList ? (
                     <DataPendingCard
                       title={`${t('hierarchy.booth')} records`}
                       message={t('hierarchy.noDataAvailable')}
@@ -644,6 +699,9 @@ function LiveBoothCard({
           </Text>
           {booth.pollingStationName && booth.pollingStationName !== booth.boothName ? (
             <Text style={[styles.cardSub, { color: colors.textSecondary }]}>{booth.pollingStationName}</Text>
+          ) : null}
+          {booth.pollingStationAddress ? (
+            <Text style={[styles.cardSub, { color: colors.textSecondary }]}>{booth.pollingStationAddress}</Text>
           ) : null}
         </View>
       </View>

@@ -36,13 +36,13 @@ describe('Constituencies Routes Unit Tests (Exhaustive Branch Coverage)', () => 
       year: 2023,
       winnerParty: 'BJP',
       history: expect.arrayContaining([
-        {
+        expect.objectContaining({
           year: 2023,
           constituencyName: 'Sirpur',
           winnerName: 'Palvai Harish Babu',
           winnerParty: 'BJP',
           margin: 3088,
-        },
+        }),
         expect.objectContaining({ year: 2018, winnerName: 'Koneru Konappa' }),
       ]),
     });
@@ -78,6 +78,25 @@ describe('Constituencies Routes Unit Tests (Exhaustive Branch Coverage)', () => 
     expect(contest.secondRunnerUp.caseDetails).toHaveLength(2);
   });
 
+  it.each([
+    [5, 'Kotnaka Vijay Kumar'],
+    [47, 'Parameshwar Reddy Mandumula'],
+    [47, 'N. V. S. S. Prabhakar'],
+    [61, 'Mohammed Azharuddin'],
+    [61, 'Lankala Deepak Reddy'],
+    [72, 'Patnam Narender Reddy'],
+    [103, 'Kambhampati Prathap'],
+  ])('publishes the original 2023 ECI filing in seat %i for %s', async (acNo, name) => {
+    const response = await app.inject(`/states/TS/constituencies/${acNo}/podium`);
+    expect(response.statusCode).toBe(200);
+    const contest = response.json().find((row: { year: number }) => row.year === 2023);
+    const candidates = [contest.winner, contest.firstRunnerUp, contest.secondRunnerUp];
+    expect(candidates.find((candidate) => candidate?.name === name)).toMatchObject({
+      affidavitDocumentUrl: expect.stringMatching(/^https:\/\/affidavit\.eci\.gov\.in\//),
+      photoVerified: true,
+    });
+  });
+
   it('shows the official constituency and candidate names for the results before delimitation', async () => {
     const response = await app.inject('/states/TS/constituencies/61/podium');
     expect(response.statusCode).toBe(200);
@@ -86,7 +105,7 @@ describe('Constituencies Routes Unit Tests (Exhaustive Branch Coverage)', () => 
       constituencyName: 'Secunderabad',
       historicalConstituencyNumber: 209,
       winner: { name: 'T.Padma Rao', votes: 56997, party: 'TRS' },
-      resultSourceUrl: expect.stringContaining('/2004.pdf'),
+      resultSourceUrl: 'https://ceotelangana.nic.in/GE_2004/Statistical_Report_2004.pdf',
     });
   });
 

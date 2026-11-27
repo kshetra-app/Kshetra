@@ -10,7 +10,7 @@
 
 import type { ApiClient } from '../client';
 import { ApiValidationError } from '../errors';
-import type { ConstituencyBrief, SubConstituencyHierarchyDTO } from '@kshetra/shared';
+import type { ConstituencyBrief, ConstituencyElectoralStatistics, SubConstituencyHierarchyDTO } from '@kshetra/shared';
 
 export interface ConstituencyElectionSummary {
   electionYear: number | null;
@@ -35,6 +35,7 @@ export interface ConstituencyElectionHistoryItem {
 }
 
 export interface ConstituencyDetailDTO extends ConstituencyBrief {
+  electoralStatistics?: ConstituencyElectoralStatistics;
   recentElection?: ConstituencyElectionSummary;
   elections?: ConstituencyElectionHistoryItem[];
   election2023?: {
@@ -194,6 +195,9 @@ export function validateConstituencyHierarchy(data: unknown): SubConstituencyHie
       boothNumber,
       boothName: hierarchyString(row.boothName, `${context}.boothName`),
       pollingStationName: hierarchyNullableString(row.pollingStationName, `${context}.pollingStationName`),
+      ...(row.pollingStationAddress === undefined
+        ? {}
+        : { pollingStationAddress: hierarchyNullableString(row.pollingStationAddress, `${context}.pollingStationAddress`) }),
       totalVoters: totalVoters !== null && totalVoters > 0 ? totalVoters : null,
       localBodyType: validatedLocalBodyType,
       panchayatId: panchayatId === undefined || panchayatId === null ? panchayatId : hierarchyString(panchayatId, `${context}.panchayatId`),
@@ -202,7 +206,16 @@ export function validateConstituencyHierarchy(data: unknown): SubConstituencyHie
     };
   });
 
-  return { constituency, urbanLocalBodies, gramPanchayats, pollingBooths };
+  let pollingStationList: SubConstituencyHierarchyDTO['pollingStationList'];
+  if (root.pollingStationList) {
+    const value = hierarchyRecord(root.pollingStationList, 'pollingStationList');
+    const { publishedOn, sourceUrl } = value;
+    if (typeof publishedOn === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(publishedOn) &&
+        typeof sourceUrl === 'string' && sourceUrl.startsWith('https://')) {
+      pollingStationList = { publishedOn, sourceUrl };
+    }
+  }
+  return { constituency, urbanLocalBodies, gramPanchayats, pollingBooths, ...(pollingStationList ? { pollingStationList } : {}) };
 }
 
 export interface SearchConstituenciesOptions {
@@ -259,6 +272,20 @@ export function validateConstituencyBrief(data: unknown, context: string): Const
 export function validateConstituencyDetail(data: unknown, context: string): ConstituencyDetailDTO {
   const brief = validateConstituencyBrief(data, context);
   const obj = data as Record<string, unknown>;
+  let electoralStatistics: ConstituencyDetailDTO['electoralStatistics'];
+  if (obj.electoralStatistics && typeof obj.electoralStatistics === 'object') {
+    const { year, registeredElectors, votesPolled, turnoutPercent, sourceUrl } =
+      obj.electoralStatistics as Record<string, unknown>;
+    if (
+      typeof year === 'number' && Number.isInteger(year) &&
+      typeof registeredElectors === 'number' && Number.isSafeInteger(registeredElectors) && registeredElectors > 0 &&
+      typeof votesPolled === 'number' && Number.isSafeInteger(votesPolled) && votesPolled >= 0 && votesPolled <= registeredElectors &&
+      typeof turnoutPercent === 'number' && Number.isFinite(turnoutPercent) && turnoutPercent >= 0 && turnoutPercent <= 100 &&
+      typeof sourceUrl === 'string' && sourceUrl.startsWith('https://')
+    ) {
+      electoralStatistics = { year, registeredElectors, votesPolled, turnoutPercent, sourceUrl };
+    }
+  }
 
   let recentElection: ConstituencyElectionSummary | undefined;
   if (obj.recentElection && typeof obj.recentElection === 'object' && !Array.isArray(obj.recentElection)) {
@@ -331,6 +358,7 @@ export function validateConstituencyDetail(data: unknown, context: string): Cons
     recentElection,
     elections,
     election2023,
+    ...(electoralStatistics ? { electoralStatistics } : {}),
   };
 }
 

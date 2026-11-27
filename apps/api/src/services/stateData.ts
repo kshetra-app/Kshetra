@@ -382,6 +382,13 @@ export const canonicalGeographyService = {
       null
     );
   },
+  async getElectoralStatistics(constituencyInternalId: string) {
+    return (
+      canonicalGeoModule?.canonicalGeographyService?.getElectoralStatistics(
+        constituencyInternalId,
+      ) ?? null
+    );
+  },
   getConfirmedByElections() {
     return CONFIRMED_BY_ELECTIONS;
   },

@@ -18,6 +18,7 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import type {
   ConstituencyBrief,
+  ConstituencyElectoralStatistics,
   ReservationStatus,
   SubConstituencyHierarchyDTO,
   LocatePointResponse,
@@ -84,10 +85,12 @@ interface HierarchyBoothRow {
   booth_number: number;
   booth_name: string;
   polling_station_name: string | null;
+  polling_station_address: string | null;
   total_voters: number | null;
   panchayat_id: string | null;
   ulb_ward_internal_id: string | null;
   gp_ward_internal_id: string | null;
+  primary_dataset_version_id: string | null;
 }
 
 interface HierarchyULBWardRow {
@@ -402,9 +405,7 @@ export class CanonicalGeographyService {
    * Legacy constituency.current_mla values are deprecated and are only used
    * by non-production compatibility paths when no canonical tenure exists.
    */
-  private async getCurrentTenureMap(
-    constituencyIds: string[],
-  ): Promise<
+  private async getCurrentTenureMap(constituencyIds: string[]): Promise<
     Map<
       string,
       {
@@ -911,6 +912,44 @@ export class CanonicalGeographyService {
     }
   }
 
+  async getElectoralStatistics(
+    constituencyInternalId: string,
+  ): Promise<ConstituencyElectoralStatistics | null> {
+    const { data, error } = await supabase
+      .from('constituency_demographics')
+      .select('election_year, registered_voters, total_voters, turnout_percentage, metadata')
+      .eq('constituency_id', constituencyInternalId)
+      .filter('metadata->electoral_statistics->>status', 'eq', 'OFFICIAL')
+      .order('election_year', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) throw error;
+    if (!data) return null;
+    const {
+      election_year: year,
+      registered_voters: registeredElectors,
+      total_voters: votesPolled,
+      turnout_percentage: turnoutPercent,
+    } = data;
+    const sourceUrl = data.metadata?.electoral_statistics?.source_url;
+    if (
+      !Number.isInteger(year) ||
+      !Number.isSafeInteger(registeredElectors) ||
+      registeredElectors <= 0 ||
+      !Number.isSafeInteger(votesPolled) ||
+      votesPolled < 0 ||
+      votesPolled > registeredElectors ||
+      typeof turnoutPercent !== 'number' ||
+      !Number.isFinite(turnoutPercent) ||
+      turnoutPercent < 0 ||
+      turnoutPercent > 100 ||
+      typeof sourceUrl !== 'string' ||
+      !sourceUrl.startsWith('https://')
+    )
+      return null;
+    return { year, registeredElectors, votesPolled, turnoutPercent, sourceUrl };
+  }
+
   /**
    * Fetch 6-Tier Sub-Constituency Hierarchy for an Assembly Constituency (JOB 013).
    * Traverses Urban Local Bodies, Wards, Gram Panchayats, and Polling Booths.
@@ -941,27 +980,47 @@ export class CanonicalGeographyService {
     let ulbs: SubConstituencyHierarchyDTO['urbanLocalBodies'] = [];
     let gps: SubConstituencyHierarchyDTO['gramPanchayats'] = [];
     let booths: SubConstituencyHierarchyDTO['pollingBooths'] = [];
+    let pollingStationList: SubConstituencyHierarchyDTO['pollingStationList'];
 
     if (this.isAvailable()) {
       try {
         // Start with constituency-scoped booth rows; parent records are fetched
         // only for IDs referenced by those rows, never as a full-state dump.
-        const boothRes = await supabase
+        const boothQuery = supabase
           .from('polling_booths')
           .select(
-            'id, internal_id, booth_number, booth_name, polling_station_name, total_voters, panchayat_id, ulb_ward_internal_id, gp_ward_internal_id',
+            'id, internal_id, booth_number, booth_name, polling_station_name, polling_station_address, total_voters, panchayat_id, ulb_ward_internal_id, gp_ward_internal_id, primary_dataset_version_id',
           )
-          .eq('constituency_id', brief.id);
+          .eq('constituency_id', brief.id)
+          .order('booth_number');
+        const boothRes = await (isProductionLikeRuntime()
+          ? boothQuery.in('data_status', ['OFFICIAL', 'VERIFIED'])
+          : boothQuery);
         if (boothRes.error) throw boothRes.error;
         const boothRows = (
           Array.isArray(boothRes.data) ? boothRes.data : []
         ) as HierarchyBoothRow[];
+        const versions = [...new Set(boothRows.map((row) => row.primary_dataset_version_id))];
+        if (versions.length === 1 && versions[0]) {
+          const version = await supabase
+            .from('dataset_versions')
+            .select('effective_from, metadata')
+            .eq('id', versions[0])
+            .maybeSingle();
+          if (version.error) throw version.error;
+          const publishedOn = version.data?.effective_from;
+          const sourceUrl = version.data?.metadata?.source_url;
+          if (publishedOn && typeof sourceUrl === 'string' && sourceUrl.startsWith('https://')) {
+            pollingStationList = { publishedOn, sourceUrl };
+          }
+        }
         booths = boothRows.map((b) => ({
           id: b.id,
           internalId: b.internal_id || b.id,
           boothNumber: b.booth_number,
           boothName: b.booth_name,
           pollingStationName: b.polling_station_name ?? null,
+          pollingStationAddress: b.polling_station_address ?? null,
           totalVoters:
             typeof b.total_voters === 'number' &&
             Number.isFinite(b.total_voters) &&
@@ -1181,6 +1240,7 @@ export class CanonicalGeographyService {
       urbanLocalBodies: ulbs,
       gramPanchayats: gps,
       pollingBooths: booths,
+      ...(pollingStationList ? { pollingStationList } : {}),
     };
   }
 

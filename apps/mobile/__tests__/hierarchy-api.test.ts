@@ -2,6 +2,7 @@ import { ApiValidationError, createApiErrorFromResponse } from '../lib/api/error
 import type { ApiClient } from '../lib/api/client';
 import {
   ConstituenciesEndpoint,
+  validateConstituencyDetail,
   validateConstituencyHierarchy,
 } from '../lib/api/endpoints/constituencies';
 
@@ -34,6 +35,26 @@ const payload = {
 };
 
 describe('constituency hierarchy API', () => {
+  it('preserves the revision and source on a published polling-station list', () => {
+    const pollingStationList = { publishedOn: '2023-10-04', sourceUrl: 'https://medchal-malkajgiri.telangana.gov.in/' };
+    expect(validateConstituencyHierarchy({ ...payload, pollingStationList }).pollingStationList).toEqual(pollingStationList);
+  });
+
+  it('accepts official election totals and ignores an impossible turnout', () => {
+    const electoralStatistics = {
+      year: 2023,
+      registeredElectors: 227164,
+      votesPolled: 187057,
+      turnoutPercent: 82.34,
+      sourceUrl: 'https://www.eci.gov.in/',
+    };
+    const brief = { ...payload.constituency, currentParty: 'BJP', currentMLA: 'Palvai Harish Babu' };
+    expect(validateConstituencyDetail({ ...brief, electoralStatistics }, 'test').electoralStatistics).toEqual(electoralStatistics);
+    expect(validateConstituencyDetail({
+      ...brief,
+      electoralStatistics: { ...electoralStatistics, turnoutPercent: 125 },
+    }, 'test').electoralStatistics).toBeUndefined();
+  });
   it('retains the API error code so missing data is distinct from a missing endpoint', () => {
     const error = createApiErrorFromResponse(404, {
       error: 'Not Found',

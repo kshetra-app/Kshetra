@@ -8,6 +8,7 @@ import {
   Dimensions,
   Image,
   Animated,
+  Linking,
   Share,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -33,6 +34,7 @@ import { isStateSupported, getStateData } from '../../lib/stateRegistry';
 import { MapboxGL, mapboxAvailable, extractLngLat } from '../../lib/maplibreCompat';
 import { getStateCodeFromName } from '../../lib/enrichGeoJSON';
 import { apiClient, type SpatialProvenance } from '../../lib/api';
+import type { ConstituencyDetailDTO } from '../../lib/api/endpoints/constituencies';
 import { telemetry } from '../../lib/telemetry';
 import { useEnrichedGeo } from '../../lib/useEnrichedGeo';
 import { computeDistrictDensityMap } from '../../lib/delimitationDensity';
@@ -207,6 +209,25 @@ function FullMapScreen() {
     acNo: number;
     contest: HistoricalPodiumContest;
   } | null>(null);
+  const [selectedElectoralStatistics, setSelectedElectoralStatistics] = useState<{
+    stateCode: string;
+    acNo: number;
+    value: NonNullable<ConstituencyDetailDTO['electoralStatistics']>;
+  } | null>(null);
+  const snapshotAcNo = selected?.acNo;
+  useEffect(() => {
+    if (!IS_LIVE_ENVIRONMENT || snapshotAcNo == null) return;
+    let active = true;
+    apiClient.constituencies.getConstituency(stateCode, snapshotAcNo).then((detail) => {
+      if (!active) return;
+      setSelectedElectoralStatistics(detail.electoralStatistics
+        ? { stateCode, acNo: snapshotAcNo, value: detail.electoralStatistics }
+        : null);
+    }).catch(() => {
+      if (active) setSelectedElectoralStatistics(null);
+    });
+    return () => { active = false; };
+  }, [stateCode, snapshotAcNo]);
   const [podiumLoadingForAcNo, setPodiumLoadingForAcNo] = useState<number | null>(null);
   const [podiumRetry, setPodiumRetry] = useState(0);
   const selectedRef = useRef<SelectedConstituency | null>(null);
@@ -2366,7 +2387,11 @@ function FullMapScreen() {
           const profession = IS_LIVE_ENVIRONMENT
             ? affidavit?.profession ?? podium?.winner?.profession ?? null
             : affidavit?.profession || mla?.profession || podium?.winner?.profession || null;
-          const turnoutValue = IS_LIVE_ENVIRONMENT ? undefined : (seed as any)?.turnout;
+          const electoralStatistics = selectedElectoralStatistics?.stateCode === stateCode &&
+            selectedElectoralStatistics.acNo === selected.acNo ? selectedElectoralStatistics.value : null;
+          const turnoutValue = IS_LIVE_ENVIRONMENT
+            ? (electoralStatistics?.year === electionYear ? electoralStatistics?.turnoutPercent : undefined)
+            : (seed as any)?.turnout;
           const turnout = typeof turnoutValue === 'number' && Number.isFinite(turnoutValue) ? turnoutValue : null;
 
           return (
@@ -2668,7 +2693,7 @@ function FullMapScreen() {
                     <View style={styles.s1MetricsGrid}>
                       <View style={styles.s1MetricBox}>
                         <Text style={styles.s1MetricLabel}>
-                          {t('constituency.totalVotes', { defaultValue: 'Total Votes' })}
+                          {t('constituency.countedBallots', { defaultValue: 'Votes counted' })}
                         </Text>
                         <Text style={styles.s1MetricValue}>
                           {totalValidVotes != null ? totalValidVotes.toLocaleString() : '—'}
@@ -2693,6 +2718,20 @@ function FullMapScreen() {
                         </Text>
                       </View>
                     </View>
+                    {electoralStatistics && (
+                      <Pressable
+                        accessibilityRole="link"
+                        onPress={() => void Linking.openURL(electoralStatistics.sourceUrl)}
+                        style={styles.sheetCompareButton}
+                      >
+                        <Text style={styles.sheetCompareText}>
+                          {t('constituency.totalVoters')} · {electoralStatistics.year}{' '}
+                          {electoralStatistics.registeredElectors.toLocaleString('en-IN')}
+                          {turnout === null ? ` · ${t('constituency.turnout')} ${electoralStatistics.turnoutPercent}%` : ''}
+                        </Text>
+                        <Ionicons name="open-outline" size={14} color="#002B7F" />
+                      </Pressable>
+                    )}
                     </>
                     ) : (
                       <View style={{ paddingVertical: 8 }}>
@@ -2929,7 +2968,7 @@ function FullMapScreen() {
                   })()}
 
                   {/* Explore Hierarchy trigger */}
-                  {!mapOnlyMode && hasHierarchyData(stateCode, selected.acNo) && (
+                  {!mapOnlyMode && (IS_LIVE_ENVIRONMENT || hasHierarchyData(stateCode, selected.acNo)) && (
                     <Pressable
                       style={[styles.sheetCompareButton, { borderColor: '#002B7F40', backgroundColor: '#002B7F10', marginBottom: 10 }]}
                       onPress={() => {
