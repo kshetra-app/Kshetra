@@ -1,32 +1,46 @@
 import { createHash } from 'node:crypto';
-import { get } from 'node:https';
 import type { FastifyPluginAsync } from 'fastify';
 import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import { isSupabaseConfigured, isUsingServiceRole, supabase } from '../lib/supabase';
 
 const daily = 24 * 60 * 60 * 1000;
 const retryDelay = 60 * 60 * 1000;
-const responseLimit = 2_000_000;
+const region = 'ap-south-1';
+const transport = 'supabase-mumbai';
 
 const publishers = [
   {
     id: 'telangana_law_department',
-    url: 'https://law.telangana.gov.in/bills',
     format: 'legislation-index',
   },
   {
     id: 'telangana_state_portal',
-    url: 'https://www.telangana.gov.in/category/news/feed/',
     format: 'rss',
   },
   {
     id: 'telangana_electricity_regulatory_commission',
-    url: 'https://www.tgerc.telangana.gov.in/',
     format: 'hearing-notices',
   },
 ] as const;
 
 type Publisher = (typeof publishers)[number];
+
+interface PublisherCheck {
+  transport?: string;
+  status?: string;
+  last_attempt_at?: string;
+  fingerprint?: string;
+}
+
+export function isCivicPublisherCheckDue(previous: PublisherCheck, now = Date.now()): boolean {
+  const lastAttempt = Date.parse(previous.last_attempt_at ?? '');
+  const interval = previous.status === 'unavailable' ? retryDelay : daily;
+  return (
+    previous.transport !== transport ||
+    !Number.isFinite(lastAttempt) ||
+    now - lastAttempt >= interval
+  );
+}
 
 export function fingerprintPublisherDocument(format: Publisher['format'], source: string): string {
   let evidence: string;
@@ -50,42 +64,48 @@ export function fingerprintPublisherDocument(format: Publisher['format'], source
   return createHash('sha256').update(evidence).digest('hex');
 }
 
-async function fetchFingerprint(publisher: Publisher): Promise<string> {
-  const source = await new Promise<string>((resolve, reject) => {
-    const request = get(
-      publisher.url,
-      {
-        family: 4,
-        signal: AbortSignal.timeout(25_000),
-        headers: { 'User-Agent': 'Poligram official civic publisher monitor' },
-      },
-      (response) => {
-        if (response.statusCode !== 200) {
-          response.destroy();
-          reject(new Error(`Publisher returned HTTP ${response.statusCode}`));
-          return;
-        }
-        const chunks: Buffer[] = [];
-        let bytes = 0;
-        response.on('data', (chunk: Buffer) => {
-          bytes += chunk.length;
-          if (bytes > responseLimit) {
-            response.destroy(new Error('Publisher response exceeds the size limit'));
-            return;
-          }
-          chunks.push(chunk);
-        });
-        response.once('error', reject);
-        response.once('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
-      },
-    );
-    request.once('error', reject);
+export async function fetchCivicPublisherFingerprint(
+  functionUrl: URL,
+  token: string,
+  publisher: Publisher,
+): Promise<string> {
+  const url = new URL(functionUrl);
+  url.searchParams.set('publisher', publisher.id);
+  const response = await fetch(url, {
+    method: 'POST',
+    redirect: 'error',
+    signal: AbortSignal.timeout(25_000),
+    headers: { 'x-region': region, 'x-poligram-civic-token': token },
   });
-  return fingerprintPublisherDocument(publisher.format, source);
+  if (!response.ok || response.headers.get('x-sb-edge-region') !== region) {
+    await response.body?.cancel();
+    if (!response.ok) {
+      const upstream = response.headers.get('x-poligram-upstream-status');
+      throw new Error(
+        upstream
+          ? `Publisher returned HTTP ${upstream}`
+          : `Publisher worker returned HTTP ${response.status}`,
+      );
+    }
+    throw new Error('Publisher worker did not run in the expected region');
+  }
+  return fingerprintPublisherDocument(publisher.format, await response.text());
 }
 
 export const civicPublisherMonitor: FastifyPluginAsync = async (app) => {
   if (!isProductionLikeRuntime() || !isSupabaseConfigured || !isUsingServiceRole) return;
+
+  const token = process.env.CIVIC_PUBLISHER_TOKEN?.trim();
+  const supabaseUrl = process.env.SUPABASE_URL;
+  if (!token || !/^[a-f0-9]{64}$/.test(token) || !supabaseUrl) {
+    app.log.warn('Civic publisher worker credentials are missing or invalid');
+    return;
+  }
+  const functionUrl = new URL('/functions/v1/civic-publisher', supabaseUrl);
+  if (functionUrl.protocol !== 'https:') {
+    app.log.warn('Civic publisher worker requires HTTPS');
+    return;
+  }
 
   let timer: NodeJS.Timeout | undefined;
   let running: Promise<void> | undefined;
@@ -104,32 +124,30 @@ export const civicPublisherMonitor: FastifyPluginAsync = async (app) => {
       for (const row of result.data) {
         const publisher = publishers.find(({ id }) => id === row.id);
         if (!publisher) continue;
-        const previous = row.metadata?.publisher_check ?? {};
-        const wait = previous.status === 'unavailable' ? retryDelay : daily;
-        if (
-          Date.now() - Date.parse(previous.last_attempt_at) < wait &&
-          (previous.status !== 'unavailable' || previous.last_error)
-        )
-          continue;
+        const previous: PublisherCheck = row.metadata?.publisher_check ?? {};
+        if (!isCivicPublisherCheckDue(previous)) continue;
         const checkedOn = new Date().toISOString();
         let check;
         try {
-          const digest = await fetchFingerprint(publisher);
+          const digest = await fetchCivicPublisherFingerprint(functionUrl, token, publisher);
           const changed = Boolean(previous.fingerprint && previous.fingerprint !== digest);
+          const verifiedOn = new Date().toISOString();
           check = {
             ...previous,
+            transport,
             fingerprint: digest,
             last_attempt_at: checkedOn,
-            last_success_at: checkedOn,
+            last_success_at: verifiedOn,
             last_error: null,
             status: changed ? 'changed' : previous.fingerprint ? 'unchanged' : 'baseline',
-            ...(changed ? { last_changed_at: checkedOn, review_required: true } : {}),
+            ...(changed ? { last_changed_at: verifiedOn, review_required: true } : {}),
           };
         } catch (error) {
           const connectionCode = (error as NodeJS.ErrnoException).code;
           const message = error instanceof Error ? error.message : 'Unknown error';
           check = {
             ...previous,
+            transport,
             last_attempt_at: checkedOn,
             status: 'unavailable',
             last_error: connectionCode ?? message,
@@ -139,7 +157,10 @@ export const civicPublisherMonitor: FastifyPluginAsync = async (app) => {
         // updates a bill, project, hearing, or its content verification date.
         const saved = await supabase
           .from('data_sources')
-          .update({ metadata: { ...row.metadata, publisher_check: check }, updated_at: checkedOn })
+          .update({
+            metadata: { ...row.metadata, publisher_check: check },
+            updated_at: new Date().toISOString(),
+          })
           .eq('id', row.id)
           .eq('updated_at', row.updated_at)
           .select('id');
