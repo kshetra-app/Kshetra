@@ -63,19 +63,21 @@ describe('personal page controls', () => {
   it('lets an ordinary member open the shared composer and see their private submission status', async () => {
     mockViewerId = owner;
     render(<UserProfileScreen />);
-    await screen.findByText('profile.createPost', {}, { timeout: 10000 });
+    await act(async () => {});
+    expect(screen.getByText('profile.createPost')).toBeOnTheScreen();
     expect(screen.queryByText('Awaiting approval')).toBeNull();
     await act(async () => { fireEvent.press(screen.getByRole('tab', { name: 'profile.submissions' })); });
     expect(screen.getByText('Awaiting approval')).toBeOnTheScreen();
     fireEvent.press(screen.getByText('profile.createPost'));
     expect(screen.getByText('Shared composer')).toBeOnTheScreen();
-  });
+  }, 15_000);
 
   it('shows visitor actions without loading private data or accepting an owner compose link', async () => {
     mockViewerId = 'visitor';
     mockCompose = '1';
     render(<UserProfileScreen />);
-    expect(await screen.findByText('common.follow', {}, { timeout: 10000 })).toBeOnTheScreen();
+    await act(async () => {});
+    expect(screen.getByText('common.follow')).toBeOnTheScreen();
     expect(screen.queryByText('profile.createPost')).toBeNull();
     expect(screen.queryByText('profile.submissions')).toBeNull();
     expect(screen.queryByText('Shared composer')).toBeNull();
