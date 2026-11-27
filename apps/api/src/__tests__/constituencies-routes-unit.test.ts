@@ -105,24 +105,31 @@ describe('Constituencies Routes Unit Tests (Exhaustive Branch Coverage)', () => 
     }
   });
 
-  it('publishes the 2026 Karnataka by-election declarations with their verified fields', async () => {
+  it('publishes final vote counts for the two 2026 Karnataka by-elections', async () => {
     const response = await app.inject('/states/KA/podium-summary');
     expect(response.statusCode).toBe(200);
     const seats = response.json().data;
-    for (const [acNo, winnerName] of [
-      [24, 'Umesh Hullappa Meti'],
-      [107, 'Samarth Shamanur Mallikarjuna'],
-    ]) {
+    for (const [acNo, winnerName, margin, count, thirdPlaceVotes] of [
+      [24, 'Umesh Hullappa Meti', 22332, 178531, 521],
+      [107, 'Samarth Shamanur Mallikarjuna', 5708, 158318, 18975],
+    ] as const) {
       const seat = seats.find((row: { acNo: number }) => row.acNo === acNo);
       expect(seat.history[0]).toMatchObject({
         year: 2026,
         electionType: 'BYPOLL',
         winnerName,
         winnerParty: 'INC',
-        margin: null,
-        resultSourceUrl: 'https://kla.kar.nic.in/assembly/gazette/gazette_04052026.pdf',
+        margin,
+        resultSourceUrl: expect.stringContaining(
+          `/https://results.eci.gov.in/ResultAcByeMay2026/ConstituencywiseS10${acNo}.htm`,
+        ),
       });
       expect(seat.history[1]).toMatchObject({ year: 2023, electionType: 'GENERAL' });
+      const contest = await app.inject(`/states/KA/constituencies/${acNo}/podium`);
+      expect(contest.json()[0]).toMatchObject({
+        totalValidVotes: count,
+        secondRunnerUp: { votes: thirdPlaceVotes },
+      });
     }
 
     const detail = await app.inject('/states/KA/constituencies/24');
@@ -132,8 +139,8 @@ describe('Constituencies Routes Unit Tests (Exhaustive Branch Coverage)', () => 
         electionYear: 2026,
         electionType: 'BYPOLL',
         winnerName: 'Umesh Hullappa Meti',
-        winnerVotes: null,
-        margin: null,
+        winnerVotes: 98919,
+        margin: 22332,
       },
       election2023: { winnerName: 'Meti. Hullappa. Yamanappa', winnerVotes: 79336 },
     });
