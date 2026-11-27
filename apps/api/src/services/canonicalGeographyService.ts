@@ -902,7 +902,8 @@ export class CanonicalGeographyService {
       if (isProductionLikeRuntime() && !tenure?.currentMLA) return null;
 
       let name = tenure?.currentMLA || data.current_mla || 'UNKNOWN';
-      let party = tenure?.currentParty || data.current_party || 'UNKNOWN';
+      let party =
+        tenure?.currentParty || (isProductionLikeRuntime() ? '' : data.current_party || 'UNKNOWN');
 
       const override = resolveRuntimeByElectionOverride(code, data.ac_no, data.name);
       if (override) {
@@ -962,7 +963,8 @@ export class CanonicalGeographyService {
           if (isProductionLikeRuntime() && !tenure?.currentMLA) return null;
 
           let name = tenure?.currentMLA || c.current_mla || 'UNKNOWN';
-          let party = tenure?.currentParty || c.current_party || 'UNKNOWN';
+          let party =
+            tenure?.currentParty || (isProductionLikeRuntime() ? '' : c.current_party || 'UNKNOWN');
 
           const override = resolveRuntimeByElectionOverride(code, c.ac_no, c.name);
           if (override) {
