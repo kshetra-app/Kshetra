@@ -105,6 +105,27 @@ describe('Constituencies Routes Unit Tests (Exhaustive Branch Coverage)', () => 
     }
   });
 
+  it('publishes the 2026 Karnataka by-election declarations with their verified fields', async () => {
+    const response = await app.inject('/states/KA/podium-summary');
+    expect(response.statusCode).toBe(200);
+    const seats = response.json().data;
+    for (const [acNo, winnerName] of [
+      [24, 'Umesh Hullappa Meti'],
+      [107, 'Samarth Shamanur Mallikarjuna'],
+    ]) {
+      const seat = seats.find((row: { acNo: number }) => row.acNo === acNo);
+      expect(seat.history[0]).toMatchObject({
+        year: 2026,
+        electionType: 'BYPOLL',
+        winnerName,
+        winnerParty: 'INC',
+        margin: null,
+        resultSourceUrl: 'https://kla.kar.nic.in/assembly/gazette/gazette_04052026.pdf',
+      });
+      expect(seat.history[1]).toMatchObject({ year: 2023, electionType: 'GENERAL' });
+    }
+  });
+
   it('keeps disclosures, portraits and citations attached to the individual podium candidate', async () => {
     const response = await app.inject('/states/TS/constituencies/1/podium');
     expect(response.statusCode).toBe(200);
