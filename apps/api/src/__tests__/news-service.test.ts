@@ -48,6 +48,32 @@ describe('News Service (newsService.ts)', () => {
       expect(getFeed(scope).items.map((item) => item.sourceUrl)).toEqual([stateVideo]);
     });
 
+    it('retains a relevant election story below a busy publisher’s general article limit', async () => {
+      const now = Date.now();
+      const electionDate = new Date(now - 3600000).toUTCString();
+      const headline = 'https://tv9kannada.com/karnataka/assembly-by-election.html';
+      const items = Array.from(
+        { length: 20 },
+        (_, index) => `
+        <item><title>State report ${index}</title><link>https://tv9kannada.com/karnataka/report-${index}.html</link>
+        <category>ಕರ್ನಾಟಕ ಸುದ್ದಿ</category><pubDate>${new Date(now - index * 60000).toUTCString()}</pubDate></item>`,
+      ).join('');
+      jest.spyOn(rssParser, 'fetchFeedXml').mockImplementation(async (url) => {
+        if (url !== 'https://tv9kannada.com/karnataka/feed') return null;
+        return `<rss><channel>${items}
+          <item><title>ವಿಧಾನಸಭಾ ಚುನಾವಣೆ</title><link>${headline}</link>
+          <category>ಕರ್ನಾಟಕ ಸುದ್ದಿ</category><pubDate>${electionDate}</pubDate></item>
+        </channel></rss>`;
+      });
+      await refreshNews();
+      expect(
+        getFeed({ scope: 'state', state: 'KA', lang: 'kn', category: 'elections' }).items.map(
+          (item) => item.sourceUrl,
+        ),
+      ).toEqual([headline]);
+      expect(getFeed({ scope: 'state', state: 'KA', lang: 'kn' }).items).toHaveLength(16);
+    });
+
     it('scrapes feeds, deduplicates items, extracts YouTube video metadata, and updates cache', async () => {
       const recentDate = new Date(Date.now() - 2 * 60 * 60 * 1000).toUTCString();
       const staleDate = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toUTCString();

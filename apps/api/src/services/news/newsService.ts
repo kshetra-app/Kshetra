@@ -56,6 +56,15 @@ export interface FeedFilters {
 const REFRESH_INTERVAL_MIN = 10;
 const MIN_REFRESH_INTERVAL_MS = 3 * 60_000;
 const PER_SOURCE_CAP = 15;
+const RETAINED_TOPICS = [
+  'politics',
+  'elections',
+  'governance',
+  'economy',
+  'breaking',
+  'video',
+] as const;
+const PER_SOURCE_TOPIC_CAP = 5;
 
 let cache: NewsFeed = {
   version: 1,
@@ -121,13 +130,7 @@ async function scrapeSource(
       );
     })
     .sort((a, b) => Date.parse(b.publishedAt!) - Date.parse(a.publishedAt!));
-  const parsed = fresh.slice(0, PER_SOURCE_CAP);
-  const ids = new Set(parsed.map((item) => item.link));
-  // A busy text feed should not crowd out its publisher's fresh video stories.
-  for (const video of fresh.filter((item) => detectVideo(item.link)).slice(0, 5)) {
-    if (!ids.has(video.link)) parsed.push(video);
-  }
-  return parsed.map((p) => {
+  const items = fresh.map((p) => {
     const link = canonicalNewsUrl(p.link)!.toString();
     const video = detectVideo(link);
     const { categories, breaking } = classifyNews(src, p.title, p.categories ?? []);
@@ -155,6 +158,21 @@ async function scrapeSource(
       video,
     } satisfies NewsItem;
   });
+  const byId = new Map<string, NewsItem>();
+  for (const item of items) {
+    if (!byId.has(item.id)) byId.set(item.id, item);
+  }
+  const unique = [...byId.values()];
+  const retained = new Map(unique.slice(0, PER_SOURCE_CAP).map((item) => [item.id, item]));
+  // Keep a small set per topic so a busy edition does not hide matching articles.
+  for (const topic of RETAINED_TOPICS) {
+    for (const item of unique
+      .filter((entry) => matchesNewsCategory(entry, topic))
+      .slice(0, PER_SOURCE_TOPIC_CAP)) {
+      retained.set(item.id, item);
+    }
+  }
+  return [...retained.values()];
 }
 
 export function refreshNews(): Promise<NewsFeed> {
