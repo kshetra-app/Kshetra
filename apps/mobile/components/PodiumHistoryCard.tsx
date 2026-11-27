@@ -112,11 +112,6 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text style={[styles.year, { color: colors.text }]}>{item.year}</Text>
-          {isLatest && (
-            <View style={styles.latestBadge}>
-              <Text style={styles.latestBadgeText}>{t('constituency.current', { defaultValue: 'Current' })}</Text>
-            </View>
-          )}
           {item.delimitation_id && (
             <View style={styles.delimBadge}>
               <Text style={styles.delimBadgeText}>
@@ -302,17 +297,6 @@ const styles = StyleSheet.create({
   year: {
     fontSize: 16,
     fontWeight: '800',
-  },
-  latestBadge: {
-    backgroundColor: '#FEF3C7',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-  latestBadgeText: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: '#D97706',
   },
   delimBadge: {
     backgroundColor: '#F3F4F6',
