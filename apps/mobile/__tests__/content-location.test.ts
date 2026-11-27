@@ -1,6 +1,10 @@
 import * as Location from 'expo-location';
 import { captureLocationFingerprint } from '../lib/deviceFingerprint';
 
+jest.mock('@react-native-async-storage/async-storage', () =>
+  require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
+);
+
 jest.mock('expo-location', () => ({
   getForegroundPermissionsAsync: jest.fn(),
   getLastKnownPositionAsync: jest.fn(),

@@ -230,7 +230,7 @@ export default function NewsScreen() {
               setShowScopeModal(true);
             }}
             accessibilityRole="button"
-            accessibilityLabel="Filter by Scope"
+            accessibilityLabel={t('news.selectReach')}
           >
             <Ionicons
               name={scope === 'national' ? 'globe-outline' : scope === 'state' ? 'map-outline' : 'location-outline'}
@@ -261,7 +261,7 @@ export default function NewsScreen() {
               setShowLanguageModal(true);
             }}
             accessibilityRole="button"
-            accessibilityLabel="Filter by Language"
+            accessibilityLabel={t('news.selectNewsLanguage')}
           >
             <Ionicons
               name="language"
@@ -292,7 +292,7 @@ export default function NewsScreen() {
               setShowBookmarks((v) => !v);
             }}
             accessibilityRole="button"
-            accessibilityLabel="Saved Stories"
+            accessibilityLabel={t('news.savedStories')}
           >
             <Ionicons
               name={showBookmarks ? 'bookmark' : 'bookmark-outline'}
@@ -312,7 +312,7 @@ export default function NewsScreen() {
               setShowDiscoveryHub(true);
             }}
             accessibilityRole="button"
-            accessibilityLabel="News Guide"
+            accessibilityLabel={t('discovery.screenHelp')}
           >
             <Ionicons name="sparkles-outline" size={17} color={colors.gold || colors.primary} />
           </Pressable>
@@ -407,7 +407,7 @@ export default function NewsScreen() {
                     refreshFromPublishers();
                   }}
                   accessibilityRole="button"
-                  accessibilityLabel="Retry loading news"
+                  accessibilityLabel={t('common.retry')}
                 >
                   <Text style={[styles.resetEmptyBtnText, { color: colors.primary }]}>{t('common.retry')}</Text>
                 </Pressable>
@@ -455,7 +455,7 @@ export default function NewsScreen() {
         <Pressable style={styles.modalBackdrop} onPress={() => setShowScopeModal(false)}>
           <View style={[styles.modalSheet, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: colors.text }]}>Select Geographic Reach</Text>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>{t('news.selectReach')}</Text>
               <Pressable onPress={() => setShowScopeModal(false)} hitSlop={10}>
                 <Ionicons name="close" size={20} color={colors.textMuted} />
               </Pressable>
@@ -518,7 +518,7 @@ export default function NewsScreen() {
         <Pressable style={styles.modalBackdrop} onPress={() => setShowLanguageModal(false)}>
           <View style={[styles.modalSheet, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: colors.text }]}>Select News Language</Text>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>{t('news.selectNewsLanguage')}</Text>
               <Pressable onPress={() => setShowLanguageModal(false)} hitSlop={10}>
                 <Ionicons name="close" size={20} color={colors.textMuted} />
               </Pressable>

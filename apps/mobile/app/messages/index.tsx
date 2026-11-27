@@ -29,7 +29,6 @@ import { useForegroundChatRefresh } from '../../lib/useForegroundChatRefresh';
 import {
   getLocalizedContactName,
   getLocalizedContactRole,
-  getLocalizedDMPreview,
 } from '../../lib/dmLocalization';
 
 type InboxTab = 'chats' | 'requests';
@@ -177,7 +176,7 @@ export default function MessagesInboxScreen() {
     };
 
     const localizedDisplayName = getLocalizedContactName(other.displayName, i18n.language);
-    const localizedPreview = getLocalizedDMPreview(item.last_message_preview || '', i18n.language) ||
+    const preview = item.last_message_preview ||
       (item.status === 'pending'
         ? t('messages.messageRequest', { defaultValue: 'Message request' })
         : t('messages.noMessagesYet', { defaultValue: 'No messages yet' }));
@@ -224,7 +223,7 @@ export default function MessagesInboxScreen() {
             ]}
             numberOfLines={1}
           >
-            {localizedPreview}
+            {preview}
           </Text>
         </View>
 
@@ -237,7 +236,8 @@ export default function MessagesInboxScreen() {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + 8, borderBottomColor: colors.border }]}>
-        <Pressable onPress={() => router.back()} hitSlop={8} style={styles.backBtn}>
+        <Pressable accessibilityRole="button" accessibilityLabel={t('common.back')}
+          onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/more')} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={22} color={colors.text} />
         </Pressable>
         <Text style={[styles.headerTitle, { color: colors.text }]}>
@@ -359,7 +359,7 @@ export default function MessagesInboxScreen() {
       />
 
       {/* Floating Action Button (FAB) to Start New Conversation */}
-      <Pressable
+      {(activeTab !== 'chats' || chats.length > 0) && <Pressable
         style={[
           styles.composeFab,
           {
@@ -372,7 +372,7 @@ export default function MessagesInboxScreen() {
         accessibilityLabel={t('messages.newChat', { defaultValue: 'New conversation' })}
       >
         <Ionicons name="create-outline" size={24} color="#FFFFFF" />
-      </Pressable>
+      </Pressable>}
 
       {/* New Message / Select Contact Modal */}
       <Modal
@@ -583,14 +583,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   backBtn: { padding: 4 },
-  headerTitle: { fontSize: 18, fontWeight: '800' },
+  headerTitle: { flex: 1, fontSize: 18, fontWeight: '800' },
   headerRightActions: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   headerIconBtn: { padding: 6, borderRadius: 20 },
   tabBar: { flexDirection: 'row', borderBottomWidth: 1 },
   tab: { flex: 1, paddingVertical: 12, alignItems: 'center', borderBottomWidth: 2, borderBottomColor: 'transparent' },
   activeTab: {},
-  tabContent: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  tabLabel: { fontSize: 14, fontWeight: '700' },
+  tabContent: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: 6, paddingHorizontal: 8 },
+  tabLabel: { flexShrink: 1, textAlign: 'center', fontSize: 14, fontWeight: '700' },
   badge: { paddingHorizontal: 7, paddingVertical: 2, borderRadius: 10 },
   badgeText: { color: '#FFFFFF', fontSize: 11, fontWeight: '800' },
   quietBadge: { paddingHorizontal: 7, paddingVertical: 2, borderRadius: 10, borderWidth: 1 },

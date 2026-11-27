@@ -48,9 +48,6 @@ export default function MoreScreen() {
             <Text style={[styles.title, { color: colors.text }]}>
               {t('more.title', { defaultValue: t('tabs.more', { defaultValue: 'More' }) })}
             </Text>
-            <Text style={[styles.subtitle, { color: colors.textMuted }]}>
-              {t('more.subtitle', { defaultValue: 'Civic directory, media & account tools' })}
-            </Text>
           </View>
           <Pressable
             style={[
@@ -71,7 +68,7 @@ export default function MoreScreen() {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 110, paddingTop: 8 }}
+        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 24 }]}
       >
         {featuredPagesAndLeaders && (
           <Pressable
@@ -82,7 +79,6 @@ export default function MoreScreen() {
             ]}
             onPress={() => go(featuredPagesAndLeaders)}
           >
-            <View style={styles.featuredGlow} />
             <View style={styles.featuredContent}>
               <View
                 style={[styles.featuredIconWrap, { backgroundColor: 'rgba(255, 255, 255, 0.2)' }]}
@@ -197,6 +193,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   headerRow: {
+    width: '100%',
+    maxWidth: 768,
+    alignSelf: 'center',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -207,15 +206,16 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     letterSpacing: -0.3,
   },
-  subtitle: {
-    fontSize: 12,
-    fontWeight: '600',
-    marginTop: 2,
+  content: {
+    width: '100%',
+    maxWidth: 800,
+    alignSelf: 'center',
+    paddingTop: 8,
   },
   helpTrigger: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
@@ -232,15 +232,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 5,
     elevation: 4,
-  },
-  featuredGlow: {
-    position: 'absolute',
-    top: -40,
-    right: -30,
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
   },
   featuredContent: {
     flexDirection: 'row',
@@ -260,10 +251,9 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   featuredSub: {
-    fontSize: 11.5,
+    fontSize: 13,
     color: 'rgba(255, 255, 255, 0.9)',
     marginTop: 2,
-    lineHeight: 15,
   },
   sectionWrap: {
     marginBottom: 14,
@@ -301,12 +291,12 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   rowTitle: {
-    fontSize: 13.5,
+    fontSize: 15,
     fontWeight: '700',
     textAlignVertical: 'center',
   },
   rowSubtitle: {
-    fontSize: 11,
+    fontSize: 13,
     marginTop: 1,
   },
   rowRight: {

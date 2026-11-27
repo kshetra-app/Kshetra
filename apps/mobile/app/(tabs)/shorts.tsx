@@ -177,7 +177,7 @@ export default function ShortsScreen({ hideHeader = false, searchQuery = '' }: S
           );
         })}
         <Text style={[styles.periodHint, { color: colors.textMuted }]}>
-          {period === 'recent' ? t('feed.archiveRecentHint', { defaultValue: 'Last 30 days' }) : t('feed.archiveOlderHint', { defaultValue: 'Older shorts' })}
+          {period === 'recent' ? t('feed.archiveRecentHint') : t('shorts.archiveOlderHint')}
         </Text>
       </View>
 

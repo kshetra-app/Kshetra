@@ -2,7 +2,65 @@
  * HI translation
  */
 const hi = {
+  "constituencyDirectory": {
+    "currentRepresentative": "वर्तमान प्रतिनिधि",
+    "loading": "लाइव निर्वाचन क्षेत्र के रिकॉर्ड की जाँच की जा रही है...",
+    "staleRecords": "पहले से लोड किए गए रिकॉर्ड दिखा रहा है; वर्तमान डेटाबेस डेटा की पुष्टि नहीं की जा सकी.",
+    "empty": "इस राज्य के लिए अभी तक कोई प्रतिनिधि रिकॉर्ड उपलब्ध नहीं है।",
+    "databaseRecord": "पोलिग्राम डेटाबेस रिकॉर्ड",
+    "geographyOnly": "केवल निर्वाचन क्षेत्र का भूगोल",
+    "localPreviewData": "स्थानीय पूर्वावलोकन डेटा",
+    "nameUnavailable": "नाम अनुपलब्ध",
+    "partyUnavailable": "पार्टी अनुपलब्ध",
+    "connectedElectionRecord": "जुड़ा हुआ चुनाव रिकॉर्ड",
+    "noPartyRecords": "पार्टी का कोई रिकॉर्ड उपलब्ध नहीं है.",
+    "officeholderUnavailable": "प्रतिनिधि विवरण उपलब्ध नहीं है",
+    "unavailable": "प्रतिनिधि अभिलेख अनुपलब्ध हैं.",
+    "partyRecordsUnavailable": "इस दृश्य के लिए पार्टी रिकॉर्ड उपलब्ध नहीं हैं।"
+  },
+  "news": {
+    "selectReach": "समाचार क्षेत्र चुनें",
+    "selectNewsLanguage": "समाचार भाषा चुनें",
+    "savedStories": "सहेजी गई कहानियाँ",
+    "refreshFailed": "रिफ्रेश विफल रहा. हाल की सहेजी गई कहानियाँ दिखा रहा हूँ।",
+    "lastUpdated": "अद्यतन {{time}}",
+    "noBreaking": "ब्रेकिंग के रूप में चिह्नित कोई भी हालिया कहानी इन फ़िल्टर से मेल नहीं खाती।",
+    "showLatest": "नवीनतम समाचार दिखाएँ",
+    "showState": "{{state}} समाचार दिखाएँ",
+    "showNational": "अखिल भारतीय समाचार दिखाओ",
+    "searchStates": "राज्य और केंद्र शासित प्रदेश खोजें",
+    "noMatchingStates": "कोई मेल खाने वाला राज्य या केंद्र शासित प्रदेश नहीं"
+  },
+  "sync": {
+    "retryFailed": "इस टिप्पणी का पुनः प्रयास नहीं किया जा सका.",
+    "syncing": "सिंक हो रहा है",
+    "queued": "सिंक होने की प्रतीक्षा की जा रही है",
+    "failedRetry": "सिंक नहीं हो सका. पुन: प्रयास करने के लिए ठोकिए।"
+  },
+  "civic": {
+    "reportIssue": "किसी समस्या की रिपोर्ट करें"
+  },
+  "electionArchive": {
+    "byElection": "उपचुनाव",
+    "officialDocument": "आधिकारिक परिणाम दस्तावेज़",
+    "officialResults": "चुनाव आयोग के नतीजे और मतगणना अपडेट",
+    "selectState": "किसी राज्य या केंद्र शासित प्रदेश का चयन करें",
+    "search": "विधानसभा क्षेत्र खोजें",
+    "latest": "नवीनतम रिकॉर्ड किया गया",
+    "retry": "संग्रह लोड नहीं किया जा सका. पुन: प्रयास करने के लिए ठोकिए।",
+    "noMatches": "संग्रह में कोई मेल खाने वाला असेंबली परिणाम नहीं है। आधिकारिक कवरेज के लिए उपरोक्त चुनाव आयोग लिंक खोलें।",
+    "margin": "मार्जिन {{votes}} वोट",
+    "menuDescription": "विधानसभा परिणाम और आधिकारिक मतगणना अपडेट"
+  },
   "partyRegistry": {
+    "about": "पार्टी के बारे में",
+    "registryIdentity": "{{party}} को {{code}} के अंतर्गत राजनीतिक दल निर्देशिका में सूचीबद्ध किया गया है।",
+    "founded": "{{year}} में स्थापित।",
+    "contributionReport": "भारत का चुनाव आयोग {{period}} के लिए पार्टी की योगदान रिपोर्ट प्रकाशित करता है।",
+    "constitution": "पार्टी का संविधान भारत के चुनाव आयोग के माध्यम से उपलब्ध है।",
+    "assemblyElection": "चुनाव आयोग {{year}}  {{state}} विधानसभा चुनाव में पार्टी को रिकॉर्ड करता है।",
+    "profileSource": "स्रोत",
+    "actionFailed": "परिवर्तन सहेजा नहीं जा सका. कृपया पुन: प्रयास करें।",
     "retryControls": "पेज के कुछ नियंत्रण लोड नहीं हुए। फिर से कोशिश करें।",
     "verifyToClaim": "आवेदन करने के लिए अपने योगदानकर्ता खाते का सत्यापन करें",
     "contributorPending": "योगदानकर्ता सत्यापन की समीक्षा चल रही है।",
@@ -82,6 +140,30 @@ const hi = {
     "noClaims": "समीक्षा के लिए दल के पेज का कोई अनुरोध नहीं है।"
   },
   "common": {
+    "sortBy": "क्रमबद्ध करें",
+    "showMoreCount": "सभी दिखाएँ ( {{count}} )",
+    "clear": "हटाएँ",
+    "loadMore": "और अधिक लोड करें",
+    "archive": "पुरालेख",
+    "showLess": "कम दिखाएँ",
+    "newsUnavailable": "अभी समाचार अनुपलब्ध है.",
+    "newsUnavailableDescription": "नवीनतम कहानियाँ लोड नहीं की जा सकीं. कृपया पुन: प्रयास करें।",
+    "justNow": "अभी",
+    "minutesShort": "एम",
+    "ago": "पहले",
+    "hoursShort": "ज",
+    "daysShort": "घ",
+    "tryAgain": "कृपया पुनः प्रयास करें.",
+    "create": "बनाएँ",
+    "checkDetails": "अभियान विवरण जांचें",
+    "later": "बाद में",
+    "updating": "अपडेट हो रहा है...",
+    "dataUnavailable": "डेटा अनुपलब्ध",
+    "allLanguages": "सभी भाषाएँ",
+    "resetFilters": "फ़िल्टर रीसेट करें",
+    "more": "अधिक",
+    "openSource": "खुला स्रोत",
+    "limitReached": "सीमा पूरी हो गई",
     "newsCategories": {
       "top": "प्रमुख",
       "politics": "राजनीति",
@@ -153,6 +235,8 @@ const hi = {
       "weeksAgo": "{{n}} सप्ताह पहले"
     },
     "scopes": {
+      "constituency": "निर्वाचन क्षेत्र",
+      "district": "ज़िला",
       "myConstituency": "मेरा निर्वाचन क्षेत्र",
       "myState": "मेरा राज्य",
       "national": "राष्ट्रीय",
@@ -205,6 +289,7 @@ const hi = {
     "boundariesComingSoon": "सीमाएँ जल्द आ रही हैं"
   },
   "mapLegend": {
+    "latestElectionResults": "नवीनतम उपलब्ध चुनाव परिणाम",
     "seatCategory": "सीट श्रेणी",
     "competitiveness": "प्रतिस्पर्धात्मकता",
     "seatStatus": "सीट की स्थिति",
@@ -241,6 +326,9 @@ const hi = {
     "viewFullProfile": "पूरी प्रोफ़ाइल देखें"
   },
   "explore": {
+    "noFavoritesTitle": "अभी तक कोई पसंदीदा निर्वाचन क्षेत्र नहीं है",
+    "noFavoritesSubtitle": "त्वरित पहुंच के लिए किसी भी निर्वाचन क्षेत्र कार्ड पर दिल के आइकन को यहां पिन करने के लिए टैप करें।",
+    "showAll": "सभी निर्वाचन क्षेत्रों को ब्राउज़ करें",
     "removeFavorite": "पसंदीदा से हटाएं",
     "addFavorite": "पसंदीदा में जोड़ें",
     "jumpTo": "पर जाएं",
@@ -269,6 +357,26 @@ const hi = {
     "st": "अनुसूचित जनजाति"
   },
   "constituency": {
+    "latestElection": "नवीनतम चुनाव",
+    "assemblyTag": "सभा",
+    "electionResults": "चुनाव परिणाम",
+    "marginPct": "अंतर %",
+    "resultsLoading": "चुनाव परिणाम लोड हो रहे हैं...",
+    "affidavitSummary": "विधायक शपथ पत्र और प्रकटीकरण",
+    "viewFullConstituencyData": "संपूर्ण निर्वाचन क्षेत्र डेटा देखें",
+    "mlaProfileDossier": "विधायक प्रोफाइल और डोजियर",
+    "following": "अनुसरण",
+    "follow": "फॉलो करें",
+    "recentElectionResult": "हालिया चुनाव परिणाम",
+    "communityPulseTitle": "संविधान सभा नागरिक मंच",
+    "communityPulseDesc": "स्थानीय मतदाताओं से जुड़ें, नागरिक मुद्दों की रिपोर्ट करें, या इस निर्वाचन क्षेत्र के लिए जमीनी स्तर की सामुदायिक चर्चाएँ देखें।",
+    "reservationStatus": "आरक्षण",
+    "genderDistribution": "मतदाता लिंग संरचना",
+    "sexRatio": "लिंगानुपात",
+    "localityDistribution": "इलाका और पर्यावास वितरण",
+    "urban": "शहरी",
+    "rural": "ग्रामीण",
+    "votesPolled": "वोट पड़े",
     "notFoundTitle": "निर्वाचन क्षेत्र नहीं मिला",
     "notFoundDesc": "अनुरोधित निर्वाचन क्षेत्र नहीं मिला। कृपया पुनः खोजें।",
     "politicalEvents": "राजनीतिक घटनाक्रम",
@@ -341,6 +449,24 @@ const hi = {
     "demographicDataNote": "समेकित जनसांख्यिकीय मान अनुमान हो सकते हैं या पुराने स्रोत-वर्ष पर आधारित हो सकते हैं। प्रत्येक मान के लिए पता लगाने योग्य स्रोत, वर्ष और निर्वाचन क्षेत्र का दायरा सत्यापित होने तक इन्हें प्रोडक्शन दृश्य में नहीं दिखाया जाता।"
   },
   "feed": {
+    "archiveOlderHint": "पुराने पोस्ट",
+    "nationalFeedHint": "भारत भर से चर्चाएँ और समाचार",
+    "localFeedHint": "इस निर्वाचन क्षेत्र से पोस्ट",
+    "archiveRecentHint": "पिछले 30 दिन",
+    "selectRegion": "फ़ीड स्थान चुनें",
+    "startDiscussion": "फ़ीड पर चर्चा प्रारंभ करें",
+    "editFailed": "यह संपादन सहेजा नहीं जा सका. अपना कनेक्शन जांचें और पुनः प्रयास करें।",
+    "createPostFailed": "इस पोस्ट को प्रकाशित नहीं किया जा सका",
+    "postLocalTitle": "केवल स्थानीय पूर्वावलोकन",
+    "postLocalBody": "यह पोस्ट केवल विकास पूर्वावलोकन में संग्रहीत है और प्रकाशित नहीं की गई है।",
+    "attachmentUnavailable": "यह अनुलग्नक खोला नहीं जा सका. पोस्ट को ताज़ा करें और पुनः प्रयास करें।",
+    "deleteFailed": "पोस्ट को हटाया नहीं जा सका. कृपया पुन: प्रयास करें।",
+    "reactionFailed": "आपकी प्रतिक्रिया अपडेट नहीं की जा सकी. कृपया पुन: प्रयास करें।",
+    "voteFailed": "आपका वोट नहीं बचाया जा सका. कृपया पुन: प्रयास करें।",
+    "react": "प्रतिक्रिया",
+    "comment": "टिप्पणी करें",
+    "writeAComment": "एक टिप्पणी लिखें",
+    "createPostFailedBody": "पोस्ट नहीं बनाया जा सका. कृपया पुन: प्रयास करें।",
     "changeOrRemoveVote": "अपना वोट बदलने या वापस लेने के लिए किसी विकल्प पर टैप करें",
     "voteCount_one": "{{count}} वोट",
     "voteCount_other": "{{count}} वोट",
@@ -388,6 +514,8 @@ const hi = {
     "myConstituency": "मेरा निर्वाचन क्षेत्र"
   },
   "shorts": {
+    "archiveOlderHint": "पुराने शॉर्ट्स",
+    "searchPlaceholder": "शॉर्ट्स, निर्माता, विषय खोजें...",
     "title": "शॉर्ट्स",
     "seeAll": "सभी देखें",
     "views": "व्यूज़",
@@ -401,6 +529,7 @@ const hi = {
     "uploadFirst": "पहला शॉर्ट अपलोड करें"
   },
   "postCard": {
+    "comment": "टिप्पणी करें",
     "pinned": "पिन किया गया",
     "justNow": "अभी",
     "discussion": "चर्चा",
@@ -429,6 +558,11 @@ const hi = {
     "celebrate": "उत्सव"
   },
   "postDetail": {
+    "commentFailed": "टिप्पणी नहीं भेजी गई",
+    "commentRetry": "कृपया अपना कनेक्शन जांचें और पुनः प्रयास करें।",
+    "commentQueued": "टिप्पणी कतारबद्ध",
+    "commentQueuedBody": "आपका कनेक्शन वापस आने पर इसे भेज दिया जाएगा.",
+    "deleteCommentFailed": "टिप्पणी हटाई नहीं जा सकी. कृपया पुन: प्रयास करें।",
     "olderComments": "पुरानी टिप्पणियाँ देखें",
     "retryComments": "टिप्पणियाँ फिर से लोड करें",
     "editComment": "टिप्पणी संपादित करें",
@@ -450,6 +584,9 @@ const hi = {
     "ends": "समाप्त"
   },
   "compose": {
+    "recordVideo": "वीडियो",
+    "attachmentLimit": "अधिकतम चार आइटम संलग्न करें: तीन फ़ोटो, एक वीडियो और एक लिंक।",
+    "linkHelp": "संपूर्ण http या https लिंक दर्ज करें.",
     "title": "नई पोस्ट",
     "replyTo": "{{name}} को जवाब",
     "placeholder": "आपके विचार क्या हैं?",
@@ -477,8 +614,17 @@ const hi = {
     "selectLanguage": "भाषा"
   },
   "dashboard": {
+    "showingPreviousIssues": "ताज़ा नहीं किया जा सका. पहले से लोड किए गए मुद्दे दिखाए जा रहे हैं.",
+    "selectConstituency": "स्थानीय मुद्दों को देखने के लिए अपना गृह निर्वाचन क्षेत्र निर्धारित करें, या राज्य या राष्ट्रीय चुनें।",
+    "issuesUnavailable": "नागरिक मुद्दे लोड नहीं किये जा सके. खाली स्थिति को शून्य मुद्दे के रूप में नहीं माना जा रहा है।",
+    "loadedMatches": "{{total}} की {{shown}} मिलान रिपोर्ट लोड की गई। उपरोक्त गणनाएँ लोड की गई रिपोर्टों का सारांश प्रस्तुत करती हैं।",
+    "noIssuesHint": "इस दृश्य के लिए कोई नागरिक समस्या रिपोर्ट नहीं की गई। प्रतिनिधियों को सूचित करने के लिए किसी स्थानीय समस्या की रिपोर्ट करें।",
+    "showingPreviousPromises": "ताज़ा नहीं किया जा सका. पहले से लोड किए गए वादे दिखाए जा रहे हैं.",
+    "activityReportCount": "{{count}}  {{scope}} में रिपोर्ट करता है",
+    "activityDefinition": "इस क्षेत्र के लिए सभी श्रेणियों और स्थितियों में पोलिग्राम के माध्यम से सबमिट की गई रिपोर्टों की गणना करता है।",
     "title": "नागरिक डैशबोर्ड",
     "tabs": {
+      "activity": "गतिविधि",
       "issues": "समस्याएँ",
       "promises": "वादे",
       "sentiment": "जनभावना",
@@ -531,6 +677,14 @@ const hi = {
     }
   },
   "profile": {
+    "followUpdateFailed": "फ़ॉलो स्टेटस अपडेट नहीं किया जा सका",
+    "messageUnavailable": "बातचीत शुरू नहीं हो सकी. कृपया पुन: प्रयास करें।",
+    "notFound": "यह प्रोफ़ाइल नहीं मिल सकी.",
+    "verified": "सत्यापित",
+    "cachedProfile": "प्रोफ़ाइल ताज़ा नहीं किया जा सका.",
+    "message": "संदेश",
+    "postsUnavailable": "नवीनतम पोस्ट लोड नहीं किया जा सका.",
+    "unavailable": "प्रोफ़ाइल अनुपलब्ध है",
     "createPost": "पोस्ट लिखें",
     "submissions": "समीक्षा के लिए भेजी गई पोस्ट",
     "submissionPending": "समीक्षा बाकी है",
@@ -591,6 +745,8 @@ const hi = {
     }
   },
   "notificationSettings": {
+    "paused": "सभी सूचनाएं रोक दी गईं",
+    "infoText": "सूचनाएं केवल महत्वपूर्ण अपडेट के लिए भेजी जाती हैं। आप निर्वाचन क्षेत्र पृष्ठ से प्रति निर्वाचन क्षेत्र अलर्ट समायोजित कर सकते हैं।",
     "title": "अधिसूचना सेटिंग्स",
     "masterToggle": "पुश सूचनाएँ",
     "masterDesc": "अपने निर्वाचन क्षेत्र की गतिविधियों की सूचना पाएँ",
@@ -677,6 +833,11 @@ const hi = {
     }
   },
   "ai": {
+    "referenceDataNotVerified": "इस उत्तर के स्रोतों और तारीखों को सत्यापित नहीं किया जा सका।",
+    "chatLoadError": "उत्तर नहीं मिल सका. कृपया पुन: प्रयास करें।",
+    "chatSignInRequired": "सिविक एआई का उपयोग करने के लिए साइन इन करें।",
+    "chatLimitReached": "सिविक एआई अपनी उपयोग सीमा तक पहुंच गया है। बाद में पुन: प्रयास।",
+    "chatServiceUnavailable": "सिविक एआई अस्थायी रूप से अनुपलब्ध है।",
     "title": "पॉलीग्राम AI सहायक",
     "askAboutConstituency": "{{name}} निर्वाचन क्षेत्र के बारे में कुछ भी पूछें",
     "askAboutState": "{{state}} की राजनीति के बारे में कुछ भी पूछें",
@@ -728,6 +889,8 @@ const hi = {
     "reportContent": "सामग्री की शिकायत करें",
     "reportReason": "शिकायत का कारण",
     "reasons": {
+      "violenceOrThreats": "हिंसा या धमकी",
+      "impersonation": "प्रतिरूपण",
       "spam": "स्पैम",
       "harassment": "उत्पीड़न",
       "misinformation": "गलत सूचना",
@@ -778,6 +941,7 @@ const hi = {
     "OTH": "अन्य"
   },
   "mla": {
+    "dob": "जन्म तिथि",
     "age": "आयु",
     "male": "पुरुष",
     "female": "महिला",
@@ -812,6 +976,15 @@ const hi = {
     "politicalEvents": "राजनीतिक घटनाएं"
   },
   "intelligence": {
+    "liveCoverage": "{{count}} निर्वाचन क्षेत्र के रिकॉर्ड लोड किए गए। पार्टी प्रतिशत किसी पार्टी के साथ {{knownParties}} रिकॉर्ड का उपयोग करते हैं।",
+    "currentRecords": "वर्तमान डेटाबेस रिकॉर्ड",
+    "nationalUnavailable": "एक राष्ट्रीय वर्तमान-पार्टी डेटासेट कनेक्ट नहीं है।",
+    "partiesRecorded": "पार्टियाँ रिकार्ड की गईं",
+    "currentPartyRecords": "वर्तमान पार्टी रिकॉर्ड",
+    "records": "अभिलेख",
+    "largestRecordedParty": "सबसे बड़ी रिकॉर्डेड पार्टी",
+    "liveSource": "स्रोत: पोलिग्राम निर्वाचन क्षेत्र डेटाबेस",
+    "databaseRecords": "डेटाबेस रिकॉर्ड",
     "party_strength_title": "दल की ताकत: वर्तमान बनाम चुनाव दिवस",
     "title": "खुफिया एवं विश्लेषण",
     "mps": "सांसद",
@@ -1317,6 +1490,16 @@ const hi = {
     "vs": "बनाम"
   },
   "parliament": {
+    "membershipDate": "{{date}} के सदस्य",
+    "officialRoster": "आधिकारिक सदस्य सूची",
+    "searchLokSabhaByMember": "नाम, निर्वाचन क्षेत्र या पार्टी के आधार पर खोजें...",
+    "declaredCases": "घोषित मामले",
+    "affidavitFinancials": "हलफनामे का खुलासा",
+    "filingYear": "{{year}} में दायर किया गया",
+    "currentTerm": "वर्तमान पद",
+    "viewFilingRecord": "चुनावी हलफनामा और मामले का विवरण देखें",
+    "officialMemberProfile": "आधिकारिक संसद प्रोफ़ाइल",
+    "directoryDescription": "लोकसभा और राज्यसभा सदस्य प्रोफाइल",
     "screenTitle": "संसद और सांसद",
     "tabOverview": "अवलोकन",
     "tabLokSabha": "लोकसभा",
@@ -1386,6 +1569,20 @@ const hi = {
     "othersAlliance": "Others"
   },
   "legislator": {
+    "assets": "संपत्ति",
+    "age": "आयु",
+    "cases": "आपराधिक मामले",
+    "education": "शिक्षा",
+    "tabBio": "बायो",
+    "tabAssets": "संपत्ति",
+    "tabLegal": "कानूनी",
+    "tabElections": "चुनाव",
+    "viewAffidavit": "दाखिल किया गया हलफनामा देखें",
+    "portraitSource": "पोर्ट्रेट स्रोत",
+    "noDisclosures": "इस चुनाव के लिए कोई शपथ पत्र संलग्न नहीं है।",
+    "netWorth": "नेट वर्थ",
+    "assetReport": "घोषित संपत्ति रिपोर्ट (एडीआर)",
+    "caseReport": "घोषित मामलों की रिपोर्ट (एडीआर)",
     "party_switch_history": "पार्टी परिवर्तन इतिहास",
     "profileNotFound": "प्रोफाइल नहीं मिली",
     "educationProfession": "शिक्षा एवं व्यवसाय",
@@ -1518,6 +1715,7 @@ const hi = {
     }
   },
   "hierarchy": {
+    "unassigned": "असाइन नहीं किया गया",
     "screenTitle": "स्थानीय शासन पदानुक्रम",
     "back": "वापस",
     "hierarchyLabel": "प्रशासनिक पदानुक्रम",
@@ -1631,6 +1829,99 @@ const hi = {
     "avgResponseTime": "औसत प्रतिक्रिया समय: {{hours}} घंटे"
   },
   "campaignManager": {
+    "facebookAttachmentFormats": "एक JPEG, PNG, या MP4 फ़ाइल चुनें।",
+    "facebookEmptyPost": "एक संदेश लिखें या मीडिया संलग्न करें.",
+    "facebookScheduleError": "भविष्य में एक वैध दिनांक और समय दर्ज करें।",
+    "facebookConfirmSchedule": "{{page}} के लिए शेड्यूल?",
+    "facebookConfirmPublish": "{{page}} पर प्रकाशित करें?",
+    "facebookSchedule": "शेड्यूल",
+    "facebookPublish": "प्रकाशित करें",
+    "facebookAttachmentSize": "10 एमबी तक का फोटो या 25 एमबी तक का MP4 चुनें।",
+    "facebookAttachmentError": "अनुलग्नक अपलोड नहीं किया जा सका. अपना कनेक्शन जांचें और पुनः प्रयास करें.",
+    "facebookDate": "दिनांक (YYYY-MM-DD)",
+    "facebookTime": "स्थानीय समय (HH:mm, 24-घंटे)",
+    "facebookNewPost": "नई फेसबुक पोस्ट",
+    "facebookPostMessage": "संदेश पोस्ट करें",
+    "facebookRemoveMedia": "अनुलग्नक हटाएँ",
+    "facebookAddMedia": "एक फोटो या वीडियो संलग्न करें",
+    "facebookSendNow": "अभी प्रकाशित करने के लिए स्विच करें",
+    "facebookChooseTime": "एक दिनांक और समय निर्धारित करें",
+    "facebookPublicationHistory": "फेसबुक प्रकाशन इतिहास",
+    "facebookNoPublications": "इस अभियान में अभी तक कोई फेसबुक पोस्ट नहीं है.",
+    "facebookMediaPost": "मीडिया पोस्ट",
+    "facebookViewPost": "फेसबुक पर पोस्ट देखें",
+    "facebookCancelSchedule": "निर्धारित पोस्ट रद्द करें",
+    "facebookAccessLoadError": "प्रकाशन पहुंच लोड नहीं की जा सकी.",
+    "facebookCheckoutInvalid": "चेकआउट खोला नहीं जा सका.",
+    "facebookPublishingAccess": "अभियान प्रकाशन पहुंच",
+    "facebookActiveUntil": "परीक्षण पहुंच {{date}} तक सक्रिय है",
+    "facebookTestPrice": "रेज़रपे टेस्ट मोड में {{days}} दिनों के लिए {{price}}",
+    "facebookOpenTestCheckout": "परीक्षण चेकआउट खोलें",
+    "campaignRequiredFields": "YYYY-MM-DD प्रारूप में एक नाम, दो अक्षर का राज्य कोड और मान्य तिथियां दर्ज करें।",
+    "campaignDateOrder": "अंतिम तिथि आरंभ तिथि को या उसके बाद की होनी चाहिए.",
+    "campaignBudgetInvalid": "एक वैध गैर-नकारात्मक बजट दर्ज करें, या इसे खाली छोड़ दें।",
+    "campaignNotSaved": "अभियान सहेजा नहीं गया",
+    "campaignName": "अभियान का नाम",
+    "campaignNamePlaceholder": "इस अभियान को नाम दें",
+    "campaignType": "अभियान प्रकार",
+    "descriptionOptional": "विवरण (वैकल्पिक)",
+    "descriptionPlaceholder": "यह अभियान किस बारे में है?",
+    "stateCode": "राज्य कोड",
+    "startDate": "आरंभ तिथि",
+    "endDate": "समाप्ति तिथि",
+    "budgetOptional": "INR में बजट (वैकल्पिक)",
+    "budgetNotSet": "यदि सेट नहीं है तो खाली छोड़ दें",
+    "campaignDraftNote": "यह एक ड्राफ्ट रिकॉर्ड बनाता है. यह विज्ञापन प्रकाशित नहीं करता या आउटरीच शेड्यूल नहीं करता।",
+    "saveCampaignDraft": "अभियान ड्राफ्ट सहेजें",
+    "facebookChooseCampaign": "उस अभियान का चयन करें जिसके फेसबुक कनेक्शन को प्रबंधित करने के लिए आप उसके मालिक हैं।",
+    "facebookRetry": "फेसबुक प्रकाशन लोड नहीं किया जा सका. पुनः प्रयास करें",
+    "facebookUnavailable": "इस परिवेश में Facebook परीक्षण प्रकाशन अनुपलब्ध है.",
+    "facebookDisconnect": "पेज डिस्कनेक्ट करें",
+    "facebookConfirmDisconnect": "इस फेसबुक पेज को डिस्कनेक्ट करें?",
+    "facebookConnect": "स्टेजिंग पेज कनेक्ट करें",
+    "facebookInvalidLink": "फेसबुक प्राधिकरण खोला नहीं जा सका.",
+    "facebookReceipt": "फेसबुक पोस्ट आईडी: {{id}}",
+    "facebookAwaitingConfirmation": "परीक्षण पोस्ट फेसबुक की पुष्टि की प्रतीक्षा कर रही है। आगे की कार्रवाई करने से पहले पृष्ठ की जाँच करें।",
+    "facebookRejected": "फेसबुक ने पिछले परीक्षण को अस्वीकार कर दिया था। पेज अनुमतियाँ जांचें.",
+    "facebookPublishTest": "परीक्षण पोस्ट प्रकाशित करें",
+    "accountCheckUnavailable": "खाता जांच अनुपलब्ध",
+    "enterNameAndPhone": "कृपया प्रभारी का नाम और फोन नंबर दर्ज करें।",
+    "assignmentNotSaved": "असाइनमेंट सहेजा नहीं गया",
+    "noBoothsYet": "इस अभियान के लिए अभी तक कोई बूथ रिकॉर्ड उपलब्ध नहीं है।",
+    "noBoothsMatchFilter": "कोई भी बूथ इस फ़िल्टर से मेल नहीं खाता.",
+    "noCampaignsYet": "इस खाते के लिए अभी तक कोई अभियान उपलब्ध नहीं है.",
+    "noCampaignSelected": "कोई अभियान चयनित नहीं",
+    "campaignLocationNotSet": "अभियान स्थान निर्धारित नहीं है",
+    "budgetNotAvailable": "बजट उपलब्ध नहीं है",
+    "enterWorkerDetails": "कृपया कार्यकर्ता का नाम और फ़ोन नंबर दर्ज करें.",
+    "workerNotSaved": "कार्यकर्ता को बचाया नहीं गया",
+    "noCampaignForWorkers": "अभियान कार्यकर्ताओं को जोड़ने से पहले एक अभियान उपलब्ध होना चाहिए।",
+    "noWorkersYet": "इस अभियान के लिए अभी तक कोई भी कार्यकर्ता पंजीकृत नहीं है।",
+    "noWorkersMatchSearch": "कोई भी कर्मचारी इस खोज से मेल नहीं खाता.",
+    "namasteVoter": "नमस्ते! आपके उम्मीदवार की ओर से शुभकामनाएँ.",
+    "manifestoHighlight": "हमारी 3 मुख्य प्रतिज्ञाएँ: 24x7 स्वच्छ पेयजल, युवा रोजगार प्रशिक्षण, वार्ड ड्रेनेज ओवरहाल।",
+    "serviceUnavailableTitle": "अभियान सेवा अनुपलब्ध",
+    "serviceUnavailableDescription": "प्रसारण निर्धारित करने से पहले सत्यापित दर्शक, मूल्य निर्धारण, वॉलेट और डिलीवरी सेवा डेटा की आवश्यकता होती है।",
+    "confirmVoiceCall": "ध्वनि प्रसारण की पुष्टि करें",
+    "confirmVoiceCallDesc": "{{count}} मतदाताओं को ₹ {{cost}} में 30 सेकंड का रिकॉर्डेड ऑडियो कॉल डिलीवर करें? राशि आपके अभियान वॉलेट से काट ली जाएगी।",
+    "dispatchNow": "शेड्यूल कॉल ब्लास्ट",
+    "rechargeFailed": "रिचार्ज पूरा नहीं हुआ",
+    "balanceUnavailable": "शेष अनुपलब्ध",
+    "whatsappUnavailable": "साझा करना अनुपलब्ध है",
+    "whatsappUnavailableDescription": "कोई अभियान प्रोफ़ाइल या स्वीकृत शेयर सामग्री जुड़ी नहीं है.",
+    "posterNotReady": "अभियान सामग्री कनेक्ट नहीं है.",
+    "posterNotConfigured": "साझा करने से पहले एक सत्यापित अभियान प्रोफ़ाइल और अनुमोदित सामग्री की आवश्यकता होती है।",
+    "pricingUnavailable": "मूल्य निर्धारण अनुपलब्ध",
+    "pricingUnavailableDescription": "सत्यापित मूल्य उद्धरण अभी उपलब्ध नहीं है।",
+    "totalPriceUnavailable": "कुल: अनुपलब्ध",
+    "walletOrPricingUnavailable": "सत्यापित ऑडियंस, वॉलेट और वर्तमान मूल्य निर्धारण की आवश्यकता है।",
+    "voiceGuidanceUnavailable": "सत्यापित मूल्य निर्धारण और सेवा कॉन्फ़िगरेशन उपलब्ध होने पर प्रदाता-विशिष्ट डिलीवरी मार्गदर्शन दिखाई देगा।",
+    "audioNotConnected": "ऑडियो अपलोड कनेक्ट नहीं है",
+    "realAudioRequired": "एक सत्यापित अभियान ऑडियो फ़ाइल आवश्यक है.",
+    "broadcastUnavailable": "प्रसारण अनुपलब्ध",
+    "loadingBroadcastHistory": "प्रसारण इतिहास लोड हो रहा है...",
+    "broadcastHistoryUnavailable": "प्रसारण इतिहास अनुपलब्ध है.",
+    "noBroadcastHistory": "इस खाते के लिए अभी तक कोई प्रसारण रिकॉर्ड नहीं किया गया है।",
     "screenTitle": "अभियान कमांड सेंटर",
     "active": "सक्रिय",
     "total": "कुल",
@@ -1818,6 +2109,23 @@ const hi = {
     "simulationNote": "संदेश सिमुलेशन हैं, वास्तव में नहीं भेजे जाते"
   },
   "civicMetrics": {
+    "officialSchemes": "सरकारी योजना पात्रता एवं आवेदन मार्गदर्शन",
+    "officialBills": "आधिकारिक संसद विधेयक के पाठ और स्थितियाँ",
+    "telanganaBudgetPublications": "तेलंगाना बजट दस्तावेज़ और पुरालेख",
+    "billRecords": "बिल और विधान",
+    "governmentSchemesLabel": "सरकारी योजनाएँ एवं कल्याण",
+    "developmentProjectsLabel": "बुनियादी ढाँचा एवं विकास परियोजनाएँ",
+    "rtiOfficialTitle": "संबंधित सार्वजनिक प्राधिकरण के पास फाइल करें",
+    "rtiOfficialDescription": "केंद्रीय सार्वजनिक प्राधिकरणों के लिए केंद्रीय पोर्टल का उपयोग करें। किसी राज्य प्राधिकरण के लिए, उस राज्य की आरटीआई प्रक्रिया का पालन करें। नीचे दी गई प्रविष्टियाँ पोलिग्राम में साझा किए गए सामुदायिक रिकॉर्ड हैं।",
+    "rtiOfficialGuide": "केंद्रीय आरटीआई पोर्टल और फाइलिंग मार्गदर्शन",
+    "communityRtiRecords": "सामुदायिक आरटीआई रिकॉर्ड",
+    "communityRtiCount": "सामुदायिक आरटीआई रिकॉर्ड ( {{count}} )",
+    "reportedDate": "रिपोर्ट की गई दिनांक {{date}}",
+    "publicHearingsLabel": "जन सुनवाई",
+    "grossEstimate": "सकल व्यय अनुमान",
+    "viewBudgetSource": "आधिकारिक बजट प्रकाशन",
+    "originalEstimate": "मूल अनुमान",
+    "revisedEstimate": "संशोधित अनुमान",
     "sourceVerifiedOn": "अंतिम सत्यापन {{date}}",
     "showingSavedRecords": "रीफ़्रेश नहीं हो सका। पिछली बार लोड किए गए रिकॉर्ड दिख रहे हैं।",
     "officialHearingNotice": "सुनवाई की आधिकारिक सूचना",
@@ -1880,6 +2188,7 @@ const hi = {
     "noConnectedData": "किसी जुड़े स्रोत से सत्यापित रिकॉर्ड अभी उपलब्ध नहीं हैं।"
   },
   "lmx": {
+    "searchPlaceholder": "लाइव रूम, मुद्दे, स्पीकर खोजें...",
     "screenTitle": "पॉलीग्राम लाइव",
     "liveNow": "{{count}} अभी लाइव",
     "liveNow_one": "{{count}} अभी लाइव",
@@ -1894,10 +2203,22 @@ const hi = {
       "verified": "सत्यापित"
     },
     "empty": {
+      "loadFailed": "लाइव ताज़ा नहीं हो सका.",
+      "retry": "पुनः प्रयास करने के लिए नीचे खींचें.",
       "title": "आपके फिल्टर से मेल खाने वाली कोई लाइव स्ट्रीम नहीं है",
       "subtitle": "सबसे पहले बनें — यहां से प्रसारण करने के लिए लाइव शुरू करें पर टैप करें।"
     },
     "goLiveScreen": {
+      "createFailed": "प्रसारण स्टूडियो नहीं खोला जा सका. अपना कनेक्शन जांचें और पुनः प्रयास करें।",
+      "signInRequired": "प्रसारण प्रारंभ करने के लिए साइन इन करें.",
+      "emailRequired": "प्रसारण के लिए अपने ईमेल पते की पुष्टि करें।",
+      "verificationRequired": "प्रसारण के लिए अपने योगदानकर्ता प्रोफ़ाइल को सत्यापित करें।",
+      "roleRequired": "सत्यापित उम्मीदवारों, पार्टियों और पत्रकारों के लिए लाइव प्रसारण उपलब्ध है।",
+      "mediaPlaneUnavailable": "प्रसारण अस्थायी रूप से अनुपलब्ध है.",
+      "tagsLabel": "टैग (वैकल्पिक, अल्पविराम से अलग)",
+      "browserStudio": "ब्राउज़र में कैमरा और माइक्रोफ़ोन एक्सेस की अनुमति दें। प्रसारण के समय स्टूडियो खुला रखें।",
+      "reviewBeforePublic": "समीक्षक द्वारा अनुमोदित किए जाने के बाद आपका प्रसारण लाइव में दिखाई देता है।",
+      "openStudio": "प्रसारण स्टूडियो खोलें",
       "title": "लाइव शुरू करें",
       "detectingLocation": "लोकेशन का पता लगाया जा रहा है…",
       "locationLocked": "लोकेशन लॉक की गई — {{district}}, {{state}}",
@@ -1982,6 +2303,10 @@ const hi = {
       "openReceiver": "रिसीवर खोलें"
     },
     "moderation": {
+      "loadFailed": "समीक्षा कतार अनुपलब्ध है. अपनी पहुंच जांचें और पुनः प्रयास करें।",
+      "previewFailed": "पूर्वावलोकन खोला नहीं जा सका. कतार को ताज़ा करें और पुनः प्रयास करें।",
+      "saveFailed": "समीक्षा निर्णय सहेजा नहीं जा सका.",
+      "activeBroadcasts": "सक्रिय प्रसारण",
       "title": "मॉडरेशन कतार",
       "streamsInBuffer": "बफर में {{count}} स्ट्रीम हैं।",
       "streamsInBuffer_one": "बफर में {{count}} स्ट्रीम है।",
@@ -2124,6 +2449,7 @@ const hi = {
     }
   },
   "notifications": {
+    "configureAlerts": "अलर्ट विषय कॉन्फ़िगर करें",
     "title": "सूचनाएं",
     "markAllRead": "सभी पढ़ी गई मार्क करें",
     "noNotifications": "कोई सूचना नहीं है",
@@ -2139,6 +2465,8 @@ const hi = {
     "daysAgo": "{{n}} दिन पहले"
   },
   "auth": {
+    "getVerified": "सत्यापित करें",
+    "loginRequired": "रिपोर्ट सबमिट करने के लिए कृपया साइन इन करें।",
     "signIn": "साइन इन",
     "signUp": "साइन अप",
     "signOut": "साइन आउट",
@@ -2188,6 +2516,8 @@ const hi = {
     "versionPhase": "v0.1.0 · चरण 1"
   },
   "reportIssueSheet": {
+    "saveFailed": "आपकी रिपोर्ट सहेजी नहीं जा सकी. कृपया पुन: प्रयास करें।",
+    "selectState": "किसी समस्या की रिपोर्ट करने के लिए एक राज्य का चयन करें।",
     "title": "समस्या दर्ज करें",
     "submit": "जमा करें",
     "reportingIn": "यहाँ दर्ज कर रहे हैं",
@@ -2206,6 +2536,8 @@ const hi = {
     "permissionMsg": "प्रमाण जोड़ने के लिए कैमरा/फ़ोटो अनुमति चाहिए"
   },
   "reportSheet": {
+    "errorTitle": "रिपोर्ट प्रस्तुत नहीं हो सकी",
+    "errorMsg": "रिपोर्ट प्रस्तुत नहीं हो सकी। कृपया पुन: प्रयास करें।",
     "title": "{{targetType}} की शिकायत",
     "submit": "जमा करें",
     "sending": "भेजा जा रहा है…",
@@ -2241,6 +2573,11 @@ const hi = {
     "statesAndUTs": "31 राज्य एवं केंद्रशासित प्रदेश"
   },
   "constituencyExtended": {
+    "reportIssue": "समस्या दर्ज करें",
+    "viewNews": "स्थानीय समाचार",
+    "linkedWithCommunityFeed": "सामुदायिक फ़ीड से जुड़ा हुआ",
+    "communityFeedDesc": "इस निर्वाचन क्षेत्र के मुद्दे नागरिक चर्चाओं से सहजता से जुड़े हुए हैं। आप इस मुद्दे पर सामुदायिक फ़ीड पर चर्चा कर सकते हैं या किसी फ़ीड पोस्ट को आधिकारिक नागरिक मुद्दे में बदल सकते हैं।",
+    "discussFeed": "फ़ीड में चर्चा करें",
     "followConstituency": "निर्वाचन क्षेत्र फ़ॉलो करें",
     "followingConstituency": "निर्वाचन क्षेत्र फ़ॉलो कर रहे हैं",
     "viewCompleteProfile": "पूरी प्रोफ़ाइल देखें",
@@ -2273,6 +2610,9 @@ const hi = {
     "exploreHierarchyButton": "पदानुक्रम देखें"
   },
   "mapExtended": {
+    "expandControls": "नियंत्रण विस्तृत करें",
+    "minimizeControls": "नियंत्रण न्यूनतम करें",
+    "mode3D": "3डी",
     "margin": "अंतर",
     "votes": "वोट",
     "population": "जनसंख्या",
@@ -2328,6 +2668,7 @@ const hi = {
     "scopeNational": "राष्ट्रीय"
   },
   "exploreExtended": {
+    "aiChatAndSearch": "एआई चैट और एआई खोज",
     "mpsParliament": "सांसद और संसद",
     "aiChat": "AI चैट",
     "delimitation": "परिसीमन",
@@ -2397,6 +2738,10 @@ const hi = {
     "perYear": "प्रति वर्ष"
   },
   "promiseCard": {
+    "awaitingEvidence": "स्थिति साक्ष्य की प्रतीक्षा में है",
+    "promisedOn": "{{date}} प्रतिज्ञा की",
+    "viewPledge": "मूल प्रतिज्ञा पढ़ें",
+    "viewStatusEvidence": "स्थिति साक्ष्य, {{date}}",
     "deliveryProgress": "पूर्ति प्रगति",
     "deadlinePassed": "समयसीमा बीत चुकी:",
     "verified": "सत्यापित",
@@ -2435,6 +2780,9 @@ const hi = {
     "challengeComplete": "चुनौती पूरी!"
   },
   "aspirantReg": {
+    "homeConstituencyRequired": "प्रोफ़ाइल में अपना गृह निर्वाचन क्षेत्र निर्धारित करें",
+    "targetYearRequired": "वह चुनावी वर्ष चुनें जिसमें आप चुनाव लड़ना चाहते हैं।",
+    "affiliationRequired": "जारी रखने के लिए एक संबद्धता चुनें.",
     "title": "आकांक्षी बनें",
     "introText": "एक सार्वजनिक नागरिक प्रोफ़ाइल बनाएं ताकि अपने सिविक स्कोर को ट्रैक कर सकें, बैज कमा सकें और अपने निर्वाचन क्षेत्र को बता सकें कि आप नेतृत्व करना चाहते हैं। आप कभी भी अपनी प्रोफ़ाइल छिपा सकते हैं।",
     "publicName": "सार्वजनिक नाम",
@@ -2492,6 +2840,8 @@ const hi = {
     "demographicsUnavailable": "चयनित एक या दोनों निर्वाचन क्षेत्रों के लिए स्रोत-सहित सत्यापित जनसांख्यिकीय आँकड़े उपलब्ध न होने के कारण तुलना उपलब्ध नहीं है।"
   },
   "export": {
+    "loadedIssueCoverage": "इस क्षेत्र और इन फ़िल्टर के लिए {{total}} मिलान रिपोर्ट की {{matched}} लोड की गई।",
+    "shareCsv": "सीएसवी साझा करें",
     "title": "निर्यात डैशबोर्ड",
     "dataScope": "डेटा दायरा",
     "currentView": "वर्तमान दृश्य",
@@ -2538,6 +2888,7 @@ const hi = {
     "noComparison": "तुलना के लिए दो निर्वाचन क्षेत्र चुनें"
   },
   "delimitationExtended": {
+    "exploreScenarios": "परिदृश्यों का अन्वेषण करें",
     "headerSubtitle": "परिसीमन ट्रैकर और सीट अनुमान",
     "statusDesc": "84वें संविधान संशोधन के अनुसार 2026 के बाद पहली जनगणना प्रकाशित होने तक सीटों की संख्या स्थिर रखी गई है।",
     "simulatorSub": "इंटरैक्टिव सीमा सिमुलेशन",
@@ -2795,6 +3146,10 @@ const hi = {
     "alertShareMessage": "\"{{title}}\" के लिए शेयर लिंक क्लिपबोर्ड पर कॉपी हो गया।"
   },
   "uploadShort": {
+    "deviceVideoLimits": "60 सेकंड और 25 एमबी तक का H.264 MP4 वीडियो चुनें।",
+    "chooseState": "लघु प्रकाशित करने के लिए एक राज्य का चयन करें।",
+    "changeDeviceVideo": "चयनित वीडियो बदलें",
+    "chooseDeviceVideo": "डिवाइस से वीडियो चुनें",
     "confirmRights": "मुझे यह वीडियो साझा करने का अधिकार है और मैं समुदाय के नियमों से सहमत हूँ।",
     "title": "राजनीतिक शॉर्ट अपलोड करें",
     "creatorVerification": "निर्माता सत्यापन आवश्यक",
@@ -2886,6 +3241,13 @@ const hi = {
     "missingFieldsMessage": "कृपया टेम्पलेट नाम और संदेश भरें।"
   },
   "localBodies": {
+    "resultsLoadError": "इन चुनाव परिणामों को लोड नहीं किया जा सका.",
+    "returnsYear": "{{year}} स्थानीय चुनाव परिणाम",
+    "zptcMembers": "जिला परिषद (ZPTC)",
+    "ruralDirectoryDescription": "आंध्र प्रदेश और तेलंगाना के लिए ग्रामीण चुनाव रिकॉर्ड",
+    "selectElectionState": "स्थानीय चुनाव परिणाम ब्राउज़ करने के लिए आंध्र प्रदेश या तेलंगाना चुनें।",
+    "telanganaName": "तेलंगाना",
+    "andhraPradeshName": "आंध्र प्रदेश",
     "screenTitle": "स्थानीय निकाय",
     "loadingState": "{{state}} स्थानीय निकायों का विवरण लोड हो रहा है…",
     "noDataDesc": "{{state}} के लिए सत्यापित ग्राम पंचायत प्रतिनिधियों का विवरण राज्य चुनाव आयोग से संकलित किया जा रहा है। हम केवल आधिकारिक स्रोतों से पुष्टि की गई जानकारी ही प्रदर्शित करते हैं।",
@@ -2938,6 +3300,8 @@ const hi = {
       "account": "खाता"
     },
     "tiles": {
+      "messages": "सीधे संदेश",
+      "electionResults": "चुनाव परिणाम",
       "politicianPortal": "राजनेता पोर्टल",
       "becomeAspirant": "प्रत्याशी बनें",
       "campaignManager": "प्रचार प्रबंधक",
@@ -2981,6 +3345,7 @@ const hi = {
     "enableAll": "सभी सक्षम करें"
   },
   "representative": {
+    "profileLoadError": "यह चुनाव रिकॉर्ड लोड नहीं किया जा सका.",
     "profileNotFound": "प्रोफाइल नहीं मिली",
     "electionDetails": "चुनाव एवं जनादेश विवरण",
     "designation": "पद / पदनाम",
@@ -3002,6 +3367,18 @@ const hi = {
     "officialSource": "आधिकारिक स्रोत एवं सत्यापन"
   },
   "issueDetail": {
+    "actionFailed": "परिवर्तन सहेजा नहीं जा सका. कृपया पुन: प्रयास करें।",
+    "title": "मुद्दे का विवरण",
+    "loadFailed": "यह अंक लोड नहीं किया जा सका.",
+    "legacyAcknowledgment": "रिकार्ड पर अभिस्वीकृति",
+    "flagged": "पोलिग्राम में ध्वजांकित किया गया",
+    "flagAlreadyRecorded": "यह मुद्दा प्रतिनिधि ध्यान के लिए पहले ही चिह्नित किया जा चुका है।",
+    "flagForRepresentative": "झंडा मुद्दा",
+    "acknowledge": "सत्यापित प्राधिकारी के रूप में स्वीकार करें",
+    "acknowledgeConfirm": "रिकॉर्ड करें कि आपके कार्यालय को यह रिपोर्ट प्राप्त हुई है?",
+    "actorUnrecorded": "अभिनेता रिकॉर्ड नहीं किया गया",
+    "verifiedAuthority": "सत्यापित प्राधिकारी",
+    "poligramStaff": "पोलिग्राम स्टाफ",
     "notFound": "मुद्दा नहीं मिला",
     "verified": "सत्यापित",
     "upvotes": "अपवोट",
@@ -3018,6 +3395,18 @@ const hi = {
     "disputeResolution": "विवाद समाधान"
   },
   "messages": {
+    "mediaConsentTitle": "मीडिया अनुलग्नक देखें",
+    "mediaConsentBody": "यह मीडिया एक अपुष्ट प्रेषक का है। क्या आप वाकई इसे प्रकट करना चाहते हैं?",
+    "revealMedia": "खुलासा मीडिया",
+    "mediaHidden": "मीडिया शील्ड सक्रिय",
+    "tapToReveal": "सहमति का निरीक्षण और पुष्टि करने के लिए टैप करें",
+    "typePlaceholder": "सीधा संदेश भेजें...",
+    "noContactsFound": "कोई संपर्क नहीं मिला",
+    "noContactsMatch": "किसी भिन्न नाम से खोजने का प्रयास करें",
+    "noContactsAvailable": "कोई भी पंजीकृत संपर्क इस फ़िल्टर से मेल नहीं खाता",
+    "reportTitle": "इस वार्तालाप की रिपोर्ट करें",
+    "selectReason": "कोई कारण चुनें",
+    "reportAndBlock": "रिपोर्ट करें और ब्लॉक करें",
     "startFailed": "यह बातचीत नहीं खुल सकी। फिर से कोशिश करें।",
     "actionFailed": "यह बातचीत अपडेट नहीं हो सकी। फिर से कोशिश करें।",
     "waitingForAccept": "अनुरोध भेजा गया। स्वीकार होने के बाद आप दूसरा संदेश भेज सकते हैं।",
@@ -3065,6 +3454,10 @@ const hi = {
     "unlockMedia": "मीडिया देखें"
   },
   "discovery": {
+    "pageHelp": {
+      "openHelp": "पेज सहायता"
+    },
+    "screenHelp": "पेज मार्गदर्शन",
     "hubTitle": "पॉलीग्राम खोज और मार्गदर्शिका",
     "hubSubtitle": "लक्ष्य, सभी सुविधाएं और पृष्ठ मार्गदर्शन देखें",
     "goalsHeading": "आप क्या करना चाहते हैं?",
@@ -3246,6 +3639,11 @@ const hi = {
     }
   },
   "pages": {
+    "aspirantProfileUnavailable": "आपकी आकांक्षी प्रोफ़ाइल लोड नहीं की जा सकी.",
+    "badgesUnavailable": "बैज लोड नहीं किए जा सके. पुन: प्रयास करने के लिए ठोकिए।",
+    "civicScoreCard": {
+      "resolved": "समाधान किए"
+    },
       "personalPageTitle": "व्यक्तिगत पेज",
       "personalPageDescription": "आपकी प्रोफ़ाइल और प्रकाशित पोस्ट एक ही जगह।",
       "openMyPage": "मेरा पेज खोलें",

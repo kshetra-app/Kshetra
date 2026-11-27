@@ -1,3 +1,7 @@
+jest.mock('@react-native-async-storage/async-storage', () =>
+  require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
+);
+
 jest.mock('../lib/supabase', () => ({
   supabase: {
     from: jest.fn(() => ({
@@ -20,7 +24,8 @@ jest.mock('../stores/userProfile', () => ({
   useUserProfileStore: { getState: () => ({ profile: null, updateProfile: jest.fn() }) },
 }));
 jest.mock('../stores/myConstituency', () => ({
-  useMyConstituencyStore: { getState: () => ({ home: { acNo: 61 } }) },
+  ...jest.requireActual('../stores/myConstituency'),
+  useMyConstituencyStore: { getState: () => ({ home: { acNo: 61, stateCode: 'TS' } }) },
 }));
 jest.mock('../stores/activeState', () => ({
   useActiveStateStore: { getState: () => ({ stateCode: 'TS' }) },
@@ -29,7 +34,9 @@ jest.mock('../stores/feed', () => ({
   __refreshFeed: jest.fn(async () => undefined),
   useFeedStore: {
     getState: () => ({
-      refreshFeed: jest.requireMock('../stores/feed').__refreshFeed,
+      refreshFeedIfStale: jest.requireMock('../stores/feed').__refreshFeed,
+      scopeFilter: 'constituency',
+      feedPeriod: 'recent',
       posts: [],
       isLive: true,
     }),
@@ -127,7 +134,7 @@ describe('Supabase foreground refresh', () => {
       refreshSupabaseDataOnForeground(),
     ]);
 
-    expect(feedStore.__refreshFeed).toHaveBeenCalledWith('TS', 'TS-AC-61');
+    expect(feedStore.__refreshFeed).toHaveBeenCalledWith('TS', 'TS-AC-61', 'recent');
     expect(feedStore.__refreshFeed).toHaveBeenCalledTimes(1);
     expect(dataService.fetchFeedForState).not.toHaveBeenCalled();
     expect(civicStore.__loadIssuesForScope).toHaveBeenCalledWith('constituency', 'TS', 'TS-AC-61', true);

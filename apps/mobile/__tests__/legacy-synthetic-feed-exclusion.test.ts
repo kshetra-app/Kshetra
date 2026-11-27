@@ -19,7 +19,7 @@ const mockFrom = supabase.from as jest.Mock;
 
 function makeFeedQuery() {
   const query: Record<string, jest.Mock> = {};
-  for (const method of ['eq', 'is', 'not', 'lt', 'gte', 'order']) {
+  for (const method of ['eq', 'is', 'not', 'or', 'lt', 'gte', 'order']) {
     query[method] = jest.fn(() => query);
   }
   query.limit = jest.fn().mockResolvedValue({ data: [], error: null });
@@ -43,10 +43,13 @@ describe('legacy synthetic posts are excluded from every mobile feed read path',
     const query = makeFeedQuery();
     mockFrom.mockReturnValue({ select: () => query });
 
-    await fetchBlendedFeed(null, null, 'TS', 10, [], 'archive', 0);
+    await expect(fetchBlendedFeed(null, null, 'TS', 10, [], 'archive', 0)).resolves.toEqual([]);
 
     expect(query.not).toHaveBeenCalledWith('id', 'in', LEGACY_SYNTHETIC_POSTS_FILTER);
-    expect(query.lt).toHaveBeenCalledTimes(1);
+    expect(query.or).toHaveBeenCalledWith('follows_publisher.eq.true,state_code.eq.TS');
+    expect(query.lt).toHaveBeenCalledWith('created_at', expect.any(String));
+    expect(query.gte).not.toHaveBeenCalled();
+    expect(query.range).toHaveBeenCalledWith(0, 9);
   });
 
   it('excludes them from a state feed', async () => {

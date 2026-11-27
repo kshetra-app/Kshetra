@@ -143,7 +143,7 @@ export default function ReportSheet({
                   color={active ? '#EF4444' : '#6B7280'}
                 />
                 <Text style={[styles.reasonText, active && styles.reasonTextActive]}>
-                  {r.label}
+                  {t(r.labelKey)}
                 </Text>
                 {active && (
                   <Ionicons name="checkmark-circle" size={20} color="#EF4444" style={styles.checkIcon} />

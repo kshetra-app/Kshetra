@@ -175,7 +175,7 @@ export default function CommunityScreen() {
             ]}
             onPress={() => setSearchOpen((v) => !v)}
             hitSlop={8}
-            accessibilityLabel="Universal Search"
+              accessibilityLabel={t('common.search')}
           >
             <Ionicons
               name={searchOpen ? 'close' : 'search'}

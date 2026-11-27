@@ -103,7 +103,7 @@ describe('Ticket 0.3: Follow Graph & Feed Blending', () => {
 
   it('coalesces automatic refreshes for the same feed scope', async () => {
     const originalRefreshFeed = useFeedStore.getState().refreshFeed;
-    const refreshFeed = jest.fn().mockResolvedValue(undefined);
+    const refreshFeed = jest.fn(originalRefreshFeed);
     const uniqueConstituencyId = `TS-AUTO-${Date.now()}`;
     useFeedStore.setState({ refreshFeed });
 

@@ -2,6 +2,44 @@
  * English (en) — Base translation
  */
 const en =  {
+  "constituencyDirectory": {
+    "currentRepresentative": "Current representative",
+    "loading": "Checking live constituency records…",
+    "staleRecords": "Showing previously loaded records; current database data could not be confirmed.",
+    "empty": "No representative records are available for this state yet.",
+    "databaseRecord": "Poligram database record",
+    "geographyOnly": "Constituency geography only",
+    "localPreviewData": "Local preview data",
+    "nameUnavailable": "Name unavailable",
+    "partyUnavailable": "Party unavailable",
+    "connectedElectionRecord": "Connected election record",
+    "noPartyRecords": "No party records are available.",
+    "officeholderUnavailable": "Representative details unavailable",
+    "unavailable": "Representative records are unavailable.",
+    "partyRecordsUnavailable": "Party records are unavailable for this view."
+  },
+  "news": {
+    "selectReach": "Choose news region",
+    "selectNewsLanguage": "Choose news language",
+    "savedStories": "Saved stories",
+    "refreshFailed": "Refresh failed. Showing recent saved stories.",
+    "lastUpdated": "Updated {{time}}",
+    "noBreaking": "No recent stories marked breaking match these filters.",
+    "showLatest": "Show latest news",
+    "showState": "Show {{state}} news",
+    "showNational": "Show All India news",
+    "searchStates": "Search states and union territories",
+    "noMatchingStates": "No matching states or union territories"
+  },
+  "sync": {
+    "retryFailed": "Could not retry this comment.",
+    "syncing": "Syncing",
+    "queued": "Waiting to sync",
+    "failedRetry": "Could not sync. Tap to retry."
+  },
+  "civic": {
+    "reportIssue": "Report an issue"
+  },
   "partyRegistry": {
     "retryControls": "Some Page controls could not load. Retry",
     "verifyToClaim": "Verify your contributor account to apply",
@@ -17,6 +55,14 @@ const en =  {
     "aspirantIntent": "This declares your intention to run. Official candidacy is recorded from election filings.",
     "retryProfile": "Could not load the party. Retry",
     "registryProfile": "Party directory profile",
+    "about": "About the party",
+    "registryIdentity": "{{party}} is listed in the political party directory under {{code}}.",
+    "founded": "Founded in {{year}}.",
+    "contributionReport": "The Election Commission of India publishes the party’s contribution report for {{period}}.",
+    "constitution": "The party’s constitution is available through the Election Commission of India.",
+    "assemblyElection": "The Election Commission records the party in the {{year}} {{state}} Assembly election.",
+    "profileSource": "Source",
+    "actionFailed": "Could not save the change. Please try again.",
     "official": "Verified official Page",
     "source": "View official source",
     "followers_one": "{{count}} follower",
@@ -82,6 +128,30 @@ const en =  {
     "noClaims": "No party Page claims to review."
   },
   "common": {
+    "clear": "Clear",
+    "sortBy": "Sort by",
+    "showMoreCount": "Show all ({{count}})",
+    "loadMore": "Load more",
+    "archive": "Archive",
+    "showLess": "Show Less",
+    "newsUnavailable": "News is unavailable right now.",
+    "newsUnavailableDescription": "The latest stories could not be loaded. Please try again.",
+    "justNow": "Just now",
+    "minutesShort": "m",
+    "ago": "ago",
+    "hoursShort": "h",
+    "daysShort": "d",
+    "tryAgain": "Please try again.",
+    "create": "Create",
+    "checkDetails": "Check campaign details",
+    "later": "Later",
+    "updating": "Updating…",
+    "dataUnavailable": "Data unavailable",
+    "allLanguages": "All languages",
+    "resetFilters": "Reset filters",
+    "more": "More",
+    "openSource": "Open source",
+    "limitReached": "Limit reached",
     "newsCategories": {
       "top": "Top",
       "politics": "Politics",
@@ -153,6 +223,8 @@ const en =  {
       "weeksAgo": "{{n}}w ago"
     },
     "scopes": {
+      "constituency": "Constituency",
+      "district": "District",
       "myConstituency": "My Constituency",
       "myState": "My State",
       "national": "National",
@@ -205,6 +277,7 @@ const en =  {
     "boundariesComingSoon": "Boundaries coming soon"
   },
   "mapLegend": {
+    "latestElectionResults": "Latest available election results",
     "seatCategory": "Seat Category",
     "competitiveness": "Competitiveness",
     "seatStatus": "Seat Status",
@@ -241,6 +314,9 @@ const en =  {
     "viewFullProfile": "View Full Profile"
   },
   "explore": {
+    "noFavoritesTitle": "No Favorite Constituencies Yet",
+    "noFavoritesSubtitle": "Tap the heart icon on any constituency card to pin it here for quick access.",
+    "showAll": "Browse All Constituencies",
     "removeFavorite": "Remove favorite",
     "addFavorite": "Add favorite",
     "jumpTo": "Jump to",
@@ -269,6 +345,26 @@ const en =  {
     "st": "ST"
   },
   "constituency": {
+    "latestElection": "Latest Election",
+    "assemblyTag": "Assembly",
+    "electionResults": "Election Results",
+    "marginPct": "Margin %",
+    "resultsLoading": "Loading election results…",
+    "affidavitSummary": "MLA Affidavit & Disclosures",
+    "viewFullConstituencyData": "View Full Constituency Data",
+    "mlaProfileDossier": "MLA Profile & Dossier",
+    "following": "Following",
+    "follow": "Follow",
+    "recentElectionResult": "Recent Election Result",
+    "communityPulseTitle": "Constituency Civic Forum",
+    "communityPulseDesc": "Connect with local voters, report civic issues, or view grassroots community discussions for this constituency.",
+    "reservationStatus": "Reservation",
+    "genderDistribution": "Electorate Gender Composition",
+    "sexRatio": "Sex Ratio",
+    "localityDistribution": "Locality & Habitat Distribution",
+    "urban": "Urban",
+    "rural": "Rural",
+    "votesPolled": "Votes Polled",
     "notFoundTitle": "Constituency Not Found",
     "notFoundDesc": "We could not find the requested constituency. Please try searching again.",
     "politicalEvents": "Political Events",
@@ -341,6 +437,26 @@ const en =  {
     "demoDisclaimer": "Source: Census 2011 · ECI 2023 voter rolls"
   },
   "feed": {
+    "archiveRecentHint": "Last 30 days",
+    "archiveOlderHint": "Older posts",
+    "voteCount_one": "{{count}} vote",
+    "voteCount_other": "{{count}} votes",
+    "selectRegion": "Select Feed Location",
+    "nationalFeedHint": "Discussions and news from across India",
+    "localFeedHint": "Posts from this constituency",
+    "startDiscussion": "Start a Discussion on Feed",
+    "editFailed": "Could not save this edit. Check your connection and try again.",
+    "createPostFailed": "Could not publish this post",
+    "postLocalTitle": "Local preview only",
+    "postLocalBody": "This post is stored only in the development preview and was not published.",
+    "attachmentUnavailable": "This attachment could not be opened. Refresh the post and try again.",
+    "deleteFailed": "Could not delete the post. Please try again.",
+    "reactionFailed": "Could not update your reaction. Please try again.",
+    "voteFailed": "Could not save your vote. Please try again.",
+    "react": "React",
+    "comment": "Comment",
+    "writeAComment": "Write a comment",
+    "createPostFailedBody": "Could not create the post. Please try again.",
     "changeOrRemoveVote": "Tap an option to change or remove your vote",
     "voteCount_one": "{{count}} vote",
     "voteCount_other": "{{count}} votes",
@@ -388,6 +504,8 @@ const en =  {
     "myConstituency": "My Constituency"
   },
   "shorts": {
+    "archiveOlderHint": "Older shorts",
+    "searchPlaceholder": "Search shorts, creators, topics...",
     "title": "Political Shorts",
     "seeAll": "See All",
     "views": "views",
@@ -401,6 +519,7 @@ const en =  {
     "uploadFirst": "Upload the first one"
   },
   "postCard": {
+    "comment": "Comment",
     "pinned": "Pinned",
     "justNow": "just now",
     "discussion": "Discussion",
@@ -429,6 +548,11 @@ const en =  {
     "celebrate": "Celebrate"
   },
   "postDetail": {
+    "commentFailed": "Comment not sent",
+    "commentRetry": "Please check your connection and try again.",
+    "commentQueued": "Comment queued",
+    "commentQueuedBody": "It will be sent when your connection returns.",
+    "deleteCommentFailed": "Could not delete the comment. Please try again.",
     "olderComments": "Load older comments",
     "retryComments": "Retry loading comments",
     "editComment": "Edit comment",
@@ -450,6 +574,9 @@ const en =  {
     "ends": "Ends"
   },
   "compose": {
+    "recordVideo": "Video",
+    "attachmentLimit": "Attach up to four items: three photos, one video and one link.",
+    "linkHelp": "Enter a complete http or https link.",
     "title": "New Post",
     "replyTo": "Reply to {{name}}",
     "placeholder": "What's on your mind?",
@@ -477,6 +604,14 @@ const en =  {
     "selectLanguage": "Language"
   },
   "dashboard": {
+    "showingPreviousIssues": "Could not refresh. Showing previously loaded issues.",
+    "selectConstituency": "Set your home constituency to view local issues, or choose State or National.",
+    "issuesUnavailable": "Civic issues could not be loaded. The empty state is not being treated as zero issues.",
+    "loadedMatches": "{{shown}} of {{total}} matching reports loaded. The counts above summarize the loaded reports.",
+    "noIssuesHint": "No civic issues reported for this view. Report a local issue to notify representatives.",
+    "showingPreviousPromises": "Could not refresh. Showing previously loaded promises.",
+    "activityReportCount": "{{count}} reports in {{scope}}",
+    "activityDefinition": "Counts reports submitted through Poligram across all categories and statuses for this area.",
     "title": "Civic Dashboard",
     "tabs": {
       "issues": "Issues",
@@ -532,6 +667,14 @@ const en =  {
     }
   },
   "profile": {
+    "followUpdateFailed": "Could not update follow status",
+    "messageUnavailable": "Could not open a conversation. Please try again.",
+    "notFound": "This profile could not be found.",
+    "verified": "Verified",
+    "cachedProfile": "Could not refresh the profile.",
+    "message": "Message",
+    "postsUnavailable": "Could not load the latest posts.",
+    "unavailable": "Profile unavailable",
     "createPost": "Create post",
     "submissions": "Submissions",
     "submissionPending": "Awaiting review",
@@ -592,6 +735,8 @@ const en =  {
     }
   },
   "notificationSettings": {
+    "paused": "All notifications paused",
+    "infoText": "Notifications are sent for critical updates only. You can adjust per-constituency alerts from the constituency page.",
     "title": "Notification Settings",
     "masterToggle": "Push Notifications",
     "masterDesc": "Receive alerts about activity in your constituencies",
@@ -678,6 +823,11 @@ const en =  {
     }
   },
   "ai": {
+    "referenceDataNotVerified": "The sources and dates for this answer could not be verified.",
+    "chatLoadError": "Could not get an answer. Please try again.",
+    "chatSignInRequired": "Sign in to use Civic AI.",
+    "chatLimitReached": "Civic AI has reached its usage limit. Try again later.",
+    "chatServiceUnavailable": "Civic AI is temporarily unavailable.",
     "title": "Poligram AI Assistant",
     "askAboutConstituency": "Ask anything about {{name}} elections, candidates, and demographics",
     "askAboutState": "Ask anything about elections, parties, and politics in {{state}}",
@@ -734,6 +884,8 @@ const en =  {
       "misinformation": "Misinformation",
       "hateSpeech": "Hate Speech",
       "violence": "Violence",
+      "violenceOrThreats": "Violence or threats",
+      "impersonation": "Impersonation",
       "inappropriate": "Inappropriate Content",
       "other": "Other"
     },
@@ -779,6 +931,7 @@ const en =  {
     "OTH": "Other"
   },
   "mla": {
+    "dob": "Date of birth",
     "age": "Age",
     "male": "Male",
     "female": "Female",
@@ -813,6 +966,15 @@ const en =  {
     "politicalEvents": "Political Events"
   },
   "intelligence": {
+    "liveCoverage": "{{count}} constituency records loaded. Party percentages use the {{knownParties}} records with a party.",
+    "currentRecords": "Current database records",
+    "nationalUnavailable": "A national current-party dataset is not connected.",
+    "partiesRecorded": "Parties recorded",
+    "currentPartyRecords": "Current Party Records",
+    "records": "records",
+    "largestRecordedParty": "Largest recorded party",
+    "liveSource": "Source: Poligram constituency database",
+    "databaseRecords": "Database records",
     "party_strength_title": "Party Strength: Current vs Election Day",
     "title": "Intelligence",
     "mps": "MPs",
@@ -1318,6 +1480,15 @@ const en =  {
     "vs": "vs"
   },
   "parliament": {
+    "membershipDate": "Members as of {{date}}",
+    "officialRoster": "Official member list",
+    "searchLokSabhaByMember": "Search by name, constituency, or party…",
+    "declaredCases": "Declared cases",
+    "affidavitFinancials": "Affidavit disclosures",
+    "filingYear": "Filed in {{year}}",
+    "currentTerm": "Current term",
+    "viewFilingRecord": "View election affidavit and case details",
+    "officialMemberProfile": "Official Parliament profile",
     "directoryDescription": "Lok Sabha and Rajya Sabha member profiles",
     "screenTitle": "Parliament & MPs",
     "tabOverview": "Overview",
@@ -1388,12 +1559,26 @@ const en =  {
     "othersAlliance": "Others"
   },
   "legislator": {
+    "assets": "Assets",
+    "age": "Age",
+    "cases": "Criminal Cases",
+    "education": "Education",
+    "tabBio": "Bio",
+    "tabAssets": "Assets",
+    "tabLegal": "Legal",
+    "tabElections": "Elections",
+    "viewAffidavit": "View filed affidavit",
+    "portraitSource": "Portrait source",
+    "noDisclosures": "No affidavit is linked for this election.",
+    "netWorth": "Net Worth",
     "party_switch_history": "Party Switch History",
     "profileNotFound": "Profile Not Found",
     "educationProfession": "Education & Profession",
     "dataDisclaimer": "Data sourced from candidate self-declarations filed with the Election Commission of India. Figures are approximations from MyNeta/ADR summaries. Always verify with official records.",
     "datedPortraitSource": "Portrait source ({{year}})",
     "dataSources": "Data Sources",
+    "assetReport": "Declared assets report (ADR)",
+    "caseReport": "Declared cases report (ADR)",
     "mlaProfilesSeed": "MLA Profiles (Seed)",
     "myNetaAffidavit": "MyNeta Affidavit",
     "eciResults": "ECI Results",
@@ -1520,6 +1705,7 @@ const en =  {
     }
   },
   "hierarchy": {
+    "unassigned": "Unassigned",
     "screenTitle": "Local Governance Hierarchy",
     "back": "Back",
     "hierarchyLabel": "Administrative Hierarchy",
@@ -1633,6 +1819,99 @@ const en =  {
     "avgResponseTime": "Avg. response time: {{hours}} hours"
   },
   "campaignManager": {
+    "facebookAttachmentFormats": "Choose a JPEG, PNG, or MP4 file.",
+    "facebookEmptyPost": "Write a message or attach media.",
+    "facebookScheduleError": "Enter a valid date and time in the future.",
+    "facebookConfirmSchedule": "Schedule for {{page}}?",
+    "facebookConfirmPublish": "Publish to {{page}}?",
+    "facebookSchedule": "Schedule",
+    "facebookPublish": "Publish",
+    "facebookAttachmentSize": "Choose a photo up to 10 MB or an MP4 up to 25 MB.",
+    "facebookAttachmentError": "The attachment could not be uploaded. Check your connection and retry.",
+    "facebookDate": "Date (YYYY-MM-DD)",
+    "facebookTime": "Local time (HH:mm, 24-hour)",
+    "facebookNewPost": "New Facebook post",
+    "facebookPostMessage": "Post message",
+    "facebookRemoveMedia": "Remove attachment",
+    "facebookAddMedia": "Attach a photo or video",
+    "facebookSendNow": "Switch to publish now",
+    "facebookChooseTime": "Set a date and time",
+    "facebookPublicationHistory": "Facebook publishing history",
+    "facebookNoPublications": "This campaign has no Facebook posts yet.",
+    "facebookMediaPost": "Media post",
+    "facebookViewPost": "View post on Facebook",
+    "facebookCancelSchedule": "Cancel scheduled post",
+    "facebookAccessLoadError": "Publishing access could not be loaded.",
+    "facebookCheckoutInvalid": "Checkout could not be opened.",
+    "facebookPublishingAccess": "Campaign Publishing access",
+    "facebookActiveUntil": "Test access active until {{date}}",
+    "facebookTestPrice": "{{price}} for {{days}} days in Razorpay Test Mode",
+    "facebookOpenTestCheckout": "Open test checkout",
+    "campaignRequiredFields": "Enter a name, a two-letter state code, and valid dates in YYYY-MM-DD format.",
+    "campaignDateOrder": "The end date must be on or after the start date.",
+    "campaignBudgetInvalid": "Enter a valid non-negative budget, or leave it blank.",
+    "campaignNotSaved": "Campaign not saved",
+    "campaignName": "Campaign name",
+    "campaignNamePlaceholder": "Name this campaign",
+    "campaignType": "Campaign type",
+    "descriptionOptional": "Description (optional)",
+    "descriptionPlaceholder": "What is this campaign about?",
+    "stateCode": "State code",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "budgetOptional": "Budget in INR (optional)",
+    "budgetNotSet": "Leave blank if not set",
+    "campaignDraftNote": "This creates a draft record. It does not publish ads or schedule outreach.",
+    "saveCampaignDraft": "Save campaign draft",
+    "facebookChooseCampaign": "Select a campaign you own to manage its Facebook connection.",
+    "facebookRetry": "Could not load Facebook publishing. Retry",
+    "facebookUnavailable": "Facebook test publishing is unavailable in this environment.",
+    "facebookDisconnect": "Disconnect Page",
+    "facebookConfirmDisconnect": "Disconnect this Facebook Page?",
+    "facebookConnect": "Connect the Staging Page",
+    "facebookInvalidLink": "Facebook authorization could not be opened.",
+    "facebookReceipt": "Facebook post ID: {{id}}",
+    "facebookAwaitingConfirmation": "The test post is awaiting Facebook confirmation. Check the Page before taking further action.",
+    "facebookRejected": "Facebook declined the previous test. Check the Page permissions.",
+    "facebookPublishTest": "Publish test post",
+    "accountCheckUnavailable": "Account check unavailable",
+    "enterNameAndPhone": "Please enter in-charge name and phone number.",
+    "assignmentNotSaved": "Assignment not saved",
+    "noBoothsYet": "No booth records are available for this campaign yet.",
+    "noBoothsMatchFilter": "No booths match this filter.",
+    "noCampaignsYet": "No campaigns are available for this account yet.",
+    "noCampaignSelected": "No campaign selected",
+    "campaignLocationNotSet": "Campaign location not set",
+    "budgetNotAvailable": "Budget not available",
+    "enterWorkerDetails": "Please enter worker name and phone number.",
+    "workerNotSaved": "Worker not saved",
+    "noCampaignForWorkers": "A campaign must be available before campaign workers can be added.",
+    "noWorkersYet": "No workers are registered for this campaign yet.",
+    "noWorkersMatchSearch": "No workers match this search.",
+    "namasteVoter": "Namaste! Greetings from your candidate.",
+    "manifestoHighlight": "Our 3 Core Pledges: 24x7 Clean Drinking Water, Youth Employment Coaching, Ward Drainage Overhaul.",
+    "serviceUnavailableTitle": "Campaign service unavailable",
+    "serviceUnavailableDescription": "Verified audience, pricing, wallet, and delivery service data are required before a broadcast can be scheduled.",
+    "confirmVoiceCall": "Confirm Voice Broadcast",
+    "confirmVoiceCallDesc": "Deliver 30-second recorded audio call to {{count}} voters for ₹{{cost}}? Amount will be deducted from your Campaign Wallet.",
+    "dispatchNow": "Schedule Call Blast",
+    "rechargeFailed": "Recharge not completed",
+    "balanceUnavailable": "Balance unavailable",
+    "whatsappUnavailable": "Sharing is unavailable",
+    "whatsappUnavailableDescription": "No campaign profile or approved share content is connected.",
+    "posterNotReady": "Campaign content is not connected.",
+    "posterNotConfigured": "A verified campaign profile and approved content are required before sharing.",
+    "pricingUnavailable": "Pricing unavailable",
+    "pricingUnavailableDescription": "A verified price quote is not available right now.",
+    "totalPriceUnavailable": "Total: unavailable",
+    "walletOrPricingUnavailable": "Verified audience, wallet, and current pricing are required.",
+    "voiceGuidanceUnavailable": "Provider-specific delivery guidance will appear when verified pricing and service configuration are available.",
+    "audioNotConnected": "Audio upload is not connected",
+    "realAudioRequired": "A verified campaign audio file is required.",
+    "broadcastUnavailable": "Broadcast unavailable",
+    "loadingBroadcastHistory": "Loading broadcast history…",
+    "broadcastHistoryUnavailable": "Broadcast history is unavailable.",
+    "noBroadcastHistory": "No broadcasts are recorded for this account yet.",
     "screenTitle": "Campaign Manager",
     "active": "Active",
     "total": "Total",
@@ -1820,6 +2099,23 @@ const en =  {
     "simulationNote": "Messages are simulated and not actually sent"
   },
   "civicMetrics": {
+    "officialSchemes": "Government scheme eligibility and application guidance",
+    "officialBills": "Official Parliament bill texts and statuses",
+    "telanganaBudgetPublications": "Telangana budget documents and archive",
+    "billRecords": "Bills and legislation",
+    "governmentSchemesLabel": "Government Schemes & Welfare",
+    "developmentProjectsLabel": "Infrastructure & Development Projects",
+    "rtiOfficialTitle": "File with the relevant public authority",
+    "rtiOfficialDescription": "Use the central portal for central public authorities. For a state authority, follow that state’s RTI process. Entries below are community records shared in Poligram.",
+    "rtiOfficialGuide": "Central RTI portal and filing guidance",
+    "communityRtiRecords": "Community RTI records",
+    "communityRtiCount": "Community RTI records ({{count}})",
+    "reportedDate": "Reported date {{date}}",
+    "publicHearingsLabel": "Public hearings",
+    "grossEstimate": "Gross expenditure estimate",
+    "viewBudgetSource": "Official budget publication",
+    "originalEstimate": "Original estimate",
+    "revisedEstimate": "Revised estimate",
     "sourceVerifiedOn": "Last verified {{date}}",
     "showingSavedRecords": "Couldn’t refresh. Showing the last loaded records.",
     "officialHearingNotice": "Official hearing notice",
@@ -1882,6 +2178,7 @@ const en =  {
     "daysDelayed": "{{n}} days delayed"
   },
   "lmx": {
+    "searchPlaceholder": "Search live rooms, issues, speakers...",
     "screenTitle": "Poligram Live",
     "liveNow": "{{count}} live now",
     "liveNow_one": "{{count}} live now",
@@ -1896,10 +2193,22 @@ const en =  {
       "verified": "Verified"
     },
     "empty": {
+      "loadFailed": "Live could not refresh.",
+      "retry": "Pull down to try again.",
       "title": "No live streams match your filters",
       "subtitle": "Be the first — tap Go Live to broadcast from here."
     },
     "goLiveScreen": {
+      "createFailed": "The broadcast studio could not be opened. Check your connection and try again.",
+      "signInRequired": "Sign in to start a broadcast.",
+      "emailRequired": "Confirm your email address to broadcast.",
+      "verificationRequired": "Verify your contributor profile to broadcast.",
+      "roleRequired": "Live broadcasting is available to verified candidates, parties and journalists.",
+      "mediaPlaneUnavailable": "Broadcasting is temporarily unavailable.",
+      "tagsLabel": "Tags (optional, comma-separated)",
+      "browserStudio": "Allow camera and microphone access in the browser. Keep the studio open while broadcasting.",
+      "reviewBeforePublic": "Your broadcast appears in Live after a reviewer approves it.",
+      "openStudio": "Open broadcast studio",
       "title": "Go Live",
       "detectingLocation": "Detecting location…",
       "locationLocked": "Location locked — {{district}}, {{state}}",
@@ -1984,6 +2293,10 @@ const en =  {
       "openReceiver": "Open receiver"
     },
     "moderation": {
+      "loadFailed": "The review queue is unavailable. Check your access and try again.",
+      "previewFailed": "The preview could not be opened. Refresh the queue and try again.",
+      "saveFailed": "The review decision could not be saved.",
+      "activeBroadcasts": "Active broadcasts",
       "title": "Moderation Queue",
       "streamsInBuffer": "{{count}} stream(s) in buffer.",
       "streamsInBuffer_one": "{{count}} stream in buffer.",
@@ -2087,6 +2400,15 @@ const en =  {
     }
   },
   "electionArchive": {
+    "byElection": "By-election",
+    "officialDocument": "Official result document",
+    "officialResults": "Election Commission results and counting updates",
+    "selectState": "Select a state or union territory",
+    "search": "Search assembly constituencies",
+    "latest": "Latest recorded",
+    "retry": "Could not load the archive. Tap to retry.",
+    "noMatches": "No matching assembly results in the archive. Open the Election Commission link above for official coverage.",
+    "margin": "Margin {{votes}} votes",
     "menuDescription": "Assembly results and official counting updates"
   },
   "liveElection": {
@@ -2129,6 +2451,7 @@ const en =  {
     }
   },
   "notifications": {
+    "configureAlerts": "Configure Alert Topics",
     "title": "Notifications",
     "markAllRead": "Mark all read",
     "noNotifications": "No notifications yet",
@@ -2144,6 +2467,8 @@ const en =  {
     "daysAgo": "{{n}}d ago"
   },
   "auth": {
+    "getVerified": "Get verified",
+    "loginRequired": "Please sign in to submit a report.",
     "signIn": "Sign In",
     "signUp": "Sign Up",
     "signOut": "Sign Out",
@@ -2193,6 +2518,8 @@ const en =  {
     "versionPhase": "v0.1.0 · Phase 1"
   },
   "reportIssueSheet": {
+    "saveFailed": "Your report could not be saved. Please try again.",
+    "selectState": "Select a state to report an issue.",
     "title": "Report Issue",
     "submit": "Submit",
     "reportingIn": "Reporting in",
@@ -2211,6 +2538,8 @@ const en =  {
     "permissionMsg": "Camera/photo access is needed to add evidence"
   },
   "reportSheet": {
+    "errorTitle": "Could not submit report",
+    "errorMsg": "Could not submit report. Please try again.",
     "title": "Report {{targetType}}",
     "submit": "Submit",
     "sending": "Sending…",
@@ -2246,6 +2575,11 @@ const en =  {
     "statesAndUTs": "31 states & union territories"
   },
   "constituencyExtended": {
+    "reportIssue": "Report Issue",
+    "viewNews": "Local News",
+    "linkedWithCommunityFeed": "Linked with Community Feed",
+    "communityFeedDesc": "Issues in this constituency are seamlessly linked with citizen discussions. You can discuss this issue on the community feed or convert a feed post into an official civic issue.",
+    "discussFeed": "Discuss in Feed",
     "followConstituency": "Follow Constituency",
     "followingConstituency": "Following Constituency",
     "viewCompleteProfile": "View Complete Profile",
@@ -2278,6 +2612,9 @@ const en =  {
     "exploreHierarchyButton": "Explore Hierarchy"
   },
   "mapExtended": {
+    "expandControls": "Expand Controls",
+    "minimizeControls": "Minimize Controls",
+    "mode3D": "3D",
     "margin": "Margin",
     "votes": "votes",
     "population": "Population",
@@ -2333,6 +2670,7 @@ const en =  {
     "scopeNational": "National"
   },
   "exploreExtended": {
+    "aiChatAndSearch": "AI Chat & AI Search",
     "mpsParliament": "Parliament & MPs",
     "aiChat": "AI Chat",
     "delimitation": "Delimitation",
@@ -2402,6 +2740,10 @@ const en =  {
     "perYear": "per year"
   },
   "promiseCard": {
+    "awaitingEvidence": "Status awaiting evidence",
+    "promisedOn": "Pledged {{date}}",
+    "viewPledge": "Read the original pledge",
+    "viewStatusEvidence": "Status evidence, {{date}}",
     "deliveryProgress": "Delivery Progress",
     "deadlinePassed": "Deadline passed:",
     "verified": "verified",
@@ -2440,6 +2782,9 @@ const en =  {
     "challengeComplete": "Challenge Complete!"
   },
   "aspirantReg": {
+    "homeConstituencyRequired": "Set your home constituency in Profile",
+    "targetYearRequired": "Choose the election year you intend to contest.",
+    "affiliationRequired": "Choose an affiliation to continue.",
     "title": "Become an Aspirant",
     "introText": "Create a public civic profile to track your Civic Score, earn badges, and let your constituency know you want to lead. You can hide your profile any time.",
     "publicName": "Public name",
@@ -2497,6 +2842,8 @@ const en =  {
     "historical": "Historical Comparison"
   },
   "export": {
+    "loadedIssueCoverage": "{{matched}} of {{total}} matching reports loaded for this area and these filters.",
+    "shareCsv": "Share CSV",
     "title": "Export Dashboard",
     "dataScope": "Data Scope",
     "currentView": "Current View",
@@ -2543,6 +2890,7 @@ const en =  {
     "noComparison": "Select two constituencies to compare"
   },
   "delimitationExtended": {
+    "exploreScenarios": "Explore Scenarios",
     "headerSubtitle": "India's Constituency Redraw Tracker & Projections",
     "statusDesc": "Constituency redraw freeze ends after Census 2026. Anticipated seat reallocation based on population growth.",
     "simulatorSub": "Simulate seat distribution scenarios, thresholds, and state impacts",
@@ -2810,6 +3158,10 @@ const en =  {
     "alertShareMessage": "Share link for \"{{title}}\" copied to clipboard."
   },
   "uploadShort": {
+    "deviceVideoLimits": "Choose an H.264 MP4 video up to 60 seconds and 25 MB.",
+    "chooseState": "Select a state to publish a Short.",
+    "changeDeviceVideo": "Change selected video",
+    "chooseDeviceVideo": "Choose video from device",
     "confirmRights": "I have the right to share this video and agree to the community rules.",
     "title": "Upload Political Short",
     "creatorVerification": "Creator Verification Required",
@@ -2901,6 +3253,9 @@ const en =  {
     "missingFieldsMessage": "Please fill in the template name and message body."
   },
   "localBodies": {
+    "resultsLoadError": "Could not load these election results.",
+    "returnsYear": "{{year}} local election results",
+    "zptcMembers": "ZILLA PARISHAD (ZPTC)",
     "ruralDirectoryDescription": "Rural election records for Andhra Pradesh and Telangana",
     "screenTitle": "Local Bodies",
     "loadingState": "Loading {{state}} local bodies…",
@@ -2957,6 +3312,7 @@ const en =  {
       "account": "Account"
     },
     "tiles": {
+      "messages": "Direct Messages",
       "politicianPortal": "Politician Portal",
       "becomeAspirant": "Become Aspirant",
       "campaignManager": "Campaign Manager",
@@ -3001,6 +3357,7 @@ const en =  {
     "enableAll": "Enable All"
   },
   "representative": {
+    "profileLoadError": "Could not load this election record.",
     "profileNotFound": "Profile Not Found",
     "electionDetails": "Election & Mandate Details",
     "designation": "Designation",
@@ -3022,6 +3379,18 @@ const en =  {
     "officialSource": "Official Source & Verification"
   },
   "issueDetail": {
+    "actionFailed": "The change could not be saved. Please try again.",
+    "title": "Issue detail",
+    "loadFailed": "This issue could not be loaded.",
+    "legacyAcknowledgment": "Acknowledgment on record",
+    "flagged": "Flagged in Poligram",
+    "flagAlreadyRecorded": "This issue is already flagged for representative attention.",
+    "flagForRepresentative": "Flag issue",
+    "acknowledge": "Acknowledge as the verified authority",
+    "acknowledgeConfirm": "Record that your office has received this report?",
+    "actorUnrecorded": "Actor not recorded",
+    "verifiedAuthority": "Verified authority",
+    "poligramStaff": "Poligram staff",
     "notFound": "Issue not found",
     "verified": "Verified",
     "upvotes": "Upvotes",
@@ -3038,6 +3407,18 @@ const en =  {
     "disputeResolution": "Dispute Resolution"
   },
   "messages": {
+    "mediaConsentTitle": "View Media Attachment",
+    "mediaConsentBody": "This media is from an unvetted sender. Are you sure you want to reveal it?",
+    "revealMedia": "Reveal Media",
+    "mediaHidden": "Media Shield Active",
+    "tapToReveal": "Tap to inspect and confirm consent",
+    "typePlaceholder": "Send a direct message...",
+    "noContactsFound": "No contacts found",
+    "noContactsMatch": "Try searching with a different name",
+    "noContactsAvailable": "No registered contacts match this filter",
+    "reportTitle": "Report this conversation",
+    "selectReason": "Choose a reason",
+    "reportAndBlock": "Report and block",
     "startFailed": "Could not open this conversation. Try again.",
     "actionFailed": "Could not update this conversation. Try again.",
     "waitingForAccept": "Request sent. You can send another message after it is accepted.",
@@ -3085,6 +3466,10 @@ const en =  {
     "unlockMedia": "View media"
   },
   "discovery": {
+    "pageHelp": {
+      "openHelp": "Page help"
+    },
+    "screenHelp": "Page guidance",
     "hubTitle": "POLIGRAM Discovery & Guide",
     "hubSubtitle": "Explore goals, all features, and page guidance",
     "goalsHeading": "What would you like to do?",
@@ -3266,6 +3651,11 @@ const en =  {
     }
   },
   "pages": {
+    "aspirantProfileUnavailable": "Your aspirant profile could not be loaded.",
+    "badgesUnavailable": "Badges could not be loaded. Tap to retry.",
+    "civicScoreCard": {
+      "resolved": "Resolved"
+    },
       "personalPageTitle": "Personal page",
       "personalPageDescription": "Your profile and published posts, together in one place.",
       "openMyPage": "Open my page",

@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, Alert, KeyboardAvoidingView, Linking, Modal, Platform, RefreshControl, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, KeyboardAvoidingView, Linking, Modal, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,6 +14,7 @@ import {
   type PartyAccount, type PartyPageState, type PartyTeamMember, type PartyTeamRole,
 } from '../../lib/partyRegistry';
 import { useTheme } from '../../lib/theme';
+import { localizeState } from '../../lib/lmxLocalizer';
 import { useAuthStore } from '../../stores/auth';
 import { useContributorVerificationStore } from '../../stores/contributorVerification';
 
@@ -45,6 +47,7 @@ export default function PartyProfileScreen() {
   const [controlsUnavailable, setControlsUnavailable] = useState(false);
   const [working, setWorking] = useState(false);
   const [revision, setRevision] = useState(0);
+  const [expanded, setExpanded] = useState<{ partyId: string; section: 'affiliation' | 'management' } | null>(null);
 
   useFocusEffect(useCallback(() => {
     let current = true;
@@ -59,13 +62,15 @@ export default function PartyProfileScreen() {
     setClaimForm(false);
     async function load() {
       try {
-        const [details, accountResult] = await Promise.all([
-          getParty(id),
-          signedIn ? getPartyAccount().then(
+        const accountPromise = signedIn ? getPartyAccount().then(
             (value) => ({ value, available: true }),
             () => ({ value: null, available: false }),
-          ) : { value: null, available: true },
-        ]);
+          ) : Promise.resolve({ value: null, available: true });
+        const details = await getParty(id);
+        if (!current) return;
+        setParty(details);
+        setLoading(false);
+        const accountResult = await accountPromise;
         const personal = accountResult.value?.accountId === userId ? accountResult.value : null;
         const ownsPage = Boolean(details.page_id && personal?.claims.some(
           (claim) => claim.organization_id === id && claim.status === 'approved',
@@ -76,7 +81,6 @@ export default function PartyProfileScreen() {
           details.page_id && signedIn ? canPublishForParty(id) : false,
         ]);
         if (!current) return;
-        setParty(details);
         setControlsUnavailable(!accountResult.available || [follow, members, publish].some(
           (result) => result.status === 'rejected',
         ));
@@ -101,8 +105,8 @@ export default function PartyProfileScreen() {
     try {
       await action();
       setRevision((previous) => previous + 1);
-    } catch (error) {
-      Alert.alert(t('common.error', { defaultValue: 'Error' }), error instanceof Error ? error.message : undefined);
+    } catch {
+      Alert.alert(t('common.error'), t('partyRegistry.actionFailed'));
     } finally {
       setWorking(false);
     }
@@ -110,6 +114,8 @@ export default function PartyProfileScreen() {
 
   const locale = i18n.language?.split('-')[0];
   const localName = party?.names.find((name) => name.language_code === locale)?.name_value;
+  const name = localName ?? party?.name;
+  const facts = party?.profileEvidence ?? [];
   const ownClaim = account?.claims.find((claim) => claim.organization_id === id);
   const hasDeclaration = account?.declaration?.organization_id === id;
   const ownsPage = Boolean(party?.page_id && account?.claims.some(
@@ -121,10 +127,22 @@ export default function PartyProfileScreen() {
   const validMember = /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(memberId);
   const roleTitle = (role: PartyTeamRole) => t('partyRegistry.role.' + role, { defaultValue: role });
 
+  function sectionToggle(section: 'affiliation' | 'management', label: string) {
+    const open = expanded?.partyId === id && expanded.section === section;
+    return (
+      <Pressable accessibilityRole="button" accessibilityState={{ expanded: open }}
+        style={styles.sectionToggle}
+        onPress={() => setExpanded(open ? null : { partyId: id, section })}>
+        <Text style={[styles.section, { color: colors.text }]}>{label}</Text>
+        <Ionicons name={open ? 'chevron-up' : 'chevron-down'} size={20} color={colors.textMuted} />
+      </Pressable>
+    );
+  }
+
   return (
     <ScrollView
       style={{ backgroundColor: colors.background }}
-      contentContainerStyle={styles.screen}
+      contentContainerStyle={[styles.screen, { paddingBottom: Math.max(24, insets.bottom + 16) }]}
       keyboardShouldPersistTaps="handled"
       refreshControl={<RefreshControl refreshing={loading} onRefresh={() => setRevision(revision + 1)} />}
     >
@@ -135,15 +153,16 @@ export default function PartyProfileScreen() {
       ) : (
         <>
           <View style={[styles.panel, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={[styles.heading, { color: colors.text }]}>{localName ?? party.name}</Text>
-            {localName && <Text style={{ color: colors.text }}>{party.name}</Text>}
-            <Text style={{ color: colors.textMuted }}>
-              {party.verifiedAt
-                ? t('partyRegistry.official', { defaultValue: 'Verified official Page' })
-                : t('partyRegistry.registryProfile', { defaultValue: 'Party directory profile' })}
-            </Text>
-            {party.sourceUrl?.startsWith('https://') && (
-              <PartyAction label={t('partyRegistry.source', { defaultValue: 'View official source' })}
+            <Text accessibilityRole="header" style={[styles.heading, { color: colors.text }]}>{name}</Text>
+            {localName && localName !== party.name && <Text style={{ color: colors.textMuted }}>{party.name}</Text>}
+            {party.verifiedAt && <Text style={{ color: colors.textMuted }}>{t('partyRegistry.official')}</Text>}
+            {facts.length === 0 && party.name !== party.short_name && (
+              <Text style={{ color: colors.textMuted }}>
+                {t('partyRegistry.registryIdentity', { party: name, code: party.short_name })}
+              </Text>
+            )}
+            {facts.length === 0 && party.sourceUrl?.startsWith('https://') && (
+              <PartyAction label={t('partyRegistry.source')}
                 onPress={() => void Linking.openURL(party.sourceUrl!)} />
             )}
             {officialPage && page && (
@@ -164,6 +183,28 @@ export default function PartyProfileScreen() {
             )}
           </View>
 
+          {facts.length > 0 && (
+            <View style={[styles.panel, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+              <Text accessibilityRole="header" style={[styles.section, { color: colors.text }]}>{t('partyRegistry.about')}</Text>
+              {facts.map((fact) => {
+                const description = fact.kind === 'founded' ? t('partyRegistry.founded', { year: fact.year })
+                  : fact.kind === 'assemblyElection' ? t('partyRegistry.assemblyElection', { year: fact.year, state: localizeState(fact.state, locale) })
+                  : fact.kind === 'contributionReport' ? t('partyRegistry.contributionReport', { period: fact.period })
+                  : t('partyRegistry.constitution');
+                return (
+                  <Pressable key={fact.kind} accessibilityRole="link" style={styles.fact}
+                    accessibilityLabel={`${description} ${t('partyRegistry.profileSource')}`}
+                    onPress={() => void Linking.openURL(fact.sourceUrl).catch(() => {
+                      Alert.alert(t('common.error'));
+                    })}>
+                    <Text style={[styles.factText, { color: colors.text }]}>{description}</Text>
+                    <Ionicons name="open-outline" size={18} color={colors.primary} />
+                  </Pressable>
+                );
+              })}
+            </View>
+          )}
+
           {controlsUnavailable && (
             <PartyAction
               label={t('partyRegistry.retryControls')}
@@ -173,7 +214,8 @@ export default function PartyProfileScreen() {
           {account && (
             <>
               <View style={[styles.panel, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                <Text style={[styles.section, { color: colors.text }]}>{t('partyRegistry.myDeclaration', { defaultValue: 'My affiliation' })}</Text>
+                {sectionToggle('affiliation', t('partyRegistry.myDeclaration'))}
+                {expanded?.partyId === id && expanded.section === 'affiliation' && <>
                 <Text style={{ color: colors.textMuted }}>
                   {hasDeclaration
                     ? t('partyRegistry.savedVisibility', {
@@ -205,10 +247,12 @@ export default function PartyProfileScreen() {
                 {hasDeclaration && <PartyAction disabled={working}
                   label={t('partyRegistry.clear', { defaultValue: 'Clear affiliation' })}
                   onPress={() => void perform(clearPartyDeclaration)} />}
+                </>}
               </View>
 
-              <View style={[styles.panel, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                <Text style={[styles.section, { color: colors.text }]}>{t('partyRegistry.authority', { defaultValue: 'Official Page access' })}</Text>
+              {(ownClaim || ownsPage || showClaimOption) && <View style={[styles.panel, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                {sectionToggle('management', t('partyRegistry.authority'))}
+                {expanded?.partyId === id && expanded.section === 'management' && <>
                 {ownClaim && <Text style={{ color: colors.text }}>{t('partyRegistry.claim.' + ownClaim.status, { defaultValue: ownClaim.status })}</Text>}
                 {ownsPage && <Text style={{ color: colors.textMuted }}>
                   {t('partyRegistry.teamHelp', { defaultValue: 'Assign one role to a verified member using their Poligram account ID.' })}
@@ -255,7 +299,8 @@ export default function PartyProfileScreen() {
                 <Text selectable style={{ color: colors.textMuted }}>
                   {t('partyRegistry.myAccountId', { id: account.accountId })}
                 </Text>
-              </View>
+                </>}
+              </View>}
             </>
           )}
           {!signedIn && <PartyAction label={t('partyRegistry.signIn', { defaultValue: 'Sign in to follow or declare an affiliation' })}
@@ -320,10 +365,13 @@ export default function PartyProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { padding: 16, paddingBottom: 36, gap: 14 },
+  screen: { width: '100%', maxWidth: 680, alignSelf: 'center', padding: 16, paddingBottom: 36, gap: 12 },
   panel: { borderRadius: 16, padding: 16, gap: 12, borderWidth: 1 },
   heading: { fontSize: 25, fontWeight: '800' },
-  section: { fontSize: 18, fontWeight: '700' },
+  section: { flexShrink: 1, fontSize: 18, fontWeight: '700' },
+  sectionToggle: { minHeight: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+  fact: { minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  factText: { fontSize: 15, flex: 1 },
   toggle: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   roles: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   team: { gap: 8 },

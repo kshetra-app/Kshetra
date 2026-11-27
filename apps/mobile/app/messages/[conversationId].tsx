@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useRef } from 'react';
+import React, { useCallback, useMemo, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
   Alert,
   Modal,
   Image,
+  ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -26,8 +27,9 @@ import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import { useForegroundChatRefresh } from '../../lib/useForegroundChatRefresh';
 import {
   getLocalizedContactName,
-  getLocalizedDMPreview,
 } from '../../lib/dmLocalization';
+
+const emptyMessages: DMMessageItem[] = [];
 
 export default function ConversationThreadScreen() {
   const { conversationId } = useLocalSearchParams<{ conversationId: string }>();
@@ -73,11 +75,11 @@ export default function ConversationThreadScreen() {
   };
   const localizedOtherName = getLocalizedContactName(otherUser.displayName, i18n.language);
 
-  const messages = (conversationId && currentUserId === inboxOwner ? activeMessages[conversationId] : []) || [];
+  const messages = (conversationId && currentUserId === inboxOwner ? activeMessages[conversationId] : undefined) ?? emptyMessages;
+  const newestFirst = useMemo(() => [...messages].reverse(), [messages]);
   const waitingForAccept = isPending && !isIncomingRequest && Boolean(conv.last_message_preview || messages.length);
   const canSend = Boolean(currentUserId && conv && !isIncomingRequest && !waitingForAccept);
   const flatListRef = useRef<FlatList>(null);
-  const atLatest = useRef(true);
 
   useForegroundChatRefresh(useCallback(async () => {
     if (!conversationId || !currentUserId) return;
@@ -91,10 +93,12 @@ export default function ConversationThreadScreen() {
     sendingMessage.current = true;
     setSending(true);
     setSendFailed(false);
-    atLatest.current = true;
     try {
       const result = await sendMessage(conversationId, currentUserId, inputContent.trim());
-      if (result) setInputContent('');
+      if (result) {
+        setInputContent('');
+        flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+      }
       else setSendFailed(true);
     } finally {
       sendingMessage.current = false;
@@ -136,7 +140,7 @@ export default function ConversationThreadScreen() {
     if (!currentUserId || !otherUser.id) return;
     Alert.alert(
       t('messages.safetyOptions', { defaultValue: 'Safety & Moderation' }),
-      t('messages.safetyDesc', { defaultValue: `Options for conversation with ${otherUser.displayName}:` }),
+      t('messages.safetyDesc', { name: localizedOtherName }),
       [
         { text: t('common.cancel', { defaultValue: 'Cancel' }), style: 'cancel' },
         {
@@ -241,7 +245,7 @@ export default function ConversationThreadScreen() {
                 { color: isMine ? '#FFFFFF' : colors.text },
               ]}
             >
-              {getLocalizedDMPreview(item.content, i18n.language)}
+              {item.content}
             </Text>
           ) : null}
 
@@ -340,17 +344,13 @@ export default function ConversationThreadScreen() {
       {/* Message List */}
       <FlatList
         ref={flatListRef}
-        data={messages}
+        key={conversationId}
+        data={newestFirst}
+        inverted
         keyExtractor={(item) => item.id}
         renderItem={renderMessageItem}
         contentContainerStyle={[styles.listContent, { paddingBottom: 20 }]}
-        onScroll={({ nativeEvent: { contentOffset, contentSize, layoutMeasurement } }) => {
-          atLatest.current = contentSize.height - contentOffset.y - layoutMeasurement.height < 100;
-        }}
-        scrollEventThrottle={80}
-        onContentSizeChange={() => {
-          if (atLatest.current) flatListRef.current?.scrollToEnd({ animated: false });
-        }}
+        maintainVisibleContentPosition={{ minIndexForVisible: 0, autoscrollToTopThreshold: 100 }}
       />
 
       {/* Input Bar */}
@@ -385,9 +385,12 @@ export default function ConversationThreadScreen() {
       </View>}
 
       {/* Report Modal */}
-      <Modal visible={reportModalVisible} transparent animationType="slide">
-        <Pressable style={styles.modalOverlay} onPress={() => setReportModalVisible(false)}>
-          <Pressable style={[styles.modalSheet, { backgroundColor: colors.surface }]}>
+      <Modal visible={reportModalVisible} transparent animationType="slide" onRequestClose={() => setReportModalVisible(false)}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.modalOverlay}>
+          <Pressable accessible={false} style={StyleSheet.absoluteFill} onPress={() => setReportModalVisible(false)} />
+          <ScrollView style={[styles.modalSheet, { backgroundColor: colors.surface }]}
+            contentContainerStyle={[styles.modalContent, { paddingBottom: 20 + insets.bottom }]}
+            keyboardShouldPersistTaps="handled">
             <Text style={[styles.modalTitle, { color: colors.text }]}>
               {t('messages.reportTitle', { defaultValue: 'Report User & Conversation' })}
             </Text>
@@ -399,6 +402,8 @@ export default function ConversationThreadScreen() {
             {REPORT_REASONS.map((r) => (
               <Pressable
                 key={r.key}
+                accessibilityRole="radio"
+                accessibilityState={{ checked: reportReason === r.key }}
                 style={[
                   styles.reasonRow,
                   reportReason === r.key && { backgroundColor: colors.primaryLight },
@@ -416,14 +421,15 @@ export default function ConversationThreadScreen() {
                     { color: reportReason === r.key ? colors.primary : colors.text },
                   ]}
                 >
-                  {r.label}
+                  {t(r.labelKey)}
                 </Text>
               </Pressable>
             ))}
 
             <TextInput
               style={[styles.reportInput, { color: colors.text, borderColor: colors.border }]}
-              placeholder="Additional details (optional)..."
+              accessibilityLabel={t('reportSheet.additionalDetails')}
+              placeholder={t('reportSheet.additionalDetails')}
               placeholderTextColor={colors.textMuted}
               value={reportDescription}
               onChangeText={setReportDescription}
@@ -435,17 +441,17 @@ export default function ConversationThreadScreen() {
                 style={[styles.modalBtn, { borderColor: colors.border, borderWidth: 1 }]}
                 onPress={() => setReportModalVisible(false)}
               >
-                <Text style={{ color: colors.textSecondary, fontWeight: '700' }}>Cancel</Text>
+                <Text style={{ color: colors.textSecondary, fontWeight: '700' }}>{t('common.cancel')}</Text>
               </Pressable>
               <Pressable
                 style={[styles.modalBtn, { backgroundColor: '#EF4444' }]}
                 onPress={submitReport}
               >
-                <Text style={{ color: '#FFFFFF', fontWeight: '800' }}>Submit Report & Block</Text>
+                <Text style={styles.reportSubmitText}>{t('messages.reportAndBlock')}</Text>
               </Pressable>
             </View>
-          </Pressable>
-        </Pressable>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </Modal>
       <DiscoveryHubSheet
         visible={helpVisible}
@@ -533,12 +539,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  modalSheet: { padding: 20, borderTopLeftRadius: 24, borderTopRightRadius: 24, gap: 10 },
+  modalSheet: { flexGrow: 0, maxHeight: '90%', width: '100%', maxWidth: 600, alignSelf: 'center', borderTopLeftRadius: 24, borderTopRightRadius: 24 },
+  modalContent: { padding: 20, gap: 10 },
   modalTitle: { fontSize: 18, fontWeight: '800' },
   modalSub: { fontSize: 13 },
   reasonRow: { flexDirection: 'row', alignItems: 'center', padding: 10, borderRadius: 10, gap: 10 },
-  reasonText: { fontSize: 14, fontWeight: '600' },
-  reportInput: { borderWidth: 1, borderRadius: 12, padding: 12, height: 80, fontSize: 13 },
-  modalBtnRow: { flexDirection: 'row', gap: 10, marginTop: 8 },
-  modalBtn: { flex: 1, paddingVertical: 12, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  reasonText: { flexShrink: 1, fontSize: 14, fontWeight: '600' },
+  reportInput: { borderWidth: 1, borderRadius: 12, padding: 12, minHeight: 80, fontSize: 14, textAlignVertical: 'top' },
+  modalBtnRow: { gap: 8, marginTop: 8 },
+  modalBtn: { minHeight: 48, padding: 12, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  reportSubmitText: { color: '#FFFFFF', fontWeight: '800', textAlign: 'center' },
 });

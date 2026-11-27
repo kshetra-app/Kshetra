@@ -416,7 +416,7 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
               setShowScopeModal(true);
             }}
             accessibilityRole="button"
-            accessibilityLabel="Feed Location"
+            accessibilityLabel={t('feed.selectRegion')}
           >
             <Ionicons
               name={scopeFilter === 'national' ? 'globe-outline' : scopeFilter === 'state' ? 'map-outline' : 'location-outline'}
@@ -447,7 +447,7 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
               setShowSortModal(true);
             }}
             accessibilityRole="button"
-            accessibilityLabel="Sort Discussions"
+            accessibilityLabel={t('common.sortBy')}
           >
             <Ionicons
               name={
@@ -488,7 +488,7 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
               setVerifiedOnly(!verifiedOnly);
             }}
             accessibilityRole="button"
-            accessibilityLabel="Verified Authors Only"
+            accessibilityLabel={t('feed.sort.verifiedOnly')}
           >
             <Ionicons
               name={verifiedOnly ? 'checkmark-circle' : 'shield-checkmark-outline'}
@@ -798,7 +798,7 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
           setComposeVisible(true);
         }}
         accessibilityRole="button"
-        accessibilityLabel="Create Post"
+        accessibilityLabel={t('feed.compose')}
       >
         <Ionicons name="create" size={22} color="#FFFFFF" />
       </Pressable>
@@ -842,7 +842,7 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
                       <Text style={[styles.modalOptionText, { color: scopeFilter === 'national' ? colors.primary : colors.text, fontWeight: scopeFilter === 'national' ? '700' : '500' }]}>
                         {t('common.scopes.allIndia', { defaultValue: '🇮🇳 All India (National)' })}
                       </Text>
-                      <Text style={{ fontSize: 11, color: colors.textMuted }}>National political discussions & news</Text>
+                      <Text style={{ fontSize: 12, color: colors.textMuted }}>{t('feed.nationalFeedHint')}</Text>
                     </View>
                   </View>
                   {scopeFilter === 'national' && <Ionicons name="checkmark-circle" size={18} color={colors.primary} />}
@@ -905,7 +905,7 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
                       <Text style={[styles.modalOptionText, { color: scopeFilter === 'constituency' ? colors.primary : colors.text, fontWeight: scopeFilter === 'constituency' ? '700' : '500' }]}>
                         📍 {effectiveConstituencyName || t('common.scopes.myConstituency', { defaultValue: 'My Constituency / Local Area' })}
                       </Text>
-                      <Text style={{ fontSize: 11, color: colors.textMuted }}>Hyper-local grassroots feed</Text>
+                      <Text style={{ fontSize: 12, color: colors.textMuted }}>{t('feed.localFeedHint')}</Text>
                     </View>
                   </View>
                   {scopeFilter === 'constituency' && <Ionicons name="checkmark-circle" size={18} color={colors.primary} />}
@@ -926,7 +926,7 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
         <Pressable style={styles.modalBackdrop} onPress={() => setShowSortModal(false)}>
           <View style={[styles.modalSheet, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: colors.text }]}>Sort Discussions By</Text>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>{t('common.sortBy')}</Text>
               <Pressable onPress={() => setShowSortModal(false)} hitSlop={10}>
                 <Ionicons name="close" size={20} color={colors.textMuted} />
               </Pressable>

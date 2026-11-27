@@ -11,6 +11,13 @@ export interface RegistryParty {
   page_id: string | null;
 }
 
+export type PartyProfileEvidence = { sourceUrl: string } & (
+  | { kind: 'founded'; year: number }
+  | { kind: 'contributionReport'; period: string }
+  | { kind: 'constitution' }
+  | { kind: 'assemblyElection'; year: number; state: string }
+);
+
 export interface PartyDeclaration {
   organization_id: string;
   is_public: boolean;
@@ -59,6 +66,7 @@ export async function getParty(id: string) {
   return (await apiClient.get<RegistryParty & {
     sourceUrl: string | null;
     verifiedAt: string | null;
+    profileEvidence?: PartyProfileEvidence[];
     names: { language_code: string; name_value: string }[];
   }>(path(id), publicRequest)).data;
 }

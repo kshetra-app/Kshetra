@@ -48,14 +48,14 @@ export interface ReportSubmission {
   description?: string;
 }
 
-export const REPORT_REASONS: { key: ReportReason; label: string; icon: string }[] = [
-  { key: 'spam', label: 'Spam', icon: 'megaphone' },
-  { key: 'harassment', label: 'Harassment', icon: 'hand-left' },
-  { key: 'misinformation', label: 'Misinformation', icon: 'alert-circle' },
-  { key: 'hate_speech', label: 'Hate Speech', icon: 'flame' },
-  { key: 'violence', label: 'Violence / Threats', icon: 'skull' },
-  { key: 'impersonation', label: 'Impersonation', icon: 'person-circle' },
-  { key: 'other', label: 'Other', icon: 'ellipsis-horizontal' },
+export const REPORT_REASONS: { key: ReportReason; labelKey: string; icon: string }[] = [
+  { key: 'spam', labelKey: 'moderation.reasons.spam', icon: 'megaphone' },
+  { key: 'harassment', labelKey: 'moderation.reasons.harassment', icon: 'hand-left' },
+  { key: 'misinformation', labelKey: 'moderation.reasons.misinformation', icon: 'alert-circle' },
+  { key: 'hate_speech', labelKey: 'moderation.reasons.hateSpeech', icon: 'flame' },
+  { key: 'violence', labelKey: 'moderation.reasons.violenceOrThreats', icon: 'skull' },
+  { key: 'impersonation', labelKey: 'moderation.reasons.impersonation', icon: 'person-circle' },
+  { key: 'other', labelKey: 'moderation.reasons.other', icon: 'ellipsis-horizontal' },
 ];
 
 export const ROLE_CONFIG: Record<UserRole, { label: string; color: string; icon: string; badge: boolean }> = {
