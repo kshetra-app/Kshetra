@@ -922,7 +922,8 @@ export async function constituencyRoutes(app: FastifyInstance) {
       const { stateCode, acNo } = request.params;
       const code = stateCode.toUpperCase();
 
-      if (code !== 'TS') {
+      const state = getStateInfo(code);
+      if (!state || state.totalSeats < 1) {
         return sendApiError(
           reply,
           request,
@@ -936,15 +937,16 @@ export async function constituencyRoutes(app: FastifyInstance) {
       }
 
       const num = parseInt(acNo, 10);
-      if (isNaN(num) || num < 1 || num > 119) {
+      if (!Number.isSafeInteger(num) || num < 1 || num > state.totalSeats) {
         return sendApiError(reply, request, 400, 'Bad Request', 'Invalid AC number', {
           code: 'FST_ERR_VALIDATION',
         });
       }
 
-      const profile = isProductionLikeRuntime()
-        ? await getCanonicalMLAProfile(code, num)
-        : getMLAProfile(num);
+      const profile =
+        code === 'TS' && !isProductionLikeRuntime()
+          ? getMLAProfile(num)
+          : await getCanonicalMLAProfile(code, num);
       if (!profile) {
         return sendApiError(
           reply,
@@ -958,7 +960,7 @@ export async function constituencyRoutes(app: FastifyInstance) {
         );
       }
 
-      return { state: 'TS', acNo: num, profile };
+      return { state: code, acNo: num, profile };
     },
   );
 

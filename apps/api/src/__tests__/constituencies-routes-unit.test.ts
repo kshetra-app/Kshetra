@@ -564,12 +564,34 @@ describe('Constituencies Routes Unit Tests (Exhaustive Branch Coverage)', () => 
       expect(json.profile).toBeDefined();
     });
 
-    it('returns 404 when state is not TS', async () => {
+    it('returns 404 for an unknown state', async () => {
       const res = await app.inject({
         method: 'GET',
-        url: '/states/MH/mla/1',
+        url: '/states/ZZ/mla/1',
       });
       expect(res.statusCode).toBe(404);
+    });
+
+    it('reads both profile routes for Karnataka from the same canonical lookup', async () => {
+      const roster = jest.spyOn(stateData, 'getCanonicalMLAProfile').mockResolvedValue({
+        acNo: 224,
+        name: 'Example Representative',
+        party: 'INC',
+        stateCode: 'KA',
+      });
+      const [summary, detail] = await Promise.all([
+        app.inject('/states/KA/mla/224'),
+        app.inject('/states/KA/constituencies/224/mla'),
+      ]);
+      expect(summary.statusCode).toBe(200);
+      expect(detail.statusCode).toBe(200);
+      expect(summary.json()).toEqual({ state: 'KA', acNo: 224, profile: detail.json() });
+      expect(roster.mock.calls).toEqual([
+        ['KA', 224],
+        ['KA', 224],
+      ]);
+      const invalid = await app.inject('/states/KA/mla/225');
+      expect(invalid.statusCode).toBe(400);
     });
 
     it('returns 400 when acNo is out of range (< 1 or > 119)', async () => {
