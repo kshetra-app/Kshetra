@@ -137,6 +137,7 @@ export default function ExploreScreen() {
           c.name,
           i18n.language,
           c.localName,
+          c.localizedNames,
         );
         const locDist = getLocalizedDistrictName(c.district, i18n.language) || c.district;
         const representativeName = IS_LIVE_ENVIRONMENT ? c.currentMLA || '' : c.winnerName;
@@ -788,6 +789,7 @@ const ConstituencyCard = React.memo(function ConstituencyCard({
     item.name,
     i18n.language,
     item.localName,
+    item.localizedNames,
   );
   const localizedDistrict = getLocalizedDistrictName(item.district, i18n.language) || item.district;
   const localizedType = getLocalizedReservation(item.type || '', i18n.language) || item.type;

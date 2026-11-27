@@ -171,8 +171,8 @@ export default function ConstituencyDetailScreen() {
   const effectiveConstituencyName = apiDetail?.name || constituency?.name || '';
   const effectiveDistrict = apiDetail?.district || constituency?.district || '';
   const effectiveReservation = apiDetail?.reservationStatus || constituency?.type || '';
-  const currentRepresentativeName = apiDetail?.currentMLA?.trim() || constituency?.currentMLA?.trim() || '';
-  const currentRepresentativeParty = apiDetail?.currentParty?.trim() || constituency?.currentParty?.trim() || '';
+  const currentRepresentativeName = (apiDetail ? apiDetail.currentMLA : constituency?.currentMLA)?.trim() || '';
+  const currentRepresentativeParty = (apiDetail ? apiDetail.currentParty : constituency?.currentParty)?.trim() || '';
   const currentRepresentativePartyId = apiDetail ? apiDetail.currentPartyId : constituency?.currentPartyId;
   const effectiveWinnerParty = (constituency?.winnerParty && constituency.winnerParty.trim()) || apiDetail?.recentElection?.winner || '';
   const effectiveWinnerName = (constituency?.winnerName && constituency.winnerName.trim()) || apiDetail?.recentElection?.winnerName || '';
@@ -184,9 +184,10 @@ export default function ConstituencyDetailScreen() {
     : (constituency?.electionYear ?? null);
   const effectiveMarginPercent = apiDetail?.recentElection?.marginPercent ?? null;
 
-  const localizedConstName = constituency
-    ? getLocalizedConstituencyName(acNo, stateCode, effectiveConstituencyName, i18n.language, constituency.localName)
-    : effectiveConstituencyName;
+  const localizedConstName = getLocalizedConstituencyName(
+    acNo, stateCode, effectiveConstituencyName, i18n.language, constituency?.localName,
+    apiDetail?.localizedNames ?? constituency?.localizedNames,
+  );
   const localizedDistrict = getLocalizedDistrictName(effectiveDistrict, i18n.language) || effectiveDistrict;
   const localizedReservation = getLocalizedReservation(effectiveReservation, i18n.language) || effectiveReservation;
   const localizedWinnerParty = getLocalizedPartyName(effectiveWinnerParty, i18n.language) || effectiveWinnerParty;

@@ -513,7 +513,7 @@ export default function PagesScreen() {
                 {stateRepresentatives.map((c) => {
                   const repName = getLocalizedCandidateName(c.currentMLA?.trim(), i18n.language);
                   const partyName = getLocalizedPartyName(c.currentParty, i18n.language);
-                  const constituencyName = getLocalizedConstituencyName(c.acNo, c.stateCode, c.name, i18n.language);
+                  const constituencyName = getLocalizedConstituencyName(c.acNo, c.stateCode, c.name, i18n.language, undefined, c.localizedNames);
                   const districtName = getLocalizedDistrictName(c.district, i18n.language);
                   const legislatorId = `${c.stateCode}-AC-${c.acNo}`;
                   return (

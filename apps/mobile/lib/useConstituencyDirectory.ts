@@ -106,6 +106,8 @@ export function mergeCanonicalConstituencies(
     return {
       ...geographyOnly,
       name: record.name || geographyOnly.name,
+      localizedNames: record.localizedNames,
+      parliamentaryConstituencyId: record.parliamentaryConstituencyId,
       district: record.district || geographyOnly.district,
       type: record.reservationStatus,
       winnerParty: '',
@@ -134,6 +136,8 @@ export function mergeCanonicalConstituencies(
     merged.push({
       acNo: record.acNo,
       name: record.name,
+      localizedNames: record.localizedNames,
+      parliamentaryConstituencyId: record.parliamentaryConstituencyId,
       district: record.district,
       type: record.reservationStatus,
       stateCode: record.stateCode,

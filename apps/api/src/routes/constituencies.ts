@@ -76,6 +76,8 @@ const constituencyBriefSchema = {
   properties: {
     id: { type: 'string' },
     name: { type: 'string' },
+    localizedNames: { type: 'object', additionalProperties: { type: 'string' } },
+    parliamentaryConstituencyId: { type: 'string' },
     acNo: { type: 'integer' },
     stateCode: { type: 'string' },
     district: { type: 'string' },
@@ -133,15 +135,7 @@ const getConstituencyDetailSchema = {
     200: {
       type: 'object',
       properties: {
-        id: { type: 'string' },
-        name: { type: 'string' },
-        acNo: { type: 'integer' },
-        stateCode: { type: 'string' },
-        district: { type: 'string' },
-        reservationStatus: { type: 'string' },
-        currentParty: { type: 'string' },
-        currentPartyId: { type: 'string' },
-        currentMLA: { type: 'string' },
+        ...constituencyBriefSchema.properties,
         electoralStatistics: {
           type: 'object',
           properties: {
@@ -746,6 +740,9 @@ export async function constituencyRoutes(app: FastifyInstance) {
         results = results.filter(
           (c) =>
             c.name.toLowerCase().includes(lower) ||
+            Object.values(c.localizedNames ?? {}).some((name) =>
+              name.toLowerCase().includes(lower),
+            ) ||
             c.district.toLowerCase().includes(lower) ||
             c.currentMLA.toLowerCase().includes(lower) ||
             c.id.toLowerCase().includes(lower) ||

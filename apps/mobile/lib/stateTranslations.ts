@@ -669,8 +669,11 @@ export function getLocalizedConstituencyName(
   fallbackName: string,
   lang: string,
   localNameCandidate?: string,
+  canonicalNames?: Record<string, string>,
 ): string {
   if (!lang || lang === 'en') return fallbackName;
+  const canonical = canonicalNames?.[lang] || canonicalNames?.[lang.split('-')[0]];
+  if (canonical) return canonical;
 
   // 1. If regional local name matches the target script / state:
   if (localNameCandidate) {

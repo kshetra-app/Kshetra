@@ -116,6 +116,8 @@ export interface ConstituencyBrief {
   /** Stable canonical ID when supplied by the canonical database. */
   internalId?: string;
   name: string;
+  localizedNames?: Record<string, string>;
+  parliamentaryConstituencyId?: string;
   acNo: number;
   stateCode: string;
   district: string;

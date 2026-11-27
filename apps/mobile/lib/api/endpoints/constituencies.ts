@@ -260,6 +260,12 @@ export function validateConstituencyBrief(data: unknown, context: string): Const
   return {
     id: c.id,
     name: c.name,
+    localizedNames: c.localizedNames && typeof c.localizedNames === 'object'
+      ? Object.fromEntries(Object.entries(c.localizedNames).filter(([, value]) => typeof value === 'string'))
+      : undefined,
+    parliamentaryConstituencyId: typeof c.parliamentaryConstituencyId === 'string'
+      ? c.parliamentaryConstituencyId
+      : undefined,
     acNo: c.acNo,
     stateCode: c.stateCode,
     district: c.district,

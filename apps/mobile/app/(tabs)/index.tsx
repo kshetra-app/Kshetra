@@ -105,6 +105,7 @@ import { loadHistoricalResultsForState } from '../../lib/seedDataLoader';
 interface SelectedConstituency {
   acNo: number;
   name: string;
+  localizedNames?: Record<string, string>;
   district: string;
   winner: string | null;
   winnerName: string | null;
@@ -620,8 +621,8 @@ function FullMapScreen() {
       const seed = seedMap.get(acNo);
       return {
         acNo,
-        name: acName,
-        district: distName,
+        name: seed?.name || acName,
+        district: seed?.district || distName,
         winner: seed?.winnerParty ?? null,
         winnerName: seed?.winnerName ?? null,
         runnerUp: seed?.runnerUp ?? null,
@@ -630,6 +631,7 @@ function FullMapScreen() {
         votes: seed?.winnerVotes ?? null,
         type: seed?.type ?? null,
         localName: seed?.localName,
+        localizedNames: seed?.localizedNames,
         currentParty: seed?.currentParty,
         currentPartyId: seed?.currentPartyId,
         currentMLA: seed?.currentMLA,
@@ -2090,7 +2092,7 @@ function FullMapScreen() {
                     <View style={[styles.spatialHubDot, { backgroundColor: getPartyColor(c.winnerParty) }]} />
                     <View style={styles.spatialHubRowInfo}>
                       <Text style={styles.spatialHubRowTitle}>
-                        {getLocalizedConstituencyName(c.acNo, stateCode, c.name, i18n.language, c.localName)}
+                        {getLocalizedConstituencyName(c.acNo, stateCode, c.name, i18n.language, c.localName, c.localizedNames)}
                       </Text>
                       <Text style={styles.spatialHubRowSubtitle}>
                         AC #{c.acNo} · {getLocalizedDistrictName(c.district, i18n.language)}
@@ -2415,7 +2417,7 @@ function FullMapScreen() {
                 <View style={styles.sheetTitleRow}>
                   <View style={styles.sheetTitleGroup}>
                     <Text style={styles.sheetTitle} numberOfLines={1}>
-                      {getLocalizedConstituencyName(selected.acNo, stateCode, selected.name, i18n.language, selected.localName)}
+                      {getLocalizedConstituencyName(selected.acNo, stateCode, selected.name, i18n.language, selected.localName, selected.localizedNames)}
                     </Text>
                     <Text style={styles.sheetSubtitle} numberOfLines={1}>
                       {getLocalizedDistrictName(selected.district, i18n.language)}, {getLocalizedStateName(stateCode, i18n.language)}

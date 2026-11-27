@@ -337,6 +337,70 @@ export class CanonicalGeographyService {
     return isSupabaseConfigured;
   }
 
+  private async getConstituencyLabels(
+    seats: { id: string; current_version_id?: string | null }[],
+  ): Promise<
+    Map<string, Pick<ConstituencyBrief, 'localizedNames' | 'parliamentaryConstituencyId'>>
+  > {
+    const result = new Map<
+      string,
+      Pick<ConstituencyBrief, 'localizedNames' | 'parliamentaryConstituencyId'>
+    >();
+    const byVersion = new Map(
+      seats.flatMap((seat) =>
+        seat.current_version_id ? [[seat.current_version_id, seat.id] as const] : [],
+      ),
+    );
+    if (!byVersion.size) return result;
+
+    const queries = [];
+    for (let offset = 0; offset < seats.length; offset += 50) {
+      const batch = seats.slice(offset, offset + 50);
+      queries.push(
+        Promise.all([
+          supabase
+            .from('constituency_parliamentary_mappings')
+            .select('assembly_constituency_version_id, parliamentary_constituency_versions(pc_id)')
+            .in(
+              'assembly_constituency_version_id',
+              batch.flatMap((seat) => (seat.current_version_id ? [seat.current_version_id] : [])),
+            )
+            .eq('is_current', true)
+            .eq('data_status', 'VERIFIED'),
+          supabase
+            .from('entity_multilingual_representations')
+            .select('entity_id, language_code, representation_value')
+            .in(
+              'entity_id',
+              batch.map(({ id }) => id),
+            )
+            .eq('entity_type', 'constituency')
+            .eq('field_key', 'name')
+            .eq('representation_type', 'OFFICIAL')
+            .in('translation_status', ['SOURCE_NATIVE', 'OFFICIAL_LOCALIZED', 'HUMAN_VERIFIED']),
+        ]),
+      );
+    }
+    for (const [parents, names] of await Promise.all(queries)) {
+      for (const row of parents.data ?? []) {
+        const id = byVersion.get(row.assembly_constituency_version_id);
+        const parent = row.parliamentary_constituency_versions as unknown as {
+          pc_id: string;
+        } | null;
+        if (id && parent?.pc_id) result.set(id, { parliamentaryConstituencyId: parent.pc_id });
+      }
+      for (const row of names.data ?? []) {
+        const labels = result.get(row.entity_id) ?? {};
+        labels.localizedNames = {
+          ...labels.localizedNames,
+          [row.language_code]: row.representation_value,
+        };
+        result.set(row.entity_id, labels);
+      }
+    }
+    return result;
+  }
+
   /**
    * Fetch all states from normalized PostgreSQL public.states table.
    */
@@ -547,7 +611,7 @@ export class CanonicalGeographyService {
     const { data, error } = await supabase
       .from('constituencies')
       .select(
-        'id, ac_no, name, state_code, district, reservation_status, current_party, current_mla',
+        'id, ac_no, name, state_code, district, reservation_status, current_party, current_mla, current_version_id',
       )
       .eq('state_code', code)
       .order('ac_no');
@@ -562,15 +626,15 @@ export class CanonicalGeographyService {
       return [];
     }
 
-    const tenureMap = await this.getCurrentTenureMap(
-      validRows
-        .map((row: any) => row.id)
-        .filter((id: unknown): id is string => typeof id === 'string'),
-    );
+    const [tenureMap, labels] = await Promise.all([
+      this.getCurrentTenureMap(validRows.map((row) => row.id)),
+      this.getConstituencyLabels(validRows),
+    ]);
 
     return validRows.map((row: any) => {
       const tenure = tenureMap.get(row.id);
-      let currentParty = tenure?.currentParty || row.current_party || '';
+      let currentParty =
+        tenure?.currentParty || (isProductionLikeRuntime() ? '' : row.current_party || '');
       let currentMLA =
         tenure?.currentMLA || (isProductionLikeRuntime() ? '' : row.current_mla || '');
 
@@ -581,6 +645,7 @@ export class CanonicalGeographyService {
       }
 
       return {
+        ...labels.get(row.id),
         id: row.id || `${code}-AC-${row.ac_no}`,
         name: row.name,
         acNo: row.ac_no,
@@ -604,7 +669,7 @@ export class CanonicalGeographyService {
     const { data, error } = await supabase
       .from('constituencies')
       .select(
-        'id, internal_id, ac_no, name, state_code, district, reservation_status, current_party, current_mla',
+        'id, internal_id, ac_no, name, state_code, district, reservation_status, current_party, current_mla, current_version_id',
       )
       .eq('state_code', code)
       .eq('ac_no', acNo)
@@ -615,8 +680,13 @@ export class CanonicalGeographyService {
       return null;
     }
 
-    const tenure = await this.getCurrentTenureMap([data.id]).then((map) => map.get(data.id));
-    let currentParty = tenure?.currentParty || data.current_party || '';
+    const [tenures, labels] = await Promise.all([
+      this.getCurrentTenureMap([data.id]),
+      this.getConstituencyLabels([data]),
+    ]);
+    const tenure = tenures.get(data.id);
+    let currentParty =
+      tenure?.currentParty || (isProductionLikeRuntime() ? '' : data.current_party || '');
     let currentMLA =
       tenure?.currentMLA || (isProductionLikeRuntime() ? '' : data.current_mla || '');
 
@@ -627,6 +697,7 @@ export class CanonicalGeographyService {
     }
 
     return {
+      ...labels.get(data.id),
       id: data.id || `${code}-AC-${data.ac_no}`,
       ...(typeof data.internal_id === 'string' ? { internalId: data.internal_id } : {}),
       name: data.name,
@@ -648,6 +719,14 @@ export class CanonicalGeographyService {
     const code = stateCode.toUpperCase();
     const q = query.trim();
     if (!q) return this.getConstituencies(code);
+    if (isProductionLikeRuntime()) {
+      const term = q.toLocaleLowerCase();
+      return (await this.getConstituencies(code)).filter((seat) =>
+        [seat.name, seat.district, ...Object.values(seat.localizedNames ?? {})].some((value) =>
+          value.toLocaleLowerCase().includes(term),
+        ),
+      );
+    }
 
     const { data, error } = await supabase
       .from('constituencies')

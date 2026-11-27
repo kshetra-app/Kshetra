@@ -80,6 +80,8 @@ export interface ByElectionRecord {
 export interface UnifiedConstituency {
   acNo: number;
   name: string;
+  localizedNames?: Record<string, string>;
+  parliamentaryConstituencyId?: string;
   district: string;
   type: 'GEN' | 'SC' | 'ST';
   stateCode: string;
