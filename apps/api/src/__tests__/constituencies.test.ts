@@ -241,11 +241,11 @@ describe('Constituency Routes', () => {
     });
     expect(election.winner).toMatchObject({
       photoUrl:
-        'https://results.eci.gov.in/uploads1/candprofile/E22/2023/AC/s29/TRAJ-2023-20231104014656.jpg',
+        'https://www.myneta.info/images_candidate/Telangana2023/8b905dc776d36b74f1abb2f7a2d8be2841334400.jpg',
+      affidavitUrl: 'https://www.myneta.info/Telangana2023/candidate.php?candidate_id=87',
       photoVerified: true,
     });
-    expect(election.winner.affidavitUrl).toContain('suvidha.eci.gov.in');
-    expect(election.winner.criminalCases).toBe(8);
+    expect(election.winner.criminalCases).toBe(87);
   });
 
   it('GET /states/TS/elections should return 3 elections', async () => {

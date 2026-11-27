@@ -39,7 +39,7 @@ async function lookupParty(id: string) {
   return supabase
     .from('political_organizations')
     .select(
-      'id,name,short_name,symbol_url,page_id,provenance_records(metadata),organization_multilingual_names(language_code,name_value,valid_from,valid_to)',
+      'id,name,short_name,symbol_url,page_id,profile_evidence,provenance_records(metadata),organization_multilingual_names(language_code,name_value,valid_from,valid_to)',
     )
     .eq('id', id)
     .eq('org_type', 'political_party')
@@ -86,6 +86,7 @@ export const partyRoutes: FastifyPluginAsync = async (app) => {
       if (!data) return sendApiError(reply, request, 404, 'PARTY_NOT_FOUND', 'Party not found.');
       const {
         page_id: linkedPage,
+        profile_evidence: profileEvidence,
         provenance_records: provenance,
         organization_multilingual_names: names,
         ...party
@@ -122,6 +123,7 @@ export const partyRoutes: FastifyPluginAsync = async (app) => {
         page_id: verification ? linkedPage : null,
         verifiedAt: verification?.reviewed_at ?? null,
         sourceUrl,
+        profileEvidence: profileEvidence ?? [],
         names: names
           .filter((name) => name.valid_from <= today && (!name.valid_to || name.valid_to >= today))
           .map(({ language_code, name_value }) => ({ language_code, name_value })),
