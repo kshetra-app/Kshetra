@@ -32,6 +32,7 @@ import { spatialAnalyticsRoutes } from './routes/spatialAnalytics';
 import { politicalEntityRoutes } from './routes/politicalEntities';
 import { electionRoutes } from './routes/elections';
 import { newsRoutes } from './routes/news';
+import { civicPublisherMonitor } from './services/civicPublisherMonitor';
 import { lmxRoutes } from './routes/lmx';
 import { configRoutes } from './routes/config';
 import { manageRoutes } from './routes/manage';
@@ -257,6 +258,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(politicianRoutes);
   await app.register(campaignRoutes);
   await app.register(civicRoutes);
+  await app.register(civicPublisherMonitor);
   await app.register(broadcastRoutes);
   await app.register(geoRoutes);
   await app.register(newsRoutes);

@@ -80,6 +80,30 @@ describe('production civic public hearing data', () => {
     }
   });
 
+  it('requests past hearings from the same endpoint and keeps past pagination in that period', async () => {
+    const previous = useCivicMetricsStore.getState();
+    const get = jest.spyOn(apiClient, 'get').mockResolvedValue({
+      data: { hearings: [{ ...hearingRow, date: '2025-06-15', is_open: false }], total: 2 },
+      statusCode: 200,
+      headers: new Headers(),
+      requestId: 'historical-hearings',
+    } as any);
+
+    try {
+      await useCivicMetricsStore.getState().loadHearingsByState('TS', false, true);
+      await useCivicMetricsStore.getState().loadMoreHearingsByState('TS');
+      expect(get.mock.calls.map(([, options]) => options?.query)).toEqual([
+        { state: 'TS', upcoming: 'false', page: 1, limit: 50 },
+        { state: 'TS', upcoming: 'false', page: 2, limit: 50 },
+      ]);
+      expect(useCivicMetricsStore.getState().hearings.filter(({ stateCode }) => stateCode === 'TS'))
+        .toEqual([expect.objectContaining({ date: '2025-06-15', isOpen: false })]);
+    } finally {
+      get.mockRestore();
+      useCivicMetricsStore.setState(previous);
+    }
+  });
+
   it('preserves missing registration and ingestion metadata as unknown', async () => {
     const get = jest.spyOn(apiClient, 'get').mockResolvedValue({
       data: {

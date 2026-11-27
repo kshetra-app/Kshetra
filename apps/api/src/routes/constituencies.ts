@@ -967,7 +967,7 @@ export async function constituencyRoutes(app: FastifyInstance) {
 
   const PODIUM_DIR = path.resolve(__dirname, '../../../../data/historical/podiums');
   const telanganaResultSources = new Map([
-    [1999, 'https://www.electionawaaz.org/wp-content/uploads/2021/03/1999.pdf'],
+    [1999, 'https://ceotelangana.nic.in/Archives/StasticalReports/StatRep_AP_1999.pdf'],
     [2004, 'https://ceotelangana.nic.in/GE_2004/Statistical_Report_2004.pdf'],
     [
       2023,

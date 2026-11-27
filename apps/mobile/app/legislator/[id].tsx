@@ -351,6 +351,8 @@ export default function LegislatorProfileScreen() {
   const affidavitUrl = podiumDetail?.affidavitUrl || winnerAffidavit?.sourceUrl;
   const affidavitDocumentUrl = podiumDetail?.affidavitDocumentUrl;
   const resultSourceUrl = podiumContest?.resultSourceUrl;
+  const photoSourceUrl = podiumDetail?.photoVerified ? podiumDetail.photoSourceUrl : undefined;
+  const photoSourceYear = podiumDetail?.photoSourceYear;
   const constType = constituency?.type || '—';
 
   const defectionEvent = (() => {
@@ -715,14 +717,18 @@ export default function LegislatorProfileScreen() {
           );
         })()}
 
-        {(affidavitUrl || affidavitDocumentUrl || resultSourceUrl) && (
+        {(affidavitUrl || affidavitDocumentUrl || resultSourceUrl || photoSourceUrl) && (
           <View style={[styles.sourcesSection, { borderTopColor: colors.border }]}>
             <Text style={[styles.sourcesTitle, { color: colors.textMuted }]}>{i18n.t('legislator.dataSources')}</Text>
             {[
               [affidavitUrl, i18n.t('legislator.viewOnMyNeta')],
               [affidavitDocumentUrl, i18n.t('legislator.viewAffidavit', { defaultValue: 'View filed affidavit' })],
               [resultSourceUrl, i18n.t('constituency.electionHistory')],
-            ].map(([url, label]) => url && (
+              [photoSourceUrl, photoSourceYear
+                ? i18n.t('legislator.datedPortraitSource', { year: photoSourceYear, defaultValue: 'Portrait source ({{year}})' })
+                : i18n.t('legislator.portraitSource', { defaultValue: 'Portrait source' })],
+            ].filter(([url], index, links) => url && links.findIndex(([href]) => href === url) === index)
+              .map(([url, label]) => url && (
               <Pressable key={url} style={styles.sourceLink} accessibilityRole="link" onPress={() => void Linking.openURL(url)}>
                 <Ionicons name="open-outline" size={14} color={colors.primary} />
                 <Text style={[styles.sourceLinkText, { color: colors.primary }]}>{label}</Text>

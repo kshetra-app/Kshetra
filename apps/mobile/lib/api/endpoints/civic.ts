@@ -768,11 +768,12 @@ export class CivicEndpoint {
     return { items: requests as RTIRequest[], total: response.data.total };
   }
 
-  /** List persisted, upcoming public hearings for one state. */
+  /** List persisted public hearings for one state and period. */
   async listPublicHearings(
     stateCode: string,
     page = 1,
     limit = 50,
+    upcoming = true,
   ): Promise<{ items: PublicHearing[]; total: number }> {
     if (!/^[A-Z]{2}$/.test(stateCode)) {
       throw new ApiValidationError('Invalid stateCode: expected a two-letter uppercase code');
@@ -788,7 +789,7 @@ export class CivicEndpoint {
       '/api/v1/civic/hearings',
       {
         authPolicy: 'public',
-        query: { state: stateCode, upcoming: 'true', page, limit },
+        query: { state: stateCode, upcoming: String(upcoming), page, limit },
       },
     );
     if (!Array.isArray(response.data.hearings) || !Number.isInteger(response.data.total) || response.data.total < 0) {

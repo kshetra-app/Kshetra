@@ -47,6 +47,7 @@ export default function CivicMetricsScreen() {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<Tab>('budget');
+  const [hearingHistory, setHearingHistory] = useState(false);
   const [helpVisible, setHelpVisible] = useState(false);
   const [refreshRequest, setRefreshRequest] = useState<{ key: string } | null>(null);
   const activeState = useActiveStateStore((s) => s.stateCode) || 'TS';
@@ -97,15 +98,15 @@ export default function CivicMetricsScreen() {
     s.budgetLoadStateCode === activeState ? s.budgetLoadStatus : 'loading',
   );
   const hearingLoadStatus = useCivicMetricsStore((s) =>
-    s.hearingLoadStateCode === activeState ? s.hearingLoadStatus : 'loading',
+    s.hearingLoadStateCode === activeState && s.hearingLoadHistory === hearingHistory ? s.hearingLoadStatus : 'loading',
   );
   const hearingTotal = useCivicMetricsStore((s) =>
-    s.hearingLoadStateCode === activeState
+    s.hearingLoadStateCode === activeState && s.hearingLoadHistory === hearingHistory
       ? getConfirmedMetricTotal(s.hearingLoadStatus, s.hearingTotal)
       : null,
   );
   const hearingPage = useCivicMetricsStore((s) =>
-    s.hearingLoadStateCode === activeState ? s.hearingPage : 0,
+    s.hearingLoadStateCode === activeState && s.hearingLoadHistory === hearingHistory ? s.hearingPage : 0,
   );
   useFocusEffect(useCallback(() => {
     void loadBudgetSummary(activeState);
@@ -113,10 +114,12 @@ export default function CivicMetricsScreen() {
     void loadSchemesByState(activeState);
     void loadProjectsByState(activeState);
     void loadPublicRTIs(activeState);
-    void loadHearingsByState(activeState);
-  }, [activeState, loadBudgetSummary, loadBillsByState, loadSchemesByState, loadProjectsByState, loadPublicRTIs, loadHearingsByState]));
+  }, [activeState, loadBudgetSummary, loadBillsByState, loadSchemesByState, loadProjectsByState, loadPublicRTIs]));
+  useFocusEffect(useCallback(() => {
+    if (activeTab === 'hearings') void loadHearingsByState(activeState, false, hearingHistory);
+  }, [activeState, activeTab, hearingHistory, loadHearingsByState]));
 
-  const refreshKey = `${activeState}:${activeTab}`;
+  const refreshKey = `${activeState}:${activeTab}:${activeTab === 'hearings' ? hearingHistory : ''}`;
   const refreshing = refreshRequest?.key === refreshKey;
   const refreshActiveTab = async () => {
     if (refreshing) return;
@@ -126,7 +129,7 @@ export default function CivicMetricsScreen() {
       schemes: loadSchemesByState,
       projects: loadProjectsByState,
       rti: loadPublicRTIs,
-      hearings: loadHearingsByState,
+      hearings: (state: string, preserve: boolean) => loadHearingsByState(state, preserve, hearingHistory),
     };
     const request = { key: refreshKey };
     setRefreshRequest(request);
@@ -148,7 +151,7 @@ export default function CivicMetricsScreen() {
   const schemes = useMemo(() => store.getSchemesByState(activeState), [store, activeState]);
   const projects = useMemo(() => store.getProjectsByState(activeState), [store, activeState]);
   const publicRTIs = useMemo(() => store.getPublicRTIs(activeState), [store, activeState]);
-  const hearings = useMemo(() => store.getUpcomingHearings(activeState), [store, activeState]);
+  const hearings = useMemo(() => hearingPage === 0 ? [] : store.hearings.filter((item) => item.stateCode === activeState), [store.hearings, hearingPage, activeState]);
 
   const noConnectedData = t('civicMetrics.noConnectedData', {
     defaultValue: 'Verified records are not available from a connected source yet.',
@@ -277,7 +280,18 @@ export default function CivicMetricsScreen() {
                   {t('civicMetrics.billRecords', { defaultValue: 'Bills and legislation' })}
                 </Text>
                 {billLoadStatus === 'error' && <Text style={styles.emptyText}>{refreshFailed}</Text>}
-                {bills.map((b) => <BillCard key={b.id} bill={b} onSupport={() => store.supportBill(b.id)} onOppose={() => store.opposeBill(b.id)} />)}
+                {bills.map((bill) => {
+                  const source = getWebUrl(bill.fullTextUrl);
+                  return (
+                    <BillCard
+                      key={bill.id}
+                      bill={bill}
+                      onPress={source ? () => void Linking.openURL(source).catch(() => undefined) : undefined}
+                      onSupport={() => store.supportBill(bill.id)}
+                      onOppose={() => store.opposeBill(bill.id)}
+                    />
+                  );
+                })}
                 {billTotal !== null && billPage * 50 < billTotal && (
                   <Pressable
                     accessibilityRole="button"
@@ -432,6 +446,22 @@ export default function CivicMetricsScreen() {
 
         {activeTab === 'hearings' && (
           <>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginHorizontal: 16, marginBottom: 10 }}>
+              {[false, true].map((history) => (
+                <Pressable
+                  key={String(history)}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: hearingHistory === history }}
+                  onPress={() => setHearingHistory(history)}
+                  style={{ paddingHorizontal: 14, paddingVertical: 12, borderRadius: 10, borderWidth: 1,
+                    borderColor: hearingHistory === history ? colors.primary : colors.border }}
+                >
+                  <Text style={{ color: hearingHistory === history ? colors.primary : colors.textSecondary }}>
+                    {history ? t('civicMetrics.pastHearings', { defaultValue: 'Past hearings' }) : t('civicMetrics.upcomingHearings', { defaultValue: 'Upcoming hearings' })}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
             {hearings.length ? (
               <>
                 <Text style={[styles.sectionTitle, { color: colors.text }]}>
@@ -441,7 +471,7 @@ export default function CivicMetricsScreen() {
                 </Text>
                 {hearingLoadStatus === 'error' && <Text style={styles.emptyText}>{refreshFailed}</Text>}
                 {hearings.map((hearing) => {
-                  const registrationUrl = hearing.isOpen ? getWebUrl(hearing.registrationUrl) : null;
+                  const registrationUrl = !hearingHistory && hearing.isOpen ? getWebUrl(hearing.registrationUrl) : null;
                   const sourceUrl = getWebUrl(hearing.sourceUrl);
                   return (
                     <View
@@ -508,10 +538,10 @@ export default function CivicMetricsScreen() {
                     ? t('common.loading')
                     : getCivicMetricsEmptyState(hearingLoadStatus) === 'unavailable'
                       ? noConnectedData
-                      : t('civicMetrics.noUpcomingHearings')}
+                      : hearingHistory ? t('civicMetrics.noPastHearings', { defaultValue: 'No past public hearings are recorded for this state.' }) : t('civicMetrics.noUpcomingHearings')}
                 </Text>
                 {getCivicMetricsEmptyState(hearingLoadStatus) === 'unavailable' && (
-                  <Pressable accessibilityRole="button" onPress={() => void loadHearingsByState(activeState)}>
+                  <Pressable accessibilityRole="button" onPress={() => void loadHearingsByState(activeState, false, hearingHistory)}>
                     <Text style={[styles.emptyText, { color: colors.primary }]}>{t('common.retry')}</Text>
                   </Pressable>
                 )}

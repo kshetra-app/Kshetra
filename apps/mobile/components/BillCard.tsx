@@ -29,7 +29,7 @@ export default function BillCard({ bill, onPress, onSupport, onOppose }: BillCar
   const statusColor = bill.status === 'enacted' ? '#10B981' : bill.status === 'lapsed' || bill.status === 'withdrawn' ? '#EF4444' : '#3B82F6';
 
   return (
-    <Pressable style={styles.card} onPress={onPress}>
+    <View style={styles.card}>
       <View style={styles.header}>
         <View style={[styles.typeBadge, { backgroundColor: bill.type === 'money' || bill.type === 'finance' ? '#F59E0B20' : '#3B82F620' }]}>
           <Text style={[styles.typeText, { color: bill.type === 'money' || bill.type === 'finance' ? '#F59E0B' : '#3B82F6' }]}>{bill.type.replace('_', ' ').toUpperCase()}</Text>
@@ -47,6 +47,12 @@ export default function BillCard({ bill, onPress, onSupport, onOppose }: BillCar
 
       <Text style={styles.summary} numberOfLines={3}>{bill.summary}</Text>
       <CivicVerificationDate date={bill.sourceVerifiedOn} />
+      {onPress && (
+        <Pressable accessibilityRole="link" onPress={onPress} style={styles.sourceLink}>
+          <Ionicons name="document-text-outline" size={14} color="#1D4ED8" />
+          <Text style={styles.sourceText}>{t('civicMetrics.officialBillText', { defaultValue: 'Official text' })}</Text>
+        </Pressable>
+      )}
 
       {/* Timeline */}
       {bill.timeline.length > 0 && (
@@ -84,7 +90,7 @@ export default function BillCard({ bill, onPress, onSupport, onOppose }: BillCar
           ) : <Text style={styles.opinionPct}>{unavailable}</Text>}
         </View>
       </View>
-    </Pressable>
+    </View>
   );
 }
 
@@ -98,6 +104,8 @@ const styles = StyleSheet.create({
   title: { fontSize: 15, fontWeight: '700', color: '#241814', lineHeight: 20, marginBottom: 4 },
   meta: { fontSize: 11, color: '#988275', marginBottom: 8 },
   summary: { fontSize: 13, color: '#6D5549', lineHeight: 18, marginBottom: 10 },
+  sourceLink: { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 44 },
+  sourceText: { color: '#1D4ED8', fontSize: 13, fontWeight: '600', flexShrink: 1 },
   timelineRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 10, backgroundColor: '#F5EFE4', padding: 8, borderRadius: 8 },
   timelineText: { fontSize: 11, color: '#6D5549', flex: 1 },
   opinionSection: { borderTopWidth: 1, borderTopColor: '#E8DED1', paddingTop: 10 },

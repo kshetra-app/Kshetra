@@ -241,6 +241,7 @@ interface CivicMetricsState {
   projectPage: number;
   hearingLoadStatus: 'idle' | 'loading' | 'loaded' | 'error';
   hearingLoadStateCode: string | null;
+  hearingLoadHistory: boolean;
   hearingTotal: number;
   hearingPage: number;
   budgetAllocations: BudgetAllocation[];
@@ -275,7 +276,7 @@ interface CivicMetricsState {
   loadMoreProjectsByState: (stateCode: string) => Promise<void>;
   loadPublicRTIs: (stateCode: string, preserveLoadedData?: boolean) => Promise<void>;
   loadMorePublicRTIs: (stateCode: string) => Promise<void>;
-  loadHearingsByState: (stateCode: string, preserveLoadedData?: boolean) => Promise<void>;
+  loadHearingsByState: (stateCode: string, preserveLoadedData?: boolean, history?: boolean) => Promise<void>;
   loadMoreHearingsByState: (stateCode: string) => Promise<void>;
   fileRTI: (rti: Partial<RTIRequest>) => Promise<boolean>;
   upvoteRTI: (rtiId: string) => Promise<boolean>;
@@ -313,6 +314,7 @@ export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => {
   projectPage: 0,
   hearingLoadStatus: 'idle',
   hearingLoadStateCode: null,
+  hearingLoadHistory: false,
   hearingTotal: IS_LIVE_ENVIRONMENT ? 0 : SEED_HEARINGS.length,
   hearingPage: 0,
   budgetAllocations: [],
@@ -634,17 +636,26 @@ export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => {
     }
   },
 
-  loadHearingsByState: async (stateCode, preserveLoadedData = false) => {
-    const keepCurrentData = preserveLoadedData && get().hearingLoadStateCode === stateCode;
+  loadHearingsByState: async (stateCode, preserveLoadedData = false, history = false) => {
+    const current = get();
+    const sameScope = current.hearingLoadStateCode === stateCode && current.hearingLoadHistory === history;
+    const keepCurrentData = preserveLoadedData && sameScope;
     const requestSequence = ++hearingRequestSequence;
-    set({ hearingLoadStatus: 'loading', hearingLoadStateCode: stateCode });
+    set({
+      hearingLoadStatus: 'loading',
+      hearingLoadStateCode: stateCode,
+      hearingLoadHistory: history,
+      ...(!sameScope ? { hearingPage: 0, hearingTotal: 0 } : {}),
+    });
 
     try {
-      const { items, total } = await apiClient.civic.listPublicHearings(stateCode);
+      const { items, total } = history
+        ? await apiClient.civic.listPublicHearings(stateCode, 1, 50, false)
+        : await apiClient.civic.listPublicHearings(stateCode);
       if (requestSequence !== hearingRequestSequence) return;
 
       set((state) => {
-        const keepDemoHearings = items.length === 0 && !IS_LIVE_ENVIRONMENT;
+        const keepDemoHearings = !history && items.length === 0 && !IS_LIVE_ENVIRONMENT;
         const nextHearings = keepDemoHearings
           ? state.hearings
           : [...state.hearings.filter((hearing) => hearing.stateCode !== stateCode), ...items];
@@ -682,17 +693,19 @@ export const useCivicMetricsStore = create<CivicMetricsState>((set, get) => {
     const current = get();
     if (current.hearingLoadStatus === 'loading' && current.hearingLoadStateCode === stateCode) return;
     if (current.hearingLoadStateCode !== stateCode || current.hearingPage < 1) {
-      await get().loadHearingsByState(stateCode);
+      await get().loadHearingsByState(stateCode, false, current.hearingLoadHistory);
       return;
     }
-    if (current.getUpcomingHearings(stateCode).length >= current.hearingTotal) return;
+    if (current.hearings.filter((hearing) => hearing.stateCode === stateCode).length >= current.hearingTotal) return;
 
     const requestSequence = ++hearingRequestSequence;
     const page = current.hearingPage + 1;
     set({ hearingLoadStatus: 'loading', hearingLoadStateCode: stateCode });
 
     try {
-      const { items, total } = await apiClient.civic.listPublicHearings(stateCode, page);
+      const { items, total } = current.hearingLoadHistory
+        ? await apiClient.civic.listPublicHearings(stateCode, page, 50, false)
+        : await apiClient.civic.listPublicHearings(stateCode, page);
       if (requestSequence !== hearingRequestSequence) return;
 
       set((state) => {

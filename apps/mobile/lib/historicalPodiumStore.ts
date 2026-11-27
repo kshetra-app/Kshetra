@@ -15,6 +15,8 @@ export interface CandidatePodiumDetail {
   localizedParties?: Record<string, string>;
   photoUrl?: string | null;
   photoVerified?: boolean;
+  photoSourceUrl?: string;
+  photoSourceYear?: number;
   affidavitUrl?: string | null;
   affidavitDocumentUrl?: string | null;
   selfMovableAssets?: number | null;
