@@ -21,6 +21,33 @@ describe('News Service (newsService.ts)', () => {
   });
 
   describe('refreshNews and feed scraping', () => {
+    it('keeps sourced Kannada election videos in Karnataka without including non-state videos', async () => {
+      const date = new Date(Date.now() - 3600000).toUTCString();
+      const stateVideo = 'https://tv9kannada.com/videos/state-assembly-election.html';
+      const otherVideo = 'https://tv9kannada.com/videos/film-announcement.html';
+      jest.spyOn(rssParser, 'fetchFeedXml').mockImplementation(async (url) => {
+        if (url !== 'https://tv9kannada.com/karnataka/feed') return null;
+        return `<rss><channel>
+          <item><title>ವಿಧಾನಸಭಾ ಚುನಾವಣೆ</title><link>${stateVideo}</link>
+          <category>ಕರ್ನಾಟಕ ಸುದ್ದಿ</category><category>ರಾಜಕೀಯ ಸುದ್ದಿ</category><pubDate>${date}</pubDate></item>
+          <item><title>Film announcement</title><link>${otherVideo}</link>
+          <category>ಸಿನಿಮಾ ಸುದ್ದಿ</category><pubDate>${date}</pubDate></item>
+        </channel></rss>`;
+      });
+      await refreshNews();
+      const scope = { scope: 'state', state: 'KA', lang: 'kn' } as const;
+      const expected = expect.objectContaining({
+        sourceUrl: stateVideo,
+        source: expect.objectContaining({ id: 'tv9-kannada' }),
+        video: { provider: 'native', embedId: stateVideo },
+      });
+      for (const category of ['politics', 'elections', 'video'] as const) {
+        expect(getFeed({ ...scope, category }).items).toEqual([expected]);
+      }
+      expect(getFeed({ ...scope, state: 'TS' }).items).toHaveLength(0);
+      expect(getFeed(scope).items.map((item) => item.sourceUrl)).toEqual([stateVideo]);
+    });
+
     it('scrapes feeds, deduplicates items, extracts YouTube video metadata, and updates cache', async () => {
       const recentDate = new Date(Date.now() - 2 * 60 * 60 * 1000).toUTCString();
       const staleDate = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toUTCString();

@@ -80,7 +80,7 @@ function detectVideo(link: string): NewsItem['video'] {
     const url = new URL(link);
     if (
       url.protocol === 'https:' &&
-      url.hostname === 'tv9telugu.com' &&
+      (url.hostname === 'tv9telugu.com' || url.hostname === 'tv9kannada.com') &&
       url.pathname.startsWith('/videos/')
     ) {
       return { provider: 'native', embedId: link };

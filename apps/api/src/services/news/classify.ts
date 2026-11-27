@@ -5,13 +5,13 @@ import type { FeedSource, NewsCategory } from './sources';
 const topics: Array<[NewsCategory, RegExp, RegExp]> = [
   [
     'politics',
-    /^(politics|political pulse|राजनीति|राजकारण|పాలిటిక్స్|రాజకీయం|அரசியல்|ರಾಜಕೀಯ|രാഷ്ട്രീയം|রাজনীতি|રાજકારણ)$/iu,
+    /^(politics|political pulse|राजनीति|राजकारण|పాలిటిక్స్|రాజకీయం|அரசியல்|ರಾಜಕೀಯ(?: ಸುದ್ದಿ)?|രാഷ്ട്രീയം|রাজনীতি|રાજકારણ)$/iu,
     /(?<![\p{L}\p{M}])(?:BJP|AICC|BRS|YSRCP|TDP|DMK|AIADMK|राजनीति|भाजपा|बीजेपी|బీజేపీ|బీఆర్ఎస్|టీడీపీ|திமுக|பாஜக|ಬಿಜೆಪಿ|ബിജെപി|বিজেপি|ભાજપ)(?![\p{L}\p{M}])/iu,
   ],
   [
     'elections',
     /^(elections?|polls|चुनाव|निर्वाचन|నిర్వచన|ఎన్నికలు|தேர்தல்|ಚುನಾವಣೆ|തിരഞ്ഞെടുപ്പ്|নির্বাচন|निवडणूक|ચૂંટણી)(?:\s*-?\s*20\d{2})?$/iu,
-    /\b(?:by[- ]election|panchayat (?:polls?|elections?)|assembly (?:polls?|elections?)|voter (?:rolls?|registration)|polling booths?)\b|पंचायत चुनाव|विधानसभा चुनाव|उपचुनाव|ఉప ఎన్నిక|పంచాయతీ ఎన్నిక|అసెంబ్లీ ఎన్నిక|இடைத்தேர்தல்|சட்டமன்றத் தேர்தல்|ಉಪಚುನಾವಣೆ|നിയമസഭാ തിരഞ്ഞെടുപ്പ്|পঞ্চায়েত নির্বাচন|पोटनिवडणूक|પેટા ચૂંટણી/iu,
+    /\b(?:by[- ]election|panchayat (?:polls?|elections?)|assembly (?:polls?|elections?)|voter (?:rolls?|registration)|polling booths?)\b|पंचायत चुनाव|विधानसभा चुनाव|उपचुनाव|ఉప ఎన్నిక|పంచాయతీ ఎన్నిక|అసెంబ్లీ ఎన్నిక|இடைத்தேர்தல்|சட்டமன்றத் தேர்தல்|ಉಪಚುನಾವಣೆ|ವಿಧಾನಸಭಾ ಚುನಾವಣೆ|ಪಂಚಾಯಿತಿ ಚುನಾವಣೆ|നിയമസഭാ തിരഞ്ഞെടുപ്പ്|পঞ্চায়েত নির্বাচন|पोटनिवडणूक|પેટા ચૂંટણી/iu,
   ],
   [
     'governance',

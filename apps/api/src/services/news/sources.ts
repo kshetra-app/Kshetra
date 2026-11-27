@@ -445,6 +445,29 @@ for (const [language, edition, stateCode, section] of [
 
 FEED_SOURCES.push(
   {
+    sourceId: 'tv9-kannada',
+    sourceName: 'TV9 Kannada',
+    domain: 'tv9kannada.com',
+    language: 'kn',
+    category: 'regional',
+    scope: 'state',
+    stateCode: 'KA',
+    rssUrl: 'https://tv9kannada.com/karnataka/feed',
+    articlePath: /^\/(?:karnataka|videos)\//,
+    articleTags: /^ಕರ್ನಾಟಕ ಸುದ್ದಿ$/u,
+  },
+  {
+    sourceId: 'prajavani',
+    sourceName: 'Prajavani',
+    domain: 'prajavani.net',
+    language: 'kn',
+    category: 'regional',
+    scope: 'state',
+    stateCode: 'KA',
+    rssUrl: 'https://www.prajavani.net/feed',
+    articlePath: /^\/(?:district\/|news\/karnataka-news\/)/,
+  },
+  {
     sourceId: 'aapta-news',
     sourceName: 'Aapta News',
     domain: 'aaptanews.com',
