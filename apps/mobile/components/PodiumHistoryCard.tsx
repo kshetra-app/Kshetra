@@ -1,14 +1,13 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
-import { getLocalizedCandidateName, getLocalizedPartyName } from '../lib/historicalPodiumStore';
+import { getLocalizedCandidateName, getLocalizedPartyName, requiresVerifiedCandidatePhoto } from '../lib/historicalPodiumStore';
 import { getLocalizedDetail } from '../lib/stateTranslations';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { getPartyColor } from '../lib/constants';
 import CandidateAvatar from './CandidateAvatar';
 import { getStaticPhoto } from '../lib/candidatePhotos';
-import { IS_LIVE_ENVIRONMENT } from '../lib/environment';
 import { useTheme } from '../lib/theme';
 import type { HistoricalResultRow } from '../lib/seedDataLoader';
 
@@ -39,7 +38,7 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
     }
   }, [item.localized_parties_json]);
 
-  const allowNamePhoto = !IS_LIVE_ENVIRONMENT || item.state_code !== 'TS';
+  const allowNamePhoto = !requiresVerifiedCandidatePhoto(item.state_code);
   const isGenericCandidate = (name?: string | null) => {
     if (!name) return true;
     const lower = name.trim().toLowerCase();

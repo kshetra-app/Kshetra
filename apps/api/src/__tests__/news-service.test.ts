@@ -48,6 +48,36 @@ describe('News Service (newsService.ts)', () => {
       expect(getFeed(scope).items.map((item) => item.sourceUrl)).toEqual([stateVideo]);
     });
 
+    it('filters Kannada government orders, electricity tariffs and by-elections by topic', async () => {
+      const date = new Date(Date.now() - 3600000).toUTCString();
+      const stories = [
+        ['governance', 'ತನಿಖೆಗೆ ರಾಜ್ಯ ಸರ್ಕಾರ ಆದೇಶ'],
+        ['economy', 'ಬೆಸ್ಕಾಂ ಪ್ರಕಟಣೆ: ಪ್ರತಿ ಯೂನಿಟ್‌ಗೆ ದರ ಪರಿಷ್ಕರಣೆ'],
+        ['elections', 'ಹಿರಿಯೂರು ಉಪ ಚುನಾವಣೆಗೆ ಅಭ್ಯರ್ಥಿ ಆಯ್ಕೆ'],
+        ['regional', 'ಸಾಹಿತ್ಯ ಸಮ್ಮೇಳನಕ್ಕೆ ಚಾಲನೆ'],
+      ] as const;
+      jest.spyOn(rssParser, 'fetchFeedXml').mockImplementation(async (url) => {
+        if (url !== 'https://tv9kannada.com/karnataka/feed') return null;
+        return `<rss><channel>${stories
+          .map(
+            ([category, title]) => `<item><title>${title}</title>
+              <link>https://tv9kannada.com/karnataka/${category}.html</link>
+              <category>ಕರ್ನಾಟಕ ಸುದ್ದಿ</category>
+              <pubDate>${date}</pubDate></item>`,
+          )
+          .join('')}</channel></rss>`;
+      });
+      await refreshNews();
+      const filter = { scope: 'state', state: 'KA', lang: 'kn' } as const;
+      for (const category of ['governance', 'economy', 'elections'] as const) {
+        expect(getFeed({ ...filter, category }).items.map(({ sourceUrl }) => sourceUrl)).toEqual([
+          `https://tv9kannada.com/karnataka/${category}.html`,
+        ]);
+      }
+      expect(getFeed({ ...filter, category: 'regional' }).items).toHaveLength(4);
+      expect(getFeed({ ...filter, category: 'breaking' }).items).toEqual([]);
+    });
+
     it('retains a relevant election story below a busy publisher’s general article limit', async () => {
       const now = Date.now();
       const electionDate = new Date(now - 3600000).toUTCString();

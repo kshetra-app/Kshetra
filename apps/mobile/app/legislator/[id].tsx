@@ -18,6 +18,8 @@ import {
   getLocalizedCandidateName,
   getLocalizedPartyName,
   calculateTermsServed,
+  getPodiumCandidatePhoto,
+  requiresVerifiedCandidatePhoto,
 } from '../../lib/historicalPodiumStore';
 import PodiumHistoryCard from '../../components/PodiumHistoryCard';
 import { useActiveStateStore } from '../../stores/activeState';
@@ -345,9 +347,9 @@ export default function LegislatorProfileScreen() {
       : (isSamePersonAsSittingMLA && mla?.gender ? (mla.gender === 'F' ? 'female' : 'male') : '—');
   const age = podiumDetail?.age ?? (isSamePersonAsSittingMLA ? (winnerAffidavit?.age ?? mla?.age) : null) ?? null;
   const terms = electionYear != null && rawName ? (calculateTermsServed(rawName, stateCode, acNo, electionYear) ?? 0) : 0;
-  const photoUrl = IS_LIVE_ENVIRONMENT && stateCode === 'TS'
-    ? (podiumDetail?.photoVerified ? podiumDetail.photoUrl : null)
-    : podiumDetail?.photoUrl || getStaticPhoto(rawName) || (isSamePersonAsSittingMLA ? mla?.photoUrl : null);
+  const requiresVerifiedPhoto = requiresVerifiedCandidatePhoto(stateCode);
+  const photoUrl = getPodiumCandidatePhoto(stateCode, podiumDetail) ||
+    (requiresVerifiedPhoto ? null : getStaticPhoto(rawName) || (isSamePersonAsSittingMLA ? mla?.photoUrl : null));
   const affidavitUrl = podiumDetail?.affidavitUrl || winnerAffidavit?.sourceUrl;
   const affidavitDocumentUrl = podiumDetail?.affidavitDocumentUrl;
   const resultSourceUrl = podiumContest?.resultSourceUrl;
@@ -407,6 +409,7 @@ export default function LegislatorProfileScreen() {
           stateCode={stateCode}
           house="state_assembly"
           photoUrl={photoUrl || null}
+          allowUnverifiedPhotoFallback={!requiresVerifiedPhoto}
           gender={gender}
           age={age}
           termsServed={terms}
@@ -698,15 +701,9 @@ export default function LegislatorProfileScreen() {
                         second_runner_up_vote_share: contest.secondRunnerUp?.voteShare,
                         margin_winner_to_runner_up_2: contest.marginWinnerToRunnerUp2 ?? contest.secondRunnerUp?.marginToWinner,
                         margin_runner_up_1_to_runner_up_2: contest.marginRunnerUp1ToRunnerUp2 ?? contest.secondRunnerUp?.marginToFirstRunnerUp,
-                        winner_photo_url: IS_LIVE_ENVIRONMENT && stateCode === 'TS' && !contest.winner?.photoVerified
-                          ? undefined
-                          : contest.winner?.photoUrl,
-                        first_runner_up_photo_url: IS_LIVE_ENVIRONMENT && stateCode === 'TS' && !contest.firstRunnerUp?.photoVerified
-                          ? undefined
-                          : contest.firstRunnerUp?.photoUrl,
-                        second_runner_up_photo_url: IS_LIVE_ENVIRONMENT && stateCode === 'TS' && !contest.secondRunnerUp?.photoVerified
-                          ? undefined
-                          : contest.secondRunnerUp?.photoUrl,
+                        winner_photo_url: getPodiumCandidatePhoto(stateCode, contest.winner),
+                        first_runner_up_photo_url: getPodiumCandidatePhoto(stateCode, contest.firstRunnerUp),
+                        second_runner_up_photo_url: getPodiumCandidatePhoto(stateCode, contest.secondRunnerUp),
                       } as any}
                       isLatest={idx === 0}
                     />
@@ -717,12 +714,14 @@ export default function LegislatorProfileScreen() {
           );
         })()}
 
-        {(affidavitUrl || affidavitDocumentUrl || resultSourceUrl || photoSourceUrl) && (
+        {(affidavitUrl || affidavitDocumentUrl || podiumDetail?.assetReportUrl || podiumDetail?.caseReportUrl || resultSourceUrl || photoSourceUrl) && (
           <View style={[styles.sourcesSection, { borderTopColor: colors.border }]}>
             <Text style={[styles.sourcesTitle, { color: colors.textMuted }]}>{i18n.t('legislator.dataSources')}</Text>
             {[
               [affidavitUrl, i18n.t('legislator.viewOnMyNeta')],
               [affidavitDocumentUrl, i18n.t('legislator.viewAffidavit', { defaultValue: 'View filed affidavit' })],
+              [podiumDetail?.assetReportUrl, i18n.t('legislator.assetReport', { defaultValue: 'Declared assets report (ADR)' })],
+              [podiumDetail?.caseReportUrl, i18n.t('legislator.caseReport', { defaultValue: 'Declared cases report (ADR)' })],
               [resultSourceUrl, i18n.t('constituency.electionHistory')],
               [photoSourceUrl, photoSourceYear
                 ? i18n.t('legislator.datedPortraitSource', { year: photoSourceYear, defaultValue: 'Portrait source ({{year}})' })

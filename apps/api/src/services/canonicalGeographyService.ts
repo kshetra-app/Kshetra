@@ -1128,17 +1128,27 @@ export class CanonicalGeographyService {
           Array.isArray(boothRes.data) ? boothRes.data : []
         ) as HierarchyBoothRow[];
         const versions = [...new Set(boothRows.map((row) => row.primary_dataset_version_id))];
-        if (versions.length === 1 && versions[0]) {
-          const version = await supabase
-            .from('dataset_versions')
-            .select('effective_from, metadata')
-            .eq('id', versions[0])
-            .maybeSingle();
-          if (version.error) throw version.error;
-          const publishedOn = version.data?.effective_from;
-          const sourceUrl = version.data?.metadata?.source_url;
-          if (publishedOn && typeof sourceUrl === 'string' && sourceUrl.startsWith('https://')) {
-            pollingStationList = { publishedOn, sourceUrl };
+        if (versions.length === 0 || (versions.length === 1 && versions[0])) {
+          try {
+            const release = supabase.from('dataset_versions').select('effective_from, metadata');
+            const version = versions[0]
+              ? await release.eq('id', versions[0]).maybeSingle()
+              : await release
+                  .eq('dataset_id', 'eci_polling_stations')
+                  .eq('default_status', 'OFFICIAL')
+                  .contains('metadata', { constituency_id: brief.id })
+                  .order('effective_from', { ascending: false })
+                  .order('id', { ascending: false })
+                  .limit(1)
+                  .maybeSingle();
+            if (version.error) throw version.error;
+            const publishedOn = version.data?.effective_from;
+            const sourceUrl = version.data?.metadata?.source_url;
+            if (publishedOn && typeof sourceUrl === 'string' && sourceUrl.startsWith('https://')) {
+              pollingStationList = { publishedOn, sourceUrl };
+            }
+          } catch (error) {
+            console.warn('[CanonicalGeography] Cannot resolve polling-station publication:', error);
           }
         }
         booths = boothRows.map((b) => ({

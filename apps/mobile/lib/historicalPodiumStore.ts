@@ -19,6 +19,8 @@ export interface CandidatePodiumDetail {
   photoSourceYear?: number;
   affidavitUrl?: string | null;
   affidavitDocumentUrl?: string | null;
+  assetReportUrl?: string;
+  caseReportUrl?: string;
   selfMovableAssets?: number | null;
   selfImmovableAssets?: number | null;
   spouseMovableAssets?: number | null;
@@ -72,8 +74,23 @@ function containsNonAsciiCharacters(value: string): boolean {
 }
 
 import { API_BASE_URL } from './constants';
-import { stripHonorifics, getCanonicalCandidateName } from './candidatePhotos';
+import { stripHonorifics, getCanonicalCandidateName, getStaticPhoto } from './candidatePhotos';
 import { IS_LIVE_ENVIRONMENT } from './environment';
+
+export function requiresVerifiedCandidatePhoto(stateCode: string): boolean {
+  return IS_LIVE_ENVIRONMENT && (stateCode === 'TS' || stateCode === 'KA');
+}
+
+export function getPodiumCandidatePhoto(
+  stateCode: string,
+  candidate?: CandidatePodiumDetail | null,
+): string | undefined {
+  if (!candidate) return undefined;
+  if (requiresVerifiedCandidatePhoto(stateCode)) {
+    return candidate.photoVerified ? candidate.photoUrl || undefined : undefined;
+  }
+  return candidate.photoUrl || getStaticPhoto(candidate.name) || undefined;
+}
 
 // In-memory cache for parsed state podium files (hydrated on demand from API or local cache)
 const stateCache = new Map<string, Record<string, HistoricalPodiumContest[]>>();

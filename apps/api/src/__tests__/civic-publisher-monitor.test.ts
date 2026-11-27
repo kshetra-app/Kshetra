@@ -31,6 +31,19 @@ describe('official civic publisher fingerprints', () => {
       fingerprintPublisherDocument('hearing-notices', '<html>Unavailable</html>'),
     ).toThrow('Publisher response did not contain the expected records');
   });
+
+  it('detects a new Karnataka Council session and a changed Assembly bill status', () => {
+    const session = '<a href="159/bills_159.htm">159th Session</a>';
+    const next = '<a href="160/bills_160.htm">160th Session</a>';
+    const index = fingerprintPublisherDocument('council-sessions', session);
+    expect(fingerprintPublisherDocument('council-sessions', session + session)).toBe(index);
+    expect(fingerprintPublisherDocument('council-sessions', session + next)).not.toBe(index);
+    const bill = (date: string) =>
+      `<tr><td><a href="bill16100_14.pdf">Apartment Bill</a></td><td>${date}</td></tr>`;
+    expect(fingerprintPublisherDocument('assembly-bill-status', bill(''))).not.toBe(
+      fingerprintPublisherDocument('assembly-bill-status', bill('09.10.2026')),
+    );
+  });
 });
 
 describe('scheduled civic publisher checks', () => {

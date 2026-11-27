@@ -1284,6 +1284,8 @@ const kn = {
     "dataDisclaimer": "ಅಭ್ಯರ್ಥಿಗಳು ಚುನಾವಣಾ ಆಯೋಗಕ್ಕೆ ಸಲ್ಲಿಸಿದ ಸ್ವಯಂ ಘೋಷಣಾ ಪ್ರಮಾಣಪತ್ರಗಳಿಂದ ಪಡೆದ ಮಾಹಿತಿ. MyNeta/ADR ನಿಂದ ಅಂದಾಜು ವಿವರಗಳು.",
     "datedPortraitSource": "ಭಾವಚಿತ್ರದ ಮೂಲ ({{year}})",
     "dataSources": "ದತ್ತಾಂಶ ಮೂಲಗಳು",
+    "assetReport": "ಘೋಷಿತ ಆಸ್ತಿಗಳ ವರದಿ (ADR)",
+    "caseReport": "ಘೋಷಿತ ಪ್ರಕರಣಗಳ ವರದಿ (ADR)",
     "mlaProfilesSeed": "ಶಾಸಕರ ವಿವರಗಳು (ಸೀಡ್)",
     "myNetaAffidavit": "MyNeta ಪ್ರಮಾಣಪತ್ರ",
     "eciResults": "ECI ಫಲಿತಾಂಶಗಳು",

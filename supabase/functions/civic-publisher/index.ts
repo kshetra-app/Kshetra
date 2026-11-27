@@ -4,6 +4,8 @@ const publishers = {
   telangana_law_department: 'https://law.telangana.gov.in/bills',
   telangana_state_portal: 'https://www.telangana.gov.in/category/news/feed/',
   telangana_electricity_regulatory_commission: 'https://www.tgerc.telangana.gov.in/',
+  karnataka_legislative_council_bill_index: 'https://kla.kar.nic.in/council/house/bills/bills.htm',
+  karnataka_assembly_tenth_session_bills: 'https://kla.kar.nic.in/assembly/bills/bills16100.htm',
 } as const;
 
 const responseLimit = 2_000_000;

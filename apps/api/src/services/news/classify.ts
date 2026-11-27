@@ -11,17 +11,17 @@ const topics: Array<[NewsCategory, RegExp, RegExp]> = [
   [
     'elections',
     /^(elections?|polls|चुनाव|निर्वाचन|నిర్వచన|ఎన్నికలు|தேர்தல்|ಚುನಾವಣೆ|തിരഞ്ഞെടുപ്പ്|নির্বাচন|निवडणूक|ચૂંટણી)(?:\s*-?\s*20\d{2})?$/iu,
-    /\b(?:by[- ]election|panchayat (?:polls?|elections?)|assembly (?:polls?|elections?)|voter (?:rolls?|registration)|polling booths?)\b|पंचायत चुनाव|विधानसभा चुनाव|उपचुनाव|ఉప ఎన్నిక|పంచాయతీ ఎన్నిక|అసెంబ్లీ ఎన్నిక|இடைத்தேர்தல்|சட்டமன்றத் தேர்தல்|ಉಪಚುನಾವಣೆ|ವಿಧಾನಸಭ[ಾೆ] ಚುನಾವಣೆ|ಪಂಚಾಯಿತಿ ಚುನಾವಣೆ|നിയമസഭാ തിരഞ്ഞെടുപ്പ്|পঞ্চায়েত নির্বাচন|पोटनिवडणूक|પેટા ચૂંટણી/iu,
+    /\b(?:by[- ]election|panchayat (?:polls?|elections?)|assembly (?:polls?|elections?)|voter (?:rolls?|registration)|polling booths?)\b|पंचायत चुनाव|विधानसभा चुनाव|उपचुनाव|ఉప ఎన్నిక|పంచాయతీ ఎన్నిక|అసెంబ్లీ ఎన్నిక|இடைத்தேர்தல்|சட்டமன்றத் தேர்தல்|ಉಪ\s*ಚುನಾವಣೆ|ವಿಧಾನಸಭ[ಾೆ] ಚುನಾವಣೆ|ಪಂಚಾಯಿತಿ ಚುನಾವಣೆ|നിയമസഭാ തിരഞ്ഞെടുപ്പ്|পঞ্চায়েত নির্বাচন|पोटनिवडणूक|પેટા ચૂંટણી/iu,
   ],
   [
     'governance',
     /^(governance|public policy|government schemes|सरकारी योजनाएं|ప్రభుత్వ పథకాలు|அரசுத் திட்டங்கள்|সরকারি প্রকল্প)$/iu,
-    /\b(?:government scheme|cabinet approves?|cabinet clears?|government notification|public consultation|municipal corporation approves?)\b|कैबिनेट ने मंजूरी|सरकारी योजना|ప్రభుత్వ పథకం|మంత్రివర్గం ఆమోదం|அரசுத் திட்டம்|ಸರ್ಕಾರಿ ಯೋಜನೆ|സർക്കാർ പദ്ധതി|সরকারি প্রকল্প|शासकीय योजना|સરકારી યોજના/iu,
+    /\b(?:government scheme|cabinet approves?|cabinet clears?|government notification|public consultation|municipal corporation approves?)\b|कैबिनेट ने मंजूरी|सरकारी योजना|ప్రభుత్వ పథకం|మంత్రివర్గం ఆమోదం|அரசுத் திட்டம்|ಸರ್ಕಾರಿ ಯೋಜನೆ|ಸರ್ಕಾರ(?:ದ)? (?:ಆದೇಶ|ಅಧಿಸೂಚನೆ)|ಸಚಿವ ಸಂಪುಟದ ಅನುಮೋದನೆ|സർക്കാർ പദ്ധതി|সরকারি প্রকল্প|शासकीय योजना|સરકારી યોજના/iu,
   ],
   [
     'economy',
     /^(economy|budget|inflation|economic policy|अर्थव्यवस्था|अर्थसंकल्प|ఆర్థిక వ్యవస్థ|பொருளாதாரம்|ಆರ್ಥಿಕತೆ|സമ്പദ്‌?വ്യവസ്ഥ|অর্থনীতি|અર્થતંત્ર)$/iu,
-    /\b(?:state budget|union budget|inflation|GDP|repo rate|economic survey|tax revenue)\b|केंद्रीय बजट|आर्थिक सर्वेक्षण|రాష్ట్ర బడ్జెట్|ద్రవ్యోల్బణం|மாநில பட்ஜெட்|ರಾಜ್ಯ ಬಜೆಟ್|സംസ്ഥാന ബജറ്റ്|রাজ্য বাজেট|राज्याचा अर्थसंकल्प|રાજ્યનું બજેટ/iu,
+    /\b(?:state budget|union budget|inflation|GDP|repo rate|economic survey|tax revenue)\b|केंद्रीय बजट|आर्थिक सर्वेक्षण|రాష్ట్ర బడ్జెట్|ద్రవ్యోల్బణం|மாநில பட்ஜெட்|(?:ರಾಜ್ಯ|ಕರ್ನಾಟಕ) ಬಜೆಟ್|ತೆರಿಗೆ ಆದಾಯ|ವಿದ್ಯುತ್ ದರ|ಬೆಸ್ಕಾಂ.*(?:ಪ್ರತಿ ಯೂನಿಟ್|ವಿದ್ಯುತ್ ದರ)|സംസ്ഥാന ബജറ്റ്|রাজ্য বাজেট|राज्याचा अर्थसंकल्प|રાજ્યનું બજેટ/iu,
   ],
 ];
 

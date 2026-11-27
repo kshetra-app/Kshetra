@@ -267,11 +267,13 @@ export default function HierarchyScreen() {
               sourceNote="Persisted constituency geography records"
             />
           ) : liveBodies.length === 0 && liveBooths.length === 0 ? (
-            <DataPendingCard
-              title={`${t('hierarchy.constituency')} records`}
-              message={t('hierarchy.noDataAvailable')}
-              sourceNote="Persisted constituency geography records"
-            />
+            !liveData.pollingStationList && (
+              <DataPendingCard
+                title={`${t('hierarchy.constituency')} records`}
+                message={t('hierarchy.noDataAvailable')}
+                sourceNote="Persisted constituency geography records"
+              />
+            )
           ) : (
             <>
               <View style={[styles.breadcrumbContainer, { borderBottomColor: colors.border }]}>

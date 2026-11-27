@@ -21,6 +21,14 @@ const publishers = [
     id: 'telangana_electricity_regulatory_commission',
     format: 'hearing-notices',
   },
+  {
+    id: 'karnataka_legislative_council_bill_index',
+    format: 'council-sessions',
+  },
+  {
+    id: 'karnataka_assembly_tenth_session_bills',
+    format: 'assembly-bill-status',
+  },
 ] as const;
 
 type Publisher = (typeof publishers)[number];
@@ -44,7 +52,20 @@ export function isCivicPublisherCheckDue(previous: PublisherCheck, now = Date.no
 
 export function fingerprintPublisherDocument(format: Publisher['format'], source: string): string {
   let evidence: string;
-  if (format === 'hearing-notices') {
+  if (format === 'council-sessions') {
+    const links = Array.from(
+      source.matchAll(/href=["'](?:\.\/)?(\d{3}\/bills_\d{3}\.htm)["']/gi),
+      (match) => match[1].toLowerCase(),
+    );
+    evidence = [...new Set(links)].sort().join('\n');
+  } else if (format === 'assembly-bill-status') {
+    const rows = source.match(/<tr\b[^>]*>[\s\S]*?<\/tr>/gi) ?? [];
+    evidence = rows
+      .filter((row) => /href=["'](?:\.\/)?bill\d+_\d+\.pdf["']/i.test(row))
+      .map((row) => row.replace(/\s+/g, ' ').trim())
+      .sort()
+      .join('\n');
+  } else if (format === 'hearing-notices') {
     const rows = source.match(/<tr\b[^>]*>[\s\S]*?<\/tr>/gi) ?? [];
     evidence = rows
       .filter((row) => /date of public hearing|revised public hearing schedule/i.test(row))

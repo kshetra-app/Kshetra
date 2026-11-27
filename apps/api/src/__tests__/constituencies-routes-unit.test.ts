@@ -139,6 +139,27 @@ describe('Constituencies Routes Unit Tests (Exhaustive Branch Coverage)', () => 
     });
   });
 
+  it('serves separate Karnataka portraits and filings for candidates with the same name', async () => {
+    const seats = [167, 176, 91];
+    const winners = await Promise.all(
+      seats.map(async (seat) => {
+        const response = await app.inject(`/states/KA/constituencies/${seat}/podium`);
+        expect(response.statusCode).toBe(200);
+        return response.json().find((contest: { year: number }) => contest.year === 2023).winner;
+      }),
+    );
+
+    expect(winners.map(({ party, affidavitUrl }) => [party, affidavitUrl])).toEqual([
+      ['INC', 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7380'],
+      ['BJP', 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=7121'],
+      ['INC', 'https://www.myneta.info/Karnataka2023/candidate.php?candidate_id=8059'],
+    ]);
+    expect(new Set(winners.map(({ photoUrl }) => photoUrl)).size).toBe(3);
+    expect(winners.every(({ photoVerified }) => photoVerified === true)).toBe(true);
+    expect(winners[0].totalAssets).toBe(2_962_656_915);
+    expect(winners[0].caseReportUrl).toMatch(/adrindia\.org\/.+\.pdf#page=/);
+  });
+
   it('keeps disclosures, portraits and citations attached to the individual podium candidate', async () => {
     const response = await app.inject('/states/TS/constituencies/1/podium');
     expect(response.statusCode).toBe(200);

@@ -684,6 +684,47 @@ describe('Canonical Geography Service & Decoupled State Data Adapter', () => {
       ]);
     });
 
+    it('links a published polling-station list before its venues have been transcribed', async () => {
+      setSupabaseConfiguredForTesting(true);
+      jest.spyOn(canonicalGeographyService, 'getConstituency').mockResolvedValue({
+        id: 'KA-AC-69',
+        internalId: 'KA-AC-69-INTERNAL',
+        acNo: 69,
+        name: 'Navalgund',
+        stateCode: 'KA',
+        district: 'Dharwad',
+        reservationStatus: 'GEN',
+        currentParty: '',
+        currentMLA: '',
+      });
+
+      const sourceUrl = 'https://dharwad.nic.in/en/elections/';
+      const empty = { data: [], error: null };
+      const releaseQuery = {
+        eq: jest.fn().mockReturnThis(),
+        contains: jest.fn().mockReturnThis(),
+        order: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        maybeSingle: jest.fn().mockResolvedValue({
+          data: { effective_from: '2026-08-24', metadata: { source_url: sourceUrl } },
+          error: null,
+        }),
+      };
+      jest.spyOn(supabase, 'from').mockImplementation(((table: string) => {
+        if (table === 'dataset_versions') return { select: () => releaseQuery };
+        const booths = { ...empty, in: jest.fn().mockResolvedValue(empty) };
+        const records = table === 'polling_booths' ? { order: () => booths } : empty;
+        return { select: () => ({ eq: () => records }) };
+      }) as any);
+
+      const hierarchy = await canonicalGeographyService.getSubConstituencyHierarchy('KA', 69);
+      expect(releaseQuery.contains).toHaveBeenCalledWith('metadata', {
+        constituency_id: 'KA-AC-69',
+      });
+      expect(hierarchy?.pollingStationList).toEqual({ sourceUrl, publishedOn: '2026-08-24' });
+      expect(hierarchy?.pollingBooths).toEqual([]);
+    });
+
     it('surfaces live hierarchy query failures instead of returning an empty success', async () => {
       const previousAppEnv = process.env.APP_ENV;
       process.env.APP_ENV = 'production';
