@@ -80,6 +80,31 @@ describe('Constituencies Routes Unit Tests (Exhaustive Branch Coverage)', () => 
     );
   });
 
+  it('includes all four cited 2024 Karnataka by-elections alongside the 2023 results', async () => {
+    const response = await app.inject('/states/KA/podium-summary');
+    expect(response.statusCode).toBe(200);
+    const seats = response.json().data;
+    for (const [acNo, margin] of [
+      [36, 18320],
+      [83, 13448],
+      [95, 9649],
+      [185, 25413],
+    ]) {
+      const seat = seats.find((row: { acNo: number }) => row.acNo === acNo);
+      expect(seat.history).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            year: 2024,
+            electionType: 'BYPOLL',
+            margin,
+            resultSourceUrl: expect.stringContaining('old.eci.gov.in'),
+          }),
+          expect.objectContaining({ year: 2023, electionType: 'GENERAL' }),
+        ]),
+      );
+    }
+  });
+
   it('keeps disclosures, portraits and citations attached to the individual podium candidate', async () => {
     const response = await app.inject('/states/TS/constituencies/1/podium');
     expect(response.statusCode).toBe(200);
