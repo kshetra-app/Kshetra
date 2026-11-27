@@ -55,6 +55,19 @@ describe('constituency hierarchy API', () => {
       electoralStatistics: { ...electoralStatistics, turnoutPercent: 125 },
     }, 'test').electoralStatistics).toBeUndefined();
   });
+
+  it('keeps Census figures dated separately from the current election figures', () => {
+    const censusStatistics = {
+      year: 2011, population: 290229, urbanPercent: 10.33, literacyPercent: 61.25,
+      scheduledCastePercent: 17.72, scheduledTribePercent: 6.74,
+      sourceUrl: 'https://censusindia.gov.in/', boundarySourceUrl: 'https://www.eci.gov.in/',
+    };
+    const brief = { ...payload.constituency, currentParty: '', currentMLA: '' };
+    expect(validateConstituencyDetail({ ...brief, censusStatistics }, 'test').censusStatistics).toEqual(censusStatistics);
+    expect(validateConstituencyDetail({
+      ...brief, censusStatistics: { ...censusStatistics, boundarySourceUrl: '' },
+    }, 'test').censusStatistics).toBeUndefined();
+  });
   it('retains the API error code so missing data is distinct from a missing endpoint', () => {
     const error = createApiErrorFromResponse(404, {
       error: 'Not Found',

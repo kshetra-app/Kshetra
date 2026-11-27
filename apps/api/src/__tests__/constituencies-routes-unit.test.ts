@@ -127,6 +127,23 @@ describe('Constituencies Routes Unit Tests (Exhaustive Branch Coverage)', () => 
     });
   });
 
+  it('keeps each recovered Adilabad filing attached to its own election', async () => {
+    const response = await app.inject('/states/TS/constituencies/7/podium');
+    expect(response.statusCode).toBe(200);
+    const profile = (year: number) =>
+      response.json().find((row: { year: number }) => row.year === year).firstRunnerUp;
+    expect(profile(2014)).toMatchObject({
+      name: 'Payal Shanker',
+      affidavitUrl: 'https://www.myneta.info/telangana2014/candidate.php?candidate_id=22',
+      totalAssets: 20875649,
+    });
+    expect(profile(2018)).toMatchObject({
+      name: 'Payal Shanker',
+      affidavitUrl: 'https://www.myneta.info/telangana2018/candidate.php?candidate_id=4706',
+      totalAssets: 43374112,
+    });
+  });
+
   it('serves a source and verified financial and case summaries for every 2023 Telangana podium slot', async () => {
     const response = await app.inject('/states/TS/podium');
     expect(response.statusCode).toBe(200);

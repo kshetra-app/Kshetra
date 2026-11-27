@@ -221,6 +221,7 @@ export default function ConstituencyDetailScreen() {
   const authoritativeRuName = (!isGenericCandidate(effectiveRunnerUpName) ? effectiveRunnerUpName : null) || (!isGenericCandidate(seedRuName) ? seedRuName : '') || '';
 
   const demo = useMemo(() => getDemographicsForState(stateCode, acNo), [stateCode, acNo]);
+  const census = apiDetail?.censusStatistics;
   const mlaProfile = useMemo(() => getMLAProfileForState(stateCode, acNo), [stateCode, acNo]);
 
   // Canonical authoritative latest podium contest
@@ -1614,6 +1615,36 @@ export default function ConstituencyDetailScreen() {
                   </View>
                 </View>
               </Pressable>
+            )}
+            {census && (
+              <View style={[styles.demoCard, { marginBottom: 12 }]}>
+                <Text style={styles.demoSubTitle}>{t('constituency.censusYear', { year: census.year })}</Text>
+                {[
+                  [t('constituency.population'), census.population.toLocaleString('en-IN')],
+                  [t('constituency.censusUrbanShare'), `${census.urbanPercent}%`],
+                  [t('constituency.literacy'), `${census.literacyPercent}%`],
+                  [t('constituency.censusScheduledCastes'), `${census.scheduledCastePercent}%`],
+                  [t('constituency.censusScheduledTribes'), `${census.scheduledTribePercent}%`],
+                ].map(([label, value]) => (
+                  <View key={label} style={[styles.demoRow, { flexWrap: 'wrap', justifyContent: 'space-between', marginTop: 6 }]}>
+                    <Text style={styles.demoLabel}>{label}</Text>
+                    <Text style={styles.demoValue}>{value}</Text>
+                  </View>
+                ))}
+                {([
+                  [t('constituency.censusSource'), census.sourceUrl],
+                  [t('constituency.censusBoundarySource'), census.boundarySourceUrl],
+                ] as const).map(([label, sourceUrl]) => (
+                  <Pressable
+                    key={sourceUrl}
+                    accessibilityRole="link"
+                    onPress={() => void Linking.openURL(sourceUrl).catch(() => Alert.alert(t('common.error')))}
+                    style={{ paddingVertical: 8 }}
+                  >
+                    <Text style={{ color: colors.primary }}>{label} <Ionicons name="open-outline" size={14} /></Text>
+                  </Pressable>
+                ))}
+              </View>
             )}
             {(demo && (demo.totalVoters > 0 || demo.turnout2023 > 0)) || Boolean(localizedReservation) ? (
               <View style={styles.statsRow}>

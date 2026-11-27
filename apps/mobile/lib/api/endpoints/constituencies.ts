@@ -10,7 +10,7 @@
 
 import type { ApiClient } from '../client';
 import { ApiValidationError } from '../errors';
-import type { ConstituencyBrief, ConstituencyElectoralStatistics, SubConstituencyHierarchyDTO } from '@kshetra/shared';
+import type { ConstituencyBrief, ConstituencyCensusStatistics, ConstituencyElectoralStatistics, SubConstituencyHierarchyDTO } from '@kshetra/shared';
 
 export interface ConstituencyElectionSummary {
   electionYear: number | null;
@@ -36,6 +36,7 @@ export interface ConstituencyElectionHistoryItem {
 
 export interface ConstituencyDetailDTO extends ConstituencyBrief {
   electoralStatistics?: ConstituencyElectoralStatistics;
+  censusStatistics?: ConstituencyCensusStatistics;
   recentElection?: ConstituencyElectionSummary;
   elections?: ConstituencyElectionHistoryItem[];
   election2023?: {
@@ -288,6 +289,20 @@ export function validateConstituencyDetail(data: unknown, context: string): Cons
   }
 
   let recentElection: ConstituencyElectionSummary | undefined;
+  let censusStatistics: ConstituencyDetailDTO['censusStatistics'];
+  if (obj.censusStatistics && typeof obj.censusStatistics === 'object') {
+    const value = obj.censusStatistics as Partial<ConstituencyCensusStatistics>;
+    if (
+      Number.isInteger(value.year) && typeof value.population === 'number' && Number.isSafeInteger(value.population) && value.population > 0 &&
+      [value.urbanPercent, value.literacyPercent, value.scheduledCastePercent, value.scheduledTribePercent].every(
+        (percent) => typeof percent === 'number' && Number.isFinite(percent) && percent >= 0 && percent <= 100,
+      ) &&
+      typeof value.sourceUrl === 'string' && value.sourceUrl.startsWith('https://') &&
+      typeof value.boundarySourceUrl === 'string' && value.boundarySourceUrl.startsWith('https://')
+    ) {
+      censusStatistics = value as ConstituencyCensusStatistics;
+    }
+  }
   if (obj.recentElection && typeof obj.recentElection === 'object' && !Array.isArray(obj.recentElection)) {
     const el = obj.recentElection as Record<string, unknown>;
     let electionType: 'GENERAL' | 'BYPOLL' | null = null;
@@ -359,6 +374,7 @@ export function validateConstituencyDetail(data: unknown, context: string): Cons
     elections,
     election2023,
     ...(electoralStatistics ? { electoralStatistics } : {}),
+    ...(censusStatistics ? { censusStatistics } : {}),
   };
 }
 

@@ -13,6 +13,17 @@ export interface ConstituencyElectoralStatistics {
   sourceUrl: string;
 }
 
+export interface ConstituencyCensusStatistics {
+  year: number;
+  population: number;
+  urbanPercent: number;
+  literacyPercent: number;
+  scheduledCastePercent: number;
+  scheduledTribePercent: number;
+  sourceUrl: string;
+  boundarySourceUrl: string;
+}
+
 export interface SubConstituencyHierarchyDTO {
   pollingStationList?: {
     publishedOn: string;

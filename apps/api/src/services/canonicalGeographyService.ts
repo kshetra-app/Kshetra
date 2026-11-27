@@ -18,6 +18,7 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { isProductionLikeRuntime } from '../lib/runtimeEnvironment';
 import type {
   ConstituencyBrief,
+  ConstituencyCensusStatistics,
   ConstituencyElectoralStatistics,
   ReservationStatus,
   SubConstituencyHierarchyDTO,
@@ -912,19 +913,22 @@ export class CanonicalGeographyService {
     }
   }
 
-  async getElectoralStatistics(
-    constituencyInternalId: string,
-  ): Promise<ConstituencyElectoralStatistics | null> {
+  async getConstituencyStatistics(constituencyInternalId: string): Promise<{
+    electoralStatistics?: ConstituencyElectoralStatistics;
+    censusStatistics?: ConstituencyCensusStatistics;
+  }> {
     const { data, error } = await supabase
       .from('constituency_demographics')
-      .select('election_year, registered_voters, total_voters, turnout_percentage, metadata')
+      .select(
+        'election_year, registered_voters, total_voters, turnout_percentage, total_population, urban_percentage, literacy_rate, sc_percentage, st_percentage, metadata',
+      )
       .eq('constituency_id', constituencyInternalId)
       .filter('metadata->electoral_statistics->>status', 'eq', 'OFFICIAL')
       .order('election_year', { ascending: false })
       .limit(1)
       .maybeSingle();
     if (error) throw error;
-    if (!data) return null;
+    if (!data) return {};
     const {
       election_year: year,
       registered_voters: registeredElectors,
@@ -946,8 +950,50 @@ export class CanonicalGeographyService {
       typeof sourceUrl !== 'string' ||
       !sourceUrl.startsWith('https://')
     )
-      return null;
-    return { year, registeredElectors, votesPolled, turnoutPercent, sourceUrl };
+      return {};
+    const electoralStatistics = {
+      year,
+      registeredElectors,
+      votesPolled,
+      turnoutPercent,
+      sourceUrl,
+    };
+    const census = data.metadata?.census_statistics;
+    const {
+      total_population: population,
+      urban_percentage: urbanPercent,
+      literacy_rate: literacyPercent,
+      sc_percentage: scheduledCastePercent,
+      st_percentage: scheduledTribePercent,
+    } = data;
+    if (
+      census?.status !== 'DERIVED' ||
+      !Number.isInteger(census.year) ||
+      !Number.isSafeInteger(population) ||
+      population <= 0 ||
+      ![urbanPercent, literacyPercent, scheduledCastePercent, scheduledTribePercent].every(
+        (value) =>
+          typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 100,
+      ) ||
+      typeof census.source_url !== 'string' ||
+      !census.source_url.startsWith('https://') ||
+      typeof census.boundary_url !== 'string' ||
+      !census.boundary_url.startsWith('https://')
+    )
+      return { electoralStatistics };
+    return {
+      electoralStatistics,
+      censusStatistics: {
+        year: census.year,
+        population,
+        urbanPercent,
+        literacyPercent,
+        scheduledCastePercent,
+        scheduledTribePercent,
+        sourceUrl: census.source_url,
+        boundarySourceUrl: census.boundary_url,
+      },
+    };
   }
 
   /**

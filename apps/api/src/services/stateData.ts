@@ -382,11 +382,11 @@ export const canonicalGeographyService = {
       null
     );
   },
-  async getElectoralStatistics(constituencyInternalId: string) {
+  async getConstituencyStatistics(constituencyInternalId: string) {
     return (
-      canonicalGeoModule?.canonicalGeographyService?.getElectoralStatistics(
+      canonicalGeoModule?.canonicalGeographyService?.getConstituencyStatistics(
         constituencyInternalId,
-      ) ?? null
+      ) ?? {}
     );
   },
   getConfirmedByElections() {
