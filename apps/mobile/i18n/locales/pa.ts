@@ -2610,6 +2610,7 @@ const pa = {
     "exploreHierarchyButton": "Explore Hierarchy"
   },
   "mapExtended": {
+    "view3DOn": "3D ਚਾਲੂ ਹੈ",
     "expandControls": "ਕੰਟਰੋਲ ਫੈਲਾਓ",
     "minimizeControls": "ਨਿਯੰਤਰਣ ਨੂੰ ਛੋਟਾ ਕਰੋ",
     "mode3D": "3ਡੀ",

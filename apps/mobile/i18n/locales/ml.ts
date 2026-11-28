@@ -2610,6 +2610,7 @@ const ml = {
     "exploreHierarchyButton": "Explore Hierarchy"
   },
   "mapExtended": {
+    "view3DOn": "3D ഓണാണ്",
     "expandControls": "നിയന്ത്രണങ്ങൾ വികസിപ്പിക്കുക",
     "minimizeControls": "നിയന്ത്രണങ്ങൾ ചെറുതാക്കുക",
     "mode3D": "3D",

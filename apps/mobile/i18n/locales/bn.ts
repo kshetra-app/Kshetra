@@ -2610,6 +2610,7 @@ const bn = {
     "exploreHierarchyButton": "Explore Hierarchy"
   },
   "mapExtended": {
+    "view3DOn": "3D চালু",
     "expandControls": "নিয়ন্ত্রণগুলি প্রসারিত করুন",
     "minimizeControls": "কন্ট্রোল মিনিমাইজ করুন",
     "mode3D": "3D",

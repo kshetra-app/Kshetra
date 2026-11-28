@@ -2610,6 +2610,7 @@ const te = {
     "exploreHierarchyButton": "పరిపాలనా క్రమం అన్వేషించండి"
   },
   "mapExtended": {
+    "view3DOn": "3D ఆన్",
     "expandControls": "నియంత్రణలను విస్తరించండి",
     "minimizeControls": "నియంత్రణలను తగ్గించండి",
     "mode3D": "3D",

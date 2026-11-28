@@ -2610,6 +2610,7 @@ const hi = {
     "exploreHierarchyButton": "पदानुक्रम देखें"
   },
   "mapExtended": {
+    "view3DOn": "3डी चालू",
     "expandControls": "नियंत्रण विस्तृत करें",
     "minimizeControls": "नियंत्रण न्यूनतम करें",
     "mode3D": "3डी",

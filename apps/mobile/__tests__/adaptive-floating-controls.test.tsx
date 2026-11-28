@@ -1,6 +1,9 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react-native';
 import AdaptiveFloatingControls from '../components/AdaptiveFloatingControls';
+import mockTelugu from '../i18n/locales/te';
+
+let mockLanguage = 'en';
 
 jest.mock('@expo/vector-icons', () => ({
   Ionicons: 'Ionicons',
@@ -8,8 +11,11 @@ jest.mock('@expo/vector-icons', () => ({
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: any, opts: any) => opts?.defaultValue || key,
-    i18n: { language: 'en' },
+    t: (key: string, opts?: { defaultValue?: string }) => {
+      if (mockLanguage === 'te' && key === 'mapExtended.view3D') return mockTelugu.mapExtended?.view3D;
+      return opts?.defaultValue || key;
+    },
+    i18n: { language: mockLanguage },
   }),
 }));
 
@@ -23,6 +29,8 @@ jest.mock('react-native-safe-area-context', () => ({
 }));
 
 describe('<AdaptiveFloatingControls /> Component Behavioral Specs', () => {
+  afterEach(() => { mockLanguage = 'en'; });
+
   const defaultProps = {
     stateCode: 'IN',
     selectedConstituency: null,
@@ -86,8 +94,16 @@ describe('<AdaptiveFloatingControls /> Component Behavioral Specs', () => {
   it('shows glowing reset button when 3D mode is active on National Overview', () => {
     render(<AdaptiveFloatingControls {...defaultProps} stateCode="IN" is3DMode={true} />);
 
-    expect(screen.getByText('3D ON')).toBeTruthy();
+    expect(screen.getByText('3D on')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: '3D', selected: true })).toBeOnTheScreen();
     expect(screen.getByText('Reset')).toBeTruthy();
+  });
+
+  it('uses the Telugu label for the 3D view control', () => {
+    mockLanguage = 'te';
+    render(<AdaptiveFloatingControls {...defaultProps} />);
+    expect(screen.getByText(mockTelugu.mapExtended!.view3D!)).toBeOnTheScreen();
+    expect(screen.queryByText('3D View')).toBeNull();
   });
 
   it('triggers onToggle3D when 3D button is pressed', () => {

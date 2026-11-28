@@ -2610,6 +2610,7 @@ const kn = {
     "exploreHierarchyButton": "ಶ್ರೇಣಿ ಅನ್ವೇಷಿಸಿ"
   },
   "mapExtended": {
+    "view3DOn": "3D ಆನ್ ಆಗಿದೆ",
     "expandControls": "ನಿಯಂತ್ರಣಗಳನ್ನು ವಿಸ್ತರಿಸಿ",
     "minimizeControls": "ನಿಯಂತ್ರಣಗಳನ್ನು ಕಡಿಮೆ ಮಾಡಿ",
     "mode3D": "3D",

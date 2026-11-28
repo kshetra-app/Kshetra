@@ -2610,6 +2610,7 @@ const gu = {
     "exploreHierarchyButton": "Explore Hierarchy"
   },
   "mapExtended": {
+    "view3DOn": "3D ચાલુ",
     "expandControls": "નિયંત્રણો વિસ્તૃત કરો",
     "minimizeControls": "નિયંત્રણો નાનું કરો",
     "mode3D": "3D",

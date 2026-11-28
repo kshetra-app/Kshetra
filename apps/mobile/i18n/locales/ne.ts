@@ -2610,6 +2610,7 @@ const ne = {
     "exploreHierarchyButton": "Explore Hierarchy"
   },
   "mapExtended": {
+    "view3DOn": "3D अन",
     "expandControls": "नियन्त्रणहरू विस्तार गर्नुहोस्",
     "minimizeControls": "नियन्त्रणहरू न्यूनतम गर्नुहोस्",
     "mode3D": "3D",

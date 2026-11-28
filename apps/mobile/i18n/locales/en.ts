@@ -2650,6 +2650,7 @@ const en =  {
     "femaleVoters": "Female Voters",
     "exploreBoothHierarchy": "Explore Hierarchy of this Booth",
     "view3D": "3D View",
+    "view3DOn": "3D on",
     "district": "District",
     "density": "Density",
     "locate": "Locate"

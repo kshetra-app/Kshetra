@@ -2610,6 +2610,7 @@ const ta = {
     "exploreHierarchyButton": "Explore Hierarchy"
   },
   "mapExtended": {
+    "view3DOn": "3D இல்",
     "expandControls": "கட்டுப்பாடுகளை விரிவாக்கு",
     "minimizeControls": "கட்டுப்பாடுகளைக் குறைக்கவும்",
     "mode3D": "3D",

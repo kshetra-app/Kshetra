@@ -2610,6 +2610,7 @@ const mr = {
     "exploreHierarchyButton": "श्रेणी शोधा"
   },
   "mapExtended": {
+    "view3DOn": "3D चालू",
     "expandControls": "नियंत्रणे विस्तृत करा",
     "minimizeControls": "नियंत्रणे कमी करा",
     "mode3D": "3D",

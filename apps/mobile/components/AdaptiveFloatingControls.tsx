@@ -436,6 +436,7 @@ export default function AdaptiveFloatingControls({
             }}
             accessibilityRole="button"
             accessibilityLabel={t('mapExtended.mode3D', { defaultValue: '3D' })}
+            accessibilityState={{ selected: is3DMode }}
           >
             <View style={[styles.actionButton, is3DMode && styles.activeButton]}>
               <Ionicons
@@ -449,9 +450,11 @@ export default function AdaptiveFloatingControls({
                 styles.actionButtonLabel,
                 is3DMode && { color: '#FCD34D' },
               ]}
-              numberOfLines={1}
+              numberOfLines={2}
             >
-              {is3DMode ? '3D ON' : '3D View'}
+              {is3DMode
+                ? t('mapExtended.view3DOn', { defaultValue: '3D on' })
+                : t('mapExtended.view3D', { defaultValue: '3D View' })}
             </Text>
           </Pressable>
         </View>

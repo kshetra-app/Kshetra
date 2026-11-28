@@ -2610,6 +2610,7 @@ const or = {
     "exploreHierarchyButton": "Explore Hierarchy"
   },
   "mapExtended": {
+    "view3DOn": "3D ଅନ୍",
     "expandControls": "ନିୟନ୍ତ୍ରଣ ବିସ୍ତାର କରନ୍ତୁ |",
     "minimizeControls": "ନିୟନ୍ତ୍ରଣକୁ କମ୍ କରନ୍ତୁ |",
     "mode3D": "3D",
