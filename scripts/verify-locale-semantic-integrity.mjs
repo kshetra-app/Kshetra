@@ -10,6 +10,21 @@ if (fallbackPolicy.fallbackLanguage !== 'en' || !Array.isArray(fallbackPolicy.ke
   throw new Error('Approved English fallback policy is missing or invalid.');
 }
 const approvedEnglishFallbacks = new Set(fallbackPolicy.keys);
+// Official codes, format names, brands and development examples may be invariant.
+const invariantLocaleKeys = new Set([
+  'campaignManager.constituencyLabel', 'campaignManager.ctr', 'campaignManager.serviceWhatsApp',
+  'civicMetrics.tabs.rti', 'compare.scPct', 'compare.stPct', 'constituency.scPct',
+  'constituency.stPct', 'constituencyExtended.scLabel', 'constituencyExtended.stLabel',
+  'delimitation.sc', 'delimitation.st', 'explore.sc', 'explore.sort.acNo', 'explore.st',
+  'exportSheet.csv', 'exportSheet.json', 'exportSheet.pdf', 'govReportCard.pdi', 'language.en',
+  'outreach.channels.sms', 'outreach.channels.whatsapp', 'parliament.ndaAlliance',
+  'parties.AIMIM', 'parties.BRS', 'parties.JDS', 'parties.JSP', 'parties.TDP', 'parties.YSRCP',
+  'screenLabels.CompareSheet.mla', 'screenLabels.ComposeSheet.mp4',
+  'screenLabels.ConstituencySelectorSheet.acValue1', 'screenLabels.CriminalRecordCard.ipc',
+  'screenLabels.MapFallback.genValue1ScValue2StValue3', 'screenLabels.PerformanceCard.mplads',
+  'screenLabels.SimplifiedOutreach.revanthReddyInc', 'screenLabels.localBodies.ap',
+  'screenLabels.localBodies.ts', 'uploadShort.urlPlaceholder',
+]);
 
 console.log('=== 13-LANGUAGE SEMANTIC & BIDIRECTIONAL TOKEN INTEGRITY VALIDATOR (DEF-012) ===\n');
 
@@ -98,6 +113,7 @@ languages.forEach(lang => {
   const missingKeys = enKeys.filter(k => !(k in flat) && !approvedEnglishFallbacks.has(k));
   const extraKeys = keys.filter(k => !(k in enFlat));
   const tokenMismatches = [];
+  const copiedEnglishKeys = [];
 
   for (const k of enKeys) {
     const expectedVal = enFlat[k];
@@ -108,6 +124,10 @@ languages.forEach(lang => {
         tokenMismatches.push({ key: k, reason: 'NOT_A_STRING', expectedTokens: extractTokens(expectedVal) });
       }
       continue;
+    }
+    if (lang !== 'en' && actualVal === expectedVal && !invariantLocaleKeys.has(k) &&
+        /[a-z]{2}/i.test(actualVal.replace(/\{\{[^}]+\}\}/g, ''))) {
+      copiedEnglishKeys.push(k);
     }
     const expectedTokens = extractTokens(expectedVal).sort();
     const actualTokens = extractTokens(actualVal).sort();
@@ -128,7 +148,11 @@ languages.forEach(lang => {
   }
 
   const effectiveKeyCount = keys.length + approvedFallbackKeys.length;
-  const isPass = missingKeys.length === 0 && extraKeys.length === 0 && tokenMismatches.length === 0 && effectiveKeyCount === enKeys.length;
+  const isPass = missingKeys.length === 0 && extraKeys.length === 0 && tokenMismatches.length === 0 &&
+    copiedEnglishKeys.length === 0 && effectiveKeyCount === enKeys.length;
+  if (copiedEnglishKeys.length) {
+    console.error(`[i18n] ${lang} contains copied English values: ${copiedEnglishKeys.join(', ')}`);
+  }
   if (!isPass) allPass = false;
 
   results.push({
@@ -140,9 +164,11 @@ languages.forEach(lang => {
     approvedFallbackCount: approvedFallbackKeys.length,
     extraCount: extraKeys.length,
     tokenMismatchCount: tokenMismatches.length,
+    copiedEnglishCount: copiedEnglishKeys.length,
     status: isPass ? 'PASS' : 'FAIL',
     missingKeys: missingKeys.slice(0, 5),
     extraKeys: extraKeys.slice(0, 5),
+    copiedEnglishKeys: copiedEnglishKeys.slice(0, 5),
     tokenMismatches: tokenMismatches.slice(0, 5)
   });
 

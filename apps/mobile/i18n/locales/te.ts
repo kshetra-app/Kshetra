@@ -1831,15 +1831,15 @@ const te = {
       "body": "2024 ఎన్నికల ముందు 6 YSRCP MLAలు TDPలోకి ఫిరాయింపు — 2017 \"ఆపరేషన్ ఆకర్ష్\" ప్రతిబింబం."
     },
     "KA-T-001": {
-      "headline": "Operation Kamala — The Biggest Defection Drama",
-      "body": "17 JDS-INC MLAs resigned in July 2019. 12 won by-elections on BJP tickets months later."
+      "headline": "ఆపరేషన్ కమల — అతిపెద్ద ఫిరాయింపు డ్రామా",
+      "body": "జూలై 2019లో 17 మంది JDS-INC ఎమ్మెల్యేలు రాజీనామా చేశారు. నెలల తర్వాత 12 మంది బీజేపీ టిక్కెట్‌పై ఉప ఎన్నికల్లో గెలిచారు."
     },
     "KA-T-002": {
-      "headline": "Siddaramaiah — The Guarantee Man",
-      "body": "Siddaramaiah won Badami with 42,567 margin. His 5 guarantee schemes drove INC's 135-seat landslide."
+      "headline": "సిద్ధరామయ్య - ది గ్యారెంటీ మ్యాన్",
+      "body": "బాదామీలో సిద్ధరామయ్య 42,567 మెజార్టీతో గెలుపొందారు. అతని 5 హామీ పథకాలు INC యొక్క 135-సీట్ల ల్యాండ్‌స్లైడ్‌కు దారితీశాయి."
     },
     "KA-T-003": {
-      "headline": "Deve Gowda Dynasty — Three Generations",
+      "headline": "దేవెగౌడ వంశం - మూడు తరాలు",
       "body": "H.D. Deve Gowda (ప్రధానమంత్రి), son Kumaraswamy (ముఖ్యమంత్రి), grandson Prajwal — all held elected office."
     },
     "KA-T-004": {
@@ -1851,23 +1851,23 @@ const te = {
       "body": "Karnataka had 3 BJP ముఖ్యమంత్రులు in 2018-2023: Yediyurappa, Bommai, and brief considerations for Sadananda Gowda."
     },
     "KA-T-006": {
-      "headline": "Jarkiholi Brothers — On Opposite Sides",
-      "body": "Ramesh in BJP (Gokak), Balachandra in INC (Arabhavi). Political rivalry within the family!"
+      "headline": "జార్కిహోళి బ్రదర్స్ - ఎదురుగా",
+      "body": "బీజేపీ (గోకాక్‌)లో రమేష్‌, ఐఎన్‌సీలో బాలచంద్ర (ఆరభావి). కుటుంబంలో రాజకీయ పోరు!"
     },
     "KA-T-007": {
-      "headline": "Coastal Karnataka — BJP's Fortress",
+      "headline": "కోస్తా కర్ణాటక — బీజేపీ కోట",
       "body": "In 2023, BJP గెలిచింది all 8 coastal సీట్లు despite losing the state overall."
     },
     "MH-T-001": {
-      "headline": "The Great Shiv Sena Split",
-      "body": "Eknath Shinde led 40 of 56 Shiv Sena MLAs in rebellion (June 2022). ECI awarded the name to Shinde faction."
+      "headline": "మహా శివసేన చీలిపోయింది",
+      "body": "తిరుగుబాటు (జూన్ 2022)లో 56 మంది శివసేన ఎమ్మెల్యేలలో 40 మంది ఏక్నాథ్ షిండే నాయకత్వం వహించారు. ఈసీఐ షిండే వర్గానికి పేరు ప్రదానం చేసింది."
     },
     "MH-T-002": {
-      "headline": "Pawar vs Pawar — Uncle vs Nephew",
-      "body": "Ajit Pawar split NCP taking 40+ MLAs to BJP. Uncle Sharad Pawar (83) founded NCP(SP)."
+      "headline": "పవార్ vs పవార్ — మామ vs మేనల్లుడు",
+      "body": "అజిత్ పవార్ ఎన్సీపీని చీల్చి 40 మంది ఎమ్మెల్యేలను బీజేపీలోకి తీసుకున్నారు. మామ శరద్ పవార్ (83) ఎన్సీపీ(ఎస్పీ)ని స్థాపించారు."
     },
     "MH-T-003": {
-      "headline": "Fadnavis — The Comeback Man",
+      "headline": "ఫడ్నవీస్ - ది కమ్ బ్యాక్ మాన్",
       "body": "Fadnavis గెలిచింది Nagpur South West with a massive margin. Became ముఖ్యమంత్రి for the 3rd time."
     },
     "MH-T-004": {
@@ -1875,19 +1875,19 @@ const te = {
       "body": "Congress decimated — from 44 సీట్లు (2019) to just 16 (2024), their worst performance in Maharashtra."
     },
     "MH-T-005": {
-      "headline": "Aaditya Thackeray — The Worli Prince",
-      "body": "Aaditya retained Worli even as his father's faction was decimated statewide."
+      "headline": "ఆదిత్య థాకరే - ది వర్లీ ప్రిన్స్",
+      "body": "తన తండ్రి వర్గం రాష్ట్రవ్యాప్తంగా క్షీణించినప్పటికీ ఆదిత్య వర్లీని నిలబెట్టుకున్నాడు."
     },
     "MH-T-006": {
-      "headline": "Mahayuti Tsunami — 230/288",
+      "headline": "మహాయుతి సునామీ — 230/288",
       "body": "BJP-SHS-NCP (Mahayuti) గెలిచింది 230/288 సీట్లు in 2024 — most lopsided result in MH history."
     },
     "MH-T-007": {
-      "headline": "Two Parties, Same Name",
-      "body": "Both Shiv Sena and NCP split into two, each claiming the original name. Courts had to adjudicate."
+      "headline": "రెండు పార్టీలు, ఒకే పేరు",
+      "body": "శివసేన మరియు ఎన్‌సిపి రెండూ రెండుగా విడిపోయాయి, ఒక్కొక్కటి అసలు పేరును పేర్కొంటున్నాయి. కోర్టులు తీర్పు చెప్పవలసి వచ్చింది."
     },
     "MH-T-008": {
-      "headline": "Mumbai — 36 Seats, BJP Dominates",
+      "headline": "ముంబై - 36 సీట్లు, బీజేపీ ఆధిపత్యం",
       "body": "BJP గెలిచింది majority of Mumbai's 36 assembly సీట్లు in 2024, consolidating urban dominance."
     }
   },
@@ -1984,17 +1984,17 @@ const te = {
     "constitutionalDeviation": "రాజ్యాంగ విచలనం",
     "mathematicalDerivation": "రాజ్యాంగ సూత్రాలు & గణిత సమీకరణాలు",
     "reasoningSteps": "రాజ్యాంగ వివరణ దశలు:",
-    "art82Desc": "• Article 82: Readjustment of allocation of seats in the House of the People and division of each State into territorial constituencies.",
-    "art170_2Desc": "• Article 170(2): Each State assembly divided into territorial constituencies such that population:seats ratio is practically uniform.",
-    "art330_332Desc": "• Articles 330 & 332: Mandatory proportional reservations for Scheduled Castes and Scheduled Tribes.",
-    "delimActSec9Desc": "• Delimitation Act Section 9: Equal population deviation bound (±10%), physical features, and administrative unit integrity.",
-    "art170Desc": "• Article 170: Mandates that each constituency within a state must have equal population within a strict ±10% deviation bound.",
-    "art330Desc": "• Articles 330 & 332: Proportional reservations for Scheduled Castes and Scheduled Tribes based on the latest published Census figures.",
-    "publicObjectionDesc": "• Public Objection Window: Under Section 9(2) of the Delimitation Act, the Commission must publish draft boundaries and allow citizens to submit objections before final notification.",
-    "contiguityDesc": "• Contiguity Requirement: All redrawn constituencies must be geographically contiguous without enclaves or isolated pockets.",
-    "idealDivisor": "Ideal Divisor: ",
-    "article332Sc": "Article 332 SC: ",
-    "article332St": "Article 332 ST: ",
+    "art82Desc": "• ఆర్టికల్ 82: హౌస్ ఆఫ్ ది పీపుల్‌లో సీట్ల కేటాయింపు మరియు ప్రతి రాష్ట్రాన్ని ప్రాదేశిక నియోజకవర్గాలుగా విభజించడం.",
+    "art170_2Desc": "• ఆర్టికల్ 170(2): జనాభా:సీట్ల నిష్పత్తి ఆచరణాత్మకంగా ఏకరీతిగా ఉండేలా ప్రతి రాష్ట్ర అసెంబ్లీ ప్రాదేశిక నియోజకవర్గాలుగా విభజించబడింది.",
+    "art330_332Desc": "• ఆర్టికల్స్ 330 & 332: షెడ్యూల్డ్ కులాలు మరియు షెడ్యూల్డ్ తెగలకు తప్పనిసరిగా దామాషా రిజర్వేషన్లు.",
+    "delimActSec9Desc": "• డీలిమిటేషన్ చట్టం సెక్షన్ 9: సమాన జనాభా విచలనం (±10%), భౌతిక లక్షణాలు మరియు అడ్మినిస్ట్రేటివ్ యూనిట్ సమగ్రత.",
+    "art170Desc": "• ఆర్టికల్ 170: ఒక రాష్ట్రంలోని ప్రతి నియోజకవర్గం ఖచ్చితంగా ±10% విచలన పరిమితిలో సమాన జనాభాను కలిగి ఉండాలి.",
+    "art330Desc": "• ఆర్టికల్స్ 330 & 332: తాజాగా ప్రచురించిన జనాభా లెక్కల ఆధారంగా షెడ్యూల్డ్ కులాలు మరియు షెడ్యూల్డ్ తెగలకు దామాషా రిజర్వేషన్లు.",
+    "publicObjectionDesc": "• పబ్లిక్ అభ్యంతరాల విండో: డీలిమిటేషన్ చట్టంలోని సెక్షన్ 9(2) ప్రకారం, కమిషన్ తప్పనిసరిగా ముసాయిదా సరిహద్దులను ప్రచురించాలి మరియు తుది నోటిఫికేషన్‌కు ముందు అభ్యంతరాలను సమర్పించడానికి పౌరులను అనుమతించాలి.",
+    "contiguityDesc": "• కంటిగ్యుటీ ఆవశ్యకత: తిరిగి గీయబడిన అన్ని నియోజకవర్గాలు తప్పనిసరిగా ఎన్‌క్లేవ్‌లు లేదా వివిక్త పాకెట్‌లు లేకుండా భౌగోళికంగా ఆనుకొని ఉండాలి.",
+    "idealDivisor": "ఆదర్శ విభజన:",
+    "article332Sc": "ఆర్టికల్ 332 SC:",
+    "article332St": "ఆర్టికల్ 332 ST:",
     "popPerSeat": "జనాభా/సీటు",
     "deviation": "విచలనం",
     "assemblyConstituencies": "శాసనసభ నియోజకవర్గాలు ({{count}})",
@@ -2194,7 +2194,7 @@ const te = {
     "searchRajyaSabhaPlaceholder": "రాజ్యసభ ఎంపీలను పేరు లేదా పార్టీ ద్వారా వెతకండి…",
     "ndaAlliance": "NDA",
     "indiaAlliance": "I.N.D.I.A",
-    "othersAlliance": "Others"
+    "othersAlliance": "ఇతరులు"
   },
   "legislator": {
     "assets": "ఆస్తులు",
@@ -2445,7 +2445,7 @@ const te = {
     "grievanceCount": "{{count}} ఫిర్యాదులు",
     "pendingGrievances": "పెండింగ్",
     "resolvedGrievances": "పరిష్కరించబడినవి",
-    "live": "LIVE",
+    "live": "లైవ్",
     "cancelled": "రద్దు చేయబడింది",
     "going": "హాజరవుతున్నారు",
     "attended": "హాజరయ్యారు",
@@ -3048,7 +3048,7 @@ const te = {
     "systemHealth": "కౌంటింగ్ పైప్‌లైన్: {{status}} ({{healthy}}/{{total}} మూలాలు పనిచేస్తున్నాయి)",
     "title": "లైవ్ ఎన్నిక",
     "subtitle": "నిజ-సమయ లెక్కింపు & ఫలితాలు",
-    "live": "LIVE",
+    "live": "లైవ్",
     "declared": "ప్రకటించబడింది",
     "countingComplete": "లెక్కింపు పూర్తయింది",
     "majority": "మెజారిటీ",
@@ -3394,7 +3394,7 @@ const te = {
     "results": "ఫలితాలు",
     "overview": "ఫలితాలు",
     "issues": "సమస్యలు",
-    "pulse": "Pulse",
+    "pulse": "పల్స్",
     "news": "వార్తలు",
     "affidavits": "అఫిడవిట్",
     "demographics": "ఓటర్ల వివరాలు",
@@ -3807,7 +3807,7 @@ const te = {
     "urlPlaceholder": "https://youtube.com/...",
     "presets": "లేదా పరీక్షించడానికి నిజమైన వీడియోను ఎంచుకోండి:",
     "hashtags": "హ్యాష్ట్యాగ్లు (కామాతో వేరు చేయండి)",
-    "hashtagsPlaceholder": "#politics, #constituency",
+    "hashtagsPlaceholder": "#రాజకీయం, #నియోజకవర్గం",
     "uploadButton": "నియోజకవర్గానికి అప్లోడ్ చేయండి",
     "uploading": "అప్‌లోడ్ అవుతోంది...",
     "uploadSuccess": "అప్‌లోడ్ విజయవంతమైంది",
@@ -3891,7 +3891,7 @@ const te = {
     "searchDistricts": "జిల్లాలను వెతకండి",
     "searchMandals": "మండలాలను వెతకండి",
     "searchGps": "గ్రామ పంచాయతీలను వెతకండి",
-    "mptcZptcTitle": "MPTC & ZPTC — {{note}}",
+    "mptcZptcTitle": "ఎంపీటీసీ / జెడ్పీటీసీ — {{note}}",
     "mptcZptcDesc": "మండల & జిల్లా పరిషత్ ప్రాదేశిక నియోజకవర్గాల ఎన్నికలు ఇంకా నిర్వహించబడలేదు/ప్రచురించబడలేదు. ప్రస్తుతం గ్రామ పంచాయతీ స్థాయి ఫలితాలు (సర్పంచ్ & వార్డు సభ్యులు) మాత్రమే అందుబాటులో ఉన్నాయి.",
     "electionsToBeConducted": "ఎన్నికలు నిర్వహించాల్సి ఉంది",
     "gps": "గ్రా.పం.",
@@ -3917,8 +3917,8 @@ const te = {
     "tsStatsSummary": "31 జిల్లాలు · 12,705 గ్రామ పంచాయతీలు",
     "tsRecordsSummary": "72,134 ధృవీకరించబడిన సర్పంచ్ & వార్డు సభ్యుల రికార్డులు",
     "verifiedApsec": "ధృవీకరించిన ఏపీఎస్ఈసీ రికార్డులు",
-    "apStatsSummary": "13 Districts · 13,079 Gram Panchayats",
-    "apRecordsSummary": "152,646 verified Sarpanch, Ward, MPTC & ZPTC records",
+    "apStatsSummary": "13 జిల్లాలు · 13,079 గ్రామ పంచాయతీలు",
+    "apRecordsSummary": "152,646 ధృవీకరించబడిన సర్పంచ్, వార్డు, MPTC & ZPTC రికార్డులు",
     "chooseAnotherState": "లేదా మరో రాష్ట్రాన్ని ఎంచుకోండి:",
     "tsTabLabel": "తెలంగాణ (31 జిల్లాలు)",
     "apTabLabel": "ఆంధ్రప్రదేశ్ (15 జిల్లాలు)",

@@ -1759,12 +1759,12 @@ const hi = {
       "body": "2016 में TRS ने 12 TDP विधायक खींचे। 2024 में INC ने 10 BRS विधायक खींचे — मीडिया ने इसे \"ऑपरेशन आकर्ष 2.0\" कहा।"
     },
     "TRV-DEF-004": {
-      "headline": "Like Father, Like Son",
+      "headline": "जैसा पिता, वैसा बेटा",
       "body": "When Nagarjuna Sagar MLA Nomula Narsimhaiah (TRS) died in 2021, his son Nomula Bhagath जीता the by-election on the same ticket."
     },
     "TRV-DEF-005": {
-      "headline": "The Defection Boomerang",
-      "body": "Arekapudi Gandhi's constituency has been \"represented\" by 4 parties without a single by-election."
+      "headline": "दलबदल बूमरैंग",
+      "body": "अरेकापुडी गांधी के निर्वाचन क्षेत्र को एक भी उपचुनाव के बिना 4 दलों द्वारा \"प्रतिनिधित्व\" किया गया है।"
     },
     "TRV-REC-001": {
       "headline": "अभेद्य किला",
@@ -1779,32 +1779,32 @@ const hi = {
       "body": "Revanth Reddy: TDP MLA (2014) → joined INC (2017) → हारा (2018) → TPCC president → मुख्यमंत्री (2023)."
     },
     "TRV-REC-004": {
-      "headline": "The Sircilla King",
+      "headline": "सिरसिला राजा",
       "body": "KTR has जीता Sircilla in all 3 Telangana elections — 2014, 2018, and 2023."
     },
     "TRV-REC-005": {
-      "headline": "Harish Rao's Siddipet Streak",
-      "body": "T. Harish Rao has represented Siddipet since 2004 — winning 5 consecutive elections."
+      "headline": "हरीश राव की सिद्दीपेट स्ट्रीक",
+      "body": "टी. हरीश राव ने 2004 से लगातार 5 चुनाव जीतकर सिद्दीपेट का प्रतिनिधित्व किया है।"
     },
     "TRV-ELE-001": {
       "headline": "जल्दी भंग का जुआ",
       "body": "KCR ने 2018 में विधानसभा 9 महीने पहले भंग की। TRS ने 88/119 सीटें जीतीं। 2023 में पूरा कार्यकाल सिर्फ 39 सीटें।"
     },
     "TRV-ELE-002": {
-      "headline": "Similar Votes, Wildly Different Seats",
+      "headline": "एक जैसे वोट, बेहद अलग सीटें",
       "body": "In 2023, INC got 39.4% votes → 64 सीटें, BRS got 37.4% → 39 सीटें. 2% difference = 25 सीटें."
     },
     "TRV-ELE-003": {
-      "headline": "The Red Bastion",
-      "body": "Ramagundam is Telangana's sole left-party constituency. Coal belt keeps leftist politics alive."
+      "headline": "लाल गढ़",
+      "body": "रामागुंडम तेलंगाना का एकमात्र वामपंथी पार्टी निर्वाचन क्षेत्र है। कोयला बेल्ट वामपंथी राजनीति को जिंदा रखता है."
     },
     "TRV-HIS-001": {
-      "headline": "The Youngest State's First Vote",
-      "body": "2014 was the first-ever Telangana Assembly election after statehood on June 2, 2014."
+      "headline": "सबसे युवा राज्य का पहला वोट",
+      "body": "2 जून 2014 को राज्य बनने के बाद 2014 में पहला तेलंगाना विधानसभा चुनाव हुआ था।"
     },
     "TRV-HIS-002": {
-      "headline": "What's in a Name?",
-      "body": "TRS became BRS in October 2022 — \"Telangana\" replaced with \"Bharat\" for national ambitions that flopped."
+      "headline": "नाम में क्या रखा है?",
+      "body": "टीआरएस अक्टूबर 2022 में बीआरएस बन गया - राष्ट्रीय महत्वाकांक्षाओं के लिए \"तेलंगाना\" को \"भारत\" से बदल दिया गया जो फ्लॉप हो गया।"
     },
     "AP-T-001": {
       "headline": "चंद्रबाबू नायडू — वापसी के राजा",
@@ -1819,16 +1819,16 @@ const hi = {
       "body": "2019 में YSRCP ने 151/175 सीटें जीतीं। 2024 में सिर्फ 11 — एक चुनाव में 140 सीटें गँवाईं।"
     },
     "AP-T-004": {
-      "headline": "NDA Triple Alliance Sweep",
+      "headline": "एनडीए ट्रिपल एलायंस स्वीप",
       "body": "TDP-JSP-BJP जीता 164/175 सीटें in 2024 — 93.7% of all सीटें, most lopsided result in AP post-bifurcation."
     },
     "AP-T-005": {
-      "headline": "Pulivendula — Jagan's Last Bastion",
-      "body": "Even in the 2024 wipeout, Jagan held Pulivendula by 45,678 votes. His family has held this seat 40+ years."
+      "headline": "पुलिवेंदुला - जगन का आखिरी गढ़",
+      "body": "2024 के सफाए में भी, जगन ने पुलिवेंदुला को 45,678 वोटों से हराया। उनके परिवार का इस सीट पर 40 साल से अधिक समय से कब्जा है।"
     },
     "AP-T-006": {
-      "headline": "Operation Akarsh 2.0",
-      "body": "6 YSRCP MLAs defected to TDP before 2024 elections, mirroring 2017's \"Operation Akarsh.\""
+      "headline": "ऑपरेशन आकर्ष 2.0",
+      "body": "2024 के चुनावों से पहले वाईएसआरसीपी के 6 विधायक टीडीपी में शामिल हो गए, जो 2017 के \"ऑपरेशन आकर्ष\" को दर्शाता है।"
     },
     "KA-T-001": {
       "headline": "ऑपरेशन कमल — सबसे बड़ा दलबदल नाटक",
@@ -1839,7 +1839,7 @@ const hi = {
       "body": "सिद्धरामैया ने बदामी 42,567 अंतर से जीता। उनकी 5 गारंटी योजनाओं ने INC को 135 सीटें दिलाईं।"
     },
     "KA-T-003": {
-      "headline": "Deve Gowda Dynasty — Three Generations",
+      "headline": "देवेगौड़ा राजवंश - तीन पीढ़ियाँ",
       "body": "H.D. Deve Gowda (प्रधानमंत्री), son Kumaraswamy (मुख्यमंत्री), grandson Prajwal — all held elected office."
     },
     "KA-T-004": {
@@ -1851,11 +1851,11 @@ const hi = {
       "body": "Karnataka had 3 BJP मुख्यमंत्री in 2018-2023: Yediyurappa, Bommai, and brief considerations for Sadananda Gowda."
     },
     "KA-T-006": {
-      "headline": "Jarkiholi Brothers — On Opposite Sides",
-      "body": "Ramesh in BJP (Gokak), Balachandra in INC (Arabhavi). Political rivalry within the family!"
+      "headline": "जारकीहोली ब्रदर्स - विपरीत पक्षों पर",
+      "body": "रमेश बीजेपी (गोकक) में, बालचंद्र कांग्रेस (अरभवी) में। परिवार में राजनीतिक प्रतिद्वंद्विता!"
     },
     "KA-T-007": {
-      "headline": "Coastal Karnataka — BJP's Fortress",
+      "headline": "तटीय कर्नाटक - भाजपा का किला",
       "body": "In 2023, BJP जीता all 8 coastal सीटें despite losing the state overall."
     },
     "MH-T-001": {
@@ -1867,7 +1867,7 @@ const hi = {
       "body": "अजित पवार ने NCP तोड़कर 40+ विधायकों को BJP में ले गए। चाचा शरद पवार (83) ने NCP(SP) बनाई।"
     },
     "MH-T-003": {
-      "headline": "Fadnavis — The Comeback Man",
+      "headline": "फड़नवीस - द कमबैक मैन",
       "body": "Fadnavis जीता Nagpur South West with a massive margin. Became मुख्यमंत्री for the 3rd time."
     },
     "MH-T-004": {
@@ -1875,19 +1875,19 @@ const hi = {
       "body": "Congress decimated — from 44 सीटें (2019) to just 16 (2024), their worst performance in Maharashtra."
     },
     "MH-T-005": {
-      "headline": "Aaditya Thackeray — The Worli Prince",
-      "body": "Aaditya retained Worli even as his father's faction was decimated statewide."
+      "headline": "आदित्य ठाकरे - द वर्ली प्रिंस",
+      "body": "आदित्य ने वर्ली को बरकरार रखा, जबकि उनके पिता का गुट राज्य भर में ख़त्म हो गया था।"
     },
     "MH-T-006": {
       "headline": "महायुति सुनामी — 230/288",
       "body": "BJP-SHS-NCP (महायुति) ने 2024 में 230/288 सीटें जीतीं — MH इतिहास का सबसे एकतरफा परिणाम।"
     },
     "MH-T-007": {
-      "headline": "Two Parties, Same Name",
-      "body": "Both Shiv Sena and NCP split into two, each claiming the original name. Courts had to adjudicate."
+      "headline": "दो पार्टियां, एक ही नाम",
+      "body": "शिवसेना और राकांपा दोनों दो हिस्सों में बंट गए और प्रत्येक ने मूल नाम पर दावा किया। अदालतों को निर्णय देना पड़ा।"
     },
     "MH-T-008": {
-      "headline": "Mumbai — 36 Seats, BJP Dominates",
+      "headline": "मुंबई- 36 सीटें, बीजेपी का दबदबा",
       "body": "BJP जीता majority of Mumbai's 36 assembly सीटें in 2024, consolidating urban dominance."
     }
   },
@@ -1984,17 +1984,17 @@ const hi = {
     "constitutionalDeviation": "संवैधानिक विचलन",
     "mathematicalDerivation": "संवैधानिक सूत्र और गणितीय गणना",
     "reasoningSteps": "संवैधानिक तर्क के चरण:",
-    "art82Desc": "• Article 82: Readjustment of allocation of seats in the House of the People and division of each State into territorial constituencies.",
-    "art170_2Desc": "• Article 170(2): Each State assembly divided into territorial constituencies such that population:seats ratio is practically uniform.",
-    "art330_332Desc": "• Articles 330 & 332: Mandatory proportional reservations for Scheduled Castes and Scheduled Tribes.",
-    "delimActSec9Desc": "• Delimitation Act Section 9: Equal population deviation bound (±10%), physical features, and administrative unit integrity.",
-    "art170Desc": "• Article 170: Mandates that each constituency within a state must have equal population within a strict ±10% deviation bound.",
-    "art330Desc": "• Articles 330 & 332: Proportional reservations for Scheduled Castes and Scheduled Tribes based on the latest published Census figures.",
-    "publicObjectionDesc": "• Public Objection Window: Under Section 9(2) of the Delimitation Act, the Commission must publish draft boundaries and allow citizens to submit objections before final notification.",
-    "contiguityDesc": "• Contiguity Requirement: All redrawn constituencies must be geographically contiguous without enclaves or isolated pockets.",
-    "idealDivisor": "Ideal Divisor: ",
-    "article332Sc": "Article 332 SC: ",
-    "article332St": "Article 332 ST: ",
+    "art82Desc": "• अनुच्छेद 82: लोक सभा में सीटों के आवंटन का पुन: समायोजन और प्रत्येक राज्य को क्षेत्रीय निर्वाचन क्षेत्रों में विभाजित करना।",
+    "art170_2Desc": "• अनुच्छेद 170(2): प्रत्येक राज्य विधानसभा को क्षेत्रीय निर्वाचन क्षेत्रों में इस प्रकार विभाजित किया गया है कि जनसंख्या:सीटों का अनुपात व्यावहारिक रूप से एक समान हो।",
+    "art330_332Desc": "• अनुच्छेद 330 और 332: अनुसूचित जाति और अनुसूचित जनजाति के लिए अनिवार्य आनुपातिक आरक्षण।",
+    "delimActSec9Desc": "• परिसीमन अधिनियम धारा 9: समान जनसंख्या विचलन बाध्य (±10%), भौतिक विशेषताएं, और प्रशासनिक इकाई अखंडता।",
+    "art170Desc": "• अनुच्छेद 170: आदेश देता है कि राज्य के प्रत्येक निर्वाचन क्षेत्र में सख्त ±10% विचलन सीमा के भीतर समान जनसंख्या होनी चाहिए।",
+    "art330Desc": "• अनुच्छेद 330 और 332: नवीनतम प्रकाशित जनगणना आंकड़ों के आधार पर अनुसूचित जाति और अनुसूचित जनजाति के लिए आनुपातिक आरक्षण।",
+    "publicObjectionDesc": "• सार्वजनिक आपत्ति विंडो: परिसीमन अधिनियम की धारा 9(2) के तहत, आयोग को मसौदा सीमाओं को प्रकाशित करना चाहिए और नागरिकों को अंतिम अधिसूचना से पहले आपत्तियां प्रस्तुत करने की अनुमति देनी चाहिए।",
+    "contiguityDesc": "• समीपता की आवश्यकता: सभी पुनर्निर्धारित निर्वाचन क्षेत्र भौगोलिक दृष्टि से बिना परिक्षेत्रों या अलग-अलग पॉकेटों के सन्निहित होने चाहिए।",
+    "idealDivisor": "आदर्श भाजक:",
+    "article332Sc": "अनुच्छेद 332 एससी:",
+    "article332St": "अनुच्छेद 332 एसटी:",
     "popPerSeat": "जनसंख्या/सीट",
     "deviation": "विचलन",
     "assemblyConstituencies": "विधानसभा निर्वाचन क्षेत्र ({{count}})",
@@ -2194,7 +2194,7 @@ const hi = {
     "searchRajyaSabhaPlaceholder": "नाम या दल द्वारा राज्यसभा सांसदों को खोजें…",
     "ndaAlliance": "NDA",
     "indiaAlliance": "I.N.D.I.A",
-    "othersAlliance": "Others"
+    "othersAlliance": "अन्य"
   },
   "legislator": {
     "assets": "संपत्ति",
@@ -2445,7 +2445,7 @@ const hi = {
     "grievanceCount": "{{count}} शिकायतें",
     "pendingGrievances": "लंबित",
     "resolvedGrievances": "निपटाई गई",
-    "live": "LIVE",
+    "live": "लाइव",
     "cancelled": "रद्द",
     "going": "जा रहे हैं",
     "attended": "उपस्थित",
@@ -3394,7 +3394,7 @@ const hi = {
     "results": "परिणाम",
     "overview": "परिणाम",
     "issues": "मुद्दे",
-    "pulse": "Pulse",
+    "pulse": "नाड़ी",
     "news": "समाचार",
     "affidavits": "शपथ पत्र",
     "demographics": "जनसांख्यिकी",
@@ -3916,10 +3916,10 @@ const hi = {
     "verifiedTsec": "सत्यापित चुनाव आयोग रिकॉर्ड",
     "tsStatsSummary": "31 जिले · 12,705 ग्राम पंचायतें",
     "tsRecordsSummary": "72,134 सत्यापित सरपंच और वार्ड सदस्य रिकॉर्ड",
-    "verifiedApsec": "Verified APSEC",
-    "apStatsSummary": "13 Districts · 13,079 Gram Panchayats",
-    "apRecordsSummary": "152,646 verified Sarpanch, Ward, MPTC & ZPTC records",
-    "chooseAnotherState": "Or choose another state:",
+    "verifiedApsec": "सत्यापित एपीएसईसी",
+    "apStatsSummary": "13 जिले · 13,079 ग्राम पंचायतें",
+    "apRecordsSummary": "152,646 सत्यापित सरपंच, वार्ड, एमपीटीसी और जेडपीटीसी रिकॉर्ड",
+    "chooseAnotherState": "या कोई अन्य राज्य चुनें:",
     "tsTabLabel": "तेलंगाना (31 जिले)",
     "apTabLabel": "आंध्र प्रदेश (15 जिले)",
     "verified3TierTitle": "सत्यापित 3-स्तरीय पंचायती राज डेटा",
