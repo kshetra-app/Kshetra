@@ -11,6 +11,7 @@ import { View, Text, StyleSheet, ScrollView, TextInput, Pressable, Alert } from 
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { WritingKeyboardButton } from '../../../components/WritingTools';
 import { useTheme } from '../../../lib/useTheme';
 import { getRepresentativeById } from '../../../lib/representativesData';
 import type { Representative } from '@kshetra/shared';
@@ -145,6 +146,7 @@ export default function RepresentativeEditScreen() {
           <Text style={[styles.bannerText, { color: colors.textSecondary }]}>{translateScreenLabel("screenLabels.edit.value1Value2Value3EveryEditRequiresAVerifiable", { value1: office ? `${office} · ` : '', value2: jurisdiction ?? '', value3: '\n' })}</Text>
         </View>
 
+        <WritingKeyboardButton />
         {EDITABLE_FIELDS.filter(({ key }) => key !== 'party' || rep?.partyOfficial).map((f) => (
           <View key={f.key} style={styles.fieldWrap}>
             <Text style={[styles.label, { color: colors.textSecondary }]}>{translateScreenLabel(f.label)}</Text>

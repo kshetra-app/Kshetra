@@ -2,6 +2,15 @@
  * PA translation
  */
 const pa = {
+  "writing": {
+    "keyboard": "ਕੀਬੋਰਡ ਦੀ ਭਾਸ਼ਾ",
+    "keyboardHelp": "ਭਾਸ਼ਾ ਬਦਲਣ ਲਈ ਕੀਬੋਰਡ ਦਾ ਭਾਸ਼ਾ ਬਟਨ ਜਾਂ ਮੀਨੂ ਵਰਤੋ। ਨਵੀਂ ਭਾਸ਼ਾ ਜੋੜਨ ਲਈ ਫ਼ੋਨ ਦੀਆਂ ਕੀਬੋਰਡ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ।",
+    "openKeyboardSettings": "ਕੀਬੋਰਡ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ",
+    "contentLanguage": "ਲਿਖਣ ਦੀ ਭਾਸ਼ਾ · {{language}}",
+    "editMessage": "ਸੁਨੇਹਾ ਸੋਧੋ",
+    "editedTime": "ਸੋਧਿਆ · {{time}}",
+    "messageEditFailed": "ਸੋਧ ਸੰਭਾਲੀ ਨਹੀਂ ਗਈ। ਤੁਹਾਡੀ ਲਿਖਤ ਇੱਥੇ ਹੀ ਹੈ। ਭੇਜਿਆ ਸੁਨੇਹਾ 15 ਮਿੰਟਾਂ ਅੰਦਰ ਸੋਧ ਸਕਦੇ ਹੋ।",
+  },
   "additionalScreenLabels": {
     "candidate": {
       "profile": "ਉਮੀਦਵਾਰ ਐਕਸ-ਰੇ",

@@ -2,6 +2,15 @@
  * MR translation
  */
 const mr = {
+  "writing": {
+    "keyboard": "कीबोर्डची भाषा",
+    "keyboardHelp": "भाषा बदलण्यासाठी कीबोर्डवरील भाषेचे बटण किंवा मेनू वापरा. फोनच्या कीबोर्ड सेटिंग्जमध्ये नवीन भाषा जोडा.",
+    "openKeyboardSettings": "कीबोर्ड सेटिंग्ज उघडा",
+    "contentLanguage": "लिहिण्याची भाषा · {{language}}",
+    "editMessage": "संदेश संपादित करा",
+    "editedTime": "संपादित · {{time}}",
+    "messageEditFailed": "बदल जतन झाला नाही. तुम्ही लिहिलेला मजकूर इथेच आहे. पाठवलेला संदेश 15 मिनिटांच्या आत संपादित करता येतो.",
+  },
   "additionalScreenLabels": {
     "candidate": {
       "profile": "उमेदवार एक्स-रे",

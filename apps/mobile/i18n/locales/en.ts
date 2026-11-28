@@ -2,6 +2,15 @@
  * English (en) — Base translation
  */
 const en =  {
+  "writing": {
+    "keyboard": "Keyboard language",
+    "keyboardHelp": "Switch languages using your keyboard’s language key or menu. Add keyboards in your phone’s keyboard settings.",
+    "openKeyboardSettings": "Open keyboard settings",
+    "contentLanguage": "Content language · {{language}}",
+    "editMessage": "Edit message",
+    "editedTime": "Edited · {{time}}",
+    "messageEditFailed": "Couldn’t save the edit. Your text is still here. You can edit a sent message for 15 minutes.",
+  },
   "additionalScreenLabels": {
     "candidate": {
       "profile": "Candidate X-Ray",

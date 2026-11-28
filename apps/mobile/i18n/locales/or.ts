@@ -2,6 +2,15 @@
  * OR translation
  */
 const or = {
+  "writing": {
+    "keyboard": "କୀବୋର୍ଡ୍ ଭାଷା",
+    "keyboardHelp": "ଭାଷା ବଦଳାଇବାକୁ କୀବୋର୍ଡ୍‌ର ଭାଷା ବଟନ୍ ବା ମେନୁ ବ୍ୟବହାର କରନ୍ତୁ। ନୂଆ ଭାଷା ଯୋଡ଼ିବାକୁ ଫୋନ୍‌ର କୀବୋର୍ଡ୍ ସେଟିଂ ଖୋଲନ୍ତୁ।",
+    "openKeyboardSettings": "କୀବୋର୍ଡ୍ ସେଟିଂ ଖୋଲନ୍ତୁ",
+    "contentLanguage": "ଲେଖିବାର ଭାଷା · {{language}}",
+    "editMessage": "ବାର୍ତ୍ତା ସମ୍ପାଦନ କରନ୍ତୁ",
+    "editedTime": "ସମ୍ପାଦିତ · {{time}}",
+    "messageEditFailed": "ସମ୍ପାଦନ ସଞ୍ଚୟ ହେଲା ନାହିଁ। ଆପଣଙ୍କ ଲେଖା ଏଠି ଅଛି। ପଠାଇବାର ୧୫ ମିନିଟ୍ ଭିତରେ ବାର୍ତ୍ତା ବଦଳାଇପାରିବେ।",
+  },
   "additionalScreenLabels": {
     "candidate": {
       "profile": "ପ୍ରାର୍ଥୀ ଏକ୍ସ-ରେ",

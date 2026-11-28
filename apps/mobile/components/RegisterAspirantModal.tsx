@@ -2,6 +2,7 @@
  * RegisterAspirantModal — registration form for the "Become an Aspirant" flow.
  * Collects a public civic profile and creates it via the aspirant store.
  */
+import { WritingKeyboardButton } from './WritingTools';
 import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -169,6 +170,7 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
 
           {/* Display name */}
           <Text style={styles.label}>{t('aspirantReg.publicName')}</Text>
+          <WritingKeyboardButton />
           <TextInput
             style={styles.input}
             value={displayName}

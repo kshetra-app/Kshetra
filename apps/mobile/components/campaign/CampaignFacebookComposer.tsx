@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Linking, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { WritingKeyboardButton } from '../WritingTools';
 import { useTranslation } from 'react-i18next';
 import * as ImagePicker from 'expo-image-picker';
 import { File } from 'expo-file-system';
@@ -209,6 +210,7 @@ export default function CampaignFacebookComposer({ path, pageName }: {
       <Text style={[styles.title, { color: colors.text }]}>
         {t('campaignManager.facebookNewPost', { defaultValue: 'New Facebook post' })}
       </Text>
+      <WritingKeyboardButton />
       <TextInput accessibilityLabel={t('campaignManager.facebookPostMessage', { defaultValue: 'Post message' })}
         placeholder={t('campaignManager.facebookPostMessage', { defaultValue: 'Post message' })}
         placeholderTextColor={colors.textSecondary} multiline maxLength={5000}

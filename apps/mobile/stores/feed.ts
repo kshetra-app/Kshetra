@@ -23,7 +23,7 @@ import { logContentAction } from '../lib/contentAccountability';
 import { SequenceGuard } from '../lib/staleResponseGuard';
 import { useAuthStore } from './auth';
 import { prepareFeedAttachments, type SubmittedAttachment } from '../lib/feedAttachments';
-import { CONTENT_PAGE_SIZE, isInContentPeriod, type ContentPeriod } from '@kshetra/shared';
+import { CONTENT_PAGE_SIZE, extractContentHashtags, isInContentPeriod, type ContentPeriod } from '@kshetra/shared';
 
 const pollWrites = new Set<string>();
 const feedRefreshGuard = new SequenceGuard<string>();
@@ -64,7 +64,7 @@ export function mapSupabasePost(post: any): Post {
     language: post.language ?? 'en',
     createdAt: post.created_at,
     updatedAt: post.updated_at,
-    hashtags: post.hashtags ?? (post.content?.match(/#(\w+)/g) ?? []).map((tag: string) => tag.slice(1).toLowerCase()),
+    hashtags: post.hashtags ?? extractContentHashtags(post.content ?? ''),
     poll: post.poll ?? undefined,
     media: post.media,
     userReaction: post.user_reaction,
@@ -1389,13 +1389,13 @@ interface FeedState {
 
   // Post Actions
   addPost: (post: Post) => Promise<PostSubmissionOutcome>;
-  editPost: (postId: string, content: string, timelinePost?: Post) => Promise<boolean | 'pending'>;
+  editPost: (postId: string, content: string, timelinePost?: Post, language?: string) => Promise<boolean | 'pending'>;
   deletePost: (postId: string, timelinePost?: Post) => Promise<boolean>;
   addMediaToPost: (postId: string, media: PostMedia) => void;
   toggleReaction: (postId: string, reaction: ReactionType, timelinePost?: Post) => Promise<boolean>;
   votePoll: (postId: string, optionId: string | null, timelinePost?: Post) => Promise<boolean>;
   loadCommentPage: (postId: string, cursor: FeedCommentCursor | null) => Promise<FeedCommentCursor | null>;
-  editComment: (postId: string, commentId: string, content: string) => Promise<boolean>;
+  editComment: (postId: string, commentId: string, content: string, language?: string) => Promise<boolean>;
 
   // Comments Actions
   addComment: (postId: string, comment: Comment) => Promise<CommentSubmissionOutcome>;
@@ -1599,7 +1599,7 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
     }
   },
 
-  editPost: async (postId, content, timelinePost) => {
+  editPost: async (postId, content, timelinePost, language) => {
     const post = timelinePost?.id === postId ? timelinePost : get().posts.find((item) => item.id === postId);
     if (!post || !content.trim()) return false;
     const userId = useAuthStore.getState().user?.id;
@@ -1610,7 +1610,7 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
 
     if (userId) {
       try {
-        const result = await dataService.editPost(postId, content, userId);
+        const result = await dataService.editPost(postId, content, userId, language);
         if (result === 'pending') {
           set((state) => ({ posts: state.posts.filter((item) => item.id !== postId), lastError: null }));
           return 'pending';
@@ -1630,8 +1630,9 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
         ? {
             ...item,
             content,
+            language: language ?? item.language,
             updatedAt: new Date().toISOString(),
-            hashtags: content.match(/#(\w+)/g)?.map((tag) => tag.slice(1).toLowerCase()) ?? item.hashtags,
+            hashtags: extractContentHashtags(content),
           }
         : item),
       lastError: null,
@@ -1788,18 +1789,18 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
     return page.next;
   },
 
-  editComment: async (postId, commentId, content) => {
+  editComment: async (postId, commentId, content, language) => {
     const item = get().comments[postId]?.find((comment) => comment.id === commentId);
     const userId = useAuthStore.getState().user?.id;
     if (!userId || item?.author.id !== userId || item.isDeleted ||
       (item.syncStatus && item.syncStatus !== 'SYNCED')) return false;
     try {
-      const saved = await apiClient.feed.editComment(commentId, content);
+      const saved = await apiClient.feed.editComment(commentId, content, language);
       if (!saved.success || saved.id !== commentId) return false;
       set((state) => ({ comments: {
         ...state.comments,
         [postId]: (state.comments[postId] ?? []).map((comment) => comment.id === commentId ? {
-          ...comment, content: saved.content, updatedAt: saved.updatedAt,
+          ...comment, content: saved.content, language: saved.language ?? comment.language, updatedAt: saved.updatedAt,
         } : comment),
       } }));
       return true;
@@ -2322,7 +2323,7 @@ export const useFeedStore = create<FeedState>()((set, get) => ({
         language: p.language ?? 'en',
         createdAt: p.created_at ?? new Date().toISOString(),
         updatedAt: p.updated_at ?? new Date().toISOString(),
-        hashtags: p.hashtags ?? (p.content?.match(/#(\w+)/g)?.map((h: string) => h.slice(1).toLowerCase()) ?? []),
+        hashtags: p.hashtags ?? extractContentHashtags(p.content ?? ''),
       };
       set((state) => ({ posts: [newPost, ...state.posts] }));
     }

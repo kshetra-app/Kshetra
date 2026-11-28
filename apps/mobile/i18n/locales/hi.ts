@@ -2,6 +2,15 @@
  * HI translation
  */
 const hi = {
+  "writing": {
+    "keyboard": "कीबोर्ड की भाषा",
+    "keyboardHelp": "भाषा बदलने के लिए कीबोर्ड का भाषा बटन या मेनू इस्तेमाल करें। फ़ोन की कीबोर्ड सेटिंग में नई भाषा जोड़ें।",
+    "openKeyboardSettings": "कीबोर्ड सेटिंग खोलें",
+    "contentLanguage": "लिखने की भाषा · {{language}}",
+    "editMessage": "संदेश संपादित करें",
+    "editedTime": "संपादित · {{time}}",
+    "messageEditFailed": "बदलाव सेव नहीं हुआ। आपका लिखा यहीं है। संदेश भेजने के 15 मिनट के अंदर उसे संपादित कर सकते हैं।",
+  },
   "additionalScreenLabels": {
     "candidate": {
       "profile": "उम्मीदवार एक्स-रे",

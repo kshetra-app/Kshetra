@@ -1,3 +1,4 @@
+import { WritingKeyboardButton } from './WritingTools';
 import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import { 
@@ -113,6 +114,7 @@ export const BroadcastQaModal: React.FC<Props> = ({
           />
 
           <View style={styles.inputContainer}>
+            <WritingKeyboardButton />
             <TextInput
               style={styles.input}
               placeholder={translateScreenLabel("screenLabels.BroadcastQaModal.askAQuestionForTheBroadcaster")}

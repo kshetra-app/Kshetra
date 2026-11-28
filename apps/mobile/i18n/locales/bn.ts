@@ -2,6 +2,15 @@
  * BN translation
  */
 const bn = {
+  "writing": {
+    "keyboard": "কিবোর্ডের ভাষা",
+    "keyboardHelp": "ভাষা বদলাতে কিবোর্ডের ভাষার বোতাম বা মেনু ব্যবহার করুন। নতুন ভাষা যোগ করতে ফোনের কিবোর্ড সেটিংস খুলুন।",
+    "openKeyboardSettings": "কিবোর্ড সেটিংস খুলুন",
+    "contentLanguage": "লেখার ভাষা · {{language}}",
+    "editMessage": "বার্তা সম্পাদনা করুন",
+    "editedTime": "সম্পাদিত · {{time}}",
+    "messageEditFailed": "পরিবর্তন সেভ হয়নি। আপনার লেখা এখানেই আছে। পাঠানো বার্তা ১৫ মিনিটের মধ্যে সম্পাদনা করতে পারেন।",
+  },
   "additionalScreenLabels": {
     "candidate": {
       "profile": "প্রার্থী এক্স-রে",

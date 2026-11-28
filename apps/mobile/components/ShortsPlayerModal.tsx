@@ -1,3 +1,4 @@
+import { WritingKeyboardButton } from './WritingTools';
 import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { resolveOriginalShortVideo } from '../lib/originalShortVideo';
 
@@ -677,6 +678,7 @@ function ShortPageItem({
               </View>
             )}
             <View style={[styles.commentInputRow, { paddingBottom: Math.max(insets.bottom, 12) }]}>
+              <WritingKeyboardButton compact />
               <TextInput
                 style={styles.commentInput}
                 placeholder={t('shortsPlayer.addComment')}

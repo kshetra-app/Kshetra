@@ -8,6 +8,7 @@ import {
   fetchUserConversations,
   fetchConversationMessages,
   sendDirectMessageToConversation,
+  editDirectMessage,
   acceptDMRequest,
   declineDMRequest,
   blockAndReportDMUser,
@@ -34,6 +35,7 @@ interface DMState {
     mediaUrl?: string,
     mediaType?: 'image' | 'video' | 'audio' | 'document',
   ) => Promise<DMMessageItem | null>;
+  editMessage: (message: DMMessageItem, content: string) => Promise<void>;
   acceptRequest: (conversationId: string, userId: string) => Promise<boolean>;
   declineRequest: (conversationId: string, userId: string) => Promise<boolean>;
   blockAndReport: (
@@ -224,6 +226,28 @@ export const useDMStore = create<DMState>((set, get) => ({
       return { activeMessages: { ...s.activeMessages, [conversationId]: [...messages, result] } };
     });
     return result;
+  },
+
+  editMessage: async (message, content) => {
+    const senderId = message.sender_id;
+    const conversationId = message.conversation_id;
+    if (!isCurrentUser(senderId) || get().inboxUserId !== senderId) {
+      throw new Error('Message owner changed');
+    }
+    const saved = await editDirectMessage(message, content);
+    if (saved?.id !== message.id || saved.sender_id !== senderId || saved.conversation_id !== conversationId) {
+      throw new Error('Message edit was not confirmed');
+    }
+    if (!isCurrentUser(senderId) || get().inboxUserId !== senderId) return;
+    messageRevision++;
+    set((state) => ({
+      activeMessages: {
+        ...state.activeMessages,
+        [conversationId]: (state.activeMessages[conversationId] ?? []).map((item) =>
+          item.id === message.id ? saved : item),
+      },
+    }));
+    void get().loadInbox(senderId, true);
   },
 
   acceptRequest: async (conversationId, userId) => {

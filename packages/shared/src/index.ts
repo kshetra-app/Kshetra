@@ -13,6 +13,7 @@ export * from './config/features';
 export * from './config/environments';
 export * from './contentArchive';
 export * from './contentLimits';
+export * from './contentHashtags';
 export * from './legacySyntheticRecords';
 export * from './contracts';
 export * from './i18n/indic-transliterator';

@@ -2,6 +2,15 @@
  * TE translation
  */
 const te = {
+  "writing": {
+    "keyboard": "కీబోర్డ్ భాష",
+    "keyboardHelp": "కీబోర్డ్‌లోని భాష బటన్ లేదా మెనూతో భాష మార్చండి. కొత్త భాషను మీ ఫోన్ కీబోర్డ్ సెట్టింగ్‌లలో జోడించండి.",
+    "openKeyboardSettings": "కీబోర్డ్ సెట్టింగ్‌లు తెరవండి",
+    "contentLanguage": "రచన భాష · {{language}}",
+    "editMessage": "సందేశాన్ని సవరించండి",
+    "editedTime": "సవరించారు · {{time}}",
+    "messageEditFailed": "మార్పు సేవ్ కాలేదు. మీరు రాసిన వచనం ఇక్కడే ఉంది. పంపిన సందేశాన్ని 15 నిమిషాల్లో సవరించవచ్చు.",
+  },
   "additionalScreenLabels": {
     "candidate": {
       "profile": "అభ్యర్థి ఎక్స్-రే",

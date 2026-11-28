@@ -102,6 +102,16 @@ describe('Track 3: Mobile API Strangler - Feed & Social Mutations', () => {
       expect(res).toBe(true);
     });
 
+    it('saves the original text and chosen language when editing a published post', async () => {
+      const content = 'తెలుగు వార్తలు · नमस्ते 👋';
+      await dataService.editPost('post-1', content, 'usr-1', 'te');
+      expect(mockPatch).toHaveBeenCalledWith(
+        '/api/v1/feed/posts/post-1',
+        { content, language: 'te' },
+        expect.objectContaining({ authPolicy: 'authenticated' }),
+      );
+    });
+
     it('deletePost dispatches to DELETE /api/v1/feed/posts/:id', async () => {
       const res = await dataService.deletePost('post-1');
       expect(mockDelete).toHaveBeenCalledWith(

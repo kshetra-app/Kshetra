@@ -489,8 +489,8 @@ function PersonalPage({
             }
             return result;
           }}
-          onEditSubmit={async (postId, content) => {
-            const result = await useFeedStore.getState().editPost(postId, content, editingPost);
+          onEditSubmit={async (postId, content, language) => {
+            const result = await useFeedStore.getState().editPost(postId, content, editingPost, language);
             if (result === 'pending') setPosts((current) => current.filter((post) => post.id !== postId));
             if (result) { void loadPage(); void loadSubmissions(); }
             return result;

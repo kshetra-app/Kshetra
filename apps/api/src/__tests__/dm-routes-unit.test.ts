@@ -221,6 +221,56 @@ describe('DM Routes & Rate Limiting Unit Tests (Direct Route Injection)', () => 
     });
   });
 
+  describe('Editing sent messages', () => {
+    const actor = '40000000-0000-4000-8000-000000000001';
+    const conversation = '40000000-0000-4000-8000-000000000002';
+    const messageId = '40000000-0000-4000-8000-000000000003';
+    const url = `/api/v1/dm/conversations/${conversation}/messages/${messageId}`;
+    const content = 'తెలుగు · नमस्ते · தமிழ் 👋';
+
+    it('preserves native text and passes the authenticated sender to the transaction', async () => {
+      const wasConfigured = isSupabaseConfigured;
+      setSupabaseConfiguredForTesting(true);
+      const message = {
+        id: messageId,
+        sender_id: actor,
+        content,
+        edited_at: '2026-11-28T10:00:00Z',
+      };
+      const rpc = jest.spyOn(supabase, 'rpc').mockReturnValue({
+        single: async () => ({ data: message, error: null }),
+      } as any);
+      try {
+        const response = await app.inject({
+          method: 'PATCH',
+          url,
+          headers: { 'x-user-id': actor },
+          payload: { content, previousEditedAt: null },
+        });
+        expect(response.statusCode).toBe(200);
+        expect(response.json().message).toEqual(message);
+        expect(rpc).toHaveBeenCalledWith('edit_own_direct_message', {
+          p_conversation_id: conversation,
+          p_message_id: messageId,
+          p_actor_id: actor,
+          p_content: content,
+          p_previous_edit: null,
+        });
+      } finally {
+        setSupabaseConfiguredForTesting(wasConfigured);
+      }
+    });
+
+    it('requires sign-in before attempting an edit', async () => {
+      const response = await app.inject({
+        method: 'PATCH',
+        url,
+        payload: { content, previousEditedAt: null },
+      });
+      expect(response.statusCode).toBe(401);
+    });
+  });
+
   describe('3. Create Conversation Endpoint (/api/v1/dm/conversations)', () => {
     it('rejects unauthenticated request with 401', async () => {
       const res = await app.inject({

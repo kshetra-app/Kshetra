@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -24,6 +24,7 @@ import { REPORT_REASONS, type ReportReason } from '../../lib/moderationTypes';
 import type { DMMessageItem } from '../../lib/supabaseDataService';
 import { useTimeAgo } from '../../lib/useTimeAgo';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
+import { WritingKeyboardButton } from '../../components/WritingTools';
 import { useForegroundChatRefresh } from '../../lib/useForegroundChatRefresh';
 import {
   getLocalizedContactName,
@@ -48,11 +49,15 @@ export default function ConversationThreadScreen() {
   const loadThread = useDMStore((s) => s.loadThread);
   const loadInbox = useDMStore((s) => s.loadInbox);
   const sendMessage = useDMStore((s) => s.sendMessage);
+  const editMessage = useDMStore((s) => s.editMessage);
   const acceptRequest = useDMStore((s) => s.acceptRequest);
   const declineRequest = useDMStore((s) => s.declineRequest);
   const blockAndReport = useDMStore((s) => s.blockAndReport);
 
   const [inputContent, setInputContent] = useState('');
+  const [editingMessage, setEditingMessage] = useState<DMMessageItem | null>(null);
+  const [editContent, setEditContent] = useState('');
+  const inputRef = useRef<TextInput>(null);
   const [reportModalVisible, setReportModalVisible] = useState(false);
   const [reportReason, setReportReason] = useState<ReportReason>('harassment');
   const [reportDescription, setReportDescription] = useState('');
@@ -79,7 +84,15 @@ export default function ConversationThreadScreen() {
   const newestFirst = useMemo(() => [...messages].reverse(), [messages]);
   const waitingForAccept = isPending && !isIncomingRequest && Boolean(conv.last_message_preview || messages.length);
   const canSend = Boolean(currentUserId && conv && !isIncomingRequest && !waitingForAccept);
+  const canCompose = editingMessage ? conv?.status === 'accepted' : canSend;
+  const composeText = editingMessage ? editContent : inputContent;
   const flatListRef = useRef<FlatList>(null);
+
+  useEffect(() => {
+    setEditingMessage(null);
+    setInputContent('');
+    setSendFailed(false);
+  }, [conversationId, currentUserId]);
 
   useForegroundChatRefresh(useCallback(async () => {
     if (!conversationId || !currentUserId) return;
@@ -89,17 +102,25 @@ export default function ConversationThreadScreen() {
   }, [conversationId, currentUserId, loadInbox, loadThread]));
 
   const handleSend = async () => {
-    if (!canSend || !inputContent.trim() || !conversationId || !currentUserId || sendingMessage.current) return;
+    const content = composeText.trim();
+    if (!canCompose || !content || !conversationId || !currentUserId || sendingMessage.current) return;
     sendingMessage.current = true;
     setSending(true);
     setSendFailed(false);
     try {
-      const result = await sendMessage(conversationId, currentUserId, inputContent.trim());
+      if (editingMessage) {
+        await editMessage(editingMessage, content);
+        setEditingMessage(null);
+        return;
+      }
+      const result = await sendMessage(conversationId, currentUserId, content);
       if (result) {
         setInputContent('');
         flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
       }
       else setSendFailed(true);
+    } catch {
+      setSendFailed(true);
     } finally {
       sendingMessage.current = false;
       setSending(false);
@@ -189,6 +210,8 @@ export default function ConversationThreadScreen() {
 
   const renderMessageItem = ({ item }: { item: DMMessageItem }) => {
     const isMine = item.sender_id === currentUserId;
+    const canEdit = isMine && conv?.status === 'accepted' && !item.media_url &&
+      Date.now() - Date.parse(item.created_at) < 15 * 60 * 1000;
     const isMediaLocked = item.is_media_locked && !unlockedMediaIds.has(item.id);
 
     return (
@@ -250,14 +273,23 @@ export default function ConversationThreadScreen() {
           ) : null}
 
           {/* Timestamp */}
-          <Text
-            style={[
-              styles.msgTime,
-              { color: isMine ? 'rgba(255,255,255,0.7)' : colors.textMuted },
-            ]}
-          >
-            {timeAgo(item.created_at)}
-          </Text>
+          <View style={styles.messageFooter}>
+            {canEdit && (
+              <Pressable accessibilityRole="button" accessibilityLabel={t('writing.editMessage')}
+                disabled={sending} style={styles.editMessageButton}
+                onPress={() => {
+                  setEditingMessage(item);
+                  setEditContent(item.content);
+                  setSendFailed(false);
+                  inputRef.current?.focus();
+                }}>
+                <Ionicons name="pencil-outline" size={14} color="#FFFFFF" />
+              </Pressable>
+            )}
+            <Text style={[styles.msgTime, { color: isMine ? 'rgba(255,255,255,0.7)' : colors.textMuted }]}>
+              {item.edited_at ? t('writing.editedTime', { time: timeAgo(item.created_at) }) : timeAgo(item.created_at)}
+            </Text>
+          </View>
         </View>
       </View>
     );
@@ -356,16 +388,29 @@ export default function ConversationThreadScreen() {
       {/* Input Bar */}
       {sendFailed && (
         <Text accessibilityRole="alert" style={[styles.requestBanner, { color: colors.text }]}>
-          {t('messages.sendFailed', { defaultValue: 'Message could not send. Your text is still here.' })}
+          {editingMessage ? t('writing.messageEditFailed') : t('messages.sendFailed')}
         </Text>
       )}
-      {canSend && <View style={[styles.inputBar, { paddingBottom: Math.max(insets.bottom, 8) + 4, borderTopColor: colors.border, backgroundColor: colors.surface }]}>
+      {editingMessage && (
+        <View style={styles.editBanner}>
+          <Text style={{ color: colors.text, flexShrink: 1 }}>{t('writing.editMessage')}</Text>
+          <Pressable accessibilityRole="button" disabled={sending} onPress={() => {
+            setEditingMessage(null);
+            setSendFailed(false);
+          }}>
+            <Text style={{ color: colors.primary }}>{t('common.cancel')}</Text>
+          </Pressable>
+        </View>
+      )}
+      {canCompose && <View style={[styles.inputBar, { paddingBottom: Math.max(insets.bottom, 8) + 4, borderTopColor: colors.border, backgroundColor: colors.surface }]}>
+        <WritingKeyboardButton compact />
         <TextInput
+          ref={inputRef}
           style={[styles.input, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
           placeholder={t('messages.typePlaceholder', { defaultValue: 'Send a direct message...' })}
           placeholderTextColor={colors.textMuted}
-          value={inputContent}
-          onChangeText={setInputContent}
+          value={composeText}
+          onChangeText={editingMessage ? setEditContent : setInputContent}
           editable={!sending}
           maxLength={isPending ? 2000 : 5000}
           multiline
@@ -373,14 +418,14 @@ export default function ConversationThreadScreen() {
         <Pressable
           style={[
             styles.sendBtn,
-            { backgroundColor: inputContent.trim() ? colors.primary : colors.textMuted },
+            { backgroundColor: composeText.trim() ? colors.primary : colors.textMuted },
           ]}
           onPress={handleSend}
-          disabled={sending || !inputContent.trim()}
+          disabled={sending || !composeText.trim()}
           accessibilityRole="button"
-          accessibilityLabel={t('common.send', { defaultValue: 'Send' })}
+          accessibilityLabel={editingMessage ? t('common.save') : t('common.send')}
         >
-          <Ionicons name="arrow-up" size={18} color="#FFFFFF" />
+          <Ionicons name={editingMessage ? 'checkmark' : 'arrow-up'} size={18} color="#FFFFFF" />
         </Pressable>
       </View>}
 
@@ -501,6 +546,9 @@ const styles = StyleSheet.create({
   msgBubbleOther: { borderBottomLeftRadius: 4, borderWidth: 1 },
   msgText: { fontSize: 14, lineHeight: 20 },
   msgTime: { fontSize: 10, marginTop: 4, alignSelf: 'flex-end' },
+  messageFooter: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 6 },
+  editMessageButton: { minHeight: 32, minWidth: 40, justifyContent: 'center', alignItems: 'center' },
+  editBanner: { flexDirection: 'row', justifyContent: 'space-between', gap: 8, padding: 12 },
   mediaShield: {
     padding: 16,
     borderRadius: 12,

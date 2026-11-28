@@ -773,6 +773,91 @@ export const dmRoutes: FastifyPluginAsync = async (app) => {
     },
   );
 
+  app.patch<{
+    Params: { id: string; messageId: string };
+    Body: { content: string; previousEditedAt: string | null };
+  }>(
+    '/api/v1/dm/conversations/:id/messages/:messageId',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          required: ['id', 'messageId'],
+          properties: {
+            id: { type: 'string', format: 'uuid' },
+            messageId: { type: 'string', format: 'uuid' },
+          },
+        },
+        body: {
+          type: 'object',
+          required: ['content', 'previousEditedAt'],
+          additionalProperties: false,
+          properties: {
+            content: { type: 'string', minLength: 1, maxLength: 5000 },
+            previousEditedAt: {
+              anyOf: [{ type: 'string', format: 'date-time' }, { type: 'null' }],
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const auth = await resolveAuthenticatedUser(request, reply);
+      if (!auth) return;
+
+      const content = request.body.content.trim();
+      if (!content)
+        return sendApiError(reply, request, 400, 'Bad Request', 'Message text is required');
+      if (!isSupabaseConfigured) {
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Direct messaging storage is unavailable',
+        );
+      }
+
+      const { data, error } = await supabase
+        .rpc('edit_own_direct_message', {
+          p_conversation_id: request.params.id,
+          p_message_id: request.params.messageId,
+          p_actor_id: auth.userId,
+          p_content: content,
+          p_previous_edit: request.body.previousEditedAt,
+        })
+        .single();
+
+      if (error?.code === 'P0002')
+        return sendApiError(reply, request, 404, 'Not Found', 'Editable message not found');
+      if (error?.code === '42501')
+        return sendApiError(reply, request, 403, 'Forbidden', 'This conversation is unavailable');
+      if (error?.code === 'P4113') {
+        return sendApiError(
+          reply,
+          request,
+          409,
+          'Conflict',
+          'The edit window closed or the message changed',
+          {
+            code: 'MESSAGE_EDIT_CONFLICT',
+          },
+        );
+      }
+      if (error || !data) {
+        request.log.error({ code: error?.code }, 'Could not save direct message edit');
+        return sendApiError(
+          reply,
+          request,
+          503,
+          'Service Unavailable',
+          'Could not save the message edit',
+        );
+      }
+      return reply.send({ message: data });
+    },
+  );
+
   /**
    * POST /api/v1/dm/conversations/:id/accept
    * Accept a pending message request (moves to Chats and unlocks messaging)

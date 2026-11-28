@@ -2,6 +2,15 @@
  * ML translation
  */
 const ml = {
+  "writing": {
+    "keyboard": "കീബോർഡ് ഭാഷ",
+    "keyboardHelp": "ഭാഷ മാറ്റാൻ കീബോർഡിലെ ഭാഷാ ബട്ടണോ മെനുവോ ഉപയോഗിക്കുക. പുതിയ ഭാഷ ചേർക്കാൻ ഫോണിലെ കീബോർഡ് ക്രമീകരണങ്ങൾ തുറക്കുക.",
+    "openKeyboardSettings": "കീബോർഡ് ക്രമീകരണങ്ങൾ തുറക്കുക",
+    "contentLanguage": "എഴുതുന്ന ഭാഷ · {{language}}",
+    "editMessage": "സന്ദേശം തിരുത്തുക",
+    "editedTime": "തിരുത്തിയത് · {{time}}",
+    "messageEditFailed": "തിരുത്തൽ സേവ് ചെയ്യാനായില്ല. നിങ്ങൾ എഴുതിയത് ഇവിടെയുണ്ട്. അയച്ച സന്ദേശം 15 മിനിറ്റിനകം തിരുത്താം.",
+  },
   "additionalScreenLabels": {
     "candidate": {
       "profile": "സ്ഥാനാർത്ഥി എക്സ്-റേ",

@@ -346,8 +346,8 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
   );
 
   const handleEditSubmit = useCallback(
-    async (postId: string, content: string) => {
-      return editPostAction(postId, content);
+    async (postId: string, content: string, language?: string) => {
+      return editPostAction(postId, content, undefined, language);
     },
     [editPostAction],
   );

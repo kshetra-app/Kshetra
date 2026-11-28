@@ -1,4 +1,5 @@
 import AttachmentToolbar from './AttachmentToolbar';
+import { ContentLanguagePicker, WritingKeyboardButton } from './WritingTools';
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   View,
@@ -28,7 +29,7 @@ import { useFeedStore } from '../stores/feed';
 import type { PostSubmissionOutcome } from '../stores/feed';
 import { uuid } from 'expo-modules-core';
 import { uploadShort } from '../lib/supabaseDataService';
-import { CONTENT_LIMITS, exceedsFeedMediaLimit, STATES } from '@kshetra/shared';
+import { CONTENT_LIMITS, exceedsFeedMediaLimit, extractContentHashtags, STATES } from '@kshetra/shared';
 import { gateContentAction, logContentAction } from '../lib/contentAccountability';
 import { useContentPromotionStore } from '../stores/contentPromotion';
 import { useUserProfileStore } from '../stores/userProfile';
@@ -41,7 +42,7 @@ interface ComposeSheetProps {
   onClose: () => void;
   initialKind?: 'post' | 'short';
   onSubmit?: (post: Post) => Promise<PostSubmissionOutcome>;
-  onEditSubmit?: (postId: string, content: string) => Promise<boolean | 'pending'>;
+  onEditSubmit?: (postId: string, content: string, language?: string) => Promise<boolean | 'pending'>;
   editPost?: Post;
   replyTo?: { postId: string; authorName: string };
 }
@@ -53,22 +54,6 @@ const POST_TYPES: { key: PostType; icon: string; tKey: string; color: string }[]
   { key: 'question', icon: 'help-circle', tKey: 'postCard.question', color: '#B45309' },
   { key: 'poll', icon: 'stats-chart', tKey: 'postCard.poll', color: '#C5A059' },
   { key: 'alert', icon: 'alert-circle', tKey: 'postCard.alert', color: '#C0392B' },
-];
-
-const LANGUAGES = [
-  { code: 'en', label: 'English' },
-  { code: 'te', label: 'తెలుగు (Telugu)' },
-  { code: 'hi', label: 'हिन्दी (Hindi)' },
-  { code: 'ta', label: 'தமிழ் (Tamil)' },
-  { code: 'kn', label: 'ಕನ್ನಡ (Kannada)' },
-  { code: 'mr', label: 'मराठी (Marathi)' },
-  { code: 'bn', label: 'বাংলা (Bengali)' },
-  { code: 'gu', label: 'ગુજરાતી (Gujarati)' },
-  { code: 'ml', label: 'മലയാളം (Malayalam)' },
-  { code: 'or', label: 'ଓଡ଼ିଆ (Odia)' },
-  { code: 'pa', label: 'ਪੰਜਾਬੀ (Punjabi)' },
-  { code: 'as', label: 'অসমীয়া (Assamese)' },
-  { code: 'ne', label: 'नेपाली (Nepali)' },
 ];
 
 const { feedMedia, pollOptions: MAX_POLL_OPTIONS, short: shortLimits } = CONTENT_LIMITS;
@@ -102,7 +87,6 @@ export default function ComposeSheet({
   const [mediaItems, setMediaItems] = useState<PostMedia[]>([]);
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
-  const [showLangPicker, setShowLangPicker] = useState(false);
 
   const inputRef = useRef<TextInput>(null);
   const user = useAuthStore((s) => s.user);
@@ -132,9 +116,13 @@ export default function ComposeSheet({
   }, [effectiveTargetScope, targetScope]);
 
   const isEditMode = !!editPost;
+  const draftSession = useRef<string | null>(null);
 
   useEffect(() => {
     if (visible) {
+      const id = editPost?.id ?? 'new';
+      if (draftSession.current === id) return;
+      draftSession.current = id;
       if (editPost) {
         setContent(editPost.content);
         setPostType(editPost.type);
@@ -145,6 +133,7 @@ export default function ComposeSheet({
       }
       setTimeout(() => inputRef.current?.focus(), 200);
     } else {
+      draftSession.current = null;
       setKind(initialKind);
       setShortTitle('');
       setShortDescription('');
@@ -157,7 +146,6 @@ export default function ComposeSheet({
       setMediaItems([]);
       setShowLinkInput(false);
       setLinkUrl('');
-      setShowLangPicker(false);
     }
   }, [visible, editPost, i18n.language, initialKind]);
 
@@ -293,7 +281,7 @@ export default function ComposeSheet({
         stateCode, stateName,
         constituencyId: effectiveTargetScope === 'constituency' && activeConstituency
           ? `${stateCode}-AC-${activeConstituency.acNo}` : undefined,
-        hashtags: shortDescription.match(/#[^\s#]+/gu)?.map((tag) => tag.slice(1)) ?? [],
+        hashtags: extractContentHashtags(shortDescription),
       };
       const draft = JSON.stringify([user.id, shortVideo.uri, short]);
       if (shortRetry.current?.draft !== draft) shortRetry.current = {draft, id:uuid.v4()};
@@ -318,7 +306,7 @@ export default function ComposeSheet({
 
     if (isEditMode && editPost) {
       if (!gateContentAction('edit_post')) return;
-      const saved = await onEditSubmit?.(editPost.id, content.trim());
+      const saved = await onEditSubmit?.(editPost.id, content.trim(), language === editPost.language ? undefined : language);
       if (!saved) {
         Alert.alert(t('feed.editFailed', { defaultValue: 'Could not save this edit. Check your connection and try again.' }));
         return;
@@ -338,7 +326,7 @@ export default function ComposeSheet({
 
     const now = new Date().toISOString();
     const authorName = user?.email?.split('@')[0] ?? 'Citizen';
-    const hashtags = content.match(/#(\w+)/g)?.map((h) => h.slice(1).toLowerCase()) ?? [];
+    const hashtags = extractContentHashtags(content);
 
     // Dynamically resolve target state and constituency based on user scope choice
     let targetState = stateCode === 'IN' ? 'NATIONAL' : stateCode;
@@ -453,7 +441,6 @@ export default function ComposeSheet({
     }
   };
 
-  const currentLangLabel = LANGUAGES.find((l) => l.code === language)?.label ?? language;
 
   return (
     <Modal visible={visible} onRequestClose={() => {if (!saveLock.current) onClose();}} animationType="slide" statusBarTranslucent>
@@ -513,43 +500,11 @@ export default function ComposeSheet({
               </View>
             )}
             <View style={styles.sectionRow}>
-              <Pressable onPress={() => setShowLangPicker((open) => !open)} accessibilityRole="button"
-                style={[styles.scopeChip, { borderColor: colors.border }]}>
-                <Ionicons name="language" size={16} color={colors.primary} />
-                <Text style={{ color: colors.text }}>{currentLangLabel}</Text>
-                <Ionicons name="chevron-down" size={14} color={colors.textSecondary} />
-              </Pressable>
-            </View>
-            {showLangPicker && (
-              <View style={[styles.langList, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                {LANGUAGES.map((l) => (
-                  <Pressable
-                    key={l.code}
-                    style={[
-                      styles.langOption,
-                      language === l.code && { backgroundColor: colors.primaryLight },
-                    ]}
-                    onPress={() => {
-                      setLanguage(l.code);
-                      setShowLangPicker(false);
-                    }}
-                  >
-                    <Text
-                      style={[
-                        styles.langOptionText,
-                        { color: colors.text },
-                        language === l.code && { color: colors.primary, fontWeight: '700' },
-                      ]}
-                    >
-                      {l.label}
-                    </Text>
-                    {language === l.code && (
-                      <Ionicons name="checkmark" size={16} color={colors.primary} />
-                    )}
-                  </Pressable>
-                ))}
+              <View style={{ flex: 1 }}>
+                <ContentLanguagePicker key={editPost?.id ?? kind} value={language} onChange={setLanguage} />
               </View>
-            )}
+              <WritingKeyboardButton />
+            </View>
 
             {isShort ? (
               <View style={styles.shortFields}>
@@ -940,36 +895,6 @@ const styles = StyleSheet.create({
   langSelectorRow: {
     flexDirection: 'row',
     marginTop: 10,
-  },
-  langTrigger: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 6,
-  },
-  langTriggerText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  langList: {
-    borderRadius: 10,
-    borderWidth: 1,
-    marginTop: 6,
-    maxHeight: 180,
-    overflow: 'hidden',
-  },
-  langOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  langOptionText: {
-    fontSize: 13,
   },
   typeRow: {
     flexDirection: 'row',

@@ -2,6 +2,15 @@
  * NE translation
  */
 const ne = {
+  "writing": {
+    "keyboard": "किबोर्डको भाषा",
+    "keyboardHelp": "भाषा बदल्न किबोर्डको भाषा बटन वा मेनु प्रयोग गर्नुहोस्। अर्को भाषा थप्न फोनको किबोर्ड सेटिङ खोल्नुहोस्।",
+    "openKeyboardSettings": "किबोर्ड सेटिङ खोल्नुहोस्",
+    "contentLanguage": "लेख्ने भाषा · {{language}}",
+    "editMessage": "सन्देश सम्पादन गर्नुहोस्",
+    "editedTime": "सम्पादन गरिएको · {{time}}",
+    "messageEditFailed": "सम्पादन सुरक्षित भएन। तपाईंले लेखेको पाठ यहीं छ। पठाएको सन्देश १५ मिनेटभित्र सम्पादन गर्न सकिन्छ।",
+  },
   "additionalScreenLabels": {
     "candidate": {
       "profile": "उम्मेदवार एक्स-रे",

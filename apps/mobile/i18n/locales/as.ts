@@ -2,6 +2,15 @@
  * AS translation
  */
 const as = {
+  "writing": {
+    "keyboard": "কীব’ৰ্ডৰ ভাষা",
+    "keyboardHelp": "ভাষা সলনি কৰিবলৈ কীব’ৰ্ডৰ ভাষাৰ বুটাম বা মেনু ব্যৱহাৰ কৰক। নতুন ভাষা যোগ কৰিবলৈ ফোনৰ কীব’ৰ্ড ছেটিংছ খোলক।",
+    "openKeyboardSettings": "কীব’ৰ্ড ছেটিংছ খোলক",
+    "contentLanguage": "লিখাৰ ভাষা · {{language}}",
+    "editMessage": "বাৰ্তাটো সম্পাদনা কৰক",
+    "editedTime": "সম্পাদনা কৰা হৈছে · {{time}}",
+    "messageEditFailed": "সম্পাদনাটো সংৰক্ষণ কৰিব পৰা নগ’ল। আপুনি লিখাখিনি ইয়াতে আছে। পঠোৱা বাৰ্তা ১৫ মিনিটৰ ভিতৰত সম্পাদনা কৰিব পাৰে।",
+  },
   "additionalScreenLabels": {
     "candidate": {
       "profile": "প্ৰাৰ্থী এক্স-ৰে",

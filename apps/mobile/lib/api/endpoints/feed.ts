@@ -105,13 +105,13 @@ export class FeedEndpoint {
   /**
    * 2. Edit post
    */
-  async editPost(postId: string, content: string): Promise<{ success: boolean; id: string; reviewStatus?: PostReviewStatus }> {
+  async editPost(postId: string, content: string, language?: string): Promise<{ success: boolean; id: string; reviewStatus?: PostReviewStatus }> {
     if (!postId || !content) {
       throw new ApiValidationError('Invalid edit post: postId and content are required');
     }
     const res = await this.client.patch<{ success: boolean; id: string; reviewStatus?: PostReviewStatus }>(
       `/api/v1/feed/posts/${encodeURIComponent(postId)}`,
-      { content },
+      { content, ...(language ? { language } : {}) },
       { authPolicy: 'authenticated' },
     );
     return res.data;
@@ -180,10 +180,10 @@ export class FeedEndpoint {
     return res.data;
   }
 
-  async editComment(commentId: string, content: string) {
-    const res = await this.client.patch<{ success: boolean; id: string; content: string; updatedAt: string }>(
+  async editComment(commentId: string, content: string, language?: string) {
+    const res = await this.client.patch<{ success: boolean; id: string; content: string; updatedAt: string; language?: string }>(
       `/api/v1/feed/comments/${encodeURIComponent(commentId)}`,
-      { content },
+      { content, ...(language ? { language } : {}) },
       { authPolicy: 'authenticated' },
     );
     return res.data;

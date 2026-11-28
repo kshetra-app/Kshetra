@@ -19,6 +19,7 @@ import type { IssueComment, IssueStatusChange } from '../../lib/civicTypes';
 import { useTimeAgo } from '../../lib/useTimeAgo';
 import { useLocalizedDate } from '../../lib/useLocalizedDate';
 import { useTheme } from '../../lib/theme';
+import { WritingKeyboardButton } from '../../components/WritingTools';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import { gateContentAction, logContentAction } from '../../lib/contentAccountability';
 
@@ -632,6 +633,7 @@ export default function IssueDetailScreen() {
           },
         ]}
       >
+        <WritingKeyboardButton compact />
         <TextInput
           ref={commentInputRef}
           style={[

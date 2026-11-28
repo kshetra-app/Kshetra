@@ -314,11 +314,11 @@ export async function composePost(post: {
   }
 }
 
-export async function editPost(postId: string, content: string, _userId?: string): Promise<boolean | PostReviewStatus> {
+export async function editPost(postId: string, content: string, _userId?: string, language?: string): Promise<boolean | PostReviewStatus> {
   if (!guard()) return false;
   try {
     addBreadcrumb('feed', 'edit_post', { postId });
-    const res = await apiClient.feed.editPost(postId, content);
+    const res = await (language ? apiClient.feed.editPost(postId, content, language) : apiClient.feed.editPost(postId, content));
     return res.success && (res.reviewStatus ?? true);
   } catch (err) {
     captureException(err as Error, { op: 'edit_post', postId });
@@ -1819,6 +1819,7 @@ export interface DMMessageItem {
   is_media_locked: boolean;
   read_at?: string | null;
   created_at: string;
+  edited_at?: string | null;
 }
 
 export async function fetchUserConversations(userId: string): Promise<DMConversationItem[] | null> {
@@ -1919,6 +1920,17 @@ export async function sendDirectMessageToConversation(
     captureException(err as Error, { op: 'send_dm', conversationId });
     return null;
   }
+}
+
+export async function editDirectMessage(message: DMMessageItem, content: string) {
+  const conversation = encodeURIComponent(message.conversation_id);
+  const id = encodeURIComponent(message.id);
+  const result = await apiClient.patch<{ message: DMMessageItem }>(
+    `/api/v1/dm/conversations/${conversation}/messages/${id}`,
+    { content, previousEditedAt: message.edited_at ?? null },
+    { authPolicy: 'authenticated' },
+  );
+  return result.data.message;
 }
 
 export async function acceptDMRequest(conversationId: string, userId: string): Promise<boolean> {

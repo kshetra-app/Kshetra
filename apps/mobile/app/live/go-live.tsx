@@ -3,6 +3,7 @@ import { Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } fro
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { WritingKeyboardButton } from '../../components/WritingTools';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../stores/auth';
 import { useUserProfileStore } from '../../stores/userProfile';
@@ -245,6 +246,7 @@ export default function GoLiveScreen() {
                 </Pressable>
               ))}
             </View>
+            <WritingKeyboardButton />
             <TextInput
               style={[styles.input, { color: colors.text, borderColor: colors.border }]}
               placeholder={t('lmx.goLiveScreen.tagsLabel', {

@@ -1,3 +1,4 @@
+import { WritingKeyboardButton } from '../components/WritingTools';
 import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import {
@@ -211,6 +212,7 @@ function EditProfile({ userId }: { userId?: string }) {
         {/* Display Name */}
         <View style={styles.field}>
           <Text style={styles.fieldLabel}>{t('editProfile.displayName', { defaultValue: 'Display Name' })}</Text>
+          <WritingKeyboardButton />
           <TextInput
             style={styles.textInput}
             value={displayName}

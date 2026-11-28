@@ -6,7 +6,7 @@
 
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { createHash } from 'node:crypto';
-import { CONTENT_LIMITS, exceedsFeedMediaLimit } from '@kshetra/shared';
+import { CONTENT_LIMITS, exceedsFeedMediaLimit, SUPPORTED_LANGUAGES } from '@kshetra/shared';
 import { supabase, isSupabaseConfigured, isUsingServiceRole } from '../lib/supabase';
 import { sendApiError } from '../lib/replyHelper';
 import { resolveAuthenticatedUser, assertActingUserMatch } from '../lib/userAuth';
@@ -655,7 +655,7 @@ export async function feedRoutes(app: FastifyInstance) {
    */
   app.patch<{
     Params: { id: string };
-    Body: { content: string; authorId?: string };
+    Body: { content: string; authorId?: string; language?: string };
   }>(
     '/api/v1/feed/posts/:id',
     {
@@ -671,6 +671,7 @@ export async function feedRoutes(app: FastifyInstance) {
           properties: {
             content: { type: 'string', minLength: 1, maxLength: CONTENT_LIMITS.post.discussion },
             authorId: { type: 'string' },
+            language: { type: 'string', enum: [...SUPPORTED_LANGUAGES] },
           },
         },
       },
@@ -697,7 +698,7 @@ export async function feedRoutes(app: FastifyInstance) {
       }
 
       const { id } = request.params;
-      const { content } = request.body;
+      const { content, language } = request.body;
 
       try {
         const { data: existing, error: fetchErr } = await supabase
@@ -747,7 +748,11 @@ export async function feedRoutes(app: FastifyInstance) {
 
         const { data: updated, error: updateErr } = await supabase
           .from('posts')
-          .update({ content, updated_at: new Date().toISOString() })
+          .update({
+            content,
+            ...(language ? { language } : {}),
+            updated_at: new Date().toISOString(),
+          })
           .eq('id', id)
           .eq('author_id', auth.userId)
           .eq('is_deleted', false)
@@ -1226,7 +1231,7 @@ export async function feedRoutes(app: FastifyInstance) {
     },
   );
 
-  app.patch<{ Params: { id: string }; Body: { content: string } }>(
+  app.patch<{ Params: { id: string }; Body: { content: string; language?: string } }>(
     '/api/v1/feed/comments/:id',
     {
       schema: {
@@ -1235,6 +1240,7 @@ export async function feedRoutes(app: FastifyInstance) {
           required: ['content'],
           properties: {
             content: { type: 'string', minLength: 1, maxLength: CONTENT_LIMITS.comment },
+            language: { type: 'string', enum: [...SUPPORTED_LANGUAGES] },
           },
         },
       },
@@ -1247,6 +1253,7 @@ export async function feedRoutes(app: FastifyInstance) {
       if (!uuidPattern.test(request.params.id))
         return sendApiError(reply, request, 400, 'Bad Request', 'Invalid comment');
       const content = request.body.content.trim();
+      const { language } = request.body;
       if (!content || (await checkContentModeration(content)).flagged) {
         return sendApiError(
           reply,
@@ -1258,11 +1265,11 @@ export async function feedRoutes(app: FastifyInstance) {
       }
       const { data, error } = await supabase
         .from('comments')
-        .update({ content })
+        .update({ content, ...(language ? { language } : {}) })
         .eq('id', request.params.id)
         .eq('author_id', auth.userId)
         .eq('is_deleted', false)
-        .select('id,content,updated_at')
+        .select('id,content,language,updated_at')
         .maybeSingle();
       if (error)
         return sendApiError(
@@ -1274,7 +1281,13 @@ export async function feedRoutes(app: FastifyInstance) {
         );
       if (!data)
         return sendApiError(reply, request, 404, 'Not Found', 'Editable comment not found');
-      return { success: true, id: data.id, content: data.content, updatedAt: data.updated_at };
+      return {
+        success: true,
+        id: data.id,
+        content: data.content,
+        language: data.language,
+        updatedAt: data.updated_at,
+      };
     },
   );
 

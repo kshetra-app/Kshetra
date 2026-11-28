@@ -1,3 +1,4 @@
+import { WritingKeyboardButton } from './WritingTools';
 import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { CONTENT_LIMITS } from '@kshetra/shared';
 import AttachmentToolbar from './AttachmentToolbar';
@@ -250,6 +251,7 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit, constitue
             )}
             {/* Title */}
             <Text style={styles.fieldLabel}>{t('reportIssueSheet.titleLabel')}</Text>
+            <WritingKeyboardButton />
             <TextInput
               ref={titleRef}
               style={styles.titleInput}

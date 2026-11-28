@@ -2,6 +2,15 @@
  * GU translation
  */
 const gu = {
+  "writing": {
+    "keyboard": "કીબોર્ડની ભાષા",
+    "keyboardHelp": "ભાષા બદલવા કીબોર્ડનું ભાષા બટન અથવા મેનૂ વાપરો. નવી ભાષા ઉમેરવા ફોનના કીબોર્ડ સેટિંગ્સ ખોલો.",
+    "openKeyboardSettings": "કીબોર્ડ સેટિંગ્સ ખોલો",
+    "contentLanguage": "લખવાની ભાષા · {{language}}",
+    "editMessage": "સંદેશ સુધારો",
+    "editedTime": "સુધારેલું · {{time}}",
+    "messageEditFailed": "ફેરફાર સાચવી શકાયો નહીં. તમે લખેલું અહીં જ છે. મોકલેલો સંદેશ 15 મિનિટ સુધી સુધારી શકો છો.",
+  },
   "additionalScreenLabels": {
     "candidate": {
       "profile": "ઉમેદવાર એક્સ-રે",

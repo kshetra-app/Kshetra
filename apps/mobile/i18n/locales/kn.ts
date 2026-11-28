@@ -2,6 +2,15 @@
  * KN translation
  */
 const kn = {
+  "writing": {
+    "keyboard": "ಕೀಬೋರ್ಡ್ ಭಾಷೆ",
+    "keyboardHelp": "ಭಾಷೆ ಬದಲಿಸಲು ಕೀಬೋರ್ಡ್‌ನ ಭಾಷೆಯ ಕೀ ಅಥವಾ ಮೆನು ಬಳಸಿ. ಫೋನ್‌ನ ಕೀಬೋರ್ಡ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಹೊಸ ಭಾಷೆ ಸೇರಿಸಿ.",
+    "openKeyboardSettings": "ಕೀಬೋರ್ಡ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ",
+    "contentLanguage": "ಬರೆಯುವ ಭಾಷೆ · {{language}}",
+    "editMessage": "ಸಂದೇಶವನ್ನು ತಿದ್ದಿ",
+    "editedTime": "ತಿದ್ದಲಾಗಿದೆ · {{time}}",
+    "messageEditFailed": "ತಿದ್ದುಪಡಿಯನ್ನು ಉಳಿಸಲಾಗಲಿಲ್ಲ. ನೀವು ಬರೆದ ಪಠ್ಯ ಇಲ್ಲೇ ಇದೆ. ಕಳುಹಿಸಿದ ಸಂದೇಶವನ್ನು 15 ನಿಮಿಷಗಳ ಒಳಗೆ ತಿದ್ದಬಹುದು.",
+  },
   "additionalScreenLabels": {
     "candidate": {
       "profile": "ಅಭ್ಯರ್ಥಿ ಎಕ್ಸ್-ರೇ",

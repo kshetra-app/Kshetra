@@ -1,5 +1,6 @@
 import type { FeedCommentCursor } from '../lib/api/endpoints/feed';
 import { CONTENT_LIMITS } from '@kshetra/shared';
+import { ContentLanguagePicker, WritingKeyboardButton } from './WritingTools';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
@@ -64,6 +65,7 @@ export default function PostDetailModal({
   const feedPost = useFeedStore((state) => state.posts.find((entry) => entry.id === initialPost?.id));
   const post = onPostChanged ? initialPost : feedPost ?? initialPost;
   const [commentText, setCommentText] = useState('');
+  const [commentLanguage, setCommentLanguage] = useState<string | null>(null);
   const [isSendingComment, setIsSendingComment] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [nextComment, setNextComment] = useState<FeedCommentCursor | null>(null);
@@ -97,6 +99,7 @@ export default function PostDetailModal({
     if (!visible || !postId) return;
     setEditingId(null);
     setCommentText('');
+    setCommentLanguage(null);
     setNextComment(null);
     void load(null);
     return () => { pageRequest.current++; };
@@ -146,9 +149,12 @@ export default function PostDetailModal({
     if (!gateContentAction('create_comment')) return;
     tapLight();
     setIsSendingComment(true);
+    const language = commentLanguage ?? (i18n.resolvedLanguage ?? i18n.language ?? 'en');
     if (editingId) {
       try {
-        if (!await editComment(post.id, editingId, commentText.trim())) {
+        const previousLanguage = rawComments.find((comment) => comment.id === editingId)?.language;
+        const newLanguage = commentLanguage === previousLanguage ? undefined : commentLanguage ?? undefined;
+        if (!await editComment(post.id, editingId, commentText.trim(), newLanguage)) {
           Alert.alert(t('postDetail.editCommentFailed', { defaultValue: 'The edit could not be saved.' }));
           return;
         }
@@ -174,7 +180,7 @@ export default function PostDetailModal({
       content: commentText.trim(),
       reactionCount: 0,
       isDeleted: false,
-      language: i18n.language || 'en',
+      language,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -201,7 +207,7 @@ export default function PostDetailModal({
     } finally {
       setIsSendingComment(false);
     }
-  }, [post, commentText, ownProfile, userId, i18n.language, isSendingComment, commentLoading, addComment, editComment, editingId, t]);
+  }, [post, commentText, commentLanguage, rawComments, ownProfile, userId, i18n.language, i18n.resolvedLanguage, isSendingComment, commentLoading, addComment, editComment, editingId, t]);
 
   const handleShare = useCallback(async () => {
     if (!post) return;
@@ -547,7 +553,7 @@ export default function PostDetailModal({
                       <Pressable accessibilityRole="button"
                         accessibilityLabel={t('postDetail.editComment', { defaultValue: 'Edit comment' })}
                         disabled={isSendingComment || commentLoading}
-                        onPress={() => { setEditingId(item.id); setCommentText(item.content); inputRef.current?.focus(); }}
+                        onPress={() => { setEditingId(item.id); setCommentText(item.content); setCommentLanguage(item.language ?? null); inputRef.current?.focus(); }}
                         hitSlop={6} style={{ marginLeft: 8 }}>
                         <Ionicons name="create-outline" size={16} color={colors.primary} />
                       </Pressable>
@@ -616,6 +622,9 @@ export default function PostDetailModal({
             </Pressable>
           </View>
         )}
+        <View style={{ paddingHorizontal: 16 }}>
+          <ContentLanguagePicker value={commentLanguage ?? (i18n.resolvedLanguage ?? i18n.language ?? 'en')} onChange={setCommentLanguage} />
+        </View>
         <View
           style={[
             styles.replyBar,
@@ -626,6 +635,7 @@ export default function PostDetailModal({
             },
           ]}
         >
+          <WritingKeyboardButton compact />
           <TextInput
             ref={inputRef}
             style={[styles.replyInput, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
