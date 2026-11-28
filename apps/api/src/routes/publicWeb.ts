@@ -53,8 +53,9 @@ function sendUnavailable(
   );
 }
 
-function installLink(value: string | undefined, label: string): string {
+function installLink(value: string | undefined, label: string, expiresAt?: string): string {
   if (!value) return '';
+  if (expiresAt?.trim() && !(Date.parse(expiresAt) > Date.now())) return '';
   try {
     const url = new URL(value);
     if (url.protocol !== 'https:' || url.username || url.password) return '';
@@ -73,10 +74,12 @@ export async function publicWebRoutes(app: FastifyInstance) {
     const android = installLink(
       process.env.POLIGRAM_ANDROID_INSTALL_URL,
       staging ? 'Get the Android test build' : 'Get Poligram for Android',
+      process.env.POLIGRAM_ANDROID_INSTALL_EXPIRES_AT,
     );
     const ios = installLink(
       process.env.POLIGRAM_IOS_INSTALL_URL,
       staging ? 'Get the iPhone test build' : 'Get Poligram for iPhone',
+      process.env.POLIGRAM_IOS_INSTALL_EXPIRES_AT,
     );
     const installHelp = staging
       ? 'Ask the person who invited you for access to the Staging build.'

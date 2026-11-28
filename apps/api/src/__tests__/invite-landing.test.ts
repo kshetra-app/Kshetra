@@ -14,6 +14,8 @@ describe('public invitation landing page', () => {
     jest.replaceProperty(process, 'env', { ...process.env, APP_ENV: 'staging' });
     delete process.env.POLIGRAM_ANDROID_INSTALL_URL;
     delete process.env.POLIGRAM_IOS_INSTALL_URL;
+    delete process.env.POLIGRAM_ANDROID_INSTALL_EXPIRES_AT;
+    delete process.env.POLIGRAM_IOS_INSTALL_EXPIRES_AT;
   });
 
   afterEach(() => {
@@ -55,6 +57,17 @@ describe('public invitation landing page', () => {
 
     expect(landing.body).toContain('<title>Join Poligram</title>');
     expect(landing.body).not.toContain('Staging');
+  });
+
+  it('drops an expired test installer and keeps the browser fallback available', async () => {
+    process.env.POLIGRAM_ANDROID_INSTALL_URL = 'https://downloads.example.org/preview.apk';
+    process.env.POLIGRAM_ANDROID_INSTALL_EXPIRES_AT = '2025-01-01T00:00:00Z';
+
+    const landing = await app.inject({ url: '/join' });
+
+    expect(landing.body).not.toContain('preview.apk');
+    expect(landing.body).toContain('Ask the person who invited you');
+    expect(landing.body).toContain('href="/public/states/TS"');
   });
 
   it('recognizes Railway Staging independently of the Node runtime mode', async () => {
