@@ -76,7 +76,7 @@ export default function RepresentativeProfileScreen() {
   if (loading) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <Stack.Screen options={{ title: 'Representative' }} />
+        <Stack.Screen options={{ title: translateScreenLabel('additionalScreenLabels.representative.profile') }} />
         <View style={styles.center}>
           <ActivityIndicator color={colors.primary} />
         </View>
@@ -87,7 +87,7 @@ export default function RepresentativeProfileScreen() {
   if (!profile) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <Stack.Screen options={{ title: 'Representative' }} />
+        <Stack.Screen options={{ title: translateScreenLabel('additionalScreenLabels.representative.profile') }} />
         <View style={styles.center}>
           <Ionicons name="person-circle-outline" size={56} color={colors.textMuted} />
           <Text style={[styles.emptyTitle, { color: colors.text }]}>

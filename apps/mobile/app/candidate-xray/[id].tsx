@@ -36,7 +36,7 @@ export default function CandidateXRayRedirect() {
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen
           options={{
-            title: 'Candidate X-Ray',
+            title: translateScreenLabel('additionalScreenLabels.candidate.profile'),
             headerRight: () => (
               <Pressable
                 accessibilityRole="button"
@@ -72,7 +72,7 @@ export default function CandidateXRayRedirect() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Stack.Screen options={{ title: 'Redirecting...' }} />
+      <Stack.Screen options={{ title: translateScreenLabel('additionalScreenLabels.candidate.redirecting') }} />
       <Text style={[styles.text, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.candidateXray.loadingProfile")}</Text>
     </View>
   );

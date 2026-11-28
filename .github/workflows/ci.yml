@@ -87,7 +87,9 @@ jobs:
         run: node scripts/verify-13-locales.mjs --strict
 
       - name: Check mobile screen localization
-        run: node scripts/scan-hardcoded-strings.mjs
+        run: |
+          node --test tests/mobile-screen-localization.test.mjs
+          node scripts/scan-hardcoded-strings.mjs
 
       - name: Verify 13-Language Semantic & Bidirectional Token Integrity (DEF-012 Gate)
         run: node scripts/verify-locale-semantic-integrity.mjs

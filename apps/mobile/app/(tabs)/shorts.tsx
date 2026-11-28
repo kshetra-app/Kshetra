@@ -98,9 +98,9 @@ export default function ShortsScreen({ hideHeader = false, searchQuery = '' }: S
   const cardHeight = cardWidth * 1.55;
 
   const SCOPES: { key: ShortsScope; label: string; icon: string; disabled: boolean }[] = [
-    { key: 'national', label: 'National', icon: 'globe', disabled: false },
-    { key: 'state', label: 'My State', icon: 'map', disabled: stateCode === 'IN' },
-    { key: 'constituency', label: myHome?.name ?? 'My Area', icon: 'location', disabled: !myHome || stateCode === 'IN' },
+    { key: 'national', label: t('additionalScreenLabels.shorts.national'), icon: 'globe', disabled: false },
+    { key: 'state', label: t('additionalScreenLabels.shorts.state'), icon: 'map', disabled: stateCode === 'IN' },
+    { key: 'constituency', label: myHome?.name ?? t('additionalScreenLabels.shorts.area'), icon: 'location', disabled: !myHome || stateCode === 'IN' },
   ];
 
   return (

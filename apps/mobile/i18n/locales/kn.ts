@@ -2,6 +2,70 @@
  * KN translation
  */
 const kn = {
+  "additionalScreenLabels": {
+    "candidate": {
+      "profile": "ಅಭ್ಯರ್ಥಿ ಎಕ್ಸ್-ರೇ",
+      "redirecting": "ಮರುನಿರ್ದೇಶಿಸಲಾಗುತ್ತಿದೆ...",
+      "legislator": "ಶಾಸಕರ ವಿವರ"
+    },
+    "representative": {
+      "profile": "ಪ್ರತಿನಿಧಿ",
+      "edit": "ಕೊಡುಗೆ ವಿವರಗಳು",
+      "name": "ಪೂರ್ಣ ಹೆಸರು",
+      "party": "ಪಕ್ಷ (ಪಕ್ಷೇತರರಾಗಿದ್ದರೆ ಖಾಲಿ ಬಿಡಿ)",
+      "phone": "ಫೋನ್",
+      "email": "ಇಮೇಲ್",
+      "photoUrl": "ಫೋಟೋ URL"
+    },
+    "shorts": {
+      "national": "ರಾಷ್ಟ್ರೀಯ",
+      "state": "ನನ್ನ ರಾಜ್ಯ",
+      "area": "ನನ್ನ ಪ್ರದೇಶ"
+    },
+    "search": {
+      "constituency": "ಕ್ಷೇತ್ರ",
+      "mla": "ಶಾಸಕ",
+      "mp": "ಸಂಸದ",
+      "person": "ನಾಯಕ / ಪುಟ",
+      "issue": "ಸಂಚಿಕೆ",
+      "post": "ಪ್ರಕಟಿಸಿ",
+      "promise": "ಭರವಸೆ",
+      "feature": "ವೈಶಿಷ್ಟ್ಯ ಮತ್ತು ಮಾರ್ಗದರ್ಶಿ"
+    },
+    "civicScore": {
+      "issuesReported": "ಸಮಸ್ಯೆಗಳು",
+      "issuesResolved": "ಪರಿಹರಿಸಿದವು",
+      "commentsCount": "ಕಾಮೆಂಟ್‌ಗಳು",
+      "evidenceSubmitted": "ಸಾಕ್ಷ್ಯ",
+      "promisesTracked": "ಭರವಸೆಗಳು",
+      "endorsements": "ಬೆಂಬಲಗಳು",
+      "modulesCompleted": "ಮಾಡ್ಯೂಲ್‌ಗಳು",
+      "challengesCompleted": "ಸವಾಲುಗಳು",
+      "observer": "ವೀಕ್ಷಕ",
+      "contributor": "ಕೊಡುಗೆದಾರ",
+      "advocate": "ಪ್ರತಿಪಾದಕ",
+      "leader": "ನಾಯಕ",
+      "champion": "ಚಾಂಪಿಯನ್"
+    },
+    "legend": {
+
+      "rangeGeneralGen": "ಸಾಮಾನ್ಯ (GEN)",
+      "rangeScheduledCasteSc": "ಎಸ್ಸಿ (SC)",
+      "rangeScheduledTribeSt": "ಎಸ್ಟಿ (ST)",
+
+      "rangeCriticalMargin2000": "ನಿರ್ಣಾಯಕ ಅಂಚು (< 2,000)",
+      "rangeCompetitive20005000": "ಸ್ಪರ್ಧಾತ್ಮಕ (2,000 – 5,000)",
+      "rangeSafeSeat5000": "ಸುರಕ್ಷಿತ ಆಸನ (>= 5,000)",
+      "rangeSwingSeatPartySwitched": "ಸ್ವಿಂಗ್ ಸೀಟ್ (ಪಕ್ಷ ಬದಲಾಯಿಸಲಾಗಿದೆ)",
+      "rangeRetainedSeatSameParty": "ಉಳಿಸಿಕೊಂಡ ಸ್ಥಾನ (ಒಂದೇ ಪಕ್ಷ)",
+      "rangeNoHistoryAvailable": "ಯಾವುದೇ ಇತಿಹಾಸ ಲಭ್ಯವಿಲ್ಲ",
+      "vacantSeat": "ಖಾಲಿ ಸೀಟು"
+    },
+    "parliament": {
+      "allIndia": "ಅಖಿಲ ಭಾರತ",
+      "nominated": "ನಾಮನಿರ್ದೇಶನಗೊಂಡಿದೆ"
+    }
+  },
   "financialDisclosure": {
     "completeItemization": "ಎಲ್ಲ ಆಸ್ತಿ ಅಂಶಗಳ ವಿವರ",
     "zeroAssets": "ಆಸ್ತಿಯ ಮೌಲ್ಯ ಶೂನ್ಯವೆಂದು ಘೋಷಿಸಲಾಗಿದೆ",
@@ -624,7 +688,7 @@ const kn = {
     "founded": "{{year}} ನಲ್ಲಿ ಸ್ಥಾಪಿಸಲಾಗಿದೆ.",
     "contributionReport": "ಭಾರತದ ಚುನಾವಣಾ ಆಯೋಗವು {{period}} ಗಾಗಿ ಪಕ್ಷದ ಕೊಡುಗೆ ವರದಿಯನ್ನು ಪ್ರಕಟಿಸುತ್ತದೆ.",
     "constitution": "ಪಕ್ಷದ ಸಂವಿಧಾನವು ಭಾರತದ ಚುನಾವಣಾ ಆಯೋಗದ ಮೂಲಕ ಲಭ್ಯವಿದೆ.",
-    "assemblyElection": "ಚುನಾವಣಾ ಆಯೋಗವು {{year}}  {{state}} ಅಸೆಂಬ್ಲಿ ಚುನಾವಣೆಯಲ್ಲಿ ಪಕ್ಷವನ್ನು ದಾಖಲಿಸುತ್ತದೆ.",
+    "assemblyElection": "{{year}}ರ {{state}} ವಿಧಾನಸಭಾ ಚುನಾವಣೆಯ ಅಧಿಕೃತ ದಾಖಲೆಯಲ್ಲಿ ಈ ಪಕ್ಷದ ಹೆಸರು ಇದೆ.",
     "profileSource": "ಮೂಲ",
     "actionFailed": "ಬದಲಾವಣೆಯನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
     "official": "ಅಧಿಕೃತ ಪುಟವನ್ನು ಪರಿಶೀಲಿಸಲಾಗಿದೆ",

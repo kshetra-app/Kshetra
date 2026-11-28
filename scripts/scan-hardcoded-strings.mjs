@@ -70,6 +70,18 @@ export function scanScreenCopy(root = process.cwd()) {
         if (value && ts.isStringLiteral(value)) add(value, 'prop', value.text);
         if (value && ts.isJsxExpression(value) && value.expression) expression(value.expression, 'expression');
       }
+      if (ts.isJsxAttribute(node) && node.name.getText(source) === 'options') {
+        const value = node.initializer;
+        if (value && ts.isJsxExpression(value) && value.expression &&
+            ts.isObjectLiteralExpression(value.expression)) {
+          for (const option of value.expression.properties) {
+            if (ts.isPropertyAssignment(option) &&
+                ['title', 'headerTitle', 'headerBackTitle', 'tabBarLabel'].includes(option.name.getText(source))) {
+              expression(option.initializer, 'navigation');
+            }
+          }
+        }
+      }
       if (ts.isJsxExpression(node) && node.expression && ts.isJsxElement(node.parent)) {
         const name = node.parent.openingElement.tagName.getText(source);
         if (name === 'Text' || name.endsWith('.Text')) expression(node.expression, 'expression');

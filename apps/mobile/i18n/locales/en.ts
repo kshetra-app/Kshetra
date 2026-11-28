@@ -2,6 +2,70 @@
  * English (en) — Base translation
  */
 const en =  {
+  "additionalScreenLabels": {
+    "candidate": {
+      "profile": "Candidate X-Ray",
+      "redirecting": "Redirecting...",
+      "legislator": "Legislator Profile"
+    },
+    "representative": {
+      "profile": "Representative",
+      "edit": "Contribute Details",
+      "name": "Full name",
+      "party": "Party (leave blank if non-party)",
+      "phone": "Phone",
+      "email": "Email",
+      "photoUrl": "Photo URL"
+    },
+    "shorts": {
+      "national": "National",
+      "state": "My State",
+      "area": "My Area"
+    },
+    "search": {
+      "constituency": "Constituency",
+      "mla": "MLA",
+      "mp": "MP",
+      "person": "Leader / Page",
+      "issue": "Issue",
+      "post": "Post",
+      "promise": "Promise",
+      "feature": "Feature & Guide"
+    },
+    "civicScore": {
+      "issuesReported": "Issues",
+      "issuesResolved": "Resolved",
+      "commentsCount": "Comments",
+      "evidenceSubmitted": "Evidence",
+      "promisesTracked": "Promises",
+      "endorsements": "Endorsements",
+      "modulesCompleted": "Modules",
+      "challengesCompleted": "Challenges",
+      "observer": "Observer",
+      "contributor": "Contributor",
+      "advocate": "Advocate",
+      "leader": "Leader",
+      "champion": "Champion"
+    },
+    "legend": {
+
+      "rangeGeneralGen": "General (GEN)",
+      "rangeScheduledCasteSc": "Scheduled Caste (SC)",
+      "rangeScheduledTribeSt": "Scheduled Tribe (ST)",
+
+      "rangeCriticalMargin2000": "Critical Margin (< 2,000)",
+      "rangeCompetitive20005000": "Competitive (2,000 – 5,000)",
+      "rangeSafeSeat5000": "Safe Seat (>= 5,000)",
+      "rangeSwingSeatPartySwitched": "Swing Seat (Party Switched)",
+      "rangeRetainedSeatSameParty": "Retained Seat (Same Party)",
+      "rangeNoHistoryAvailable": "No History Available",
+      "vacantSeat": "Vacant seat"
+    },
+    "parliament": {
+      "allIndia": "All India",
+      "nominated": "Nominated"
+    }
+  },
   financialDisclosure: {
     completeItemization: 'Complete itemization',
     zeroAssets: 'Affirmative zero assets disclosed',
@@ -609,7 +673,7 @@ const en =  {
     "founded": "Founded in {{year}}.",
     "contributionReport": "The Election Commission of India publishes the party’s contribution report for {{period}}.",
     "constitution": "The party’s constitution is available through the Election Commission of India.",
-    "assemblyElection": "The Election Commission records the party in the {{year}} {{state}} Assembly election.",
+    "assemblyElection": "Official records list this party in the {{year}} {{state}} Assembly election.",
     "profileSource": "Source",
     "electionRecord": "Election record",
     "historyAndFilings": "History and filings",

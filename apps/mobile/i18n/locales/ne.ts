@@ -2,6 +2,70 @@
  * NE translation
  */
 const ne = {
+  "additionalScreenLabels": {
+    "candidate": {
+      "profile": "उम्मेदवार एक्स-रे",
+      "redirecting": "रिडिरेक्ट गर्दै...",
+      "legislator": "विधायक प्रोफाइल"
+    },
+    "representative": {
+      "profile": "प्रतिनिधि",
+      "edit": "विवरणहरू योगदान गर्नुहोस्",
+      "name": "पूरा नाम",
+      "party": "पार्टी (गैर-पार्टी भए खाली छोड्नुहोस्)",
+      "phone": "फोन",
+      "email": "ईमेल",
+      "photoUrl": "फोटो URL"
+    },
+    "shorts": {
+      "national": "राष्ट्रीय",
+      "state": "मेरो राज्य",
+      "area": "मेरो क्षेत्र"
+    },
+    "search": {
+      "constituency": "निर्वाचन क्षेत्र",
+      "mla": "विधायक",
+      "mp": "सांसद",
+      "person": "नेता / पृष्ठ",
+      "issue": "मुद्दा",
+      "post": "पोस्ट गर्नुहोस्",
+      "promise": "वाचा",
+      "feature": "सुविधा र गाइड"
+    },
+    "civicScore": {
+      "issuesReported": "मुद्दाहरू",
+      "issuesResolved": "समाधान भएका",
+      "commentsCount": "टिप्पणियां",
+      "evidenceSubmitted": "साक्ष्य",
+      "promisesTracked": "वादे",
+      "endorsements": "समर्थन",
+      "modulesCompleted": "मोड्युलहरू",
+      "challengesCompleted": "चुनौतियाँ",
+      "observer": "प्रेक्षक",
+      "contributor": "योगदानकर्ता",
+      "advocate": "पैरोकोर",
+      "leader": "नेता",
+      "champion": "चैंपियन"
+    },
+    "legend": {
+
+      "rangeGeneralGen": "साधारण (GEN)",
+      "rangeScheduledCasteSc": "अनुसूचित जाति (SC)",
+      "rangeScheduledTribeSt": "अनुसूचित जनजाति (ST)",
+
+      "rangeCriticalMargin2000": "क्रिटिकल मार्जिन (<2,000)",
+      "rangeCompetitive20005000": "प्रतिस्पर्धी (२,००० – ५,०००)",
+      "rangeSafeSeat5000": "सुरक्षित सिट (>= ५,०००)",
+      "rangeSwingSeatPartySwitched": "स्विङ सीट (पार्टी स्विच गरिएको)",
+      "rangeRetainedSeatSameParty": "राखिएको सिट (एउटै पार्टी)",
+      "rangeNoHistoryAvailable": "कुनै इतिहास उपलब्ध छैन",
+      "vacantSeat": "खाली सिट"
+    },
+    "parliament": {
+      "allIndia": "अखिल भारतीय",
+      "nominated": "मनोनीत"
+    }
+  },
   "financialDisclosure": {
     "completeItemization": "सबै सम्पत्तिको शीर्षकगत विवरण",
     "zeroAssets": "सम्पत्तिको मूल्य शून्य घोषणा गरिएको छ",
@@ -624,7 +688,7 @@ const ne = {
     "founded": "{{year}} मा स्थापित।",
     "contributionReport": "भारतको निर्वाचन आयोगले {{period}} को लागि पार्टीको योगदान प्रतिवेदन प्रकाशित गर्दछ।",
     "constitution": "पार्टीको संविधान भारतको निर्वाचन आयोग मार्फत उपलब्ध छ।",
-    "assemblyElection": "निर्वाचन आयोगले {{year}}  {{state}} विधानसभा चुनावमा पार्टी रेकर्ड गर्दछ।",
+    "assemblyElection": "{{year}} को {{state}} विधानसभा निर्वाचनको आधिकारिक अभिलेखमा यस दलको नाम छ।",
     "profileSource": "स्रोत",
     "actionFailed": "परिवर्तन बचत गर्न सकेन। कृपया पुन: प्रयास गर्नुहोस्।",
     "official": "प्रमाणित आधिकारिक पृष्ठ",

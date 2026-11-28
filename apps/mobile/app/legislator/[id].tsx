@@ -301,7 +301,7 @@ export default function LegislatorProfileScreen() {
   if (!mla && !constituency) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <Stack.Screen options={{ title: 'Legislator Profile', headerStyle: { backgroundColor: colors.surface }, headerTintColor: colors.primary }} />
+        <Stack.Screen options={{ title: translateScreenLabel('additionalScreenLabels.candidate.legislator'), headerStyle: { backgroundColor: colors.surface }, headerTintColor: colors.primary }} />
         <View style={styles.center}>
           <Ionicons name="person-circle" size={56} color={colors.textMuted} />
           <Text style={[styles.emptyTitle, { color: colors.text }]}>{i18n.t('legislator.profileNotFound')}</Text>

@@ -2,6 +2,70 @@
  * PA translation
  */
 const pa = {
+  "additionalScreenLabels": {
+    "candidate": {
+      "profile": "ਉਮੀਦਵਾਰ ਐਕਸ-ਰੇ",
+      "redirecting": "ਰੀਡਾਇਰੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...",
+      "legislator": "ਵਿਧਾਇਕ ਪ੍ਰੋਫ਼ਾਈਲ"
+    },
+    "representative": {
+      "profile": "ਪ੍ਰਤੀਨਿਧੀ",
+      "edit": "ਯੋਗਦਾਨ ਵੇਰਵੇ",
+      "name": "ਪੂਰਾ ਨਾਮ",
+      "party": "ਪਾਰਟੀ (ਜੇ ਗੈਰ-ਪਾਰਟੀ ਹੋਵੇ ਤਾਂ ਖਾਲੀ ਛੱਡੋ)",
+      "phone": "ਫ਼ੋਨ",
+      "email": "ਈਮੇਲ",
+      "photoUrl": "ਫੋਟੋ URL"
+    },
+    "shorts": {
+      "national": "ਰਾਸ਼੍ਟ੍ਰੀਯ",
+      "state": "ਮੇਰਾ ਰਾਜ",
+      "area": "ਮੇਰਾ ਖੇਤਰ"
+    },
+    "search": {
+      "mla": "ਵਿਧਾਇਕ",
+      "constituency": "ਨਿਰ੍ਵਾਚਨ ਕ੍ਸ਼ੇਤ੍ਰ",
+      "mp": "ਐਮ.ਪੀ",
+      "person": "ਆਗੂ / ਪੰਨਾ",
+      "issue": "ਮੁੱਦਾ",
+      "post": "ਪੋਸ੍ਟ ਕਰੇਂ",
+      "promise": "ਵਾਅਦਾ",
+      "feature": "ਵਿਸ਼ੇਸ਼ਤਾ ਅਤੇ ਗਾਈਡ"
+    },
+    "civicScore": {
+      "issuesReported": "ਮੁੱਦੇ",
+      "issuesResolved": "ਹੱਲ ਕੀਤੇ",
+      "commentsCount": "ਟਿਪ੍ਪਣਿਯਾਂ",
+      "evidenceSubmitted": "ਸਾਕ੍ਸ਼੍ਯ",
+      "promisesTracked": "ਵਾਦੇ",
+      "endorsements": "ਸਮਰਥਨ",
+      "modulesCompleted": "ਮੌਡਿਊਲ",
+      "challengesCompleted": "ਚੁਨੌਤਿਯਾਁ",
+      "observer": "ਪ੍ਰੇਕ੍ਸ਼ਕ",
+      "contributor": "ਯੋਗਦਾਨਕਰ੍ਤਾ",
+      "advocate": "ਪੈਰੋਕਾਰ",
+      "leader": "ਨੇਤਾ",
+      "champion": "ਚੈਂਪਿਯਨ"
+    },
+    "legend": {
+
+      "rangeGeneralGen": "ਜਨਰਲ (GEN)",
+      "rangeScheduledCasteSc": "ਅਨੁਸੂਚਿਤ ਜਾਤੀ (SC)",
+      "rangeScheduledTribeSt": "ਅਨੁਸੂਚਿਤ ਕਬੀਲਾ (ST)",
+
+      "rangeCriticalMargin2000": "ਗੰਭੀਰ ਹਾਸ਼ੀਆ (<2,000)",
+      "rangeCompetitive20005000": "ਪ੍ਰਤੀਯੋਗੀ (2,000 – 5,000)",
+      "rangeSafeSeat5000": "ਸੁਰੱਖਿਅਤ ਸੀਟ (>= 5,000)",
+      "rangeSwingSeatPartySwitched": "ਸਵਿੰਗ ਸੀਟ (ਪਾਰਟੀ ਬਦਲੀ)",
+      "rangeRetainedSeatSameParty": "ਬਰਕਰਾਰ ਸੀਟ (ਇੱਕੋ ਪਾਰਟੀ)",
+      "rangeNoHistoryAvailable": "ਕੋਈ ਇਤਿਹਾਸ ਉਪਲਬਧ ਨਹੀਂ ਹੈ",
+      "vacantSeat": "ਖਾਲੀ ਸੀਟ"
+    },
+    "parliament": {
+      "allIndia": "ਸਰਬ ਭਾਰਤੀ",
+      "nominated": "ਨਾਮਜ਼ਦ ਕੀਤਾ"
+    }
+  },
   "financialDisclosure": {
     "completeItemization": "ਸਾਰੀ ਜਾਇਦਾਦ ਦਾ ਮੱਦਵਾਰ ਵੇਰਵਾ",
     "zeroAssets": "ਜਾਇਦਾਦ ਦੀ ਕੀਮਤ ਸਿਫ਼ਰ ਐਲਾਨੀ ਗਈ ਹੈ",
@@ -624,7 +688,7 @@ const pa = {
     "founded": "{{year}} ਵਿੱਚ ਸਥਾਪਿਤ ਕੀਤਾ ਗਿਆ।",
     "contributionReport": "ਭਾਰਤੀ ਚੋਣ ਕਮਿਸ਼ਨ {{period}} ਲਈ ਪਾਰਟੀ ਦੇ ਯੋਗਦਾਨ ਦੀ ਰਿਪੋਰਟ ਪ੍ਰਕਾਸ਼ਿਤ ਕਰਦਾ ਹੈ।",
     "constitution": "ਪਾਰਟੀ ਦਾ ਸੰਵਿਧਾਨ ਭਾਰਤ ਦੇ ਚੋਣ ਕਮਿਸ਼ਨ ਰਾਹੀਂ ਉਪਲਬਧ ਹੈ।",
-    "assemblyElection": "ਚੋਣ ਕਮਿਸ਼ਨ {{year}}  {{state}} ਵਿਧਾਨ ਸਭਾ ਚੋਣਾਂ ਵਿੱਚ ਪਾਰਟੀ ਨੂੰ ਰਿਕਾਰਡ ਕਰਦਾ ਹੈ।",
+    "assemblyElection": "{{year}} ਦੀ {{state}} ਵਿਧਾਨ ਸਭਾ ਚੋਣ ਦੇ ਸਰਕਾਰੀ ਰਿਕਾਰਡ ਵਿੱਚ ਇਸ ਪਾਰਟੀ ਦਾ ਨਾਮ ਹੈ।",
     "profileSource": "ਸਰੋਤ",
     "actionFailed": "ਤਬਦੀਲੀ ਨੂੰ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
     "official": "ਪ੍ਰਮਾਣਿਤ ਅਧਿਕਾਰਤ ਪੰਨਾ",

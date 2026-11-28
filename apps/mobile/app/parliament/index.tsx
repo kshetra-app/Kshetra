@@ -19,7 +19,6 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { STATES } from '@kshetra/shared';
 import { getPartyColor } from '../../lib/constants';
 import { useResponsive } from '../../lib/responsive';
 import {
@@ -33,16 +32,12 @@ import MPCard from '../../components/MPCard';
 import CandidateAvatar from '../../components/CandidateAvatar';
 import { useActiveStateStore } from '../../stores/activeState';
 import { useTheme } from '../../lib/theme';
+import { localizeState } from '../../lib/lmxLocalizer';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 
 type TabType = 'overview' | 'lok_sabha' | 'rajya_sabha';
 
-const PARLIAMENT_SCOPES = [
-  { code: 'IN', label: 'All India' },
-  ...Array.from(new Set(ALL_MP_PROFILES.map((member) => member.stateCode)))
-    .map((code) => ({ code, label: STATES[code]?.name ?? (code === 'NM' ? 'Nominated' : code) }))
-    .sort((a, b) => a.label.localeCompare(b.label)),
-];
+const PARLIAMENT_STATE_CODES = [...new Set(ALL_MP_PROFILES.map((member) => member.stateCode))];
 
 function formatINR(value?: number) {
   return value === undefined ? '—' : '₹' + value.toLocaleString('en-IN');
@@ -71,7 +66,14 @@ function formatPartyName(party: string): string {
 
 export default function ParliamentScreen() {
   const { t: translateScreenLabel } = useScreenTranslation();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const parliamentScopes = [
+    { code: 'IN', label: t('additionalScreenLabels.parliament.allIndia') },
+    ...PARLIAMENT_STATE_CODES.map((code) => ({
+      code,
+      label: code === 'NM' ? t('additionalScreenLabels.parliament.nominated') : localizeState(code, i18n.language),
+    })).sort((a, b) => a.label.localeCompare(b.label)),
+  ];
   const { colors } = useTheme();
   const router = useRouter();
   const activeAppState = useActiveStateStore((s) => s.stateCode);
@@ -133,7 +135,7 @@ export default function ParliamentScreen() {
       .map(([party, counts]) => ({ party, ...counts }))
       .sort((a, b) => (b.lokSabha + b.rajyaSabha) - (a.lokSabha + a.rajyaSabha));
 
-    const stateObj = PARLIAMENT_SCOPES.find(s => s.code === selectedScope);
+    const stateObj = parliamentScopes.find(s => s.code === selectedScope);
 
     return {
       stateCode: selectedScope,
@@ -224,7 +226,7 @@ export default function ParliamentScreen() {
       {/* Scope Selector (All India / States) */}
       <View style={[styles.scopeBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scopeScroll}>
-          {PARLIAMENT_SCOPES.map((s) => {
+          {parliamentScopes.map((s) => {
             const isSelected = selectedScope === s.code;
             return (
               <Pressable

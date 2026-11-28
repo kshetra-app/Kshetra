@@ -2,6 +2,70 @@
  * MR translation
  */
 const mr = {
+  "additionalScreenLabels": {
+    "candidate": {
+      "profile": "उमेदवार एक्स-रे",
+      "redirecting": "पुनर्निर्देशित करत आहे...",
+      "legislator": "आमदार प्रोफाइल"
+    },
+    "representative": {
+      "profile": "प्रतिनिधी",
+      "edit": "योगदान तपशील",
+      "name": "पूर्ण नाव",
+      "party": "पक्ष (पक्ष नसल्यास रिक्त सोडा)",
+      "phone": "फोन",
+      "email": "ईमेल",
+      "photoUrl": "फोटो URL"
+    },
+    "shorts": {
+      "national": "राष्ट्रीय",
+      "state": "माझे राज्य",
+      "area": "माझे क्षेत्र"
+    },
+    "search": {
+      "constituency": "मतदारसंघ",
+      "mla": "आमदार",
+      "mp": "खासदार",
+      "person": "नेता / पृष्ठ",
+      "issue": "इश्यू",
+      "post": "पोस्ट करा",
+      "promise": "वचन",
+      "feature": "वैशिष्ट्य आणि मार्गदर्शक"
+    },
+    "civicScore": {
+      "issuesReported": "मुद्दे",
+      "issuesResolved": "निराकरण केलेले",
+      "commentsCount": "टिप्पण्या",
+      "evidenceSubmitted": "पुरावा",
+      "promisesTracked": "आश्वासने",
+      "endorsements": "पाठिंबा",
+      "modulesCompleted": "मॉड्यूल्स",
+      "challengesCompleted": "आव्हाने",
+      "observer": "निरीक्षक",
+      "contributor": "योगदानकर्ता",
+      "advocate": "समर्थक",
+      "leader": "नेता",
+      "champion": "चॅम्पियन"
+    },
+    "legend": {
+
+      "rangeGeneralGen": "सामान्य (GEN)",
+      "rangeScheduledCasteSc": "अनुसूचित जाती (SC)",
+      "rangeScheduledTribeSt": "अनुसूचित जमाती (ST)",
+
+      "rangeCriticalMargin2000": "गंभीर मार्जिन (<2,000)",
+      "rangeCompetitive20005000": "स्पर्धात्मक (2,000 – 5,000)",
+      "rangeSafeSeat5000": "सुरक्षित आसन (>= ५,०००)",
+      "rangeSwingSeatPartySwitched": "स्विंग सीट (पार्टी स्विच केलेले)",
+      "rangeRetainedSeatSameParty": "राखून ठेवलेली जागा (समान पक्ष)",
+      "rangeNoHistoryAvailable": "कोणताही इतिहास उपलब्ध नाही",
+      "vacantSeat": "मोकळी जागा"
+    },
+    "parliament": {
+      "allIndia": "संपूर्ण भारत",
+      "nominated": "नामांकित"
+    }
+  },
   "financialDisclosure": {
     "completeItemization": "सर्व मालमत्ता घटकांचा तपशील",
     "zeroAssets": "मालमत्तेचे मूल्य शून्य घोषित केले आहे",
@@ -624,7 +688,7 @@ const mr = {
     "founded": "{{year}} मध्ये स्थापना केली.",
     "contributionReport": "भारतीय निवडणूक आयोग {{period}} साठी पक्षाचा योगदान अहवाल प्रकाशित करतो.",
     "constitution": "पक्षाची घटना भारतीय निवडणूक आयोगामार्फत उपलब्ध आहे.",
-    "assemblyElection": "निवडणूक आयोग {{year}}  {{state}} विधानसभा निवडणुकीत पक्षाची नोंद करतो.",
+    "assemblyElection": "{{year}} च्या {{state}} विधानसभा निवडणुकीच्या अधिकृत नोंदीत या पक्षाचा उल्लेख आहे.",
     "profileSource": "स्त्रोत",
     "actionFailed": "बदल जतन करू शकलो नाही. कृपया पुन्हा प्रयत्न करा.",
     "official": "सत्यापित अधिकृत पृष्ठ",

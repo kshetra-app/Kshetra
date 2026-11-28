@@ -2,6 +2,70 @@
  * TE translation
  */
 const te = {
+  "additionalScreenLabels": {
+    "candidate": {
+      "profile": "అభ్యర్థి ఎక్స్-రే",
+      "redirecting": "దారి మళ్లిస్తోంది...",
+      "legislator": "శాసనసభ్యుని ప్రొఫైల్"
+    },
+    "representative": {
+      "profile": "ప్రతినిధి",
+      "edit": "కంట్రిబ్యూట్ వివరాలు",
+      "name": "పూర్తి పేరు",
+      "party": "పార్టీ (పార్టీయేతర అయితే ఖాళీగా ఉంచండి)",
+      "phone": "ఫోన్",
+      "email": "ఇమెయిల్",
+      "photoUrl": "ఫోటో URL"
+    },
+    "shorts": {
+      "national": "జాతీయ",
+      "state": "నా రాష్ట్రం",
+      "area": "నా ప్రాంతం"
+    },
+    "search": {
+      "constituency": "నియోజకవర్గం",
+      "mla": "ఎమ్మెల్యే",
+      "mp": "ఎంపీ",
+      "person": "నాయకుడు / పేజీ",
+      "issue": "సమస్య",
+      "post": "పోస్ట్ చేయండి",
+      "promise": "ప్రామిస్",
+      "feature": "ఫీచర్ & గైడ్"
+    },
+    "civicScore": {
+      "issuesReported": "సమస్యలు",
+      "issuesResolved": "పరిష్కారాలు",
+      "commentsCount": "వ్యాఖ్యలు",
+      "evidenceSubmitted": "సాక్ష్యం",
+      "promisesTracked": "హామీలు",
+      "endorsements": "మద్దతులు",
+      "modulesCompleted": "మాడ్యూల్స్",
+      "challengesCompleted": "సవాళ్ళు",
+      "observer": "పరిశీలకుడు",
+      "contributor": "సహకర్త",
+      "advocate": "న్యాయవాది",
+      "leader": "నాయకుడు",
+      "champion": "ఛాంపియన్"
+    },
+    "legend": {
+
+      "rangeGeneralGen": "సాధారణ (GEN)",
+      "rangeScheduledCasteSc": "షెడ్యూల్డ్ కులం (SC)",
+      "rangeScheduledTribeSt": "షెడ్యూల్డ్ తెగ (ST)",
+
+      "rangeCriticalMargin2000": "క్రిటికల్ మార్జిన్ (< 2,000)",
+      "rangeCompetitive20005000": "పోటీ (2,000 – 5,000)",
+      "rangeSafeSeat5000": "సురక్షిత సీటు (>= 5,000)",
+      "rangeSwingSeatPartySwitched": "స్వింగ్ సీటు (పార్టీ మారినది)",
+      "rangeRetainedSeatSameParty": "నిలబెట్టుకున్న సీటు (అదే పార్టీ)",
+      "rangeNoHistoryAvailable": "చరిత్ర ఏదీ అందుబాటులో లేదు",
+      "vacantSeat": "ఖాళీ సీటు"
+    },
+    "parliament": {
+      "allIndia": "అఖిల భారతం",
+      "nominated": "నామినేట్ చేయబడింది"
+    }
+  },
   "financialDisclosure": {
     "completeItemization": "పూర్తి ఆస్తుల వివరాలు",
     "zeroAssets": "ఆస్తుల విలువ సున్నాగా ప్రకటించారు",
@@ -622,7 +686,7 @@ const te = {
     "founded": "{{year}} లో స్థాపించబడింది.",
     "contributionReport": "{{period}} కోసం పార్టీ సహకార నివేదికను భారత ఎన్నికల సంఘం ప్రచురించింది.",
     "constitution": "పార్టీ రాజ్యాంగం భారత ఎన్నికల సంఘం ద్వారా అందుబాటులో ఉంది.",
-    "assemblyElection": "ఎన్నికల సంఘం {{year}}  {{state}} అసెంబ్లీ ఎన్నికల్లో పార్టీని నమోదు చేస్తుంది.",
+    "assemblyElection": "{{year}} {{state}} శాసనసభ ఎన్నికల అధికారిక రికార్డుల్లో ఈ పార్టీ పేరు ఉంది.",
     "profileSource": "మూలం",
     "actionFailed": "మార్పును సేవ్ చేయడం సాధ్యపడలేదు. దయచేసి మళ్లీ ప్రయత్నించండి.",
     "retryControls": "పేజీ నియంత్రణల్లో కొన్ని తెరుచుకోలేదు. మళ్లీ ప్రయత్నించండి.",

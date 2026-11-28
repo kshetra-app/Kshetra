@@ -2,6 +2,70 @@
  * ML translation
  */
 const ml = {
+  "additionalScreenLabels": {
+    "candidate": {
+      "profile": "സ്ഥാനാർത്ഥി എക്സ്-റേ",
+      "redirecting": "റീഡയറക്‌ട് ചെയ്യുന്നു...",
+      "legislator": "നിയമസഭാംഗത്തിൻ്റെ പ്രൊഫൈൽ"
+    },
+    "representative": {
+      "profile": "പ്രതിനിധി",
+      "edit": "വിശദാംശങ്ങൾ സംഭാവന ചെയ്യുക",
+      "name": "മുഴുവൻ പേര്",
+      "party": "പാർട്ടി (പാർട്ടി അല്ലാത്തതാണെങ്കിൽ ശൂന്യമായി വിടുക)",
+      "phone": "ഫോൺ",
+      "email": "ഇമെയില്",
+      "photoUrl": "ഫോട്ടോ URL"
+    },
+    "shorts": {
+      "national": "ജാതീയ",
+      "state": "എന്റെ സംസ്ഥാനം",
+      "area": "എൻ്റെ ഏരിയ"
+    },
+    "search": {
+      "constituency": "നിയോജകവര്ഗം",
+      "mla": "എം.എൽ.എ",
+      "mp": "എം.പി",
+      "person": "നേതാവ് / പേജ്",
+      "issue": "പ്രശ്നം",
+      "post": "പോസ്ട് ചേയംഡി",
+      "promise": "വാഗ്ദാനം ചെയ്യുക",
+      "feature": "ഫീച്ചർ & ഗൈഡ്"
+    },
+    "civicScore": {
+      "issuesReported": "പ്രശ്നങ്ങൾ",
+      "issuesResolved": "പരിഹരിച്ചത്",
+      "commentsCount": "വ്യാഖ്യലു",
+      "evidenceSubmitted": "സാക്ഷ്യം",
+      "promisesTracked": "ഹാമീലു",
+      "endorsements": "പിന്തുണകൾ",
+      "modulesCompleted": "മൊഡ്യൂളുകൾ",
+      "challengesCompleted": "സവാള്ളു",
+      "observer": "പരിശീലകുഡു",
+      "contributor": "സഹകര്ത",
+      "advocate": "ന്യായവാദി",
+      "leader": "നേതാവ്",
+      "champion": "ഛാംപിയന്"
+    },
+    "legend": {
+
+      "rangeGeneralGen": "പൊതുവിഭാഗം (GEN)",
+      "rangeScheduledCasteSc": "പട്ടികജാതി (SC)",
+      "rangeScheduledTribeSt": "പട്ടികവർഗ്ഗം (ST)",
+
+      "rangeCriticalMargin2000": "ക്രിട്ടിക്കൽ മാർജിൻ (< 2,000)",
+      "rangeCompetitive20005000": "മത്സരാധിഷ്ഠിത (2,000 - 5,000)",
+      "rangeSafeSeat5000": "സുരക്ഷിത സീറ്റ് (>= 5,000)",
+      "rangeSwingSeatPartySwitched": "സ്വിംഗ് സീറ്റ് (പാർട്ടി മാറി)",
+      "rangeRetainedSeatSameParty": "നിലനിർത്തിയ സീറ്റ് (ഒരേ പാർട്ടി)",
+      "rangeNoHistoryAvailable": "ചരിത്രമൊന്നും ലഭ്യമല്ല",
+      "vacantSeat": "ഒഴിവുള്ള സീറ്റ്"
+    },
+    "parliament": {
+      "allIndia": "അഖിലേന്ത്യ",
+      "nominated": "നാമനിർദ്ദേശം ചെയ്യപ്പെട്ടു"
+    }
+  },
   "financialDisclosure": {
     "completeItemization": "എല്ലാ ആസ്തിയിനങ്ങളുടെയും വിശദാംശങ്ങൾ",
     "zeroAssets": "ആസ്തിമൂല്യം പൂജ്യമെന്ന് പ്രഖ്യാപിച്ചു",
@@ -624,7 +688,7 @@ const ml = {
     "founded": "{{year}} -ൽ സ്ഥാപിതമായത്.",
     "contributionReport": "{{period}} എന്നതിനായുള്ള പാർട്ടിയുടെ സംഭാവന റിപ്പോർട്ട് ഇന്ത്യൻ തിരഞ്ഞെടുപ്പ് കമ്മീഷൻ പ്രസിദ്ധീകരിക്കുന്നു.",
     "constitution": "പാർട്ടിയുടെ ഭരണഘടന ഇന്ത്യൻ തിരഞ്ഞെടുപ്പ് കമ്മീഷൻ വഴി ലഭ്യമാണ്.",
-    "assemblyElection": "{{year}}  {{state}} നിയമസഭാ തിരഞ്ഞെടുപ്പിൽ തിരഞ്ഞെടുപ്പ് കമ്മീഷൻ പാർട്ടിയെ രേഖപ്പെടുത്തുന്നു.",
+    "assemblyElection": "{{year}}-ലെ {{state}} നിയമസഭാ തിരഞ്ഞെടുപ്പിന്റെ ഔദ്യോഗിക രേഖയിൽ ഈ പാർട്ടി ഉൾപ്പെട്ടിട്ടുണ്ട്.",
     "profileSource": "ഉറവിടം",
     "actionFailed": "മാറ്റം സംരക്ഷിക്കാനായില്ല. ദയവായി വീണ്ടും ശ്രമിക്കുക.",
     "official": "പരിശോധിച്ച ഔദ്യോഗിക പേജ്",

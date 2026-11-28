@@ -16,14 +16,14 @@ interface CivicScoreCardProps {
 }
 
 const SCORE_ITEMS: { key: keyof Omit<CivicScoreBreakdown, 'totalScore' | 'level'>; label: string; icon: string }[] = [
-  { key: 'issuesReported', label: 'Issues', icon: 'flag' },
-  { key: 'issuesResolved', label: 'Resolved', icon: 'checkmark-circle' },
-  { key: 'commentsCount', label: 'Comments', icon: 'chatbubble' },
-  { key: 'evidenceSubmitted', label: 'Evidence', icon: 'camera' },
-  { key: 'promisesTracked', label: 'Promises', icon: 'eye' },
-  { key: 'endorsements', label: 'Endorsements', icon: 'heart' },
-  { key: 'modulesCompleted', label: 'Modules', icon: 'school' },
-  { key: 'challengesCompleted', label: 'Challenges', icon: 'flash' },
+  { key: 'issuesReported', label: 'additionalScreenLabels.civicScore.issuesReported', icon: 'flag' },
+  { key: 'issuesResolved', label: 'additionalScreenLabels.civicScore.issuesResolved', icon: 'checkmark-circle' },
+  { key: 'commentsCount', label: 'additionalScreenLabels.civicScore.commentsCount', icon: 'chatbubble' },
+  { key: 'evidenceSubmitted', label: 'additionalScreenLabels.civicScore.evidenceSubmitted', icon: 'camera' },
+  { key: 'promisesTracked', label: 'additionalScreenLabels.civicScore.promisesTracked', icon: 'eye' },
+  { key: 'endorsements', label: 'additionalScreenLabels.civicScore.endorsements', icon: 'heart' },
+  { key: 'modulesCompleted', label: 'additionalScreenLabels.civicScore.modulesCompleted', icon: 'school' },
+  { key: 'challengesCompleted', label: 'additionalScreenLabels.civicScore.challengesCompleted', icon: 'flash' },
 ];
 
 export default React.memo(function CivicScoreCard({ score, displayName }: CivicScoreCardProps) {
@@ -42,7 +42,7 @@ export default React.memo(function CivicScoreCard({ score, displayName }: CivicS
           </Text>
           <View style={[styles.levelBadge, { backgroundColor: levelConfig.color + '20' }]}>
             <Ionicons name={levelConfig.icon as any} size={14} color={levelConfig.color} />
-            <Text style={[styles.levelText, { color: levelConfig.color }]}>{levelConfig.label}</Text>
+            <Text style={[styles.levelText, { color: levelConfig.color }]}>{t('additionalScreenLabels.civicScore.' + score.level)}</Text>
           </View>
         </View>
         <View style={[styles.scoreCircle, { borderColor: levelConfig.color }]}>
@@ -65,7 +65,7 @@ export default React.memo(function CivicScoreCard({ score, displayName }: CivicS
         {SCORE_ITEMS.filter((item) => score[item.key] > 0).map((item) => (
           <View key={item.key} style={styles.breakdownItem}>
             <Ionicons name={item.icon as any} size={14} color="#9CA3AF" />
-            <Text style={styles.breakdownLabel}>{item.label}</Text>
+            <Text style={styles.breakdownLabel}>{t(item.label)}</Text>
             <Text style={styles.breakdownValue}>+{score[item.key]}</Text>
           </View>
         ))}

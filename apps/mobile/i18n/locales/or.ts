@@ -2,6 +2,70 @@
  * OR translation
  */
 const or = {
+  "additionalScreenLabels": {
+    "candidate": {
+      "profile": "ପ୍ରାର୍ଥୀ ଏକ୍ସ-ରେ",
+      "redirecting": "ପୁନ ir ନିର୍ଦ୍ଦେଶ...",
+      "legislator": "ବିଧାୟକ ପ୍ରୋଫାଇଲ୍ |"
+    },
+    "representative": {
+      "profile": "ପ୍ରତିନିଧୀ",
+      "edit": "ସବିଶେଷ ବିବରଣୀ ଯୋଗଦାନ କରନ୍ତୁ |",
+      "name": "ପୂର୍ଣ୍ଣ ନାମ",
+      "party": "ପାର୍ଟୀ (ଯଦି ପାର୍ଟି ନହୁଏ ତେବେ ଖାଲି ଛାଡନ୍ତୁ)",
+      "phone": "ଫୋନ୍ |",
+      "email": "ଈମେଲ",
+      "photoUrl": "ଫଟୋ URL"
+    },
+    "shorts": {
+      "national": "ରାଷ୍ଟ୍ରୀଯ",
+      "state": "ମୋ ରାଜ୍ୟ",
+      "area": "ମୋ କ୍ଷେତ୍ର"
+    },
+    "search": {
+      "constituency": "ନିର୍ୱାଚନ କ୍ଷେତ୍ର",
+      "mla": "ବିଧାୟକ",
+      "mp": "ସାଂସଦ",
+      "person": "ନେତା / ପୃଷ୍ଠା |",
+      "issue": "ଇସୁ |",
+      "post": "ପୋସ୍ଟ କରେଂ",
+      "promise": "ପ୍ରତିଜ୍ଞା",
+      "feature": "ବ & ଶିଷ୍ଟ୍ୟ ଏବଂ ଗାଇଡ୍"
+    },
+    "civicScore": {
+      "issuesReported": "ସମସ୍ୟା",
+      "issuesResolved": "ସମାଧାନ ହୋଇଛି",
+      "commentsCount": "ଟିପ୍ପଣିଯାଂ",
+      "evidenceSubmitted": "ସାକ୍ଷ୍ଯ",
+      "promisesTracked": "ୱାଦେ",
+      "endorsements": "ସମର୍ଥନ",
+      "modulesCompleted": "ମଡ୍ୟୁଲ୍",
+      "challengesCompleted": "ଚୁନୌତିଯାଁ",
+      "observer": "ପ୍ରେକ୍ଷକ",
+      "contributor": "ଯୋଗଦାନକର୍ତା",
+      "advocate": "ପୈରୋକାର",
+      "leader": "ନେତା",
+      "champion": "ଚୈଂପିଯନ"
+    },
+    "legend": {
+
+      "rangeGeneralGen": "ସାଧାରଣ (GEN)",
+      "rangeScheduledCasteSc": "ତଫସିଲଭୁକ୍ତ ଜาତି (SC)",
+      "rangeScheduledTribeSt": "ତଫସିଲଭୁକ୍ତ ଜନଜାତି (ST)",
+
+      "rangeCriticalMargin2000": "ଗୁରୁତର ମାର୍ଜିନ୍ (<2,000)",
+      "rangeCompetitive20005000": "ପ୍ରତିଯୋଗୀ (2,000 - 5,000)",
+      "rangeSafeSeat5000": "ସୁରକ୍ଷିତ ଆସନ (> = 5,000)",
+      "rangeSwingSeatPartySwitched": "ସୁଇଙ୍ଗ୍ ସିଟ୍ (ପାର୍ଟି ସୁଇଚ୍)",
+      "rangeRetainedSeatSameParty": "ରଖାଯାଇଥିବା ଆସନ (ସମାନ ପାର୍ଟି)",
+      "rangeNoHistoryAvailable": "କ History ଣସି ଇତିହାସ ଉପଲବ୍ଧ ନାହିଁ |",
+      "vacantSeat": "ଖାଲି ଆସନ |"
+    },
+    "parliament": {
+      "allIndia": "ସର୍ବଭାରତୀୟ",
+      "nominated": "ନାମାଙ୍କିତ |"
+    }
+  },
   "financialDisclosure": {
     "completeItemization": "ସମସ୍ତ ସମ୍ପତ୍ତିର ବିସ୍ତୃତ ତାଲିକା",
     "zeroAssets": "ସମ୍ପତ୍ତିର ମୂଲ୍ୟ ଶୂନ୍ୟ ବୋଲି ଘୋଷଣା କରାଯାଇଛି",
@@ -590,7 +654,7 @@ const or = {
     "reportIssue": "ଏକ ସମସ୍ୟା ରିପୋର୍ଟ କରନ୍ତୁ |"
   },
   "partyRegistry": {
-    "electionRecord": "ନିର୍ବାଚନ ରେକର୍ଡ |",
+    "electionRecord": "ନିର୍ବାଚନ ରେକର୍ଡ",
     "historyAndFilings": "ଇତିହାସ ଏବଂ ଫିଲିଙ୍ଗ୍ |",
     "electionCode": "ରେକର୍ଡ ହୋଇଥିବା ପାର୍ଟି କୋଡ୍ · {{code}} |",
     "ballotSymbol": "ବାଲାଟ୍ ସଙ୍କେତ · {{symbol}} |",
@@ -624,7 +688,7 @@ const or = {
     "founded": "{{year}} ରେ ପ୍ରତିଷ୍ଠିତ |",
     "contributionReport": "ଭାରତର ନିର୍ବାଚନ ଆୟୋଗ {{period}} ପାଇଁ ଦଳର ଅବଦାନ ରିପୋର୍ଟ ପ୍ରକାଶ କରିଛି |",
     "constitution": "ଦଳର ସମ୍ବିଧାନ ଭାରତର ନିର୍ବାଚନ ଆୟୋଗ ମାଧ୍ୟମରେ ଉପଲବ୍ଧ।",
-    "assemblyElection": "ନିର୍ବାଚନ ଆୟୋଗ ଦଳକୁ {{year}}  {{state}} ବିଧାନସଭା ନିର୍ବାଚନରେ ​​ରେକର୍ଡ କରିଛନ୍ତି।",
+    "assemblyElection": "{{year}} {{state}} ବିଧାନସଭା ନିର୍ବାଚନର ସରକାରୀ ରେକର୍ଡରେ ଏହି ଦଳର ନାମ ରହିଛି।",
     "profileSource": "ଉତ୍ସ",
     "actionFailed": "ପରିବର୍ତ୍ତନ ସଞ୍ଚୟ କରିପାରିଲା ନାହିଁ | ଦୟାକରି ପୁନର୍ବାର ଚେଷ୍ଟା କରନ୍ତୁ |",
     "official": "ଯାଞ୍ଚ ହୋଇଥିବା ଅଫିସିଆଲ୍ ପୃଷ୍ଠା |",

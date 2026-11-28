@@ -2,6 +2,70 @@
  * GU translation
  */
 const gu = {
+  "additionalScreenLabels": {
+    "candidate": {
+      "profile": "ઉમેદવાર એક્સ-રે",
+      "redirecting": "રીડાયરેક્ટ કરી રહ્યું છે...",
+      "legislator": "ધારાસભ્ય પ્રોફાઇલ"
+    },
+    "representative": {
+      "profile": "પ્રતિનિધિ",
+      "edit": "ફાળો વિગતો",
+      "name": "પૂરું નામ",
+      "party": "પક્ષ (જો બિન-પક્ષીય હોય તો ખાલી છોડો)",
+      "phone": "ફોન",
+      "email": "ઈમેલ",
+      "photoUrl": "ફોટો URL"
+    },
+    "shorts": {
+      "national": "રાષ્ટ્રીય",
+      "state": "મારું રાજ્ય",
+      "area": "મારો વિસ્તાર"
+    },
+    "search": {
+      "constituency": "નિર્વાચન ક્ષેત્ર",
+      "mla": "ધારાસભ્ય",
+      "mp": "એમ.પી",
+      "person": "નેતા / પૃષ્ઠ",
+      "issue": "અંક",
+      "post": "પોસ્ટ કરેં",
+      "promise": "વચન",
+      "feature": "લક્ષણ અને માર્ગદર્શિકા"
+    },
+    "civicScore": {
+      "issuesReported": "મુદ્દાઓ",
+      "issuesResolved": "ઉકેલાયેલાં",
+      "commentsCount": "ટિપ્પણિયાં",
+      "evidenceSubmitted": "સાક્ષ્ય",
+      "promisesTracked": "વાદે",
+      "endorsements": "સમર્થન",
+      "modulesCompleted": "મોડ્યુલ્સ",
+      "challengesCompleted": "ચુનૌતિયાઁ",
+      "observer": "પ્રેક્ષક",
+      "contributor": "યોગદાનકર્તા",
+      "advocate": "પૈરોકાર",
+      "leader": "નેતા",
+      "champion": "ચૈંપિયન"
+    },
+    "legend": {
+
+      "rangeGeneralGen": "સામાન્ય (GEN)",
+      "rangeScheduledCasteSc": "અનુસૂચિત જાતિ (SC)",
+      "rangeScheduledTribeSt": "અનુસૂચિત જનજાતિ (ST)",
+
+      "rangeCriticalMargin2000": "જટિલ માર્જિન (<2,000)",
+      "rangeCompetitive20005000": "સ્પર્ધાત્મક (2,000 – 5,000)",
+      "rangeSafeSeat5000": "સલામત બેઠક (>= 5,000)",
+      "rangeSwingSeatPartySwitched": "સ્વિંગ સીટ (પાર્ટી સ્વિચ કરેલ)",
+      "rangeRetainedSeatSameParty": "જાળવી રાખેલી બેઠક (સમાન પક્ષ)",
+      "rangeNoHistoryAvailable": "કોઈ ઇતિહાસ ઉપલબ્ધ નથી",
+      "vacantSeat": "ખાલી બેઠક"
+    },
+    "parliament": {
+      "allIndia": "અખિલ ભારતીય",
+      "nominated": "નામાંકિત"
+    }
+  },
   "financialDisclosure": {
     "completeItemization": "તમામ સંપત્તિનો વિગતવાર હિસાબ",
     "zeroAssets": "સંપત્તિનું મૂલ્ય શૂન્ય જાહેર કર્યું છે",
@@ -624,7 +688,7 @@ const gu = {
     "founded": "{{year}} માં સ્થાપના કરી.",
     "contributionReport": "ભારતીય ચૂંટણી પંચ {{period}} માટે પક્ષના યોગદાનનો અહેવાલ પ્રકાશિત કરે છે.",
     "constitution": "પક્ષનું બંધારણ ભારતના ચૂંટણી પંચ દ્વારા ઉપલબ્ધ છે.",
-    "assemblyElection": "ચૂંટણી પંચ {{year}}  {{state}} વિધાનસભા ચૂંટણીમાં પક્ષને રેકોર્ડ કરે છે.",
+    "assemblyElection": "{{year}}ની {{state}} વિધાનસભા ચૂંટણીના અધિકૃત રેકોર્ડમાં આ પક્ષનું નામ છે.",
     "profileSource": "સ્ત્રોત",
     "actionFailed": "ફેરફાર સાચવી શકાયો નથી. કૃપા કરીને ફરી પ્રયાસ કરો.",
     "official": "ચકાસાયેલ સત્તાવાર પૃષ્ઠ",

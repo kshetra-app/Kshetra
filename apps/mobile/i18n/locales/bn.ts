@@ -2,6 +2,70 @@
  * BN translation
  */
 const bn = {
+  "additionalScreenLabels": {
+    "candidate": {
+      "profile": "প্রার্থী এক্স-রে",
+      "redirecting": "পুনঃনির্দেশ করা হচ্ছে...",
+      "legislator": "বিধায়ক প্রোফাইল"
+    },
+    "representative": {
+      "profile": "প্রতিনিধি",
+      "edit": "বিস্তারিত অবদান",
+      "name": "পুরো নাম",
+      "party": "পার্টি (অদলীয় হলে ফাঁকা ছেড়ে দিন)",
+      "phone": "ফোন",
+      "email": "ঈমেল",
+      "photoUrl": "ছবির URL"
+    },
+    "shorts": {
+      "national": "রাষ্ট্রীয",
+      "state": "আমার রাজ্য",
+      "area": "আমার এলাকা"
+    },
+    "search": {
+      "constituency": "নির্বাচন ক্ষেত্র",
+      "mla": "এমএলএ",
+      "mp": "এমপি",
+      "person": "নেতা/পৃষ্ঠা",
+      "issue": "ইস্যু",
+      "post": "পোস্ট করেং",
+      "promise": "প্রতিশ্রুতি",
+      "feature": "বৈশিষ্ট্য এবং গাইড"
+    },
+    "civicScore": {
+      "issuesReported": "সমস্যা",
+      "issuesResolved": "সমাধান হয়েছে",
+      "commentsCount": "টিপ্পণিযাং",
+      "evidenceSubmitted": "সাক্ষ্য",
+      "promisesTracked": "বাদে",
+      "endorsements": "সমর্থন",
+      "modulesCompleted": "মডিউল",
+      "challengesCompleted": "চুনৌতিযাঁ",
+      "observer": "প্রেক্ষক",
+      "contributor": "যোগদানকর্তা",
+      "advocate": "পৈরোকার",
+      "leader": "নেতা",
+      "champion": "চৈংপিযন"
+    },
+    "legend": {
+
+      "rangeGeneralGen": "সাধারণ (GEN)",
+      "rangeScheduledCasteSc": "তফসিলি জাতি (SC)",
+      "rangeScheduledTribeSt": "তফসিলি উপজাতি (ST)",
+
+      "rangeCriticalMargin2000": "ক্রিটিক্যাল মার্জিন (<2,000)",
+      "rangeCompetitive20005000": "প্রতিযোগিতামূলক (2,000 – 5,000)",
+      "rangeSafeSeat5000": "নিরাপদ আসন (>= 5,000)",
+      "rangeSwingSeatPartySwitched": "সুইং সিট (পার্টি সুইচড)",
+      "rangeRetainedSeatSameParty": "ধরে রাখা আসন (একই দল)",
+      "rangeNoHistoryAvailable": "কোন ইতিহাস উপলব্ধ",
+      "vacantSeat": "খালি আসন"
+    },
+    "parliament": {
+      "allIndia": "সর্বভারতীয়",
+      "nominated": "মনোনীত"
+    }
+  },
   "financialDisclosure": {
     "completeItemization": "সব সম্পদের খাতভিত্তিক বিবরণ",
     "zeroAssets": "সম্পদের মূল্য শূন্য ঘোষণা করা হয়েছে",
@@ -624,7 +688,7 @@ const bn = {
     "founded": "{{year}} এ প্রতিষ্ঠিত।",
     "contributionReport": "ভারতের নির্বাচন কমিশন {{period}} -এর জন্য পার্টির অবদানের প্রতিবেদন প্রকাশ করে।",
     "constitution": "দলের গঠনতন্ত্র ভারতের নির্বাচন কমিশনের মাধ্যমে পাওয়া যায়।",
-    "assemblyElection": "নির্বাচন কমিশন {{year}}  {{state}} বিধানসভা নির্বাচনে দলটিকে রেকর্ড করে।",
+    "assemblyElection": "{{year}} সালের {{state}} বিধানসভা নির্বাচনের সরকারি নথিতে এই দলের নাম রয়েছে।",
     "profileSource": "উৎস",
     "actionFailed": "পরিবর্তন সংরক্ষণ করা যায়নি. আবার চেষ্টা করুন.",
     "official": "যাচাইকৃত অফিসিয়াল পেজ",

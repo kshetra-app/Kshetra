@@ -2,6 +2,70 @@
  * HI translation
  */
 const hi = {
+  "additionalScreenLabels": {
+    "candidate": {
+      "profile": "उम्मीदवार एक्स-रे",
+      "redirecting": "पुनर्निर्देशन...",
+      "legislator": "विधायक प्रोफ़ाइल"
+    },
+    "representative": {
+      "profile": "प्रतिनिधि",
+      "edit": "योगदान विवरण",
+      "name": "पूरा नाम",
+      "party": "पार्टी (यदि गैर-पार्टी है तो खाली छोड़ें)",
+      "phone": "फ़ोन",
+      "email": "ईमेल",
+      "photoUrl": "फोटो यूआरएल"
+    },
+    "shorts": {
+      "national": "राष्ट्रीय",
+      "state": "मेरा राज्य",
+      "area": "मेरा क्षेत्र"
+    },
+    "search": {
+      "constituency": "निर्वाचन क्षेत्र",
+      "mla": "विधायक",
+      "mp": "एमपी",
+      "person": "नेता/पेज",
+      "issue": "मुद्दा",
+      "post": "पोस्ट करें",
+      "promise": "वादा",
+      "feature": "फ़ीचर और गाइड"
+    },
+    "civicScore": {
+      "issuesReported": "मुद्दे",
+      "issuesResolved": "समाधान किए",
+      "commentsCount": "टिप्पणियां",
+      "evidenceSubmitted": "साक्ष्य",
+      "promisesTracked": "वादे",
+      "endorsements": "समर्थन",
+      "modulesCompleted": "मॉड्यूल",
+      "challengesCompleted": "चुनौतियाँ",
+      "observer": "प्रेक्षक",
+      "contributor": "योगदानकर्ता",
+      "advocate": "पैरोकार",
+      "leader": "नेता",
+      "champion": "चैंपियन"
+    },
+    "legend": {
+
+      "rangeGeneralGen": "सामान्य (GEN)",
+      "rangeScheduledCasteSc": "अनुसूचित जाति (SC)",
+      "rangeScheduledTribeSt": "अनुसूचित जनजाति (ST)",
+
+      "rangeCriticalMargin2000": "क्रिटिकल मार्जिन (<2,000)",
+      "rangeCompetitive20005000": "प्रतिस्पर्धी (2,000 – 5,000)",
+      "rangeSafeSeat5000": "सुरक्षित सीट (>=5,000)",
+      "rangeSwingSeatPartySwitched": "स्विंग सीट (पार्टी स्विच्ड)",
+      "rangeRetainedSeatSameParty": "बरकरार सीट (वही पार्टी)",
+      "rangeNoHistoryAvailable": "कोई इतिहास उपलब्ध नहीं",
+      "vacantSeat": "खाली सीट"
+    },
+    "parliament": {
+      "allIndia": "अखिल भारत",
+      "nominated": "नामांकित"
+    }
+  },
   "financialDisclosure": {
     "completeItemization": "सभी मदों का विवरण",
     "zeroAssets": "संपत्ति का मूल्य शून्य घोषित किया गया",
@@ -622,7 +686,7 @@ const hi = {
     "founded": "{{year}} में स्थापित।",
     "contributionReport": "भारत का चुनाव आयोग {{period}} के लिए पार्टी की योगदान रिपोर्ट प्रकाशित करता है।",
     "constitution": "पार्टी का संविधान भारत के चुनाव आयोग के माध्यम से उपलब्ध है।",
-    "assemblyElection": "चुनाव आयोग {{year}}  {{state}} विधानसभा चुनाव में पार्टी को रिकॉर्ड करता है।",
+    "assemblyElection": "{{year}} के {{state}} विधानसभा चुनाव के आधिकारिक रिकॉर्ड में इस दल का नाम है।",
     "profileSource": "स्रोत",
     "actionFailed": "परिवर्तन सहेजा नहीं जा सका. कृपया पुन: प्रयास करें।",
     "retryControls": "पेज के कुछ नियंत्रण लोड नहीं हुए। फिर से कोशिश करें।",

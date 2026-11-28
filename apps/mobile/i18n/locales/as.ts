@@ -2,6 +2,70 @@
  * AS translation
  */
 const as = {
+  "additionalScreenLabels": {
+    "candidate": {
+      "profile": "প্ৰাৰ্থী এক্স-ৰে",
+      "redirecting": "পুনঃনিৰ্দেশিত...",
+      "legislator": "বিধানসভাৰ প্ৰফাইল"
+    },
+    "representative": {
+      "profile": "প্ৰতিনিধি",
+      "edit": "অৱদানৰ বিৱৰণ",
+      "name": "সম্পূৰ্ণ নাম",
+      "party": "পাৰ্টি (অপাৰ্টি হ'লে খালী ৰাখক)",
+      "phone": "ফোন",
+      "email": "ঈমেল",
+      "photoUrl": "ফটোৰ ইউ আৰ এল"
+    },
+    "shorts": {
+      "national": "ৰাষ্ট্ৰীয",
+      "state": "মোৰ ৰাজ্য",
+      "area": "মোৰ এলেকা"
+    },
+    "search": {
+      "constituency": "নিৰ্ৱাচন ক্ষেত্ৰ",
+      "mla": "বিধায়ক",
+      "mp": "সাংসদ",
+      "person": "নেতা / পৃষ্ঠা",
+      "issue": "ইছ্যু",
+      "post": "পোস্ট কৰেং",
+      "promise": "প্ৰতিশ্ৰুতি",
+      "feature": "বৈশিষ্ট্য আৰু গাইড"
+    },
+    "civicScore": {
+      "issuesReported": "সমস্যা",
+      "issuesResolved": "সমাধান কৰা হৈছে",
+      "commentsCount": "টিপ্পণিযাং",
+      "evidenceSubmitted": "সাক্ষ্য",
+      "promisesTracked": "ৱাদে",
+      "endorsements": "সমৰ্থন",
+      "modulesCompleted": "মডিউল",
+      "challengesCompleted": "চুনৌতিযাঁ",
+      "observer": "প্ৰেক্ষক",
+      "contributor": "যোগদানকৰ্তা",
+      "advocate": "পৈৰোকাৰ",
+      "leader": "নেতা",
+      "champion": "চৈংপিযন"
+    },
+    "legend": {
+
+      "rangeGeneralGen": "সাধাৰণ (GEN)",
+      "rangeScheduledCasteSc": "অনুসূচিত জাতি (SC)",
+      "rangeScheduledTribeSt": "অনুসূচিত জনজাতি (ST)",
+
+      "rangeCriticalMargin2000": "জটিল মাৰ্জিন (< 2,000)",
+      "rangeCompetitive20005000": "প্ৰতিযোগিতামূলক (২,০০০ – ৫,০০০)",
+      "rangeSafeSeat5000": "নিৰাপদ আসন (>= ৫,০০০)",
+      "rangeSwingSeatPartySwitched": "ছুইং আসন (পাৰ্টি চুইচড)",
+      "rangeRetainedSeatSameParty": "ৰখা আসন (একে পক্ষ)",
+      "rangeNoHistoryAvailable": "কোনো ইতিহাস উপলব্ধ নহয়",
+      "vacantSeat": "খালী আসন"
+    },
+    "parliament": {
+      "allIndia": "সৰ্বভাৰতীয়",
+      "nominated": "মনোনীত"
+    }
+  },
   "financialDisclosure": {
     "completeItemization": "সকলো সম্পত্তিৰ পৃথক বিৱৰণ",
     "zeroAssets": "সম্পত্তিৰ মূল্য শূন্য বুলি ঘোষণা কৰা হৈছে",
@@ -624,7 +688,7 @@ const as = {
     "founded": "{{year}} ত প্ৰতিষ্ঠা কৰা হৈছে।",
     "contributionReport": "ভাৰতীয় নিৰ্বাচন আয়োগে {{period}} ৰ বাবে দলটোৰ অৱদানৰ প্ৰতিবেদন প্ৰকাশ কৰে।",
     "constitution": "দলটোৰ সংবিধান ভাৰতৰ নিৰ্বাচন আয়োগৰ জৰিয়তে উপলব্ধ।",
-    "assemblyElection": "নিৰ্বাচন আয়োগে দলটোক {{year}}  {{state}} বিধানসভা নিৰ্বাচনত লিপিবদ্ধ কৰে।",
+    "assemblyElection": "{{year}} চনৰ {{state}} বিধানসভা নিৰ্বাচনৰ চৰকাৰী নথিত এই দলৰ নাম আছে।",
     "profileSource": "উৎস",
     "actionFailed": "পৰিবৰ্তন সংৰক্ষণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
     "official": "ভেৰিফাইড অফিচিয়েল পেজ",

@@ -26,14 +26,14 @@ import { searchDiscoveryCatalog } from '../lib/discoveryCatalog';
 import DiscoveryHubSheet from '../components/DiscoveryHubSheet';
 
 const TYPE_CONFIG: Record<SearchResultType, { icon: string; color: string; label: string }> = {
-  constituency: { icon: 'location', color: '#A8201A', label: 'Constituency' },
-  mla: { icon: 'person', color: '#145C68', label: 'MLA' },
-  mp: { icon: 'business', color: '#C5A059', label: 'MP' },
-  person: { icon: 'person-circle', color: '#2563EB', label: 'Leader / Page' },
-  issue: { icon: 'megaphone', color: '#D3453E', label: 'Issue' },
-  post: { icon: 'chatbubble', color: '#C5A059', label: 'Post' },
-  promise: { icon: 'checkmark-done', color: '#C5A059', label: 'Promise' },
-  feature: { icon: 'sparkles', color: '#8B5CF6', label: 'Feature & Guide' },
+  constituency: { icon: 'location', color: '#A8201A', label: 'additionalScreenLabels.search.constituency' },
+  mla: { icon: 'person', color: '#145C68', label: 'additionalScreenLabels.search.mla' },
+  mp: { icon: 'business', color: '#C5A059', label: 'additionalScreenLabels.search.mp' },
+  person: { icon: 'person-circle', color: '#2563EB', label: 'additionalScreenLabels.search.person' },
+  issue: { icon: 'megaphone', color: '#D3453E', label: 'additionalScreenLabels.search.issue' },
+  post: { icon: 'chatbubble', color: '#C5A059', label: 'additionalScreenLabels.search.post' },
+  promise: { icon: 'checkmark-done', color: '#C5A059', label: 'additionalScreenLabels.search.promise' },
+  feature: { icon: 'sparkles', color: '#8B5CF6', label: 'additionalScreenLabels.search.feature' },
 };
 
 export default function GlobalSearchScreen() {
@@ -166,7 +166,7 @@ export default function GlobalSearchScreen() {
           <Text style={styles.resultSub} numberOfLines={1}>{item.subtitle}</Text>
         </View>
         <View style={[styles.typeBadge, { backgroundColor: config.color + '15' }]}>
-          <Text style={[styles.typeBadgeText, { color: config.color }]}>{config.label}</Text>
+          <Text style={[styles.typeBadgeText, { color: config.color }]}>{t(config.label)}</Text>
         </View>
       </Pressable>
     );

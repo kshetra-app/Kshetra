@@ -20,11 +20,11 @@ import DiscoveryHubSheet from '../../../components/DiscoveryHubSheet';
 import i18n from '../../../i18n';
 
 const EDITABLE_FIELDS: { key: string; label: string; keyboard?: 'default' | 'phone-pad' | 'email-address' | 'url' }[] = [
-  { key: 'name', label: 'Full name' },
-  { key: 'party', label: 'Party (leave blank if non-party)' },
-  { key: 'phone', label: 'Phone', keyboard: 'phone-pad' },
-  { key: 'email', label: 'Email', keyboard: 'email-address' },
-  { key: 'photoUrl', label: 'Photo URL', keyboard: 'url' },
+  { key: 'name', label: 'additionalScreenLabels.representative.name' },
+  { key: 'party', label: 'additionalScreenLabels.representative.party' },
+  { key: 'phone', label: 'additionalScreenLabels.representative.phone', keyboard: 'phone-pad' },
+  { key: 'email', label: 'additionalScreenLabels.representative.email', keyboard: 'email-address' },
+  { key: 'photoUrl', label: 'additionalScreenLabels.representative.photoUrl', keyboard: 'url' },
 ];
 
 export default function RepresentativeEditScreen() {
@@ -125,7 +125,7 @@ export default function RepresentativeEditScreen() {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
-          title: 'Contribute Details',
+          title: translateScreenLabel('additionalScreenLabels.representative.edit'),
           headerRight: () => (
             <Pressable
               accessibilityRole="button"
@@ -147,7 +147,7 @@ export default function RepresentativeEditScreen() {
 
         {EDITABLE_FIELDS.filter(({ key }) => key !== 'party' || rep?.partyOfficial).map((f) => (
           <View key={f.key} style={styles.fieldWrap}>
-            <Text style={[styles.label, { color: colors.textSecondary }]}>{f.label}</Text>
+            <Text style={[styles.label, { color: colors.textSecondary }]}>{translateScreenLabel(f.label)}</Text>
             <TextInput
               value={values[f.key]}
               onChangeText={(v) => setField(f.key, v)}

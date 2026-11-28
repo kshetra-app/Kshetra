@@ -2,6 +2,70 @@
  * TA translation
  */
 const ta = {
+  "additionalScreenLabels": {
+    "candidate": {
+      "profile": "வேட்பாளர் எக்ஸ்-ரே",
+      "redirecting": "திசைதிருப்புகிறது...",
+      "legislator": "சட்டமன்ற உறுப்பினர் விவரக்குறிப்பு"
+    },
+    "representative": {
+      "profile": "பிரதிநிதி",
+      "edit": "பங்களிப்பு விவரங்கள்",
+      "name": "முழுப் பெயர்",
+      "party": "கட்சி (கட்சி அல்லாதது என்றால் காலியாக விடவும்)",
+      "phone": "தொலைபேசி",
+      "email": "இமெயில்",
+      "photoUrl": "புகைப்பட URL"
+    },
+    "shorts": {
+      "national": "ஜாதீய",
+      "state": "என் மாநிலம்",
+      "area": "எனது பகுதி"
+    },
+    "search": {
+      "constituency": "நியோஜகவர்கம்",
+      "mla": "எம்.எல்.ஏ",
+      "mp": "எம்.பி",
+      "person": "தலைவர் / பக்கம்",
+      "issue": "பிரச்சினை",
+      "post": "போஸ்ட் சேயம்டி",
+      "promise": "சத்தியம்",
+      "feature": "அம்சம் & வழிகாட்டி"
+    },
+    "civicScore": {
+      "issuesReported": "பிரச்சினைகள்",
+      "issuesResolved": "தீர்க்கப்பட்டவை",
+      "commentsCount": "வ்யாக்யலு",
+      "evidenceSubmitted": "ஸாக்ஷ்யம்",
+      "promisesTracked": "ஹாமீலு",
+      "endorsements": "ஆதரவுகள்",
+      "modulesCompleted": "தொகுதிகள்",
+      "challengesCompleted": "ஸவாள்ளு",
+      "observer": "பரிசீலகுடு",
+      "contributor": "ஸஹகர்த",
+      "advocate": "ந்யாயவாதி",
+      "leader": "தலைவர்",
+      "champion": "சாம்பியந்"
+    },
+    "legend": {
+
+      "rangeGeneralGen": "பொது (GEN)",
+      "rangeScheduledCasteSc": "பட்டியலிடப்பட்ட சாதியினர் (SC)",
+      "rangeScheduledTribeSt": "பட்டியலிடப்பட்ட பழங்குடியினர் (ST)",
+
+      "rangeCriticalMargin2000": "முக்கியமான விளிம்பு (< 2,000)",
+      "rangeCompetitive20005000": "போட்டி (2,000 - 5,000)",
+      "rangeSafeSeat5000": "பாதுகாப்பான இருக்கை (>= 5,000)",
+      "rangeSwingSeatPartySwitched": "ஊஞ்சல் இருக்கை (கட்சி மாறியது)",
+      "rangeRetainedSeatSameParty": "தக்கவைக்கப்பட்ட இருக்கை (ஒரே கட்சி)",
+      "rangeNoHistoryAvailable": "வரலாறு இல்லை",
+      "vacantSeat": "காலி இருக்கை"
+    },
+    "parliament": {
+      "allIndia": "அனைத்திந்திய",
+      "nominated": "பரிந்துரைக்கப்பட்டது"
+    }
+  },
   "financialDisclosure": {
     "completeItemization": "அனைத்து சொத்து வகைகளின் விவரம்",
     "zeroAssets": "சொத்து மதிப்பு பூஜ்ஜியம் என அறிவிக்கப்பட்டுள்ளது",
@@ -624,7 +688,7 @@ const ta = {
     "founded": "{{year}} இல் நிறுவப்பட்டது.",
     "contributionReport": "{{period}} க்கான கட்சியின் பங்களிப்பு அறிக்கையை இந்திய தேர்தல் ஆணையம் வெளியிடுகிறது.",
     "constitution": "கட்சியின் அரசியலமைப்பு இந்திய தேர்தல் ஆணையத்தின் மூலம் கிடைக்கிறது.",
-    "assemblyElection": "{{year}}  {{state}} சட்டமன்றத் தேர்தலில் கட்சியை தேர்தல் ஆணையம் பதிவு செய்கிறது.",
+    "assemblyElection": "{{year}} {{state}} சட்டமன்றத் தேர்தலின் அதிகாரப்பூர்வ பதிவில் இந்தக் கட்சி இடம்பெற்றுள்ளது.",
     "profileSource": "ஆதாரம்",
     "actionFailed": "மாற்றத்தைச் சேமிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
     "official": "சரிபார்க்கப்பட்ட அதிகாரப்பூர்வ பக்கம்",

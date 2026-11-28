@@ -102,53 +102,53 @@ export function buildPartyLegend(
 }
 
 const MARGIN_LEGEND = [
-  { color: '#8B5CF6', label: '> 100,000 (Massive)' },
-  { color: '#3B82F6', label: '50,000 – 100,000 (Landslide)' },
-  { color: '#10B981', label: '20,000 – 50,000 (Comfortable)' },
-  { color: '#F59E0B', label: '5,000 – 20,000 (Competitive)' },
-  { color: '#EF4444', label: '< 5,000 (Razor Thin)' },
+  { color: '#8B5CF6', label: '> 100,000' },
+  { color: '#3B82F6', label: '50,000 – 100,000' },
+  { color: '#10B981', label: '20,000 – 50,000' },
+  { color: '#F59E0B', label: '5,000 – 20,000' },
+  { color: '#EF4444', label: '< 5,000' },
 ];
 
 const RESERVATION_LEGEND = [
-  { color: '#6366F1', label: 'General (GEN)' },
-  { color: '#F59E0B', label: 'Scheduled Caste (SC)' },
-  { color: '#10B981', label: 'Scheduled Tribe (ST)' },
+  { color: '#6366F1', label: 'additionalScreenLabels.legend.rangeGeneralGen' },
+  { color: '#F59E0B', label: 'additionalScreenLabels.legend.rangeScheduledCasteSc' },
+  { color: '#10B981', label: 'additionalScreenLabels.legend.rangeScheduledTribeSt' },
 ];
 
 const TURNOUT_LEGEND = [
-  { color: '#059669', label: '> 82% (High Turnout)' },
-  { color: '#10B981', label: '76% – 82% (Good)' },
-  { color: '#FBBF24', label: '72% – 76% (Moderate)' },
-  { color: '#F59E0B', label: '68% – 72% (Below Average)' },
-  { color: '#EF4444', label: '< 68% (Low Turnout)' },
+  { color: '#059669', label: '> 82%' },
+  { color: '#10B981', label: '76% – 82%' },
+  { color: '#FBBF24', label: '72% – 76%' },
+  { color: '#F59E0B', label: '68% – 72%' },
+  { color: '#EF4444', label: '< 68%' },
 ];
 
 const LITERACY_LEGEND = [
-  { color: '#059669', label: '> 80% (High Literacy)' },
-  { color: '#10B981', label: '70% – 80% (Good)' },
-  { color: '#FBBF24', label: '60% – 70% (Moderate)' },
-  { color: '#F59E0B', label: '50% – 60% (Low)' },
-  { color: '#EF4444', label: '< 50% (Critical)' },
+  { color: '#059669', label: '> 80%' },
+  { color: '#10B981', label: '70% – 80%' },
+  { color: '#FBBF24', label: '60% – 70%' },
+  { color: '#F59E0B', label: '50% – 60%' },
+  { color: '#EF4444', label: '< 50%' },
 ];
 
 const POPULATION_LEGEND = [
-  { color: '#1D4ED8', label: '> 350,000 (Very Dense)' },
-  { color: '#2563EB', label: '310,000 – 350,000 (Dense)' },
-  { color: '#3B82F6', label: '280,000 – 310,000 (Medium)' },
-  { color: '#60A5FA', label: '250,000 – 280,000 (Moderate)' },
-  { color: '#DBEAFE', label: '< 250,000 (Sparse)' },
+  { color: '#1D4ED8', label: '> 350,000' },
+  { color: '#2563EB', label: '310,000 – 350,000' },
+  { color: '#3B82F6', label: '280,000 – 310,000' },
+  { color: '#60A5FA', label: '250,000 – 280,000' },
+  { color: '#DBEAFE', label: '< 250,000' },
 ];
 
 const BATTLEGROUND_LEGEND = [
-  { color: '#DC2626', label: 'Critical Margin (< 2,000)' },
-  { color: '#F59E0B', label: 'Competitive (2,000 – 5,000)' },
-  { color: '#10B981', label: 'Safe Seat (>= 5,000)' },
+  { color: '#DC2626', label: 'additionalScreenLabels.legend.rangeCriticalMargin2000' },
+  { color: '#F59E0B', label: 'additionalScreenLabels.legend.rangeCompetitive20005000' },
+  { color: '#10B981', label: 'additionalScreenLabels.legend.rangeSafeSeat5000' },
 ];
 
 const SWING_LEGEND = [
-  { color: '#8B5CF6', label: 'Swing Seat (Party Switched)' },
-  { color: '#10B981', label: 'Retained Seat (Same Party)' },
-  { color: '#6B7280', label: 'No History Available' },
+  { color: '#8B5CF6', label: 'additionalScreenLabels.legend.rangeSwingSeatPartySwitched' },
+  { color: '#10B981', label: 'additionalScreenLabels.legend.rangeRetainedSeatSameParty' },
+  { color: '#6B7280', label: 'additionalScreenLabels.legend.rangeNoHistoryAvailable' },
 ];
 
 interface MapLegendProps {
@@ -254,7 +254,7 @@ export default function MapLegend({
           {RESERVATION_LEGEND.map((item) => (
             <View key={item.label} style={styles.row}>
               <View style={[styles.colorDot, { backgroundColor: item.color }]} />
-              <Text style={[styles.partyName, { color: colors.textSecondary }]}>{item.label}</Text>
+              <Text style={[styles.partyName, { color: colors.textSecondary }]}>{t(item.label)}</Text>
             </View>
           ))}
         </>
@@ -310,7 +310,7 @@ export default function MapLegend({
           {BATTLEGROUND_LEGEND.map((item) => (
             <View key={item.label} style={styles.row}>
               <View style={[styles.colorDot, { backgroundColor: item.color }]} />
-              <Text style={[styles.partyName, { color: colors.textSecondary }]}>{item.label}</Text>
+              <Text style={[styles.partyName, { color: colors.textSecondary }]}>{t(item.label)}</Text>
             </View>
           ))}
         </>
@@ -324,7 +324,7 @@ export default function MapLegend({
           {SWING_LEGEND.map((item) => (
             <View key={item.label} style={styles.row}>
               <View style={[styles.colorDot, { backgroundColor: item.color }]} />
-              <Text style={[styles.partyName, { color: colors.textSecondary }]}>{item.label}</Text>
+              <Text style={[styles.partyName, { color: colors.textSecondary }]}>{t(item.label)}</Text>
             </View>
           ))}
         </>
@@ -348,7 +348,7 @@ export default function MapLegend({
               <View style={[styles.colorDot, { backgroundColor: color }]} />
               <Text style={[styles.partyCode, { color: colors.text }]}>{item.party}</Text>
               <Text style={[styles.partyName, { color: colors.textSecondary }]} numberOfLines={1}>
-                {item.label}
+                {item.party === 'VACANT' ? t('additionalScreenLabels.legend.vacantSeat') : item.label}
               </Text>
               {item.seats > 0 && (
                 <Text style={[styles.partySeats, { color: colors.gold || '#FCD34D' }]}>

@@ -1,4 +1,3 @@
-import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useState } from 'react';
 import {
   View,
@@ -26,6 +25,7 @@ import { useTranslation } from 'react-i18next';
 import { STATES } from '@kshetra/shared';
 import { useActiveStateStore } from '../../stores/activeState';
 import { getUnifiedConstituenciesForState } from '../../lib/stateDataAdapter';
+import { localizeState } from '../../lib/lmxLocalizer';
 import { useResponsive } from '../../lib/responsive';
 import { useContributorVerificationStore } from '../../stores/contributorVerification';
 import { KYC_STATUS_CONFIG } from '../../lib/contentAccountabilityTypes';
@@ -62,9 +62,8 @@ function SettingRow({ icon, label, value, onPress, color = '#2563EB' }: SettingR
 }
 
 export default function ProfileScreen() {
-  const { t: translateScreenLabel } = useScreenTranslation();
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const prefs = usePreferencesStore();
   const favoriteCount = useFavoritesStore((s) => s.favoriteIds.length);
   const recents = useRecentsStore((s) => s.recents);
@@ -79,10 +78,13 @@ export default function ProfileScreen() {
   const userProfile = useUserProfileStore((s) => s.profile);
   const activeUserProfile = selectUserProfileForAccount(userProfile, userId);
   const activeStateCode = useActiveStateStore((s) => s.stateCode);
-  const latestElectionYear = (() => {
-    const cs = getUnifiedConstituenciesForState(activeStateCode);
-    return cs.length > 0 ? cs[0].electionYear : 2023;
-  })();
+  const latestElectionYear = getUnifiedConstituenciesForState(activeStateCode).reduce(
+    (latest, { electionYear }) =>
+      typeof electionYear === 'number' && Number.isInteger(electionYear)
+        ? Math.max(latest, electionYear)
+        : latest,
+    0,
+  );
 
   const { insets } = useResponsive();
   const { colors } = useTheme();
@@ -317,9 +319,11 @@ export default function ProfileScreen() {
         <Text style={styles.sectionTitle}>{t('profile.about')}</Text>
         <View style={styles.card}>
           <SettingRow icon="information-circle" label={t('profile.version')} value="0.1.0" />
-          <SettingRow icon="map" label={t('profile.settings')} value={STATES[activeStateCode]?.name ?? activeStateCode} />
+          <SettingRow icon="map" label={t('profile.settings')} value={localizeState(activeStateCode, i18n.language)} />
           <SettingRow icon="people" label={t('explore.constituencies')} value={String(STATES[activeStateCode]?.assemblySeats ?? '—')} />
-          <SettingRow icon="server" label={t('profileExtended.data')} value={`${latestElectionYear} ${t('profileExtended.elections')}`} />
+          {latestElectionYear > 0 && (
+            <SettingRow icon="server" label={t('profileExtended.data')} value={t('constituency.election2023', { year: latestElectionYear })} />
+          )}
                   <SettingRow
             icon="shield-checkmark"
             label={t('profileExtended.privacyPolicy')}
@@ -497,20 +501,20 @@ export default function ProfileScreen() {
           </View>
           <SettingRow
             icon="language"
-            label={translateScreenLabel("compose.selectLanguage")}
+            label={t("compose.selectLanguage")}
             value={prefs.language === 'en' ? 'English' : prefs.language === 'hi' ? 'Hindi' : 'Telugu'}
             color="#10B981"
           />
           <SettingRow
             icon="toggle"
-            label={translateScreenLabel("screenLabels.profile.featureFlagsDevSwitches")}
+            label={t("screenLabels.profile.featureFlagsDevSwitches")}
             onPress={() => setShowDevModal(true)}
             color="#8B5CF6"
           />
           {(activeUserProfile?.role === 'moderator' || activeUserProfile?.role === 'admin') && (
             <SettingRow
               icon="shield-half"
-              label={translateScreenLabel("moderation.contentModerationQueue")}
+              label={t("moderation.contentModerationQueue")}
               value="Grievance Officer"
               onPress={() => router.push('/moderation' as any)}
               color="#EC4899"
@@ -532,7 +536,7 @@ export default function ProfileScreen() {
         </Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 }}>
           <Ionicons name="settings-outline" size={12} color={colors.textMuted} />
-          <Text style={[styles.footerVersion, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.profile.value1TapForDevSwitches", { value1: t('profileExtended.versionPhase') })}</Text>
+          <Text style={[styles.footerVersion, { color: colors.textMuted }]}>{t("screenLabels.profile.value1TapForDevSwitches", { value1: t('profileExtended.versionPhase') })}</Text>
         </View>
       </TouchableOpacity>
 
