@@ -44,6 +44,7 @@ describe('public invitation landing page', () => {
 
     expect(landing.body).toContain('href="https://downloads.example.org/test?release=1&amp;abi=2"');
     expect(landing.body).toContain('Get the Android test build');
+    expect(landing.body).toContain('After installing, return here and tap Open Poligram.');
     expect(landing.body).not.toContain('http://downloads.example.org/ios');
     expect(landing.body).toContain('Ask the person who invited you');
   });

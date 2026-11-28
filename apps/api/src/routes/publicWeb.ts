@@ -104,6 +104,7 @@ export async function publicWebRoutes(app: FastifyInstance) {
 <h1>${staging ? 'You’re invited to test Poligram' : 'You’re invited to Poligram'}</h1>
 <p>Explore your constituency, see election information, and take part in civic discussions.</p>
 <div class="actions"><a class="action primary" href="kshetra://welcome">Open Poligram</a>${android}${ios}</div>
+${android || ios ? '<p>After installing, return here and tap Open Poligram.</p>' : ''}
 ${android && ios ? '' : `<p>${installHelp}</p>`}
 <a href="/public/states/TS">Explore Telangana in your browser</a>
 </section></main></body></html>`);
