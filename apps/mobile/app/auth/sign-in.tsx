@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
   Alert,
 } from 'react-native';
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../stores/auth';
@@ -19,6 +19,7 @@ import i18n from '../../i18n';
 
 export default function SignInScreen() {
   const router = useRouter();
+  const { mode } = useLocalSearchParams<{ mode?: string }>();
   const { colors } = useTheme();
   const signInWithEmail = useAuthStore((s) => s.signInWithEmail);
   const signUpWithEmail = useAuthStore((s) => s.signUpWithEmail);
@@ -26,7 +27,7 @@ export default function SignInScreen() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(mode === 'signup');
   const [helpVisible, setHelpVisible] = useState(false);
   const insets = useSafeAreaInsets();
 
@@ -46,7 +47,8 @@ export default function SignInScreen() {
       if (isSignUp) {
         Alert.alert(i18n.t('auth.signUp'), i18n.t('auth.confirmationSent'));
       }
-      router.back();
+      if (router.canGoBack()) router.back();
+      else router.replace('/(tabs)/community');
     }
   };
 

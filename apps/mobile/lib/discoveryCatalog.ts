@@ -323,6 +323,17 @@ export const FEATURE_DIRECTORY: FeatureDirectoryItem[] = [
     status: 'auth_required',
   },
   {
+    id: 'invite_friends',
+    titleKey: 'invite.title',
+    descKey: 'invite.menuDescription',
+    category: 'tools',
+    icon: 'person-add-outline',
+    color: '#145C68',
+    route: '/invite',
+    morePlacement: 'section',
+    status: 'available',
+  },
+  {
     id: 'notifications',
     titleKey: 'profile.notifications',
     descKey: 'discovery.features.notifications.desc',

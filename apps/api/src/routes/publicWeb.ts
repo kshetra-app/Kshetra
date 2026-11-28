@@ -10,6 +10,7 @@
 
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { ApiSuccessEnvelope } from '@kshetra/shared';
+import { resolveEnvironment } from '@kshetra/shared';
 import { PublicWebDataUnavailableError, publicWebService } from '../services/publicWebService';
 import { sendApiError } from '../lib/replyHelper';
 
@@ -52,7 +53,62 @@ function sendUnavailable(
   );
 }
 
+function installLink(value: string | undefined, label: string): string {
+  if (!value) return '';
+  try {
+    const url = new URL(value);
+    if (url.protocol !== 'https:' || url.username || url.password) return '';
+    const href = url.href.replaceAll('&', '&amp;').replaceAll('"', '&quot;');
+    return `<a class="action" href="${href}">${label}</a>`;
+  } catch {
+    return '';
+  }
+}
+
 export async function publicWebRoutes(app: FastifyInstance) {
+  app.get('/join', async (_request, reply) => {
+    const environment =
+      process.env.APP_ENV ?? process.env.RAILWAY_ENVIRONMENT_NAME ?? process.env.NODE_ENV;
+    const staging = resolveEnvironment(environment) === 'staging';
+    const android = installLink(
+      process.env.POLIGRAM_ANDROID_INSTALL_URL,
+      staging ? 'Get the Android test build' : 'Get Poligram for Android',
+    );
+    const ios = installLink(
+      process.env.POLIGRAM_IOS_INSTALL_URL,
+      staging ? 'Get the iPhone test build' : 'Get Poligram for iPhone',
+    );
+    const installHelp = staging
+      ? 'Ask the person who invited you for access to the Staging build.'
+      : 'If a download for your phone isn’t listed, you can still explore in your browser.';
+
+    return reply
+      .header('Cache-Control', 'no-store')
+      .header('X-Robots-Tag', 'noindex, nofollow')
+      .header('Referrer-Policy', 'no-referrer')
+      .type('text/html; charset=utf-8').send(`<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${staging ? 'Poligram Staging invitation' : 'Join Poligram'}</title>
+<meta property="og:title" content="${staging ? 'Poligram Staging invitation' : 'Join Poligram'}">
+<meta property="og:description" content="Explore local civic issues, election information, and community discussions.">
+<style>
+  :root{color-scheme:light dark;--bg:#fbf8f1;--card:#fff;--text:#162d35;--sub:#455b63;--border:#dadfdb;--accent:#145c68}
+  @media(prefers-color-scheme:dark){:root{--bg:#0d1c22;--card:#132932;--text:#f3f8f7;--sub:#bdd0d4;--border:#38505b;--accent:#176977}}
+  *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:1rem/1.55 system-ui,sans-serif}
+  main{max-width:36rem;margin:clamp(2rem,12vh,7rem) auto;padding:0 clamp(1rem,5vw,2rem)}
+  section{padding:clamp(1.25rem,5vw,2.5rem);background:var(--card);border:1px solid var(--border);border-radius:1.25rem}
+  h1{font-size:clamp(1.8rem,6vw,2.65rem);letter-spacing:-.035em;line-height:1.15;margin:.25rem 0 1rem}p{color:var(--sub)}
+  .actions{margin:1.5rem 0 1rem;display:grid;gap:.65rem}.action{display:block;padding:.75rem 1rem;border:1px solid var(--border);border-radius:.65rem;color:var(--text);font-weight:650;text-align:center;text-decoration:none}
+  .primary{background:var(--accent);border-color:var(--accent);color:#fff}a:focus-visible{outline:.2rem solid var(--accent);outline-offset:.18rem}a{color:var(--text)}
+</style></head><body><main><section>
+<h1>${staging ? 'You’re invited to test Poligram' : 'You’re invited to Poligram'}</h1>
+<p>Explore your constituency, see election information, and take part in civic discussions.</p>
+<div class="actions"><a class="action primary" href="kshetra://welcome">Open Poligram</a>${android}${ios}</div>
+${android && ios ? '' : `<p>${installHelp}</p>`}
+<a href="/public/states/TS">Explore Telangana in your browser</a>
+</section></main></body></html>`);
+  });
+
   // ==============================================================================
   // 1. CANONICAL SSR HTML PAGES (DEC-189 OPTION A)
   // ==============================================================================

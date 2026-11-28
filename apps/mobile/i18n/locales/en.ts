@@ -2,6 +2,22 @@
  * English (en) — Base translation
  */
 const en =  {
+  "invite": {
+    "title": "Invite friends",
+    "menuDescription": "Send someone a link to join Poligram",
+    "heading": "Invite a friend to Poligram",
+    "instructions": "Choose a contact in Messages, then review and send your invitation.",
+    "preview": "Invitation preview",
+    "textContact": "Text a contact",
+    "share": "Share invite link",
+    "smsUnavailable": "Text messaging is unavailable on this device. You can share the link instead.",
+    "openFailed": "Couldn’t open a sharing app. Please try again.",
+    "message": "Join me on Poligram to follow local civic issues and elections.",
+    "testMessage": "Try Poligram Staging with me.",
+    "welcome": "Welcome to Poligram",
+    "welcomeBody": "Explore your constituency, follow elections, and join civic discussions.",
+    "explore": "Explore Poligram"
+  },
   "writing": {
     "keyboard": "Keyboard language",
     "keyboardHelp": "Switch languages using your keyboard’s language key or menu. Add keyboards in your phone’s keyboard settings.",

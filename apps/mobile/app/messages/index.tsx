@@ -246,6 +246,14 @@ export default function MessagesInboxScreen() {
         <View style={styles.headerRightActions}>
           <Pressable
             accessibilityRole="button"
+            accessibilityLabel={t('invite.title')}
+            style={styles.headerIconBtn}
+            onPress={() => router.push('/invite')}
+          >
+            <Ionicons name="person-add-outline" size={22} color={colors.primary} />
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
             accessibilityLabel={t('discovery.screenHelp', { defaultValue: 'Page guidance' })}
             style={styles.headerIconBtn}
             onPress={() => setHelpVisible(true)}
