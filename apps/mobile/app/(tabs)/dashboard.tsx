@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { apiClient } from '../../lib/api';
 import { validWebLink } from '../../lib/feedAttachments';
 import { getUnifiedConstituenciesForState } from '../../lib/stateDataAdapter';
@@ -99,6 +100,7 @@ export default function DashboardScreen() {
 }
 
 function DashboardContent() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t, i18n: translations } = useTranslation();
   const { colors } = useTheme();
   const router = useRouter();
@@ -586,7 +588,7 @@ function DashboardContent() {
               <View style={styles.emptyState}>
                 <Ionicons name="search-outline" size={42} color={colors.textMuted} />
                 <Text style={[styles.emptyTitle, { color: colors.text }]}>
-                  No loaded reports match these filters. More reports are available to search.
+                  {translateScreenLabel("screenLabels.dashboard.noLoadedReportsMatchTheseFiltersMoreReports")}
                 </Text>
               </View>
             ) : issues.length === 0 ? (
@@ -662,7 +664,7 @@ function DashboardContent() {
               <View style={{ alignItems: 'center', marginVertical: 12 }}>
                 {issueLoadMoreError && (
                   <Text style={{ color: colors.textMuted, fontSize: 12, marginBottom: 8 }}>
-                    Could not load the next page. The reports already shown are unchanged.
+                    {translateScreenLabel("screenLabels.dashboard.couldNotLoadTheNextPageTheReports")}
                   </Text>
                 )}
                 <Pressable

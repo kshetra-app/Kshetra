@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,6 +12,7 @@ interface EventCardProps {
 }
 
 export default function EventCard({ event, onPress, onRSVP }: EventCardProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const typeConfig = EVENT_TYPE_CONFIG[event.type];
   const startDate = new Date(event.startTime);
@@ -84,7 +86,7 @@ export default function EventCard({ event, onPress, onRSVP }: EventCardProps) {
           )}
           {isUpcoming && onRSVP && (
             <Pressable style={styles.rsvpButton} onPress={onRSVP}>
-              <Text style={styles.rsvpButtonText}>RSVP</Text>
+              <Text style={styles.rsvpButtonText}>{translateScreenLabel("screenLabels.EventCard.rsvp")}</Text>
             </Pressable>
           )}
         </View>

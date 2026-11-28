@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -17,6 +18,7 @@ interface PodiumHistoryCardProps {
 }
 
 export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHistoryCardProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const { colors } = useTheme();
@@ -114,7 +116,7 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
           {item.delimitation_id && (
             <View style={styles.delimBadge}>
               <Text style={styles.delimBadgeText}>
-                {item.delimitation_id === '4' ? 'Delim 2008' : item.delimitation_id === '3' ? 'Delim 1976' : `Delim ${item.delimitation_id}`}
+                {item.delimitation_id === '4' ? translateScreenLabel("screenLabels.PodiumHistoryCard.delim2008") : item.delimitation_id === '3' ? translateScreenLabel("screenLabels.PodiumHistoryCard.delim1976") : translateScreenLabel("screenLabels.PodiumHistoryCard.delimValue1", { value1: item.delimitation_id })}
               </Text>
             </View>
           )}
@@ -131,7 +133,7 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
       {/* ── 1. WINNER (RANK 1) ── */}
       <Pressable style={({ pressed }) => [styles.podiumRow, styles.winnerRow, { opacity: pressed ? 0.85 : 1 }]} onPress={() => handlePressCandidate('W')}>
         <View style={[styles.medalBadge, styles.goldBadge]}>
-          <Text style={styles.goldBadgeText}>🥇 1st</Text>
+          <Text style={styles.goldBadgeText}>{translateScreenLabel("screenLabels.PodiumHistoryCard.label1st")}</Text>
         </View>
 
         <CandidateAvatar
@@ -177,7 +179,7 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
       {hasPodium && (
         <Pressable style={({ pressed }) => [styles.podiumRow, { opacity: pressed ? 0.85 : 1 }]} onPress={() => handlePressCandidate('RU1')}>
           <View style={[styles.medalBadge, styles.silverBadge]}>
-            <Text style={styles.silverBadgeText}>🥈 2nd</Text>
+            <Text style={styles.silverBadgeText}>{translateScreenLabel("screenLabels.PodiumHistoryCard.label2nd")}</Text>
           </View>
 
           <CandidateAvatar
@@ -218,7 +220,7 @@ export default function PodiumHistoryCard({ item, isLatest = false }: PodiumHist
       {hasThirdPlace && ru2Name && (
         <Pressable style={({ pressed }) => [styles.podiumRow, { opacity: pressed ? 0.85 : 1 }]} onPress={() => handlePressCandidate('RU2')}>
           <View style={[styles.medalBadge, styles.bronzeBadge]}>
-            <Text style={styles.bronzeBadgeText}>🥉 3rd</Text>
+            <Text style={styles.bronzeBadgeText}>{translateScreenLabel("screenLabels.PodiumHistoryCard.label3rd")}</Text>
           </View>
 
           <CandidateAvatar

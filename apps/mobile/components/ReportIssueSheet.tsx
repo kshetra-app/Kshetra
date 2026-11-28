@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { CONTENT_LIMITS } from '@kshetra/shared';
 import AttachmentToolbar from './AttachmentToolbar';
 import { useState, useRef, useEffect, useCallback } from 'react';
@@ -47,6 +48,7 @@ const CATEGORIES = Object.entries(ISSUE_CATEGORY_CONFIG) as [IssueCategory, type
 const SEVERITIES = Object.entries(SEVERITY_CONFIG) as [IssueSeverity, typeof SEVERITY_CONFIG[IssueSeverity]][];
 
 export default function ReportIssueSheet({ visible, onClose, onSubmit, constituency }: ReportIssueSheetProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -79,7 +81,7 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit, constitue
 
   const pickFromGallery = useCallback(async () => {
     if (mediaUris.length >= MAX_MEDIA) {
-      Alert.alert(t('reportIssueSheet.limitReached', { defaultValue: 'Limit reached' }), `You can add up to ${MAX_MEDIA} media files.`);
+      Alert.alert(t('reportIssueSheet.limitReached', { defaultValue: 'Limit reached' }), translateScreenLabel("screenLabels.ReportIssueSheet.youCanAddUpToValue1Media", { value1: MAX_MEDIA }));
       return;
     }
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -100,7 +102,7 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit, constitue
 
   const takePhoto = useCallback(async () => {
     if (mediaUris.length >= MAX_MEDIA) {
-      Alert.alert(t('reportIssueSheet.limitReached', { defaultValue: 'Limit reached' }), `You can add up to ${MAX_MEDIA} media files.`);
+      Alert.alert(t('reportIssueSheet.limitReached', { defaultValue: 'Limit reached' }), translateScreenLabel("screenLabels.ReportIssueSheet.youCanAddUpToValue1Media", { value1: MAX_MEDIA }));
       return;
     }
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -119,7 +121,7 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit, constitue
 
   const recordVideo = useCallback(async () => {
     if (mediaUris.length >= MAX_MEDIA) {
-      Alert.alert(t('reportIssueSheet.limitReached', { defaultValue: 'Limit reached' }), `You can add up to ${MAX_MEDIA} media files.`);
+      Alert.alert(t('reportIssueSheet.limitReached', { defaultValue: 'Limit reached' }), translateScreenLabel("screenLabels.ReportIssueSheet.youCanAddUpToValue1Media", { value1: MAX_MEDIA }));
       return;
     }
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -317,7 +319,7 @@ export default function ReportIssueSheet({ visible, onClose, onSubmit, constitue
               )}
             </View>
             {mediaUris.length > 0 && (
-              <Text style={styles.charHint}>{mediaUris.length}/{MAX_MEDIA} media attached</Text>
+              <Text style={styles.charHint}>{translateScreenLabel("screenLabels.ReportIssueSheet.value1Value2MediaAttached", { value1: mediaUris.length, value2: MAX_MEDIA })}</Text>
             )}
 
             {/* Severity */}

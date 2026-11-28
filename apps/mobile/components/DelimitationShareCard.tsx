@@ -7,6 +7,7 @@
  * with verified public web URLs (poligram.in) and DPDP Act 2023 zero-PII privacy.
  */
 
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import {
   View,
@@ -36,6 +37,7 @@ export function DelimitationShareCard({
   domain = 'poligram.in',
   onShareComplete,
 }: DelimitationShareCardProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { colors } = useTheme();
   const [sharing, setSharing] = useState(false);
 
@@ -97,7 +99,7 @@ export function DelimitationShareCard({
         <View style={styles.badgeRow}>
           <View style={[styles.badge, { backgroundColor: colors.primaryLight }]}>
             <Text style={[styles.badgeText, { color: colors.primary }]}>
-              CONSTITUTIONAL ASSESSMENT
+              {translateScreenLabel("screenLabels.DelimitationShareCard.constitutionalAssessment")}
             </Text>
           </View>
           <View style={[styles.severityBadge, { backgroundColor: severityConfig.color + '20' }]}>
@@ -109,17 +111,13 @@ export function DelimitationShareCard({
       </View>
 
       {/* Main Headline */}
-      <Text style={[styles.title, { color: colors.text }]}>
-        {impact.currentAcName} (AC #{impact.currentAcNo})
-      </Text>
-      <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-        Postal Code {impact.pinCode} · {impact.districtName || impact.stateCode}
-      </Text>
+      <Text style={[styles.title, { color: colors.text }]}>{translateScreenLabel("screenLabels.tabs.value1AcValue2", { value1: impact.currentAcName, value2: impact.currentAcNo })}</Text>
+      <Text style={[styles.subtitle, { color: colors.textSecondary }]}>{translateScreenLabel("screenLabels.DelimitationShareCard.postalCodeValue1Value2", { value1: impact.pinCode, value2: impact.districtName || impact.stateCode })}</Text>
 
       {/* Comparison Grid */}
       <View style={[styles.summaryBox, { backgroundColor: colors.surfaceElevated, borderColor: colors.border }]}>
         <View style={styles.col}>
-          <Text style={[styles.colLabel, { color: colors.textMuted }]}>CURRENT</Text>
+          <Text style={[styles.colLabel, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.DelimitationShareCard.current")}</Text>
           <Text style={[styles.colVal, { color: colors.text }]}>{impact.currentAcName}</Text>
           <Text style={[styles.colSub, { color: colors.textSecondary }]}>
             {impact.currentReservation || 'GEN'}
@@ -129,7 +127,7 @@ export function DelimitationShareCard({
         <Ionicons name="arrow-forward" size={18} color={colors.textMuted} />
 
         <View style={styles.col}>
-          <Text style={[styles.colLabel, { color: colors.textMuted }]}>PROPOSED</Text>
+          <Text style={[styles.colLabel, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.DelimitationShareCard.proposed")}</Text>
           <Text style={[styles.colVal, { color: colors.text }]}>
             {impact.proposedAcName || impact.currentAcName}
           </Text>
@@ -148,7 +146,7 @@ export function DelimitationShareCard({
       <View style={styles.privacyRow}>
         <Ionicons name="shield-checkmark" size={14} color="#10B981" />
         <Text style={styles.privacyText}>
-          DPDP Act 2023 Compliant · Zero Voter Tracking
+          {translateScreenLabel("screenLabels.DelimitationShareCard.dpdpAct2023CompliantZeroVoterTracking")}
         </Text>
       </View>
 
@@ -163,7 +161,7 @@ export function DelimitationShareCard({
         ) : (
           <>
             <Ionicons name="share-social" size={18} color="#FFFFFF" />
-            <Text style={styles.shareBtnText}>Share My Impact Card</Text>
+            <Text style={styles.shareBtnText}>{translateScreenLabel("screenLabels.DelimitationShareCard.shareMyImpactCard")}</Text>
           </>
         )}
       </Pressable>

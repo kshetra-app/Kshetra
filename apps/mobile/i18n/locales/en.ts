@@ -2,6 +2,546 @@
  * English (en) — Base translation
  */
 const en =  {
+  "screenLabels": {
+    "dashboard": {
+      "noLoadedReportsMatchTheseFiltersMoreReports": "No loaded reports match these filters. More reports are available to search.",
+      "couldNotLoadTheNextPageTheReports": "Could not load the next page. The reports already shown are unchanged.",
+      "value1AlertSValue2AwaitingAcknowledgment": "{{value1}} alert(s) · {{value2}} awaiting acknowledgment",
+      "value1Alert": "{{value1}} alert",
+      "watchLiveFeed": "Watch live feed",
+      "reporter": "Reporter"
+    },
+    "explore": {
+      "value1Value2Found": "{{value1}} {{value2}} found"
+    },
+    "tabs": {
+      "tapAnyStateToExploreItsAssemblyConstituencies": "Tap any state to explore its assembly constituencies",
+      "boothValue1": "BOOTH #{{value1}}",
+      "acValue1Value2": "AC #{{value1}} · {{value2}}",
+      "value1AcValue2": "{{value1}} (AC #{{value2}})",
+      "acValue1": "AC #{{value1}}",
+      "label1st": "1st",
+      "label2nd": "2nd",
+      "label3rd": "3rd",
+      "urbanValue1": "URBAN {{value1}}",
+      "ruralGramPanchayat": "RURAL GRAM PANCHAYAT",
+      "othersValue1": "Others: {{value1}}%",
+      "value1Cr": "₹{{value1}} Cr",
+      "netValue1Cr": "Net: ₹{{value1}} Cr",
+      "value1Yrs": "{{value1}} Yrs",
+      "dobValue1": "DOB: {{value1}}"
+    },
+    "intelligence": {
+      "value1Turnout": "{{value1}}% turnout",
+      "value1Value2AssemblyElections": "{{value1}} {{value2}} · Assembly Elections",
+      "seatValue1": "seat{{value1}}",
+      "value1SeatValue2": "{{value1}} seat{{value2}}",
+      "value1MarginOfValue2Votes": "{{value1}} — margin of {{value2}} votes",
+      "marginDataUnavailable": "Margin data unavailable",
+      "value1AppearsInValue2RecordedConstituenciesValue3": "{{value1}} appears in {{value2}} recorded constituencies ({{value3}}% of party-known records)",
+      "value1WithValue2SeatsValue3": "{{value1}} with {{value2}} seats ({{value3}}%)",
+      "partyDataUnavailable": "Party data unavailable",
+      "dataValue1StateElectionCommission": "Data: {{value1}} State Election Commission"
+    },
+    "profile": {
+      "featureFlagsDevSwitches": "Feature Flags & Dev Switches",
+      "value1TapForDevSwitches": "{{value1}} • Tap for Dev Switches"
+    },
+    "shorts": {
+      "value1ShortValue2": "{{value1}} short{{value2}}"
+    },
+    "candidateXray": {
+      "candidateRecordNotFound": "Candidate record not found",
+      "affidavitProfilesHaveBeenConsolidatedIntoLegislatorProfiles": "Affidavit profiles have been consolidated into Legislator Profiles.",
+      "loadingProfile": "Loading profile..."
+    },
+    "constituency": {
+      "shareConstituencyCard": "Share Constituency Card",
+      "profileRecord": "Profile record",
+      "historicalPoliticalData19992026": "Historical Political Data (1999–2026)",
+      "viewAllValue1": "View All ({{value1}})",
+      "assemblyElectionPodiumResultsWith1st2ndAnd": "Assembly election podium results with 1st, 2nd, and 3rd place candidates, margins, and vote shares:",
+      "showAllValue1PastElections1999Value2": "Show All {{value1}} Past Elections (1999–{{value2}})",
+      "notReported": "Not Reported"
+    },
+    "simulator": {
+      "dataStatusPoligramScenario": "DATA STATUS: POLIGRAM SCENARIO",
+      "stateAssemblyIntraStateDistrictProjectionArticle170": "State Assembly & Intra-State District Projection — Article 170 / applicable statutory framework. This is an academic research simulation, NOT an official order of the Delimitation Commission of India.",
+      "simulationQualityValue1Within10DeviationBound": "Simulation Quality: {{value1}}% within ±10% deviation bound"
+    },
+    "state": {
+      "populationValue1Value2Seat": "Population: {{value1}} · {{value2}}/seat",
+      "constitutionalDeviationValue1Value2": "Constitutional Deviation: {{value1}}{{value2}}%",
+      "scValue1": "SC ({{value1}}%)",
+      "stValue1": "ST ({{value1}}%)",
+      "value1DistrictsValue2ProjectedSeatsIdealValue3Seat": "{{value1}} districts · {{value2}} projected seats · Ideal: {{value3}}/seat",
+      "value1Seats": "{{value1}} seats",
+      "scValue1StValue2UrbanValue3": "SC {{value1}}% · ST {{value2}}% · Urban {{value3}}%",
+      "acValue1Value2": "AC #{{value1}} {{value2}}",
+      "districtValue1Value2": "District: {{value1}} {{value2}}"
+    },
+    "editProfile": {
+      "yourName": "Your name",
+      "tellUsAboutYourself": "Tell us about yourself..."
+    },
+    "issue": {
+      "byValue1": "by {{value1}}",
+      "resolvedValue1": "Resolved {{value1}}",
+      "reopenedValue1CitizensDisputedTheResolution": "Reopened — {{value1}} citizens disputed the resolution",
+      "evidenceValue1": "Evidence ({{value1}})",
+      "showAllValue1MediaFiles": "Show all {{value1}} media files",
+      "statusTimeline": "Status Timeline",
+      "official": "Official",
+      "flagValue1ForRepresentativeAttentionInPoligram": "Flag \"{{value1}}\" for representative attention in Poligram?",
+      "alreadyDisputed": "Already Disputed",
+      "youHaveAlreadyDisputedThisResolution": "You have already disputed this resolution.",
+      "doYouBelieveThisIssueHasNot": "Do you believe this issue has NOT been properly resolved? Your dispute will be recorded. If 5+ citizens dispute, the issue will be automatically reopened.",
+      "dispute": "Dispute"
+    },
+    "leadershipAcademy": {
+      "loadingModules": "Loading modules…",
+      "noPublishedModulesAreAvailable": "No published modules are available.",
+      "moduleUnavailable": "Module unavailable",
+      "theModuleCouldNotBeOpenedRight": "The module could not be opened right now.",
+      "couldNotJoinChallenge": "Could not join challenge",
+      "leadershipAcademyIsCurrentlyUnavailable": "Leadership Academy is currently unavailable."
+    },
+    "legislator": {
+      "couldNotFindDataForAcValue1": "Could not find data for AC #{{value1}}",
+      "profession": "Profession",
+      "maritalStatus": "Marital Status",
+      "dateOfBirth": "Date of Birth",
+      "assemblyTermStatus": "Assembly Term & Status",
+      "term": "Term",
+      "podiumRank": "Podium Rank",
+      "currentParty": "Current Party",
+      "constituencyElectionHistory": "Constituency Election History",
+      "fullElectionCyclesForValue1Value2TapAny": "Full election cycles for #{{value1}} {{value2}}. Tap any candidate to view their profile dossier.",
+      "value1ElectionPerformance": "{{value1}} Election Performance",
+      "electionPerformance": "Election Performance"
+    },
+    "distribution": {
+      "shipsAsASeparateLightweightBuildAppsWeb": "Ships as a separate lightweight build (apps/web-receiver). Native Windows + Android TV wrappers are Phase 2 polish on the same page."
+    },
+    "localBodies": {
+      "ts": "TS",
+      "ap": "AP",
+      "mandalParishadTerritorialConstituencyMptcValue1": "MANDAL PARISHAD TERRITORIAL CONSTITUENCY (MPTC) ({{value1}})",
+      "gramPanchayatsValue1": "GRAM PANCHAYATS ({{value1}})",
+      "sourceAndhraPradeshStateElectionCommissionApsec": "Source: Andhra Pradesh State Election Commission (APSEC) — Official local body election results. Gram Panchayat polls are officially non-party.",
+      "sourceTelanganaStateElectionCommissionTsecKnow": "Source: Telangana State Election Commission (TSEC) — Know Your Public Representative (Rural). Gram Panchayat polls are officially non-party."
+    },
+    "onboarding": {
+      "selectedValue1Value2Value3": "Selected: #{{value1}}{{value2}} {{value3}}"
+    },
+    "parliament": {
+      "lsValue1RsValue2TotalValue3": "LS: {{value1}} · RS: {{value2}} · Total: {{value3}}",
+      "lokSabha18th": "Lok Sabha (18th)",
+      "value1Yrs": "{{value1}} yrs"
+    },
+    "reader": {
+      "contentFromValue1": "Content from {{value1}}",
+      "article": "Article"
+    },
+    "representative": {
+      "thisPollIsOfficiallyNonPartyPartyAffiliation": "This poll is officially non-party. Party affiliation ({{value1}}) is de-facto / unofficial.",
+      "wardValue1": "Ward {{value1}}",
+      "value1DeclaredCaseValue2": "{{value1}} declared case{{value2}}",
+      "verifyOnStateElectionCommissionPortal": "Verify on State Election Commission Portal",
+      "suggestAnEditWithSource": "Suggest an edit (with source)",
+      "value1Record": "{{value1}} record",
+      "officiallyNonPartyStatePanchayatiRajAct": "Officially Non-Party (State Panchayati Raj Act)",
+      "officialElectionResultsFromAndhraPradeshState": "Official Election Results from Andhra Pradesh State Election Commission (APSEC)",
+      "officialElectionResultsFromTelanganaStateElection": "Official Election Results from Telangana State Election Commission (TSEC) — Know Your Representative (KYR)"
+    },
+    "edit": {
+      "theRepresentativeProfileCouldNotBeLoaded": "The representative profile could not be loaded.",
+      "value1Value2Value3EveryEditRequiresAVerifiable": "{{value1}}{{value2}}{{value3}} Every edit requires a verifiable source and is fingerprinted for accountability. Edits are moderated before publishing.",
+      "sourceLinkRequired": "Source link (required)",
+      "httpsTsecGovInOrNewsGazetteUrl": "https://tsec.gov.in/... or news / gazette URL",
+      "citationNoteOptional": "Citation / note (optional)",
+      "eGTsecKnowYourRepresentativePagePublished": "e.g. TSEC Know-Your-Representative page, published 2020-12-04",
+      "noChanges": "No changes",
+      "editAtLeastOneFieldBeforeSubmitting": "Edit at least one field before submitting.",
+      "sourceRequired": "Source required",
+      "enterAnHttpsLinkSupportingTheCorrection": "Enter an HTTPS link supporting the correction.",
+      "thankYou": "Thank you",
+      "yourCorrectionHasBeenSubmittedForReview": "Your correction has been submitted for review.",
+      "submissionFailed": "Submission failed",
+      "pleaseTryAgainLater": "Please try again later.",
+      "submitting": "Submitting…",
+      "submitForModeration": "Submit for moderation"
+    },
+    "search": {
+      "trySearchingBy": "Try searching by:",
+      "constituencyNameJubileeHills": "• Constituency name: \"Jubilee Hills\"",
+      "acNumber141": "• AC number: \"141\"",
+      "mlaNameRevanthReddy": "• MLA name: \"Revanth Reddy\"",
+      "partyBjpOrInc": "• Party: \"BJP\" or \"INC\"",
+      "issueWaterSupply": "• Issue: \"Water supply\""
+    },
+    "AdCard": {
+      "featuredPartner": "Featured Partner",
+      "sponsored": "Sponsored",
+      "commercialPromotion": "Commercial Promotion"
+    },
+    "BroadcastPollCard": {
+      "value1Votes": "{{value1}} votes",
+      "submittingAnonymousBallot": "Submitting anonymous ballot...",
+      "liveAudiencePoll": "LIVE AUDIENCE POLL",
+      "pollResults": "POLL RESULTS"
+    },
+    "BroadcastQaModal": {
+      "audienceQA": "Audience Q&A",
+      "noAudienceQuestionsYetBeTheFirstTo": "No audience questions yet. Be the first to ask!",
+      "pinnedByHost": "PINNED BY HOST",
+      "askAQuestionForTheBroadcaster": "Ask a question for the broadcaster...",
+      "validationError": "Validation Error",
+      "questionMustBeAtLeast5Characters": "Question must be at least 5 characters",
+      "privacyProtection": "Privacy Protection",
+      "pleaseDoNotIncludeEmailAddressesIn": "Please do not include email addresses in questions.",
+      "pleaseDoNotIncludePhoneNumbersIn": "Please do not include phone numbers in questions.",
+      "submissionError": "Submission Error",
+      "failedToSubmitQuestion": "Failed to submit question"
+    },
+    "CampaignOutreachPanel": {
+      "value1CharsValue2": "{{value1}} chars{{value2}}",
+      "goesOutValue1": "Goes out {{value1}}",
+      "answered": "Answered",
+      "templateName": "Template name",
+      "bodyWithNameBooth": "Body with {name}, {booth}…",
+      "theBroadcastCouldNotBeCreated": "The broadcast could not be created.",
+      "deliveryIsUnavailableUntilARealMessaging": "Delivery is unavailable until a real messaging provider, consent-based audience source, and delivery reporting are connected.",
+      "simulationModeNoMessagesAreSentReal": "Simulation mode. No messages are sent. Real delivery needs provider setup{{value1}}. {{value2}}",
+      "noLiveAudienceSegmentsAreConnected": "No live audience segments are connected.",
+      "noAudienceSegmentsAreAvailable": "No audience segments are available.",
+      "describeTheRecordedVoiceMessage": "Describe the recorded voice message…",
+      "typeYourMessageUseNameBoothFor": "Type your message. Use {name}, {booth} for personalisation.",
+      "value1ToValue2": "{{value1}} to {{value2}}",
+      "deliveryNotConnected": "Delivery not connected"
+    },
+    "CompareSheet": {
+      "search": "Search...",
+      "mla": "MLA",
+      "value1Winner": "{{value1}} Winner",
+      "swing": "Swing",
+      "loyalty": "Loyalty",
+      "selectTwoConstituenciesToCompareThemSideBy": "Select two constituencies to compare them side by side"
+    },
+    "ConstituencySelectorSheet": {
+      "acValue1": "AC {{value1}}"
+    },
+    "DataPendingCard": {
+      "expectedSourceValue1": "Expected source: {{value1}}",
+      "theOfficialMapBoundaryForThisArea": "The official map boundary for this area has not been published yet. The list view remains fully accurate.",
+      "thisSeatExistsButAVerifiedOffice": "This seat exists, but a verified office-holder record is not yet available. We only show data confirmed from official sources.",
+      "fingerprint": " · fingerprint ✓"
+    },
+    "DataPipelineCard": {
+      "dataPipeline": "Data Pipeline",
+      "value1Value2Healthy": "{{value1}}/{{value2}} healthy"
+    },
+    "DelimitationShareCard": {
+      "constitutionalAssessment": "CONSTITUTIONAL ASSESSMENT",
+      "postalCodeValue1Value2": "Postal Code {{value1}} · {{value2}}",
+      "current": "CURRENT",
+      "proposed": "PROPOSED",
+      "dpdpAct2023CompliantZeroVoterTracking": "DPDP Act 2023 Compliant · Zero Voter Tracking",
+      "shareMyImpactCard": "Share My Impact Card"
+    },
+    "DevFeatureSwitcher": {
+      "devControl": "DEV CONTROL"
+    },
+    "ErrorBoundary": {
+      "poligramEncounteredAnIssueWhileLoadingThisScreen": "Poligram encountered an issue while loading this screen.",
+      "copyShareLog": "Copy / Share Log",
+      "crashDiagnosticsStackTrace": "Crash Diagnostics & Stack Trace",
+      "jsStackTrace": "JS Stack Trace:",
+      "componentHierarchy": "Component Hierarchy:",
+      "errorLog": "Error Log",
+      "hideLogs": "Hide Logs",
+      "viewLogs": "View Logs"
+    },
+    "EventCard": {
+      "rsvp": "RSVP"
+    },
+    "KYCVerificationSheet": {
+      "byProceedingIAcknowledgeAndAgreeThat": "By proceeding, I acknowledge and agree that:",
+      "value1MyIdentityNamePhonePhotoWillBe": "{{value1}} My identity (name, phone, photo) will be recorded and securely stored.",
+      "value1MyDeviceInformationIpAddressAndLocation": "{{value1}} My device information, IP address, and location will be captured with every content action I perform.",
+      "value1ThisDataMayBeSharedWithLaw": "{{value1}} This data may be shared with law enforcement agencies if my content is found to violate Indian law (IT Act 2000, IPC, etc.).",
+      "value1IAmSolelyResponsibleForAllContent": "{{value1}} I am solely responsible for all content I post, and I will not post defamatory, fake, or illegal content.",
+      "value1FalseOrMisleadingVerificationDetailsMayResult": "{{value1}} False or misleading verification details may result in permanent ban and legal action.",
+      "iHaveReadAndAgreeToTheAbove": "I have read and agree to the above terms of accountability",
+      "yourDeviceInfoNetworkDetailsAndLocationWill": "Your device info, network details, and location will be captured now."
+    },
+    "LeaderProfileModal": {
+      "eciVerified": "ECI Verified",
+      "acValue1Value2": "🎯 AC #{{value1}} {{value2}}",
+      "civicLeader": "🎯 Civic Leader",
+      "ind": "స్వతంత్ర అభ్యర్థి (IND)",
+      "aspirant": "Aspirant",
+      "activeInConstituencyOutreachSabhas": "Active in constituency outreach Sabhas",
+      "label1HrAgo": "1 hr ago",
+      "educationGrassrootsBackground": "Education & Grassroots Background",
+      "maPublicPolicy": "పోస్ట్ గ్రాడ్యుయేషన్ (MA Public Policy)",
+      "postGraduationMaPublicPolicy": "Post Graduation (MA Public Policy)",
+      "osmaniaUniversityDistinction": "Osmania University · Distinction",
+      "grassrootsCivicActionCommittee": "Grassroots Civic Action Committee",
+      "waterSecurityYouthConvenor2018Present": "Water Security & Youth Convenor (2018 - Present)",
+      "aClearPublicAgendaForTheFuture": "A clear public agenda for the future of this constituency. Citizens can vote to prioritize initiatives:",
+      "iSolemnlyPledgeToUpholdTheConstitution": "I solemnly pledge to uphold the Constitution of India, maintain zero tolerance for corruption, ensure total transparency in public expenditure, and remain accessible and accountable to every citizen.",
+      "boothReach": "Booth Reach",
+      "responseTime": "Response Time",
+      "signInToMessageThisProfile": "Sign in to message this profile.",
+      "volunteer": "Volunteer ✓"
+    },
+    "LiveBroadcaster": {
+      "consumerBuildsAreDecoupledFromHeavyNativeWebrtc": "Consumer builds are decoupled from heavy native WebRTC binaries for lean HLS playback. To broadcast live video, use the Poligram Studio Web Client at https://studio.poligram.in or connect via RTMP/SRT from OBS."
+    },
+    "MapFallback": {
+      "value1Value2Constituencies": "{{value1}} · {{value2}} Constituencies",
+      "interactiveMapUnavailable": "Interactive Map Unavailable",
+      "theFullMapboxMapRequiresADevelopmentBuild": "The full Mapbox map requires a development build.{{value1}} Run: npx expo run:android (or create an EAS dev build).{{value2}} All other features work normally in Expo Go!",
+      "electionPartySeats": "Election — Party Seats",
+      "delimitationProjection": "Delimitation Projection",
+      "genValue1ScValue2StValue3": "GEN {{value1}} · SC {{value2}} · ST {{value3}}",
+      "topConstituenciesByMargin": "Top Constituencies by Margin"
+    },
+    "ModuleDetailModal": {
+      "value1MinValue2Value3": "{{value1}} min · {{value2}} · {{value3}}",
+      "value1Value2Source": "“{{value1}}” — {{value2}}. Source ↗",
+      "quizCouldNotBeSaved": "Quiz could not be saved",
+      "checkYourConnectionAndTrySubmittingYour": "Check your connection and try submitting your answers again.",
+      "progressCouldNotBeSaved": "Progress could not be saved",
+      "yourModuleIsStillOpenPleaseTry": "Your module is still open. Please try again."
+    },
+    "PhotoViewerModal": {
+      "photoSourcedFromWikipediaMyneta": "Photo sourced from Wikipedia / MyNeta"
+    },
+    "PodiumHistoryCard": {
+      "label1st": "🥇 1st",
+      "label2nd": "🥈 2nd",
+      "label3rd": "🥉 3rd",
+      "delim2008": "Delim 2008",
+      "delim1976": "Delim 1976",
+      "delimValue1": "Delim {{value1}}"
+    },
+    "PoliticalAdCard": {
+      "politicalAdPaidPromotionByValue1": "Political Ad · Paid Promotion by {{value1}}",
+      "targetValue1Value2": "Target: {{value1}} {{value2}}",
+      "certifiedUnderEciMcmcGuidelinesPaidValue1": "Certified under ECI / MCMC Guidelines · Paid ₹{{value1}}",
+      "constituencyAnnouncementCampaignReleaseFromValue1Tap": "Constituency announcement & campaign release from {{value1}}. Tap to view full post and discussions."
+    },
+    "PoliticalShortsCarousel": {
+      "new": "NEW",
+      "uploadShort": "Upload Short",
+      "addShort": "Add Short",
+      "shareLocalReport": "Share local report",
+      "noShortsInThisConstituency": "No shorts in this constituency.",
+      "beTheFirst": "Be the first!"
+    },
+    "ReportIssueSheet": {
+      "value1Value2MediaAttached": "{{value1}}/{{value2}} media attached",
+      "youCanAddUpToValue1Media": "You can add up to {{value1}} media files."
+    },
+    "ReportSheet": {
+      "reportsAreReviewedByOurModerationTeamWithin": "Reports are reviewed by our moderation team within 24 hours. False reports may affect your reputation score."
+    },
+    "RevenueCard": {
+      "revenueDashboard": "Revenue Dashboard",
+      "totalRevenue": "Total Revenue",
+      "projectedMrr": "Projected MRR",
+      "politicians": "Politicians",
+      "avgRoi": "Avg ROI",
+      "revenueByFormat": "Revenue by Format",
+      "monthlyGrowth": "Monthly Growth",
+      "unitEconomics": "Unit Economics",
+      "costPromotedPostValue1": "Cost/Promoted Post: {{value1}}",
+      "avgPoliticiansStateValue1": "Avg Politicians/State: {{value1}}",
+      "activeStatesValue1": "Active States: {{value1}}",
+      "monthlyStateValue1": "Monthly/State: {{value1}}"
+    },
+    "SeatProjectionCard": {
+      "popValue1": "Pop: {{value1}}",
+      "popSeatValue1": "Pop/Seat: {{value1}}",
+      "devValue1Value2": "Dev: {{value1}}{{value2}}%"
+    },
+    "ShareableCardModal": {
+      "officialCivicCard": "OFFICIAL CIVIC CARD",
+      "winner": "🥇 WINNER",
+      "value1VotesValue2": "{{value1}} votes {{value2}}",
+      "runnerUp": "🥈 RUNNER-UP",
+      "margin": "MARGIN",
+      "verifiedByEciForm21ePoligramCivicIntelligence": "Verified by ECI Form 21E • Poligram Civic Intelligence",
+      "shareDetailedStoryFormattedText": "Share Detailed Story (Formatted Text)",
+      "value1District": "{{value1}} District",
+      "ind": "IND",
+      "runnerUp2": "Runner-Up",
+      "value1Terms": "{{value1}} Terms",
+      "tenure": "Tenure",
+      "preparingVisualCard": "Preparing Visual Card...",
+      "shareVisualGraphicCard": "Share Visual Graphic Card"
+    },
+    "ShortsPlayerModal": {
+      "commentsCouldNotBeLoaded": "Comments could not be loaded.",
+      "couldNotSaveYourCommentPleaseTry": "Could not save your comment. Please try again.",
+      "saved": "Saved",
+      "asAVerifiedConstituentOfValue1Is": "As a verified constituent of {{value1}}, is this video relevant and constructive for your constituency?",
+      "helpVerifyThisVideoFromValue1To": "Help verify this video from {{value1}} to promote it to National level."
+    },
+    "StateView": {
+      "refValue1Value2": "Ref: {{value1}} ({{value2}})"
+    },
+    "WealthTimeline": {
+      "value1GrowthTimelineContainsUndisclosedObservations": "{{value1}} Growth timeline contains undisclosed observations"
+    },
+    "GrassrootsBooths": {
+      "check": "Check",
+      "eGRameshGoud": "e.g. Ramesh Goud",
+      "wardValue1": "Ward #{{value1}} · ",
+      "value1Voters": "{{value1}} Voters",
+      "voterCountUnavailable": "Voter count unavailable",
+      "targetValue1": "Target: {{value1}}",
+      "targetUnavailable": "Target unavailable"
+    },
+    "GrassrootsWorkers": {
+      "poligramUser": "Poligram User",
+      "logCompletedOutreach": "Log completed outreach",
+      "eGBSrinivas": "e.g. B. Srinivas",
+      "value1ReportedByTheCampaignTeamNotIndependently": "{{value1}} · reported by the campaign team, not independently verified",
+      "campaignBooth": "Campaign booth",
+      "campaignBoothRecordsAreUnavailableRefreshTheCampaign": "Campaign booth records are unavailable. Refresh the campaign before logging work.",
+      "sessionDurationMinutes": "Session duration (minutes)",
+      "sessionDurationInMinutes": "Session duration in minutes",
+      "householdsVisited": "Households visited",
+      "cannotSaveWorkLog": "Cannot save work log",
+      "chooseACampaignWorkerAndBoothThat": "Choose a campaign, worker, and booth that are available in the campaign records.",
+      "checkTheSessionDuration": "Check the session duration",
+      "enterAWholeNumberOfMinutesFrom": "Enter a whole number of minutes from 1 to 1,440.",
+      "checkHouseholdsVisited": "Check households visited",
+      "enterAWholeNumberFrom0To": "Enter a whole number from 0 to 100,000.",
+      "workSessionSaved": "Work session saved",
+      "thisSessionWasSavedToTheCampaign": "This session was saved to the campaign work log.",
+      "workSessionNotSaved": "Work session not saved",
+      "boothValue1": " · Booth #{{value1}}",
+      "completedSessionsUnavailable": "Completed sessions unavailable",
+      "value1CompletedSessions": "{{value1}} completed sessions",
+      "loggedHoursUnavailable": "Logged hours unavailable",
+      "value1HoursLogged": "{{value1}} hours logged",
+      "logCompletedOutreachForValue1": "Log completed outreach for {{value1}}",
+      "saving": "Saving…",
+      "saveWorkSession": "Save work session"
+    },
+    "SimplifiedOutreach": {
+      "available": "Available",
+      "revanthReddyInc": "Revanth Reddy · INC",
+      "wardValue1": "Ward #{{value1}}",
+      "liveCallDeliveryProgress": "Live Call Delivery Progress",
+      "targetValue1VotersCostValue2": "Target: {{value1}} voters · Cost: ₹{{value2}}",
+      "busy": "Busy",
+      "unreachable": "Unreachable",
+      "creditsCanBeUsedImmediatelyForVoiceObd": "Credits can be used immediately for Voice OBD call blasts and promoted posts.",
+      "chooseRechargeAmount": "Choose Recharge Amount:",
+      "orEnterCustomAmount": "Or Enter Custom Amount (₹):",
+      "payValue1ViaUpiNetbanking": "Pay ₹{{value1}} via UPI / Netbanking",
+      "minimumWalletRechargeIs500": "Minimum wallet recharge is ₹500.",
+      "notConnected": "NOT CONNECTED",
+      "label100Free": "100% FREE",
+      "indicativePricing": "INDICATIVE PRICING",
+      "pricingUnavailable": "PRICING UNAVAILABLE",
+      "sufficientBalanceRemainingAfterBlastValue1": "✓ Sufficient balance. Remaining after blast: ₹{{value1}}",
+      "walletBalanceShortByValue1TopUp": "⚠️ Wallet balance short by ₹{{value1}}. Top-up required.",
+      "duration028QualityHighVerified": "Duration: 0:28 · Quality: High · Verified",
+      "topUpValue1ToScheduleBlast": "Top-Up ₹{{value1}} to Schedule Blast",
+      "delivered": "✓ Delivered",
+      "calling": "📞 Calling...",
+      "queued": "Queued"
+    },
+    "CriminalRecordCard": {
+      "criminalCaseDisclosureUnavailable": "Criminal case disclosure unavailable",
+      "noCriminalCasesDeclared": "No criminal cases declared",
+      "value1CaseValue2Value3": "{{value1}} case{{value2}}{{value3}}",
+      "totalCases": "Total Cases",
+      "serious": "Serious",
+      "convictions": "Convictions",
+      "value1CaseDetailsValue2": "{{value1}} Case Details ({{value2}})",
+      "caseValue1": "Case: {{value1}}",
+      "courtValue1": "Court: {{value1}}",
+      "ipc": "IPC:",
+      "chargesFramed": "Charges Framed",
+      "pending": "pending"
+    },
+    "DynastyCard": {
+      "politicalDynasty": "Political Dynasty",
+      "thisLegislatorComesFromAPoliticalFamily": "This legislator comes from a political family",
+      "familyInPolitics": "Family in Politics",
+      "familyConstituencies": "Family Constituencies"
+    },
+    "ElectionHistoryCard": {
+      "value1WinRate": "{{value1}}% win rate",
+      "share": "share",
+      "won": "WON",
+      "lost": "LOST",
+      "defeated": "Defeated",
+      "lostTo": "Lost to"
+    },
+    "FinancialBreakdownCard": {
+      "noFinancialDataAvailable": "No financial data available",
+      "financialDisclosure": "Financial Disclosure",
+      "assetBreakdown": "Asset Breakdown",
+      "selfMovable": "Self Movable",
+      "selfImmovable": "Self Immovable",
+      "dependents": "Dependents",
+      "spouseMovable": "Spouse Movable",
+      "spouseImmovable": "Spouse Immovable",
+      "declaredIncomeItr": "Declared Income (ITR)",
+      "wealthTimeline": "Wealth Timeline",
+      "value1Value2SinceValue3": "{{value1}}{{value2}}% since {{value3}}",
+      "totalLiabilities": "Total Liabilities:"
+    },
+    "PerformanceCard": {
+      "legislativePerformance": "Legislative Performance",
+      "comingSoon": "Coming soon",
+      "mplads": "MPLADS"
+    },
+    "RedFlagsBanner": {
+      "value1RedFlagValue2Detected": "{{value1}} Red Flag{{value2}} Detected"
+    },
+    "news": {
+      "noSavedStoriesYet": "No saved stories yet",
+      "noStoriesAreAvailableForThisArea": "No stories are available for this area yet",
+      "noValue1StoriesAreAvailableRightNow": "No {{value1}} stories are available right now",
+      "noNewsStoriesAreAvailableRightNow": "No news stories are available right now"
+    },
+    "hierarchy": {
+      "value1Records": "{{value1}} records",
+      "value1Value2Value3DrillDown": "{{value1}} → {{value2}} → {{value3}} drill-down"
+    },
+    "moderation": {
+      "actionApplied": "Action Applied",
+      "reportProcessedSuccessfullyValue1": "Report processed successfully: {{value1}}",
+      "error": "Error",
+      "failedToApplyModerationAction": "Failed to apply moderation action",
+      "networkRequestFailed": "Network request failed",
+      "userIdValue1": "User ID: {{value1}}..."
+    },
+    "ComposeSheet": {
+      "mp4": "MP4",
+      "optionValue1": "Option {{value1}}"
+    },
+    "ProfileHeroCard": {
+      "label1stRunnerUp": "1st Runner-up",
+      "label2ndRunnerUp": "2nd Runner-up",
+      "yrs": "Yrs"
+    },
+    "ProjectCard": {
+      "acValue1": " · AC #{{value1}}"
+    },
+    "RegisterAspirantModal": {
+      "pleaseLogInBeforeRegisteringAsAn": "Please log in before registering as an aspirant."
+    }
+  },
   "constituencyDirectory": {
     "currentRepresentative": "Current representative",
     "loading": "Checking live constituency records…",
@@ -62,6 +602,21 @@ const en =  {
     "constitution": "The party’s constitution is available through the Election Commission of India.",
     "assemblyElection": "The Election Commission records the party in the {{year}} {{state}} Assembly election.",
     "profileSource": "Source",
+    "electionRecord": "Election record",
+    "historyAndFilings": "History and filings",
+    "electionCode": "Recorded party code · {{code}}",
+    "ballotSymbol": "Ballot symbol · {{symbol}}",
+    "seatsWon": "Seats won · {{seats}}",
+    "lokSabhaElection": "{{year}} Lok Sabha election",
+    "stateAssemblyElection": "{{year}} {{state}} Assembly election",
+    "foundedBy": "Founded by {{founder}} in {{year}}.",
+    "registeredIn": "Registered with the Election Commission of India in {{year}}.",
+    "renamedIn": "Previously known as {{name}}. The name changed in {{year}}.",
+    "profileSummary": {
+      "national": "The Election Commission of India listed this party as a recognized national party in the {{election}}.",
+      "state": "The Election Commission of India listed this party as a recognized state party in the {{election}}.",
+      "registered": "The Election Commission of India listed this party as registered and unrecognized in the {{election}}."
+    },
     "actionFailed": "Could not save the change. Please try again.",
     "official": "Verified official Page",
     "source": "View official source",

@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -32,6 +33,7 @@ interface PoliticalAdCardProps {
  * 4. Displays official MCMC Certificate ID for regulatory compliance
  */
 export default function PoliticalAdCard({ ad, onPress }: PoliticalAdCardProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { colors } = useTheme();
 
   return (
@@ -39,9 +41,7 @@ export default function PoliticalAdCard({ ad, onPress }: PoliticalAdCardProps) {
       {/* Official Political Promotion Header — Distinct Amber Tone */}
       <View style={styles.topBadgeRow}>
         <Ionicons name="shield-checkmark" size={13} color="#B45309" />
-        <Text style={styles.mandatoryLabel} numberOfLines={1}>
-          Political Ad · Paid Promotion by {ad.pageName}
-        </Text>
+        <Text style={styles.mandatoryLabel} numberOfLines={1}>{translateScreenLabel("screenLabels.PoliticalAdCard.politicalAdPaidPromotionByValue1", { value1: ad.pageName })}</Text>
       </View>
 
       {/* Page Profile & Transparency Meta */}
@@ -60,9 +60,7 @@ export default function PoliticalAdCard({ ad, onPress }: PoliticalAdCardProps) {
           </View>
           <View style={styles.mcmcRow}>
             <Text style={styles.mcmcBadge}>MCMC: {ad.mcmcCertificateId}</Text>
-            <Text style={[styles.scopeBadge, { color: colors.textSecondary }]}>
-              Target: {ad.targetScope.toUpperCase()} {ad.targetValue ? `(${ad.targetValue})` : ''}
-            </Text>
+            <Text style={[styles.scopeBadge, { color: colors.textSecondary }]}>{translateScreenLabel("screenLabels.PoliticalAdCard.targetValue1Value2", { value1: ad.targetScope.toUpperCase(), value2: ad.targetValue ? `(${ad.targetValue})` : '' })}</Text>
           </View>
         </View>
       </View>
@@ -70,15 +68,13 @@ export default function PoliticalAdCard({ ad, onPress }: PoliticalAdCardProps) {
       {/* Ad Creative / Post Content */}
       <Pressable style={styles.contentWrap} onPress={onPress}>
         <Text style={[styles.contentText, { color: colors.text }]}>
-          {ad.postContent || `Constituency announcement & campaign release from ${ad.pageName}. Tap to view full post and discussions.`}
+          {ad.postContent || translateScreenLabel("screenLabels.PoliticalAdCard.constituencyAnnouncementCampaignReleaseFromValue1Tap", { value1: ad.pageName })}
         </Text>
       </Pressable>
 
       {/* Footer Transparency Notice */}
       <View style={[styles.footer, { borderTopColor: colors.border }]}>
-        <Text style={[styles.disclaimer, { color: colors.textSecondary }]}>
-          Certified under ECI / MCMC Guidelines · Paid ₹{(ad.amountPaid / 100).toLocaleString('en-IN')}
-        </Text>
+        <Text style={[styles.disclaimer, { color: colors.textSecondary }]}>{translateScreenLabel("screenLabels.PoliticalAdCard.certifiedUnderEciMcmcGuidelinesPaidValue1", { value1: (ad.amountPaid / 100).toLocaleString('en-IN') })}</Text>
       </View>
     </View>
   );

@@ -145,7 +145,7 @@ export default function IssueCard({ issue, onUpvote, onPress, onFollow, onShare 
         <View style={[styles.mlaRow, { backgroundColor: '#F59E0B12', borderColor: '#F59E0B30' }]}>
           <Ionicons name="megaphone" size={12} color="#F59E0B" />
           <Text style={styles.mlaText}>
-            {issue.mlaResponded ? 'MLA Responded' : 'MLA Tagged — Awaiting Response'}
+            {issue.mlaResponded ? t("issueResponse.mlaResponded") : t("issueResponse.mlaTaggedAwaiting")}
           </Text>
           {issue.mlaResponded && (
             <Ionicons name="checkmark-circle" size={12} color="#10B981" style={{ marginLeft: 4 }} />

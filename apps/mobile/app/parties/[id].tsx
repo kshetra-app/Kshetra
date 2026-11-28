@@ -11,7 +11,7 @@ import {
   canPublishForParty,
   clearPartyDeclaration, getParty, getPartyAccount, getPartyPage, listPartyTeam,
   savePartyDeclaration, setPartyPageFollow, submitPartyClaim, updatePartyTeam,
-  type PartyAccount, type PartyPageState, type PartyTeamMember, type PartyTeamRole,
+  type PartyAccount, type PartyPageState, type PartyProfileEvidence, type PartyTeamMember, type PartyTeamRole,
 } from '../../lib/partyRegistry';
 import { useTheme } from '../../lib/theme';
 import { localizeState } from '../../lib/lmxLocalizer';
@@ -116,6 +116,9 @@ export default function PartyProfileScreen() {
   const localName = party?.names.find((name) => name.language_code === locale)?.name_value;
   const name = localName ?? party?.name;
   const facts = party?.profileEvidence ?? [];
+  const elections = facts.filter((fact) => fact.kind === 'electionProfile');
+  const history = facts.filter((fact) => fact.kind !== 'electionProfile');
+  const latestElection = elections[0];
   const ownClaim = account?.claims.find((claim) => claim.organization_id === id);
   const hasDeclaration = account?.declaration?.organization_id === id;
   const ownsPage = Boolean(party?.page_id && account?.claims.some(
@@ -126,6 +129,42 @@ export default function PartyProfileScreen() {
   const memberId = member.trim();
   const validMember = /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(memberId);
   const roleTitle = (role: PartyTeamRole) => t('partyRegistry.role.' + role, { defaultValue: role });
+
+  function electionTitle(fact: Extract<PartyProfileEvidence, { kind: 'electionProfile' }>) {
+    return fact.election === 'lokSabha'
+      ? t('partyRegistry.lokSabhaElection', { year: fact.year })
+      : t('partyRegistry.stateAssemblyElection', { year: fact.year, state: localizeState(fact.state ?? '', locale) });
+  }
+
+  function historyLabel(fact: Exclude<PartyProfileEvidence, { kind: 'electionProfile' }>) {
+    switch (fact.kind) {
+      case 'founded':
+        return fact.founder
+          ? t('partyRegistry.foundedBy', { year: fact.year, founder: fact.founder })
+          : t('partyRegistry.founded', { year: fact.year });
+      case 'registered':
+        return t('partyRegistry.registeredIn', { year: fact.year });
+      case 'renamed':
+        return t('partyRegistry.renamedIn', { year: fact.year, name: fact.previousName });
+      case 'assemblyElection':
+        return t('partyRegistry.assemblyElection', { year: fact.year, state: localizeState(fact.state, locale) });
+      case 'contributionReport':
+        return t('partyRegistry.contributionReport', { period: fact.period });
+      case 'constitution':
+        return t('partyRegistry.constitution');
+    }
+  }
+
+  function sourceRow(label: string, url: string, key: string) {
+    return (
+      <Pressable key={key} accessibilityRole="link" style={styles.fact}
+        accessibilityLabel={`${label} ${t('partyRegistry.profileSource')}`}
+        onPress={() => void Linking.openURL(url).catch(() => Alert.alert(t('common.error')))}>
+        <Text style={[styles.factText, { color: colors.text }]}>{label}</Text>
+        <Ionicons name="open-outline" size={18} color={colors.primary} />
+      </Pressable>
+    );
+  }
 
   function sectionToggle(section: 'affiliation' | 'management', label: string) {
     const open = expanded?.partyId === id && expanded.section === section;
@@ -156,6 +195,11 @@ export default function PartyProfileScreen() {
             <Text accessibilityRole="header" style={[styles.heading, { color: colors.text }]}>{name}</Text>
             {localName && localName !== party.name && <Text style={{ color: colors.textMuted }}>{party.name}</Text>}
             {party.verifiedAt && <Text style={{ color: colors.textMuted }}>{t('partyRegistry.official')}</Text>}
+            {latestElection && (
+              <Text style={[styles.summaryText, { color: colors.text }]}>
+                {t('partyRegistry.profileSummary.' + latestElection.category, { election: electionTitle(latestElection) })}
+              </Text>
+            )}
             {facts.length === 0 && party.name !== party.short_name && (
               <Text style={{ color: colors.textMuted }}>
                 {t('partyRegistry.registryIdentity', { party: name, code: party.short_name })}
@@ -183,25 +227,25 @@ export default function PartyProfileScreen() {
             )}
           </View>
 
-          {facts.length > 0 && (
+          {elections.length > 0 && (
             <View style={[styles.panel, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-              <Text accessibilityRole="header" style={[styles.section, { color: colors.text }]}>{t('partyRegistry.about')}</Text>
-              {facts.map((fact) => {
-                const description = fact.kind === 'founded' ? t('partyRegistry.founded', { year: fact.year })
-                  : fact.kind === 'assemblyElection' ? t('partyRegistry.assemblyElection', { year: fact.year, state: localizeState(fact.state, locale) })
-                  : fact.kind === 'contributionReport' ? t('partyRegistry.contributionReport', { period: fact.period })
-                  : t('partyRegistry.constitution');
-                return (
-                  <Pressable key={fact.kind} accessibilityRole="link" style={styles.fact}
-                    accessibilityLabel={`${description} ${t('partyRegistry.profileSource')}`}
-                    onPress={() => void Linking.openURL(fact.sourceUrl).catch(() => {
-                      Alert.alert(t('common.error'));
-                    })}>
-                    <Text style={[styles.factText, { color: colors.text }]}>{description}</Text>
-                    <Ionicons name="open-outline" size={18} color={colors.primary} />
-                  </Pressable>
-                );
-              })}
+              <Text accessibilityRole="header" style={[styles.section, { color: colors.text }]}>{t('partyRegistry.electionRecord')}</Text>
+              {elections.map((fact) => (
+                <View key={`${fact.election}-${fact.year}-${fact.state ?? ''}`}>
+                  <Text style={[styles.factHeading, { color: colors.text }]}>{electionTitle(fact)}</Text>
+                  {sourceRow(t('partyRegistry.electionCode', { code: fact.eciCode }), fact.sourceUrl, 'code')}
+                  {fact.symbol && sourceRow(t('partyRegistry.ballotSymbol', { symbol: fact.symbol }), fact.sourceUrl, 'symbol')}
+                  {typeof fact.seatsWon === 'number' && fact.resultsSourceUrl && sourceRow(
+                    t('partyRegistry.seatsWon', { seats: fact.seatsWon }), fact.resultsSourceUrl, 'results',
+                  )}
+                </View>
+              ))}
+            </View>
+          )}
+          {history.length > 0 && (
+            <View style={[styles.panel, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+              <Text accessibilityRole="header" style={[styles.section, { color: colors.text }]}>{t('partyRegistry.historyAndFilings')}</Text>
+              {history.map((fact, index) => sourceRow(historyLabel(fact), fact.sourceUrl, fact.kind + index))}
             </View>
           )}
 
@@ -368,6 +412,8 @@ const styles = StyleSheet.create({
   screen: { width: '100%', maxWidth: 680, alignSelf: 'center', padding: 16, paddingBottom: 36, gap: 12 },
   panel: { borderRadius: 16, padding: 16, gap: 12, borderWidth: 1 },
   heading: { fontSize: 25, fontWeight: '800' },
+  summaryText: { fontSize: 16, lineHeight: 24 },
+  factHeading: { fontSize: 15, fontWeight: '700' },
   section: { flexShrink: 1, fontSize: 18, fontWeight: '700' },
   sectionToggle: { minHeight: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
   fact: { minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 12 },

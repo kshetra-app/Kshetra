@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useState } from 'react';
 import {
   View,
@@ -61,6 +62,7 @@ function SettingRow({ icon, label, value, onPress, color = '#2563EB' }: SettingR
 }
 
 export default function ProfileScreen() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const router = useRouter();
   const { t } = useTranslation();
   const prefs = usePreferencesStore();
@@ -495,20 +497,20 @@ export default function ProfileScreen() {
           </View>
           <SettingRow
             icon="language"
-            label="Language"
+            label={translateScreenLabel("compose.selectLanguage")}
             value={prefs.language === 'en' ? 'English' : prefs.language === 'hi' ? 'Hindi' : 'Telugu'}
             color="#10B981"
           />
           <SettingRow
             icon="toggle"
-            label="Feature Flags & Dev Switches"
+            label={translateScreenLabel("screenLabels.profile.featureFlagsDevSwitches")}
             onPress={() => setShowDevModal(true)}
             color="#8B5CF6"
           />
           {(activeUserProfile?.role === 'moderator' || activeUserProfile?.role === 'admin') && (
             <SettingRow
               icon="shield-half"
-              label="Content Moderation Queue"
+              label={translateScreenLabel("moderation.contentModerationQueue")}
               value="Grievance Officer"
               onPress={() => router.push('/moderation' as any)}
               color="#EC4899"
@@ -530,9 +532,7 @@ export default function ProfileScreen() {
         </Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 }}>
           <Ionicons name="settings-outline" size={12} color={colors.textMuted} />
-          <Text style={[styles.footerVersion, { color: colors.textMuted }]}>
-            {t('profileExtended.versionPhase')} • Tap for Dev Switches
-          </Text>
+          <Text style={[styles.footerVersion, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.profile.value1TapForDevSwitches", { value1: t('profileExtended.versionPhase') })}</Text>
         </View>
       </TouchableOpacity>
 

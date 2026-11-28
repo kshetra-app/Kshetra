@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -18,6 +19,7 @@ interface AIAnalysisCardProps {
 }
 
 export default function AIAnalysisCard({ acNo, constituencyName, stateCode = 'TS' }: AIAnalysisCardProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const { colors } = useTheme();
   const [analysis, setAnalysis] = useState<string | null>(null);
@@ -64,7 +66,7 @@ export default function AIAnalysisCard({ acNo, constituencyName, stateCode = 'TS
     <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, shadowColor: colors.shadowColor }]}>
       <View style={styles.header}>
         <Ionicons name="sparkles" size={16} color={colors.primary} />
-        <Text style={[styles.title, { color: colors.text }]}>AI Analysis</Text>
+        <Text style={[styles.title, { color: colors.text }]}>{translateScreenLabel("constituency.aiAnalysis")}</Text>
       </View>
 
       {error && (

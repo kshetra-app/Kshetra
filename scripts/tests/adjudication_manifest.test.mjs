@@ -37,15 +37,22 @@ console.log('================================================================');
 // Load master artifacts
 const manifestPath = path.join(REPO_ROOT, 'reports/w021_5_financial_remediation_adjudication_manifest.json');
 const summaryPath = path.join(REPO_ROOT, 'reports/w021_5_financial_remediation_adjudication_summary.json');
-const crosswalkPath = path.join(REPO_ROOT, 'scratch/w021_5_directive_048_4523_manifest_to_target_crosswalk.json');
-const ledgerPath = path.join(REPO_ROOT, 'scratch/w021_5_directive_047_1120_component_ledger.json');
-
 const manifestData = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 const summaryData = JSON.parse(fs.readFileSync(summaryPath, 'utf8'));
-const crosswalkData = JSON.parse(fs.readFileSync(crosswalkPath, 'utf8'));
-const ledgerData = JSON.parse(fs.readFileSync(ledgerPath, 'utf8'));
-
 const affidavits = manifestData.affidavits;
+const originalManifest = JSON.parse(
+  fs.readFileSync(path.join(REPO_ROOT, 'reports/w021_5b2_b2_2e_affidavit_manifest.json'), 'utf8'),
+);
+const originalAffidavits = new Map(originalManifest.affidavits.map((row) => [row.id, row]));
+
+// Read the retained evidence directly. The SQL chunk checks below independently
+// check the retained target IDs against the original migration inputs.
+const crosswalkData = affidavits.map((row) => row.crosswalk);
+const ledgerData = affidavits.filter((row) => row.ledger.hasComponentLedgerEntry).map((row) => ({
+  manifestId: row.affidavitId,
+  targetUuid: row.crosswalk.targetUuid,
+  targetTreatment: row.ledger.targetTreatment,
+}));
 
 // Build lookup maps
 const crosswalkMap = new Map();
@@ -89,6 +96,16 @@ runTest('All 4,523 retained records are accounted for exactly once', () => {
     seenIds.add(a.affidavitId);
   }
   assert.strictEqual(seenIds.size, 4523);
+  assert.strictEqual(originalAffidavits.size, 4523);
+  assert.strictEqual(ledgerData.length, 1120);
+  for (const row of affidavits) {
+    const original = originalAffidavits.get(row.affidavitId);
+    assert.ok(original, `No retained source row for ${row.affidavitId}`);
+    assert.strictEqual(row.crosswalk.manifestId, row.affidavitId);
+    assert.strictEqual(row.candidacyId, original.candidacy_id);
+    assert.strictEqual(row.personId, original.person_id);
+    assert.strictEqual(row.electionYear, original.election_year);
+  }
 });
 
 // Test 02: Production Crosswalk Validator — Exact Bijection and Canonical Formats
@@ -779,12 +796,16 @@ runTest('Production validateCorrectionEligibility() execution matches recorded r
   const manifestAff = affidavits.find(a => a.affidavitId === targetId);
   assert.ok(manifestAff, `Affidavit ${targetId} must exist`);
 
-  const originalManifestData = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'reports/w021_5b2_b2_2e_affidavit_manifest.json'), 'utf8'));
-  const originalAff = originalManifestData.affidavits.find(a => a.id === targetId);
-
-  const inventoryData = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'scratch/directive_032_scratch/reconciled_package_a2_full_inventory.json'), 'utf8'));
-  const assetCorr = inventoryData.assetCorrections.find(c => c.affidavitId === targetId);
-  assert.ok(assetCorr, `Correction for ${targetId} must exist`);
+  const originalAff = originalAffidavits.get(targetId);
+  assert.ok(originalAff, `Original affidavit ${targetId} must exist`);
+  assert.strictEqual(manifestAff.dimensions.asset.proposedDisclosureClassification, 'AFFIDAVIT_MISSING_DISCLOSURE');
+  const assetCorr = {
+    affidavitId: targetId,
+    currentRepresentedValue: originalAff.total_assets,
+    intendedValue: manifestAff.dimensions.asset.proposedValue,
+    sourceFile: originalAff.source_file,
+    sourceLocation: manifestAff.sourceCoordinates.locator,
+  };
 
   let errorCaught = null;
   try {

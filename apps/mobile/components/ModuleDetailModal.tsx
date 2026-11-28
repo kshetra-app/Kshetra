@@ -6,6 +6,7 @@
  * takeaways, and a Sources/citations block. Marking complete records progress
  * (and the quiz score, when a quiz is present) via the aspirant store.
  */
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -48,6 +49,7 @@ export default function ModuleDetailModal({
   onComplete,
   onSubmitQuiz,
 }: ModuleDetailModalProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
@@ -90,7 +92,7 @@ export default function ModuleDetailModal({
       setQuizResult(result);
       setSubmitted(true);
     } catch {
-      Alert.alert('Quiz could not be saved', 'Check your connection and try submitting your answers again.');
+      Alert.alert(translateScreenLabel("screenLabels.ModuleDetailModal.quizCouldNotBeSaved"), translateScreenLabel("screenLabels.ModuleDetailModal.checkYourConnectionAndTrySubmittingYour"));
     } finally {
       setSubmittingQuiz(false);
     }
@@ -103,7 +105,7 @@ export default function ModuleDetailModal({
       await onComplete(hasQuiz ? score : undefined);
       reset();
     } catch {
-      Alert.alert('Progress could not be saved', 'Your module is still open. Please try again.');
+      Alert.alert(translateScreenLabel("screenLabels.ModuleDetailModal.progressCouldNotBeSaved"), translateScreenLabel("screenLabels.ModuleDetailModal.yourModuleIsStillOpenPleaseTry"));
     } finally {
       setSavingComplete(false);
     }
@@ -141,9 +143,7 @@ export default function ModuleDetailModal({
         >
           {/* Title + meta */}
           <Text style={styles.title}>{module.title}</Text>
-          <Text style={styles.meta}>
-            {module.durationMinutes} min · {module.contentType} · {module.difficulty}
-          </Text>
+          <Text style={styles.meta}>{translateScreenLabel("screenLabels.ModuleDetailModal.value1MinValue2Value3", { value1: module.durationMinutes, value2: module.contentType, value3: module.difficulty })}</Text>
           <Text style={styles.description}>{module.description}</Text>
 
           {/* Video (attributed) */}
@@ -319,6 +319,7 @@ function AttributedVideo({
 }: {
   video: NonNullable<LeadershipModule['video']>;
 }) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -376,9 +377,7 @@ var player;function onYouTubeIframeAPIReady(){player=new YT.Player('player',{wid
         onPress={() => Linking.openURL(video.sourceUrl).catch(() => {})}
       >
         <Ionicons name="logo-youtube" size={13} color="#FF0000" />
-        <Text style={styles.attributionText} numberOfLines={2}>
-          “{video.title}” — {video.channel}. Source ↗
-        </Text>
+        <Text style={styles.attributionText} numberOfLines={2}>{translateScreenLabel("screenLabels.ModuleDetailModal.value1Value2Source", { value1: video.title, value2: video.channel })}</Text>
       </Pressable>
     </View>
   );

@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React from 'react';
 import {
   View,
@@ -144,6 +145,7 @@ const FLAG_GROUPS: FlagGroup[] = [
 ];
 
 export function DevFeatureSwitcher({ visible, onClose }: Props) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const { colors } = useTheme();
   const flags = useFeatureFlagsStore();
@@ -163,7 +165,7 @@ export function DevFeatureSwitcher({ visible, onClose }: Props) {
           <View style={styles.headerLeft}>
             <View style={[styles.badge, { backgroundColor: colors.primaryLight }]}>
               <Ionicons name="toggle" size={14} color={colors.primary} />
-              <Text style={[styles.badgeText, { color: colors.primary }]}>DEV CONTROL</Text>
+              <Text style={[styles.badgeText, { color: colors.primary }]}>{translateScreenLabel("screenLabels.DevFeatureSwitcher.devControl")}</Text>
             </View>
             <Text style={[styles.headerTitle, { color: colors.text }]}>{t('devSwitches.title', { defaultValue: 'Developer Feature Switches' })}</Text>
           </View>

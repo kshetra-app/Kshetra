@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -32,6 +33,7 @@ const SEVERITY_COLOR: Record<string, string> = {
 };
 
 export default function RedFlagsBanner({ flags }: Props) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { colors } = useTheme();
   if (flags.length === 0) return null;
 
@@ -43,7 +45,7 @@ export default function RedFlagsBanner({ flags }: Props) {
     <View style={[styles.container, { backgroundColor: bgColor, borderColor }]}>
       <View style={styles.header}>
         <Ionicons name="warning" size={16} color={criticalCount > 0 ? colors.danger : '#D97706'} />
-        <Text style={[styles.headerText, { color: colors.text }]}>{flags.length} Red Flag{flags.length > 1 ? 's' : ''} Detected</Text>
+        <Text style={[styles.headerText, { color: colors.text }]}>{translateScreenLabel("screenLabels.RedFlagsBanner.value1RedFlagValue2Detected", { value1: flags.length, value2: flags.length > 1 ? 's' : '' })}</Text>
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.flagsScroll}>
         {flags.map((flag, idx) => {

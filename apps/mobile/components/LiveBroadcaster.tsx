@@ -8,6 +8,7 @@
  * even when the module isn't compiled in. Real publishing activates after a native
  * build that includes it (see infra/media/README.md + TROUBLESHOOTING.md §11).
  */
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -41,6 +42,7 @@ interface Props {
 }
 
 export default function LiveBroadcaster({ whipUrl, token, onStop, streamLabel }: Props) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const [status, setStatus] = useState<Status>('starting');
   const [error, setError] = useState<string | null>(null);
@@ -135,14 +137,14 @@ export default function LiveBroadcaster({ whipUrl, token, onStop, streamLabel }:
         <View style={styles.errorBox}>
           <Text style={styles.errorText}>{error}</Text>
           <Text style={styles.errorHint}>
-            Consumer builds are decoupled from heavy native WebRTC binaries for lean HLS playback. To broadcast live video, use the Poligram Studio Web Client at https://studio.poligram.in or connect via RTMP/SRT from OBS.
+            {translateScreenLabel("screenLabels.LiveBroadcaster.consumerBuildsAreDecoupledFromHeavyNativeWebrtc")}
           </Text>
         </View>
       )}
 
       <Pressable style={styles.stopBtn} onPress={onStop}>
         <Ionicons name="stop-circle" size={22} color="#FFFFFF" />
-        <Text style={styles.stopText}>{status === 'live' ? t('lmx.broadcaster.endBroadcast') : 'Close'}</Text>
+        <Text style={styles.stopText}>{status === 'live' ? t('lmx.broadcaster.endBroadcast') : translateScreenLabel("common.close")}</Text>
       </Pressable>
     </View>
   );

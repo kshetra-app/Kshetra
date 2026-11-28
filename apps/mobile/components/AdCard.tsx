@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,6 +21,7 @@ interface AdCardProps {
  * // The component renders nothing in this slot until real credentials are wired in later.
  */
 export default function AdCard({ screenName, slotIndex }: AdCardProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { colors } = useTheme();
 
   // Strict exclusion enforcement: ads must never appear on excluded screens
@@ -42,13 +44,13 @@ export default function AdCard({ screenName, slotIndex }: AdCardProps) {
         </View>
         <View style={styles.headerInfo}>
           <View style={styles.nameRow}>
-            <Text style={[styles.sponsorName, { color: colors.text }]}>Featured Partner</Text>
+            <Text style={[styles.sponsorName, { color: colors.text }]}>{translateScreenLabel("screenLabels.AdCard.featuredPartner")}</Text>
             {/* Permanent Sponsored Badge — cannot be removed or hidden by any configuration */}
             <View style={styles.sponsoredBadge}>
-              <Text style={styles.sponsoredText}>Sponsored</Text>
+              <Text style={styles.sponsoredText}>{translateScreenLabel("screenLabels.AdCard.sponsored")}</Text>
             </View>
           </View>
-          <Text style={[styles.subText, { color: colors.textSecondary }]}>Commercial Promotion</Text>
+          <Text style={[styles.subText, { color: colors.textSecondary }]}>{translateScreenLabel("screenLabels.AdCard.commercialPromotion")}</Text>
         </View>
       </View>
 

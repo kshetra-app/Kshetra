@@ -2,6 +2,7 @@
  * Parliament Screen — Shows Lok Sabha/Rajya Sabha MPs, party strength at centre,
  * state-wise parliamentary representation, and interactive MP profiles.
  */
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -69,6 +70,7 @@ function formatPartyName(party: string): string {
 }
 
 export default function ParliamentScreen() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const { colors } = useTheme();
   const router = useRouter();
@@ -365,9 +367,7 @@ export default function ParliamentScreen() {
                     <View key={pw.party} style={[styles.statePartyRow, { borderBottomColor: colors.border }]}>
                       <View style={[styles.partyDot, { backgroundColor: getPartyColor(pw.party) }]} />
                       <Text style={[styles.statePartyName, { color: colors.text }]}>{formatPartyName(pw.party)}</Text>
-                      <Text style={[styles.statePartyCount, { color: colors.textSecondary }]}>
-                        LS: {pw.lokSabha} · RS: {pw.rajyaSabha} · Total: {pw.lokSabha + pw.rajyaSabha}
-                      </Text>
+                      <Text style={[styles.statePartyCount, { color: colors.textSecondary }]}>{translateScreenLabel("screenLabels.parliament.lsValue1RsValue2TotalValue3", { value1: pw.lokSabha, value2: pw.rajyaSabha, value3: pw.lokSabha + pw.rajyaSabha })}</Text>
                     </View>
                   ))}
                 </View>
@@ -494,7 +494,7 @@ export default function ParliamentScreen() {
                     </View>
                     <View style={[styles.houseBadge, { backgroundColor: selectedMP.house === 'lok_sabha' ? colors.primaryLight : colors.tealLight || '#E0F2FE' }]}>
                       <Text style={[styles.houseBadgeText, { color: selectedMP.house === 'lok_sabha' ? colors.primary : colors.teal }]}>
-                        {selectedMP.house === 'lok_sabha' ? 'Lok Sabha (18th)' : 'Rajya Sabha'}
+                        {selectedMP.house === 'lok_sabha' ? translateScreenLabel("screenLabels.parliament.lokSabha18th") : translateScreenLabel("parliament.tabRajyaSabha")}
                       </Text>
                     </View>
                   </View>
@@ -508,7 +508,7 @@ export default function ParliamentScreen() {
                   </View>
                   <View style={styles.metricCell}>
                     <Text style={[styles.metricLabel, { color: colors.textMuted }]}>{t('parliament.age', { defaultValue: 'Age' })}</Text>
-                    <Text style={[styles.metricValue, { color: colors.text }]}>{selectedMP.age ? `${selectedMP.age} yrs` : 'N/A'}</Text>
+                    <Text style={[styles.metricValue, { color: colors.text }]}>{selectedMP.age ? translateScreenLabel("screenLabels.parliament.value1Yrs", { value1: selectedMP.age }) : 'N/A'}</Text>
                   </View>
                   <View style={styles.metricCell}>
                     <Text style={[styles.metricLabel, { color: colors.textMuted }]}>{t('parliament.declaredCases', { defaultValue: 'Declared cases' })}</Text>

@@ -2,6 +2,7 @@
  * PhotoViewerModal — Full-screen photo viewer with zoom support.
  * Shown when user taps a candidate thumbnail to see the larger image.
  */
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { memo, useState, useEffect } from 'react';
 import {
   Modal,
@@ -37,6 +38,7 @@ export default memo(function PhotoViewerModal({
   subtitle,
   onClose,
 }: PhotoViewerModalProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const [imgLoading, setImgLoading] = useState(true);
   const [imgError, setImgError] = useState(false);
 
@@ -146,7 +148,7 @@ export default memo(function PhotoViewerModal({
           {/* Source hint */}
           {imageUri && (
             <Text style={styles.sourceHint}>
-              Photo sourced from Wikipedia / MyNeta
+              {translateScreenLabel("screenLabels.PhotoViewerModal.photoSourcedFromWikipediaMyneta")}
             </Text>
           )}
         </View>

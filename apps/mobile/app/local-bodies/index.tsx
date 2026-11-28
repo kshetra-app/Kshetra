@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, TextInput, ActivityIndicator, Keyboard, BackHandler } from 'react-native';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
@@ -33,6 +34,7 @@ export default function LocalBodiesScreen() {
 }
 
 function LocalBodiesDirectory({ stateCode }: { stateCode: string }) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
@@ -190,7 +192,7 @@ function LocalBodiesDirectory({ stateCode }: { stateCode: string }) {
               onPress={() => setStateCode('TS')}
             >
               <View style={[s.stateBadge, { backgroundColor: colors.primaryLight }]}>
-                <Text style={[s.stateBadgeText, { color: colors.primary }]}>TS</Text>
+                <Text style={[s.stateBadgeText, { color: colors.primary }]}>{translateScreenLabel("screenLabels.localBodies.ts")}</Text>
               </View>
               <View style={{ flex: 1 }}>
                 <View style={s.stateLaunchTitleRow}>
@@ -211,7 +213,7 @@ function LocalBodiesDirectory({ stateCode }: { stateCode: string }) {
               onPress={() => setStateCode('AP')}
             >
               <View style={[s.stateBadge, { backgroundColor: colors.primaryLight }]}>
-                <Text style={[s.stateBadgeText, { color: colors.primary }]}>AP</Text>
+                <Text style={[s.stateBadgeText, { color: colors.primary }]}>{translateScreenLabel("screenLabels.localBodies.ap")}</Text>
               </View>
               <View style={{ flex: 1 }}>
                 <View style={s.stateLaunchTitleRow}>
@@ -434,9 +436,7 @@ function LocalBodiesDirectory({ stateCode }: { stateCode: string }) {
             {/* MPTC section for this mandal if present */}
             {!query && mptcs.length > 0 && (
               <View style={{ marginBottom: 18 }}>
-                <Text style={s.sectionLabel}>
-                  MANDAL PARISHAD TERRITORIAL CONSTITUENCY (MPTC) ({mptcs.length})
-                </Text>
+                <Text style={s.sectionLabel}>{translateScreenLabel("screenLabels.localBodies.mandalParishadTerritorialConstituencyMptcValue1", { value1: mptcs.length })}</Text>
                 {mptcs.map((m) => (
                   <RepRow
                     key={m.id}
@@ -451,7 +451,7 @@ function LocalBodiesDirectory({ stateCode }: { stateCode: string }) {
               </View>
             )}
 
-            <Text style={s.sectionLabel}>GRAM PANCHAYATS ({filteredGps.length})</Text>
+            <Text style={s.sectionLabel}>{translateScreenLabel("screenLabels.localBodies.gramPanchayatsValue1", { value1: filteredGps.length })}</Text>
             {filteredGps.map((g) => (
               <Pressable key={g.key} onPress={() => goGp(g)} style={s.card}>
                 <View style={s.cardHead}>
@@ -513,8 +513,8 @@ function LocalBodiesDirectory({ stateCode }: { stateCode: string }) {
 
             <Text style={s.footer}>
               {stateCode === 'AP'
-                ? 'Source: Andhra Pradesh State Election Commission (APSEC) — Official local body election results. Gram Panchayat polls are officially non-party.'
-                : 'Source: Telangana State Election Commission (TSEC) — Know Your Public Representative (Rural). Gram Panchayat polls are officially non-party.'}
+                ? translateScreenLabel("screenLabels.localBodies.sourceAndhraPradeshStateElectionCommissionApsec")
+                : translateScreenLabel("screenLabels.localBodies.sourceTelanganaStateElectionCommissionTsecKnow")}
             </Text>
           </>
         )}

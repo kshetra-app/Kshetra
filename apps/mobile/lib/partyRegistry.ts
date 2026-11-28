@@ -12,10 +12,23 @@ export interface RegistryParty {
 }
 
 export type PartyProfileEvidence = { sourceUrl: string } & (
-  | { kind: 'founded'; year: number }
+  | { kind: 'founded'; year: number; founder?: string }
+  | { kind: 'registered'; year: number }
+  | { kind: 'renamed'; year: number; previousName: string }
   | { kind: 'contributionReport'; period: string }
   | { kind: 'constitution' }
   | { kind: 'assemblyElection'; year: number; state: string }
+  | {
+      kind: 'electionProfile';
+      election: 'lokSabha' | 'assembly';
+      year: number;
+      category: 'national' | 'state' | 'registered';
+      state?: string;
+      eciCode: string;
+      symbol?: string;
+      seatsWon?: number;
+      resultsSourceUrl?: string;
+    }
 );
 
 export interface PartyDeclaration {
@@ -68,7 +81,7 @@ export async function getParty(id: string) {
     verifiedAt: string | null;
     profileEvidence?: PartyProfileEvidence[];
     names: { language_code: string; name_value: string }[];
-  }>(path(id), publicRequest)).data;
+  }>(path(id), { ...publicRequest, query: { profile: 'full' } })).data;
 }
 
 export async function getPartyAccount() {

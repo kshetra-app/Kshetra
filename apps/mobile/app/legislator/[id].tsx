@@ -3,6 +3,7 @@
  * Builds profile from existing MLA Profile data + Affidavit store.
  * Dynamically fits all device sizes via useResponsive() and safe area insets.
  */
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, Share, Linking, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
@@ -41,6 +42,7 @@ import { apiClient } from '../../lib/api';
 
 
 export default function LegislatorProfileScreen() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { colors } = useTheme();
@@ -303,7 +305,7 @@ export default function LegislatorProfileScreen() {
         <View style={styles.center}>
           <Ionicons name="person-circle" size={56} color={colors.textMuted} />
           <Text style={[styles.emptyTitle, { color: colors.text }]}>{i18n.t('legislator.profileNotFound')}</Text>
-          <Text style={[styles.emptySubtitle, { color: colors.textMuted }]}>Could not find data for AC #{acNo}</Text>
+          <Text style={[styles.emptySubtitle, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.legislator.couldNotFindDataForAcValue1", { value1: acNo })}</Text>
           <Pressable style={[styles.backButton, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]} onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={18} color={colors.primary} />
             <Text style={[styles.backButtonText, { color: colors.primary }]}>{i18n.t('common.back')}</Text>
@@ -544,12 +546,12 @@ export default function LegislatorProfileScreen() {
                   <Text style={styles.sectionTitle}>{i18n.t('legislator.educationProfession')}</Text>
                 </View>
                 <View style={styles.infoGrid}>
-                  <InfoRow label="Education" value={formatEducation((isSamePersonAsSittingMLA ? (winnerAffidavit?.education || mla?.education) : podiumDetail?.education) || undefined)} />
-                  <InfoRow label="Profession" value={isSamePersonAsSittingMLA ? (winnerAffidavit?.profession || mla?.profession || '—') : (podiumDetail?.profession || '—')} />
-                  {isSamePersonAsSittingMLA && mla?.gender && <InfoRow label="Gender" value={mla.gender === 'F' ? 'Female' : 'Male'} />}
-                  {isSamePersonAsSittingMLA && mla?.maritalStatus && <InfoRow label="Marital Status" value={mla.maritalStatus} />}
-                  {isSamePersonAsSittingMLA && mla?.dob && <InfoRow label="Date of Birth" value={mla.dob} />}
-                  {isSamePersonAsSittingMLA && mla?.phone && <InfoRow label="Contact" value={mla.phone} />}
+                  <InfoRow label={translateScreenLabel("reportIssue.categories.education")} value={formatEducation((isSamePersonAsSittingMLA ? (winnerAffidavit?.education || mla?.education) : podiumDetail?.education) || undefined)} />
+                  <InfoRow label={translateScreenLabel("screenLabels.legislator.profession")} value={isSamePersonAsSittingMLA ? (winnerAffidavit?.profession || mla?.profession || '—') : (podiumDetail?.profession || '—')} />
+                  {isSamePersonAsSittingMLA && mla?.gender && <InfoRow label={translateScreenLabel("compare.gender")} value={mla.gender === 'F' ? 'Female' : 'Male'} />}
+                  {isSamePersonAsSittingMLA && mla?.maritalStatus && <InfoRow label={translateScreenLabel("screenLabels.legislator.maritalStatus")} value={mla.maritalStatus} />}
+                  {isSamePersonAsSittingMLA && mla?.dob && <InfoRow label={translateScreenLabel("screenLabels.legislator.dateOfBirth")} value={mla.dob} />}
+                  {isSamePersonAsSittingMLA && mla?.phone && <InfoRow label={translateScreenLabel("representative.contact")} value={mla.phone} />}
                 </View>
               </View>
             )}
@@ -558,13 +560,13 @@ export default function LegislatorProfileScreen() {
             <View style={styles.sectionCard}>
               <View style={styles.sectionHeader}>
                 <Ionicons name="business" size={18} color="#002B7F" />
-                <Text style={styles.sectionTitle}>Assembly Term & Status</Text>
+                <Text style={styles.sectionTitle}>{translateScreenLabel("screenLabels.legislator.assemblyTermStatus")}</Text>
               </View>
               <View style={styles.infoGrid}>
-                <InfoRow label="Constituency" value={`#${acNo} ${constName}`} />
-                <InfoRow label="State" value={stateCode} />
+                <InfoRow label={translateScreenLabel("common.scopes.constituency")} value={`#${acNo} ${constName}`} />
+                <InfoRow label={translateScreenLabel("common.scopes.state")} value={stateCode} />
                 <InfoRow
-                  label="Term"
+                  label={translateScreenLabel("screenLabels.legislator.term")}
                   value={
                     isWinner
                       ? (isSamePersonAsSittingMLA
@@ -575,7 +577,7 @@ export default function LegislatorProfileScreen() {
                       : (parsedRank === 'ru1' ? '1st Runner-up Candidate' : '2nd Runner-up Candidate')
                   }
                 />
-                <InfoRow label="Category" value={constType} />
+                <InfoRow label={translateScreenLabel("reportIssue.category")} value={constType} />
               </View>
             </View>
 
@@ -622,12 +624,12 @@ export default function LegislatorProfileScreen() {
               <View style={styles.sectionCard}>
                 <View style={styles.sectionHeader}>
                   <Ionicons name="trophy" size={18} color="#002B7F" />
-                  <Text style={styles.sectionTitle}>{electionYear != null ? `${electionYear} Election Performance` : 'Election Performance'}</Text>
+                  <Text style={styles.sectionTitle}>{electionYear != null ? translateScreenLabel("screenLabels.legislator.value1ElectionPerformance", { value1: electionYear }) : translateScreenLabel("screenLabels.legislator.electionPerformance")}</Text>
                 </View>
                 <View style={styles.infoGrid}>
-                  <InfoRow label="Constituency" value={`#${acNo} ${constName}`} />
+                  <InfoRow label={translateScreenLabel("common.scopes.constituency")} value={`#${acNo} ${constName}`} />
                   <InfoRow
-                    label="Podium Rank"
+                    label={translateScreenLabel("screenLabels.legislator.podiumRank")}
                     value={
                       !hasSelectedResult
                         ? 'Result unavailable'
@@ -639,7 +641,7 @@ export default function LegislatorProfileScreen() {
                     }
                   />
                   <InfoRow
-                    label="Votes Polled"
+                    label={translateScreenLabel("constituency.votesPolled")}
                     value={
                       candVotes != null
                         ? `${candVotes.toLocaleString()} ${candShare != null ? '(' + candShare.toFixed(1) + '%)' : ''}`
@@ -647,16 +649,16 @@ export default function LegislatorProfileScreen() {
                     }
                   />
                   <InfoRow
-                    label={parsedRank === 'winner' ? 'Victory Margin' : 'Vote Share'}
+                    label={parsedRank === 'winner' ? translateScreenLabel("mapLegend.victoryMargin") : translateScreenLabel("constituency.voteShare")}
                     value={
                       parsedRank === 'winner'
                         ? (candMargin != null && candMargin > 0 ? `+${candMargin.toLocaleString()} votes` : '—')
                         : (candShare != null ? `${candShare.toFixed(1)}%` : '—')
                     }
                   />
-                  <InfoRow label="Type" value={constType} />
+                  <InfoRow label={translateScreenLabel("map.colorModes.reservation")} value={constType} />
                   {constituency?.currentParty && constituency.currentParty !== constituency.winnerParty && (
-                    <InfoRow label="Current Party" value={constituency.currentParty} />
+                    <InfoRow label={translateScreenLabel("screenLabels.legislator.currentParty")} value={constituency.currentParty} />
                   )}
                 </View>
               </View>
@@ -667,12 +669,10 @@ export default function LegislatorProfileScreen() {
                   <View style={styles.sectionHeader}>
                     <Ionicons name="time" size={18} color="#002B7F" />
                     <Text style={styles.sectionTitle}>
-                      Constituency Election History
+                      {translateScreenLabel("screenLabels.legislator.constituencyElectionHistory")}
                     </Text>
                   </View>
-                  <Text style={{ fontSize: 12, color: colors.textSecondary, marginBottom: 8 }}>
-                    Full election cycles for #{acNo} {constName}. Tap any candidate to view their profile dossier.
-                  </Text>
+                  <Text style={{ fontSize: 12, color: colors.textSecondary, marginBottom: 8 }}>{translateScreenLabel("screenLabels.legislator.fullElectionCyclesForValue1Value2TapAny", { value1: acNo, value2: constName })}</Text>
                   {pastContests.map((contest, idx) => (
                     <PodiumHistoryCard
                       key={contest.year}

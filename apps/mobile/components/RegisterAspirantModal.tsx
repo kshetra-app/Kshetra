@@ -2,6 +2,7 @@
  * RegisterAspirantModal — registration form for the "Become an Aspirant" flow.
  * Collects a public civic profile and creates it via the aspirant store.
  */
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -36,6 +37,7 @@ const CURRENT_YEAR = new Date().getFullYear();
 const ELECTION_YEARS = [CURRENT_YEAR + 1, CURRENT_YEAR + 2, CURRENT_YEAR + 3, CURRENT_YEAR + 4];
 
 export default function RegisterAspirantModal({ visible, onClose }: RegisterAspirantModalProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
@@ -102,7 +104,7 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
 
     const realUserId = authUser?.id;
     if (!realUserId || realUserId === 'anon') {
-      Alert.alert(t('common.error', 'Authentication Required'), 'Please log in before registering as an aspirant.');
+      Alert.alert(t('common.error', 'Authentication Required'), translateScreenLabel("screenLabels.RegisterAspirantModal.pleaseLogInBeforeRegisteringAsAn"));
       return;
     }
 
@@ -145,11 +147,11 @@ export default function RegisterAspirantModal({ visible, onClose }: RegisterAspi
       >
         {/* Header with prominent Back navigation */}
         <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
-          <Pressable onPress={onClose} hitSlop={12} style={styles.backButton} accessibilityLabel="Back">
+          <Pressable onPress={onClose} hitSlop={12} style={styles.backButton} accessibilityLabel={translateScreenLabel("common.back")}>
             <Ionicons name="arrow-back" size={24} color="#002B7F" />
           </Pressable>
           <Text style={styles.headerTitle}>{t('aspirantReg.title')}</Text>
-          <Pressable onPress={onClose} hitSlop={12} accessibilityLabel="Close">
+          <Pressable onPress={onClose} hitSlop={12} accessibilityLabel={translateScreenLabel("common.close")}>
             <Ionicons name="close" size={24} color="#475569" />
           </Pressable>
         </View>

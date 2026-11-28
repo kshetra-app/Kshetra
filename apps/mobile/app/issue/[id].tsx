@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, Alert, Share, TextInput, KeyboardAvoidingView, Platform, ActivityIndicator, Linking, Keyboard } from 'react-native';
 import { useLocalSearchParams, useRouter, useFocusEffect, Stack } from 'expo-router';
@@ -42,6 +43,7 @@ function formatDate(dateStr: string): string {
 }
 
 export default function IssueDetailScreen() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { t } = useTranslation();
@@ -169,7 +171,7 @@ export default function IssueDetailScreen() {
     if (!gateContentAction('tag_mla')) return;
     Alert.alert(
       t('issueDetail.flagForRepresentative', { defaultValue: 'Flag issue' }),
-      `Flag "${issue.title}" for representative attention in Poligram?`,
+      translateScreenLabel("screenLabels.issue.flagValue1ForRepresentativeAttentionInPoligram", { value1: issue.title }),
       [
         { text: t('common.cancel'), style: 'cancel' },
         {
@@ -193,17 +195,17 @@ export default function IssueDetailScreen() {
 
   const handleDispute = () => {
     if (issue.userDisputed) {
-      Alert.alert('Already Disputed', 'You have already disputed this resolution.');
+      Alert.alert(translateScreenLabel("screenLabels.issue.alreadyDisputed"), translateScreenLabel("screenLabels.issue.youHaveAlreadyDisputedThisResolution"));
       return;
     }
     if (!gateContentAction('dispute_resolution')) return;
     Alert.alert(
-      'Dispute Resolution',
-      'Do you believe this issue has NOT been properly resolved? Your dispute will be recorded. If 5+ citizens dispute, the issue will be automatically reopened.',
+      translateScreenLabel("issueDetail.disputeResolution"),
+      translateScreenLabel("screenLabels.issue.doYouBelieveThisIssueHasNot"),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: translateScreenLabel("common.cancel"), style: 'cancel' },
         {
-          text: 'Dispute',
+          text: translateScreenLabel("screenLabels.issue.dispute"),
           style: 'destructive',
           onPress: async () => {
             if (!await disputeResolution(issue.id, 'Resolution not satisfactory')) {
@@ -350,7 +352,7 @@ export default function IssueDetailScreen() {
           )}
           <Text style={styles.metaGray}>{timeAgo(issue.createdAt)}</Text>
           <Text style={styles.metaDot}>·</Text>
-          <Text style={styles.metaGray}>by {issue.reporterName}</Text>
+          <Text style={styles.metaGray}>{translateScreenLabel("screenLabels.issue.byValue1", { value1: issue.reporterName })}</Text>
         </View>
 
         {/* ── Stats Row ── */}
@@ -462,12 +464,12 @@ export default function IssueDetailScreen() {
           <View style={styles.resolutionSection}>
             <View style={styles.sectionHeader}>
               <Ionicons name="checkmark-circle" size={16} color="#10B981" />
-              <Text style={styles.sectionTitle}>Resolution</Text>
+              <Text style={styles.sectionTitle}>{translateScreenLabel("issueDetail.resolution")}</Text>
             </View>
             <View style={styles.resolutionCard}>
               <Text style={styles.resolutionText}>{issue.resolutionNote}</Text>
               {issue.resolvedAt && (
-                <Text style={styles.resolutionDate}>Resolved {formatDate(issue.resolvedAt)}</Text>
+                <Text style={styles.resolutionDate}>{translateScreenLabel("screenLabels.issue.resolvedValue1", { value1: formatDate(issue.resolvedAt) })}</Text>
               )}
             </View>
             {issue.status === 'resolved' && (
@@ -478,7 +480,7 @@ export default function IssueDetailScreen() {
               >
                 <Ionicons name="flag" size={16} color={issue.userDisputed ? '#6B7280' : '#EF4444'} />
                 <Text style={[styles.disputeBtnText, issue.userDisputed && { color: '#6B7280' }]}>
-                  {issue.userDisputed ? 'Dispute Filed' : 'Dispute Resolution'}
+                  {issue.userDisputed ? translateScreenLabel("issueDetail.disputeFiled") : translateScreenLabel("issueDetail.disputeResolution")}
                 </Text>
                 {issue.disputeCount > 0 && (
                   <Text style={styles.disputeCount}>{issue.disputeCount}/5</Text>
@@ -492,9 +494,7 @@ export default function IssueDetailScreen() {
         {issue.status === 'reopened' && (
           <View style={styles.reopenedBanner}>
             <Ionicons name="refresh-circle" size={18} color="#EF4444" />
-            <Text style={styles.reopenedText}>
-              Reopened — {issue.disputeCount} citizens disputed the resolution
-            </Text>
+            <Text style={styles.reopenedText}>{translateScreenLabel("screenLabels.issue.reopenedValue1CitizensDisputedTheResolution", { value1: issue.disputeCount })}</Text>
           </View>
         )}
 
@@ -503,7 +503,7 @@ export default function IssueDetailScreen() {
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Ionicons name="images" size={16} color="#F59E0B" />
-              <Text style={styles.sectionTitle}>Evidence ({mediaUrls.length})</Text>
+              <Text style={styles.sectionTitle}>{translateScreenLabel("screenLabels.issue.evidenceValue1", { value1: mediaUrls.length })}</Text>
             </View>
             <View style={styles.mediaGrid}>
               {displayMedia.map((url, idx) => {
@@ -531,7 +531,7 @@ export default function IssueDetailScreen() {
             </View>
             {mediaUrls.length > 6 && !showAllMedia && (
               <Pressable style={styles.showMoreBtn} onPress={() => setShowAllMedia(true)}>
-                <Text style={styles.showMoreText}>Show all {mediaUrls.length} media files</Text>
+                <Text style={styles.showMoreText}>{translateScreenLabel("screenLabels.issue.showAllValue1MediaFiles", { value1: mediaUrls.length })}</Text>
               </Pressable>
             )}
           </View>
@@ -542,7 +542,7 @@ export default function IssueDetailScreen() {
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Ionicons name="git-branch" size={16} color="#8B5CF6" />
-              <Text style={styles.sectionTitle}>Status Timeline</Text>
+              <Text style={styles.sectionTitle}>{translateScreenLabel("screenLabels.issue.statusTimeline")}</Text>
             </View>
             <View style={styles.timeline}>
               {statusHistory.map((entry, idx) => {
@@ -697,6 +697,7 @@ function CommentCard({ comment, disabled, onEdit, onRemove }: {
   onEdit?: () => void;
   onRemove?: () => void;
 }) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const { colors } = useTheme();
   return (
@@ -711,7 +712,7 @@ function CommentCard({ comment, disabled, onEdit, onRemove }: {
             {comment.isOfficial && (
               <View style={styles.officialBadge}>
                 <Ionicons name="shield-checkmark" size={10} color="#3B82F6" />
-                <Text style={styles.officialBadgeText}>Official</Text>
+                <Text style={styles.officialBadgeText}>{translateScreenLabel("screenLabels.issue.official")}</Text>
               </View>
             )}
           </View>

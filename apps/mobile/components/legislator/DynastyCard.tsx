@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,6 +21,7 @@ interface Props {
 }
 
 export default function DynastyCard({ isDynast, politicalGeneration, familyInPolitics, familyConstituencies }: Props) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { colors } = useTheme();
   if (!isDynast && familyInPolitics.length === 0) return null;
 
@@ -31,7 +33,7 @@ export default function DynastyCard({ isDynast, politicalGeneration, familyInPol
       {/* Header */}
       <View style={styles.header}>
         <Ionicons name="git-network" size={18} color="#D97706" />
-        <Text style={[styles.title, { color: colors.text }]}>Political Dynasty</Text>
+        <Text style={[styles.title, { color: colors.text }]}>{translateScreenLabel("screenLabels.DynastyCard.politicalDynasty")}</Text>
         <View style={[styles.genBadge, { backgroundColor: genColor + '20' }]}>
           <Text style={[styles.genText, { color: genColor }]}>{genLabel}</Text>
         </View>
@@ -42,7 +44,7 @@ export default function DynastyCard({ isDynast, politicalGeneration, familyInPol
         <View style={[styles.dynastIndicator, { backgroundColor: colors.goldLight, borderColor: colors.goldBorder, borderWidth: 1 }]}>
           <Ionicons name="information-circle" size={14} color="#D97706" />
           <Text style={[styles.dynastText, { color: colors.text }]}>
-            This legislator comes from a political family
+            {translateScreenLabel("screenLabels.DynastyCard.thisLegislatorComesFromAPoliticalFamily")}
           </Text>
         </View>
       )}
@@ -50,7 +52,7 @@ export default function DynastyCard({ isDynast, politicalGeneration, familyInPol
       {/* Family tree */}
       {familyInPolitics.length > 0 && (
         <View style={styles.familySection}>
-          <Text style={[styles.familyTitle, { color: colors.textMuted }]}>Family in Politics</Text>
+          <Text style={[styles.familyTitle, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.DynastyCard.familyInPolitics")}</Text>
           {familyInPolitics.map((member, idx) => (
             <View key={idx} style={[styles.memberRow, { borderBottomColor: colors.border }]}>
               <View style={[styles.memberIcon, { backgroundColor: colors.surfaceElevated }]}>
@@ -74,7 +76,7 @@ export default function DynastyCard({ isDynast, politicalGeneration, familyInPol
       {/* Family constituencies */}
       {familyConstituencies && familyConstituencies.length > 0 && (
         <View style={[styles.constSection, { borderTopColor: colors.border }]}>
-          <Text style={[styles.constTitle, { color: colors.textMuted }]}>Family Constituencies</Text>
+          <Text style={[styles.constTitle, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.DynastyCard.familyConstituencies")}</Text>
           <View style={styles.constChips}>
             {familyConstituencies.map((c, idx) => (
               <View key={idx} style={[styles.constChip, { backgroundColor: colors.surfaceElevated, borderColor: colors.border, borderWidth: 1 }]}>

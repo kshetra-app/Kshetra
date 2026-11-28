@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -64,6 +65,7 @@ export default function CampaignOutreachPanel() {
 // ── Composer ────────────────────────────────────────────────────────────────
 
 function Composer({ onSent }: { onSent: () => void }) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const segments = useOutreachStore((s) => s.segments);
   const templates = useOutreachStore((s) => s.templates);
   const createBroadcast = useOutreachStore((s) => s.createBroadcast);
@@ -118,8 +120,8 @@ function Composer({ onSent }: { onSent: () => void }) {
               onSent();
             } catch (error) {
               Alert.alert(
-                'Broadcast unavailable',
-                error instanceof Error ? error.message : 'The broadcast could not be created.',
+                translateScreenLabel("campaignManager.broadcastUnavailable"),
+                error instanceof Error ? error.message : translateScreenLabel("screenLabels.CampaignOutreachPanel.theBroadcastCouldNotBeCreated"),
               );
             } finally {
               setSending(false);
@@ -137,8 +139,8 @@ function Composer({ onSent }: { onSent: () => void }) {
         <Ionicons name="shield-checkmark" size={16} color="#F59E0B" />
         <Text style={styles.noticeText}>
           {IS_LIVE_ENVIRONMENT
-            ? 'Delivery is unavailable until a real messaging provider, consent-based audience source, and delivery reporting are connected.'
-            : `Simulation mode. No messages are sent. Real delivery needs provider setup${channel === 'sms' ? ' + DLT-registered templates' : ''}. ${t('outreachPanel.optedInOnly')}`}
+            ? translateScreenLabel("screenLabels.CampaignOutreachPanel.deliveryIsUnavailableUntilARealMessaging")
+            : translateScreenLabel("screenLabels.CampaignOutreachPanel.simulationModeNoMessagesAreSentReal", { value1: channel === 'sms' ? ' + DLT-registered templates' : '', value2: t('outreachPanel.optedInOnly') })}
         </Text>
       </View>
 
@@ -165,7 +167,7 @@ function Composer({ onSent }: { onSent: () => void }) {
       <Text style={styles.label}>{t('outreachPanel.audience')}</Text>
       {segments.length === 0 ? (
         <Text style={styles.emptyText}>
-          {IS_LIVE_ENVIRONMENT ? 'No live audience segments are connected.' : 'No audience segments are available.'}
+          {IS_LIVE_ENVIRONMENT ? translateScreenLabel("screenLabels.CampaignOutreachPanel.noLiveAudienceSegmentsAreConnected") : translateScreenLabel("screenLabels.CampaignOutreachPanel.noAudienceSegmentsAreAvailable")}
         </Text>
       ) : segments.map((s) => {
         const active = segment?.id === s.id;
@@ -208,7 +210,7 @@ function Composer({ onSent }: { onSent: () => void }) {
         style={styles.textArea}
         value={body}
         onChangeText={(t) => setBody(t)}
-        placeholder={channel === 'voice' ? 'Describe the recorded voice message…' : 'Type your message. Use {name}, {booth} for personalisation.'}
+        placeholder={channel === 'voice' ? translateScreenLabel("screenLabels.CampaignOutreachPanel.describeTheRecordedVoiceMessage") : translateScreenLabel("screenLabels.CampaignOutreachPanel.typeYourMessageUseNameBoothFor")}
         placeholderTextColor="#4B5563"
         multiline
       />
@@ -221,9 +223,7 @@ function Composer({ onSent }: { onSent: () => void }) {
           ))}
         </View>
       )}
-      <Text style={styles.counter}>
-        {body.length} chars{channel === 'sms' ? ` · ${smsSegments} SMS segment${smsSegments > 1 ? 's' : ''}` : ''}
-      </Text>
+      <Text style={styles.counter}>{translateScreenLabel("screenLabels.CampaignOutreachPanel.value1CharsValue2", { value1: body.length, value2: channel === 'sms' ? ` · ${smsSegments} SMS segment${smsSegments > 1 ? 's' : ''}` : '' })}</Text>
 
       {/* Campaign name */}
       <Text style={styles.label}>{t('outreachPanel.broadcastName')}</Text>
@@ -231,7 +231,7 @@ function Composer({ onSent }: { onSent: () => void }) {
         style={styles.input}
         value={name}
         onChangeText={setName}
-        placeholder={`${activeChannel.label} to ${segment?.name ?? 'audience'}`}
+        placeholder={translateScreenLabel("screenLabels.CampaignOutreachPanel.value1ToValue2", { value1: activeChannel.label, value2: segment?.name ?? 'audience' })}
         placeholderTextColor="#4B5563"
       />
 
@@ -271,7 +271,7 @@ function Composer({ onSent }: { onSent: () => void }) {
             <Ionicons name={schedule === 'now' ? 'send' : 'time'} size={18} color="#FFF" />
             <Text style={styles.sendBtnText}>
               {IS_LIVE_ENVIRONMENT
-                ? 'Delivery not connected'
+                ? translateScreenLabel("screenLabels.CampaignOutreachPanel.deliveryNotConnected")
                 : schedule === 'now' ? t('outreachPanel.sendBroadcast') : t('outreachPanel.scheduleBroadcast')}
             </Text>
           </>
@@ -284,6 +284,7 @@ function Composer({ onSent }: { onSent: () => void }) {
 // ── History ───────────────────────────────────────────────────────────────
 
 function History() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const broadcasts = useOutreachStore((s) => s.broadcasts);
   const { t } = useTranslation();
   const cancelBroadcast = useOutreachStore((s) => s.cancelBroadcast);
@@ -322,9 +323,7 @@ function History() {
             {b.status === 'scheduled' && b.scheduledAt && (
               <View style={styles.scheduledRow}>
                 <Ionicons name="time-outline" size={13} color="#F59E0B" />
-                <Text style={styles.scheduledText}>
-                  Goes out {new Date(b.scheduledAt).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                </Text>
+                <Text style={styles.scheduledText}>{translateScreenLabel("screenLabels.CampaignOutreachPanel.goesOutValue1", { value1: new Date(b.scheduledAt).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) })}</Text>
                 <Pressable style={styles.cancelBtn} onPress={() => cancelBroadcast(b.id)}>
                   <Text style={styles.cancelText}>{t('outreachPanel.cancel')}</Text>
                 </Pressable>
@@ -341,11 +340,11 @@ function History() {
                   <View style={[styles.progressSeg, { flex: Math.max(0, b.stats.audience - b.stats.sent - b.stats.failed), backgroundColor: '#1F2937' }]} />
                 </View>
                 <View style={styles.statRow}>
-                  <Stat label="Sent" value={`${fmt(b.stats.sent)}`} sub={`${pct(b.stats.sent)}%`} color="#3B82F6" />
-                  <Stat label="Delivered" value={`${fmt(b.stats.delivered)}`} sub={`${pct(b.stats.delivered)}%`} color="#10B981" />
-                  {b.channel === 'whatsapp' && <Stat label="Read" value={`${fmt(b.stats.read)}`} sub={`${pct(b.stats.read)}%`} color="#8B5CF6" />}
-                  {b.channel === 'voice' && <Stat label="Answered" value={`${fmt(b.stats.read)}`} sub={`${pct(b.stats.read)}%`} color="#8B5CF6" />}
-                  <Stat label="Failed" value={`${fmt(b.stats.failed)}`} sub={`${pct(b.stats.failed)}%`} color="#EF4444" />
+                  <Stat label={translateScreenLabel("outreach.sent")} value={`${fmt(b.stats.sent)}`} sub={`${pct(b.stats.sent)}%`} color="#3B82F6" />
+                  <Stat label={translateScreenLabel("outreach.delivered")} value={`${fmt(b.stats.delivered)}`} sub={`${pct(b.stats.delivered)}%`} color="#10B981" />
+                  {b.channel === 'whatsapp' && <Stat label={translateScreenLabel("journalist.read")} value={`${fmt(b.stats.read)}`} sub={`${pct(b.stats.read)}%`} color="#8B5CF6" />}
+                  {b.channel === 'voice' && <Stat label={translateScreenLabel("screenLabels.CampaignOutreachPanel.answered")} value={`${fmt(b.stats.read)}`} sub={`${pct(b.stats.read)}%`} color="#8B5CF6" />}
+                  <Stat label={translateScreenLabel("common.failed")} value={`${fmt(b.stats.failed)}`} sub={`${pct(b.stats.failed)}%`} color="#EF4444" />
                 </View>
               </>
             )}
@@ -369,6 +368,7 @@ function Stat({ label, value, sub, color }: { label: string; value: string; sub:
 // ── Templates ───────────────────────────────────────────────────────────────
 
 function Templates() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const templates = useOutreachStore((s) => s.templates);
   const addTemplate = useOutreachStore((s) => s.addTemplate);
@@ -397,7 +397,7 @@ function Templates() {
 
       {adding && (
         <View style={styles.addForm}>
-          <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="Template name" placeholderTextColor="#4B5563" />
+          <TextInput style={styles.input} value={name} onChangeText={setName} placeholder={translateScreenLabel("screenLabels.CampaignOutreachPanel.templateName")} placeholderTextColor="#4B5563" />
           <View style={[styles.channelRow, { marginVertical: 8 }]}>
             {CHANNELS.map((c) => (
               <Pressable
@@ -410,7 +410,7 @@ function Templates() {
               </Pressable>
             ))}
           </View>
-          <TextInput style={styles.textArea} value={body} onChangeText={setBody} placeholder="Body with {name}, {booth}…" placeholderTextColor="#4B5563" multiline />
+          <TextInput style={styles.textArea} value={body} onChangeText={setBody} placeholder={translateScreenLabel("screenLabels.CampaignOutreachPanel.bodyWithNameBooth")} placeholderTextColor="#4B5563" multiline />
           <Pressable style={styles.sendBtn} onPress={save}>
             <Ionicons name="save" size={16} color="#FFF" />
             <Text style={styles.sendBtnText}>{t('outreachPanel.saveTemplate')}</Text>

@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -29,6 +30,7 @@ export function StateView({
   isOfflineCached = false,
   children,
 }: StateViewProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const [cooldown, setCooldown] = useState<number>(0);
   const [isRetrying, setIsRetrying] = useState<boolean>(false);
@@ -96,7 +98,7 @@ export function StateView({
           {errorMessage || t('error_default_desc', 'Unable to retrieve data. Please check your connection and retry.')}
         </Text>
         {correlationId && (
-          <Text style={styles.correlationText}>Ref: {correlationId} ({errorCode})</Text>
+          <Text style={styles.correlationText}>{translateScreenLabel("screenLabels.StateView.refValue1Value2", { value1: correlationId, value2: errorCode })}</Text>
         )}
         {onRetry && (
           <TouchableOpacity

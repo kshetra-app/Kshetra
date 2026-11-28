@@ -2,6 +2,546 @@
  * PA translation
  */
 const pa = {
+  "screenLabels": {
+    "ConstituencySelectorSheet": {
+      "acValue1": "AC {{value1}}"
+    },
+    "EventCard": {
+      "rsvp": "ਹਾਜ਼ਰੀ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ"
+    },
+    "news": {
+      "noSavedStoriesYet": "ਅਜੇ ਤੱਕ ਕੋਈ ਸੁਰੱਖਿਅਤ ਕਹਾਣੀਆਂ ਨਹੀਂ ਹਨ",
+      "noStoriesAreAvailableForThisArea": "ਇਸ ਖੇਤਰ ਲਈ ਅਜੇ ਤੱਕ ਕੋਈ ਕਹਾਣੀਆਂ ਉਪਲਬਧ ਨਹੀਂ ਹਨ",
+      "noValue1StoriesAreAvailableRightNow": "ਇਸ ਸਮੇਂ ਕੋਈ {{value1}} ਕਹਾਣੀਆਂ ਉਪਲਬਧ ਨਹੀਂ ਹਨ",
+      "noNewsStoriesAreAvailableRightNow": "ਇਸ ਵੇਲੇ ਕੋਈ ਖ਼ਬਰਾਂ ਉਪਲਬਧ ਨਹੀਂ ਹਨ"
+    },
+    "hierarchy": {
+      "value1Records": "{{value1}} ਰਿਕਾਰਡ",
+      "value1Value2Value3DrillDown": "{{value1}} → {{value2}} → {{value3}} ਡਰਿਲ-ਡਾਊਨ"
+    },
+    "moderation": {
+      "actionApplied": "ਕਾਰਵਾਈ ਲਾਗੂ ਕੀਤੀ ਗਈ",
+      "reportProcessedSuccessfullyValue1": "ਰਿਪੋਰਟ ਦੀ ਸਫਲਤਾਪੂਰਵਕ ਪ੍ਰਕਿਰਿਆ ਕੀਤੀ ਗਈ: {{value1}}",
+      "error": "ਗਲਤੀ",
+      "failedToApplyModerationAction": "ਸੰਚਾਲਨ ਕਾਰਵਾਈ ਨੂੰ ਲਾਗੂ ਕਰਨ ਵਿੱਚ ਅਸਫਲ",
+      "networkRequestFailed": "ਨੈੱਟਵਰਕ ਬੇਨਤੀ ਅਸਫਲ ਰਹੀ",
+      "userIdValue1": "ਉਪਭੋਗਤਾ ID: {{value1}}..."
+    },
+    "ComposeSheet": {
+      "mp4": "MP4",
+      "optionValue1": "ਵਿਕਲਪ {{value1}}"
+    },
+    "ProfileHeroCard": {
+      "label1stRunnerUp": "1st ਰਨਰ-ਅੱਪ",
+      "label2ndRunnerUp": "ਦੂਜਾ ਰਨਰ-ਅੱਪ",
+      "yrs": "ਸਾਲ"
+    },
+    "ProjectCard": {
+      "acValue1": "· AC # {{value1}}"
+    },
+    "RegisterAspirantModal": {
+      "pleaseLogInBeforeRegisteringAsAn": "ਕਿਰਪਾ ਕਰਕੇ ਉਮੀਦਵਾਰ ਵਜੋਂ ਰਜਿਸਟਰ ਹੋਣ ਤੋਂ ਪਹਿਲਾਂ ਲੌਗ ਇਨ ਕਰੋ।"
+    },
+    "dashboard": {
+      "reporter": "ਰਿਪੋਰਟਰ",
+      "noLoadedReportsMatchTheseFiltersMoreReports": "ਕੋਈ ਲੋਡ ਕੀਤੀ ਰਿਪੋਰਟ ਇਹਨਾਂ ਫਿਲਟਰਾਂ ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦੀ। ਖੋਜ ਲਈ ਹੋਰ ਰਿਪੋਰਟਾਂ ਉਪਲਬਧ ਹਨ।",
+      "couldNotLoadTheNextPageTheReports": "ਅਗਲਾ ਪੰਨਾ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਪਹਿਲਾਂ ਹੀ ਦਿਖਾਈਆਂ ਗਈਆਂ ਰਿਪੋਰਟਾਂ ਬਦਲੀਆਂ ਨਹੀਂ ਹਨ।",
+      "value1AlertSValue2AwaitingAcknowledgment": "{{value1}} ਚੇਤਾਵਨੀ(s) · {{value2}} ਰਸੀਦ ਦੀ ਉਡੀਕ ਕਰ ਰਿਹਾ ਹੈ",
+      "value1Alert": "{{value1}} ਚੇਤਾਵਨੀ",
+      "watchLiveFeed": "ਲਾਈਵ ਫੀਡ ਦੇਖੋ"
+    },
+    "explore": {
+      "value1Value2Found": "{{value1}}  {{value2}} ਮਿਲਿਆ"
+    },
+    "tabs": {
+      "urbanValue1": "ਸ਼ਹਿਰੀ: {{value1}}",
+      "ruralGramPanchayat": "ਪੇਂਡੂ ਗ੍ਰਾਮ ਪੰਚਾਇਤ",
+      "othersValue1": "ਹੋਰ: {{value1}} %",
+      "value1Cr": "₹ {{value1}} ਕਰੋੜ",
+      "netValue1Cr": "ਕੁੱਲ: ₹ {{value1}} ਕਰੋੜ",
+      "value1Yrs": "{{value1}} ਸਾਲ",
+      "dobValue1": "ਜਨਮ ਮਿਤੀ · {{value1}}",
+      "tapAnyStateToExploreItsAssemblyConstituencies": "ਕਿਸੇ ਵੀ ਰਾਜ ਦੇ ਵਿਧਾਨ ਸਭਾ ਹਲਕਿਆਂ ਦੀ ਪੜਚੋਲ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ",
+      "boothValue1": "ਬੂਥ # {{value1}}",
+      "acValue1Value2": "AC # {{value1}} · {{value2}}",
+      "value1AcValue2": "{{value1}} (AC # {{value2}} )",
+      "acValue1": "AC # {{value1}}",
+      "label1st": "1ਲੀ",
+      "label2nd": "2ਜੀ",
+      "label3rd": "3 ਜੀ"
+    },
+    "intelligence": {
+      "value1Value2AssemblyElections": "{{value1}}  {{value2}} · ਵਿਧਾਨ ਸਭਾ ਚੋਣਾਂ",
+      "seatValue1": "ਸੀਟ {{value1}}",
+      "value1SeatValue2": "{{value1}} ਸੀਟ {{value2}}",
+      "value1MarginOfValue2Votes": "{{value1}} — {{value2}} ਵੋਟਾਂ ਦਾ ਮਾਰਜਿਨ",
+      "marginDataUnavailable": "ਮਾਰਜਿਨ ਡੇਟਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ",
+      "value1AppearsInValue2RecordedConstituenciesValue3": "{{value1}}  {{value2}} ਰਿਕਾਰਡ ਕੀਤੇ ਹਲਕਿਆਂ ਵਿੱਚ ਦਿਖਾਈ ਦਿੰਦਾ ਹੈ (ਪਾਰਟੀ-ਜਾਣਿਆ ਰਿਕਾਰਡਾਂ ਦਾ {{value3}} %)",
+      "value1WithValue2SeatsValue3": "{{value1}}  {{value2}} ਸੀਟਾਂ ਵਾਲਾ ( {{value3}} %)",
+      "partyDataUnavailable": "ਪਾਰਟੀ ਡਾਟਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ",
+      "dataValue1StateElectionCommission": "ਡੇਟਾ: {{value1}} ਰਾਜ ਚੋਣ ਕਮਿਸ਼ਨ",
+      "value1Turnout": "{{value1}} % ਮਤਦਾਨ"
+    },
+    "profile": {
+      "featureFlagsDevSwitches": "ਫੀਚਰ ਫਲੈਗ ਅਤੇ ਦੇਵ ਸਵਿੱਚ",
+      "value1TapForDevSwitches": "{{value1}} • ਦੇਵ ਸਵਿੱਚਾਂ ਲਈ ਟੈਪ ਕਰੋ"
+    },
+    "shorts": {
+      "value1ShortValue2": "{{value1}} ਛੋਟਾ {{value2}}"
+    },
+    "candidateXray": {
+      "candidateRecordNotFound": "ਉਮੀਦਵਾਰ ਦਾ ਰਿਕਾਰਡ ਨਹੀਂ ਮਿਲਿਆ",
+      "affidavitProfilesHaveBeenConsolidatedIntoLegislatorProfiles": "ਐਫੀਡੇਵਿਟ ਪ੍ਰੋਫਾਈਲਾਂ ਨੂੰ ਵਿਧਾਇਕ ਪ੍ਰੋਫਾਈਲਾਂ ਵਿੱਚ ਜੋੜਿਆ ਗਿਆ ਹੈ।",
+      "loadingProfile": "ਪ੍ਰੋਫਾਈਲ ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ..."
+    },
+    "constituency": {
+      "notReported": "ਰਿਪੋਰਟ ਨਹੀਂ ਕੀਤੀ ਗਈ",
+      "shareConstituencyCard": "ਹਲਕੇ ਦਾ ਕਾਰਡ ਸਾਂਝਾ ਕਰੋ",
+      "profileRecord": "ਪ੍ਰੋਫਾਈਲ ਰਿਕਾਰਡ",
+      "historicalPoliticalData19992026": "ਇਤਿਹਾਸਕ ਸਿਆਸੀ ਡੇਟਾ (1999–2026)",
+      "viewAllValue1": "ਸਾਰੇ ਦੇਖੋ ( {{value1}} )",
+      "assemblyElectionPodiumResultsWith1st2ndAnd": "ਵਿਧਾਨ ਸਭਾ ਚੋਣ ਪੋਡੀਅਮ ਨਤੀਜੇ 1st, 2nd, ਅਤੇ 3rd ਸਥਾਨ ਦੇ ਉਮੀਦਵਾਰਾਂ, ਹਾਸ਼ੀਏ, ਅਤੇ ਵੋਟ ਸ਼ੇਅਰ:",
+      "showAllValue1PastElections1999Value2": "ਸਾਰੀਆਂ {{value1}} ਪਿਛਲੀਆਂ ਚੋਣਾਂ ਦਿਖਾਓ (1999– {{value2}} )"
+    },
+    "simulator": {
+      "dataStatusPoligramScenario": "ਡੇਟਾ ਸਥਿਤੀ: ਪੋਲੀਗ੍ਰਾਮ ਦ੍ਰਿਸ਼",
+      "stateAssemblyIntraStateDistrictProjectionArticle170": "ਰਾਜ ਵਿਧਾਨ ਸਭਾ ਅਤੇ ਅੰਤਰ-ਰਾਜੀ ਜ਼ਿਲ੍ਹਾ ਪ੍ਰੋਜੈਕਸ਼ਨ - ਆਰਟੀਕਲ 170 / ਲਾਗੂ ਵਿਧਾਨਕ ਢਾਂਚਾ। ਇਹ ਇੱਕ ਅਕਾਦਮਿਕ ਖੋਜ ਸਿਮੂਲੇਸ਼ਨ ਹੈ, ਨਾ ਕਿ ਭਾਰਤ ਦੇ ਹੱਦਬੰਦੀ ਕਮਿਸ਼ਨ ਦਾ ਅਧਿਕਾਰਤ ਆਦੇਸ਼।",
+      "simulationQualityValue1Within10DeviationBound": "ਸਿਮੂਲੇਸ਼ਨ ਕੁਆਲਿਟੀ: {{value1}} % ±10% ਵਿਵਹਾਰ ਸੀਮਾ ਦੇ ਅੰਦਰ"
+    },
+    "state": {
+      "populationValue1Value2Seat": "ਆਬਾਦੀ: {{value1}} · {{value2}} /ਸੀਟ",
+      "constitutionalDeviationValue1Value2": "ਸੰਵਿਧਾਨਕ ਵਿਵਹਾਰ: {{value1}}  {{value2}} %",
+      "scValue1": "SC ( {{value1}} %)",
+      "stValue1": "ST ( {{value1}} %)",
+      "value1DistrictsValue2ProjectedSeatsIdealValue3Seat": "{{value1}} ਜ਼ਿਲ੍ਹੇ · {{value2}} ਅਨੁਮਾਨਿਤ ਸੀਟਾਂ · ਆਦਰਸ਼: {{value3}} /ਸੀਟ",
+      "value1Seats": "{{value1}} ਸੀਟਾਂ",
+      "scValue1StValue2UrbanValue3": "SC {{value1}} % · ST {{value2}} % · ਸ਼ਹਿਰੀ {{value3}} %",
+      "acValue1Value2": "AC # {{value1}}  {{value2}}",
+      "districtValue1Value2": "ਜ਼ਿਲ੍ਹਾ: {{value1}}  {{value2}}"
+    },
+    "editProfile": {
+      "yourName": "ਤੁਹਾਡਾ ਨਾਮ",
+      "tellUsAboutYourself": "ਆਪਣੇ ਬਾਰੇ ਦੱਸੋ..."
+    },
+    "issue": {
+      "flagValue1ForRepresentativeAttentionInPoligram": "ਪੋਲੀਗ੍ਰਾਮ ਵਿੱਚ ਪ੍ਰਤੀਨਿਧੀ ਦੇ ਧਿਆਨ ਲਈ \" {{value1}} \" ਨੂੰ ਫਲੈਗ ਕਰੋ?",
+      "alreadyDisputed": "ਪਹਿਲਾਂ ਹੀ ਵਿਵਾਦਿਤ",
+      "youHaveAlreadyDisputedThisResolution": "ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ ਇਸ ਮਤੇ 'ਤੇ ਵਿਵਾਦ ਕਰ ਚੁੱਕੇ ਹੋ।",
+      "doYouBelieveThisIssueHasNot": "ਕੀ ਤੁਸੀਂ ਮੰਨਦੇ ਹੋ ਕਿ ਇਹ ਮੁੱਦਾ ਸਹੀ ਢੰਗ ਨਾਲ ਹੱਲ ਨਹੀਂ ਹੋਇਆ ਹੈ? ਤੁਹਾਡਾ ਵਿਵਾਦ ਦਰਜ ਕੀਤਾ ਜਾਵੇਗਾ। ਜੇਕਰ 5+ ਨਾਗਰਿਕ ਵਿਵਾਦ ਕਰਦੇ ਹਨ, ਤਾਂ ਮੁੱਦਾ ਆਪਣੇ ਆਪ ਮੁੜ ਖੋਲ੍ਹਿਆ ਜਾਵੇਗਾ।",
+      "dispute": "ਵਿਵਾਦ",
+      "byValue1": "{{value1}} ਦੁਆਰਾ",
+      "resolvedValue1": "{{value1}} ਹੱਲ ਕੀਤਾ ਗਿਆ",
+      "reopenedValue1CitizensDisputedTheResolution": "ਦੁਬਾਰਾ ਖੋਲ੍ਹਿਆ ਗਿਆ — {{value1}} ਨਾਗਰਿਕਾਂ ਨੇ ਮਤੇ 'ਤੇ ਵਿਵਾਦ ਕੀਤਾ",
+      "evidenceValue1": "ਸਬੂਤ ( {{value1}} )",
+      "showAllValue1MediaFiles": "ਸਾਰੀਆਂ {{value1}} ਮੀਡੀਆ ਫਾਈਲਾਂ ਦਿਖਾਓ",
+      "statusTimeline": "ਸਥਿਤੀ ਸਮਾਂਰੇਖਾ",
+      "official": "ਅਧਿਕਾਰੀ"
+    },
+    "leadershipAcademy": {
+      "moduleUnavailable": "ਮੋਡੀਊਲ ਉਪਲਬਧ ਨਹੀਂ ਹੈ",
+      "theModuleCouldNotBeOpenedRight": "ਮੋਡੀਊਲ ਨੂੰ ਇਸ ਵੇਲੇ ਖੋਲ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ ਹੈ।",
+      "couldNotJoinChallenge": "ਚੁਣੌਤੀ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਹੋ ਸਕਿਆ",
+      "leadershipAcademyIsCurrentlyUnavailable": "ਲੀਡਰਸ਼ਿਪ ਅਕੈਡਮੀ ਵਰਤਮਾਨ ਵਿੱਚ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।",
+      "loadingModules": "ਮੋਡੀਊਲ ਲੋਡ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ...",
+      "noPublishedModulesAreAvailable": "ਕੋਈ ਪ੍ਰਕਾਸ਼ਿਤ ਮੋਡੀਊਲ ਉਪਲਬਧ ਨਹੀਂ ਹਨ।"
+    },
+    "legislator": {
+      "value1ElectionPerformance": "{{value1}} ਚੋਣ ਪ੍ਰਦਰਸ਼ਨ",
+      "electionPerformance": "ਚੋਣ ਪ੍ਰਦਰਸ਼ਨ",
+      "couldNotFindDataForAcValue1": "AC # {{value1}} ਲਈ ਡਾਟਾ ਨਹੀਂ ਲੱਭ ਸਕਿਆ",
+      "profession": "ਪੇਸ਼ੇ",
+      "maritalStatus": "ਵਿਆਹੁਤਾ ਸਥਿਤੀ",
+      "dateOfBirth": "ਜਨਮ ਮਿਤੀ",
+      "assemblyTermStatus": "ਅਸੈਂਬਲੀ ਦੀ ਮਿਆਦ ਅਤੇ ਸਥਿਤੀ",
+      "term": "ਮਿਆਦ",
+      "podiumRank": "ਪੋਡੀਅਮ ਰੈਂਕ",
+      "currentParty": "ਮੌਜੂਦਾ ਪਾਰਟੀ",
+      "constituencyElectionHistory": "ਹਲਕੇ ਚੋਣ ਇਤਿਹਾਸ",
+      "fullElectionCyclesForValue1Value2TapAny": "# {{value1}}  {{value2}} ਲਈ ਪੂਰੇ ਚੋਣ ਚੱਕਰ। ਕਿਸੇ ਵੀ ਉਮੀਦਵਾਰ ਦਾ ਪ੍ਰੋਫਾਈਲ ਡੋਜ਼ੀਅਰ ਦੇਖਣ ਲਈ ਟੈਪ ਕਰੋ।"
+    },
+    "distribution": {
+      "shipsAsASeparateLightweightBuildAppsWeb": "ਇੱਕ ਵੱਖਰੇ ਲਾਈਟਵੇਟ ਬਿਲਡ (ਐਪਸ/ਵੈੱਬ-ਰਿਸੀਵਰ) ਦੇ ਰੂਪ ਵਿੱਚ ਸ਼ਿਪ। ਮੂਲ ਵਿੰਡੋਜ਼ + ਐਂਡਰੌਇਡ ਟੀਵੀ ਰੈਪਰ ਇੱਕੋ ਪੰਨੇ 'ਤੇ ਪੜਾਅ 2 ਪੋਲਿਸ਼ ਹਨ।"
+    },
+    "localBodies": {
+      "sourceAndhraPradeshStateElectionCommissionApsec": "ਸਰੋਤ: ਆਂਧਰਾ ਪ੍ਰਦੇਸ਼ ਰਾਜ ਚੋਣ ਕਮਿਸ਼ਨ (APSEC) - ਅਧਿਕਾਰਤ ਸਥਾਨਕ ਬਾਡੀ ਚੋਣ ਨਤੀਜੇ। ਗ੍ਰਾਮ ਪੰਚਾਇਤ ਚੋਣਾਂ ਅਧਿਕਾਰਤ ਤੌਰ 'ਤੇ ਗੈਰ-ਪਾਰਟੀ ਹਨ।",
+      "sourceTelanganaStateElectionCommissionTsecKnow": "ਸਰੋਤ: ਤੇਲੰਗਾਨਾ ਰਾਜ ਚੋਣ ਕਮਿਸ਼ਨ (TSEC) — ਆਪਣੇ ਜਨਤਕ ਪ੍ਰਤੀਨਿਧੀ (ਪੇਂਡੂ) ਨੂੰ ਜਾਣੋ। ਗ੍ਰਾਮ ਪੰਚਾਇਤ ਚੋਣਾਂ ਅਧਿਕਾਰਤ ਤੌਰ 'ਤੇ ਗੈਰ-ਪਾਰਟੀ ਹਨ।",
+      "ts": "ਟੀ.ਐਸ",
+      "ap": "ਏ.ਪੀ",
+      "mandalParishadTerritorialConstituencyMptcValue1": "ਮੰਡਲ ਪ੍ਰੀਸ਼ਦ ਖੇਤਰੀ ਚੋਣ ਖੇਤਰ (MPTC) ( {{value1}} )",
+      "gramPanchayatsValue1": "ਗ੍ਰਾਮ ਪੰਚਾਇਤਾਂ ( {{value1}} )"
+    },
+    "onboarding": {
+      "selectedValue1Value2Value3": "ਚੁਣਿਆ ਗਿਆ: # {{value1}}  {{value2}}  {{value3}}"
+    },
+    "parliament": {
+      "lokSabha18th": "ਲੋਕ ਸਭਾ (18ਵੀਂ)",
+      "value1Yrs": "{{value1}} ਸਾਲ",
+      "lsValue1RsValue2TotalValue3": "LS: {{value1}} · RS: {{value2}} · ਕੁੱਲ: {{value3}}"
+    },
+    "reader": {
+      "article": "ਲੇਖ",
+      "contentFromValue1": "{{value1}} ਤੋਂ ਸਮੱਗਰੀ"
+    },
+    "representative": {
+      "value1Record": "{{value1}} ਰਿਕਾਰਡ",
+      "officiallyNonPartyStatePanchayatiRajAct": "ਅਧਿਕਾਰਤ ਤੌਰ 'ਤੇ ਗੈਰ-ਪਾਰਟੀ (ਰਾਜ ਪੰਚਾਇਤੀ ਰਾਜ ਐਕਟ)",
+      "officialElectionResultsFromAndhraPradeshState": "ਆਂਧਰਾ ਪ੍ਰਦੇਸ਼ ਰਾਜ ਚੋਣ ਕਮਿਸ਼ਨ (APSEC) ਤੋਂ ਅਧਿਕਾਰਤ ਚੋਣ ਨਤੀਜੇ",
+      "officialElectionResultsFromTelanganaStateElection": "ਤੇਲੰਗਾਨਾ ਰਾਜ ਚੋਣ ਕਮਿਸ਼ਨ (TSEC) ਤੋਂ ਅਧਿਕਾਰਤ ਚੋਣ ਨਤੀਜੇ - ਆਪਣੇ ਪ੍ਰਤੀਨਿਧੀ ਨੂੰ ਜਾਣੋ (KYR)",
+      "thisPollIsOfficiallyNonPartyPartyAffiliation": "ਇਹ ਪੋਲ ਅਧਿਕਾਰਤ ਤੌਰ 'ਤੇ ਗੈਰ-ਪਾਰਟੀ ਹੈ। ਪਾਰਟੀ ਦੀ ਮਾਨਤਾ ( {{value1}} ) ਡੀ-ਫੈਕਟੋ/ਅਣਅਧਿਕਾਰਤ ਹੈ।",
+      "wardValue1": "ਵਾਰਡ {{value1}}",
+      "value1DeclaredCaseValue2": "{{value1}} ਘੋਸ਼ਿਤ ਕੇਸ {{value2}}",
+      "verifyOnStateElectionCommissionPortal": "ਰਾਜ ਚੋਣ ਕਮਿਸ਼ਨ ਦੇ ਪੋਰਟਲ 'ਤੇ ਪੁਸ਼ਟੀ ਕਰੋ",
+      "suggestAnEditWithSource": "ਇੱਕ ਸੰਪਾਦਨ ਦਾ ਸੁਝਾਅ ਦਿਓ (ਸਰੋਤ ਦੇ ਨਾਲ)"
+    },
+    "edit": {
+      "noChanges": "ਕੋਈ ਬਦਲਾਅ ਨਹੀਂ",
+      "editAtLeastOneFieldBeforeSubmitting": "ਦਰਜ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਘੱਟੋ-ਘੱਟ ਇੱਕ ਖੇਤਰ ਦਾ ਸੰਪਾਦਨ ਕਰੋ।",
+      "sourceRequired": "ਸਰੋਤ ਦੀ ਲੋੜ ਹੈ",
+      "enterAnHttpsLinkSupportingTheCorrection": "ਸੁਧਾਰ ਦਾ ਸਮਰਥਨ ਕਰਨ ਵਾਲਾ HTTPS ਲਿੰਕ ਦਾਖਲ ਕਰੋ।",
+      "thankYou": "ਧੰਨਵਾਦ",
+      "yourCorrectionHasBeenSubmittedForReview": "ਤੁਹਾਡਾ ਸੁਧਾਰ ਸਮੀਖਿਆ ਲਈ ਸਪੁਰਦ ਕੀਤਾ ਗਿਆ ਹੈ।",
+      "submissionFailed": "ਸਪੁਰਦਗੀ ਅਸਫਲ ਰਹੀ",
+      "pleaseTryAgainLater": "ਕਿਰਪਾ ਕਰਕੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+      "submitting": "ਸਪੁਰਦ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...",
+      "submitForModeration": "ਸੰਚਾਲਨ ਲਈ ਜਮ੍ਹਾਂ ਕਰੋ",
+      "theRepresentativeProfileCouldNotBeLoaded": "ਪ੍ਰਤੀਨਿਧੀ ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।",
+      "value1Value2Value3EveryEditRequiresAVerifiable": "{{value1}}  {{value2}}  {{value3}} ਹਰੇਕ ਸੰਪਾਦਨ ਲਈ ਇੱਕ ਪ੍ਰਮਾਣਿਤ ਸਰੋਤ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ ਅਤੇ ਜਵਾਬਦੇਹੀ ਲਈ ਫਿੰਗਰਪ੍ਰਿੰਟ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਪ੍ਰਕਾਸ਼ਿਤ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਸੰਪਾਦਨ ਸੰਚਾਲਿਤ ਕੀਤੇ ਜਾਂਦੇ ਹਨ।",
+      "sourceLinkRequired": "ਸਰੋਤ ਲਿੰਕ (ਲੋੜੀਂਦਾ)",
+      "httpsTsecGovInOrNewsGazetteUrl": "https://tsec.gov.in/... ਜਾਂ ਖਬਰ/ਗਜ਼ਟ URL",
+      "citationNoteOptional": "ਹਵਾਲਾ / ਨੋਟ (ਵਿਕਲਪਿਕ)",
+      "eGTsecKnowYourRepresentativePagePublished": "ਜਿਵੇਂ ਕਿ TSEC ਜਾਣੋ-ਤੁਹਾਡਾ-ਪ੍ਰਤੀਨਿਧੀ ਪੰਨਾ, ਪ੍ਰਕਾਸ਼ਿਤ 2020-12-04"
+    },
+    "search": {
+      "trySearchingBy": "ਇਸ ਦੁਆਰਾ ਖੋਜ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ:",
+      "constituencyNameJubileeHills": "• ਚੋਣ ਖੇਤਰ ਦਾ ਨਾਮ: \"ਜੁਬਲੀ ਹਿਲਸ\"",
+      "acNumber141": "• AC ਨੰਬਰ: \"141\"",
+      "mlaNameRevanthReddy": "• ਵਿਧਾਇਕ ਦਾ ਨਾਮ: \"ਰੇਵੰਤ ਰੈਡੀ\"",
+      "partyBjpOrInc": "• ਪਾਰਟੀ: \"ਭਾਜਪਾ\" ਜਾਂ \"INC\"",
+      "issueWaterSupply": "• ਮੁੱਦਾ: \"ਪਾਣੀ ਦੀ ਸਪਲਾਈ\""
+    },
+    "AdCard": {
+      "featuredPartner": "ਫੀਚਰਡ ਪਾਰਟਨਰ",
+      "sponsored": "ਸਪਾਂਸਰ ਕੀਤਾ",
+      "commercialPromotion": "ਵਪਾਰਕ ਪ੍ਰਚਾਰ"
+    },
+    "BroadcastPollCard": {
+      "liveAudiencePoll": "ਲਾਈਵ ਦਰਸ਼ਕ ਪੋਲ",
+      "pollResults": "ਪੋਲ ਨਤੀਜੇ",
+      "value1Votes": "{{value1}} ਵੋਟਾਂ",
+      "submittingAnonymousBallot": "ਅਗਿਆਤ ਬੈਲਟ ਸਪੁਰਦ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ..."
+    },
+    "BroadcastQaModal": {
+      "validationError": "ਪ੍ਰਮਾਣਿਕਤਾ ਗਲਤੀ",
+      "questionMustBeAtLeast5Characters": "ਸਵਾਲ ਘੱਟੋ-ਘੱਟ 5 ਅੱਖਰਾਂ ਦਾ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ",
+      "privacyProtection": "ਗੋਪਨੀਯਤਾ ਸੁਰੱਖਿਆ",
+      "pleaseDoNotIncludeEmailAddressesIn": "ਕਿਰਪਾ ਕਰਕੇ ਪ੍ਰਸ਼ਨਾਂ ਵਿੱਚ ਈਮੇਲ ਪਤੇ ਸ਼ਾਮਲ ਨਾ ਕਰੋ।",
+      "pleaseDoNotIncludePhoneNumbersIn": "ਕਿਰਪਾ ਕਰਕੇ ਸਵਾਲਾਂ ਵਿੱਚ ਫ਼ੋਨ ਨੰਬਰ ਸ਼ਾਮਲ ਨਾ ਕਰੋ।",
+      "submissionError": "ਸਪੁਰਦਗੀ ਗਲਤੀ",
+      "failedToSubmitQuestion": "ਸਵਾਲ ਸਪੁਰਦ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ",
+      "audienceQA": "ਦਰਸ਼ਕ ਸਵਾਲ-ਜਵਾਬ",
+      "noAudienceQuestionsYetBeTheFirstTo": "ਅਜੇ ਤੱਕ ਕੋਈ ਦਰਸ਼ਕ ਸਵਾਲ ਨਹੀਂ ਹਨ। ਪੁੱਛਣ ਵਾਲੇ ਪਹਿਲੇ ਬਣੋ!",
+      "pinnedByHost": "ਹੋਸਟ ਦੁਆਰਾ ਪਿੰਨ ਕੀਤਾ ਗਿਆ",
+      "askAQuestionForTheBroadcaster": "ਪ੍ਰਸਾਰਕ ਲਈ ਇੱਕ ਸਵਾਲ ਪੁੱਛੋ..."
+    },
+    "CampaignOutreachPanel": {
+      "theBroadcastCouldNotBeCreated": "ਪ੍ਰਸਾਰਣ ਬਣਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ।",
+      "deliveryIsUnavailableUntilARealMessaging": "ਡਿਲਿਵਰੀ ਉਦੋਂ ਤੱਕ ਉਪਲਬਧ ਨਹੀਂ ਹੈ ਜਦੋਂ ਤੱਕ ਇੱਕ ਅਸਲੀ ਸੁਨੇਹਾ ਪ੍ਰਦਾਤਾ, ਸਹਿਮਤੀ-ਆਧਾਰਿਤ ਦਰਸ਼ਕ ਸਰੋਤ, ਅਤੇ ਡਿਲੀਵਰੀ ਰਿਪੋਰਟਿੰਗ ਕਨੈਕਟ ਨਹੀਂ ਹੋ ਜਾਂਦੀ।",
+      "simulationModeNoMessagesAreSentReal": "ਸਿਮੂਲੇਸ਼ਨ ਮੋਡ। ਕੋਈ ਸੁਨੇਹੇ ਨਹੀਂ ਭੇਜੇ ਜਾਂਦੇ। ਅਸਲ ਡਿਲੀਵਰੀ ਲਈ ਪ੍ਰਦਾਤਾ ਸੈੱਟਅੱਪ {{value1}} ਦੀ ਲੋੜ ਹੈ। {{value2}}",
+      "noLiveAudienceSegmentsAreConnected": "ਕੋਈ ਲਾਈਵ ਦਰਸ਼ਕ ਹਿੱਸੇ ਕਨੈਕਟ ਨਹੀਂ ਹਨ।",
+      "noAudienceSegmentsAreAvailable": "ਕੋਈ ਦਰਸ਼ਕ ਹਿੱਸੇ ਉਪਲਬਧ ਨਹੀਂ ਹਨ।",
+      "describeTheRecordedVoiceMessage": "ਰਿਕਾਰਡ ਕੀਤੇ ਵੌਇਸ ਸੁਨੇਹੇ ਦਾ ਵਰਣਨ ਕਰੋ...",
+      "typeYourMessageUseNameBoothFor": "ਆਪਣਾ ਸੁਨੇਹਾ ਟਾਈਪ ਕਰੋ। ਵਿਅਕਤੀਗਤਕਰਨ ਲਈ {name}, {booth} ਦੀ ਵਰਤੋਂ ਕਰੋ।",
+      "value1ToValue2": "{{value1}} ਤੋਂ {{value2}}",
+      "deliveryNotConnected": "ਡਿਲੀਵਰੀ ਕਨੈਕਟ ਨਹੀਂ ਹੈ",
+      "value1CharsValue2": "{{value1}} ਅੱਖਰ {{value2}}",
+      "goesOutValue1": "{{value1}} ਬਾਹਰ ਜਾਂਦਾ ਹੈ",
+      "answered": "ਜਵਾਬ ਦਿੱਤਾ",
+      "templateName": "ਟੈਂਪਲੇਟ ਦਾ ਨਾਮ",
+      "bodyWithNameBooth": "{name}, {booth} ਵਾਲਾ ਸਰੀਰ…"
+    },
+    "CompareSheet": {
+      "mla": "MLA",
+      "search": "ਖੋਜ...",
+      "value1Winner": "{{value1}} ਜੇਤੂ",
+      "swing": "ਸਵਿੰਗ",
+      "loyalty": "ਵਫ਼ਾਦਾਰੀ",
+      "selectTwoConstituenciesToCompareThemSideBy": "ਨਾਲ-ਨਾਲ ਤੁਲਨਾ ਕਰਨ ਲਈ ਦੋ ਹਲਕਿਆਂ ਦੀ ਚੋਣ ਕਰੋ"
+    },
+    "DataPendingCard": {
+      "theOfficialMapBoundaryForThisArea": "ਇਸ ਖੇਤਰ ਲਈ ਅਧਿਕਾਰਤ ਨਕਸ਼ਾ ਸੀਮਾ ਅਜੇ ਪ੍ਰਕਾਸ਼ਿਤ ਨਹੀਂ ਕੀਤੀ ਗਈ ਹੈ। ਸੂਚੀ ਦ੍ਰਿਸ਼ ਪੂਰੀ ਤਰ੍ਹਾਂ ਸਹੀ ਰਹਿੰਦਾ ਹੈ।",
+      "thisSeatExistsButAVerifiedOffice": "ਇਹ ਸੀਟ ਮੌਜੂਦ ਹੈ, ਪਰ ਇੱਕ ਪ੍ਰਮਾਣਿਤ ਦਫਤਰ-ਧਾਰਕ ਰਿਕਾਰਡ ਅਜੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਅਸੀਂ ਸਿਰਫ਼ ਅਧਿਕਾਰਤ ਸਰੋਤਾਂ ਤੋਂ ਪੁਸ਼ਟੀ ਕੀਤੇ ਡੇਟਾ ਦਿਖਾਉਂਦੇ ਹਾਂ।",
+      "fingerprint": "· ਫਿੰਗਰਪ੍ਰਿੰਟ ✓",
+      "expectedSourceValue1": "ਸੰਭਾਵਿਤ ਸਰੋਤ: {{value1}}"
+    },
+    "DataPipelineCard": {
+      "dataPipeline": "ਡਾਟਾ ਪਾਈਪਲਾਈਨ",
+      "value1Value2Healthy": "{{value1}} / {{value2}} ਸਿਹਤਮੰਦ"
+    },
+    "DelimitationShareCard": {
+      "constitutionalAssessment": "ਸੰਵਿਧਾਨਕ ਮੁਲਾਂਕਣ",
+      "postalCodeValue1Value2": "ਡਾਕ ਕੋਡ {{value1}} · {{value2}}",
+      "current": "ਵਰਤਮਾਨ",
+      "proposed": "ਪ੍ਰਸਤਾਵਿਤ",
+      "dpdpAct2023CompliantZeroVoterTracking": "DPDP ਐਕਟ 2023 ਅਨੁਕੂਲ · ਜ਼ੀਰੋ ਵੋਟਰ ਟ੍ਰੈਕਿੰਗ",
+      "shareMyImpactCard": "ਮੇਰਾ ਪ੍ਰਭਾਵ ਕਾਰਡ ਸਾਂਝਾ ਕਰੋ"
+    },
+    "DevFeatureSwitcher": {
+      "devControl": "DEV ਕੰਟਰੋਲ"
+    },
+    "ErrorBoundary": {
+      "errorLog": "ਗਲਤੀ ਲੌਗ",
+      "hideLogs": "ਲਾਗ ਲੁਕਾਓ",
+      "viewLogs": "ਲੌਗ ਦੇਖੋ",
+      "poligramEncounteredAnIssueWhileLoadingThisScreen": "ਇਸ ਸਕ੍ਰੀਨ ਨੂੰ ਲੋਡ ਕਰਨ ਦੌਰਾਨ ਪੋਲੀਗ੍ਰਾਮ ਵਿੱਚ ਇੱਕ ਸਮੱਸਿਆ ਆਈ ਹੈ।",
+      "copyShareLog": "ਕਾਪੀ / ਸ਼ੇਅਰ ਲੌਗ",
+      "crashDiagnosticsStackTrace": "ਕਰੈਸ਼ ਡਾਇਗਨੌਸਟਿਕਸ ਅਤੇ ਸਟੈਕ ਟਰੇਸ",
+      "jsStackTrace": "JS ਸਟੈਕ ਟਰੇਸ:",
+      "componentHierarchy": "ਕੰਪੋਨੈਂਟ ਲੜੀ:"
+    },
+    "KYCVerificationSheet": {
+      "byProceedingIAcknowledgeAndAgreeThat": "ਅੱਗੇ ਵਧਣ ਦੁਆਰਾ, ਮੈਂ ਸਵੀਕਾਰ ਕਰਦਾ ਹਾਂ ਅਤੇ ਸਹਿਮਤ ਹਾਂ ਕਿ:",
+      "value1MyIdentityNamePhonePhotoWillBe": "{{value1}} ਮੇਰੀ ਪਛਾਣ (ਨਾਮ, ਫ਼ੋਨ, ਫੋਟੋ) ਨੂੰ ਰਿਕਾਰਡ ਕੀਤਾ ਜਾਵੇਗਾ ਅਤੇ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸਟੋਰ ਕੀਤਾ ਜਾਵੇਗਾ।",
+      "value1MyDeviceInformationIpAddressAndLocation": "{{value1}} ਮੇਰੀ ਡਿਵਾਈਸ ਦੀ ਜਾਣਕਾਰੀ, IP ਐਡਰੈੱਸ, ਅਤੇ ਟਿਕਾਣਾ ਮੇਰੇ ਦੁਆਰਾ ਕੀਤੀ ਹਰ ਸਮੱਗਰੀ ਕਾਰਵਾਈ ਨਾਲ ਕੈਪਚਰ ਕੀਤਾ ਜਾਵੇਗਾ।",
+      "value1ThisDataMayBeSharedWithLaw": "{{value1}} ਇਹ ਡੇਟਾ ਕਾਨੂੰਨ ਲਾਗੂ ਕਰਨ ਵਾਲੀਆਂ ਏਜੰਸੀਆਂ ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ ਜੇਕਰ ਮੇਰੀ ਸਮੱਗਰੀ ਭਾਰਤੀ ਕਾਨੂੰਨ (IT ਐਕਟ 2000, IPC, ਆਦਿ) ਦੀ ਉਲੰਘਣਾ ਕਰਦੀ ਪਾਈ ਜਾਂਦੀ ਹੈ।",
+      "value1IAmSolelyResponsibleForAllContent": "{{value1}} ਮੈਂ ਪੋਸਟ ਕੀਤੀ ਸਾਰੀ ਸਮੱਗਰੀ ਲਈ ਪੂਰੀ ਤਰ੍ਹਾਂ ਜ਼ਿੰਮੇਵਾਰ ਹਾਂ, ਅਤੇ ਮੈਂ ਅਪਮਾਨਜਨਕ, ਜਾਅਲੀ ਜਾਂ ਗੈਰ-ਕਾਨੂੰਨੀ ਸਮੱਗਰੀ ਪੋਸਟ ਨਹੀਂ ਕਰਾਂਗਾ।",
+      "value1FalseOrMisleadingVerificationDetailsMayResult": "{{value1}} ਗਲਤ ਜਾਂ ਗੁੰਮਰਾਹਕੁੰਨ ਪੁਸ਼ਟੀਕਰਨ ਵੇਰਵਿਆਂ ਦੇ ਨਤੀਜੇ ਵਜੋਂ ਸਥਾਈ ਪਾਬੰਦੀ ਅਤੇ ਕਾਨੂੰਨੀ ਕਾਰਵਾਈ ਹੋ ਸਕਦੀ ਹੈ।",
+      "iHaveReadAndAgreeToTheAbove": "ਮੈਂ ਜਵਾਬਦੇਹੀ ਦੀਆਂ ਉਪਰੋਕਤ ਸ਼ਰਤਾਂ ਨੂੰ ਪੜ੍ਹ ਲਿਆ ਹੈ ਅਤੇ ਉਹਨਾਂ ਨਾਲ ਸਹਿਮਤ ਹਾਂ",
+      "yourDeviceInfoNetworkDetailsAndLocationWill": "ਤੁਹਾਡੀ ਡੀਵਾਈਸ ਜਾਣਕਾਰੀ, ਨੈੱਟਵਰਕ ਵੇਰਵੇ ਅਤੇ ਟਿਕਾਣਾ ਹੁਣੇ ਕੈਪਚਰ ਕੀਤਾ ਜਾਵੇਗਾ।"
+    },
+    "LeaderProfileModal": {
+      "acValue1Value2": "🎯 AC # {{value1}}  {{value2}}",
+      "civicLeader": "🎯 ਨਾਗਰਿਕ ਆਗੂ",
+      "ind": "ਆਜ਼ਾਦ",
+      "aspirant": "ਚਾਹਵਾਨ",
+      "activeInConstituencyOutreachSabhas": "ਹਲਕੇ ਦੀਆਂ ਆਊਟਰੀਚ ਸਭਾਵਾਂ ਵਿੱਚ ਸਰਗਰਮ",
+      "label1HrAgo": "1 ਘੰਟਾ ਪਹਿਲਾਂ",
+      "educationGrassrootsBackground": "ਸਿੱਖਿਆ ਅਤੇ ਜ਼ਮੀਨੀ ਪੱਧਰ ਦਾ ਪਿਛੋਕੜ",
+      "maPublicPolicy": "పోస్ట్ గ్రాడ్యుయేషన్ (MA ਜਨਤਕ ਨੀਤੀ)",
+      "postGraduationMaPublicPolicy": "ਪੋਸਟ ਗ੍ਰੈਜੂਏਸ਼ਨ (ਐੱਮ. ਏ. ਪਬਲਿਕ ਪਾਲਿਸੀ)",
+      "osmaniaUniversityDistinction": "ਓਸਮਾਨੀਆ ਯੂਨੀਵਰਸਿਟੀ · ਡਿਸਟਿੰਕਸ਼ਨ",
+      "grassrootsCivicActionCommittee": "ਗਰਾਸਰੂਟਸ ਸਿਵਿਕ ਐਕਸ਼ਨ ਕਮੇਟੀ",
+      "waterSecurityYouthConvenor2018Present": "ਜਲ ਸੁਰੱਖਿਆ ਅਤੇ ਯੂਥ ਕਨਵੀਨਰ (2018 - ਵਰਤਮਾਨ)",
+      "aClearPublicAgendaForTheFuture": "ਇਸ ਹਲਕੇ ਦੇ ਭਵਿੱਖ ਲਈ ਸਪੱਸ਼ਟ ਜਨਤਕ ਏਜੰਡਾ। ਨਾਗਰਿਕ ਪਹਿਲਕਦਮੀਆਂ ਨੂੰ ਤਰਜੀਹ ਦੇਣ ਲਈ ਵੋਟ ਦੇ ਸਕਦੇ ਹਨ:",
+      "iSolemnlyPledgeToUpholdTheConstitution": "ਮੈਂ ਭਾਰਤ ਦੇ ਸੰਵਿਧਾਨ ਨੂੰ ਬਰਕਰਾਰ ਰੱਖਣ, ਭ੍ਰਿਸ਼ਟਾਚਾਰ ਲਈ ਜ਼ੀਰੋ ਸਹਿਣਸ਼ੀਲਤਾ ਬਣਾਈ ਰੱਖਣ, ਜਨਤਕ ਖਰਚਿਆਂ ਵਿੱਚ ਪੂਰੀ ਪਾਰਦਰਸ਼ਤਾ ਨੂੰ ਯਕੀਨੀ ਬਣਾਉਣ, ਅਤੇ ਹਰੇਕ ਨਾਗਰਿਕ ਲਈ ਪਹੁੰਚਯੋਗ ਅਤੇ ਜਵਾਬਦੇਹ ਰਹਿਣ ਦਾ ਵਾਅਦਾ ਕਰਦਾ ਹਾਂ।",
+      "boothReach": "ਬੂਥ ਪਹੁੰਚ",
+      "responseTime": "ਜਵਾਬ ਸਮਾਂ",
+      "signInToMessageThisProfile": "ਇਸ ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਸੁਨੇਹਾ ਦੇਣ ਲਈ ਸਾਈਨ ਇਨ ਕਰੋ।",
+      "volunteer": "ਵਲੰਟੀਅਰ ✓",
+      "eciVerified": "ECI ਪ੍ਰਮਾਣਿਤ"
+    },
+    "LiveBroadcaster": {
+      "consumerBuildsAreDecoupledFromHeavyNativeWebrtc": "ਲੀਨ HLS ਪਲੇਬੈਕ ਲਈ ਖਪਤਕਾਰ ਬਿਲਡਾਂ ਨੂੰ ਭਾਰੀ ਮੂਲ WebRTC ਬਾਈਨਰੀਆਂ ਤੋਂ ਜੋੜਿਆ ਜਾਂਦਾ ਹੈ। ਲਾਈਵ ਵੀਡੀਓ ਦਾ ਪ੍ਰਸਾਰਣ ਕਰਨ ਲਈ, https://studio.poligram.in 'ਤੇ ਪੋਲੀਗ੍ਰਾਮ ਸਟੂਡੀਓ ਵੈੱਬ ਕਲਾਇੰਟ ਦੀ ਵਰਤੋਂ ਕਰੋ ਜਾਂ OBS ਤੋਂ RTMP/SRT ਰਾਹੀਂ ਜੁੜੋ।"
+    },
+    "MapFallback": {
+      "genValue1ScValue2StValue3": "GEN {{value1}} · SC {{value2}} · ST {{value3}}",
+      "value1Value2Constituencies": "{{value1}} · {{value2}} ਹਲਕੇ",
+      "interactiveMapUnavailable": "ਇੰਟਰਐਕਟਿਵ ਨਕਸ਼ਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ",
+      "theFullMapboxMapRequiresADevelopmentBuild": "ਪੂਰੇ ਮੈਪਬਾਕਸ ਨਕਸ਼ੇ ਲਈ ਇੱਕ ਵਿਕਾਸ ਬਿਲਡ ਦੀ ਲੋੜ ਹੈ। {{value1}} Run: npx expo run:android (ਜਾਂ ਇੱਕ EAS dev ਬਿਲਡ ਬਣਾਓ)। {{value2}} ਹੋਰ ਸਾਰੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਐਕਸਪੋ ਗੋ ਵਿੱਚ ਆਮ ਤੌਰ 'ਤੇ ਕੰਮ ਕਰਦੀਆਂ ਹਨ!",
+      "electionPartySeats": "ਚੋਣ - ਪਾਰਟੀ ਸੀਟਾਂ",
+      "delimitationProjection": "ਹੱਦਬੰਦੀ ਪ੍ਰੋਜੈਕਸ਼ਨ",
+      "topConstituenciesByMargin": "ਹਾਸ਼ੀਏ ਨਾਲ ਚੋਟੀ ਦੇ ਹਲਕੇ"
+    },
+    "ModuleDetailModal": {
+      "quizCouldNotBeSaved": "ਕਵਿਜ਼ ਨੂੰ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ",
+      "checkYourConnectionAndTrySubmittingYour": "ਆਪਣੇ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਆਪਣੇ ਜਵਾਬ ਦੁਬਾਰਾ ਦਰਜ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+      "progressCouldNotBeSaved": "ਤਰੱਕੀ ਨੂੰ ਸੰਭਾਲਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ",
+      "yourModuleIsStillOpenPleaseTry": "ਤੁਹਾਡਾ ਮੋਡੀਊਲ ਅਜੇ ਵੀ ਖੁੱਲ੍ਹਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+      "value1MinValue2Value3": "{{value1}} ਮਿੰਟ · {{value2}} · {{value3}}",
+      "value1Value2Source": "\" {{value1}} \" - {{value2}}. ਸਰੋਤ ↗"
+    },
+    "PhotoViewerModal": {
+      "photoSourcedFromWikipediaMyneta": "ਫੋਟੋ ਵਿਕੀਪੀਡੀਆ / ਮਾਈਨੇਟਾ ਤੋਂ ਪ੍ਰਾਪਤ ਕੀਤੀ ਗਈ ਹੈ"
+    },
+    "PodiumHistoryCard": {
+      "delim2008": "ਡੇਲਿਮ 2008",
+      "delim1976": "ਡੇਲਿਮ 1976",
+      "delimValue1": "ਡੈਲਿਮ {{value1}}",
+      "label1st": "🥇 ਪਹਿਲਾ",
+      "label2nd": "🥈 ਦੂਜਾ",
+      "label3rd": "🥉 ਤੀਜਾ"
+    },
+    "PoliticalAdCard": {
+      "constituencyAnnouncementCampaignReleaseFromValue1Tap": "{{value1}} ਤੋਂ ਚੋਣ ਖੇਤਰ ਦਾ ਐਲਾਨ ਅਤੇ ਮੁਹਿੰਮ ਜਾਰੀ। ਪੂਰੀ ਪੋਸਟ ਅਤੇ ਚਰਚਾਵਾਂ ਦੇਖਣ ਲਈ ਟੈਪ ਕਰੋ।",
+      "politicalAdPaidPromotionByValue1": "ਰਾਜਨੀਤਿਕ ਵਿਗਿਆਪਨ · {{value1}} ਦੁਆਰਾ ਭੁਗਤਾਨਸ਼ੁਦਾ ਪ੍ਰਚਾਰ",
+      "targetValue1Value2": "ਟੀਚਾ: {{value1}}  {{value2}}",
+      "certifiedUnderEciMcmcGuidelinesPaidValue1": "ECI / MCMC ਦਿਸ਼ਾ-ਨਿਰਦੇਸ਼ਾਂ ਦੇ ਅਧੀਨ ਪ੍ਰਮਾਣਿਤ · ਭੁਗਤਾਨ ਕੀਤਾ ₹ {{value1}}"
+    },
+    "PoliticalShortsCarousel": {
+      "new": "ਨਵਾਂ",
+      "uploadShort": "ਛੋਟਾ ਅੱਪਲੋਡ ਕਰੋ",
+      "addShort": "ਛੋਟਾ ਸ਼ਾਮਲ ਕਰੋ",
+      "shareLocalReport": "ਸਥਾਨਕ ਰਿਪੋਰਟ ਸਾਂਝੀ ਕਰੋ",
+      "noShortsInThisConstituency": "ਇਸ ਹਲਕੇ ਵਿੱਚ ਕੋਈ ਸ਼ਾਰਟ ਨਹੀਂ ਹੈ।",
+      "beTheFirst": "ਪਹਿਲੇ ਬਣੋ!"
+    },
+    "ReportIssueSheet": {
+      "youCanAddUpToValue1Media": "ਤੁਸੀਂ {{value1}} ਮੀਡੀਆ ਫਾਈਲਾਂ ਤੱਕ ਜੋੜ ਸਕਦੇ ਹੋ।",
+      "value1Value2MediaAttached": "{{value1}} / {{value2}} ਮੀਡੀਆ ਨੱਥੀ ਹੈ"
+    },
+    "ReportSheet": {
+      "reportsAreReviewedByOurModerationTeamWithin": "ਸਾਡੀ ਸੰਚਾਲਨ ਟੀਮ ਦੁਆਰਾ 24 ਘੰਟਿਆਂ ਦੇ ਅੰਦਰ ਰਿਪੋਰਟਾਂ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ਗਲਤ ਰਿਪੋਰਟਾਂ ਤੁਹਾਡੇ ਵੱਕਾਰ ਸਕੋਰ ਨੂੰ ਪ੍ਰਭਾਵਿਤ ਕਰ ਸਕਦੀਆਂ ਹਨ।"
+    },
+    "RevenueCard": {
+      "revenueDashboard": "ਮਾਲੀਆ ਡੈਸ਼ਬੋਰਡ",
+      "totalRevenue": "ਕੁੱਲ ਆਮਦਨ",
+      "projectedMrr": "ਅਨੁਮਾਨਿਤ MRR",
+      "politicians": "ਸਿਆਸਤਦਾਨ",
+      "avgRoi": "ਔਸਤ ROI",
+      "revenueByFormat": "ਫਾਰਮੈਟ ਦੁਆਰਾ ਆਮਦਨ",
+      "monthlyGrowth": "ਮਹੀਨਾਵਾਰ ਵਾਧਾ",
+      "unitEconomics": "ਯੂਨਿਟ ਅਰਥ ਸ਼ਾਸਤਰ",
+      "costPromotedPostValue1": "ਲਾਗਤ/ਪ੍ਰਚਾਰਿਤ ਪੋਸਟ: {{value1}}",
+      "avgPoliticiansStateValue1": "ਔਸਤ ਸਿਆਸਤਦਾਨ/ਰਾਜ: {{value1}}",
+      "activeStatesValue1": "ਕਿਰਿਆਸ਼ੀਲ ਰਾਜ: {{value1}}",
+      "monthlyStateValue1": "ਮਾਸਿਕ/ਰਾਜ: {{value1}}"
+    },
+    "SeatProjectionCard": {
+      "popValue1": "ਪੌਪ: {{value1}}",
+      "popSeatValue1": "ਪੌਪ/ਸੀਟ: {{value1}}",
+      "devValue1Value2": "ਦੇਵ: {{value1}}  {{value2}} %"
+    },
+    "ShareableCardModal": {
+      "value1District": "{{value1}} ਜ਼ਿਲ੍ਹਾ",
+      "ind": "ਆਜ਼ਾਦ",
+      "runnerUp2": "ਰਨਰ-ਅੱਪ",
+      "value1Terms": "{{value1}} ਸ਼ਰਤਾਂ",
+      "tenure": "ਕਾਰਜਕਾਲ",
+      "preparingVisualCard": "ਵਿਜ਼ੂਅਲ ਕਾਰਡ ਤਿਆਰ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...",
+      "shareVisualGraphicCard": "ਵਿਜ਼ੂਅਲ ਗ੍ਰਾਫਿਕ ਕਾਰਡ ਸਾਂਝਾ ਕਰੋ",
+      "officialCivicCard": "ਅਧਿਕਾਰਤ ਨਾਗਰਿਕ ਕਾਰਡ",
+      "winner": "🥇 ਵਿਜੇਤਾ",
+      "value1VotesValue2": "{{value1}} ਵੋਟਾਂ {{value2}}",
+      "runnerUp": "🥈 ਰਨਰ-ਅੱਪ",
+      "margin": "ਮਾਰਜਿਨ",
+      "verifiedByEciForm21ePoligramCivicIntelligence": "ECI ਫਾਰਮ 21E ਦੁਆਰਾ ਪ੍ਰਮਾਣਿਤ • ਪੋਲੀਗ੍ਰਾਮ ਸਿਵਿਕ ਇੰਟੈਲੀਜੈਂਸ",
+      "shareDetailedStoryFormattedText": "ਵਿਸਤ੍ਰਿਤ ਕਹਾਣੀ ਸਾਂਝੀ ਕਰੋ (ਫਾਰਮੈਟ ਕੀਤਾ ਟੈਕਸਟ)"
+    },
+    "ShortsPlayerModal": {
+      "couldNotSaveYourCommentPleaseTry": "ਤੁਹਾਡੀ ਟਿੱਪਣੀ ਨੂੰ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+      "saved": "ਸੰਭਾਲਿਆ",
+      "asAVerifiedConstituentOfValue1Is": "{{value1}} ਦੇ ਪ੍ਰਮਾਣਿਤ ਹਿੱਸੇ ਵਜੋਂ, ਕੀ ਇਹ ਵੀਡੀਓ ਤੁਹਾਡੇ ਹਲਕੇ ਲਈ ਢੁਕਵਾਂ ਅਤੇ ਰਚਨਾਤਮਕ ਹੈ?",
+      "helpVerifyThisVideoFromValue1To": "ਇਸ ਵੀਡੀਓ ਨੂੰ ਰਾਸ਼ਟਰੀ ਪੱਧਰ 'ਤੇ ਅੱਗੇ ਵਧਾਉਣ ਲਈ {{value1}} ਤੋਂ ਇਸ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਵਿੱਚ ਮਦਦ ਕਰੋ।",
+      "commentsCouldNotBeLoaded": "ਟਿੱਪਣੀਆਂ ਲੋਡ ਨਹੀਂ ਕੀਤੀਆਂ ਜਾ ਸਕੀਆਂ।"
+    },
+    "StateView": {
+      "refValue1Value2": "ਹਵਾਲਾ: {{value1}} ( {{value2}} )"
+    },
+    "WealthTimeline": {
+      "value1GrowthTimelineContainsUndisclosedObservations": "{{value1}} ਗਰੋਥ ਟਾਈਮਲਾਈਨ ਵਿੱਚ ਅਣਜਾਣ ਨਿਰੀਖਣ ਸ਼ਾਮਲ ਹਨ"
+    },
+    "GrassrootsBooths": {
+      "wardValue1": "ਵਾਰਡ # {{value1}} ·",
+      "value1Voters": "{{value1}} ਵੋਟਰ",
+      "voterCountUnavailable": "ਵੋਟਰ ਗਿਣਤੀ ਉਪਲਬਧ ਨਹੀਂ ਹੈ",
+      "targetValue1": "ਟੀਚਾ: {{value1}}",
+      "targetUnavailable": "ਟੀਚਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ",
+      "check": "ਚੈੱਕ ਕਰੋ",
+      "eGRameshGoud": "ਜਿਵੇਂ ਕਿ ਰਮੇਸ਼ ਗੌੜ"
+    },
+    "GrassrootsWorkers": {
+      "cannotSaveWorkLog": "ਕੰਮ ਲੌਗ ਨੂੰ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ",
+      "chooseACampaignWorkerAndBoothThat": "ਇੱਕ ਮੁਹਿੰਮ, ਵਰਕਰ ਅਤੇ ਬੂਥ ਚੁਣੋ ਜੋ ਮੁਹਿੰਮ ਦੇ ਰਿਕਾਰਡ ਵਿੱਚ ਉਪਲਬਧ ਹਨ।",
+      "checkTheSessionDuration": "ਸੈਸ਼ਨ ਦੀ ਮਿਆਦ ਦੀ ਜਾਂਚ ਕਰੋ",
+      "enterAWholeNumberOfMinutesFrom": "1 ਤੋਂ 1,440 ਤੱਕ ਮਿੰਟਾਂ ਦੀ ਪੂਰੀ ਸੰਖਿਆ ਦਰਜ ਕਰੋ।",
+      "checkHouseholdsVisited": "ਦੌਰਾ ਕੀਤੇ ਗਏ ਘਰਾਂ ਦੀ ਜਾਂਚ ਕਰੋ",
+      "enterAWholeNumberFrom0To": "0 ਤੋਂ 100,000 ਤੱਕ ਪੂਰਾ ਸੰਖਿਆ ਦਰਜ ਕਰੋ।",
+      "workSessionSaved": "ਕੰਮ ਦਾ ਸੈਸ਼ਨ ਸੁਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ",
+      "thisSessionWasSavedToTheCampaign": "ਇਸ ਸੈਸ਼ਨ ਨੂੰ ਮੁਹਿੰਮ ਦੇ ਕੰਮ ਦੇ ਲੌਗ ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਸੀ।",
+      "workSessionNotSaved": "ਕੰਮ ਦਾ ਸੈਸ਼ਨ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ",
+      "boothValue1": "· ਬੂਥ # {{value1}}",
+      "completedSessionsUnavailable": "ਪੂਰੇ ਹੋਏ ਸੈਸ਼ਨ ਉਪਲਬਧ ਨਹੀਂ ਹਨ",
+      "value1CompletedSessions": "{{value1}} ਸੈਸ਼ਨ ਪੂਰੇ ਕੀਤੇ",
+      "loggedHoursUnavailable": "ਲੌਗ ਕੀਤੇ ਘੰਟੇ ਉਪਲਬਧ ਨਹੀਂ ਹਨ",
+      "value1HoursLogged": "{{value1}} ਘੰਟੇ ਲੌਗ ਕੀਤੇ ਗਏ",
+      "logCompletedOutreachForValue1": "{{value1}} ਲਈ ਆਊਟਰੀਚ ਨੂੰ ਪੂਰਾ ਕਰੋ",
+      "saving": "ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...",
+      "saveWorkSession": "ਕੰਮ ਦੇ ਸੈਸ਼ਨ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰੋ",
+      "poligramUser": "ਪੋਲੀਗ੍ਰਾਮ ਉਪਭੋਗਤਾ",
+      "logCompletedOutreach": "ਲੌਗ ਪੂਰਾ ਕੀਤਾ ਆਊਟਰੀਚ",
+      "eGBSrinivas": "ਜਿਵੇਂ ਕਿ ਬੀ ਸ੍ਰੀਨਿਵਾਸ",
+      "value1ReportedByTheCampaignTeamNotIndependently": "{{value1}} · ਮੁਹਿੰਮ ਟੀਮ ਦੁਆਰਾ ਰਿਪੋਰਟ ਕੀਤੀ ਗਈ, ਸੁਤੰਤਰ ਤੌਰ 'ਤੇ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤੀ ਗਈ",
+      "campaignBooth": "ਮੁਹਿੰਮ ਬੂਥ",
+      "campaignBoothRecordsAreUnavailableRefreshTheCampaign": "ਮੁਹਿੰਮ ਦੇ ਬੂਥ ਰਿਕਾਰਡ ਉਪਲਬਧ ਨਹੀਂ ਹਨ। ਕੰਮ ਨੂੰ ਲੌਗ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਮੁਹਿੰਮ ਨੂੰ ਤਾਜ਼ਾ ਕਰੋ।",
+      "sessionDurationMinutes": "ਸੈਸ਼ਨ ਦੀ ਮਿਆਦ (ਮਿੰਟ)",
+      "sessionDurationInMinutes": "ਮਿੰਟਾਂ ਵਿੱਚ ਸੈਸ਼ਨ ਦੀ ਮਿਆਦ",
+      "householdsVisited": "ਘਰਾਂ ਦਾ ਦੌਰਾ ਕੀਤਾ"
+    },
+    "SimplifiedOutreach": {
+      "minimumWalletRechargeIs500": "ਘੱਟੋ-ਘੱਟ ਵਾਲਿਟ ਰੀਚਾਰਜ ₹500 ਹੈ।",
+      "notConnected": "ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਗਿਆ",
+      "label100Free": "100% ਮੁਫ਼ਤ",
+      "indicativePricing": "ਸੰਕੇਤਕ ਕੀਮਤ",
+      "pricingUnavailable": "ਕੀਮਤ ਉਪਲਬਧ ਨਹੀਂ ਹੈ",
+      "sufficientBalanceRemainingAfterBlastValue1": "✓ ਕਾਫ਼ੀ ਸੰਤੁਲਨ। ਧਮਾਕੇ ਤੋਂ ਬਾਅਦ ਬਾਕੀ: ₹ {{value1}}",
+      "walletBalanceShortByValue1TopUp": "⚠️ ਵਾਲਿਟ ਬੈਲੇਂਸ ₹ {{value1}} ਦੁਆਰਾ ਛੋਟਾ ਹੈ। ਟੌਪ-ਅੱਪ ਲੋੜੀਂਦਾ ਹੈ।",
+      "duration028QualityHighVerified": "ਮਿਆਦ: 0:28 · ਗੁਣਵੱਤਾ: ਉੱਚ · ਪ੍ਰਮਾਣਿਤ",
+      "topUpValue1ToScheduleBlast": "ਧਮਾਕੇ ਨੂੰ ਤਹਿ ਕਰਨ ਲਈ ਟਾਪ-ਅੱਪ ₹ {{value1}}",
+      "delivered": "✓ ਡਿਲੀਵਰ ਕੀਤਾ ਗਿਆ",
+      "calling": "📞 ਕਾਲ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...",
+      "queued": "ਕਤਾਰਬੱਧ",
+      "available": "ਉਪਲਬਧ ਹੈ",
+      "revanthReddyInc": "ਰੇਵੰਤ ਰੈੱਡੀ · INC",
+      "wardValue1": "ਵਾਰਡ # {{value1}}",
+      "liveCallDeliveryProgress": "ਲਾਈਵ ਕਾਲ ਡਿਲੀਵਰੀ ਪ੍ਰਗਤੀ",
+      "targetValue1VotersCostValue2": "ਟੀਚਾ: {{value1}} ਵੋਟਰ · ਲਾਗਤ: ₹ {{value2}}",
+      "busy": "ਵਿਅਸਤ",
+      "unreachable": "ਪਹੁੰਚ ਤੋਂ ਬਾਹਰ",
+      "creditsCanBeUsedImmediatelyForVoiceObd": "ਵੌਇਸ OBD ਕਾਲ ਬਲਾਸਟ ਅਤੇ ਤਰੱਕੀ ਵਾਲੀਆਂ ਪੋਸਟਾਂ ਲਈ ਕ੍ਰੈਡਿਟ ਦੀ ਵਰਤੋਂ ਤੁਰੰਤ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ।",
+      "chooseRechargeAmount": "ਰੀਚਾਰਜ ਰਕਮ ਚੁਣੋ:",
+      "orEnterCustomAmount": "ਜਾਂ ਕਸਟਮ ਰਕਮ (₹) ਦਾਖਲ ਕਰੋ:",
+      "payValue1ViaUpiNetbanking": "UPI/ਨੈੱਟਬੈਂਕਿੰਗ ਰਾਹੀਂ ₹ {{value1}} ਦਾ ਭੁਗਤਾਨ ਕਰੋ"
+    },
+    "CriminalRecordCard": {
+      "ipc": "IPC:",
+      "pending": "ਬਕਾਇਆ",
+      "criminalCaseDisclosureUnavailable": "ਅਪਰਾਧਿਕ ਮਾਮਲੇ ਦਾ ਖੁਲਾਸਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ",
+      "noCriminalCasesDeclared": "ਕੋਈ ਅਪਰਾਧਿਕ ਕੇਸ ਘੋਸ਼ਿਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ",
+      "value1CaseValue2Value3": "{{value1}} ਕੇਸ {{value2}}  {{value3}}",
+      "totalCases": "ਕੁੱਲ ਕੇਸ",
+      "serious": "ਗੰਭੀਰ",
+      "convictions": "ਯਕੀਨ",
+      "value1CaseDetailsValue2": "{{value1}} ਕੇਸ ਵੇਰਵੇ ( {{value2}} )",
+      "caseValue1": "ਕੇਸ: {{value1}}",
+      "courtValue1": "ਅਦਾਲਤ: {{value1}}",
+      "chargesFramed": "ਚਾਰਜ ਫਰੇਮ ਕੀਤੇ ਗਏ"
+    },
+    "DynastyCard": {
+      "politicalDynasty": "ਰਾਜਨੀਤਿਕ ਰਾਜਵੰਸ਼",
+      "thisLegislatorComesFromAPoliticalFamily": "ਇਹ ਵਿਧਾਇਕ ਸਿਆਸੀ ਪਰਿਵਾਰ ਤੋਂ ਆਉਂਦਾ ਹੈ",
+      "familyInPolitics": "ਰਾਜਨੀਤੀ ਵਿੱਚ ਪਰਿਵਾਰ",
+      "familyConstituencies": "ਪਰਿਵਾਰਕ ਹਲਕੇ"
+    },
+    "ElectionHistoryCard": {
+      "won": "ਜਿੱਤਿਆ",
+      "lost": "ਗੁਆਚ ਗਿਆ",
+      "defeated": "ਨੂੰ ਹਰਾਇਆ",
+      "lostTo": "ਤੋਂ ਹਾਰ ਗਏ",
+      "value1WinRate": "{{value1}} % ਜਿੱਤ ਦਰ",
+      "share": "ਸ਼ੇਅਰ"
+    },
+    "FinancialBreakdownCard": {
+      "noFinancialDataAvailable": "ਕੋਈ ਵਿੱਤੀ ਡਾਟਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ",
+      "financialDisclosure": "ਵਿੱਤੀ ਖੁਲਾਸਾ",
+      "assetBreakdown": "ਸੰਪਤੀ ਬ੍ਰੇਕਡਾਊਨ",
+      "selfMovable": "ਸਵੈ ਚਲਣਯੋਗ",
+      "selfImmovable": "ਸਵੈ ਅਚੱਲ",
+      "dependents": "ਨਿਰਭਰ",
+      "spouseMovable": "ਜੀਵਨ ਸਾਥੀ ਚਲਣਯੋਗ",
+      "spouseImmovable": "ਜੀਵਨ ਸਾਥੀ ਅਚੱਲ",
+      "declaredIncomeItr": "ਘੋਸ਼ਿਤ ਆਮਦਨ (ITR)",
+      "wealthTimeline": "ਵੈਲਥ ਟਾਈਮਲਾਈਨ",
+      "value1Value2SinceValue3": "{{value1}}  {{value3}} ਤੋਂ {{value2}} %",
+      "totalLiabilities": "ਕੁੱਲ ਦੇਣਦਾਰੀਆਂ:"
+    },
+    "PerformanceCard": {
+      "mplads": "MPLADS",
+      "legislativePerformance": "ਵਿਧਾਨਕ ਪ੍ਰਦਰਸ਼ਨ",
+      "comingSoon": "ਆਨ ਵਾਲੀ"
+    },
+    "RedFlagsBanner": {
+      "value1RedFlagValue2Detected": "{{value1}} ਲਾਲ ਝੰਡਾ {{value2}} ਖੋਜਿਆ ਗਿਆ"
+    }
+  },
   "constituencyDirectory": {
     "currentRepresentative": "ਮੌਜੂਦਾ ਪ੍ਰਤੀਨਿਧੀ",
     "loading": "ਲਾਈਵ ਹਲਕੇ ਦੇ ਰਿਕਾਰਡਾਂ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...",
@@ -41,6 +581,21 @@ const pa = {
     "reportIssue": "ਕਿਸੇ ਮੁੱਦੇ ਦੀ ਰਿਪੋਰਟ ਕਰੋ"
   },
   "partyRegistry": {
+    "electionRecord": "ਚੋਣ ਰਿਕਾਰਡ",
+    "historyAndFilings": "ਇਤਿਹਾਸ ਅਤੇ ਫਾਈਲਿੰਗ",
+    "electionCode": "ਰਿਕਾਰਡ ਕੀਤਾ ਪਾਰਟੀ ਕੋਡ · {{code}}",
+    "ballotSymbol": "ਬੈਲਟ ਚਿੰਨ੍ਹ · {{symbol}}",
+    "seatsWon": "ਜਿੱਤੀਆਂ ਸੀਟਾਂ · {{seats}}",
+    "lokSabhaElection": "{{year}} ਲੋਕ ਸਭਾ ਚੋਣ",
+    "stateAssemblyElection": "{{year}}  {{state}} ਵਿਧਾਨ ਸਭਾ ਚੋਣ",
+    "foundedBy": "{{year}} ਵਿੱਚ {{founder}} ਦੁਆਰਾ ਸਥਾਪਿਤ ਕੀਤਾ ਗਿਆ।",
+    "registeredIn": "{{year}} ਵਿੱਚ ਭਾਰਤ ਦੇ ਚੋਣ ਕਮਿਸ਼ਨ ਨਾਲ ਰਜਿਸਟਰਡ।",
+    "renamedIn": "ਪਹਿਲਾਂ {{name}} ਵਜੋਂ ਜਾਣਿਆ ਜਾਂਦਾ ਸੀ। {{year}} ਵਿੱਚ ਨਾਮ ਬਦਲਿਆ ਗਿਆ।",
+    "profileSummary": {
+      "national": "ਭਾਰਤ ਦੇ ਚੋਣ ਕਮਿਸ਼ਨ ਨੇ ਇਸ ਪਾਰਟੀ ਨੂੰ {{election}} ਵਿੱਚ ਇੱਕ ਮਾਨਤਾ ਪ੍ਰਾਪਤ ਰਾਸ਼ਟਰੀ ਪਾਰਟੀ ਵਜੋਂ ਸੂਚੀਬੱਧ ਕੀਤਾ ਹੈ।",
+      "state": "ਭਾਰਤ ਦੇ ਚੋਣ ਕਮਿਸ਼ਨ ਨੇ ਇਸ ਪਾਰਟੀ ਨੂੰ {{election}} ਵਿੱਚ ਇੱਕ ਮਾਨਤਾ ਪ੍ਰਾਪਤ ਰਾਜ ਪਾਰਟੀ ਵਜੋਂ ਸੂਚੀਬੱਧ ਕੀਤਾ ਹੈ।",
+      "registered": "ਭਾਰਤ ਦੇ ਚੋਣ ਕਮਿਸ਼ਨ ਨੇ ਇਸ ਪਾਰਟੀ ਨੂੰ {{election}} ਵਿੱਚ ਰਜਿਸਟਰਡ ਅਤੇ ਅਣਪਛਾਤੇ ਵਜੋਂ ਸੂਚੀਬੱਧ ਕੀਤਾ ਹੈ।"
+    },
     "retryControls": "ਕੁਝ ਪੰਨਾ ਨਿਯੰਤਰਣ ਲੋਡ ਨਹੀਂ ਹੋ ਸਕੇ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ",
     "verifyToClaim": "ਅਪਲਾਈ ਕਰਨ ਲਈ ਆਪਣੇ ਯੋਗਦਾਨੀ ਖਾਤੇ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ",
     "contributorPending": "ਯੋਗਦਾਨੀ ਪੁਸ਼ਟੀਕਰਨ ਸਮੀਖਿਆ ਅਧੀਨ ਹੈ।",
@@ -3059,6 +3614,16 @@ const pa = {
     }
   },
   "kycSheet": {
+    "submitted": "ਸਮੀਖਿਆ ਲਈ ਸਪੁਰਦ ਕੀਤਾ ਗਿਆ",
+    "pendingReviewMsg": "ਤੁਹਾਡੀ ਸਬਮਿਸ਼ਨ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਇੱਕ ਅਧਿਕਾਰਤ ਸਮੀਖਿਅਕ ਦੁਆਰਾ ਇਸਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਤੋਂ ਬਾਅਦ ਹੀ ਯੋਗਦਾਨ ਪਾਉਣ ਵਾਲੀਆਂ ਕਾਰਵਾਈਆਂ ਨੂੰ ਸਮਰੱਥ ਬਣਾਇਆ ਜਾਵੇਗਾ।",
+    "reviewNotice": "ਯੋਗਦਾਨੀ ਪੁਸ਼ਟੀਕਰਨ ਭਾਈਚਾਰੇ ਦੀ ਸੁਰੱਖਿਆ ਵਿੱਚ ਮਦਦ ਕਰਦਾ ਹੈ। ਤੁਹਾਡੀ ਪਛਾਣ ਦੇ ਵੇਰਵੇ ਸਮੀਖਿਆ ਲਈ ਸਟੋਰ ਕੀਤੇ ਜਾਂਦੇ ਹਨ ਅਤੇ ਤੁਹਾਡੇ ਜਨਤਕ ਪ੍ਰੋਫਾਈਲ 'ਤੇ ਨਹੀਂ ਦਿਖਾਏ ਜਾਂਦੇ ਹਨ।",
+    "selfieReviewNotice": "ਤੁਹਾਡੀ ਸੈਲਫੀ ਸਮੀਖਿਆ ਲਈ ਨਿੱਜੀ ਸਟੋਰੇਜ ਵਿੱਚ ਅੱਪਲੋਡ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ਸਵੈਚਲਿਤ ਚਿਹਰਾ ਮਿਲਾਨ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।",
+    "checkingStatus": "ਤੁਹਾਡੀ ਸੁਰੱਖਿਅਤ ਕੀਤੀ ਪੁਸ਼ਟੀਕਰਨ ਸਥਿਤੀ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...",
+    "statusUnavailable": "ਅਸੀਂ ਤੁਹਾਡੀ ਸਥਿਤੀ ਨੂੰ ਲੋਡ ਨਹੀਂ ਕਰ ਸਕੇ। ਕਨੈਕਟ ਹੋਣ 'ਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ।",
+    "rejectedResubmitHint": "ਆਪਣੇ ਵੇਰਵਿਆਂ ਨੂੰ ਠੀਕ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ ਅਤੇ ਸਮੀਖਿਆ ਲਈ ਦੁਬਾਰਾ ਸਪੁਰਦ ਕਰੋ।",
+    "resubmitTitle": "ਆਪਣੀ ਸਪੁਰਦਗੀ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ",
+    "resubmitNotice": "ਅਸਵੀਕਾਰ ਕਰਨ ਦੇ ਕਾਰਨ ਦੀ ਸਮੀਖਿਆ ਕਰੋ, ਆਪਣੇ ਵੇਰਵਿਆਂ ਨੂੰ ਠੀਕ ਕਰੋ, ਅਤੇ ਸਮੀਖਿਆ ਲਈ ਦੁਬਾਰਾ ਸਪੁਰਦ ਕਰੋ।",
+    "agreeAndVerify": "ਸਹਿਮਤ ਹੋਵੋ ਅਤੇ ਸਮੀਖਿਆ ਲਈ ਸਪੁਰਦ ਕਰੋ",
     "title": "ਯੋਗਦਾਨੀ ਤਸਦੀਕ",
     "verified": "ਤਸਦੀਕ ਹੋ ਗਈ!",
     "verifiedMsg": "ਅਬ ਆਪ ਏਕ ਸਤ੍ਯਾਪਿਤ ਯੋਗਦਾਨਕਰ੍ਤਾ ਹੈਂ। ਆਪ ਪੋਸ੍ਟ, ਟਿਪ੍ਪਣੀ ਔਰ ਰਿਪੋਰ੍ਟ ਕਰ ਸਕਤੇ ਹੈਂ।",

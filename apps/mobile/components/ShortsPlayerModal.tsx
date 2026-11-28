@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { resolveOriginalShortVideo } from '../lib/originalShortVideo';
 
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
@@ -173,6 +174,7 @@ function ShortPageItem({
   onClose,
   incrementViews,
 }: ShortPageItemProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [webViewLoading, setWebViewLoading] = useState(true);
@@ -353,7 +355,7 @@ function ShortPageItem({
       console.warn('[Shorts] Failed to persist comment to database:', err);
       Alert.alert(
         editingCommentId ? t('postDetail.editCommentFailed') : t('postDetail.commentFailed', { defaultValue: 'Comment not sent' }),
-        err instanceof Error ? err.message : 'Could not save your comment. Please try again.',
+        err instanceof Error ? err.message : translateScreenLabel("screenLabels.ShortsPlayerModal.couldNotSaveYourCommentPleaseTry"),
       );
     } finally {
       writingComment.current = false;
@@ -471,7 +473,7 @@ function ShortPageItem({
             />
           </Animated.View>
           <Text style={styles.sidebarCount}>
-            {isApproved ? 'Approved' : 'Approve'}
+            {isApproved ? translateScreenLabel("partyRegistry.claim.approved") : translateScreenLabel("shortsPlayer.approve")}
           </Text>
         </Pressable>
 
@@ -497,7 +499,7 @@ function ShortPageItem({
             color={isFlagged ? '#EF4444' : '#FFFFFF'}
           />
           <Text style={[styles.sidebarCount, isFlagged && { color: '#EF4444' }]}>
-            {isFlagged ? 'Flagged' : 'Report'}
+            {isFlagged ? translateScreenLabel("contentGate.flagged") : translateScreenLabel("common.report")}
           </Text>
         </Pressable>
 
@@ -508,7 +510,7 @@ function ShortPageItem({
             size={26}
             color={saved ? '#FFD700' : '#FFFFFF'}
           />
-          <Text style={styles.sidebarCount}>{saved ? 'Saved' : 'Save'}</Text>
+          <Text style={styles.sidebarCount}>{saved ? translateScreenLabel("screenLabels.ShortsPlayerModal.saved") : translateScreenLabel("common.save")}</Text>
         </Pressable>
       </View>
 
@@ -561,8 +563,8 @@ function ShortPageItem({
             </View>
             <Text style={styles.curationPromptText}>
               {item.visibilityLevel === 'constituency'
-                ? `As a verified constituent of ${item.stateName}, is this video relevant and constructive for your constituency?`
-                : `Help verify this video from ${item.stateName} to promote it to National level.`}
+                ? translateScreenLabel("screenLabels.ShortsPlayerModal.asAVerifiedConstituentOfValue1Is", { value1: item.stateName })
+                : translateScreenLabel("screenLabels.ShortsPlayerModal.helpVerifyThisVideoFromValue1To", { value1: item.stateName })}
             </Text>
             <View style={styles.curationPromptActions}>
               <Pressable style={[styles.promptBtn, styles.promptBtnApprove]} onPress={handleApproveAction}>
@@ -635,7 +637,7 @@ function ShortPageItem({
                   <ActivityIndicator color="#FFFFFF" style={{ marginTop: 28 }} />
                 ) : commentsError ? (
                   <View style={styles.commentsEmpty}>
-                    <Text style={styles.commentText}>Comments could not be loaded.</Text>
+                    <Text style={styles.commentText}>{translateScreenLabel("screenLabels.ShortsPlayerModal.commentsCouldNotBeLoaded")}</Text>
                     <Pressable onPress={() => void refreshComments()}>
                       <Text style={styles.commentsRetry}>{t('shortsPlayer.retry')}</Text>
                     </Pressable>

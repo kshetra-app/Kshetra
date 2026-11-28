@@ -7,6 +7,7 @@
  * Source & Provenance section and honest "Data pending" states — never
  * synthesized data.
  */
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, Share, Linking, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
@@ -25,6 +26,7 @@ import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import i18n from '../../i18n';
 
 export default function RepresentativeProfileScreen() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { id, jurisdiction, office, state } = useLocalSearchParams<{
     id: string;
     jurisdiction?: string;
@@ -154,7 +156,7 @@ export default function RepresentativeProfileScreen() {
               </Text>
             </View>
             <DataPendingCard
-              title={`${profile.officeLabel} record`}
+              title={translateScreenLabel("screenLabels.representative.value1Record", { value1: profile.officeLabel })}
               message="This seat is part of the administrative structure, but confirmed election records are being compiled from official sources."
               sourceNote="State Election Commission"
             />
@@ -181,9 +183,7 @@ export default function RepresentativeProfileScreen() {
             {profile.party && !profile.partyOfficial ? (
               <View style={[styles.note, { backgroundColor: colors.warning + '15', borderColor: colors.warning + '40' }]}>
                 <Ionicons name="information-circle-outline" size={14} color={colors.warning} />
-                <Text style={[styles.noteText, { color: colors.textSecondary }]}>
-                  This poll is officially non-party. Party affiliation ({partyLabel}) is de-facto / unofficial.
-                </Text>
+                <Text style={[styles.noteText, { color: colors.textSecondary }]}>{translateScreenLabel("screenLabels.representative.thisPollIsOfficiallyNonPartyPartyAffiliation", { value1: partyLabel })}</Text>
               </View>
             ) : null}
 
@@ -206,7 +206,7 @@ export default function RepresentativeProfileScreen() {
               {rep?.wardNo ? (
                 <View style={styles.kvRow}>
                   <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>{i18n.t('representative.wardNumber')}</Text>
-                  <Text style={[styles.kvValue, { color: colors.text }]}>Ward {rep.wardNo}</Text>
+                  <Text style={[styles.kvValue, { color: colors.text }]}>{translateScreenLabel("screenLabels.representative.wardValue1", { value1: rep.wardNo })}</Text>
                 </View>
               ) : null}
 
@@ -227,7 +227,7 @@ export default function RepresentativeProfileScreen() {
               <View style={styles.kvRow}>
                 <Text style={[styles.kvLabel, { color: colors.textSecondary }]}>{i18n.t('representative.state')}</Text>
                 <Text style={[styles.kvValue, { color: colors.text }]}>
-                  {profile.stateCode === 'TS' ? 'Telangana' : profile.stateCode === 'AP' ? 'Andhra Pradesh' : profile.stateCode}
+                  {profile.stateCode === 'TS' ? translateScreenLabel("localBodies.telanganaName") : profile.stateCode === 'AP' ? translateScreenLabel("localBodies.andhraPradeshName") : profile.stateCode}
                 </Text>
               </View>
 
@@ -255,7 +255,7 @@ export default function RepresentativeProfileScreen() {
                 <Text style={[styles.kvValue, { color: colors.text }]}>
                   {rep?.party
                     ? `${rep.party}${rep.partyOfficial ? '' : ' (Unofficial / De-facto)'}`
-                    : 'Officially Non-Party (State Panchayati Raj Act)'}
+                    : translateScreenLabel("screenLabels.representative.officiallyNonPartyStatePanchayatiRajAct")}
                 </Text>
               </View>
             </View>
@@ -283,9 +283,7 @@ export default function RepresentativeProfileScreen() {
             {profile.criminalCases != null && (
               <View style={[styles.section, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                 <Text style={[styles.sectionTitle, { color: colors.text }]}>{i18n.t('representative.criminalRecord')}</Text>
-                <Text style={[styles.kvValue, { color: profile.criminalCases > 0 ? colors.danger : colors.success }]}>
-                  {profile.criminalCases} declared case{profile.criminalCases === 1 ? '' : 's'}
-                </Text>
+                <Text style={[styles.kvValue, { color: profile.criminalCases > 0 ? colors.danger : colors.success }]}>{translateScreenLabel("screenLabels.representative.value1DeclaredCaseValue2", { value1: profile.criminalCases, value2: profile.criminalCases === 1 ? '' : 's' })}</Text>
               </View>
             )}
 
@@ -311,14 +309,14 @@ export default function RepresentativeProfileScreen() {
               <Text style={[styles.sectionTitle, { color: colors.text }]}>{i18n.t('representative.officialSource')}</Text>
               <Text style={[styles.secSourceText, { color: colors.textSecondary }]}>
                 {profile.stateCode === 'AP'
-                  ? 'Official Election Results from Andhra Pradesh State Election Commission (APSEC)'
-                  : 'Official Election Results from Telangana State Election Commission (TSEC) — Know Your Representative (KYR)'}
+                  ? translateScreenLabel("screenLabels.representative.officialElectionResultsFromAndhraPradeshState")
+                  : translateScreenLabel("screenLabels.representative.officialElectionResultsFromTelanganaStateElection")}
               </Text>
               {profile.sourceUrl ? (
                 <Pressable style={styles.sourceBtn} onPress={() => Linking.openURL(profile.sourceUrl!)}>
                   <Ionicons name="open-outline" size={14} color={colors.primary} />
                   <Text style={[styles.link, { color: colors.primary }]} numberOfLines={1}>
-                    Verify on State Election Commission Portal
+                    {translateScreenLabel("screenLabels.representative.verifyOnStateElectionCommissionPortal")}
                   </Text>
                 </Pressable>
               ) : null}
@@ -326,7 +324,7 @@ export default function RepresentativeProfileScreen() {
 
             <Pressable style={[styles.claimBtn, { borderColor: colors.primary }]} onPress={handleClaim}>
               <Ionicons name="create-outline" size={16} color={colors.primary} />
-              <Text style={[styles.claimText, { color: colors.primary }]}>Suggest an edit (with source)</Text>
+              <Text style={[styles.claimText, { color: colors.primary }]}>{translateScreenLabel("screenLabels.representative.suggestAnEditWithSource")}</Text>
             </Pressable>
           </>
         )}

@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -24,6 +25,7 @@ interface Props {
 }
 
 export default function CriminalRecordCard({ totalCases, seriousCases, convictions, caseDetails, compact }: Props) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { colors } = useTheme();
   const [expanded, setExpanded] = useState(false);
 
@@ -33,7 +35,7 @@ export default function CriminalRecordCard({ totalCases, seriousCases, convictio
       <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1 }]}>
         <View style={styles.cleanRow}>
           <Ionicons name="help-circle-outline" size={20} color={colors.textMuted} />
-          <Text style={[styles.cleanText, { color: colors.textMuted }]}>Criminal case disclosure unavailable</Text>
+          <Text style={[styles.cleanText, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.CriminalRecordCard.criminalCaseDisclosureUnavailable")}</Text>
         </View>
       </View>
     );
@@ -45,7 +47,7 @@ export default function CriminalRecordCard({ totalCases, seriousCases, convictio
       <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
         <View style={styles.cleanRow}>
           <Ionicons name="shield-checkmark" size={20} color={colors.success} />
-          <Text style={[styles.cleanText, { color: colors.success }]}>No criminal cases declared</Text>
+          <Text style={[styles.cleanText, { color: colors.success }]}>{translateScreenLabel("screenLabels.CriminalRecordCard.noCriminalCasesDeclared")}</Text>
         </View>
       </View>
     );
@@ -58,9 +60,7 @@ export default function CriminalRecordCard({ totalCases, seriousCases, convictio
     return (
       <View style={[styles.compactContainer, { backgroundColor: colors.surface, borderLeftColor: severityColor, borderColor: colors.border, borderWidth: 1 }]}>
         <Ionicons name="warning" size={14} color={severityColor} />
-        <Text style={[styles.compactText, { color: severityColor }]}>
-          {totalCases} case{totalCases > 1 ? 's' : ''}{(seriousCases ?? 0) > 0 ? ` (${seriousCases} serious)` : ''}
-        </Text>
+        <Text style={[styles.compactText, { color: severityColor }]}>{translateScreenLabel("screenLabels.CriminalRecordCard.value1CaseValue2Value3", { value1: totalCases, value2: totalCases > 1 ? 's' : '', value3: (seriousCases ?? 0) > 0 ? ` (${seriousCases} serious)` : '' })}</Text>
       </View>
     );
   }
@@ -71,7 +71,7 @@ export default function CriminalRecordCard({ totalCases, seriousCases, convictio
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Ionicons name="alert-circle" size={18} color={severityColor} />
-          <Text style={[styles.title, { color: colors.text }]}>Criminal Record</Text>
+          <Text style={[styles.title, { color: colors.text }]}>{translateScreenLabel("representative.criminalRecord")}</Text>
         </View>
         <View style={[styles.severityBadge, { backgroundColor: severityColor + '20' }]}>
           <Text style={[styles.severityText, { color: severityColor }]}>{severity.toUpperCase()}</Text>
@@ -82,17 +82,17 @@ export default function CriminalRecordCard({ totalCases, seriousCases, convictio
       <View style={[styles.summaryRow, { backgroundColor: colors.surfaceElevated, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
         <View style={styles.summaryItem}>
           <Text style={[styles.summaryValue, { color: colors.text }]}>{totalCases}</Text>
-          <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>Total Cases</Text>
+          <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.CriminalRecordCard.totalCases")}</Text>
         </View>
         <View style={[styles.summaryDivider, { backgroundColor: colors.border }]} />
         <View style={styles.summaryItem}>
           <Text style={[styles.summaryValue, { color: (seriousCases ?? 0) > 0 ? colors.danger : colors.textMuted }]}>{seriousCases ?? '—'}</Text>
-          <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>Serious</Text>
+          <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.CriminalRecordCard.serious")}</Text>
         </View>
         <View style={[styles.summaryDivider, { backgroundColor: colors.border }]} />
         <View style={styles.summaryItem}>
           <Text style={[styles.summaryValue, { color: (convictions ?? 0) > 0 ? colors.danger : colors.textMuted }]}>{convictions ?? '—'}</Text>
-          <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>Convictions</Text>
+          <Text style={[styles.summaryLabel, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.CriminalRecordCard.convictions")}</Text>
         </View>
       </View>
 
@@ -100,9 +100,7 @@ export default function CriminalRecordCard({ totalCases, seriousCases, convictio
       {caseDetails.length > 0 && (
         <>
           <Pressable style={[styles.expandBtn, { borderTopColor: colors.border }]} onPress={() => setExpanded(!expanded)}>
-            <Text style={[styles.expandText, { color: colors.primary }]}>
-              {expanded ? 'Hide' : 'View'} Case Details ({caseDetails.length})
-            </Text>
+            <Text style={[styles.expandText, { color: colors.primary }]}>{translateScreenLabel("screenLabels.CriminalRecordCard.value1CaseDetailsValue2", { value1: expanded ? 'Hide' : 'View', value2: caseDetails.length })}</Text>
             <Ionicons name={expanded ? 'chevron-up' : 'chevron-down'} size={16} color={colors.primary} />
           </Pressable>
 
@@ -112,7 +110,7 @@ export default function CriminalRecordCard({ totalCases, seriousCases, convictio
                 <Text style={[styles.caseNumber, { color: colors.text }]}>#{c.serialNo || idx + 1}</Text>
                 <View style={[styles.caseStatusBadge, { backgroundColor: getStatusColor(c.status) + '20' }]}>
                   <Text style={[styles.caseStatusText, { color: getStatusColor(c.status) }]}>
-                    {c.status || 'pending'}
+                    {c.status || translateScreenLabel("screenLabels.CriminalRecordCard.pending")}
                   </Text>
                 </View>
                 {c.isSeriousIPC && (
@@ -121,11 +119,11 @@ export default function CriminalRecordCard({ totalCases, seriousCases, convictio
                   </View>
                 )}
               </View>
-              {c.caseNo && <Text style={styles.caseMeta}>Case: {c.caseNo}</Text>}
-              {c.court && <Text style={styles.caseMeta}>Court: {c.court}</Text>}
+              {c.caseNo && <Text style={styles.caseMeta}>{translateScreenLabel("screenLabels.CriminalRecordCard.caseValue1", { value1: c.caseNo })}</Text>}
+              {c.court && <Text style={styles.caseMeta}>{translateScreenLabel("screenLabels.CriminalRecordCard.courtValue1", { value1: c.court })}</Text>}
               {c.ipcSections.length > 0 && (
                 <View style={styles.ipcRow}>
-                  <Text style={styles.ipcLabel}>IPC:</Text>
+                  <Text style={styles.ipcLabel}>{translateScreenLabel("screenLabels.CriminalRecordCard.ipc")}</Text>
                   <View style={styles.ipcChips}>
                     {c.ipcSections.slice(0, 5).map((s, i) => (
                       <View key={i} style={styles.ipcChip}>
@@ -141,7 +139,7 @@ export default function CriminalRecordCard({ totalCases, seriousCases, convictio
               {c.chargesFramed && (
                 <View style={styles.chargesRow}>
                   <Ionicons name="checkmark-circle" size={12} color="#EF4444" />
-                  <Text style={styles.chargesText}>Charges Framed</Text>
+                  <Text style={styles.chargesText}>{translateScreenLabel("screenLabels.CriminalRecordCard.chargesFramed")}</Text>
                 </View>
               )}
             </View>

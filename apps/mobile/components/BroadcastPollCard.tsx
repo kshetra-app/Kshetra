@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React from 'react';
 import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export const BroadcastPollCard: React.FC<Props> = ({ poll, onVote, isVoting = false }) => {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const hasVoted = poll.hasVoted || poll.status === 'CLOSED';
 
   return (
@@ -18,10 +20,10 @@ export const BroadcastPollCard: React.FC<Props> = ({ poll, onVote, isVoting = fa
         <View style={styles.titleRow}>
           <Ionicons name="stats-chart" size={16} color="#3B82F6" />
           <Text style={styles.livePollLabel}>
-            {poll.status === 'ACTIVE' ? 'LIVE AUDIENCE POLL' : 'POLL RESULTS'}
+            {poll.status === 'ACTIVE' ? translateScreenLabel("screenLabels.BroadcastPollCard.liveAudiencePoll") : translateScreenLabel("screenLabels.BroadcastPollCard.pollResults")}
           </Text>
         </View>
-        <Text style={styles.voteCount}>{poll.totalVotes} votes</Text>
+        <Text style={styles.voteCount}>{translateScreenLabel("screenLabels.BroadcastPollCard.value1Votes", { value1: poll.totalVotes })}</Text>
       </View>
 
       <Text style={styles.questionText}>{poll.question}</Text>
@@ -61,7 +63,7 @@ export const BroadcastPollCard: React.FC<Props> = ({ poll, onVote, isVoting = fa
       {isVoting && (
         <View style={styles.votingOverlay}>
           <ActivityIndicator size="small" color="#3B82F6" />
-          <Text style={styles.votingText}>Submitting anonymous ballot...</Text>
+          <Text style={styles.votingText}>{translateScreenLabel("screenLabels.BroadcastPollCard.submittingAnonymousBallot")}</Text>
         </View>
       )}
     </View>

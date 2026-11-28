@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View,
@@ -53,6 +54,7 @@ const SORT_OPTION_KEYS: { key: SortKey; tKey: string }[] = [
 ];
 
 export default function ExploreScreen() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const router = useRouter();
@@ -250,9 +252,7 @@ export default function ExploreScreen() {
     if (query.trim()) {
       return (
         <View style={styles.searchNoticeRow}>
-          <Text style={[styles.searchNoticeText, { color: colors.textMuted }]}>
-            {filtered.length} {t('explore.constituencies')} found
-          </Text>
+          <Text style={[styles.searchNoticeText, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.explore.value1Value2Found", { value1: filtered.length, value2: t('explore.constituencies') })}</Text>
         </View>
       );
     }

@@ -2,6 +2,546 @@
  * TA translation
  */
 const ta = {
+  "screenLabels": {
+    "EventCard": {
+      "rsvp": "வருகையை உறுதிசெய்யவும்"
+    },
+    "news": {
+      "noSavedStoriesYet": "இதுவரை சேமிக்கப்பட்ட கதைகள் எதுவும் இல்லை",
+      "noStoriesAreAvailableForThisArea": "இந்தப் பகுதிக்கு இதுவரை கதைகள் எதுவும் கிடைக்கவில்லை",
+      "noValue1StoriesAreAvailableRightNow": "{{value1}} கதைகள் எதுவும் தற்போது கிடைக்கவில்லை",
+      "noNewsStoriesAreAvailableRightNow": "தற்போது செய்திகள் எதுவும் கிடைக்கவில்லை"
+    },
+    "hierarchy": {
+      "value1Records": "{{value1}} பதிவுகள்",
+      "value1Value2Value3DrillDown": "{{value1}} → {{value2}} → {{value3}} டிரில்-டவுன்"
+    },
+    "moderation": {
+      "actionApplied": "நடவடிக்கை பயன்படுத்தப்பட்டது",
+      "reportProcessedSuccessfullyValue1": "அறிக்கை வெற்றிகரமாக செயலாக்கப்பட்டது: {{value1}}",
+      "error": "பிழை",
+      "failedToApplyModerationAction": "மிதமான செயலைப் பயன்படுத்துவதில் தோல்வி",
+      "networkRequestFailed": "நெட்வொர்க் கோரிக்கை தோல்வியடைந்தது",
+      "userIdValue1": "பயனர் ஐடி: {{value1}}..."
+    },
+    "ComposeSheet": {
+      "mp4": "MP4",
+      "optionValue1": "விருப்பம் {{value1}}"
+    },
+    "ProfileHeroCard": {
+      "label1stRunnerUp": "1வது ரன்னர்-அப்",
+      "label2ndRunnerUp": "2வது ரன்னர் அப்",
+      "yrs": "ஆண்டு"
+    },
+    "ProjectCard": {
+      "acValue1": "· ஏசி # {{value1}}"
+    },
+    "RegisterAspirantModal": {
+      "pleaseLogInBeforeRegisteringAsAn": "ஆர்வலராக பதிவு செய்வதற்கு முன் உள்நுழையவும்."
+    },
+    "dashboard": {
+      "reporter": "நிருபர்",
+      "noLoadedReportsMatchTheseFiltersMoreReports": "ஏற்றப்பட்ட அறிக்கைகள் இந்த வடிப்பான்களுடன் பொருந்தவில்லை. தேடுவதற்கு மேலும் அறிக்கைகள் உள்ளன.",
+      "couldNotLoadTheNextPageTheReports": "அடுத்த பக்கத்தை ஏற்ற முடியவில்லை. ஏற்கனவே காட்டப்பட்ட அறிக்கைகள் மாறாமல் உள்ளன.",
+      "value1AlertSValue2AwaitingAcknowledgment": "{{value1}} எச்சரிக்கை(கள்) · {{value2}} ஒப்புதலுக்காகக் காத்திருக்கிறது",
+      "value1Alert": "{{value1}} எச்சரிக்கை",
+      "watchLiveFeed": "நேரடி ஊட்டத்தைப் பார்க்கவும்"
+    },
+    "explore": {
+      "value1Value2Found": "{{value1}}  {{value2}} கண்டறியப்பட்டது"
+    },
+    "tabs": {
+      "urbanValue1": "நகர்ப்புற {{value1}}",
+      "ruralGramPanchayat": "கிராமப்புற கிராம பஞ்சாயத்து",
+      "othersValue1": "மற்றவை: {{value1}} %",
+      "value1Cr": "₹ {{value1}} Cr",
+      "netValue1Cr": "நிகரம்: ₹ {{value1}} Cr",
+      "value1Yrs": "{{value1}} ஆண்டு",
+      "dobValue1": "பிறந்த தேதி · {{value1}}",
+      "tapAnyStateToExploreItsAssemblyConstituencies": "எந்த மாநிலத்திலும் அதன் சட்டமன்றத் தொகுதிகளைக் கண்டறிய தட்டவும்",
+      "boothValue1": "பூத் # {{value1}}",
+      "acValue1Value2": "ஏசி # {{value1}} · {{value2}}",
+      "value1AcValue2": "{{value1}} (AC # {{value2}} )",
+      "acValue1": "ஏசி # {{value1}}",
+      "label1st": "1வது",
+      "label2nd": "2வது",
+      "label3rd": "3வது"
+    },
+    "intelligence": {
+      "value1Value2AssemblyElections": "{{value1}}  {{value2}} · சட்டமன்றத் தேர்தல்கள்",
+      "seatValue1": "இருக்கை {{value1}}",
+      "value1SeatValue2": "{{value1}} இருக்கை {{value2}}",
+      "value1MarginOfValue2Votes": "{{value1}} — {{value2}} வாக்குகளின் வித்தியாசம்",
+      "marginDataUnavailable": "விளிம்பு தரவு கிடைக்கவில்லை",
+      "value1AppearsInValue2RecordedConstituenciesValue3": "{{value2}} பதிவுசெய்யப்பட்ட தொகுதிகளில் {{value1}} தோன்றும் ( {{value3}} % கட்சி அறிந்த பதிவுகள்)",
+      "value1WithValue2SeatsValue3": "{{value2}} இருக்கைகளுடன் {{value1}} ( {{value3}} %)",
+      "partyDataUnavailable": "பார்ட்டி தரவு கிடைக்கவில்லை",
+      "dataValue1StateElectionCommission": "தரவு: {{value1}} மாநில தேர்தல் ஆணையம்",
+      "value1Turnout": "{{value1}} % வாக்குப்பதிவு"
+    },
+    "profile": {
+      "featureFlagsDevSwitches": "அம்சம் கொடிகள் & தேவ் சுவிட்சுகள்",
+      "value1TapForDevSwitches": "{{value1}} • தேவ் சுவிட்சுகளுக்கு தட்டவும்"
+    },
+    "shorts": {
+      "value1ShortValue2": "{{value1}} குறுகிய {{value2}}"
+    },
+    "candidateXray": {
+      "candidateRecordNotFound": "வேட்பாளர் பதிவு கிடைக்கவில்லை",
+      "affidavitProfilesHaveBeenConsolidatedIntoLegislatorProfiles": "உறுதிமொழி விவரங்கள் சட்டமன்ற உறுப்பினர் சுயவிவரங்களாக ஒருங்கிணைக்கப்பட்டுள்ளன.",
+      "loadingProfile": "சுயவிவரத்தை ஏற்றுகிறது..."
+    },
+    "constituency": {
+      "notReported": "புகாரளிக்கப்படவில்லை",
+      "shareConstituencyCard": "தொகுதி அட்டையைப் பகிரவும்",
+      "profileRecord": "சுயவிவரப் பதிவு",
+      "historicalPoliticalData19992026": "வரலாற்று அரசியல் தரவு (1999–2026)",
+      "viewAllValue1": "அனைத்தையும் காண்க ( {{value1}} )",
+      "assemblyElectionPodiumResultsWith1st2ndAnd": "1, 2 மற்றும் 3வது இடங்களைச் சேர்ந்த வேட்பாளர்கள், ஓரங்கள் மற்றும் வாக்குப் பங்குகளுடன் கூடிய சட்டமன்றத் தேர்தல் மேடை முடிவுகள்:",
+      "showAllValue1PastElections1999Value2": "அனைத்து {{value1}} கடந்த தேர்தல்களையும் காட்டு (1999– {{value2}} )"
+    },
+    "simulator": {
+      "dataStatusPoligramScenario": "தரவு நிலை: பாலிகிராம் காட்சி",
+      "stateAssemblyIntraStateDistrictProjectionArticle170": "மாநில சட்டமன்றம் மற்றும் மாநிலங்களுக்குள் மாவட்டத் திட்டம் - பிரிவு 170 / பொருந்தக்கூடிய சட்டப்பூர்வ கட்டமைப்பு. இது ஒரு கல்விசார் ஆராய்ச்சி உருவகப்படுத்துதல், இந்திய எல்லை நிர்ணய ஆணையத்தின் அதிகாரப்பூர்வ உத்தரவு அல்ல.",
+      "simulationQualityValue1Within10DeviationBound": "உருவகப்படுத்துதல் தரம்: {{value1}} % ±10% விலகல் எல்லைக்குள்"
+    },
+    "state": {
+      "populationValue1Value2Seat": "மக்கள் தொகை: {{value1}} · {{value2}} / இருக்கை",
+      "constitutionalDeviationValue1Value2": "அரசியலமைப்பு விலகல்: {{value1}}  {{value2}} %",
+      "scValue1": "SC ( {{value1}} %)",
+      "stValue1": "ST ( {{value1}} %)",
+      "value1DistrictsValue2ProjectedSeatsIdealValue3Seat": "{{value1}} மாவட்டங்கள் · {{value2}} திட்டமிடப்பட்ட இருக்கைகள் · சிறந்தது: {{value3}} / இருக்கை",
+      "value1Seats": "{{value1}} இருக்கைகள்",
+      "scValue1StValue2UrbanValue3": "SC {{value1}} % · ST {{value2}} % · நகர்ப்புற {{value3}} %",
+      "acValue1Value2": "ஏசி # {{value1}}  {{value2}}",
+      "districtValue1Value2": "மாவட்டம்: {{value1}}  {{value2}}"
+    },
+    "editProfile": {
+      "yourName": "உங்கள் பெயர்",
+      "tellUsAboutYourself": "உங்களைப் பற்றி எங்களிடம் கூறுங்கள்..."
+    },
+    "issue": {
+      "flagValue1ForRepresentativeAttentionInPoligram": "பாலிகிராமில் பிரதிநிதித்துவ கவனத்திற்கு \" {{value1}} \" ஐக் கொடியிடவா?",
+      "alreadyDisputed": "ஏற்கனவே சர்ச்சைக்குரியது",
+      "youHaveAlreadyDisputedThisResolution": "இந்தத் தீர்மானத்தை நீங்கள் ஏற்கனவே மறுத்துள்ளீர்கள்.",
+      "doYouBelieveThisIssueHasNot": "இந்தப் பிரச்சினை சரியாகத் தீர்க்கப்படவில்லை என்று நம்புகிறீர்களா? உங்கள் தகராறு பதிவு செய்யப்படும். 5+ குடிமக்கள் தகராறு செய்தால், சிக்கல் தானாகவே மீண்டும் திறக்கப்படும்.",
+      "dispute": "தகராறு",
+      "byValue1": "{{value1}} மூலம்",
+      "resolvedValue1": "{{value1}} தீர்க்கப்பட்டது",
+      "reopenedValue1CitizensDisputedTheResolution": "மீண்டும் திறக்கப்பட்டது - {{value1}} குடிமக்கள் தீர்மானத்தை மறுத்தனர்",
+      "evidenceValue1": "ஆதாரம் ( {{value1}} )",
+      "showAllValue1MediaFiles": "அனைத்து {{value1}} மீடியா கோப்புகளையும் காட்டு",
+      "statusTimeline": "நிலை காலவரிசை",
+      "official": "அதிகாரி"
+    },
+    "leadershipAcademy": {
+      "moduleUnavailable": "தொகுதி கிடைக்கவில்லை",
+      "theModuleCouldNotBeOpenedRight": "தொகுதியை இப்போது திறக்க முடியவில்லை.",
+      "couldNotJoinChallenge": "சவாலில் சேர முடியவில்லை",
+      "leadershipAcademyIsCurrentlyUnavailable": "லீடர்ஷிப் அகாடமி தற்போது கிடைக்கவில்லை.",
+      "loadingModules": "தொகுதிகளை ஏற்றுகிறது…",
+      "noPublishedModulesAreAvailable": "வெளியிடப்பட்ட தொகுதிகள் எதுவும் இல்லை."
+    },
+    "legislator": {
+      "value1ElectionPerformance": "{{value1}} தேர்தல் செயல்திறன்",
+      "electionPerformance": "தேர்தல் செயல்திறன்",
+      "couldNotFindDataForAcValue1": "AC # {{value1}} க்கான தரவைக் கண்டறிய முடியவில்லை",
+      "profession": "தொழில்",
+      "maritalStatus": "திருமண நிலை",
+      "dateOfBirth": "பிறந்த தேதி",
+      "assemblyTermStatus": "சட்டமன்ற காலம் & நிலை",
+      "term": "கால",
+      "podiumRank": "போடியம் தரவரிசை",
+      "currentParty": "தற்போதைய கட்சி",
+      "constituencyElectionHistory": "தொகுதி தேர்தல் வரலாறு",
+      "fullElectionCyclesForValue1Value2TapAny": "# {{value1}}  {{value2}} க்கான முழு தேர்தல் சுழற்சிகள். எந்தவொரு வேட்பாளரின் சுயவிவர ஆவணத்தையும் பார்க்க, தட்டவும்."
+    },
+    "distribution": {
+      "shipsAsASeparateLightweightBuildAppsWeb": "ஒரு தனி இலகுரக கட்டமைப்பாக அனுப்பப்படுகிறது (பயன்பாடுகள்/வலை பெறுதல்). நேட்டிவ் விண்டோஸ் + ஆண்ட்ராய்டு டிவி ரேப்பர்கள் ஒரே பக்கத்தில் 2 ஆம் கட்ட பாலிஷ் ஆகும்."
+    },
+    "localBodies": {
+      "sourceAndhraPradeshStateElectionCommissionApsec": "ஆதாரம்: ஆந்திரப் பிரதேச மாநில தேர்தல் ஆணையம் (APSEC) — அதிகாரப்பூர்வ உள்ளாட்சி தேர்தல் முடிவுகள். கிராம பஞ்சாயத்து தேர்தல்கள் அதிகாரப்பூர்வமாக கட்சி சார்பற்றவை.",
+      "sourceTelanganaStateElectionCommissionTsecKnow": "ஆதாரம்: தெலுங்கானா மாநில தேர்தல் ஆணையம் (TSEC) — உங்கள் பொதுப் பிரதிநிதியை (கிராமப்புறம்) அறிந்து கொள்ளுங்கள். கிராம பஞ்சாயத்து தேர்தல்கள் அதிகாரப்பூர்வமாக கட்சி சார்பற்றவை.",
+      "ts": "TS",
+      "ap": "AP",
+      "mandalParishadTerritorialConstituencyMptcValue1": "மண்டல் பரிஷத் பிராந்தியத் தொகுதி (MPTC) ( {{value1}} )",
+      "gramPanchayatsValue1": "கிராம பஞ்சாயத்துகள் ( {{value1}} )"
+    },
+    "onboarding": {
+      "selectedValue1Value2Value3": "தேர்ந்தெடுக்கப்பட்டது: # {{value1}}  {{value2}}  {{value3}}"
+    },
+    "parliament": {
+      "lokSabha18th": "மக்களவை (18வது)",
+      "value1Yrs": "{{value1}} ஆண்டுகள்",
+      "lsValue1RsValue2TotalValue3": "LS: {{value1}} · RS: {{value2}} · மொத்தம்: {{value3}}"
+    },
+    "reader": {
+      "article": "கட்டுரை",
+      "contentFromValue1": "{{value1}} இலிருந்து உள்ளடக்கம்"
+    },
+    "representative": {
+      "value1Record": "{{value1}} பதிவு",
+      "officiallyNonPartyStatePanchayatiRajAct": "அதிகாரப்பூர்வமாக கட்சி சார்பற்றது (மாநில பஞ்சாயத்து ராஜ் சட்டம்)",
+      "officialElectionResultsFromAndhraPradeshState": "ஆந்திர பிரதேச மாநில தேர்தல் ஆணையத்தின் (APSEC) அதிகாரப்பூர்வ தேர்தல் முடிவுகள்",
+      "officialElectionResultsFromTelanganaStateElection": "தெலுங்கானா மாநில தேர்தல் ஆணையத்தின் (TSEC) அதிகாரப்பூர்வ தேர்தல் முடிவுகள் — உங்கள் பிரதிநிதியை அறிந்து கொள்ளுங்கள் (KYR)",
+      "thisPollIsOfficiallyNonPartyPartyAffiliation": "இந்த கருத்துக்கணிப்பு அதிகாரப்பூர்வமாக கட்சி சாராதது. கட்சி இணைப்பு ( {{value1}} ) உண்மை / அதிகாரப்பூர்வமற்றது.",
+      "wardValue1": "வார்டு {{value1}}",
+      "value1DeclaredCaseValue2": "{{value1}} வழக்கு {{value2}} அறிவிக்கப்பட்டது",
+      "verifyOnStateElectionCommissionPortal": "மாநில தேர்தல் கமிஷன் போர்ட்டலில் சரிபார்க்கவும்",
+      "suggestAnEditWithSource": "திருத்தத்தைப் பரிந்துரைக்கவும் (மூலத்துடன்)"
+    },
+    "edit": {
+      "noChanges": "மாற்றங்கள் இல்லை",
+      "editAtLeastOneFieldBeforeSubmitting": "சமர்ப்பிக்கும் முன் குறைந்தது ஒரு புலத்தையாவது திருத்தவும்.",
+      "sourceRequired": "ஆதாரம் தேவை",
+      "enterAnHttpsLinkSupportingTheCorrection": "திருத்தத்தை ஆதரிக்கும் HTTPS இணைப்பை உள்ளிடவும்.",
+      "thankYou": "நன்றி",
+      "yourCorrectionHasBeenSubmittedForReview": "உங்கள் திருத்தம் மதிப்பாய்வுக்காக சமர்ப்பிக்கப்பட்டது.",
+      "submissionFailed": "சமர்ப்பிப்பு தோல்வியடைந்தது",
+      "pleaseTryAgainLater": "பிறகு முயற்சிக்கவும்.",
+      "submitting": "சமர்ப்பிக்கிறது…",
+      "submitForModeration": "நிதானத்திற்குச் சமர்ப்பிக்கவும்",
+      "theRepresentativeProfileCouldNotBeLoaded": "பிரதிநிதி சுயவிவரத்தை ஏற்ற முடியவில்லை.",
+      "value1Value2Value3EveryEditRequiresAVerifiable": "{{value1}}  {{value2}}  {{value3}} ஒவ்வொரு திருத்தத்திற்கும் சரிபார்க்கக்கூடிய ஆதாரம் தேவைப்படுகிறது மற்றும் பொறுப்புக்கூறலுக்காக கைரேகையிடப்பட்டது. திருத்தங்கள் வெளியிடும் முன் நடுநிலைப்படுத்தப்படும்.",
+      "sourceLinkRequired": "ஆதார இணைப்பு (தேவை)",
+      "httpsTsecGovInOrNewsGazetteUrl": "https://tsec.gov.in/... அல்லது செய்தி / கெஜட் URL",
+      "citationNoteOptional": "மேற்கோள் / குறிப்பு (விரும்பினால்)",
+      "eGTsecKnowYourRepresentativePagePublished": "எ.கா. TSEC நோ-உங்கள்-பிரதிநிதி பக்கம், 2020-12-04 வெளியிடப்பட்டது"
+    },
+    "search": {
+      "trySearchingBy": "இதன் மூலம் தேட முயற்சிக்கவும்:",
+      "constituencyNameJubileeHills": "• தொகுதியின் பெயர்: \"ஜூபிலி ஹில்ஸ்\"",
+      "acNumber141": "• ஏசி எண்: \"141\"",
+      "mlaNameRevanthReddy": "• MLA பெயர்: \"ரேவந்த் ரெட்டி\"",
+      "partyBjpOrInc": "• கட்சி: \"BJP\" அல்லது \"INC\"",
+      "issueWaterSupply": "• சிக்கல்: \"நீர் வழங்கல்\""
+    },
+    "AdCard": {
+      "featuredPartner": "சிறப்பு பங்குதாரர்",
+      "sponsored": "நிதியுதவி",
+      "commercialPromotion": "வணிக ஊக்குவிப்பு"
+    },
+    "BroadcastPollCard": {
+      "liveAudiencePoll": "லைவ் ஆடியன்ஸ் கருத்துக்கணிப்பு",
+      "pollResults": "வாக்கெடுப்பு முடிவுகள்",
+      "value1Votes": "{{value1}} வாக்குகள்",
+      "submittingAnonymousBallot": "அநாமதேய வாக்குச் சீட்டைச் சமர்ப்பிக்கிறது..."
+    },
+    "BroadcastQaModal": {
+      "validationError": "சரிபார்ப்பு பிழை",
+      "questionMustBeAtLeast5Characters": "கேள்வியில் குறைந்தது 5 எழுத்துகள் இருக்க வேண்டும்",
+      "privacyProtection": "தனியுரிமை பாதுகாப்பு",
+      "pleaseDoNotIncludeEmailAddressesIn": "மின்னஞ்சல் முகவரிகளை கேள்விகளில் சேர்க்க வேண்டாம்.",
+      "pleaseDoNotIncludePhoneNumbersIn": "கேள்விகளில் ஃபோன் எண்களைச் சேர்க்க வேண்டாம்.",
+      "submissionError": "சமர்ப்பிப்பு பிழை",
+      "failedToSubmitQuestion": "கேள்வியைச் சமர்ப்பிக்க முடியவில்லை",
+      "audienceQA": "பார்வையாளர்களின் கேள்வி பதில்",
+      "noAudienceQuestionsYetBeTheFirstTo": "இன்னும் பார்வையாளர்களின் கேள்விகள் இல்லை. முதலில் கேட்கவும்!",
+      "pinnedByHost": "ஹோஸ்ட் மூலம் பின் செய்யப்பட்டது",
+      "askAQuestionForTheBroadcaster": "ஒளிபரப்பாளரிடம் கேள்வி கேள்..."
+    },
+    "CampaignOutreachPanel": {
+      "theBroadcastCouldNotBeCreated": "ஒளிபரப்பை உருவாக்க முடியவில்லை.",
+      "deliveryIsUnavailableUntilARealMessaging": "உண்மையான செய்தியிடல் வழங்குநர், ஒப்புதல் அடிப்படையிலான பார்வையாளர்களின் ஆதாரம் மற்றும் விநியோக அறிக்கையிடல் ஆகியவை இணைக்கப்படும் வரை டெலிவரி கிடைக்காது.",
+      "simulationModeNoMessagesAreSentReal": "உருவகப்படுத்துதல் முறை. செய்திகள் எதுவும் அனுப்பப்படவில்லை. உண்மையான டெலிவரிக்கு வழங்குநரின் அமைப்பு {{value1}} தேவை. {{value2}}",
+      "noLiveAudienceSegmentsAreConnected": "நேரடி பார்வையாளர் பிரிவுகள் எதுவும் இணைக்கப்படவில்லை.",
+      "noAudienceSegmentsAreAvailable": "பார்வையாளர் பிரிவுகள் எதுவும் இல்லை.",
+      "describeTheRecordedVoiceMessage": "பதிவு செய்யப்பட்ட குரல் செய்தியை விவரிக்கவும்…",
+      "typeYourMessageUseNameBoothFor": "உங்கள் செய்தியைத் தட்டச்சு செய்யவும். தனிப்பயனாக்க {name}, {booth} ஐப் பயன்படுத்தவும்.",
+      "value1ToValue2": "{{value1}} முதல் {{value2}} வரை",
+      "deliveryNotConnected": "விநியோகம் இணைக்கப்படவில்லை",
+      "value1CharsValue2": "{{value1}} எழுத்துக்கள் {{value2}}",
+      "goesOutValue1": "{{value1}} வெளியே செல்கிறது",
+      "answered": "பதிலளித்தார்",
+      "templateName": "டெம்ப்ளேட் பெயர்",
+      "bodyWithNameBooth": "உடல் {பெயர்}, {பூத்}…"
+    },
+    "CompareSheet": {
+      "search": "தேடு...",
+      "mla": "எம்.எல்.ஏ",
+      "value1Winner": "{{value1}} வெற்றியாளர்",
+      "swing": "ஆடு",
+      "loyalty": "விசுவாசம்",
+      "selectTwoConstituenciesToCompareThemSideBy": "இரண்டு தொகுதிகளை அருகருகே ஒப்பிட்டுப் பார்க்கவும்"
+    },
+    "ConstituencySelectorSheet": {
+      "acValue1": "ஏசி {{value1}}"
+    },
+    "DataPendingCard": {
+      "theOfficialMapBoundaryForThisArea": "இந்தப் பகுதிக்கான அதிகாரப்பூர்வ வரைபட எல்லை இன்னும் வெளியிடப்படவில்லை. பட்டியல் பார்வை முழுமையாக துல்லியமாக உள்ளது.",
+      "thisSeatExistsButAVerifiedOffice": "இந்த இருக்கை உள்ளது, ஆனால் சரிபார்க்கப்பட்ட அலுவலக உரிமையாளர் பதிவு இன்னும் கிடைக்கவில்லை. அதிகாரப்பூர்வ ஆதாரங்களில் இருந்து உறுதிப்படுத்தப்பட்ட தரவை மட்டுமே நாங்கள் காட்டுகிறோம்.",
+      "fingerprint": "· கைரேகை ✓",
+      "expectedSourceValue1": "எதிர்பார்க்கப்படும் ஆதாரம்: {{value1}}"
+    },
+    "DataPipelineCard": {
+      "dataPipeline": "தரவு குழாய்",
+      "value1Value2Healthy": "{{value1}} / {{value2}} ஆரோக்கியமானது"
+    },
+    "DelimitationShareCard": {
+      "constitutionalAssessment": "அரசியலமைப்பு மதிப்பீடு",
+      "postalCodeValue1Value2": "அஞ்சல் குறியீடு {{value1}} · {{value2}}",
+      "current": "தற்போதைய",
+      "proposed": "முன்மொழியப்பட்டது",
+      "dpdpAct2023CompliantZeroVoterTracking": "DPDP சட்டம் 2023 இணக்கம் · ஜீரோ வாக்காளர் கண்காணிப்பு",
+      "shareMyImpactCard": "எனது தாக்க அட்டையைப் பகிரவும்"
+    },
+    "DevFeatureSwitcher": {
+      "devControl": "DEV கட்டுப்பாடு"
+    },
+    "ErrorBoundary": {
+      "jsStackTrace": "ஜாவாஸ்கிரிப்ட் பிழைத் தடம்",
+      "errorLog": "பிழை பதிவு",
+      "hideLogs": "பதிவுகளை மறை",
+      "viewLogs": "பதிவுகளைப் பார்க்கவும்",
+      "poligramEncounteredAnIssueWhileLoadingThisScreen": "இந்தத் திரையை ஏற்றும்போது Poligram சிக்கலை எதிர்கொண்டது.",
+      "copyShareLog": "நகலெடு / பகிர்வு பதிவேடு",
+      "crashDiagnosticsStackTrace": "செயலிழப்பு கண்டறிதல் & ஸ்டேக் டிரேஸ்",
+      "componentHierarchy": "கூறு படிநிலை:"
+    },
+    "KYCVerificationSheet": {
+      "byProceedingIAcknowledgeAndAgreeThat": "தொடர்வதன் மூலம், நான் ஒப்புக்கொள்கிறேன் மற்றும் ஒப்புக்கொள்கிறேன்:",
+      "value1MyIdentityNamePhonePhotoWillBe": "{{value1}} எனது அடையாளம் (பெயர், தொலைபேசி, புகைப்படம்) பதிவு செய்யப்பட்டு பாதுகாப்பாகச் சேமிக்கப்படும்.",
+      "value1MyDeviceInformationIpAddressAndLocation": "{{value1}} எனது சாதனத் தகவல், IP முகவரி மற்றும் இருப்பிடம் ஆகியவை நான் செய்யும் ஒவ்வொரு உள்ளடக்கச் செயலிலும் கைப்பற்றப்படும்.",
+      "value1ThisDataMayBeSharedWithLaw": "{{value1}} எனது உள்ளடக்கம் இந்தியச் சட்டத்தை மீறுவதாகக் கண்டறியப்பட்டால் (IT சட்டம் 2000, IPC போன்றவை) இந்தத் தரவு சட்ட அமலாக்க நிறுவனங்களுடன் பகிரப்படலாம்.",
+      "value1IAmSolelyResponsibleForAllContent": "{{value1}} நான் இடுகையிடும் அனைத்து உள்ளடக்கங்களுக்கும் நான் மட்டுமே பொறுப்பாவேன், மேலும் அவதூறான, போலியான அல்லது சட்டவிரோதமான உள்ளடக்கத்தை இடுகையிட மாட்டேன்.",
+      "value1FalseOrMisleadingVerificationDetailsMayResult": "{{value1}} தவறான அல்லது தவறான சரிபார்ப்பு விவரங்கள் நிரந்தர தடை மற்றும் சட்ட நடவடிக்கைக்கு வழிவகுக்கும்.",
+      "iHaveReadAndAgreeToTheAbove": "மேலே உள்ள பொறுப்புக்கூறல் விதிமுறைகளை நான் படித்து ஒப்புக்கொண்டேன்",
+      "yourDeviceInfoNetworkDetailsAndLocationWill": "உங்கள் சாதனத் தகவல், நெட்வொர்க் விவரங்கள் மற்றும் இருப்பிடம் இப்போது எடுக்கப்படும்."
+    },
+    "LeaderProfileModal": {
+      "acValue1Value2": "🎯 ஏசி # {{value1}}  {{value2}}",
+      "civicLeader": "🎯 குடிமைத் தலைவர்",
+      "ind": "சுயாதீன வேட்பாளர் (IND)",
+      "aspirant": "ஆசைப்படுபவர்",
+      "activeInConstituencyOutreachSabhas": "தொகுதி பரப்பு சபைகளில் செயலில் உள்ளது",
+      "label1HrAgo": "1 மணி நேரத்திற்கு முன்பு",
+      "educationGrassrootsBackground": "கல்வி & அடிமட்ட பின்னணி",
+      "maPublicPolicy": "போஸ்ட் கிராட்யுயேஷன் (எம்ஏ பொதுக் கொள்கை)",
+      "postGraduationMaPublicPolicy": "முதுகலை (எம்ஏ பொதுக் கொள்கை)",
+      "osmaniaUniversityDistinction": "உஸ்மானியா பல்கலைக்கழகம் · சிறப்பு",
+      "grassrootsCivicActionCommittee": "அடிமட்ட குடிமை நடவடிக்கை குழு",
+      "waterSecurityYouthConvenor2018Present": "நீர் பாதுகாப்பு மற்றும் இளைஞர் ஒருங்கிணைப்பாளர் (2018 - தற்போது)",
+      "aClearPublicAgendaForTheFuture": "இந்தத் தொகுதியின் எதிர்காலத்திற்கான தெளிவான பொது நிகழ்ச்சி நிரல். முன்முயற்சிகளுக்கு முன்னுரிமை அளிக்க குடிமக்கள் வாக்களிக்கலாம்:",
+      "iSolemnlyPledgeToUpholdTheConstitution": "இந்திய அரசியலமைப்பை நிலைநிறுத்தவும், ஊழலுக்கான சகிப்புத்தன்மையற்ற தன்மையைப் பேணவும், பொதுச் செலவினங்களில் முழு வெளிப்படைத்தன்மையை உறுதிப்படுத்தவும், ஒவ்வொரு குடிமகனுக்கும் அணுகக்கூடியதாகவும் பொறுப்புக்கூறக்கூடியதாகவும் இருக்க உறுதியளிக்கிறேன்.",
+      "boothReach": "பூத் ரீச்",
+      "responseTime": "பதில் நேரம்",
+      "signInToMessageThisProfile": "இந்த சுயவிவரத்திற்கு செய்தி அனுப்ப உள்நுழைக.",
+      "volunteer": "தன்னார்வலர் ✓",
+      "eciVerified": "ECI சரிபார்க்கப்பட்டது"
+    },
+    "LiveBroadcaster": {
+      "consumerBuildsAreDecoupledFromHeavyNativeWebrtc": "லீன் HLS பிளேபேக்கிற்காக, கனரக சொந்த WebRTC பைனரிகளில் இருந்து நுகர்வோர் உருவாக்கங்கள் பிரிக்கப்படுகின்றன. நேரடி வீடியோவை ஒளிபரப்ப, https://studio.poligram.in இல் Poligram Studio Web Client ஐப் பயன்படுத்தவும் அல்லது OBS இலிருந்து RTMP/SRT வழியாக இணைக்கவும்."
+    },
+    "MapFallback": {
+      "genValue1ScValue2StValue3": "GEN {{value1}} · SC {{value2}} · ST {{value3}}",
+      "value1Value2Constituencies": "{{value1}} · {{value2}} தொகுதிகள்",
+      "interactiveMapUnavailable": "ஊடாடும் வரைபடம் கிடைக்கவில்லை",
+      "theFullMapboxMapRequiresADevelopmentBuild": "முழு மேப்பாக்ஸ் வரைபடத்திற்கு வளர்ச்சி உருவாக்கம் தேவை. {{value1}} ரன்: npx எக்ஸ்போ ரன்:ஆண்ட்ராய்டு (அல்லது ஒரு EAS dev உருவாக்கத்தை உருவாக்கவும்). {{value2}} எக்ஸ்போ கோவில் மற்ற எல்லா அம்சங்களும் பொதுவாக வேலை செய்யும்!",
+      "electionPartySeats": "தேர்தல் - கட்சி இடங்கள்",
+      "delimitationProjection": "எல்லை வரைவு திட்டம்",
+      "topConstituenciesByMargin": "விளிம்பு வாரியாக முக்கிய தொகுதிகள்"
+    },
+    "ModuleDetailModal": {
+      "quizCouldNotBeSaved": "வினாடி வினாவைச் சேமிக்க முடியவில்லை",
+      "checkYourConnectionAndTrySubmittingYour": "உங்கள் இணைப்பைச் சரிபார்த்து, உங்கள் பதில்களை மீண்டும் சமர்ப்பிக்க முயற்சிக்கவும்.",
+      "progressCouldNotBeSaved": "முன்னேற்றத்தை சேமிக்க முடியவில்லை",
+      "yourModuleIsStillOpenPleaseTry": "உங்கள் தொகுதி இன்னும் திறந்தே உள்ளது. மீண்டும் முயற்சிக்கவும்.",
+      "value1MinValue2Value3": "{{value1}} நிமிடம் · {{value2}} · {{value3}}",
+      "value1Value2Source": "\" {{value1}} \" - {{value2}}. ஆதாரம் ↗"
+    },
+    "PhotoViewerModal": {
+      "photoSourcedFromWikipediaMyneta": "புகைப்படம் விக்கிபீடியா / மைநெட்டாவிலிருந்து பெறப்பட்டது"
+    },
+    "PodiumHistoryCard": {
+      "delim2008": "டெலிம் 2008",
+      "delim1976": "டெலிம் 1976",
+      "delimValue1": "டெலிம் {{value1}}",
+      "label1st": "🥇 1வது",
+      "label2nd": "🥈 2வது",
+      "label3rd": "🥉 3வது"
+    },
+    "PoliticalAdCard": {
+      "constituencyAnnouncementCampaignReleaseFromValue1Tap": "{{value1}} இலிருந்து தொகுதி அறிவிப்பு & பிரச்சார வெளியீடு. முழு இடுகையையும் விவாதங்களையும் காண தட்டவும்.",
+      "politicalAdPaidPromotionByValue1": "அரசியல் விளம்பரம் · {{value1}} மூலம் கட்டண விளம்பரம்",
+      "targetValue1Value2": "இலக்கு: {{value1}}  {{value2}}",
+      "certifiedUnderEciMcmcGuidelinesPaidValue1": "ECI / MCMC வழிகாட்டுதல்களின் கீழ் சான்றளிக்கப்பட்டது · ₹ {{value1}} செலுத்தப்பட்டது"
+    },
+    "PoliticalShortsCarousel": {
+      "new": "புதியது",
+      "uploadShort": "சுருக்கமாக பதிவேற்றவும்",
+      "addShort": "சுருக்கத்தைச் சேர்க்கவும்",
+      "shareLocalReport": "உள்ளூர் அறிக்கையைப் பகிரவும்",
+      "noShortsInThisConstituency": "இந்த தொகுதியில் குறும்படங்கள் இல்லை.",
+      "beTheFirst": "முதல்வராக இருங்கள்!"
+    },
+    "ReportIssueSheet": {
+      "youCanAddUpToValue1Media": "{{value1}} மீடியா கோப்புகளை நீங்கள் சேர்க்கலாம்.",
+      "value1Value2MediaAttached": "{{value1}} / {{value2}} மீடியா இணைக்கப்பட்டுள்ளது"
+    },
+    "ReportSheet": {
+      "reportsAreReviewedByOurModerationTeamWithin": "அறிக்கைகள் 24 மணி நேரத்திற்குள் எங்கள் மதிப்பாய்வுக் குழுவால் மதிப்பாய்வு செய்யப்படும். தவறான அறிக்கைகள் உங்கள் நற்பெயரை பாதிக்கலாம்."
+    },
+    "RevenueCard": {
+      "revenueDashboard": "வருவாய் டாஷ்போர்டு",
+      "totalRevenue": "மொத்த வருவாய்",
+      "projectedMrr": "திட்டமிடப்பட்ட எம்.ஆர்.ஆர்",
+      "politicians": "அரசியல்வாதிகள்",
+      "avgRoi": "சராசரி ROI",
+      "revenueByFormat": "வடிவத்தின் மூலம் வருவாய்",
+      "monthlyGrowth": "மாதாந்திர வளர்ச்சி",
+      "unitEconomics": "அலகு பொருளாதாரம்",
+      "costPromotedPostValue1": "விலை/பதவி உயர்வு: {{value1}}",
+      "avgPoliticiansStateValue1": "சராசரி அரசியல்வாதிகள்/மாநிலம்: {{value1}}",
+      "activeStatesValue1": "செயலில் உள்ள மாநிலங்கள்: {{value1}}",
+      "monthlyStateValue1": "மாதாந்திர/மாநிலம்: {{value1}}"
+    },
+    "SeatProjectionCard": {
+      "popValue1": "பாப்: {{value1}}",
+      "popSeatValue1": "பாப்/இருக்கை: {{value1}}",
+      "devValue1Value2": "தேவ்: {{value1}}  {{value2}} %"
+    },
+    "ShareableCardModal": {
+      "value1District": "{{value1}} மாவட்டம்",
+      "ind": "இந்திய",
+      "runnerUp2": "ரன்னர்-அப்",
+      "value1Terms": "{{value1}} விதிமுறைகள்",
+      "tenure": "பதவிக்காலம்",
+      "preparingVisualCard": "விஷுவல் கார்டு தயாராகிறது...",
+      "shareVisualGraphicCard": "விஷுவல் கிராஃபிக் கார்டைப் பகிரவும்",
+      "officialCivicCard": "அதிகாரப்பூர்வ குடிமை அட்டை",
+      "winner": "🥇 வெற்றியாளர்",
+      "value1VotesValue2": "{{value1}} வாக்குகள் {{value2}}",
+      "runnerUp": "🥈 ரன்னர்-அப்",
+      "margin": "விளிம்பு",
+      "verifiedByEciForm21ePoligramCivicIntelligence": "ECI படிவம் 21E மூலம் சரிபார்க்கப்பட்டது • Poligram Civic Intelligence",
+      "shareDetailedStoryFormattedText": "விரிவான கதையைப் பகிரவும் (வடிவமைக்கப்பட்ட உரை)"
+    },
+    "ShortsPlayerModal": {
+      "couldNotSaveYourCommentPleaseTry": "உங்கள் கருத்தைச் சேமிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
+      "saved": "சேமிக்கப்பட்டது",
+      "asAVerifiedConstituentOfValue1Is": "{{value1}} இன் சரிபார்க்கப்பட்ட அங்கமாக, இந்த வீடியோ உங்கள் தொகுதிக்கு பொருத்தமானதா மற்றும் ஆக்கபூர்வமானதா?",
+      "helpVerifyThisVideoFromValue1To": "இந்த வீடியோவை தேசிய அளவில் விளம்பரப்படுத்த {{value1}} இலிருந்து சரிபார்க்க உதவவும்.",
+      "commentsCouldNotBeLoaded": "கருத்துகளை ஏற்ற முடியவில்லை."
+    },
+    "StateView": {
+      "refValue1Value2": "குறிப்பு: {{value1}} ( {{value2}} )"
+    },
+    "WealthTimeline": {
+      "value1GrowthTimelineContainsUndisclosedObservations": "{{value1}} வளர்ச்சி காலவரிசையில் வெளிப்படுத்தப்படாத அவதானிப்புகள் உள்ளன"
+    },
+    "GrassrootsBooths": {
+      "wardValue1": "வார்டு # {{value1}} ·",
+      "value1Voters": "{{value1}} வாக்காளர்கள்",
+      "voterCountUnavailable": "வாக்காளர் எண்ணிக்கை கிடைக்கவில்லை",
+      "targetValue1": "இலக்கு: {{value1}}",
+      "targetUnavailable": "இலக்கு கிடைக்கவில்லை",
+      "check": "சரிபார்க்கவும்",
+      "eGRameshGoud": "எ.கா. ரமேஷ் கவுட்"
+    },
+    "GrassrootsWorkers": {
+      "cannotSaveWorkLog": "பணிப் பதிவைச் சேமிக்க முடியவில்லை",
+      "chooseACampaignWorkerAndBoothThat": "பிரச்சார பதிவுகளில் கிடைக்கும் பிரச்சாரம், தொழிலாளி மற்றும் சாவடியைத் தேர்வு செய்யவும்.",
+      "checkTheSessionDuration": "அமர்வு காலத்தை சரிபார்க்கவும்",
+      "enterAWholeNumberOfMinutesFrom": "1 முதல் 1,440 வரையிலான நிமிடங்களின் முழு எண்ணிக்கையை உள்ளிடவும்.",
+      "checkHouseholdsVisited": "சென்ற வீடுகளைச் சரிபார்த்தார்",
+      "enterAWholeNumberFrom0To": "0 முதல் 100,000 வரையிலான முழு எண்ணை உள்ளிடவும்.",
+      "workSessionSaved": "பணி அமர்வு சேமிக்கப்பட்டது",
+      "thisSessionWasSavedToTheCampaign": "இந்த அமர்வு பிரச்சார பணி பதிவில் சேமிக்கப்பட்டது.",
+      "workSessionNotSaved": "வேலை அமர்வு சேமிக்கப்படவில்லை",
+      "boothValue1": "· பூத் # {{value1}}",
+      "completedSessionsUnavailable": "முடிக்கப்பட்ட அமர்வுகள் கிடைக்கவில்லை",
+      "value1CompletedSessions": "{{value1}} நிறைவு அமர்வுகள்",
+      "loggedHoursUnavailable": "பதிவுசெய்யப்பட்ட மணிநேரம் கிடைக்கவில்லை",
+      "value1HoursLogged": "{{value1}} மணிநேரம் பதிவுசெய்யப்பட்டது",
+      "logCompletedOutreachForValue1": "{{value1}} க்கான அவுட்ரீச் முடிந்தது",
+      "saving": "சேமிக்கிறது…",
+      "saveWorkSession": "பணி அமர்வை சேமிக்கவும்",
+      "poligramUser": "Poligram பயனர்",
+      "logCompletedOutreach": "பதிவு முடிந்தது அவுட்ரீச்",
+      "eGBSrinivas": "எ.கா. பி. ஸ்ரீனிவாஸ்",
+      "value1ReportedByTheCampaignTeamNotIndependently": "{{value1}} · பிரச்சாரக் குழுவால் புகாரளிக்கப்பட்டது, சுயாதீனமாக சரிபார்க்கப்படவில்லை",
+      "campaignBooth": "பிரச்சார சாவடி",
+      "campaignBoothRecordsAreUnavailableRefreshTheCampaign": "பிரச்சார சாவடி பதிவுகள் கிடைக்கவில்லை. வேலையை பதிவு செய்வதற்கு முன் பிரச்சாரத்தைப் புதுப்பிக்கவும்.",
+      "sessionDurationMinutes": "அமர்வு காலம் (நிமிடங்கள்)",
+      "sessionDurationInMinutes": "அமர்வு காலம் நிமிடங்களில்",
+      "householdsVisited": "வீடுகளை பார்வையிட்டனர்"
+    },
+    "SimplifiedOutreach": {
+      "minimumWalletRechargeIs500": "குறைந்தபட்ச வாலட் ரீசார்ஜ் ₹500.",
+      "notConnected": "இணைக்கப்படவில்லை",
+      "label100Free": "100% இலவசம்",
+      "indicativePricing": "குறிக்கும் விலை",
+      "pricingUnavailable": "விலை கிடைக்கவில்லை",
+      "sufficientBalanceRemainingAfterBlastValue1": "✓ போதுமான இருப்பு. குண்டுவெடிப்புக்குப் பிறகு மீதமுள்ளவை: ₹ {{value1}}",
+      "walletBalanceShortByValue1TopUp": "⚠️ வாலட் பேலன்ஸ் ₹ {{value1}} குறைவாக உள்ளது. டாப்-அப் தேவை.",
+      "duration028QualityHighVerified": "காலம்: 0:28 · தரம்: உயர்ந்தது · சரிபார்க்கப்பட்டது",
+      "topUpValue1ToScheduleBlast": "குண்டுவெடிப்பைத் திட்டமிடுவதற்கு ₹ {{value1}} டாப்-அப்",
+      "delivered": "✓ வழங்கப்பட்டது",
+      "calling": "📞 அழைக்கிறது...",
+      "queued": "வரிசையில் நிற்கிறது",
+      "available": "கிடைக்கும்",
+      "revanthReddyInc": "ரேவந்த் ரெட்டி · INC",
+      "wardValue1": "வார்டு # {{value1}}",
+      "liveCallDeliveryProgress": "நேரடி அழைப்பு டெலிவரி முன்னேற்றம்",
+      "targetValue1VotersCostValue2": "இலக்கு: {{value1}} வாக்காளர்கள் · விலை: ₹ {{value2}}",
+      "busy": "பிஸி",
+      "unreachable": "அணுக முடியாதது",
+      "creditsCanBeUsedImmediatelyForVoiceObd": "வாய்ஸ் OBD அழைப்பு வெடிப்புகள் மற்றும் விளம்பரப்படுத்தப்பட்ட இடுகைகளுக்கு கிரெடிட்களை உடனடியாகப் பயன்படுத்தலாம்.",
+      "chooseRechargeAmount": "ரீசார்ஜ் தொகையைத் தேர்ந்தெடுக்கவும்:",
+      "orEnterCustomAmount": "அல்லது தனிப்பயன் தொகையை (₹) உள்ளிடவும்:",
+      "payValue1ViaUpiNetbanking": "UPI / நெட்பேங்கிங் மூலம் ₹ {{value1}} செலுத்துங்கள்"
+    },
+    "CriminalRecordCard": {
+      "pending": "நிலுவையில் உள்ளது",
+      "criminalCaseDisclosureUnavailable": "கிரிமினல் வழக்கு வெளிப்பாடு கிடைக்கவில்லை",
+      "noCriminalCasesDeclared": "குற்ற வழக்குகள் எதுவும் அறிவிக்கப்படவில்லை",
+      "value1CaseValue2Value3": "{{value1}} வழக்கு {{value2}}  {{value3}}",
+      "totalCases": "மொத்த வழக்குகள்",
+      "serious": "தீவிரமானது",
+      "convictions": "தண்டனைகள்",
+      "value1CaseDetailsValue2": "{{value1}} வழக்கு விவரங்கள் ( {{value2}} )",
+      "caseValue1": "வழக்கு: {{value1}}",
+      "courtValue1": "நீதிமன்றம்: {{value1}}",
+      "ipc": "ஐபிசி:",
+      "chargesFramed": "கட்டமைக்கப்பட்ட குற்றச்சாட்டுகள்"
+    },
+    "DynastyCard": {
+      "politicalDynasty": "அரசியல் வம்சம்",
+      "thisLegislatorComesFromAPoliticalFamily": "இந்த சட்டமன்ற உறுப்பினர் அரசியல் குடும்பத்தில் இருந்து வந்தவர்",
+      "familyInPolitics": "அரசியலில் குடும்பம்",
+      "familyConstituencies": "குடும்பத் தொகுதிகள்"
+    },
+    "ElectionHistoryCard": {
+      "won": "வென்றது",
+      "lost": "இழந்தது",
+      "defeated": "தோற்கடிக்கப்பட்டது",
+      "lostTo": "இழந்தது",
+      "value1WinRate": "{{value1}} % வெற்றி விகிதம்",
+      "share": "பங்கு"
+    },
+    "FinancialBreakdownCard": {
+      "noFinancialDataAvailable": "நிதி தரவு எதுவும் கிடைக்கவில்லை",
+      "financialDisclosure": "நிதி வெளிப்பாடு",
+      "assetBreakdown": "சொத்து முறிவு",
+      "selfMovable": "சுயமாக நகரக்கூடியது",
+      "selfImmovable": "சுயமாக அசையாது",
+      "dependents": "சார்ந்தவர்கள்",
+      "spouseMovable": "மனைவி அசையும்",
+      "spouseImmovable": "மனைவி அசையாது",
+      "declaredIncomeItr": "அறிவிக்கப்பட்ட வருமானம் (ITR)",
+      "wealthTimeline": "செல்வ காலவரிசை",
+      "value1Value2SinceValue3": "{{value3}} முதல் {{value1}}  {{value2}} %",
+      "totalLiabilities": "மொத்த பொறுப்புகள்:"
+    },
+    "PerformanceCard": {
+      "mplads": "MPLADS",
+      "legislativePerformance": "சட்டமன்ற செயல்திறன்",
+      "comingSoon": "விரைவில் வரும்"
+    },
+    "RedFlagsBanner": {
+      "value1RedFlagValue2Detected": "{{value1}} சிவப்புக் கொடி {{value2}} கண்டறியப்பட்டது"
+    }
+  },
   "constituencyDirectory": {
     "currentRepresentative": "தற்போதைய பிரதிநிதி",
     "loading": "நேரடித் தொகுதிப் பதிவுகளைச் சரிபார்க்கிறது…",
@@ -41,6 +581,21 @@ const ta = {
     "reportIssue": "சிக்கலைப் புகாரளிக்கவும்"
   },
   "partyRegistry": {
+    "electionRecord": "தேர்தல் பதிவு",
+    "historyAndFilings": "வரலாறு மற்றும் பதிவுகள்",
+    "electionCode": "பதிவுசெய்யப்பட்ட கட்சி குறியீடு · {{code}}",
+    "ballotSymbol": "வாக்குச் சின்னம் · {{symbol}}",
+    "seatsWon": "வெற்றி பெற்ற இடங்கள் · {{seats}}",
+    "lokSabhaElection": "{{year}} மக்களவைத் தேர்தல்",
+    "stateAssemblyElection": "{{year}}  {{state}} சட்டமன்ற தேர்தல்",
+    "foundedBy": "{{year}} இல் {{founder}} ஆல் நிறுவப்பட்டது.",
+    "registeredIn": "{{year}} இல் இந்திய தேர்தல் ஆணையத்தில் பதிவு செய்யப்பட்டது.",
+    "renamedIn": "முன்பு {{name}} என அறியப்பட்டது. {{year}} இல் பெயர் மாற்றப்பட்டது.",
+    "profileSummary": {
+      "national": "இந்தியத் தேர்தல் ஆணையம் {{election}} இல் இந்தக் கட்சியை அங்கீகரிக்கப்பட்ட தேசியக் கட்சியாகப் பட்டியலிட்டுள்ளது.",
+      "state": "{{election}} இல் அங்கீகரிக்கப்பட்ட மாநிலக் கட்சியாக இந்தக் கட்சியை இந்தியத் தேர்தல் ஆணையம் பட்டியலிட்டுள்ளது.",
+      "registered": "{{election}} இல் பதிவுசெய்யப்பட்ட மற்றும் அங்கீகரிக்கப்படாத கட்சி என இந்திய தேர்தல் ஆணையம் பட்டியலிட்டுள்ளது."
+    },
     "retryControls": "சில பக்கக் கட்டுப்பாடுகளை ஏற்ற முடியவில்லை. மீண்டும் முயற்சிக்கவும்",
     "verifyToClaim": "விண்ணப்பிக்க, உங்கள் பங்களிப்பாளர் கணக்கைச் சரிபார்க்கவும்",
     "contributorPending": "பங்களிப்பாளர் சரிபார்ப்பு மதிப்பாய்வில் உள்ளது.",
@@ -3059,6 +3614,16 @@ const ta = {
     }
   },
   "kycSheet": {
+    "submitted": "மதிப்பாய்வுக்காக சமர்ப்பிக்கப்பட்டது",
+    "pendingReviewMsg": "உங்கள் சமர்ப்பிப்பு சேமிக்கப்பட்டது. அங்கீகரிக்கப்பட்ட மதிப்பாய்வாளர் அதைச் சரிபார்த்த பின்னரே பங்களிப்பாளர் நடவடிக்கைகள் இயக்கப்படும்.",
+    "reviewNotice": "பங்களிப்பாளர் சரிபார்ப்பு சமூகத்தைப் பாதுகாக்க உதவுகிறது. உங்கள் அடையாள விவரங்கள் மதிப்பாய்வுக்காக சேமிக்கப்பட்டு, உங்கள் பொது சுயவிவரத்தில் காட்டப்படாது.",
+    "selfieReviewNotice": "உங்கள் செல்ஃபி மதிப்பாய்வுக்காக தனிப்பட்ட சேமிப்பகத்தில் பதிவேற்றப்பட்டது. தானியங்கி முகப் பொருத்தம் செய்யப்படவில்லை.",
+    "checkingStatus": "உங்கள் சேமித்த சரிபார்ப்பு நிலையைச் சரிபார்க்கிறது…",
+    "statusUnavailable": "உங்கள் நிலையை எங்களால் ஏற்ற முடியவில்லை. இணைக்கப்பட்டவுடன் மீண்டும் முயற்சிக்க தட்டவும்.",
+    "rejectedResubmitHint": "உங்கள் விவரங்களைச் சரிசெய்து, மதிப்பாய்விற்கு மீண்டும் சமர்ப்பிக்க தட்டவும்.",
+    "resubmitTitle": "உங்கள் சமர்ப்பிப்பைப் புதுப்பிக்கவும்",
+    "resubmitNotice": "நிராகரிப்பு காரணத்தை மதிப்பாய்வு செய்து, உங்கள் விவரங்களை சரிசெய்து, மதிப்பாய்விற்கு மீண்டும் சமர்ப்பிக்கவும்.",
+    "agreeAndVerify": "ஏற்றுக்கொண்டு மதிப்பாய்விற்குச் சமர்ப்பிக்கவும்",
     "title": "பங்களிப்பாளர் சரிபார்ப்பு",
     "verified": "சரிபார்க்கப்பட்டது!",
     "verifiedMsg": "மீரு இப்புடு திருவீகரிம்சபடிந கம்ட்ரிப்யூடர். மீரு போஸ்ட் சேயவச்சு, வ்யாக்யாநிம்சவச்சு மரியு நிவேதிம்சவச்சு.",

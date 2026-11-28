@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useState, useMemo, useRef, useEffect } from 'react';
 import {
   View,
@@ -171,6 +172,7 @@ export default function MapLegend({
   initialX = 16,
   initialTop = 160,
 }: MapLegendProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const { colors } = useTheme();
   const [expanded, setExpanded] = useState(false);
@@ -262,7 +264,7 @@ export default function MapLegend({
     if (colorMode === 'turnout') {
       return (
         <>
-          <Text style={[styles.panelTitle, { color: colors.textMuted }]}>Voter Turnout</Text>
+          <Text style={[styles.panelTitle, { color: colors.textMuted }]}>{translateScreenLabel("mapLegend.voterTurnout")}</Text>
           {TURNOUT_LEGEND.map((item) => (
             <View key={item.label} style={styles.row}>
               <View style={[styles.colorDot, { backgroundColor: item.color }]} />
@@ -276,7 +278,7 @@ export default function MapLegend({
     if (colorMode === 'literacy') {
       return (
         <>
-          <Text style={[styles.panelTitle, { color: colors.textMuted }]}>Literacy Rate</Text>
+          <Text style={[styles.panelTitle, { color: colors.textMuted }]}>{translateScreenLabel("mapLegend.literacyRate")}</Text>
           {LITERACY_LEGEND.map((item) => (
             <View key={item.label} style={styles.row}>
               <View style={[styles.colorDot, { backgroundColor: item.color }]} />
@@ -290,7 +292,7 @@ export default function MapLegend({
     if (colorMode === 'population') {
       return (
         <>
-          <Text style={[styles.panelTitle, { color: colors.textMuted }]}>Population Density</Text>
+          <Text style={[styles.panelTitle, { color: colors.textMuted }]}>{translateScreenLabel("mapLegend.populationDensity")}</Text>
           {POPULATION_LEGEND.map((item) => (
             <View key={item.label} style={styles.row}>
               <View style={[styles.colorDot, { backgroundColor: item.color }]} />

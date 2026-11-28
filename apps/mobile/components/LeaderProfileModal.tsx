@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useState, useMemo, useEffect } from 'react';
 import {
   View,
@@ -39,6 +40,7 @@ export default function LeaderProfileModal({
   onClose,
   isOwner = false,
 }: LeaderProfileModalProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t, i18n } = useTranslation();
   const isTelugu = i18n.language === 'te';
   const unavailableLabel = t('constituency.dataUnavailable', { defaultValue: 'Unavailable' });
@@ -222,7 +224,7 @@ export default function LeaderProfileModal({
               onPress={onClose}
               hitSlop={8}
               accessibilityRole="button"
-              accessibilityLabel="Back"
+              accessibilityLabel={translateScreenLabel("common.back")}
             >
               <Ionicons name="arrow-back" size={20} color="#FFFFFF" />
             </Pressable>
@@ -242,7 +244,7 @@ export default function LeaderProfileModal({
               onPress={handleShare}
               hitSlop={8}
               accessibilityRole="button"
-              accessibilityLabel="Share"
+              accessibilityLabel={translateScreenLabel("common.share")}
             >
               <Ionicons name="share-social-outline" size={18} color="#FFFFFF" />
             </Pressable>
@@ -337,13 +339,13 @@ export default function LeaderProfileModal({
                 <View style={styles.acBadge}>
                   <Text style={styles.acBadgeText}>
                     {aspirant.targetConstituencyAcNo
-                      ? `🎯 AC #${aspirant.targetConstituencyAcNo} ${aspirant.targetConstituencyName || ''}`
-                      : '🎯 Civic Leader'}
+                      ? translateScreenLabel("screenLabels.LeaderProfileModal.acValue1Value2", { value1: aspirant.targetConstituencyAcNo, value2: aspirant.targetConstituencyName || '' })
+                      : translateScreenLabel("screenLabels.LeaderProfileModal.civicLeader")}
                   </Text>
                 </View>
                 <View style={styles.partyBadge}>
                   <Text style={styles.partyBadgeText}>
-                    {aspirant.isIndependent ? 'స్వతంత్ర అభ్యర్థి (IND)' : (aspirant.partyAffiliation || 'Aspirant')}
+                    {aspirant.isIndependent ? translateScreenLabel("screenLabels.LeaderProfileModal.ind") : (aspirant.partyAffiliation || translateScreenLabel("screenLabels.LeaderProfileModal.aspirant"))}
                   </Text>
                 </View>
               </View>
@@ -354,10 +356,10 @@ export default function LeaderProfileModal({
                   <View style={[styles.liveBoxDot, IS_LIVE_ENVIRONMENT && { backgroundColor: '#94A3B8' }]} />
                   <View style={{ flex: 1 }}>
                     <Text style={styles.liveBoxTitle}>
-                      {t('pages.liveStatus', { defaultValue: isTelugu ? 'లైవ్ స్టేటస్' : 'Live Status' })}: {aspirant.liveStatus || (isTelugu ? 'నియోజకవర్గ ప్రజా సంబంధాల్లో ఉన్నారు' : 'Active in constituency outreach Sabhas')}
+                      {t('pages.liveStatus', { defaultValue: isTelugu ? 'లైవ్ స్టేటస్' : 'Live Status' })}: {aspirant.liveStatus || (isTelugu ? 'నియోజకవర్గ ప్రజా సంబంధాల్లో ఉన్నారు' : translateScreenLabel("screenLabels.LeaderProfileModal.activeInConstituencyOutreachSabhas"))}
                     </Text>
                     <Text style={styles.liveBoxSub}>
-                      {aspirant.liveStatusTime || (IS_LIVE_ENVIRONMENT ? unavailableLabel : (isTelugu ? '1 గంట క్రితం' : '1 hr ago'))}{!IS_LIVE_ENVIRONMENT && ` · ${isTelugu ? 'అధికారిక ఫీల్డ్ అప్‌డేట్' : 'Verified Field Update'}`}
+                      {aspirant.liveStatusTime || (IS_LIVE_ENVIRONMENT ? unavailableLabel : (isTelugu ? '1 గంట క్రితం' : translateScreenLabel("screenLabels.LeaderProfileModal.label1HrAgo")))}{!IS_LIVE_ENVIRONMENT && ` · ${isTelugu ? 'అధికారిక ఫీల్డ్ అప్‌డేట్' : 'Verified Field Update'}`}
                     </Text>
                   </View>
                 </View>
@@ -538,7 +540,7 @@ export default function LeaderProfileModal({
                   </Text>
                   {!IS_LIVE_ENVIRONMENT && (
                     <View style={styles.verifiedBadgePill}>
-                      <Text style={styles.verifiedBadgePillText}>ECI Verified</Text>
+                      <Text style={styles.verifiedBadgePillText}>{translateScreenLabel("screenLabels.LeaderProfileModal.eciVerified")}</Text>
                     </View>
                   )}
                 </View>
@@ -546,19 +548,19 @@ export default function LeaderProfileModal({
               </View>
 
               {!IS_LIVE_ENVIRONMENT && <View style={styles.contentBlockCard}>
-                <Text style={styles.blockTitle}>🎓 {isTelugu ? 'విద్యార్హతలు & నేపథ్యం' : 'Education & Grassroots Background'}</Text>
+                <Text style={styles.blockTitle}>🎓 {isTelugu ? 'విద్యార్హతలు & నేపథ్యం' : translateScreenLabel("screenLabels.LeaderProfileModal.educationGrassrootsBackground")}</Text>
                 <View style={styles.timelineItem}>
                   <View style={styles.timelineDot} />
                   <View style={{ flex: 1, marginLeft: 10 }}>
-                    <Text style={styles.timelineHeading}>{isTelugu ? 'పోస్ట్ గ్రాడ్యుయేషన్ (MA Public Policy)' : 'Post Graduation (MA Public Policy)'}</Text>
-                    <Text style={styles.timelineSub}>{isTelugu ? 'ఉస్మానియా విశ్వవిద్యాలయం · ప్రథమ శ్రేణి' : 'Osmania University · Distinction'}</Text>
+                    <Text style={styles.timelineHeading}>{isTelugu ? translateScreenLabel("screenLabels.LeaderProfileModal.maPublicPolicy") : translateScreenLabel("screenLabels.LeaderProfileModal.postGraduationMaPublicPolicy")}</Text>
+                    <Text style={styles.timelineSub}>{isTelugu ? 'ఉస్మానియా విశ్వవిద్యాలయం · ప్రథమ శ్రేణి' : translateScreenLabel("screenLabels.LeaderProfileModal.osmaniaUniversityDistinction")}</Text>
                   </View>
                 </View>
                 <View style={styles.timelineItem}>
                   <View style={styles.timelineDot} />
                   <View style={{ flex: 1, marginLeft: 10 }}>
-                    <Text style={styles.timelineHeading}>{isTelugu ? 'గ్రామీణ ప్రజా ఉద్యమం' : 'Grassroots Civic Action Committee'}</Text>
-                    <Text style={styles.timelineSub}>{isTelugu ? 'పల్నాడు తాగునీటి పోరాట కమిటీ కన్వీనర్ (2018 - ప్రస్తుతం)' : 'Water Security & Youth Convenor (2018 - Present)'}</Text>
+                    <Text style={styles.timelineHeading}>{isTelugu ? 'గ్రామీణ ప్రజా ఉద్యమం' : translateScreenLabel("screenLabels.LeaderProfileModal.grassrootsCivicActionCommittee")}</Text>
+                    <Text style={styles.timelineSub}>{isTelugu ? 'పల్నాడు తాగునీటి పోరాట కమిటీ కన్వీనర్ (2018 - ప్రస్తుతం)' : translateScreenLabel("screenLabels.LeaderProfileModal.waterSecurityYouthConvenor2018Present")}</Text>
                   </View>
                 </View>
               </View>}
@@ -577,7 +579,7 @@ export default function LeaderProfileModal({
                 <Text style={styles.paragraphText}>
                   {IS_LIVE_ENVIRONMENT
                     ? unavailableLabel
-                    : (isTelugu ? 'నియోజకవర్గ భవిష్యత్తు కోసం రూపొందించిన స్పష్టమైన ప్రజా ఎజెండా. ప్రతి అంశంపై పౌరులు తమ ప్రాధాన్యతను మద్దతు ద్వారా తెలపవచ్చు:' : 'A clear public agenda for the future of this constituency. Citizens can vote to prioritize initiatives:')}
+                    : (isTelugu ? 'నియోజకవర్గ భవిష్యత్తు కోసం రూపొందించిన స్పష్టమైన ప్రజా ఎజెండా. ప్రతి అంశంపై పౌరులు తమ ప్రాధాన్యతను మద్దతు ద్వారా తెలపవచ్చు:' : translateScreenLabel("screenLabels.LeaderProfileModal.aClearPublicAgendaForTheFuture"))}
                 </Text>
               </View>
 
@@ -692,7 +694,7 @@ export default function LeaderProfileModal({
                 <Text style={styles.charterText}>
                   {isTelugu
                     ? 'నేను భారత రాజ్యాంగానికి, ప్రజాస్వామ్య విలువలకి కట్టుబడి ఉంటానని, ప్రతి పౌరుడి సమస్యలకు నిష్పక్షపాతంగా సమాధానం ఇస్తానని మరియు ప్రజాధనాన్ని పారదర్శకంగా వినియోగిస్తానని ప్రతినబూనుతున్నాను.'
-                    : 'I solemnly pledge to uphold the Constitution of India, maintain zero tolerance for corruption, ensure total transparency in public expenditure, and remain accessible and accountable to every citizen.'}
+                    : translateScreenLabel("screenLabels.LeaderProfileModal.iSolemnlyPledgeToUpholdTheConstitution")}
                 </Text>
               </View>
               </>}
@@ -721,7 +723,7 @@ export default function LeaderProfileModal({
                 </Text>
                 <View style={styles.studioGrid}>
                   <View style={styles.studioStatBox}>
-                    <Text style={styles.studioStatLabel}>{isTelugu ? 'బూత్ రీచ్' : 'Booth Reach'}</Text>
+                    <Text style={styles.studioStatLabel}>{isTelugu ? 'బూత్ రీచ్' : translateScreenLabel("screenLabels.LeaderProfileModal.boothReach")}</Text>
                     <Text style={styles.studioStatVal}>
                       {aspirant.privateTelemetry?.boothCoverageText?.trim() || unavailableLabel}
                     </Text>
@@ -733,7 +735,7 @@ export default function LeaderProfileModal({
                   </View>
 
                   <View style={styles.studioStatBox}>
-                    <Text style={styles.studioStatLabel}>{isTelugu ? 'స్పందన సమయం' : 'Response Time'}</Text>
+                    <Text style={styles.studioStatLabel}>{isTelugu ? 'స్పందన సమయం' : translateScreenLabel("screenLabels.LeaderProfileModal.responseTime")}</Text>
                     <Text style={[styles.studioStatVal, { color: '#047857' }]}>
                       {aspirant.privateTelemetry?.avgResponseHours != null
                         ? `${aspirant.privateTelemetry.avgResponseHours} ${isTelugu ? 'గంటలు' : 'Hours'}`
@@ -782,7 +784,7 @@ export default function LeaderProfileModal({
             onPress={async () => {
               const currentUserId = authUser?.id;
               if (!currentUserId) {
-                Alert.alert(isTelugu ? 'దయచేసి సైన్ ఇన్ చేయండి' : 'Sign in to message this profile.');
+                Alert.alert(isTelugu ? 'దయచేసి సైన్ ఇన్ చేయండి' : translateScreenLabel("screenLabels.LeaderProfileModal.signInToMessageThisProfile"));
                 return;
               }
               if (IS_LIVE_ENVIRONMENT && !aspirant.userId) {
@@ -820,7 +822,7 @@ export default function LeaderProfileModal({
             >
               <Ionicons name="people" size={17} color={volunteerJoined ? '#047857' : '#002B7F'} />
               <Text style={[styles.dockSecondaryText, volunteerJoined && { color: '#047857' }]}>
-                {volunteerJoined ? (isTelugu ? 'వాలంటీర్ ✓' : 'Volunteer ✓') : t('pages.volunteer', { defaultValue: isTelugu ? 'వాలంటీర్' : 'Volunteer' })}
+                {volunteerJoined ? (isTelugu ? 'వాలంటీర్ ✓' : translateScreenLabel("screenLabels.LeaderProfileModal.volunteer")) : t('pages.volunteer', { defaultValue: isTelugu ? 'వాలంటీర్' : 'Volunteer' })}
               </Text>
             </Pressable>
           )}

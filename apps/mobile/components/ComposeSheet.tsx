@@ -192,7 +192,7 @@ export default function ComposeSheet({
 
   const pickMedia = async () => {
     if (mediaItems.length >= feedMedia.total) {
-      Alert.alert(t('common.limitReached', { defaultValue: 'Limit reached' }), 'Attach up to four items: three photos, one video and one link.');
+      Alert.alert(t('common.limitReached', { defaultValue: 'Limit reached' }), t("compose.attachmentLimit"));
       return;
     }
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -227,7 +227,7 @@ export default function ComposeSheet({
 
   const takeCameraMedia = async (mode: 'image' | 'video' = 'image') => {
     if (mediaItems.length >= feedMedia.total) {
-      Alert.alert(t('common.limitReached', { defaultValue: 'Limit reached' }), 'Attach up to four items: three photos, one video and one link.');
+      Alert.alert(t('common.limitReached', { defaultValue: 'Limit reached' }), t("compose.attachmentLimit"));
       return;
     }
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -574,7 +574,7 @@ export default function ComposeSheet({
                 <Text style={{color: colors.textMuted}}>{shortDescription.length}/{shortLimits.description}</Text>
                 <Pressable onPress={pickShortVideo} accessibilityRole="button" style={[styles.shortInput, {borderColor: colors.border}]}>
                   <Text style={{color: colors.primary}}>{shortVideo ? t('uploadShort.changeDeviceVideo', {defaultValue: 'Change selected video'}) : t('uploadShort.chooseDeviceVideo', {defaultValue: 'Choose video from device'})}</Text>
-                  {shortVideo && <Text numberOfLines={1} style={{color: colors.textSecondary}}>{shortVideo.fileName || 'MP4'}</Text>}
+                  {shortVideo && <Text numberOfLines={1} style={{color: colors.textSecondary}}>{shortVideo.fileName || t("screenLabels.ComposeSheet.mp4")}</Text>}
                 </Pressable>
                 <Text style={{color: colors.textMuted}}>{t('uploadShort.deviceVideoLimits', {defaultValue: 'Choose an H.264 MP4 video up to 60 seconds and 25 MB.'})}</Text>
                 <Pressable accessibilityRole="checkbox" accessibilityState={{checked:shortTerms}} style={styles.shortAgreement} onPress={() => setShortTerms(!shortTerms)}>
@@ -828,7 +828,7 @@ export default function ComposeSheet({
                   <View key={idx} style={styles.pollOptionRow}>
                     <TextInput
                       style={[styles.pollOptionInput, { backgroundColor: colors.surface, color: colors.text, borderColor: colors.border }]}
-                      placeholder={`Option ${idx + 1}`}
+                      placeholder={t("screenLabels.ComposeSheet.optionValue1", { value1: idx + 1 })}
                       placeholderTextColor={colors.textMuted}
                       value={opt}
                       onChangeText={(text) => {

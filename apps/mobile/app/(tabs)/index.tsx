@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import {
   View,
@@ -197,6 +198,7 @@ export default function MapScreen() {
 }
 
 function FullMapScreen() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const router = useRouter();
   const { colors } = useTheme();
   const { t, i18n } = useTranslation();
@@ -1667,7 +1669,7 @@ function FullMapScreen() {
             >
               <Ionicons name="finger-print" size={14} color="#FCD34D" />
               <Text style={{ fontSize: 11, fontWeight: '700', color: '#F1F5F9' }}>
-                Tap any state to explore its assembly constituencies
+                {translateScreenLabel("screenLabels.tabs.tapAnyStateToExploreItsAssemblyConstituencies")}
               </Text>
             </View>
           )}
@@ -1784,13 +1786,11 @@ function FullMapScreen() {
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
               <View style={{ backgroundColor: '#FF3B30', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 }}>
-                <Text style={{ fontSize: 11, fontWeight: '800', color: '#FFFFFF', letterSpacing: 0.5 }}>
-                  BOOTH #{selectedBooth.boothNumber}
-                </Text>
+                <Text style={{ fontSize: 11, fontWeight: '800', color: '#FFFFFF', letterSpacing: 0.5 }}>{translateScreenLabel("screenLabels.tabs.boothValue1", { value1: selectedBooth.boothNumber })}</Text>
               </View>
               <View style={{ backgroundColor: '#1E293B', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, borderWidth: 1, borderColor: '#334155' }}>
                 <Text style={{ fontSize: 10, fontWeight: '700', color: '#94A3B8' }}>
-                  {selectedBooth.isUrban ? `URBAN ${selectedBooth.wardNumber ? `· WARD ${selectedBooth.wardNumber}` : ''}` : 'RURAL GRAM PANCHAYAT'}
+                  {selectedBooth.isUrban ? translateScreenLabel("screenLabels.tabs.urbanValue1", { value1: selectedBooth.wardNumber ? `· WARD ${selectedBooth.wardNumber}` : '' }) : translateScreenLabel("screenLabels.tabs.ruralGramPanchayat")}
                 </Text>
               </View>
               {selectedBooth.historical && (
@@ -2094,9 +2094,7 @@ function FullMapScreen() {
                       <Text style={styles.spatialHubRowTitle}>
                         {getLocalizedConstituencyName(c.acNo, stateCode, c.name, i18n.language, c.localName, c.localizedNames)}
                       </Text>
-                      <Text style={styles.spatialHubRowSubtitle}>
-                        AC #{c.acNo} · {getLocalizedDistrictName(c.district, i18n.language)}
-                      </Text>
+                      <Text style={styles.spatialHubRowSubtitle}>{translateScreenLabel("screenLabels.tabs.acValue1Value2", { value1: c.acNo, value2: getLocalizedDistrictName(c.district, i18n.language) })}</Text>
                     </View>
                   </Pressable>
                 ))
@@ -2194,7 +2192,7 @@ function FullMapScreen() {
             {/* Left Seat */}
             <View style={[styles.compareCol, styles.compareColLeft]}>
               <Text style={styles.compareSeatName} numberOfLines={1}>{selected.name ?? ''}</Text>
-              <Text style={styles.compareParty}>{selected.winner || '—'} (AC #{selected.acNo ?? -1})</Text>
+              <Text style={styles.compareParty}>{translateScreenLabel("screenLabels.tabs.value1AcValue2", { value1: selected.winner || '—', value2: selected.acNo ?? -1 })}</Text>
               <Text style={styles.compareStatLabel}>{t('mapExtended.margin')}</Text>
               <Text style={styles.compareStatValue}>{selected.margin != null ? `${selected.margin.toLocaleString()} ${t('mapExtended.votes')}` : '—'}</Text>
               <Text style={styles.compareStatLabel}>{t('mapExtended.winnerVotes')}</Text>
@@ -2205,7 +2203,7 @@ function FullMapScreen() {
             {compareSelected ? (
               <View style={[styles.compareCol, styles.compareColRight]}>
                 <Text style={styles.compareSeatName} numberOfLines={1}>{compareSelected.name ?? ''}</Text>
-                <Text style={styles.compareParty}>{compareSelected.winner || '—'} (AC #{compareSelected.acNo ?? -1})</Text>
+                <Text style={styles.compareParty}>{translateScreenLabel("screenLabels.tabs.value1AcValue2", { value1: compareSelected.winner || '—', value2: compareSelected.acNo ?? -1 })}</Text>
                 <Text style={styles.compareStatLabel}>{t('mapExtended.margin')}</Text>
                 <Text style={styles.compareStatValue}>{compareSelected.margin != null ? `${compareSelected.margin.toLocaleString()} ${t('mapExtended.votes')}` : '—'}</Text>
                 <Text style={styles.compareStatLabel}>{t('mapExtended.winnerVotes')}</Text>
@@ -2403,7 +2401,7 @@ function FullMapScreen() {
               <View style={styles.sheetHeader}>
                 <View style={styles.sheetBadgeRow}>
                   <View style={styles.sheetAcBadge}>
-                    <Text style={styles.sheetAcBadgeText}>AC #{selected.acNo}</Text>
+                    <Text style={styles.sheetAcBadgeText}>{translateScreenLabel("screenLabels.tabs.acValue1", { value1: selected.acNo })}</Text>
                   </View>
                   {selected.type ? (
                     <View style={styles.sheetCategoryBadge}>
@@ -2520,7 +2518,7 @@ function FullMapScreen() {
                             onPress={(uri) => setPhotoViewer({ uri, name: winnerName || '', party: winnerParty || '' })}
                           />
                           <View style={[styles.s1RankBadge, { backgroundColor: '#F59E0B' }]}>
-                            <Text style={styles.s1RankBadgeText}>1st</Text>
+                            <Text style={styles.s1RankBadgeText}>{translateScreenLabel("screenLabels.tabs.label1st")}</Text>
                           </View>
                         </View>
                         <View style={{ flex: 1, minWidth: 0 }}>
@@ -2568,7 +2566,7 @@ function FullMapScreen() {
                             onPress={(uri) => setPhotoViewer({ uri, name: runnerUpName || '', party: runnerUpParty || '' })}
                           />
                           <View style={[styles.s1RankBadge, { backgroundColor: '#64748B' }]}>
-                            <Text style={styles.s1RankBadgeText}>2nd</Text>
+                            <Text style={styles.s1RankBadgeText}>{translateScreenLabel("screenLabels.tabs.label2nd")}</Text>
                           </View>
                         </View>
                         <View style={{ flex: 1, minWidth: 0 }}>
@@ -2617,7 +2615,7 @@ function FullMapScreen() {
                               onPress={(uri) => setPhotoViewer({ uri, name: ru2Name || '', party: ru2Party || '' })}
                             />
                             <View style={[styles.s1RankBadge, { backgroundColor: '#B45309' }]}>
-                              <Text style={styles.s1RankBadgeText}>3rd</Text>
+                              <Text style={styles.s1RankBadgeText}>{translateScreenLabel("screenLabels.tabs.label3rd")}</Text>
                             </View>
                           </View>
                           <View style={{ flex: 1, minWidth: 0 }}>
@@ -2673,8 +2671,8 @@ function FullMapScreen() {
                           </View>
                         )}
                         {othersShare != null && (
-                          <View style={styles.s1ShareLegendItem} accessibilityLabel={`Others: ${othersShare.toFixed(1)}%`}>
-                            <Text style={[styles.s1ShareLegendLabel, { color: '#64748B' }]} numberOfLines={1}>Others</Text>
+                          <View style={styles.s1ShareLegendItem} accessibilityLabel={translateScreenLabel("screenLabels.tabs.othersValue1", { value1: othersShare.toFixed(1) })}>
+                            <Text style={[styles.s1ShareLegendLabel, { color: '#64748B' }]} numberOfLines={1}>{translateScreenLabel("parliament.others")}</Text>
                             <Text style={[styles.s1ShareLegendValue, { color: '#64748B' }]}>{othersShare.toFixed(1)}%</Text>
                           </View>
                         )}
@@ -2774,10 +2772,10 @@ function FullMapScreen() {
                           {t('legislator.assets', { defaultValue: 'Assets' })}
                         </Text>
                         <Text style={styles.s1AffidavitValue}>
-                          {totalAssets != null ? `₹${(totalAssets / 10000000).toFixed(2)} Cr` : '—'}
+                          {totalAssets != null ? translateScreenLabel("screenLabels.tabs.value1Cr", { value1: (totalAssets / 10000000).toFixed(2) }) : '—'}
                         </Text>
                         <Text style={styles.s1AffidavitSub}>
-                          {netWorth != null ? `Net: ₹${(netWorth / 10000000).toFixed(2)} Cr` : '—'}
+                          {netWorth != null ? translateScreenLabel("screenLabels.tabs.netValue1Cr", { value1: (netWorth / 10000000).toFixed(2) }) : '—'}
                         </Text>
                       </View>
                       <View style={styles.s1AffidavitBox}>
@@ -2785,10 +2783,10 @@ function FullMapScreen() {
                           {t('legislator.age', { defaultValue: 'Age' })}
                         </Text>
                         <Text style={styles.s1AffidavitValue}>
-                          {age ? `${age} Yrs` : '—'}
+                          {age ? translateScreenLabel("screenLabels.tabs.value1Yrs", { value1: age }) : '—'}
                         </Text>
                         <Text style={[styles.s1AffidavitSub, { color: '#64748B' }]}>
-                          {(affidavit as any)?.dob ? `DOB: ${(affidavit as any).dob}` : '—'}
+                          {(affidavit as any)?.dob ? translateScreenLabel("screenLabels.tabs.dobValue1", { value1: (affidavit as any).dob }) : '—'}
                         </Text>
                       </View>
                       <View style={styles.s1AffidavitBox}>

@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   AppState,
@@ -76,6 +77,7 @@ export interface FeedScreenProps {
 }
 
 export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {}) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const [composeVisible, setComposeVisible] = useState(false);
@@ -508,7 +510,7 @@ export default function FeedScreen({ hideHeader = false }: FeedScreenProps = {})
               router.push('/pages' as any);
             }}
             accessibilityRole="button"
-            accessibilityLabel="Pages & Leaders"
+            accessibilityLabel={translateScreenLabel("pages.screenTitle")}
           >
             <Ionicons name="people-outline" size={15} color={colors.primary} />
           </Pressable>

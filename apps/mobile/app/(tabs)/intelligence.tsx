@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useState, useMemo } from 'react';
 import {
   ActivityIndicator,
@@ -110,6 +111,7 @@ function useElectionAnalytics(
 }
 
 export default function IntelligenceScreen() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const router = useRouter();
   const [helpVisible, setHelpVisible] = useState(false);
   const [showAllDistricts, setShowAllDistricts] = useState(false);
@@ -220,7 +222,7 @@ export default function IntelligenceScreen() {
         <Text style={[styles.headerSubtitle, { color: colors.textMuted }]}>
           {IS_LIVE_ENVIRONMENT
             ? `${currentState?.name ?? stateCode} · ${t('intelligence.currentRecords', { defaultValue: 'Current database records' })}`
-            : `${currentState?.name ?? stateCode} ${electionYear} · Assembly Elections`}
+            : translateScreenLabel("screenLabels.intelligence.value1Value2AssemblyElections", { value1: currentState?.name ?? stateCode, value2: electionYear })}
         </Text>
       </View>
 
@@ -300,7 +302,7 @@ export default function IntelligenceScreen() {
               />
               <Text style={styles.partyName}>{party}</Text>
               <Text style={styles.seatCount}>
-                {seats} {IS_LIVE_ENVIRONMENT ? t('intelligence.records', { defaultValue: 'records' }) : `seat${seats !== 1 ? 's' : ''}`}
+                {seats} {IS_LIVE_ENVIRONMENT ? t('intelligence.records', { defaultValue: 'records' }) : translateScreenLabel("screenLabels.intelligence.seatValue1", { value1: seats !== 1 ? 's' : '' })}
               </Text>
             </View>
             <View style={styles.barContainer}>
@@ -360,7 +362,7 @@ export default function IntelligenceScreen() {
               <Text style={styles.districtSeats}>
                 {IS_LIVE_ENVIRONMENT
                   ? `${d.totalSeats} ${t('intelligence.records', { defaultValue: 'records' })}`
-                  : `${d.totalSeats} seat${d.totalSeats !== 1 ? 's' : ''}`}
+                  : translateScreenLabel("screenLabels.intelligence.value1SeatValue2", { value1: d.totalSeats, value2: d.totalSeats !== 1 ? 's' : '' })}
               </Text>
             </View>
             <View style={styles.districtParties}>
@@ -419,8 +421,8 @@ export default function IntelligenceScreen() {
             <Text style={styles.insightTitle}>{t('intelligence.biggestVictory', { defaultValue: 'Biggest Victory' })}</Text>
             <Text style={styles.insightValue}>
               {analytics.biggestAC && analytics.biggestMargin != null
-                ? `${analytics.biggestAC} — margin of ${analytics.biggestMargin.toLocaleString()} votes`
-                : 'Margin data unavailable'}
+                ? translateScreenLabel("screenLabels.intelligence.value1MarginOfValue2Votes", { value1: analytics.biggestAC, value2: analytics.biggestMargin.toLocaleString() })
+                : translateScreenLabel("screenLabels.intelligence.marginDataUnavailable")}
             </Text>
           </View>
         </View>
@@ -431,8 +433,8 @@ export default function IntelligenceScreen() {
             <Text style={styles.insightTitle}>{t('intelligence.closestContest', { defaultValue: 'Closest Contest' })}</Text>
             <Text style={styles.insightValue}>
               {analytics.closestAC && analytics.closestMargin != null
-                ? `${analytics.closestAC} — margin of ${analytics.closestMargin.toLocaleString()} votes`
-                : 'Margin data unavailable'}
+                ? translateScreenLabel("screenLabels.intelligence.value1MarginOfValue2Votes", { value1: analytics.closestAC, value2: analytics.closestMargin.toLocaleString() })
+                : translateScreenLabel("screenLabels.intelligence.marginDataUnavailable")}
             </Text>
           </View>
         </View>
@@ -444,9 +446,9 @@ export default function IntelligenceScreen() {
             <Text style={styles.insightValue}>
               {analytics.partyBreakdown[0]
                 ? IS_LIVE_ENVIRONMENT
-                  ? `${analytics.partyBreakdown[0].party} appears in ${analytics.partyBreakdown[0].seats} recorded constituencies (${analytics.partyBreakdown[0].pct}% of party-known records)`
-                  : `${analytics.partyBreakdown[0].party} with ${analytics.partyBreakdown[0].seats} seats (${analytics.partyBreakdown[0].pct}%)`
-                : 'Party data unavailable'}
+                  ? translateScreenLabel("screenLabels.intelligence.value1AppearsInValue2RecordedConstituenciesValue3", { value1: analytics.partyBreakdown[0].party, value2: analytics.partyBreakdown[0].seats, value3: analytics.partyBreakdown[0].pct })
+                  : translateScreenLabel("screenLabels.intelligence.value1WithValue2SeatsValue3", { value1: analytics.partyBreakdown[0].party, value2: analytics.partyBreakdown[0].seats, value3: analytics.partyBreakdown[0].pct })
+                : translateScreenLabel("screenLabels.intelligence.partyDataUnavailable")}
             </Text>
           </View>
         </View>
@@ -467,9 +469,7 @@ export default function IntelligenceScreen() {
               <View style={styles.timelineHeader}>
                 <Text style={styles.timelineYear}>{election.year}</Text>
                 {election.turnout && (
-                  <Text style={styles.timelineTurnout}>
-                    {election.turnout}% turnout
-                  </Text>
+                  <Text style={styles.timelineTurnout}>{translateScreenLabel("screenLabels.intelligence.value1Turnout", { value1: election.turnout })}</Text>
                 )}
               </View>
               <View style={styles.timelineParties}>
@@ -519,7 +519,7 @@ export default function IntelligenceScreen() {
         <Text style={styles.footerText}>
           {IS_LIVE_ENVIRONMENT
             ? t('intelligence.liveSource', { defaultValue: 'Source: Poligram constituency database' })
-            : `Data: ${currentState?.name ?? stateCode} State Election Commission`}
+            : translateScreenLabel("screenLabels.intelligence.dataValue1StateElectionCommission", { value1: currentState?.name ?? stateCode })}
         </Text>
       </View>
 

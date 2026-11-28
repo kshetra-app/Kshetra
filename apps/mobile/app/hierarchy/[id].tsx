@@ -262,14 +262,14 @@ export default function HierarchyScreen() {
             </View>
           ) : liveHierarchy.status === 'missing' || !liveData ? (
             <DataPendingCard
-              title={`${t('hierarchy.constituency')} records`}
+              title={t("screenLabels.hierarchy.value1Records", { value1: t('hierarchy.constituency') })}
               message={t('hierarchy.noDataAvailable')}
               sourceNote="Persisted constituency geography records"
             />
           ) : liveBodies.length === 0 && liveBooths.length === 0 ? (
             !liveData.pollingStationList && (
               <DataPendingCard
-                title={`${t('hierarchy.constituency')} records`}
+                title={t("screenLabels.hierarchy.value1Records", { value1: t('hierarchy.constituency') })}
                 message={t('hierarchy.noDataAvailable')}
                 sourceNote="Persisted constituency geography records"
               />
@@ -289,7 +289,7 @@ export default function HierarchyScreen() {
                     style={styles.crumb}
                   >
                     <Text style={[styles.crumbText, { color: atBodyList ? colors.text : colors.primary }]}>
-                      {liveConstituency?.name ?? `AC ${acNo}`}
+                      {liveConstituency?.name ?? t("screenLabels.ConstituencySelectorSheet.acValue1", { value1: acNo })}
                     </Text>
                   </Pressable>
                   {liveSelectedBody ? (
@@ -388,7 +388,7 @@ export default function HierarchyScreen() {
                   ) : null}
                   {liveBodies.length === 0 && liveBooths.length > 0 && !liveData.pollingStationList ? (
                     <DataPendingCard
-                      title={`${t('hierarchy.booth')} records`}
+                      title={t("screenLabels.hierarchy.value1Records", { value1: t('hierarchy.booth') })}
                       message={t('hierarchy.noDataAvailable')}
                       sourceNote="Persisted constituency geography records; local-body links were not resolved"
                     />
@@ -477,11 +477,11 @@ export default function HierarchyScreen() {
           <View style={styles.pendingHeader}>
             <Ionicons name="git-branch-outline" size={40} color={colors.textMuted} />
             <Text style={[styles.emptyTitle, { color: colors.text }]}>
-              {constituency?.name ?? `AC ${acNo}`}
+              {constituency?.name ?? t("screenLabels.ConstituencySelectorSheet.acValue1", { value1: acNo })}
             </Text>
           </View>
           <DataPendingCard
-            title={`${labelCfg.displayLabels.mandal} → ${labelCfg.displayLabels.panchayat} → ${labelCfg.displayLabels.booth} drill-down`}
+            title={t("screenLabels.hierarchy.value1Value2Value3DrillDown", { value1: labelCfg.displayLabels.mandal, value2: labelCfg.displayLabels.panchayat, value3: labelCfg.displayLabels.booth })}
             message={`Verified booth-level structure for ${labelCfg.stateName} is being ingested from the Local Government Directory (LGD) and the Chief Electoral Officer. We only display data confirmed from official sources.`}
             sourceNote="LGD (lgdirectory.gov.in) · CEO booth rolls · State Election Commission"
           />
@@ -525,7 +525,7 @@ export default function HierarchyScreen() {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.breadcrumb}
         >
-          <Crumb label={constituency?.name ?? `AC ${acNo}`} active={level === 'mandals'} onPress={goMandals} />
+          <Crumb label={constituency?.name ?? t("screenLabels.ConstituencySelectorSheet.acValue1", { value1: acNo })} active={level === 'mandals'} onPress={goMandals} />
           {mandal && (
             <>
               <Ionicons name="chevron-forward" size={14} color={colors.textMuted} style={{ marginHorizontal: 2 }} />

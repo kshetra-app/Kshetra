@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -24,6 +25,7 @@ interface Props {
 }
 
 export default function ElectionHistoryCard({ elections }: Props) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { colors } = useTheme();
   if (elections.length === 0) return null;
 
@@ -35,7 +37,7 @@ export default function ElectionHistoryCard({ elections }: Props) {
       {/* Header */}
       <View style={styles.header}>
         <Ionicons name="trophy" size={18} color="#D97706" />
-        <Text style={[styles.title, { color: colors.text }]}>Election History</Text>
+        <Text style={[styles.title, { color: colors.text }]}>{translateScreenLabel("constituency.electionHistory")}</Text>
         <View style={[styles.recordBadge, { backgroundColor: colors.goldLight, borderColor: colors.goldBorder, borderWidth: 1 }]}>
           <Text style={[styles.recordText, { color: colors.gold }]}>{wins}W - {losses}L</Text>
         </View>
@@ -47,7 +49,7 @@ export default function ElectionHistoryCard({ elections }: Props) {
           <View style={[styles.winRateFill, { flex: wins || 0.1, backgroundColor: colors.success }]} />
           <View style={[styles.lossRateFill, { flex: losses || 0.1, backgroundColor: colors.danger }]} />
         </View>
-        <Text style={[styles.winRateText, { color: colors.textMuted }]}>{Math.round((wins / (elections.length || 1)) * 100)}% win rate</Text>
+        <Text style={[styles.winRateText, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.ElectionHistoryCard.value1WinRate", { value1: Math.round((wins / (elections.length || 1)) * 100) })}</Text>
       </View>
 
       {/* Timeline */}
@@ -72,7 +74,7 @@ export default function ElectionHistoryCard({ elections }: Props) {
                 <Text style={[styles.electionYear, { color: colors.text }]}>{e.electionYear}</Text>
                 <View style={[styles.resultBadge, { backgroundColor: isWon ? '#10B98120' : '#EF444420' }]}>
                   <Text style={[styles.resultText, { color: isWon ? colors.success : colors.danger }]}>
-                    {isWon ? 'WON' : 'LOST'}
+                    {isWon ? translateScreenLabel("screenLabels.ElectionHistoryCard.won") : translateScreenLabel("screenLabels.ElectionHistoryCard.lost")}
                   </Text>
                 </View>
                 <View style={[styles.partyChip, { backgroundColor: color + '20' }]}>
@@ -87,19 +89,19 @@ export default function ElectionHistoryCard({ elections }: Props) {
                 {e.votesReceived != null && e.votesReceived > 0 && (
                   <View style={styles.voteItem}>
                     <Text style={[styles.voteValue, { color: colors.text }]}>{e.votesReceived.toLocaleString()}</Text>
-                    <Text style={[styles.voteLabel, { color: colors.textMuted }]}>votes</Text>
+                    <Text style={[styles.voteLabel, { color: colors.textMuted }]}>{translateScreenLabel("common.votes")}</Text>
                   </View>
                 )}
                 {e.voteShare != null && e.voteShare > 0 && (
                   <View style={styles.voteItem}>
                     <Text style={[styles.voteValue, { color: colors.text }]}>{e.voteShare.toFixed(1)}%</Text>
-                    <Text style={[styles.voteLabel, { color: colors.textMuted }]}>share</Text>
+                    <Text style={[styles.voteLabel, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.ElectionHistoryCard.share")}</Text>
                   </View>
                 )}
                 {e.margin != null && e.margin > 0 && isWon && (
                   <View style={styles.voteItem}>
                     <Text style={[styles.voteValue, { color: colors.success }]}>+{e.margin.toLocaleString()}</Text>
-                    <Text style={[styles.voteLabel, { color: colors.textMuted }]}>margin</Text>
+                    <Text style={[styles.voteLabel, { color: colors.textMuted }]}>{translateScreenLabel("explore.margin")}</Text>
                   </View>
                 )}
               </View>
@@ -107,7 +109,7 @@ export default function ElectionHistoryCard({ elections }: Props) {
               {/* Runner up */}
               {e.runnerUp && (
                 <Text style={[styles.runnerUpText, { color: colors.textMuted }]}>
-                  {isWon ? 'Defeated' : 'Lost to'} {e.runnerUp} {e.runnerUpParty ? `(${e.runnerUpParty})` : ''}
+                  {isWon ? translateScreenLabel("screenLabels.ElectionHistoryCard.defeated") : translateScreenLabel("screenLabels.ElectionHistoryCard.lostTo")} {e.runnerUp} {e.runnerUpParty ? `(${e.runnerUpParty})` : ''}
                 </Text>
               )}
             </View>

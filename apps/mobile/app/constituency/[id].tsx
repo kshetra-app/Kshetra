@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import PodiumHistoryCard from '../../components/PodiumHistoryCard';
 import {
   getLatestPodiumForConstituency,
@@ -74,6 +75,7 @@ import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
 
 
 export default function ConstituencyDetailScreen() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const router = useRouter();
@@ -601,7 +603,7 @@ export default function ConstituencyDetailScreen() {
       >
         {/* Hero */}
         <View style={[styles.hero, { borderBottomColor: colors.border }]}>
-          <Text style={[styles.acNumber, { color: colors.textMuted }]}>AC #{acNo}</Text>
+          <Text style={[styles.acNumber, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.tabs.acValue1", { value1: acNo })}</Text>
           <Text style={[styles.name, { color: colors.text }]}>{localizedConstName || effectiveConstituencyName}</Text>
           <Text style={[styles.district, { color: colors.textSecondary }]}>{localizedDistrict} {t('constituency.districtLabel')}</Text>
           <View style={styles.heroActions}>
@@ -640,7 +642,7 @@ export default function ConstituencyDetailScreen() {
                 onPress={() => setShowShareModal(true)}
                 hitSlop={8}
                 accessibilityRole="button"
-                accessibilityLabel="Share Constituency Card"
+                accessibilityLabel={translateScreenLabel("screenLabels.constituency.shareConstituencyCard")}
               >
                 <Ionicons name="share-outline" size={18} color={colors.textSecondary} />
               </Pressable>
@@ -871,7 +873,7 @@ export default function ConstituencyDetailScreen() {
                 </View>
                 <View style={styles.resultRight}>
                   <Text style={styles.resultVotes}>
-                    {effectiveWinnerVotes != null ? effectiveWinnerVotes.toLocaleString() : 'Not Reported'}
+                    {effectiveWinnerVotes != null ? effectiveWinnerVotes.toLocaleString() : translateScreenLabel("screenLabels.constituency.notReported")}
                   </Text>
                   <Text style={styles.resultLabel}>{t('constituency.votes')}</Text>
                 </View>
@@ -948,7 +950,7 @@ export default function ConstituencyDetailScreen() {
                 <View style={[styles.provenancePill, { backgroundColor: '#3B82F615', borderColor: '#3B82F640', paddingVertical: 2, paddingHorizontal: 6 }]}>
                   <View style={[styles.provenanceDot, { backgroundColor: '#3B82F6', width: 5, height: 5 }]} />
                   <Text style={[styles.provenanceText, { color: '#3B82F6', fontSize: 10 }]}>
-                    Profile record
+                    {translateScreenLabel("screenLabels.constituency.profileRecord")}
                   </Text>
                 </View>
               </View>
@@ -975,22 +977,20 @@ export default function ConstituencyDetailScreen() {
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                 <Ionicons name="time" size={18} color="#002B7F" />
                 <Text style={styles.sectionTitle}>
-                  Historical Political Data (1999–2026)
+                  {translateScreenLabel("screenLabels.constituency.historicalPoliticalData19992026")}
                 </Text>
               </View>
               <Pressable
                 onPress={() => setActiveTab('history')}
                 style={[styles.provenancePill, { backgroundColor: '#002B7F15', borderColor: '#002B7F40', paddingVertical: 2, paddingHorizontal: 8 }]}
               >
-                <Text style={[styles.provenanceText, { color: '#002B7F', fontSize: 11, fontWeight: '700' }]}>
-                  View All ({historicalContests.length})
-                </Text>
+                <Text style={[styles.provenanceText, { color: '#002B7F', fontSize: 11, fontWeight: '700' }]}>{translateScreenLabel("screenLabels.constituency.viewAllValue1", { value1: historicalContests.length })}</Text>
                 <Ionicons name="chevron-forward" size={12} color="#002B7F" />
               </Pressable>
             </View>
 
             <Text style={{ fontSize: 12, color: colors.textMuted, marginBottom: 12 }}>
-              Assembly election podium results with 1st, 2nd, and 3rd place candidates, margins, and vote shares:
+              {translateScreenLabel("screenLabels.constituency.assemblyElectionPodiumResultsWith1st2ndAnd")}
             </Text>
 
             {historicalContests.slice(0, 3).map((contest, idx) => (
@@ -1006,9 +1006,7 @@ export default function ConstituencyDetailScreen() {
                 style={[styles.expandHistoryBtn, { borderColor: colors.border }]}
                 onPress={() => setActiveTab('history')}
               >
-                <Text style={[styles.expandHistoryBtnText, { color: colors.primary }]}>
-                  Show All {historicalContests.length} Past Elections (1999–{historicalContests[historicalContests.length - 1]?.year || '1999'})
-                </Text>
+                <Text style={[styles.expandHistoryBtnText, { color: colors.primary }]}>{translateScreenLabel("screenLabels.constituency.showAllValue1PastElections1999Value2", { value1: historicalContests.length, value2: historicalContests[historicalContests.length - 1]?.year || '1999' })}</Text>
                 <Ionicons name="arrow-forward-circle" size={16} color={colors.primary} />
               </Pressable>
             )}

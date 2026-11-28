@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../lib/useTheme';
@@ -28,6 +29,7 @@ export default function DataPendingCard({
   variant = 'record',
   compact,
 }: DataPendingCardProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { colors } = useTheme();
 
   const icon = variant === 'boundary' ? 'map-outline' : 'hourglass-outline';
@@ -51,8 +53,8 @@ export default function DataPendingCard({
           <Text style={[styles.body, { color: colors.textSecondary }]}>
             {message ??
               (variant === 'boundary'
-                ? 'The official map boundary for this area has not been published yet. The list view remains fully accurate.'
-                : 'This seat exists, but a verified office-holder record is not yet available. We only show data confirmed from official sources.')}
+                ? translateScreenLabel("screenLabels.DataPendingCard.theOfficialMapBoundaryForThisArea")
+                : translateScreenLabel("screenLabels.DataPendingCard.thisSeatExistsButAVerifiedOffice"))}
           </Text>
         </View>
       </View>
@@ -60,9 +62,7 @@ export default function DataPendingCard({
       {sourceNote ? (
         <View style={[styles.footer, { borderTopColor: colors.border }]}>
           <Ionicons name="document-text-outline" size={12} color={colors.textMuted} />
-          <Text style={[styles.footerText, { color: colors.textMuted }]} numberOfLines={2}>
-            Expected source: {sourceNote}
-          </Text>
+          <Text style={[styles.footerText, { color: colors.textMuted }]} numberOfLines={2}>{translateScreenLabel("screenLabels.DataPendingCard.expectedSourceValue1", { value1: sourceNote })}</Text>
         </View>
       ) : null}
     </View>
@@ -86,6 +86,7 @@ export function SourceAttributionFooter({
   lastEditedAt?: string;
   fingerprintVerified?: boolean;
 }) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { colors } = useTheme();
   const parts: string[] = [];
   if (sourceType) parts.push(`Sourced from ${sourceType}`);
@@ -102,7 +103,7 @@ export function SourceAttributionFooter({
       <Ionicons name="shield-checkmark-outline" size={12} color={colors.textMuted} />
       <Text style={[styles.attributionText, { color: colors.textMuted }]}>
         {parts.join(' · ')}
-        {fingerprintVerified ? ' · fingerprint ✓' : ''}
+        {fingerprintVerified ? translateScreenLabel("screenLabels.DataPendingCard.fingerprint") : ''}
       </Text>
     </View>
   );

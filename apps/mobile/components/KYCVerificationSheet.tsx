@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -26,6 +27,7 @@ import {
 } from '../lib/contentAccountabilityTypes';
 
 export default function KYCVerificationSheet() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const visible = useContributorVerificationStore((s) => s.showKYCSheet);
@@ -288,23 +290,13 @@ export default function KYCVerificationSheet() {
 
                 <View style={styles.termsBox}>
                   <Text style={styles.termsText}>
-                    By proceeding, I acknowledge and agree that:
+                    {translateScreenLabel("screenLabels.KYCVerificationSheet.byProceedingIAcknowledgeAndAgreeThat")}
                   </Text>
-                  <Text style={styles.termsBullet}>
-                    {'\u2022'} My identity (name, phone, photo) will be recorded and securely stored.
-                  </Text>
-                  <Text style={styles.termsBullet}>
-                    {'\u2022'} My device information, IP address, and location will be captured with every content action I perform.
-                  </Text>
-                  <Text style={styles.termsBullet}>
-                    {'\u2022'} This data may be shared with law enforcement agencies if my content is found to violate Indian law (IT Act 2000, IPC, etc.).
-                  </Text>
-                  <Text style={styles.termsBullet}>
-                    {'\u2022'} I am solely responsible for all content I post, and I will not post defamatory, fake, or illegal content.
-                  </Text>
-                  <Text style={styles.termsBullet}>
-                    {'\u2022'} False or misleading verification details may result in permanent ban and legal action.
-                  </Text>
+                  <Text style={styles.termsBullet}>{translateScreenLabel("screenLabels.KYCVerificationSheet.value1MyIdentityNamePhonePhotoWillBe", { value1: '\u2022' })}</Text>
+                  <Text style={styles.termsBullet}>{translateScreenLabel("screenLabels.KYCVerificationSheet.value1MyDeviceInformationIpAddressAndLocation", { value1: '\u2022' })}</Text>
+                  <Text style={styles.termsBullet}>{translateScreenLabel("screenLabels.KYCVerificationSheet.value1ThisDataMayBeSharedWithLaw", { value1: '\u2022' })}</Text>
+                  <Text style={styles.termsBullet}>{translateScreenLabel("screenLabels.KYCVerificationSheet.value1IAmSolelyResponsibleForAllContent", { value1: '\u2022' })}</Text>
+                  <Text style={styles.termsBullet}>{translateScreenLabel("screenLabels.KYCVerificationSheet.value1FalseOrMisleadingVerificationDetailsMayResult", { value1: '\u2022' })}</Text>
                 </View>
 
                 <Pressable
@@ -317,14 +309,14 @@ export default function KYCVerificationSheet() {
                     color={termsAccepted ? '#10B981' : '#6B7280'}
                   />
                   <Text style={styles.checkboxText}>
-                    I have read and agree to the above terms of accountability
+                    {translateScreenLabel("screenLabels.KYCVerificationSheet.iHaveReadAndAgreeToTheAbove")}
                   </Text>
                 </Pressable>
 
                 <View style={styles.captureNotice}>
                   <Ionicons name="finger-print" size={16} color="#F59E0B" />
                   <Text style={styles.captureNoticeText}>
-                    Your device info, network details, and location will be captured now.
+                    {translateScreenLabel("screenLabels.KYCVerificationSheet.yourDeviceInfoNetworkDetailsAndLocationWill")}
                   </Text>
                 </View>
 

@@ -2,6 +2,7 @@ import assert from 'assert';
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
+import { verifyCheckoutLineage } from './lib/checkout-lineage.mjs';
 
 console.log('=== RUNNING COMMIT FRESHNESS, PROVENANCE & LINEAGE VALIDATOR (Amendment v1.5-A) ===\n');
 
@@ -45,7 +46,7 @@ console.log('  HISTORICAL_W006_EVIDENCE_COMMIT:      ', histW006Evidence);
 console.log('  HISTORICAL_W006_ACCEPTANCE_COMMIT:    ', histW006Acceptance);
 
 // Git Reality
-const localHead = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
+const localHead = verifyCheckoutLineage();
 let originMasterHead = '';
 try {
   originMasterHead = execSync('git rev-parse origin/master', { encoding: 'utf8' }).trim();

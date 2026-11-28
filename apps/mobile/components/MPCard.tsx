@@ -108,7 +108,7 @@ export default function MPCard({ profile, compact, onPress }: MPCardProps) {
                   size={14}
                   color={profile.gender === 'F' ? '#EC4899' : '#3B82F6'}
                 />
-                <Text style={styles.statLabel}>{profile.gender === 'F' ? 'Female' : 'Male'}</Text>
+                <Text style={styles.statLabel}>{profile.gender === 'F' ? t("constituency.female") : t("constituency.male")}</Text>
               </View>
             )}
             {profile.totalAssets != null && (

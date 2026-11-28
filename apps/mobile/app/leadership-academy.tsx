@@ -2,6 +2,7 @@
  * LeadershipAcademy — Full screen for aspiring leaders.
  * Shows modules grouped by category, civic score, badges, challenges, and aspirant directory.
  */
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, ScrollView, Pressable, Platform, Alert, ActivityIndicator } from 'react-native';
@@ -40,6 +41,7 @@ const TAB_KEYS: { key: AcademyTab; tKey: string; icon: string }[] = [
 ];
 
 export default function LeadershipAcademyScreen() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const router = useRouter();
   const { colors } = useTheme();
@@ -88,7 +90,7 @@ export default function LeadershipAcademyScreen() {
       await startModule(mod.id);
       setSelectedModule(mod);
     } catch (error: any) {
-      Alert.alert('Module unavailable', error?.message || 'The module could not be opened right now.');
+      Alert.alert(translateScreenLabel("screenLabels.leadershipAcademy.moduleUnavailable"), error?.message || translateScreenLabel("screenLabels.leadershipAcademy.theModuleCouldNotBeOpenedRight"));
     }
   };
 
@@ -96,7 +98,7 @@ export default function LeadershipAcademyScreen() {
     try {
       await joinChallenge(challengeId);
     } catch (error: any) {
-      Alert.alert('Could not join challenge', error?.message || 'Please try again.');
+      Alert.alert(translateScreenLabel("screenLabels.leadershipAcademy.couldNotJoinChallenge"), error?.message || translateScreenLabel("common.tryAgain"));
     }
   };
 
@@ -172,13 +174,13 @@ export default function LeadershipAcademyScreen() {
         {activeTab === 'modules' && (
           <View style={styles.tabContent}>
             {academyStatus === 'loading' && (
-              <View style={styles.empty}><ActivityIndicator color="#4F8EF7" /><Text style={styles.emptyText}>Loading modules…</Text></View>
+              <View style={styles.empty}><ActivityIndicator color="#4F8EF7" /><Text style={styles.emptyText}>{translateScreenLabel("screenLabels.leadershipAcademy.loadingModules")}</Text></View>
             )}
             {academyStatus === 'error' && (
-              <View style={styles.empty}><Ionicons name="cloud-offline-outline" size={40} color="#6B7280" /><Text style={styles.emptyText}>{academyError || 'Leadership Academy is currently unavailable.'}</Text></View>
+              <View style={styles.empty}><Ionicons name="cloud-offline-outline" size={40} color="#6B7280" /><Text style={styles.emptyText}>{academyError || translateScreenLabel("screenLabels.leadershipAcademy.leadershipAcademyIsCurrentlyUnavailable")}</Text></View>
             )}
             {academyStatus === 'ready' && modules.length === 0 && (
-              <View style={styles.empty}><Ionicons name="school-outline" size={40} color="#6B7280" /><Text style={styles.emptyText}>No published modules are available.</Text></View>
+              <View style={styles.empty}><Ionicons name="school-outline" size={40} color="#6B7280" /><Text style={styles.emptyText}>{translateScreenLabel("screenLabels.leadershipAcademy.noPublishedModulesAreAvailable")}</Text></View>
             )}
             {academyStatus === 'ready' && moduleGroups.map(([category, mods]) => {
               const catConfig = MODULE_CATEGORY_CONFIG[category];

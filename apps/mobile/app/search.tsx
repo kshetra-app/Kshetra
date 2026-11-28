@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -36,6 +37,7 @@ const TYPE_CONFIG: Record<SearchResultType, { icon: string; color: string; label
 };
 
 export default function GlobalSearchScreen() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const router = useRouter();
   const { t } = useTranslation();
   const { colors } = useTheme();
@@ -287,12 +289,12 @@ export default function GlobalSearchScreen() {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t('search.tryDifferent')}</Text>
             <View style={styles.tipCard}>
-              <Text style={styles.tipText}>Try searching by:</Text>
-              <Text style={styles.tipExample}>• Constituency name: "Jubilee Hills"</Text>
-              <Text style={styles.tipExample}>• AC number: "141"</Text>
-              <Text style={styles.tipExample}>• MLA name: "Revanth Reddy"</Text>
-              <Text style={styles.tipExample}>• Party: "BJP" or "INC"</Text>
-              <Text style={styles.tipExample}>• Issue: "Water supply"</Text>
+              <Text style={styles.tipText}>{translateScreenLabel("screenLabels.search.trySearchingBy")}</Text>
+              <Text style={styles.tipExample}>{translateScreenLabel("screenLabels.search.constituencyNameJubileeHills")}</Text>
+              <Text style={styles.tipExample}>{translateScreenLabel("screenLabels.search.acNumber141")}</Text>
+              <Text style={styles.tipExample}>{translateScreenLabel("screenLabels.search.mlaNameRevanthReddy")}</Text>
+              <Text style={styles.tipExample}>{translateScreenLabel("screenLabels.search.partyBjpOrInc")}</Text>
+              <Text style={styles.tipExample}>{translateScreenLabel("screenLabels.search.issueWaterSupply")}</Text>
             </View>
           </View>
         </View>

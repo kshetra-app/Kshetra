@@ -1,3 +1,5 @@
+import screenI18n from "../i18n";
+import { Translation } from 'react-i18next';
 import React from 'react';
 import {
   View,
@@ -65,7 +67,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
         title: 'Poligram Crash Diagnostics',
       });
     } catch {
-      Alert.alert('Error Log', logDetails);
+      Alert.alert(screenI18n.t("screenLabels.ErrorBoundary.errorLog"), logDetails);
     }
   };
 
@@ -84,9 +86,9 @@ export default class ErrorBoundary extends React.Component<Props, State> {
         <View style={styles.container}>
           <View style={styles.header}>
             <Ionicons name="warning" size={40} color="#EF4444" />
-            <Text style={styles.title}>Something went wrong</Text>
+            <Text style={styles.title}><Translation>{(translateScreenLabel) => translateScreenLabel("common.error")}</Translation></Text>
             <Text style={styles.subtitle}>
-              Poligram encountered an issue while loading this screen.
+              <Translation>{(translateScreenLabel) => translateScreenLabel("screenLabels.ErrorBoundary.poligramEncounteredAnIssueWhileLoadingThisScreen")}</Translation>
             </Text>
           </View>
 
@@ -94,12 +96,12 @@ export default class ErrorBoundary extends React.Component<Props, State> {
           <View style={styles.buttonRow}>
             <Pressable style={styles.retryButton} onPress={this.handleRetry}>
               <Ionicons name="refresh" size={16} color="#FFFFFF" />
-              <Text style={styles.retryText}>Retry</Text>
+              <Text style={styles.retryText}><Translation>{(translateScreenLabel) => translateScreenLabel("common.retry")}</Translation></Text>
             </Pressable>
 
             <Pressable style={styles.shareButton} onPress={this.handleShareLog}>
               <Ionicons name="share-outline" size={16} color="#4F8EF7" />
-              <Text style={styles.shareText}>Copy / Share Log</Text>
+              <Text style={styles.shareText}><Translation>{(translateScreenLabel) => translateScreenLabel("screenLabels.ErrorBoundary.copyShareLog")}</Translation></Text>
             </Pressable>
 
             <Pressable style={styles.toggleButton} onPress={this.toggleLogs}>
@@ -109,7 +111,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
                 color="#9CA3AF"
               />
               <Text style={styles.toggleText}>
-                {showLogs ? 'Hide Logs' : 'View Logs'}
+                {showLogs ? screenI18n.t("screenLabels.ErrorBoundary.hideLogs") : screenI18n.t("screenLabels.ErrorBoundary.viewLogs")}
               </Text>
             </Pressable>
           </View>
@@ -119,7 +121,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
             <View style={styles.logWindow}>
               <View style={styles.logHeader}>
                 <Ionicons name="terminal-outline" size={16} color="#10B981" />
-                <Text style={styles.logTitle}>Crash Diagnostics & Stack Trace</Text>
+                <Text style={styles.logTitle}><Translation>{(translateScreenLabel) => translateScreenLabel("screenLabels.ErrorBoundary.crashDiagnosticsStackTrace")}</Translation></Text>
               </View>
               <ScrollView
                 style={styles.logScroll}
@@ -132,7 +134,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
 
                 {errorStack ? (
                   <>
-                    <Text style={styles.sectionHeader}>JS Stack Trace:</Text>
+                    <Text style={styles.sectionHeader}><Translation>{(translateScreenLabel) => translateScreenLabel("screenLabels.ErrorBoundary.jsStackTrace")}</Translation></Text>
                     <Text style={styles.stackText} selectable={true}>
                       {errorStack}
                     </Text>
@@ -141,7 +143,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
 
                 {componentStack ? (
                   <>
-                    <Text style={styles.sectionHeader}>Component Hierarchy:</Text>
+                    <Text style={styles.sectionHeader}><Translation>{(translateScreenLabel) => translateScreenLabel("screenLabels.ErrorBoundary.componentHierarchy")}</Translation></Text>
                     <Text style={styles.stackText} selectable={true}>
                       {componentStack.trim()}
                     </Text>

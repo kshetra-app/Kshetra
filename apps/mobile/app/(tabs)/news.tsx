@@ -386,7 +386,7 @@ export default function NewsScreen() {
               <Ionicons name={showBookmarks ? 'bookmark-outline' : 'newspaper-outline'} size={48} color={colors.textMuted} />
               <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
                 {showBookmarks
-                  ? 'No saved stories yet'
+                  ? t("screenLabels.news.noSavedStoriesYet")
                   : feedUnavailable
                     ? t('common.newsUnavailableDescription', { defaultValue: 'The latest stories could not be loaded. Please try again.' })
                     : category === 'breaking'
@@ -394,10 +394,10 @@ export default function NewsScreen() {
                     : hasContentFilters
                     ? t('common.noResults')
                     : scope === 'constituency'
-                      ? 'No stories are available for this area yet'
+                      ? t("screenLabels.news.noStoriesAreAvailableForThisArea")
                       : scope === 'state'
-                        ? `No ${stateName} stories are available right now`
-                        : 'No news stories are available right now'}
+                        ? t("screenLabels.news.noValue1StoriesAreAvailableRightNow", { value1: stateName })
+                        : t("screenLabels.news.noNewsStoriesAreAvailableRightNow")}
               </Text>
               {feedUnavailable ? (
                 <Pressable

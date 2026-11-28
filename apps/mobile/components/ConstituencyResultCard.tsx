@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,6 +12,7 @@ interface ConstituencyResultCardProps {
 }
 
 export default function ConstituencyResultCard({ result, onPress }: ConstituencyResultCardProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const { colors } = useTheme();
   const statusConfig = COUNTING_STATUS_CONFIG[result.countingStatus];
@@ -22,7 +24,7 @@ export default function ConstituencyResultCard({ result, onPress }: Constituency
       <View style={styles.header}>
         <View>
           <Text style={[styles.acName, { color: colors.text }]}>{result.acName}</Text>
-          <Text style={[styles.acMeta, { color: colors.textMuted }]}>AC #{result.acNo} · {result.districtName}</Text>
+          <Text style={[styles.acMeta, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.tabs.acValue1Value2", { value1: result.acNo, value2: result.districtName })}</Text>
         </View>
         <View style={[styles.statusBadge, { backgroundColor: statusConfig.color + '20' }]}>
           <Text style={[styles.statusText, { color: statusConfig.color }]}>{statusConfig.label}</Text>

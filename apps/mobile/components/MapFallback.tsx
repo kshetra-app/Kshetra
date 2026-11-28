@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useMemo } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,6 +17,7 @@ import { useResponsive } from '../lib/responsive';
  * Shows a styled constituency overview with quick-tap navigation.
  */
 export default function MapFallback() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const router = useRouter();
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const currentState = STATES[stateCode];
@@ -50,9 +52,7 @@ export default function MapFallback() {
           <Text style={styles.headerTitle}>POLIGRAM</Text>
           <StateSwitcher />
         </View>
-        <Text style={styles.headerSubtitle}>
-          {currentState?.name ?? stateCode} · {constituencies.length} Constituencies
-        </Text>
+        <Text style={styles.headerSubtitle}>{translateScreenLabel("screenLabels.MapFallback.value1Value2Constituencies", { value1: currentState?.name ?? stateCode, value2: constituencies.length })}</Text>
       </View>
 
       <ScrollView
@@ -63,17 +63,13 @@ export default function MapFallback() {
         <View style={styles.banner}>
           <Ionicons name="information-circle" size={20} color="#4F8EF7" />
           <View style={styles.bannerText}>
-            <Text style={styles.bannerTitle}>Interactive Map Unavailable</Text>
-            <Text style={styles.bannerBody}>
-              The full Mapbox map requires a development build.{'\n'}
-              Run: npx expo run:android (or create an EAS dev build).{'\n'}
-              All other features work normally in Expo Go!
-            </Text>
+            <Text style={styles.bannerTitle}>{translateScreenLabel("screenLabels.MapFallback.interactiveMapUnavailable")}</Text>
+            <Text style={styles.bannerBody}>{translateScreenLabel("screenLabels.MapFallback.theFullMapboxMapRequiresADevelopmentBuild", { value1: '\n', value2: '\n' })}</Text>
           </View>
         </View>
 
         {/* Party seat overview */}
-        <Text style={styles.sectionTitle}>Election — Party Seats</Text>
+        <Text style={styles.sectionTitle}>{translateScreenLabel("screenLabels.MapFallback.electionPartySeats")}</Text>
         <View style={styles.partyGrid}>
           {sortedParties.map(([party, seats]) => (
             <View key={party} style={styles.partyCard}>
@@ -97,21 +93,21 @@ export default function MapFallback() {
           >
             <View style={styles.delimHeader}>
               <Ionicons name="resize" size={16} color="#FCD34D" />
-              <Text style={styles.delimTitle}>Delimitation Projection</Text>
+              <Text style={styles.delimTitle}>{translateScreenLabel("screenLabels.MapFallback.delimitationProjection")}</Text>
             </View>
             <View style={styles.delimRow}>
-              <Text style={styles.delimCurrent}>{stateProjection.currentSeats} seats</Text>
+              <Text style={styles.delimCurrent}>{translateScreenLabel("screenLabels.state.value1Seats", { value1: stateProjection.currentSeats })}</Text>
               <Ionicons name="arrow-forward" size={14} color="#FCD34D" />
-              <Text style={styles.delimProjected}>{stateProjection.projectedSeats} seats</Text>
+              <Text style={styles.delimProjected}>{translateScreenLabel("screenLabels.state.value1Seats", { value1: stateProjection.projectedSeats })}</Text>
               <Text style={styles.delimGain}>+{stateProjection.seatChange}</Text>
             </View>
-            <Text style={styles.delimRes}>GEN {stateProjection.general} · SC {stateProjection.reservedSC} · ST {stateProjection.reservedST}</Text>
+            <Text style={styles.delimRes}>{translateScreenLabel("screenLabels.MapFallback.genValue1ScValue2StValue3", { value1: stateProjection.general, value2: stateProjection.reservedSC, value3: stateProjection.reservedST })}</Text>
           </Pressable>
         )}
 
         {/* Top constituencies */}
         <Text style={styles.sectionTitle}>
-          Top Constituencies by Margin
+          {translateScreenLabel("screenLabels.MapFallback.topConstituenciesByMargin")}
         </Text>
         {[...constituencies]
           .filter((c) => c.margin != null)
@@ -133,9 +129,7 @@ export default function MapFallback() {
               </View>
               <View style={styles.rowInfo}>
                 <Text style={styles.rowName}>{c.name}</Text>
-                <Text style={styles.rowSub}>
-                  AC #{c.acNo} · {c.district}
-                </Text>
+                <Text style={styles.rowSub}>{translateScreenLabel("screenLabels.tabs.acValue1Value2", { value1: c.acNo, value2: c.district })}</Text>
               </View>
               <View style={styles.rowRight}>
                 <Text style={styles.rowMargin}>

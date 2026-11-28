@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -36,6 +37,7 @@ export default function ReportSheet({
   targetId,
   targetLabel,
 }: ReportSheetProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const [reason, setReason] = useState<ReportReason | null>(null);
   const [description, setDescription] = useState('');
@@ -170,7 +172,7 @@ export default function ReportSheet({
         <View style={styles.infoBox}>
           <Ionicons name="shield-checkmark" size={16} color="#4F8EF7" />
           <Text style={styles.infoText}>
-            Reports are reviewed by our moderation team within 24 hours. False reports may affect your reputation score.
+            {translateScreenLabel("screenLabels.ReportSheet.reportsAreReviewedByOurModerationTeamWithin")}
           </Text>
         </View>
       </KeyboardAvoidingView>

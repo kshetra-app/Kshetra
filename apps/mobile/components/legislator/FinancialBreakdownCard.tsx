@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -167,12 +168,13 @@ export function resolveBreakdownState(record: FinancialRecord): BreakdownState {
 }
 
 export default function FinancialBreakdownCard({ records, compact }: Props) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { colors } = useTheme();
 
   if (records.length === 0) {
     return (
       <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
-        <Text style={[styles.emptyText, { color: colors.textMuted }]}>No financial data available</Text>
+        <Text style={[styles.emptyText, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.FinancialBreakdownCard.noFinancialDataAvailable")}</Text>
       </View>
     );
   }
@@ -196,25 +198,25 @@ export default function FinancialBreakdownCard({ records, compact }: Props) {
         <View style={styles.compactRow}>
           <View style={styles.compactItem}>
             <Text style={[styles.compactValue, { color: colors.text }]}>{formatINR(latest.totalAssets)}</Text>
-            <Text style={[styles.compactLabel, { color: colors.textMuted }]}>Assets</Text>
+            <Text style={[styles.compactLabel, { color: colors.textMuted }]}>{translateScreenLabel("mla.assets")}</Text>
           </View>
           <View style={[styles.compactDivider, { backgroundColor: colors.border }]} />
           <View style={styles.compactItem}>
             <Text style={[styles.compactValue, { color: colors.text }]}>{formatINR(latest.totalLiabilities)}</Text>
-            <Text style={[styles.compactLabel, { color: colors.textMuted }]}>Liabilities</Text>
+            <Text style={[styles.compactLabel, { color: colors.textMuted }]}>{translateScreenLabel("parliament.liabilities")}</Text>
           </View>
           <View style={[styles.compactDivider, { backgroundColor: colors.border }]} />
           <View style={styles.compactItem}>
             <Text style={[styles.compactValue, { color: growthPercent && growthPercent > 500 ? colors.danger : colors.success }]}>
               {growthPercent !== null ? `${growthPercent > 0 ? '+' : ''}${growthPercent}%` : '—'}
             </Text>
-            <Text style={[styles.compactLabel, { color: colors.textMuted }]}>Growth</Text>
+            <Text style={[styles.compactLabel, { color: colors.textMuted }]}>{translateScreenLabel("affidavit.growth")}</Text>
           </View>
         </View>
         {isCrorepati && (
           <View style={styles.crorepatiTag}>
             <Ionicons name="diamond" size={10} color="#D97706" />
-            <Text style={styles.crorepatiText}>Crorepati</Text>
+            <Text style={styles.crorepatiText}>{translateScreenLabel("exploreExtended.crorepati")}</Text>
           </View>
         )}
       </View>
@@ -227,7 +229,7 @@ export default function FinancialBreakdownCard({ records, compact }: Props) {
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Ionicons name="wallet" size={18} color={colors.primary} />
-          <Text style={[styles.title, { color: colors.text }]}>Financial Disclosure</Text>
+          <Text style={[styles.title, { color: colors.text }]}>{translateScreenLabel("screenLabels.FinancialBreakdownCard.financialDisclosure")}</Text>
         </View>
         <Text style={[styles.yearBadge, { backgroundColor: colors.surfaceElevated, color: colors.textSecondary }]}>{latest.electionYear}</Text>
       </View>
@@ -235,20 +237,20 @@ export default function FinancialBreakdownCard({ records, compact }: Props) {
       {/* Total Net Worth */}
       <View style={[styles.netWorthRow, { backgroundColor: colors.surfaceElevated, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
         <View>
-          <Text style={[styles.netWorthLabel, { color: colors.textMuted }]}>Net Worth</Text>
+          <Text style={[styles.netWorthLabel, { color: colors.textMuted }]}>{translateScreenLabel("legislator.netWorth")}</Text>
           <Text style={[styles.netWorthValue, { color: colors.text }]}>{formatINR(latest.netWorth)}</Text>
         </View>
         {isCrorepati && (
           <View style={styles.crorepatiChip}>
             <Ionicons name="diamond" size={12} color="#D97706" />
-            <Text style={styles.crorepatiChipText}>Crorepati</Text>
+            <Text style={styles.crorepatiChipText}>{translateScreenLabel("exploreExtended.crorepati")}</Text>
           </View>
         )}
       </View>
 
       {/* Asset Breakdown Section */}
       <View style={styles.breakdownSection}>
-        <Text style={[styles.breakdownTitle, { color: colors.textSecondary }]}>Asset Breakdown</Text>
+        <Text style={[styles.breakdownTitle, { color: colors.textSecondary }]}>{translateScreenLabel("screenLabels.FinancialBreakdownCard.assetBreakdown")}</Text>
         {breakdownState.hasCompleteBreakdown && breakdownState.percentages ? (
           <>
             <View style={[styles.stackBar, { backgroundColor: colors.surfaceElevated }]}>
@@ -258,13 +260,13 @@ export default function FinancialBreakdownCard({ records, compact }: Props) {
               {breakdownState.percentages.depPct > 0 && <View style={[styles.stackSegment, { flex: breakdownState.percentages.depPct, backgroundColor: colors.primary }]} />}
             </View>
             <View style={styles.legendRow}>
-              <LegendItem color={colors.teal} label="Self Movable" value={formatINR(latest.selfMovableAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
-              <LegendItem color={colors.success} label="Self Immovable" value={formatINR(latest.selfImmovableAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
+              <LegendItem color={colors.teal} label={translateScreenLabel("screenLabels.FinancialBreakdownCard.selfMovable")} value={formatINR(latest.selfMovableAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
+              <LegendItem color={colors.success} label={translateScreenLabel("screenLabels.FinancialBreakdownCard.selfImmovable")} value={formatINR(latest.selfImmovableAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
             </View>
             <View style={styles.legendRow}>
-              <LegendItem color={colors.gold} label="Spouse" value={formatINR(latest.spouseMovableAssets! + latest.spouseImmovableAssets!)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
+              <LegendItem color={colors.gold} label={translateScreenLabel("wealthTimeline.spouse")} value={formatINR(latest.spouseMovableAssets! + latest.spouseImmovableAssets!)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
               {latest.dependentsAssets != null && latest.dependentsAssets > 0 && (
-                <LegendItem color={colors.primary} label="Dependents" value={formatINR(latest.dependentsAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
+                <LegendItem color={colors.primary} label={translateScreenLabel("screenLabels.FinancialBreakdownCard.dependents")} value={formatINR(latest.dependentsAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
               )}
             </View>
           </>
@@ -276,16 +278,16 @@ export default function FinancialBreakdownCard({ records, compact }: Props) {
               </Text>
             </View>
             <View style={styles.legendRow}>
-              <LegendItem color={colors.teal} label="Self Movable" value={formatINR(latest.selfMovableAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
-              <LegendItem color={colors.success} label="Self Immovable" value={formatINR(latest.selfImmovableAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
+              <LegendItem color={colors.teal} label={translateScreenLabel("screenLabels.FinancialBreakdownCard.selfMovable")} value={formatINR(latest.selfMovableAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
+              <LegendItem color={colors.success} label={translateScreenLabel("screenLabels.FinancialBreakdownCard.selfImmovable")} value={formatINR(latest.selfImmovableAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
             </View>
             <View style={styles.legendRow}>
-              <LegendItem color={colors.gold} label="Spouse Movable" value={formatINR(latest.spouseMovableAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
-              <LegendItem color={colors.gold} label="Spouse Immovable" value={formatINR(latest.spouseImmovableAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
+              <LegendItem color={colors.gold} label={translateScreenLabel("screenLabels.FinancialBreakdownCard.spouseMovable")} value={formatINR(latest.spouseMovableAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
+              <LegendItem color={colors.gold} label={translateScreenLabel("screenLabels.FinancialBreakdownCard.spouseImmovable")} value={formatINR(latest.spouseImmovableAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
             </View>
             {latest.dependentsAssets !== undefined && (
               <View style={styles.legendRow}>
-                <LegendItem color={colors.primary} label="Dependents" value={formatINR(latest.dependentsAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
+                <LegendItem color={colors.primary} label={translateScreenLabel("screenLabels.FinancialBreakdownCard.dependents")} value={formatINR(latest.dependentsAssets)} textSecondary={colors.textSecondary} textPrimary={colors.text} />
               </View>
             )}
           </>
@@ -301,15 +303,15 @@ export default function FinancialBreakdownCard({ records, compact }: Props) {
       {/* Income */}
       {((latest.selfIncome != null && latest.selfIncome > 0) || (latest.spouseIncome != null && latest.spouseIncome > 0)) && (
         <View style={[styles.incomeSection, { borderTopColor: colors.border }]}>
-          <Text style={[styles.breakdownTitle, { color: colors.textSecondary }]}>Declared Income (ITR)</Text>
+          <Text style={[styles.breakdownTitle, { color: colors.textSecondary }]}>{translateScreenLabel("screenLabels.FinancialBreakdownCard.declaredIncomeItr")}</Text>
           <View style={styles.incomeRow}>
             <View style={[styles.incomeItem, { backgroundColor: colors.surfaceElevated }]}>
               <Text style={[styles.incomeValue, { color: colors.text }]}>{formatINR(latest.selfIncome)}</Text>
-              <Text style={[styles.incomeLabel, { color: colors.textMuted }]}>Self</Text>
+              <Text style={[styles.incomeLabel, { color: colors.textMuted }]}>{translateScreenLabel("wealthTimeline.self")}</Text>
             </View>
             <View style={[styles.incomeItem, { backgroundColor: colors.surfaceElevated }]}>
               <Text style={[styles.incomeValue, { color: colors.text }]}>{formatINR(latest.spouseIncome)}</Text>
-              <Text style={[styles.incomeLabel, { color: colors.textMuted }]}>Spouse</Text>
+              <Text style={[styles.incomeLabel, { color: colors.textMuted }]}>{translateScreenLabel("wealthTimeline.spouse")}</Text>
             </View>
           </View>
         </View>
@@ -318,7 +320,7 @@ export default function FinancialBreakdownCard({ records, compact }: Props) {
       {/* Growth across elections */}
       {records.length >= 2 && (
         <View style={[styles.growthSection, { borderTopColor: colors.border }]}>
-          <Text style={[styles.breakdownTitle, { color: colors.textSecondary }]}>Wealth Timeline</Text>
+          <Text style={[styles.breakdownTitle, { color: colors.textSecondary }]}>{translateScreenLabel("screenLabels.FinancialBreakdownCard.wealthTimeline")}</Text>
           <View style={styles.timelineRow}>
             {records.map((r, idx) => {
               const disclosedAssets = records.map(x => x.totalAssets).filter((a): a is number => a != null);
@@ -346,9 +348,7 @@ export default function FinancialBreakdownCard({ records, compact }: Props) {
           {growthPercent !== null && (
             <View style={[styles.growthChip, growthPercent > 500 && styles.growthChipDanger]}>
               <Ionicons name={growthPercent > 0 ? 'trending-up' : 'trending-down'} size={12} color={growthPercent > 500 ? colors.danger : colors.success} />
-              <Text style={[styles.growthChipText, { color: growthPercent > 500 ? colors.danger : colors.success }]}>
-                {growthPercent > 0 ? '+' : ''}{growthPercent}% since {previous?.electionYear}
-              </Text>
+              <Text style={[styles.growthChipText, { color: growthPercent > 500 ? colors.danger : colors.success }]}>{translateScreenLabel("screenLabels.FinancialBreakdownCard.value1Value2SinceValue3", { value1: growthPercent > 0 ? '+' : '', value2: growthPercent, value3: previous?.electionYear })}</Text>
             </View>
           )}
         </View>
@@ -357,7 +357,7 @@ export default function FinancialBreakdownCard({ records, compact }: Props) {
       {/* Liabilities */}
       <View style={[styles.liabilityRow, { borderTopColor: colors.border }]}>
         <Ionicons name="card" size={14} color={colors.danger} />
-        <Text style={[styles.liabilityLabel, { color: colors.textSecondary }]}>Total Liabilities:</Text>
+        <Text style={[styles.liabilityLabel, { color: colors.textSecondary }]}>{translateScreenLabel("screenLabels.FinancialBreakdownCard.totalLiabilities")}</Text>
         <Text style={[styles.liabilityValue, { color: colors.danger }]}>{formatINR(latest.totalLiabilities)}</Text>
       </View>
     </View>

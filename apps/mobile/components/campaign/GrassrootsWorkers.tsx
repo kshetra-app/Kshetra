@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import {
   View,
@@ -18,6 +19,7 @@ import { useCampaignStore } from '../../stores/campaign';
 import type { Volunteer, VolunteerRole } from '../../lib/campaignTypes';
 
 export default function GrassrootsWorkers() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const { colors } = useTheme();
 
@@ -94,11 +96,11 @@ export default function GrassrootsWorkers() {
     const households = Number(householdsVisited);
     const campaignId = selectedCampaignId || selectedVolunteer?.campaignId;
     if (!selectedVolunteer || !campaignId || !booth) {
-      Alert.alert('Cannot save work log', 'Choose a campaign, worker, and booth that are available in the campaign records.');
+      Alert.alert(translateScreenLabel("screenLabels.GrassrootsWorkers.cannotSaveWorkLog"), translateScreenLabel("screenLabels.GrassrootsWorkers.chooseACampaignWorkerAndBoothThat"));
       return;
     }
     if (!durationMinutes.trim() || !Number.isInteger(minutes) || minutes < 1 || minutes > 1440) {
-      Alert.alert('Check the session duration', 'Enter a whole number of minutes from 1 to 1,440.');
+      Alert.alert(translateScreenLabel("screenLabels.GrassrootsWorkers.checkTheSessionDuration"), translateScreenLabel("screenLabels.GrassrootsWorkers.enterAWholeNumberOfMinutesFrom"));
       return;
     }
     if (
@@ -107,7 +109,7 @@ export default function GrassrootsWorkers() {
       households < 0 ||
       households > 100000
     ) {
-      Alert.alert('Check households visited', 'Enter a whole number from 0 to 100,000.');
+      Alert.alert(translateScreenLabel("screenLabels.GrassrootsWorkers.checkHouseholdsVisited"), translateScreenLabel("screenLabels.GrassrootsWorkers.enterAWholeNumberFrom0To"));
       return;
     }
 
@@ -128,11 +130,11 @@ export default function GrassrootsWorkers() {
         endTime: endTime.toISOString(),
       });
       setLogModalVisible(false);
-      Alert.alert('Work session saved', 'This session was saved to the campaign work log.');
+      Alert.alert(translateScreenLabel("screenLabels.GrassrootsWorkers.workSessionSaved"), translateScreenLabel("screenLabels.GrassrootsWorkers.thisSessionWasSavedToTheCampaign"));
     } catch (error) {
       Alert.alert(
-        'Work session not saved',
-        error instanceof Error ? error.message : 'Please try again.',
+        translateScreenLabel("screenLabels.GrassrootsWorkers.workSessionNotSaved"),
+        error instanceof Error ? error.message : translateScreenLabel("common.tryAgain"),
       );
     } finally {
       setLogSaving(false);
@@ -271,7 +273,7 @@ export default function GrassrootsWorkers() {
                   {v.isKshetraUser && (
                     <View style={styles.kshetraBadge}>
                       <Ionicons name="checkmark-circle" size={11} color="#10B981" />
-                      <Text style={styles.kshetraBadgeText}>Poligram User</Text>
+                      <Text style={styles.kshetraBadgeText}>{translateScreenLabel("screenLabels.GrassrootsWorkers.poligramUser")}</Text>
                     </View>
                   )}
                 </View>
@@ -281,13 +283,13 @@ export default function GrassrootsWorkers() {
                     : v.role === 'coordinator'
                     ? t('campaignManager.roleCoordinator', { defaultValue: 'Ward Coordinator' })
                     : t('campaignManager.roleCanvasser', { defaultValue: 'Ground Canvasser' })}
-                  {v.assignedBooths.length > 0 ? ` · Booth #${v.assignedBooths.join(', #')}` : ''}
+                  {v.assignedBooths.length > 0 ? translateScreenLabel("screenLabels.GrassrootsWorkers.boothValue1", { value1: v.assignedBooths.join(', #') }) : ''}
                 </Text>
                 <Text style={styles.workerPhoneText}>{v.phone}</Text>
                 <Text style={[styles.workLogMetrics, { color: colors.textSecondary }]}>
-                  {v.tasksCompleted === null ? 'Completed sessions unavailable' : `${v.tasksCompleted} completed sessions`}
+                  {v.tasksCompleted === null ? translateScreenLabel("screenLabels.GrassrootsWorkers.completedSessionsUnavailable") : translateScreenLabel("screenLabels.GrassrootsWorkers.value1CompletedSessions", { value1: v.tasksCompleted })}
                   {' · '}
-                  {v.hoursLogged === null ? 'Logged hours unavailable' : `${v.hoursLogged.toFixed(1)} hours logged`}
+                  {v.hoursLogged === null ? translateScreenLabel("screenLabels.GrassrootsWorkers.loggedHoursUnavailable") : translateScreenLabel("screenLabels.GrassrootsWorkers.value1HoursLogged", { value1: v.hoursLogged.toFixed(1) })}
                 </Text>
               </View>
 
@@ -306,7 +308,7 @@ export default function GrassrootsWorkers() {
             </View>
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel={`Log completed outreach for ${v.name}`}
+              accessibilityLabel={translateScreenLabel("screenLabels.GrassrootsWorkers.logCompletedOutreachForValue1", { value1: v.name })}
               disabled={!boothsAvailable || booths.length === 0 || !volunteersAvailable}
               onPress={() => handleOpenWorkLog(v)}
               style={[
@@ -315,7 +317,7 @@ export default function GrassrootsWorkers() {
               ]}
             >
               <Ionicons name="clipboard-outline" size={15} color={colors.primary} />
-              <Text style={[styles.logWorkButtonText, { color: colors.primary }]}>Log completed outreach</Text>
+              <Text style={[styles.logWorkButtonText, { color: colors.primary }]}>{translateScreenLabel("screenLabels.GrassrootsWorkers.logCompletedOutreach")}</Text>
             </Pressable>
           </View>
         ))}
@@ -341,7 +343,7 @@ export default function GrassrootsWorkers() {
             </Text>
             <TextInput
               style={[styles.modalInput, { color: colors.text, borderColor: colors.border }]}
-              placeholder="e.g. B. Srinivas"
+              placeholder={translateScreenLabel("screenLabels.GrassrootsWorkers.eGBSrinivas")}
               placeholderTextColor="#9CA3AF"
               value={newName}
               onChangeText={setNewName}
@@ -389,17 +391,15 @@ export default function GrassrootsWorkers() {
           <View style={[styles.modalCard, { backgroundColor: colors.surface }]}>
             <View style={styles.modalHeader}>
               <View style={{ flex: 1, paddingRight: 12 }}>
-                <Text style={[styles.modalTitle, { color: colors.text }]}>Log completed outreach</Text>
-                <Text style={[styles.logSubtitle, { color: colors.textSecondary }]}>
-                  {selectedVolunteer?.name || ''} · reported by the campaign team, not independently verified
-                </Text>
+                <Text style={[styles.modalTitle, { color: colors.text }]}>{translateScreenLabel("screenLabels.GrassrootsWorkers.logCompletedOutreach")}</Text>
+                <Text style={[styles.logSubtitle, { color: colors.textSecondary }]}>{translateScreenLabel("screenLabels.GrassrootsWorkers.value1ReportedByTheCampaignTeamNotIndependently", { value1: selectedVolunteer?.name || '' })}</Text>
               </View>
               <Pressable onPress={() => setLogModalVisible(false)} disabled={logSaving}>
                 <Ionicons name="close" size={24} color="#6B7280" />
               </Pressable>
             </View>
 
-            <Text style={[styles.inputLabel, { color: colors.text, marginTop: 14 }]}>Campaign booth</Text>
+            <Text style={[styles.inputLabel, { color: colors.text, marginTop: 14 }]}>{translateScreenLabel("screenLabels.GrassrootsWorkers.campaignBooth")}</Text>
             {workBoothOptions.length > 0 ? (
               <ScrollView style={styles.boothChoices} nestedScrollEnabled>
                 {workBoothOptions.map((booth) => {
@@ -421,26 +421,26 @@ export default function GrassrootsWorkers() {
               </ScrollView>
             ) : (
               <Text style={[styles.logSubtitle, { color: colors.textSecondary }]}>
-                Campaign booth records are unavailable. Refresh the campaign before logging work.
+                {translateScreenLabel("screenLabels.GrassrootsWorkers.campaignBoothRecordsAreUnavailableRefreshTheCampaign")}
               </Text>
             )}
 
-            <Text style={[styles.inputLabel, { color: colors.text, marginTop: 12 }]}>Session duration (minutes)</Text>
+            <Text style={[styles.inputLabel, { color: colors.text, marginTop: 12 }]}>{translateScreenLabel("screenLabels.GrassrootsWorkers.sessionDurationMinutes")}</Text>
             <TextInput
               style={[styles.modalInput, { color: colors.text, borderColor: colors.border }]}
               keyboardType="number-pad"
               value={durationMinutes}
               onChangeText={setDurationMinutes}
-              accessibilityLabel="Session duration in minutes"
+              accessibilityLabel={translateScreenLabel("screenLabels.GrassrootsWorkers.sessionDurationInMinutes")}
             />
 
-            <Text style={[styles.inputLabel, { color: colors.text, marginTop: 10 }]}>Households visited</Text>
+            <Text style={[styles.inputLabel, { color: colors.text, marginTop: 10 }]}>{translateScreenLabel("screenLabels.GrassrootsWorkers.householdsVisited")}</Text>
             <TextInput
               style={[styles.modalInput, { color: colors.text, borderColor: colors.border }]}
               keyboardType="number-pad"
               value={householdsVisited}
               onChangeText={setHouseholdsVisited}
-              accessibilityLabel="Households visited"
+              accessibilityLabel={translateScreenLabel("screenLabels.GrassrootsWorkers.householdsVisited")}
             />
 
             <Pressable
@@ -449,7 +449,7 @@ export default function GrassrootsWorkers() {
               disabled={logSaving || workBoothOptions.length === 0}
             >
               {logSaving ? <ActivityIndicator size="small" color="#FFFFFF" /> : null}
-              <Text style={styles.btnSaveWorkerText}>{logSaving ? 'Saving…' : 'Save work session'}</Text>
+              <Text style={styles.btnSaveWorkerText}>{logSaving ? translateScreenLabel("screenLabels.GrassrootsWorkers.saving") : translateScreenLabel("screenLabels.GrassrootsWorkers.saveWorkSession")}</Text>
             </Pressable>
           </View>
         </View>

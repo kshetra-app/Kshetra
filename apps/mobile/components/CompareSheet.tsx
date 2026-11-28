@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -75,6 +76,7 @@ function ConstituencyPicker({
   constituencies: UnifiedConstituency[];
   onSelect: (c: UnifiedConstituency) => void;
 }) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const [q, setQ] = useState('');
 
   const results = useMemo(() => {
@@ -96,7 +98,7 @@ function ConstituencyPicker({
         <Ionicons name="search" size={16} color="#6B7280" />
         <TextInput
           style={styles.pickerInput}
-          placeholder="Search..."
+          placeholder={translateScreenLabel("screenLabels.CompareSheet.search")}
           placeholderTextColor="#4B5563"
           value={q}
           onChangeText={setQ}
@@ -121,6 +123,7 @@ function ConstituencyPicker({
 }
 
 export default function CompareSheet({ visible, initialAcNo, onClose }: CompareSheetProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const stateCode = useActiveStateStore((s) => s.stateCode);
   const hasFull = hasFullDataForState(stateCode);
@@ -229,7 +232,7 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
               <View style={[styles.partyBadge, { backgroundColor: getPartyColor(left.winnerParty) }]}>
                 <Text style={styles.partyText}>{left.winnerParty}</Text>
               </View>
-              <Text style={styles.vsText}>vs</Text>
+              <Text style={styles.vsText}>{translateScreenLabel("analytics.vs")}</Text>
               <View style={[styles.partyBadge, { backgroundColor: getPartyColor(right.winnerParty) }]}>
                 <Text style={styles.partyText}>{right.winnerParty}</Text>
               </View>
@@ -241,7 +244,7 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
                 <CandidateAvatar name={left.winnerName} party={left.winnerParty} size={40} />
                 <Text style={styles.mlaName} numberOfLines={1}>{left.winnerName}</Text>
               </View>
-              <Text style={styles.statLabel}>MLA</Text>
+              <Text style={styles.statLabel}>{translateScreenLabel("screenLabels.CompareSheet.mla")}</Text>
               <View style={styles.mlaCol}>
                 <CandidateAvatar name={right.winnerName} party={right.winnerParty} size={40} />
                 <Text style={styles.mlaName} numberOfLines={1}>{right.winnerName}</Text>
@@ -310,7 +313,7 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
                       <Text style={[styles.statValue, { color: getPartyColor(normalize(lh.party)) }]}>
                         {lh.party}
                       </Text>
-                      <Text style={styles.statLabel}>{lh.year} Winner</Text>
+                      <Text style={styles.statLabel}>{translateScreenLabel("screenLabels.CompareSheet.value1Winner", { value1: lh.year })}</Text>
                       <Text style={[styles.statValue, { color: getPartyColor(normalize(rh.party)) }]}>
                         {rh.party}
                       </Text>
@@ -322,26 +325,26 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
                     {leftAcNo && isStrongholdForState(stateCode, leftAcNo, left.winnerParty) ? (
                       <View style={styles.strongholdBadge}>
                         <Ionicons name="shield-checkmark" size={12} color="#10B981" />
-                        <Text style={styles.strongholdText}>Stronghold</Text>
+                        <Text style={styles.strongholdText}>{translateScreenLabel("constituency.stronghold")}</Text>
                       </View>
                     ) : (
                       <View style={styles.swingBadge}>
                         <Ionicons name="swap-horizontal" size={12} color="#F59E0B" />
-                        <Text style={styles.swingText}>Swing</Text>
+                        <Text style={styles.swingText}>{translateScreenLabel("screenLabels.CompareSheet.swing")}</Text>
                       </View>
                     )}
                   </View>
-                  <Text style={styles.statLabel}>Loyalty</Text>
+                  <Text style={styles.statLabel}>{translateScreenLabel("screenLabels.CompareSheet.loyalty")}</Text>
                   <View style={styles.badgeWrap}>
                     {rightAcNo && isStrongholdForState(stateCode, rightAcNo, right.winnerParty) ? (
                       <View style={styles.strongholdBadge}>
                         <Ionicons name="shield-checkmark" size={12} color="#10B981" />
-                        <Text style={styles.strongholdText}>Stronghold</Text>
+                        <Text style={styles.strongholdText}>{translateScreenLabel("constituency.stronghold")}</Text>
                       </View>
                     ) : (
                       <View style={styles.swingBadge}>
                         <Ionicons name="swap-horizontal" size={12} color="#F59E0B" />
-                        <Text style={styles.swingText}>Swing</Text>
+                        <Text style={styles.swingText}>{translateScreenLabel("screenLabels.CompareSheet.swing")}</Text>
                       </View>
                     )}
                   </View>
@@ -356,7 +359,7 @@ export default function CompareSheet({ visible, initialAcNo, onClose }: CompareS
           <View style={styles.emptyState}>
             <Ionicons name="git-compare" size={48} color="#1F2937" />
             <Text style={styles.emptyText}>
-              Select two constituencies to compare them side by side
+              {translateScreenLabel("screenLabels.CompareSheet.selectTwoConstituenciesToCompareThemSideBy")}
             </Text>
           </View>
         )}

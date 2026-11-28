@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { execSync } from 'child_process';
+import { verifyCheckoutLineage } from './lib/checkout-lineage.mjs';
 
 console.log('=== RUNNING GOVERNANCE CONSISTENCY TEST (AMENDMENT v1.5-A REMEDIATED) ===\n');
 
@@ -150,7 +151,7 @@ assert.ok(decisionContent.includes('PLAN APPROVAL ≠ IMPLEMENTATION ≠ INDEPEN
 console.log('[PASS] Check 7: DECISION_LOG.md records DEC-016, DEC-034, DEC-035, DEC-036, and DEC-037 with correct lifecycle separation semantics.');
 
 // 8. Comprehensive Git HEAD, Remote Consistency & Fail-Closed Provenance Invariant (DEC-013 / DEC-022)
-const localHead = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
+const localHead = verifyCheckoutLineage();
 assert.strictEqual(localHead.length, 40, 'Local HEAD SHA must be a valid 40-character SHA');
 
 let originMaster = '';
@@ -159,42 +160,6 @@ try {
   assert.strictEqual(originMaster.length, 40, 'origin/master SHA must be a valid 40-character SHA');
 } catch (err) {
   assert.fail(`origin/master could not be resolved: ${err.message}`);
-}
-
-// GitHub pull requests use a detached synthetic merge commit. Validate that
-// exact commit and its two parents against the canonical base and PR head,
-// matching the repository's v1.6 governance rule. Push/local executions keep
-// the strict canonical-master equality invariant.
-const githubEventName = process.env.GITHUB_EVENT_NAME || '';
-if (githubEventName === 'pull_request') {
-  const baseRef = process.env.GITHUB_BASE_REF || '';
-  const headRef = process.env.GITHUB_HEAD_REF || '';
-  const githubSha = process.env.GITHUB_SHA || '';
-  const activeBranch = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
-
-  assert.strictEqual(baseRef, 'master', 'Governance PR base must be canonical master');
-  assert.strictEqual(activeBranch, 'HEAD', 'GitHub pull_request checkout must use detached merge HEAD');
-  assert.strictEqual(localHead, githubSha, 'PR checkout HEAD must match GITHUB_SHA');
-
-  const firstParent = execSync('git rev-parse HEAD^1', { encoding: 'utf8' }).trim();
-  const secondParent = execSync('git rev-parse HEAD^2', { encoding: 'utf8' }).trim();
-  assert.strictEqual(firstParent, originMaster, 'PR merge first parent must match origin/master');
-  assert.match(headRef, /^[A-Za-z0-9._/-]+$/, 'PR head branch must be a safe branch name');
-  assert.ok(!headRef.includes('..'), 'PR head branch must not contain a path traversal segment');
-
-  let originHead = '';
-  try {
-    originHead = execSync(`git rev-parse "origin/${headRef}"`, { encoding: 'utf8' }).trim();
-  } catch (err) {
-    assert.fail(`PR head origin/${headRef} could not be resolved: ${err.message}`);
-  }
-  assert.strictEqual(secondParent, originHead, 'PR merge second parent must match origin/<head>');
-} else {
-  assert.strictEqual(
-    localHead,
-    originMaster,
-    `Local HEAD (${localHead}) must strictly match origin/master (${originMaster})`
-  );
 }
 
 // Working tree must be completely clean (fail-closed, no exceptions)
@@ -243,7 +208,7 @@ assert.strictEqual(
   `CURRENT_REMOTE_HEAD (${currentRemoteHeadResolved}) must strictly match VERIFIED_REMOTE_HEAD (${verifiedRemoteHeadResolved})`
 );
 
-console.log(`[PASS] Check 8: Git HEAD (${localHead}), origin/master (${originMaster}), clean working tree, and strict CURRENT_REMOTE_HEAD equality verified for ${githubEventName === 'pull_request' ? 'pull-request merge lineage' : 'canonical execution'}.`);
+console.log(`[PASS] Check 8: Git HEAD (${localHead}), origin/master (${originMaster}), clean working tree, and strict CURRENT_REMOTE_HEAD equality verified for the active checkout.`);
 
 // 9. Machine-Verifiable Implementation Authorization Gate & Five-Coordinate Model (Control M / DEC-043)
 assert.ok(protocolContent.includes('CONTROL M — MACHINE-VERIFIABLE IMPLEMENTATION AUTHORIZATION GATE'), 'Protocol must document Control M');

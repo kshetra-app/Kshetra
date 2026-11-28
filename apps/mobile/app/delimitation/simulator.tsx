@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useCallback, useMemo, useState } from 'react';
 import {
   View,
@@ -55,6 +56,7 @@ const MODE_CONFIG: Record<SimMode, ModeInfo> = {
 };
 
 export default function SimulatorScreen() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const router = useRouter();
   const { t } = useTranslation();
   const { colors } = useTheme();
@@ -299,11 +301,10 @@ export default function SimulatorScreen() {
             <View style={[styles.provenanceCard, { backgroundColor: colors.surface, borderColor: '#3B82F6' }]}>
               <View style={styles.provenanceHeader}>
                 <Ionicons name="information-circle" size={16} color="#3B82F6" />
-                <Text style={styles.provenanceBadge}>DATA STATUS: POLIGRAM SCENARIO</Text>
+                <Text style={styles.provenanceBadge}>{translateScreenLabel("screenLabels.simulator.dataStatusPoligramScenario")}</Text>
               </View>
               <Text style={[styles.provenanceText, { color: colors.textSecondary }]}>
-                State Assembly & Intra-State District Projection — Article 170 / applicable statutory framework.
-                This is an academic research simulation, NOT an official order of the Delimitation Commission of India.
+                {translateScreenLabel("screenLabels.simulator.stateAssemblyIntraStateDistrictProjectionArticle170")}
               </Text>
             </View>
 
@@ -433,9 +434,7 @@ export default function SimulatorScreen() {
 
                 <View style={[styles.qualityPill, { backgroundColor: '#10B98120' }]}>
                   <Ionicons name="checkmark-circle" size={14} color="#10B981" />
-                  <Text style={[styles.qualityPillText, { color: '#10B981' }]}>
-                    Simulation Quality: {quickSim.qualityScore}% within ±10% deviation bound
-                  </Text>
+                  <Text style={[styles.qualityPillText, { color: '#10B981' }]}>{translateScreenLabel("screenLabels.simulator.simulationQualityValue1Within10DeviationBound", { value1: quickSim.qualityScore })}</Text>
                 </View>
 
                 {/* Step by step derivation */}

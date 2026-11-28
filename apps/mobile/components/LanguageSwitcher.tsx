@@ -55,7 +55,7 @@ export default function LanguageSwitcher({ compact = false }: LanguageSwitcherPr
           numberOfLines={1}
           ellipsizeMode="tail"
         >
-          {currentLang?.nativeLabel ?? 'English'}
+          {currentLang?.nativeLabel ?? t("language.en")}
         </Text>
         <Ionicons name="chevron-down" size={compact ? 10 : 12} color={colors.textMuted} />
       </Pressable>

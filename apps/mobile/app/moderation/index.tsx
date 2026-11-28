@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
 import {
   View,
@@ -49,6 +50,7 @@ interface ReportItem {
 }
 
 export default function GeneralModerationQueueScreen() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { colors } = useTheme();
@@ -126,12 +128,12 @@ export default function GeneralModerationQueueScreen() {
         }
 
         setReports((prev) => prev.filter((r) => r.id !== report.id));
-        Alert.alert('Action Applied', `Report processed successfully: ${actionType.replace('_', ' ')}`);
+        Alert.alert(translateScreenLabel("screenLabels.moderation.actionApplied"), translateScreenLabel("screenLabels.moderation.reportProcessedSuccessfullyValue1", { value1: actionType.replace('_', ' ') }));
       } else {
-        Alert.alert('Error', result.error || 'Failed to apply moderation action');
+        Alert.alert(translateScreenLabel("screenLabels.moderation.error"), result.error || translateScreenLabel("screenLabels.moderation.failedToApplyModerationAction"));
       }
     } catch (err: any) {
-      Alert.alert('Error', err.message || 'Network request failed');
+      Alert.alert(translateScreenLabel("screenLabels.moderation.error"), err.message || translateScreenLabel("screenLabels.moderation.networkRequestFailed"));
     } finally {
       setActionInProgress(null);
     }
@@ -246,7 +248,7 @@ export default function GeneralModerationQueueScreen() {
                     </View>
 
                     <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text }}>
-                      {report.reported_user?.display_name || `User ID: ${report.reported_user_id.slice(0, 8)}...`}
+                      {report.reported_user?.display_name || translateScreenLabel("screenLabels.moderation.userIdValue1", { value1: report.reported_user_id.slice(0, 8) })}
                     </Text>
 
                     {report.conversation_id && (

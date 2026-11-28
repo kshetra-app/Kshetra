@@ -2,6 +2,546 @@
  * OR translation
  */
 const or = {
+  "screenLabels": {
+    "EventCard": {
+      "rsvp": "ଉପସ୍ଥିତି ନିଶ୍ଚିତ କରନ୍ତୁ"
+    },
+    "news": {
+      "noSavedStoriesYet": "ଏପର୍ଯ୍ୟନ୍ତ କ saved ଣସି ସ saved ୍ଚୟ କାହାଣୀ ନାହିଁ |",
+      "noStoriesAreAvailableForThisArea": "ଏହି କ୍ଷେତ୍ର ପାଇଁ ଏପର୍ଯ୍ୟନ୍ତ କ stories ଣସି କାହାଣୀ ଉପଲବ୍ଧ ନାହିଁ |",
+      "noValue1StoriesAreAvailableRightNow": "କ Q ଣସି {{value1}} କାହାଣୀ ବର୍ତ୍ତମାନ ଉପଲବ୍ଧ ନାହିଁ |",
+      "noNewsStoriesAreAvailableRightNow": "ବର୍ତ୍ତମାନ କ No ଣସି ସମ୍ବାଦ କାହାଣୀ ଉପଲବ୍ଧ ନାହିଁ |"
+    },
+    "hierarchy": {
+      "value1Records": "{{value1}} ରେକର୍ଡଗୁଡିକ |",
+      "value1Value2Value3DrillDown": "{{value1}} → {{value2}} → {{value3}} ଡ୍ରିଲ୍-ଡାଉନ୍ |"
+    },
+    "moderation": {
+      "actionApplied": "କାର୍ଯ୍ୟ ପ୍ରୟୋଗ |",
+      "reportProcessedSuccessfullyValue1": "ରିପୋର୍ଟ ସଫଳତାର ସହିତ ପ୍ରକ୍ରିୟାକରଣ: {{value1}} |",
+      "error": "ତ୍ରୁଟି |",
+      "failedToApplyModerationAction": "ମଧ୍ୟମ କାର୍ଯ୍ୟ ପ୍ରୟୋଗ କରିବାରେ ବିଫଳ |",
+      "networkRequestFailed": "ନେଟୱର୍କ ଅନୁରୋଧ ବିଫଳ ହେଲା |",
+      "userIdValue1": "ବ୍ୟବହାରକାରୀ ID: {{value1}}..."
+    },
+    "ComposeSheet": {
+      "mp4": "MP4",
+      "optionValue1": "ବିକଳ୍ପ {{value1}} |"
+    },
+    "ProfileHeroCard": {
+      "label1stRunnerUp": "ପ୍ରଥମ ରନର୍ ଅପ୍ |",
+      "label2ndRunnerUp": "୨ୟ ରନର୍ ଅପ୍ |",
+      "yrs": "ବର୍ଷ"
+    },
+    "ProjectCard": {
+      "acValue1": "· AC # {{value1}} |"
+    },
+    "RegisterAspirantModal": {
+      "pleaseLogInBeforeRegisteringAsAn": "ଏକ ଆଶାକର୍ମୀ ଭାବରେ ପଞ୍ଜୀକରଣ କରିବା ପୂର୍ବରୁ ଦୟାକରି ଲଗ୍ ଇନ୍ କରନ୍ତୁ |"
+    },
+    "dashboard": {
+      "reporter": "ସାମ୍ବାଦିକ",
+      "noLoadedReportsMatchTheseFiltersMoreReports": "କ fil ଣସି ଲୋଡ୍ ରିପୋର୍ଟ ଏହି ଫିଲ୍ଟର୍ ସହିତ ମେଳ ଖାଉ ନାହିଁ | ଖୋଜିବାକୁ ଅଧିକ ରିପୋର୍ଟ ଉପଲବ୍ଧ |",
+      "couldNotLoadTheNextPageTheReports": "ପରବର୍ତ୍ତୀ ପୃଷ୍ଠା ଲୋଡ୍ ହୋଇପାରିଲା ନାହିଁ | ପୂର୍ବରୁ ଦେଖାଯାଇଥିବା ରିପୋର୍ଟଗୁଡ଼ିକ ଅପରିବର୍ତ୍ତିତ |",
+      "value1AlertSValue2AwaitingAcknowledgment": "{{value1}} ଆଲର୍ଟ (ଗୁଡିକ) · {{value2}} ସ୍ୱୀକୃତି ଅପେକ୍ଷାରେ |",
+      "value1Alert": "{{value1}} ସତର୍କତା |",
+      "watchLiveFeed": "ଲାଇଭ୍ ଫିଡ୍ ଦେଖନ୍ତୁ |"
+    },
+    "explore": {
+      "value1Value2Found": "{{value1}}  {{value2}} ମିଳିଲା |"
+    },
+    "tabs": {
+      "urbanValue1": "URBAN {{value1}} |",
+      "ruralGramPanchayat": "ଗ୍ରାମୀଣ ଗ୍ରାମ ପଞ୍ଚାୟତ |",
+      "othersValue1": "ଅନ୍ୟମାନେ: {{value1}} %",
+      "value1Cr": "₹ {{value1}} Cr",
+      "netValue1Cr": "ନେଟ୍: ₹ {{value1}} Cr",
+      "value1Yrs": "{{value1}} ବର୍ଷ",
+      "dobValue1": "DOB: {{value1}} |",
+      "tapAnyStateToExploreItsAssemblyConstituencies": "ଏହାର ବିଧାନସଭା ନିର୍ବାଚନମଣ୍ଡଳୀଗୁଡିକୁ ଅନୁସନ୍ଧାନ କରିବାକୁ ଯେକ state ଣସି ରାଜ୍ୟକୁ ଟ୍ୟାପ୍ କରନ୍ତୁ |",
+      "boothValue1": "ବୁଥ୍ # {{value1}} |",
+      "acValue1Value2": "AC # {{value1}} · {{value2}} |",
+      "value1AcValue2": "{{value1}} (AC # {{value2}} )",
+      "acValue1": "AC # {{value1}} |",
+      "label1st": "ପ୍ରଥମ",
+      "label2nd": "୨ୟ",
+      "label3rd": "୨ୟ"
+    },
+    "intelligence": {
+      "value1Value2AssemblyElections": "{{value1}}  {{value2}} · ବିଧାନସଭା ନିର୍ବାଚନ |",
+      "seatValue1": "ଆସନ {{value1}} |",
+      "value1SeatValue2": "{{value1}} ଆସନ {{value2}} |",
+      "value1MarginOfValue2Votes": "{{value1}} - {{value2}} ଭୋଟର ମାର୍ଜିନ୍ |",
+      "marginDataUnavailable": "ମାର୍ଜିନ୍ ଡାଟା ଉପଲବ୍ଧ ନାହିଁ |",
+      "value1AppearsInValue2RecordedConstituenciesValue3": "{{value1}}  {{value2}} ରେକର୍ଡ ହୋଇଥିବା ନିର୍ବାଚନମଣ୍ଡଳୀରେ ଦେଖାଯାଏ (ପାର୍ଟି-ଜଣାଶୁଣା ରେକର୍ଡଗୁଡିକର {{value3}} %)",
+      "value1WithValue2SeatsValue3": "{{value2}} ସିଟ୍ ସହିତ {{value1}} ( {{value3}} %)",
+      "partyDataUnavailable": "ପାର୍ଟି ତଥ୍ୟ ଉପଲବ୍ଧ ନାହିଁ |",
+      "dataValue1StateElectionCommission": "ତଥ୍ୟ: {{value1}} ରାଜ୍ୟ ନିର୍ବାଚନ ଆୟୋଗ |",
+      "value1Turnout": "{{value1}} % ମତଦାନ |"
+    },
+    "profile": {
+      "featureFlagsDevSwitches": "ବ flag ଶିଷ୍ଟ୍ୟ ଫ୍ଲାଗସ୍ ଏବଂ ଦେବ ସୁଇଚ୍ |",
+      "value1TapForDevSwitches": "{{value1}} • ଦେବ ସୁଇଚ୍ ପାଇଁ ଟ୍ୟାପ୍ କରନ୍ତୁ |"
+    },
+    "shorts": {
+      "value1ShortValue2": "{{value1}} କ୍ଷୁଦ୍ର {{value2}} |"
+    },
+    "candidateXray": {
+      "candidateRecordNotFound": "ପ୍ରାର୍ଥୀ ରେକର୍ଡ ମିଳିଲା ନାହିଁ |",
+      "affidavitProfilesHaveBeenConsolidatedIntoLegislatorProfiles": "ଆଫିଡେଭିଟ୍ ପ୍ରୋଫାଇଲଗୁଡିକ ବିଧାନସଭା ପ୍ରୋଫାଇଲରେ ଏକତ୍ର କରାଯାଇଛି |",
+      "loadingProfile": "ପ୍ରୋଫାଇଲ୍ ଲୋଡ୍ କରୁଛି..."
+    },
+    "constituency": {
+      "notReported": "ରିପୋର୍ଟ ହୋଇନାହିଁ |",
+      "shareConstituencyCard": "ବିଧାନସଭା କାର୍ଡ ଅଂଶୀଦାର କରନ୍ତୁ |",
+      "profileRecord": "ପ୍ରୋଫାଇଲ୍ ରେକର୍ଡ |",
+      "historicalPoliticalData19992026": "Histor ତିହାସିକ ରାଜନ Political ତିକ ତଥ୍ୟ (1999–2026)",
+      "viewAllValue1": "ସମସ୍ତ ଦେଖନ୍ତୁ ( {{value1}} )",
+      "assemblyElectionPodiumResultsWith1st2ndAnd": "ପ୍ରଥମ, ୨ୟ, ଏବଂ 3rd ୟ ସ୍ଥାନ ପ୍ରାର୍ଥୀ, ମାର୍ଜିନ ଏବଂ ଭୋଟ୍ ସେୟାର ସହିତ ବିଧାନସଭା ନିର୍ବାଚନ ପୋଡିୟମ୍ ଫଳାଫଳ:",
+      "showAllValue1PastElections1999Value2": "ସମସ୍ତ {{value1}} ଅତୀତ ନିର୍ବାଚନ ଦେଖାନ୍ତୁ (1999– {{value2}} )"
+    },
+    "simulator": {
+      "dataStatusPoligramScenario": "ଡାଟା ଷ୍ଟାଟସ୍: ପଲିଗ୍ରାମ୍ ସ୍କେନାରିଓ |",
+      "stateAssemblyIntraStateDistrictProjectionArticle170": "ରାଜ୍ୟ ସଭା ଏବଂ ଆନ୍ତ State ରାଜ୍ୟ ଜିଲ୍ଲା ପ୍ରକଳ୍ପ - ଧାରା 170 / ପ୍ରଯୁଜ୍ୟ ବିଧିଗତ framework ାଞ୍ଚା | ଏହା ଏକ ଏକାଡେମିକ୍ ରିସର୍ଚ୍ଚ ସିମୁଲେସନ୍, ଭାରତର ଡିଲିମିଟେସନ୍ କମିଶନଙ୍କ ଅଫିସିଆଲ୍ ଆଦେଶ ନୁହେଁ |",
+      "simulationQualityValue1Within10DeviationBound": "ଅନୁକରଣ ଗୁଣ: {{value1}} % ± 10% ବିଚ୍ଛିନ୍ନତା ମଧ୍ୟରେ |"
+    },
+    "state": {
+      "populationValue1Value2Seat": "ଜନସଂଖ୍ୟା: {{value1}} · {{value2}} / ଆସନ |",
+      "constitutionalDeviationValue1Value2": "ସାମ୍ବିଧାନିକ ବିଘ୍ନ: {{value1}}  {{value2}} %",
+      "scValue1": "SC ( {{value1}} %)",
+      "stValue1": "ST ( {{value1}} %)",
+      "value1DistrictsValue2ProjectedSeatsIdealValue3Seat": "{{value1}} ଜିଲ୍ଲା · {{value2}} ପ୍ରୋଜେକ୍ଟ ସିଟ୍ · ଆଦର୍ଶ: {{value3}} / ସିଟ୍",
+      "value1Seats": "{{value1}} ଆସନ |",
+      "scValue1StValue2UrbanValue3": "SC {{value1}} % · ST {{value2}} % · ସହରୀ {{value3}} %",
+      "acValue1Value2": "AC # {{value1}}  {{value2}} |",
+      "districtValue1Value2": "ଜିଲ୍ଲା: {{value1}}  {{value2}} |"
+    },
+    "editProfile": {
+      "yourName": "ତୁମର ନାମ",
+      "tellUsAboutYourself": "ନିଜ ବିଷୟରେ ଆମକୁ କୁହ..."
+    },
+    "issue": {
+      "flagValue1ForRepresentativeAttentionInPoligram": "ପଲିଗ୍ରାମରେ ପ୍ରତିନିଧୀ ଧ୍ୟାନ ପାଇଁ ପତାକା \" {{value1}} \"?",
+      "alreadyDisputed": "ପୂର୍ବରୁ ବିବାଦୀୟ |",
+      "youHaveAlreadyDisputedThisResolution": "ଆପଣ ଏହି ରିଜୋଲ୍ୟୁସନ୍ କୁ ବିବାଦ କରିସାରିଛନ୍ତି |",
+      "doYouBelieveThisIssueHasNot": "ଆପଣ ବିଶ୍ believe ାସ କରନ୍ତି କି ଏହି ସମସ୍ୟାର ସଠିକ୍ ସମାଧାନ ହୋଇନାହିଁ? ତୁମର ବିବାଦ ରେକର୍ଡ ହେବ | ଯଦି 5+ ନାଗରିକ ବିବାଦ କରନ୍ତି, ତେବେ ସମସ୍ୟାଟି ସ୍ୱୟଂଚାଳିତ ଭାବେ ଖୋଲିବ |",
+      "dispute": "ବିବାଦ |",
+      "byValue1": "{{value1}} ଦ୍ୱାରା |",
+      "resolvedValue1": "{{value1}} ସମାଧାନ ହୋଇଛି |",
+      "reopenedValue1CitizensDisputedTheResolution": "ପୁନ ened ଖୋଲିଲା - {{value1}} ନାଗରିକମାନେ ରିଜୋଲ୍ୟୁସନକୁ ବିବାଦ କଲେ |",
+      "evidenceValue1": "ପ୍ରମାଣ ( {{value1}} )",
+      "showAllValue1MediaFiles": "ସମସ୍ତ {{value1}} ମିଡିଆ ଫାଇଲଗୁଡିକ ଦେଖାନ୍ତୁ |",
+      "statusTimeline": "ସ୍ଥିତି ସମୟସୀମା |",
+      "official": "ସରକାରୀ"
+    },
+    "leadershipAcademy": {
+      "moduleUnavailable": "ମଡ୍ୟୁଲ୍ ଉପଲବ୍ଧ ନାହିଁ",
+      "theModuleCouldNotBeOpenedRight": "ମଡ୍ୟୁଲ୍ ବର୍ତ୍ତମାନ ଖୋଲାଯାଇ ପାରିଲା ନାହିଁ |",
+      "couldNotJoinChallenge": "ଚ୍ୟାଲେଞ୍ଜରେ ଯୋଗ ଦେଇ ପାରିଲା ନାହିଁ |",
+      "leadershipAcademyIsCurrentlyUnavailable": "ନେତୃତ୍ୱ ଏକାଡେମୀ ବର୍ତ୍ତମାନ ଉପଲବ୍ଧ ନାହିଁ |",
+      "loadingModules": "ମଡ୍ୟୁଲ୍ ଲୋଡିଙ୍ଗ୍…",
+      "noPublishedModulesAreAvailable": "କ published ଣସି ପ୍ରକାଶିତ ମଡ୍ୟୁଲ୍ ଉପଲବ୍ଧ ନାହିଁ |"
+    },
+    "legislator": {
+      "value1ElectionPerformance": "{{value1}} ନିର୍ବାଚନ ପ୍ରଦର୍ଶନ |",
+      "electionPerformance": "ନିର୍ବାଚନ ପ୍ରଦର୍ଶନ",
+      "couldNotFindDataForAcValue1": "AC # {{value1}} ପାଇଁ ତଥ୍ୟ ଖୋଜି ପାରିଲା ନାହିଁ |",
+      "profession": "ବୃତ୍ତି",
+      "maritalStatus": "ବ ital ବାହିକ ସ୍ଥିତି",
+      "dateOfBirth": "ଜନ୍ମ ତାରିଖ",
+      "assemblyTermStatus": "ବିଧାନସଭା ଅବଧି ଏବଂ ସ୍ଥିତି |",
+      "term": "ଅବଧି",
+      "podiumRank": "ପୋଡିୟମ୍ ରାଙ୍କ୍ |",
+      "currentParty": "ସାମ୍ପ୍ରତିକ ପାର୍ଟି |",
+      "constituencyElectionHistory": "ବିଧାନସଭା ନିର୍ବାଚନ ଇତିହାସ",
+      "fullElectionCyclesForValue1Value2TapAny": "# {{value1}}  {{value2}} ପାଇଁ ସମ୍ପୂର୍ଣ୍ଣ ନିର୍ବାଚନ ଚକ୍ର | ସେମାନଙ୍କର ପ୍ରୋଫାଇଲ୍ ଡୋସିଅର୍ ଦେଖିବାକୁ ଯେକ candidate ଣସି ପ୍ରାର୍ଥୀଙ୍କୁ ଟ୍ୟାପ୍ କରନ୍ତୁ |"
+    },
+    "distribution": {
+      "shipsAsASeparateLightweightBuildAppsWeb": "ଏକ ଅଲଗା ହାଲୁକା ନିର୍ମାଣ (ଜାହାଜ / ୱେବ୍-ରିସିଭର୍) ଭାବରେ ଜାହାଜ | ଦେଶୀ ୱିଣ୍ଡୋଜ୍ + ଆଣ୍ଡ୍ରଏଡ୍ ଟିଭି ରାପରଗୁଡ଼ିକ ସମାନ ପୃଷ୍ଠାରେ ଦ୍ୱିତୀୟ ପର୍ଯ୍ୟାୟ ପଲିସ୍ |"
+    },
+    "localBodies": {
+      "sourceAndhraPradeshStateElectionCommissionApsec": "ଉତ୍ସ: ଆନ୍ଧ୍ରପ୍ରଦେଶ ରାଜ୍ୟ ନିର୍ବାଚନ ଆୟୋଗ (APSEC) - ସ୍ଥାନୀୟ ସ୍ଥାନୀୟ ନିର୍ବାଚନ ଫଳାଫଳ | ଗ୍ରାମ ପଞ୍ଚାୟତ ସର୍ଭେ ଆନୁଷ୍ଠାନିକ ଭାବରେ ପାର୍ଟି ନୁହେଁ।",
+      "sourceTelanganaStateElectionCommissionTsecKnow": "ଉତ୍ସ: ତେଲେଙ୍ଗାନା ରାଜ୍ୟ ନିର୍ବାଚନ ଆୟୋଗ (TSEC) - ଆପଣଙ୍କର ଜନ ପ୍ରତିନିଧୀ (ଗ୍ରାମୀଣ) ଜାଣନ୍ତୁ | ଗ୍ରାମ ପଞ୍ଚାୟତ ସର୍ଭେ ଆନୁଷ୍ଠାନିକ ଭାବରେ ପାର୍ଟି ନୁହେଁ।",
+      "ts": "TS",
+      "ap": "AP",
+      "mandalParishadTerritorialConstituencyMptcValue1": "ମାଣ୍ଡାଲ୍ ପାରିଶ୍ ଟେରିଟୋରିଆଲ୍ କନଷ୍ଟିଚ୍ୟୁଟ୍ (MPTC) ( {{value1}} )",
+      "gramPanchayatsValue1": "GRAM PANCHAYATS ( {{value1}} )"
+    },
+    "onboarding": {
+      "selectedValue1Value2Value3": "ମନୋନୀତ: # {{value1}}  {{value2}}  {{value3}} |"
+    },
+    "parliament": {
+      "lokSabha18th": "ଲୋକସଭା (18 ତମ)",
+      "value1Yrs": "{{value1}} ବର୍ଷ",
+      "lsValue1RsValue2TotalValue3": "LS: {{value1}} · RS: {{value2}} · ସମୁଦାୟ: {{value3}}"
+    },
+    "reader": {
+      "article": "ପ୍ରବନ୍ଧ",
+      "contentFromValue1": "{{value1}} ରୁ ବିଷୟବସ୍ତୁ |"
+    },
+    "representative": {
+      "value1Record": "{{value1}} ରେକର୍ଡ |",
+      "officiallyNonPartyStatePanchayatiRajAct": "ସରକାରୀ ଭାବେ ଅଣ ପାର୍ଟି (ରାଜ୍ୟ ପଞ୍ଚାୟତ ରାଜ ଆଇନ)",
+      "officialElectionResultsFromAndhraPradeshState": "ଆନ୍ଧ୍ରପ୍ରଦେଶ ରାଜ୍ୟ ନିର୍ବାଚନ ଆୟୋଗ (APSEC) ରୁ ସରକାରୀ ନିର୍ବାଚନ ଫଳାଫଳ",
+      "officialElectionResultsFromTelanganaStateElection": "ତେଲେଙ୍ଗାନା ରାଜ୍ୟ ନିର୍ବାଚନ ଆୟୋଗ (TSEC) ରୁ ସରକାରୀ ନିର୍ବାଚନ ଫଳାଫଳ - ଆପଣଙ୍କର ପ୍ରତିନିଧୀଙ୍କୁ ଜାଣନ୍ତୁ (KYR)",
+      "thisPollIsOfficiallyNonPartyPartyAffiliation": "ଏହି ସର୍ଭେ ଆନୁଷ୍ଠାନିକ ଭାବେ ଅଣ-ପାର୍ଟି ଅଟେ | ପାର୍ଟି ଅନୁବନ୍ଧ ( {{value1}} ) ଡି-ଫାକ୍ଟୋ / ଅଣଆନୁଷ୍ଠାନିକ |",
+      "wardValue1": "ୱାର୍ଡ {{value1}} |",
+      "value1DeclaredCaseValue2": "{{value1}} ଘୋଷିତ ମାମଲା {{value2}} |",
+      "verifyOnStateElectionCommissionPortal": "ରାଜ୍ୟ ନିର୍ବାଚନ ଆୟୋଗ ପୋର୍ଟାଲରେ ଯାଞ୍ଚ କରନ୍ତୁ |",
+      "suggestAnEditWithSource": "ଏକ ସମ୍ପାଦନା ପରାମର୍ଶ କରନ୍ତୁ (ଉତ୍ସ ସହିତ)"
+    },
+    "edit": {
+      "noChanges": "କ changes ଣସି ପରିବର୍ତ୍ତନ ନାହିଁ |",
+      "editAtLeastOneFieldBeforeSubmitting": "ଦାଖଲ କରିବା ପୂର୍ବରୁ ଅତିକମରେ ଗୋଟିଏ କ୍ଷେତ୍ର ସଂପାଦନ କରନ୍ତୁ |",
+      "sourceRequired": "ଉତ୍ସ ଆବଶ୍ୟକ |",
+      "enterAnHttpsLinkSupportingTheCorrection": "ସଂଶୋଧନକୁ ସମର୍ଥନ କରୁଥିବା ଏକ HTTPS ଲିଙ୍କ୍ ପ୍ରବେଶ କରନ୍ତୁ |",
+      "thankYou": "ଧନ୍ୟବାଦ",
+      "yourCorrectionHasBeenSubmittedForReview": "ସମୀକ୍ଷା ପାଇଁ ଆପଣଙ୍କର ସଂଶୋଧନ ଦାଖଲ କରାଯାଇଛି |",
+      "submissionFailed": "ଦାଖଲ ବିଫଳ ହେଲା |",
+      "pleaseTryAgainLater": "ଦୟାକରି ପରେ ପୁନର୍ବାର ଚେଷ୍ଟା କରନ୍ତୁ |",
+      "submitting": "ଦାଖଲ…",
+      "submitForModeration": "ମଧ୍ୟମତା ପାଇଁ ଦାଖଲ କରନ୍ତୁ |",
+      "theRepresentativeProfileCouldNotBeLoaded": "ପ୍ରତିନିଧୀ ପ୍ରୋଫାଇଲ୍ ଲୋଡ୍ ହୋଇପାରିଲା ନାହିଁ |",
+      "value1Value2Value3EveryEditRequiresAVerifiable": "{{value1}}  {{value2}}  {{value3}} ପ୍ରତ୍ୟେକ ସମ୍ପାଦନା ଏକ ଯାଞ୍ଚଯୋଗ୍ୟ ଉତ୍ସ ଆବଶ୍ୟକ କରେ ଏବଂ ଉତ୍ତରଦାୟିତ୍ୱ ପାଇଁ ଆଙ୍ଗୁଠି ଛାପାଯାଇଥାଏ | ପ୍ରକାଶନ ପୂର୍ବରୁ ସମ୍ପାଦନାଗୁଡିକ ନିୟନ୍ତ୍ରିତ |",
+      "sourceLinkRequired": "ଉତ୍ସ ଲିଙ୍କ୍ (ଆବଶ୍ୟକ)",
+      "httpsTsecGovInOrNewsGazetteUrl": "https: //tsec.gov.in /... କିମ୍ବା ସମ୍ବାଦ / ଗେଜେଟ୍ URL |",
+      "citationNoteOptional": "ଉଲ୍ଲେଖ / ଟିପ୍ପଣୀ (ବ al କଳ୍ପିକ)",
+      "eGTsecKnowYourRepresentativePagePublished": "ଯଥା TSEC ଜାଣ-ତୁମର-ପ୍ରତିନିଧୀ ପୃଷ୍ଠା, 2020-12-04 ପ୍ରକାଶିତ |"
+    },
+    "search": {
+      "trySearchingBy": "ଦ୍ୱାରା ଖୋଜିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ:",
+      "constituencyNameJubileeHills": "• ବିଧାନସଭା ନାମ: \"ଯୁବରାଜ ପାହାଡ\"",
+      "acNumber141": "• AC ନମ୍ବର: \"141\"",
+      "mlaNameRevanthReddy": "• ବିଧାୟକଙ୍କ ନାମ: \"ରେଭାନ୍ଥ ରେଡ୍ଡୀ\"",
+      "partyBjpOrInc": "• ପାର୍ଟି: \"ବିଜେପି\" କିମ୍ବା \"INC\"",
+      "issueWaterSupply": "• ଇସୁ: \"ଜଳ ଯୋଗାଣ\""
+    },
+    "AdCard": {
+      "featuredPartner": "ବ ured ଶିଷ୍ଟ୍ୟ ସହଭାଗୀ |",
+      "sponsored": "ପ୍ରାୟୋଜିତ |",
+      "commercialPromotion": "ବାଣିଜ୍ୟିକ ପଦୋନ୍ନତି |"
+    },
+    "BroadcastPollCard": {
+      "liveAudiencePoll": "LIVE AUDIENCE POLL |",
+      "pollResults": "ପୋଲ୍ ଫଳାଫଳ |",
+      "value1Votes": "{{value1}} ଭୋଟ୍ |",
+      "submittingAnonymousBallot": "ଅଜ୍ onymous ାତ ମତଦାନ ଦାଖଲ..."
+    },
+    "BroadcastQaModal": {
+      "validationError": "ବ id ଧତା ତ୍ରୁଟି",
+      "questionMustBeAtLeast5Characters": "ପ୍ରଶ୍ନ ଅତିକମରେ 5 ଅକ୍ଷର ହେବା ଜରୁରୀ |",
+      "privacyProtection": "ଗୋପନୀୟତା ସୁରକ୍ଷା",
+      "pleaseDoNotIncludeEmailAddressesIn": "ଦୟାକରି ପ୍ରଶ୍ନଗୁଡିକରେ ଇମେଲ ଠିକଣା ଅନ୍ତର୍ଭୂକ୍ତ କରନ୍ତୁ ନାହିଁ |",
+      "pleaseDoNotIncludePhoneNumbersIn": "ଦୟାକରି ପ୍ରଶ୍ନରେ ଫୋନ୍ ନମ୍ବର ଅନ୍ତର୍ଭୂକ୍ତ କରନ୍ତୁ ନାହିଁ |",
+      "submissionError": "ଦାଖଲ ତ୍ରୁଟି |",
+      "failedToSubmitQuestion": "ପ୍ରଶ୍ନ ଦାଖଲ କରିବାରେ ବିଫଳ |",
+      "audienceQA": "ଦର୍ଶକ ପ୍ରଶ୍ନ ଏବଂ ଉତ୍ତର |",
+      "noAudienceQuestionsYetBeTheFirstTo": "ଏପର୍ଯ୍ୟନ୍ତ କ audience ଣସି ଦର୍ଶକଙ୍କ ପ୍ରଶ୍ନ ନାହିଁ | ପଚାରିବାରେ ପ୍ରଥମ ହୁଅ!",
+      "pinnedByHost": "ହୋଷ୍ଟ ଦ୍ P ାରା ପିନଡ୍ |",
+      "askAQuestionForTheBroadcaster": "ବ୍ରଡକାଷ୍ଟର ପାଇଁ ଏକ ପ୍ରଶ୍ନ ପଚାର..."
+    },
+    "CampaignOutreachPanel": {
+      "theBroadcastCouldNotBeCreated": "ପ୍ରସାରଣ ସୃଷ୍ଟି ହୋଇପାରିଲା ନାହିଁ |",
+      "deliveryIsUnavailableUntilARealMessaging": "ପ୍ରକୃତ ମେସେଜିଂ ପ୍ରଦାନକାରୀ, ସମ୍ମତି ଭିତ୍ତିକ ଦର୍ଶକ ଉତ୍ସ ଏବଂ ବିତରଣ ରିପୋର୍ଟ ସଂଯୋଗ ନହେବା ପର୍ଯ୍ୟନ୍ତ ବିତରଣ ଉପଲବ୍ଧ ନାହିଁ |",
+      "simulationModeNoMessagesAreSentReal": "ଅନୁକରଣ ମୋଡ୍ କ No ଣସି ବାର୍ତ୍ତା ପଠାଯାଏ ନାହିଁ | ପ୍ରକୃତ ବିତରଣ ପ୍ରଦାନକାରୀ {{value1}} ସେଟଅପ୍ ଆବଶ୍ୟକ କରେ | {{value2}}",
+      "noLiveAudienceSegmentsAreConnected": "କ live ଣସି ଜୀବନ୍ତ ଦର୍ଶକ ବିଭାଗ ସଂଯୋଗ ହୋଇନାହିଁ |",
+      "noAudienceSegmentsAreAvailable": "କ audience ଣସି ଦର୍ଶକ ବିଭାଗ ଉପଲବ୍ଧ ନାହିଁ |",
+      "describeTheRecordedVoiceMessage": "ରେକର୍ଡ ହୋଇଥିବା ଭଏସ୍ ବାର୍ତ୍ତା ବର୍ଣ୍ଣନା କର…",
+      "typeYourMessageUseNameBoothFor": "ଆପଣଙ୍କର ବାର୍ତ୍ତା ଟାଇପ୍ କରନ୍ତୁ | ବ୍ୟକ୍ତିଗତକରଣ ପାଇଁ {ନାମ}, {ବୁଥ} ବ୍ୟବହାର କରନ୍ତୁ |",
+      "value1ToValue2": "{{value1}} ରୁ {{value2}} କୁ |",
+      "deliveryNotConnected": "ବିତରଣ ସଂଯୁକ୍ତ ନୁହେଁ |",
+      "value1CharsValue2": "{{value1}} ଅକ୍ଷର {{value2}} |",
+      "goesOutValue1": "{{value1}} ବାହାରକୁ ଯାଏ |",
+      "answered": "ଉତ୍ତର",
+      "templateName": "ଟେମ୍ପଲେଟ୍ ନାମ",
+      "bodyWithNameBooth": "{ନାମ}, {ବୁଥ୍} ସହିତ ଶରୀର |"
+    },
+    "CompareSheet": {
+      "search": "ସନ୍ଧାନ...",
+      "mla": "ବିଧାୟକ",
+      "value1Winner": "{{value1}} ବିଜେତା |",
+      "swing": "ସୁଇଙ୍ଗ୍ |",
+      "loyalty": "ବିଶ୍ୱସ୍ତତା",
+      "selectTwoConstituenciesToCompareThemSideBy": "ସେମାନଙ୍କୁ ପାର୍ଶ୍ୱରେ ତୁଳନା କରିବାକୁ ଦୁଇଟି ନିର୍ବାଚନମଣ୍ଡଳୀ ଚୟନ କରନ୍ତୁ |"
+    },
+    "ConstituencySelectorSheet": {
+      "acValue1": "AC {{value1}} |"
+    },
+    "DataPendingCard": {
+      "theOfficialMapBoundaryForThisArea": "ଏହି କ୍ଷେତ୍ର ପାଇଁ ସରକାରୀ ମାନଚିତ୍ର ସୀମା ଏପର୍ଯ୍ୟନ୍ତ ପ୍ରକାଶିତ ହୋଇନାହିଁ | ତାଲିକା ଦୃଶ୍ୟ ସମ୍ପୂର୍ଣ୍ଣ ସଠିକ୍ ରହିଥାଏ |",
+      "thisSeatExistsButAVerifiedOffice": "ଏହି ସିଟ୍ ବିଦ୍ୟମାନ ଅଛି, କିନ୍ତୁ ଏକ ଯାଞ୍ଚ ହୋଇଥିବା ଅଫିସ୍ ଧାରକ ରେକର୍ଡ ଏପର୍ଯ୍ୟନ୍ତ ଉପଲବ୍ଧ ନାହିଁ | ଆମେ କେବଳ ସରକାରୀ ଉତ୍ସରୁ ନିଶ୍ଚିତ ହୋଇଥିବା ତଥ୍ୟ ଦେଖାଇଥାଉ |",
+      "fingerprint": "· ଆଙ୍ଗୁଠି ଛାପ ✓",
+      "expectedSourceValue1": "ଆଶାକରାଯାଇଥିବା ଉତ୍ସ: {{value1}} |"
+    },
+    "DataPipelineCard": {
+      "dataPipeline": "ଡାଟା ପାଇପଲାଇନ |",
+      "value1Value2Healthy": "{{value1}} / {{value2}} ସୁସ୍ଥ |"
+    },
+    "DelimitationShareCard": {
+      "constitutionalAssessment": "ସାମ୍ବିଧାନିକ ମୂଲ୍ୟାଙ୍କନ |",
+      "postalCodeValue1Value2": "ଡାକ କୋଡ୍ {{value1}} · {{value2}} |",
+      "current": "ବର୍ତ୍ତମାନ",
+      "proposed": "ପ୍ରସ୍ତାବିତ |",
+      "dpdpAct2023CompliantZeroVoterTracking": "DPDP ଆକ୍ଟ 2023 ଅନୁରୂପ · ଜିରୋ ଭୋଟର ଟ୍ରାକିଂ |",
+      "shareMyImpactCard": "ମୋର ଇମ୍ପାକ୍ଟ କାର୍ଡ ଅଂଶୀଦାର କରନ୍ତୁ |"
+    },
+    "DevFeatureSwitcher": {
+      "devControl": "DEV ନିୟନ୍ତ୍ରଣ |"
+    },
+    "ErrorBoundary": {
+      "errorLog": "ତ୍ରୁଟି ଲଗ୍ |",
+      "hideLogs": "ଲଗ୍ ଲୁଚାନ୍ତୁ |",
+      "viewLogs": "ଲଗ୍ ଦେଖନ୍ତୁ |",
+      "poligramEncounteredAnIssueWhileLoadingThisScreen": "ଏହି ସ୍କ୍ରିନ୍ ଲୋଡ୍ କରିବା ସମୟରେ ପଲିଗ୍ରାମ୍ ଏକ ସମସ୍ୟାର ସମ୍ମୁଖୀନ ହୋଇଥିଲା |",
+      "copyShareLog": "ଲଗ୍ କପି / ଅଂଶୀଦାର କରନ୍ତୁ |",
+      "crashDiagnosticsStackTrace": "କ୍ରାସ୍ ଡାଇଗ୍ନୋଷ୍ଟିକ୍ ଏବଂ ଷ୍ଟାକ ଟ୍ରେସ୍ |",
+      "jsStackTrace": "JS ଷ୍ଟାକ ଟ୍ରେସ:",
+      "componentHierarchy": "ଉପାଦାନ କ୍ରମ:"
+    },
+    "KYCVerificationSheet": {
+      "byProceedingIAcknowledgeAndAgreeThat": "ଅଗ୍ରଗତି କରି, ମୁଁ ସ୍ୱୀକାର କରେ ଏବଂ ସହମତ:",
+      "value1MyIdentityNamePhonePhotoWillBe": "{{value1}} ମୋର ପରିଚୟ (ନାମ, ଫୋନ୍, ଫଟୋ) ରେକର୍ଡ ହେବ ଏବଂ ସୁରକ୍ଷିତ ଭାବରେ ଗଚ୍ଛିତ ହେବ |",
+      "value1MyDeviceInformationIpAddressAndLocation": "{{value1}} ମୋର ଡିଭାଇସ୍ ସୂଚନା, IP ଠିକଣା, ଏବଂ ଅବସ୍ଥାନ ମୁଁ କରୁଥିବା ପ୍ରତ୍ୟେକ ବିଷୟବସ୍ତୁ ସହିତ ଧରାଯିବ |",
+      "value1ThisDataMayBeSharedWithLaw": "{{value1}} ଯଦି ମୋର ବିଷୟବସ୍ତୁ ଭାରତୀୟ ନିୟମ (ଆଇଟି ଆକ୍ଟ 2000, ଆଇପିସି, ଇତ୍ୟାଦି) ଉଲ୍ଲଂଘନ କରାଯାଏ ତେବେ ଏହି ତଥ୍ୟ ଆଇନ ପ୍ରଣୟନକାରୀ ସଂସ୍ଥା ସହିତ ଅଂଶୀଦାର ହୋଇପାରେ |",
+      "value1IAmSolelyResponsibleForAllContent": "{{value1}} ମୁଁ ପୋଷ୍ଟ କରିଥିବା ସମସ୍ତ ବିଷୟବସ୍ତୁ ପାଇଁ ମୁଁ କେବଳ ଦାୟୀ, ଏବଂ ମୁଁ ବଦନାମ, ନକଲି କିମ୍ବା ବେଆଇନ ବିଷୟବସ୍ତୁ ପୋଷ୍ଟ କରିବି ନାହିଁ |",
+      "value1FalseOrMisleadingVerificationDetailsMayResult": "{{value1}} ମିଥ୍ୟା କିମ୍ବା ବିଭ୍ରାନ୍ତିକର ଯାଞ୍ଚ ବିବରଣୀ ସ୍ଥାୟୀ ନିଷେଧ ଏବଂ ଆଇନଗତ କାର୍ଯ୍ୟାନୁଷ୍ଠାନ ହୋଇପାରେ |",
+      "iHaveReadAndAgreeToTheAbove": "ମୁଁ ଉତ୍ତରଦାୟିତ୍ୱର ଉପରୋକ୍ତ ସର୍ତ୍ତାବଳୀ ପ read ିଛି ଏବଂ ସହମତ |",
+      "yourDeviceInfoNetworkDetailsAndLocationWill": "ଆପଣଙ୍କର ଡିଭାଇସ୍ ସୂଚନା, ନେଟୱର୍କ ବିବରଣୀ, ଏବଂ ଅବସ୍ଥାନ ବର୍ତ୍ତମାନ ଧରାଯିବ |"
+    },
+    "LeaderProfileModal": {
+      "acValue1Value2": "🎯 AC # {{value1}}  {{value2}} |",
+      "civicLeader": "🎯 ନାଗରିକ ନେତା",
+      "ind": "ସ୍ୱାଧୀନ",
+      "aspirant": "ଆଶାକର୍ମୀ |",
+      "activeInConstituencyOutreachSabhas": "ନିର୍ବାଚନମଣ୍ଡଳୀରେ ସଭାଗୁଡ଼ିକରେ ସକ୍ରିୟ |",
+      "label1HrAgo": "1 ଘଣ୍ଟା ପୂର୍ବରୁ",
+      "educationGrassrootsBackground": "ଶିକ୍ଷା ଏବଂ ତୃଣମୂଳ ପୃଷ୍ଠଭୂମି |",
+      "maPublicPolicy": "పోస్ట్ గ్రాడ్యుయేషన్ (MA ଜନସାଧାରଣ ନୀତି)",
+      "postGraduationMaPublicPolicy": "ସ୍ନାତକୋତ୍ତର ପୋଷ୍ଟ (MA ଜନସାଧାରଣ ନୀତି)",
+      "osmaniaUniversityDistinction": "ଓସମାନିଆ ବିଶ୍ୱବିଦ୍ୟାଳୟ · ଭିନ୍ନତା |",
+      "grassrootsCivicActionCommittee": "ତୃଣମୂଳ ନାଗରିକ କାର୍ଯ୍ୟ କମିଟି |",
+      "waterSecurityYouthConvenor2018Present": "ଜଳ ସୁରକ୍ଷା ଏବଂ ଯୁବ ସମ୍ମିଳନୀ (2018 - ବର୍ତ୍ତମାନ)",
+      "aClearPublicAgendaForTheFuture": "ଏହି ନିର୍ବାଚନମଣ୍ଡଳୀର ଭବିଷ୍ୟତ ପାଇଁ ଏକ ସ୍ୱଚ୍ଛ ଜନସାଧାରଣ ଏଜେଣ୍ଡା | ପଦକ୍ଷେପକୁ ପ୍ରାଥମିକତା ଦେବା ପାଇଁ ନାଗରିକମାନେ ଭୋଟ୍ ଦେଇପାରିବେ:",
+      "iSolemnlyPledgeToUpholdTheConstitution": "ମୁଁ ଭାରତର ସମ୍ବିଧାନକୁ ସମର୍ଥନ କରିବାକୁ, ଦୁର୍ନୀତି ପାଇଁ ଶୂନ୍ୟ ସହନଶୀଳତା ବଜାୟ ରଖିବାକୁ, ସାଧାରଣ ଖର୍ଚ୍ଚରେ ସମ୍ପୂର୍ଣ୍ଣ ସ୍ୱଚ୍ଛତା ନିଶ୍ଚିତ କରିବାକୁ ଏବଂ ପ୍ରତ୍ୟେକ ନାଗରିକଙ୍କ ନିକଟରେ ଉପଲବ୍ଧ ଏବଂ ଉତ୍ତରଦାୟୀ ରହିବାକୁ ମୁଁ ପ୍ରତିଶ୍ରୁତି ଦେଇଛି।",
+      "boothReach": "ବୁଥ୍ ପହଞ୍ଚିବା |",
+      "responseTime": "ପ୍ରତିକ୍ରିୟା ସମୟ",
+      "signInToMessageThisProfile": "ଏହି ପ୍ରୋଫାଇଲ୍ ବାର୍ତ୍ତା କରିବାକୁ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ |",
+      "volunteer": "ସ୍ୱେଚ୍ଛାସେବୀ ✓",
+      "eciVerified": "ECI ଯାଞ୍ଚ ହୋଇଛି |"
+    },
+    "LiveBroadcaster": {
+      "consumerBuildsAreDecoupledFromHeavyNativeWebrtc": "ପତଳା HLS ପ୍ଲେବ୍ୟାକ୍ ପାଇଁ ଭାରୀ ଦେଶୀ WebRTC ବାଇନାରୀରୁ ଗ୍ରାହକ ବିଲ୍ଡଗୁଡିକ ଦ୍ୱିଗୁଣିତ | ଲାଇଭ୍ ଭିଡିଓ ପ୍ରସାରଣ କରିବାକୁ, ପଲିଗ୍ରାମ୍ ଷ୍ଟୁଡିଓ ୱେବ୍ କ୍ଲାଏଣ୍ଟକୁ https://studio.poligram.in ରେ ବ୍ୟବହାର କରନ୍ତୁ କିମ୍ବା OBS ରୁ RTMP / SRT ମାଧ୍ୟମରେ ସଂଯୋଗ କରନ୍ତୁ |"
+    },
+    "MapFallback": {
+      "value1Value2Constituencies": "{{value1}} · {{value2}} ନିର୍ବାଚନମଣ୍ଡଳୀ |",
+      "interactiveMapUnavailable": "ଇଣ୍ଟରାକ୍ଟିଭ୍ ମାନଚିତ୍ର ଉପଲବ୍ଧ ନାହିଁ |",
+      "theFullMapboxMapRequiresADevelopmentBuild": "ପୂର୍ଣ୍ଣ ମ୍ୟାପବକ୍ସ ମାନଚିତ୍ର ଏକ ବିକାଶ ନିର୍ମାଣ ଆବଶ୍ୟକ କରେ | {{value1}} ଚଲାନ୍ତୁ: npx ଏକ୍ସପୋ ରନ୍: ଆଣ୍ଡ୍ରଏଡ୍ (କିମ୍ବା ଏକ EAS dev ବିଲ୍ଡ ସୃଷ୍ଟି କରନ୍ତୁ) | {{value2}} ଅନ୍ୟ ସମସ୍ତ ବ features ଶିଷ୍ଟ୍ୟଗୁଡିକ ଏକ୍ସପୋ ଗୋରେ ସାଧାରଣତ work କାମ କରେ!",
+      "electionPartySeats": "ନିର୍ବାଚନ - ପାର୍ଟି ଆସନ |",
+      "delimitationProjection": "ବିସ୍ତାର ପ୍ରୋଜେକ୍ଟ",
+      "genValue1ScValue2StValue3": "GEN {{value1}} · SC {{value2}} · ST {{value3}} |",
+      "topConstituenciesByMargin": "ମାର୍ଜିନ୍ ଦ୍ୱାରା ଶୀର୍ଷ ନିର୍ବାଚନମଣ୍ଡଳୀ |"
+    },
+    "ModuleDetailModal": {
+      "quizCouldNotBeSaved": "କୁଇଜ୍ ସଞ୍ଚୟ ହୋଇପାରିଲା ନାହିଁ |",
+      "checkYourConnectionAndTrySubmittingYour": "ଆପଣଙ୍କର ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁନର୍ବାର ଆପଣଙ୍କର ଉତ୍ତର ଦାଖଲ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ |",
+      "progressCouldNotBeSaved": "ପ୍ରଗତି ସଞ୍ଚୟ ହୋଇପାରିଲା ନାହିଁ |",
+      "yourModuleIsStillOpenPleaseTry": "ତୁମର ମଡ୍ୟୁଲ୍ ଏପର୍ଯ୍ୟନ୍ତ ଖୋଲା ଅଛି | ଦୟାକରି ପୁନର୍ବାର ଚେଷ୍ଟା କରନ୍ତୁ |",
+      "value1MinValue2Value3": "{{value1}} ମିନିଟ୍ · {{value2}} · {{value3}} |",
+      "value1Value2Source": "“ {{value1}} ” - {{value2}} | ଉତ୍ସ ↗"
+    },
+    "PhotoViewerModal": {
+      "photoSourcedFromWikipediaMyneta": "ଫଟୋ ଉଇକିପିଡ଼ିଆ / ମାଇନେଟାରୁ ସୋର୍ସ ହୋଇଛି |"
+    },
+    "PodiumHistoryCard": {
+      "delim2008": "ଡେଲିମ୍ 2008",
+      "delim1976": "ଡେଲିମ୍ 1976",
+      "delimValue1": "{{value1}} ଡିଲିମ୍ କରନ୍ତୁ |",
+      "label1st": "🥇 1st",
+      "label2nd": "🥈 ଦ୍ୱିତୀୟ",
+      "label3rd": "🥉 ତୃତୀୟ"
+    },
+    "PoliticalAdCard": {
+      "constituencyAnnouncementCampaignReleaseFromValue1Tap": "{{value1}} ରୁ ବିଧାନସଭା ଘୋଷଣା ଏବଂ ଅଭିଯାନ ମୁକ୍ତି | ପୂର୍ଣ୍ଣ ପୋଷ୍ଟ ଏବଂ ଆଲୋଚନା ଦେଖିବାକୁ ଟ୍ୟାପ୍ କରନ୍ତୁ |",
+      "politicalAdPaidPromotionByValue1": "ରାଜନ Political ତିକ ବିଜ୍ଞାପନ · {{value1}} ଦ୍ୱାରା ଦେୟ ପ୍ରୋତ୍ସାହନ |",
+      "targetValue1Value2": "ଲକ୍ଷ୍ୟ: {{value1}}  {{value2}} |",
+      "certifiedUnderEciMcmcGuidelinesPaidValue1": "ECI / MCMC ନିର୍ଦ୍ଦେଶାବଳୀ ଅଧୀନରେ ପ୍ରମାଣିତ · ଦେୟ ₹ {{value1}} |"
+    },
+    "PoliticalShortsCarousel": {
+      "new": "ନୂଆ",
+      "uploadShort": "ସଂକ୍ଷିପ୍ତ ଅପଲୋଡ୍ କରନ୍ତୁ |",
+      "addShort": "ସଂକ୍ଷିପ୍ତ ଯୋଡନ୍ତୁ |",
+      "shareLocalReport": "ସ୍ଥାନୀୟ ରିପୋର୍ଟ ଅଂଶୀଦାର କରନ୍ତୁ |",
+      "noShortsInThisConstituency": "ଏହି ନିର୍ବାଚନମଣ୍ଡଳୀରେ କ short ଣସି ସର୍ଟ ନାହିଁ |",
+      "beTheFirst": "ପ୍ରଥମ ହୁଅ!"
+    },
+    "ReportIssueSheet": {
+      "youCanAddUpToValue1Media": "ଆପଣ {{value1}} ମିଡିଆ ଫାଇଲ୍ ପର୍ଯ୍ୟନ୍ତ ଯୋଗ କରିପାରିବେ |",
+      "value1Value2MediaAttached": "{{value1}} / {{value2}} ମିଡିଆ ସଂଲଗ୍ନ ହୋଇଛି |"
+    },
+    "ReportSheet": {
+      "reportsAreReviewedByOurModerationTeamWithin": "24 ଘଣ୍ଟା ମଧ୍ୟରେ ଆମର ମୋଡରେସନ ଦଳ ଦ୍ୱାରା ରିପୋର୍ଟଗୁଡିକ ସମୀକ୍ଷା କରାଯାଇଥାଏ | ମିଥ୍ୟା ରିପୋର୍ଟ ଆପଣଙ୍କ ପ୍ରତିଷ୍ଠା ସ୍କୋରକୁ ପ୍ରଭାବିତ କରିପାରେ |"
+    },
+    "RevenueCard": {
+      "revenueDashboard": "ରାଜସ୍ୱ ଡ୍ୟାସବୋର୍ଡ |",
+      "totalRevenue": "ମୋଟ ରାଜସ୍ୱ",
+      "projectedMrr": "ପ୍ରୋଜେକ୍ଟ MRR",
+      "politicians": "ରାଜନେତାମାନେ",
+      "avgRoi": "ହାରାହାରି ROI",
+      "revenueByFormat": "ଫର୍ମାଟ୍ ଦ୍ୱାରା ରାଜସ୍ୱ |",
+      "monthlyGrowth": "ମାସିକ ଅଭିବୃଦ୍ଧି |",
+      "unitEconomics": "ୟୁନିଟ୍ ଅର୍ଥନୀତି",
+      "costPromotedPostValue1": "ମୂଲ୍ୟ / ପ୍ରୋତ୍ସାହିତ ପୋଷ୍ଟ: {{value1}} |",
+      "avgPoliticiansStateValue1": "ହାରାହାରି ରାଜନେତା / ରାଜ୍ୟ: {{value1}} |",
+      "activeStatesValue1": "ସକ୍ରିୟ ରାଜ୍ୟ: {{value1}} |",
+      "monthlyStateValue1": "ମାସିକ / ରାଜ୍ୟ: {{value1}} |"
+    },
+    "SeatProjectionCard": {
+      "popValue1": "ପପ୍: {{value1}} |",
+      "popSeatValue1": "ପପ୍ / ସିଟ୍: {{value1}} |",
+      "devValue1Value2": "ଦେବ: {{value1}}  {{value2}} %"
+    },
+    "ShareableCardModal": {
+      "value1District": "{{value1}} ଜିଲ୍ଲା |",
+      "ind": "ସ୍ୱାଧୀନ",
+      "runnerUp2": "ରନର୍ ଅପ୍ |",
+      "value1Terms": "{{value1}} ସର୍ତ୍ତାବଳୀ |",
+      "tenure": "କାର୍ଯ୍ୟକାଳ",
+      "preparingVisualCard": "ଭିଜୁଆଲ୍ କାର୍ଡ ପ୍ରସ୍ତୁତ...",
+      "shareVisualGraphicCard": "ଭିଜୁଆଲ୍ ଗ୍ରାଫିକ୍ କାର୍ଡ ଅଂଶୀଦାର କରନ୍ତୁ |",
+      "officialCivicCard": "ଅଫିସିଆଲ୍ ସିଭିକ୍ କାର୍ଡ |",
+      "winner": "IN WINNER",
+      "value1VotesValue2": "{{value1}} ଭୋଟ୍ {{value2}} |",
+      "runnerUp": "UN ରନର୍-ଅପ୍ |",
+      "margin": "ମାର୍ଜିନ୍",
+      "verifiedByEciForm21ePoligramCivicIntelligence": "ECI ଫର୍ମ 21E ଦ୍ୱାରା ଯାଞ୍ଚ କରାଯାଇଛି • ପଲିଗ୍ରାମ୍ ସିଭିକ୍ ଇଣ୍ଟେଲିଜେନ୍ସ |",
+      "shareDetailedStoryFormattedText": "ବିସ୍ତୃତ କାହାଣୀ ଅଂଶୀଦାର କରନ୍ତୁ (ଫର୍ମାଟ୍ ହୋଇଥିବା ପାଠ୍ୟ)"
+    },
+    "ShortsPlayerModal": {
+      "couldNotSaveYourCommentPleaseTry": "ଆପଣଙ୍କର ମନ୍ତବ୍ୟ ସଞ୍ଚୟ କରିପାରିଲା ନାହିଁ | ଦୟାକରି ପୁନର୍ବାର ଚେଷ୍ଟା କରନ୍ତୁ |",
+      "saved": "ସଞ୍ଚୟ ହୋଇଛି |",
+      "asAVerifiedConstituentOfValue1Is": "{{value1}} ର ଏକ ଯାଞ୍ଚ ହୋଇଥିବା ଉପାଦାନ ଭାବରେ, ଏହି ଭିଡିଓଟି ଆପଣଙ୍କ ନିର୍ବାଚନମଣ୍ଡଳୀ ପାଇଁ ପ୍ରାସଙ୍ଗିକ ଏବଂ ଗଠନମୂଳକ କି?",
+      "helpVerifyThisVideoFromValue1To": "ଏହାକୁ ଜାତୀୟ ସ୍ତରକୁ ପ୍ରୋତ୍ସାହିତ କରିବାକୁ {{value1}} ରୁ ଏହି ଭିଡିଓ ଯାଞ୍ଚ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ |",
+      "commentsCouldNotBeLoaded": "ମନ୍ତବ୍ୟଗୁଡିକ ଲୋଡ୍ ହୋଇପାରିଲା ନାହିଁ |"
+    },
+    "StateView": {
+      "refValue1Value2": "ରେଫ: {{value1}} ( {{value2}} )"
+    },
+    "WealthTimeline": {
+      "value1GrowthTimelineContainsUndisclosedObservations": "{{value1}} ଅଭିବୃଦ୍ଧି ସମୟ ସୀମା ଅଜ୍ଞାତ ପର୍ଯ୍ୟବେକ୍ଷଣଗୁଡ଼ିକୁ ଧାରଣ କରିଥାଏ |"
+    },
+    "GrassrootsBooths": {
+      "wardValue1": "ୱାର୍ଡ # {{value1}} ·",
+      "value1Voters": "{{value1}} ଭୋଟର |",
+      "voterCountUnavailable": "ଭୋଟର ଗଣନା ଉପଲବ୍ଧ ନାହିଁ |",
+      "targetValue1": "ଲକ୍ଷ୍ୟ: {{value1}} |",
+      "targetUnavailable": "ଲକ୍ଷ୍ୟ ଉପଲବ୍ଧ ନାହିଁ |",
+      "check": "ଯାଞ୍ଚ କରନ୍ତୁ |",
+      "eGRameshGoud": "ଯଥା ରମେଶ ଗୁଡ୍ |"
+    },
+    "GrassrootsWorkers": {
+      "cannotSaveWorkLog": "କାର୍ଯ୍ୟ ଲଗ୍ ସଞ୍ଚୟ କରିପାରିବ ନାହିଁ |",
+      "chooseACampaignWorkerAndBoothThat": "ଏକ ଅଭିଯାନ, କର୍ମୀ, ଏବଂ ବୁଥ୍ ବାଛ ଯାହାକି ଅଭିଯାନ ରେକର୍ଡରେ ଉପଲବ୍ଧ |",
+      "checkTheSessionDuration": "ଅଧିବେଶନ ଅବଧି ଯାଞ୍ଚ କରନ୍ତୁ |",
+      "enterAWholeNumberOfMinutesFrom": "1 ରୁ 1,440 ପର୍ଯ୍ୟନ୍ତ ସମ୍ପୂର୍ଣ୍ଣ ସଂଖ୍ୟକ ମିନିଟ୍ ପ୍ରବେଶ କରନ୍ତୁ |",
+      "checkHouseholdsVisited": "ପରିଦର୍ଶନ କରିଥିବା ପରିବାରଗୁଡିକ ଯାଞ୍ଚ କରନ୍ତୁ |",
+      "enterAWholeNumberFrom0To": "0 ରୁ 100,000 ପର୍ଯ୍ୟନ୍ତ ଏକ ସମ୍ପୂର୍ଣ୍ଣ ସଂଖ୍ୟା ପ୍ରବେଶ କରନ୍ତୁ |",
+      "workSessionSaved": "କାର୍ଯ୍ୟ ଅଧିବେଶନ ସଞ୍ଚୟ ହୋଇଛି |",
+      "thisSessionWasSavedToTheCampaign": "ଏହି ଅଧିବେଶନ ଅଭିଯାନ କାର୍ଯ୍ୟ ଲଗରେ ସଞ୍ଚୟ କରାଯାଇଥିଲା |",
+      "workSessionNotSaved": "କାର୍ଯ୍ୟ ଅଧିବେଶନ ସଞ୍ଚୟ ହୋଇନାହିଁ |",
+      "boothValue1": "ବୁଥ # {{value1}} |",
+      "completedSessionsUnavailable": "ସମାପ୍ତ ଅଧିବେଶନ ଉପଲବ୍ଧ ନାହିଁ |",
+      "value1CompletedSessions": "{{value1}} ଅଧିବେଶନ ସମାପ୍ତ କଲା |",
+      "loggedHoursUnavailable": "ଲଗ୍ ଘଣ୍ଟା ଉପଲବ୍ଧ ନାହିଁ |",
+      "value1HoursLogged": "{{value1}} ଘଣ୍ଟା ଲଗ୍ ହୋଇଛି |",
+      "logCompletedOutreachForValue1": "{{value1}} ପାଇଁ ଲଗ୍ ସମାପ୍ତ ଆଉଟ୍ରିଚ୍ |",
+      "saving": "ସଞ୍ଚୟ…",
+      "saveWorkSession": "କାର୍ଯ୍ୟ ଅଧିବେଶନ ସଞ୍ଚୟ କରନ୍ତୁ |",
+      "poligramUser": "ପଲିଗ୍ରାମ୍ ବ୍ୟବହାରକାରୀ |",
+      "logCompletedOutreach": "ଲଗ୍ ସମାପ୍ତ ଆଉଟରିଚ୍ |",
+      "eGBSrinivas": "ଯଥା B. ଶ୍ରୀନିବାସ",
+      "value1ReportedByTheCampaignTeamNotIndependently": "{{value1}} · ଅଭିଯାନ ଦଳ ଦ୍ୱାରା ରିପୋର୍ଟ କରାଯାଇଛି, ନିରପେକ୍ଷ ଭାବରେ ଯାଞ୍ଚ କରାଯାଇ ନାହିଁ |",
+      "campaignBooth": "ଅଭିଯାନ ବୁଥ୍ |",
+      "campaignBoothRecordsAreUnavailableRefreshTheCampaign": "ଅଭିଯାନ ବୁଥ୍ ରେକର୍ଡଗୁଡିକ ଉପଲବ୍ଧ ନାହିଁ | କାର୍ଯ୍ୟ ଲଗିଂ କରିବା ପୂର୍ବରୁ ଅଭିଯାନକୁ ସତେଜ କରନ୍ତୁ |",
+      "sessionDurationMinutes": "ଅଧିବେଶନ ଅବଧି (ମିନିଟ୍)",
+      "sessionDurationInMinutes": "କିଛି ମିନିଟରେ ଅଧିବେଶନ ଅବଧି |",
+      "householdsVisited": "ଘର ପରିଦର୍ଶନ କରିଥିଲେ |"
+    },
+    "SimplifiedOutreach": {
+      "revanthReddyInc": "Revanth Reddy · INC",
+      "minimumWalletRechargeIs500": "ସର୍ବନିମ୍ନ ୱାଲେଟ୍ ରିଚାର୍ଜ ହେଉଛି ₹ 500 |",
+      "notConnected": "ସଂଯୋଗ ନୁହେଁ |",
+      "label100Free": "100% ମାଗଣା |",
+      "indicativePricing": "INDICATIVE PRICING |",
+      "pricingUnavailable": "ଅମୂଲ୍ୟ ମୂଲ୍ୟ",
+      "sufficientBalanceRemainingAfterBlastValue1": "✓ ପର୍ଯ୍ୟାପ୍ତ ସନ୍ତୁଳନ | ବିସ୍ଫୋରଣ ପରେ ଅବଶିଷ୍ଟ: ₹ {{value1}} |",
+      "walletBalanceShortByValue1TopUp": "⚠️ {{value1}} ଦ୍ୱାରା ୱାଲେଟ୍ ବାଲାନ୍ସ ଛୋଟ | ଟପ୍-ଅପ୍ ଆବଶ୍ୟକ |",
+      "duration028QualityHighVerified": "ସମୟ: 0:28 · ଗୁଣ: ଉଚ୍ଚ · ଯାଞ୍ଚ ହୋଇଛି |",
+      "topUpValue1ToScheduleBlast": "ଟପ୍-ଅପ୍ ₹ {{value1}} ଅନୁସୂଚୀତ ବିସ୍ଫୋରଣ ପାଇଁ |",
+      "delivered": "✓ ବିତରଣ",
+      "calling": "📞 କଲ୍...",
+      "queued": "ଧାଡିରେ |",
+      "available": "ଉପଲବ୍ଧ |",
+      "wardValue1": "ୱାର୍ଡ # {{value1}} |",
+      "liveCallDeliveryProgress": "ଲାଇଭ୍ କଲ୍ ବିତରଣ ପ୍ରଗତି |",
+      "targetValue1VotersCostValue2": "ଲକ୍ଷ୍ୟ: {{value1}} ଭୋଟର · ମୂଲ୍ୟ: ₹ {{value2}} |",
+      "busy": "ବ୍ୟସ୍ତ",
+      "unreachable": "ଅପହଞ୍ଚ |",
+      "creditsCanBeUsedImmediatelyForVoiceObd": "ଭଏସ୍ OBD କଲ୍ ବିସ୍ଫୋରଣ ଏବଂ ପଦୋନ୍ନତି ପ୍ରାପ୍ତ ପୋଷ୍ଟଗୁଡିକ ପାଇଁ ତୁରନ୍ତ କ୍ରେଡିଟ୍ ବ୍ୟବହାର କରାଯାଇପାରିବ |",
+      "chooseRechargeAmount": "ରିଚାର୍ଜ ପରିମାଣ ବାଛନ୍ତୁ:",
+      "orEnterCustomAmount": "କିମ୍ବା କଷ୍ଟମ୍ ରାଶି (₹) ପ୍ରବେଶ କରନ୍ତୁ:",
+      "payValue1ViaUpiNetbanking": "UPI / Netbanking ମାଧ୍ୟମରେ ₹ {{value1}} ଦେୟ |"
+    },
+    "CriminalRecordCard": {
+      "ipc": "IPC:",
+      "pending": "ବିଚାରାଧୀନ ଅଛି",
+      "criminalCaseDisclosureUnavailable": "ଅପରାଧିକ ମାମଲା ପ୍ରକାଶ ଉପଲବ୍ଧ ନାହିଁ |",
+      "noCriminalCasesDeclared": "କ criminal ଣସି ଅପରାଧିକ ମାମଲା ଘୋଷଣା ହୋଇନାହିଁ",
+      "value1CaseValue2Value3": "{{value1}} କେସ୍ {{value2}}  {{value3}} |",
+      "totalCases": "ମୋଟ ମାମଲା",
+      "serious": "ଗମ୍ଭୀର |",
+      "convictions": "ବିଶ୍ୱାସ",
+      "value1CaseDetailsValue2": "{{value1}} କେସ୍ ବିବରଣୀ ( {{value2}} )",
+      "caseValue1": "ମାମଲା: {{value1}} |",
+      "courtValue1": "କୋର୍ଟ: {{value1}} |",
+      "chargesFramed": "ଚାର୍ଜ ଫ୍ରେମ୍ ହୋଇଛି |"
+    },
+    "DynastyCard": {
+      "politicalDynasty": "ରାଜନ Political ତିକ ରାଜବଂଶ",
+      "thisLegislatorComesFromAPoliticalFamily": "ଏହି ବିଧାୟକ ଏକ ରାଜନ political ତିକ ପରିବାରରୁ ଆସିଛନ୍ତି",
+      "familyInPolitics": "ରାଜନୀତିରେ ପରିବାର",
+      "familyConstituencies": "ପାରିବାରିକ ନିର୍ବାଚନମଣ୍ଡଳୀ |"
+    },
+    "ElectionHistoryCard": {
+      "won": "ଜିତିଲା |",
+      "lost": "ହଜିଯାଇଛି |",
+      "defeated": "ପରାଜିତ |",
+      "lostTo": "ହଜିଯାଇଛି",
+      "value1WinRate": "{{value1}} % ବିଜୟ ହାର |",
+      "share": "ଅଂଶୀଦାର"
+    },
+    "FinancialBreakdownCard": {
+      "noFinancialDataAvailable": "କ financial ଣସି ଆର୍ଥିକ ତଥ୍ୟ ଉପଲବ୍ଧ ନାହିଁ |",
+      "financialDisclosure": "ଆର୍ଥିକ ପ୍ରକାଶ",
+      "assetBreakdown": "ସମ୍ପତ୍ତି ଭାଙ୍ଗିବା |",
+      "selfMovable": "ଆତ୍ମ ଚଳନଶୀଳ |",
+      "selfImmovable": "ଆତ୍ମ ଅସ୍ଥାୟୀ |",
+      "dependents": "ନିର୍ଭରଶୀଳ |",
+      "spouseMovable": "ପତି ଚଳନଶୀଳ |",
+      "spouseImmovable": "ପତି ଅସ୍ଥାୟୀ |",
+      "declaredIncomeItr": "ଘୋଷିତ ଆୟ (ITR)",
+      "wealthTimeline": "ଧନ ସମୟସୀମା |",
+      "value1Value2SinceValue3": "{{value3}} ଠାରୁ {{value1}}  {{value2}} % |",
+      "totalLiabilities": "ମୋଟ ଦାୟିତ୍::"
+    },
+    "PerformanceCard": {
+      "mplads": "MPLADS",
+      "legislativePerformance": "ଆଇନଗତ ପ୍ରଦର୍ଶନ",
+      "comingSoon": "ଶୀଘ୍ର ଆସୁଛି |"
+    },
+    "RedFlagsBanner": {
+      "value1RedFlagValue2Detected": "{{value1}} ରେଡ୍ ପତାକା {{value2}} ଚିହ୍ନଟ ହେଲା |"
+    }
+  },
   "constituencyDirectory": {
     "currentRepresentative": "ସାମ୍ପ୍ରତିକ ପ୍ରତିନିଧୀ |",
     "loading": "ଲାଇଭ୍ ନିର୍ବାଚନମଣ୍ଡଳୀ ରେକର୍ଡ ଯାଞ୍ଚ କରୁଛି…",
@@ -41,6 +581,21 @@ const or = {
     "reportIssue": "ଏକ ସମସ୍ୟା ରିପୋର୍ଟ କରନ୍ତୁ |"
   },
   "partyRegistry": {
+    "electionRecord": "ନିର୍ବାଚନ ରେକର୍ଡ |",
+    "historyAndFilings": "ଇତିହାସ ଏବଂ ଫିଲିଙ୍ଗ୍ |",
+    "electionCode": "ରେକର୍ଡ ହୋଇଥିବା ପାର୍ଟି କୋଡ୍ · {{code}} |",
+    "ballotSymbol": "ବାଲାଟ୍ ସଙ୍କେତ · {{symbol}} |",
+    "seatsWon": "ଆସନଗୁଡିକ ଜିତିଲା · {{seats}} |",
+    "lokSabhaElection": "{{year}} ଲୋକସଭା ନିର୍ବାଚନ |",
+    "stateAssemblyElection": "{{year}}  {{state}} ବିଧାନସଭା ନିର୍ବାଚନ |",
+    "foundedBy": "{{year}} ରେ {{founder}} ଦ୍ୱାରା ପ୍ରତିଷ୍ଠିତ |",
+    "registeredIn": "{{year}} ରେ ଭାରତର ନିର୍ବାଚନ ଆୟୋଗ ସହିତ ପଞ୍ଜିକୃତ |",
+    "renamedIn": "ପୂର୍ବରୁ {{name}} ଭାବରେ ଜଣାଶୁଣା | {{year}} ରେ ନାମ ବଦଳିଗଲା |",
+    "profileSummary": {
+      "national": "ଭାରତର ନିର୍ବାଚନ ଆୟୋଗ ଏହି ଦଳକୁ {{election}} ରେ ଏକ ସ୍ୱୀକୃତିପ୍ରାପ୍ତ ଜାତୀୟ ଦଳ ଭାବରେ ତାଲିକାଭୁକ୍ତ କରିଛି |",
+      "state": "ଭାରତର ନିର୍ବାଚନ ଆୟୋଗ ଏହି ଦଳକୁ {{election}} ରେ ଏକ ସ୍ୱୀକୃତିପ୍ରାପ୍ତ ରାଜ୍ୟ ଦଳ ଭାବରେ ତାଲିକାଭୁକ୍ତ କରିଛି |",
+      "registered": "ଭାରତର ନିର୍ବାଚନ ଆୟୋଗ ଏହି ଦଳକୁ {{election}} ରେ ପଞ୍ଜୀକୃତ ଏବଂ ଅଜ୍ଞାତ ଭାବରେ ତାଲିକାଭୁକ୍ତ କରିଛି |"
+    },
     "retryControls": "କିଛି ପୃଷ୍ଠା ନିୟନ୍ତ୍ରଣ ଲୋଡ୍ ହୋଇପାରିଲା ନାହିଁ | ପୁନ ry ଚେଷ୍ଟା କରନ୍ତୁ |",
     "verifyToClaim": "ଆବେଦନ କରିବାକୁ ଆପଣଙ୍କର ସହଯୋଗୀ ଖାତା ଯାଞ୍ଚ କରନ୍ତୁ |",
     "contributorPending": "ସହଯୋଗୀ ଯାଞ୍ଚ ଯାଞ୍ଚରେ ଅଛି |",
@@ -3059,6 +3614,16 @@ const or = {
     }
   },
   "kycSheet": {
+    "submitted": "ସମୀକ୍ଷା ପାଇଁ ଦାଖଲ |",
+    "pendingReviewMsg": "ତୁମର ଉପସ୍ଥାପନା ସଞ୍ଚୟ ହୋଇଛି | ଏକ ପ୍ରାଧିକୃତ ସମୀକ୍ଷକ ଏହାକୁ ଯାଞ୍ଚ କରିବା ପରେ ଯୋଗଦାନକାରୀ କାର୍ଯ୍ୟଗୁଡ଼ିକ ସକ୍ଷମ ହେବ |",
+    "reviewNotice": "ସହଯୋଗୀ ଯାଞ୍ଚ ସମ୍ପ୍ରଦାୟକୁ ସୁରକ୍ଷା କରିବାରେ ସାହାଯ୍ୟ କରେ | ଆପଣଙ୍କର ପରିଚୟ ବିବରଣୀ ସମୀକ୍ଷା ପାଇଁ ଗଚ୍ଛିତ ହୋଇଛି ଏବଂ ଆପଣଙ୍କର ସାର୍ବଜନୀନ ପ୍ରୋଫାଇଲରେ ଦେଖାଯାଉନାହିଁ |",
+    "selfieReviewNotice": "ସମୀକ୍ଷା ପାଇଁ ଆପଣଙ୍କର ସେଲଫି ବ୍ୟକ୍ତିଗତ ଷ୍ଟୋରେଜ୍ ରେ ଅପଲୋଡ୍ ହୋଇଛି | ସ୍ୱୟଂଚାଳିତ ଚେହେରା ମେଳଣ କରାଯାଏ ନାହିଁ |",
+    "checkingStatus": "ଆପଣଙ୍କର ସଞ୍ଚିତ ଯାଞ୍ଚ ସ୍ଥିତି ଯାଞ୍ଚ କରୁଛି…",
+    "statusUnavailable": "ଆମେ ତୁମର ସ୍ଥିତି ଲୋଡ୍ କରିପାରିଲୁ ନାହିଁ | ସଂଯୁକ୍ତ ହେଲେ ପୁନ ry ଚେଷ୍ଟା କରିବାକୁ ଟ୍ୟାପ୍ କରନ୍ତୁ |",
+    "rejectedResubmitHint": "ଆପଣଙ୍କର ବିବରଣୀ ସଂଶୋଧନ କରିବାକୁ ଟ୍ୟାପ୍ କରନ୍ତୁ ଏବଂ ସମୀକ୍ଷା ପାଇଁ ପୁନ ub ପଠାନ୍ତୁ |",
+    "resubmitTitle": "ଆପଣଙ୍କର ଉପସ୍ଥାପନା ଅଦ୍ୟତନ କରନ୍ତୁ |",
+    "resubmitNotice": "ପ୍ରତ୍ୟାଖ୍ୟାନ କାରଣ ସମୀକ୍ଷା କରନ୍ତୁ, ଆପଣଙ୍କର ବିବରଣୀ ସଂଶୋଧନ କରନ୍ତୁ ଏବଂ ସମୀକ୍ଷା ପାଇଁ ପୁନର୍ବାର ଦାଖଲ କରନ୍ତୁ |",
+    "agreeAndVerify": "ରାଜି ହୁଅନ୍ତୁ ଏବଂ ସମୀକ୍ଷା ପାଇଁ ଦାଖଲ କରନ୍ତୁ |",
     "title": "ଯୋଗଦାନକାରୀ ଯାଞ୍ଚ",
     "verified": "ଯାଞ୍ଚ ହୋଇଗଲା!",
     "verifiedMsg": "ଅବ ଆପ ଏକ ସତ୍ଯାପିତ ଯୋଗଦାନକର୍ତା ହୈଂ। ଆପ ପୋସ୍ଟ, ଟିପ୍ପଣୀ ଔର ରିପୋର୍ଟ କର ସକତେ ହୈଂ।",

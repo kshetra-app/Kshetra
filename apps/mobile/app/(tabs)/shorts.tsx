@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View,
@@ -29,6 +30,7 @@ export interface ShortsScreenProps {
 }
 
 export default function ShortsScreen({ hideHeader = false, searchQuery = '' }: ShortsScreenProps = {}) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
@@ -113,7 +115,7 @@ export default function ShortsScreen({ hideHeader = false, searchQuery = '' }: S
             {!hideHeader && (
               <Text style={[styles.title, { color: colors.text }]}>{t('tabs.shorts', { defaultValue: 'Shorts' })}</Text>
             )}
-            <Text style={[styles.subtitle, { color: colors.textMuted }]}>{shorts.length} short{shorts.length !== 1 ? 's' : ''}</Text>
+            <Text style={[styles.subtitle, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.shorts.value1ShortValue2", { value1: shorts.length, value2: shorts.length !== 1 ? 's' : '' })}</Text>
           </View>
         </View>
         <Pressable style={[styles.uploadBtn, { backgroundColor: colors.primary }]} onPress={() => setUploadVisible(true)}>

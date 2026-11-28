@@ -4,6 +4,7 @@
  * the unified Legislator Profile screen (app/legislator/[id].tsx).
  * Kept as a redirect for backwards-compatible deep links.
  */
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
@@ -14,6 +15,7 @@ import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import i18n from '../../i18n';
 
 export default function CandidateXRayRedirect() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { colors } = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
@@ -48,9 +50,9 @@ export default function CandidateXRayRedirect() {
           }}
         />
         <Ionicons name="search-outline" size={44} color={colors.textMuted} />
-        <Text style={[styles.titleText, { color: colors.text, marginTop: 12 }]}>Candidate record not found</Text>
+        <Text style={[styles.titleText, { color: colors.text, marginTop: 12 }]}>{translateScreenLabel("screenLabels.candidateXray.candidateRecordNotFound")}</Text>
         <Text style={[styles.text, { color: colors.textMuted, marginTop: 4, textAlign: 'center', paddingHorizontal: 32 }]}>
-          Affidavit profiles have been consolidated into Legislator Profiles.
+          {translateScreenLabel("screenLabels.candidateXray.affidavitProfilesHaveBeenConsolidatedIntoLegislatorProfiles")}
         </Text>
         <Pressable
           style={[styles.btn, { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, marginTop: 16 }]}
@@ -71,7 +73,7 @@ export default function CandidateXRayRedirect() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen options={{ title: 'Redirecting...' }} />
-      <Text style={[styles.text, { color: colors.textMuted }]}>Loading profile...</Text>
+      <Text style={[styles.text, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.candidateXray.loadingProfile")}</Text>
     </View>
   );
 }

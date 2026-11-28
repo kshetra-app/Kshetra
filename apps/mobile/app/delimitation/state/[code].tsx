@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useMemo, useState } from 'react';
 import {
   View,
@@ -23,6 +24,7 @@ import { useTheme } from '../../../lib/theme';
 import DiscoveryHubSheet from '../../../components/DiscoveryHubSheet';
 
 export default function StateDelimitationDetail() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
@@ -136,12 +138,8 @@ export default function StateDelimitationDetail() {
             </View>
           </View>
           <View style={styles.heroMeta}>
-            <Text style={[styles.heroMetaText, { color: colors.textSecondary }]}>
-              Population: {formatPopulation(allocation.totalPopulation)} · {formatPopulation(allocation.populationPerProjectedSeat)}/seat
-            </Text>
-            <Text style={[styles.heroMetaText, { color: colors.textSecondary }]}>
-              Constitutional Deviation: {allocation.deviationPercent > 0 ? '+' : ''}{allocation.deviationPercent.toFixed(1)}%
-            </Text>
+            <Text style={[styles.heroMetaText, { color: colors.textSecondary }]}>{translateScreenLabel("screenLabels.state.populationValue1Value2Seat", { value1: formatPopulation(allocation.totalPopulation), value2: formatPopulation(allocation.populationPerProjectedSeat) })}</Text>
+            <Text style={[styles.heroMetaText, { color: colors.textSecondary }]}>{translateScreenLabel("screenLabels.state.constitutionalDeviationValue1Value2", { value1: allocation.deviationPercent > 0 ? '+' : '', value2: allocation.deviationPercent.toFixed(1) })}</Text>
           </View>
         </View>
 
@@ -213,7 +211,7 @@ export default function StateDelimitationDetail() {
               {/* SC */}
               <View style={styles.resRow}>
                 <View style={[styles.resDot, { backgroundColor: '#F59E0B' }]} />
-                <Text style={[styles.resCategory, { color: colors.text }]}>SC ({reservation.scPercent}%)</Text>
+                <Text style={[styles.resCategory, { color: colors.text }]}>{translateScreenLabel("screenLabels.state.scValue1", { value1: reservation.scPercent })}</Text>
                 <Text style={[styles.resValue, { color: colors.text }]}>{reservation.current.scReserved}</Text>
                 <Text style={[styles.resValue, { color: colors.text }]}>{allocation.reservedSC}</Text>
                 <Text style={[styles.resChange, { color: allocation.reservedSC - reservation.current.scReserved >= 0 ? '#10B981' : '#EF4444' }]}>
@@ -224,7 +222,7 @@ export default function StateDelimitationDetail() {
               {/* ST */}
               <View style={styles.resRow}>
                 <View style={[styles.resDot, { backgroundColor: '#10B981' }]} />
-                <Text style={[styles.resCategory, { color: colors.text }]}>ST ({reservation.stPercent}%)</Text>
+                <Text style={[styles.resCategory, { color: colors.text }]}>{translateScreenLabel("screenLabels.state.stValue1", { value1: reservation.stPercent })}</Text>
                 <Text style={[styles.resValue, { color: colors.text }]}>{reservation.current.stReserved}</Text>
                 <Text style={[styles.resValue, { color: colors.text }]}>{allocation.reservedST}</Text>
                 <Text style={[styles.resChange, { color: allocation.reservedST - reservation.current.stReserved >= 0 ? '#10B981' : '#EF4444' }]}>
@@ -250,9 +248,7 @@ export default function StateDelimitationDetail() {
         {districtAgg && (
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>{t('constituency.district')}</Text>
-            <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
-              {districtAgg.districts.length} districts · {allocation.projectedSeats} projected seats · Ideal: {formatPopulation(districtAgg.idealPopPerSeat)}/seat
-            </Text>
+            <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>{translateScreenLabel("screenLabels.state.value1DistrictsValue2ProjectedSeatsIdealValue3Seat", { value1: districtAgg.districts.length, value2: allocation.projectedSeats, value3: formatPopulation(districtAgg.idealPopPerSeat) })}</Text>
 
             {districtAgg.districts
               .sort((a, b) => b.projectedSeats - a.projectedSeats)
@@ -261,7 +257,7 @@ export default function StateDelimitationDetail() {
                   <View style={styles.districtHeader}>
                     <Text style={[styles.districtName, { color: colors.text }]}>{d.districtName}</Text>
                     <View style={[styles.districtSeatBadge, { backgroundColor: colors.primaryLight }]}>
-                      <Text style={[styles.districtSeatText, { color: colors.primary }]}>{d.projectedSeats} seats</Text>
+                      <Text style={[styles.districtSeatText, { color: colors.primary }]}>{translateScreenLabel("screenLabels.state.value1Seats", { value1: d.projectedSeats })}</Text>
                     </View>
                   </View>
                   <View style={styles.districtStats}>
@@ -287,7 +283,7 @@ export default function StateDelimitationDetail() {
                     <View style={[styles.resSegment, { flex: d.stPercent || 0.1, backgroundColor: '#10B981' }]} />
                     <View style={[styles.resSegment, { flex: Math.max(0.1, 100 - d.scPercent - d.stPercent), backgroundColor: colors.primaryLight }]} />
                   </View>
-                  <Text style={[styles.districtResText, { color: colors.textSecondary }]}>SC {d.scPercent}% · ST {d.stPercent}% · Urban {d.urbanPercent}%</Text>
+                  <Text style={[styles.districtResText, { color: colors.textSecondary }]}>{translateScreenLabel("screenLabels.state.scValue1StValue2UrbanValue3", { value1: d.scPercent, value2: d.stPercent, value3: d.urbanPercent })}</Text>
                 </View>
               ))}
           </View>
@@ -302,7 +298,7 @@ export default function StateDelimitationDetail() {
               </Text>
               <Pressable onPress={() => setShowConstituencies(!showConstituencies)}>
                 <Text style={[styles.toggleBtnText, { color: colors.primary }]}>
-                  {showConstituencies ? 'Hide' : 'View All'}
+                  {showConstituencies ? translateScreenLabel("common.hide") : translateScreenLabel("common.viewAll")}
                 </Text>
               </Pressable>
             </View>
@@ -316,13 +312,8 @@ export default function StateDelimitationDetail() {
                     onPress={() => router.push(`/constituency/${c.acNo}` as any)}
                   >
                     <View style={{ flex: 1 }}>
-                      <Text style={[styles.acName, { color: colors.text }]}>
-                        AC #{c.acNo} {c.name}
-                      </Text>
-                      <Text style={[styles.acDistrict, { color: colors.textMuted }]}>
-                        District: {c.district}
-                        {c.winnerName && c.winnerParty ? ` · MLA: ${c.winnerName} (${c.winnerParty})` : ''}
-                      </Text>
+                      <Text style={[styles.acName, { color: colors.text }]}>{translateScreenLabel("screenLabels.state.acValue1Value2", { value1: c.acNo, value2: c.name })}</Text>
+                      <Text style={[styles.acDistrict, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.state.districtValue1Value2", { value1: c.district, value2: c.winnerName && c.winnerParty ? ` · MLA: ${c.winnerName} (${c.winnerParty})` : '' })}</Text>
                     </View>
                     <View style={[styles.acTypeBadge, { backgroundColor: colors.primaryLight }]}>
                       <Text style={[styles.acTypeText, { color: colors.primary }]}>{c.type}</Text>

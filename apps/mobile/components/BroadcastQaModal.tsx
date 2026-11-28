@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import { 
   View, 
@@ -28,22 +29,23 @@ export const BroadcastQaModal: React.FC<Props> = ({
   onSubmitQuestion,
   onUpvoteQuestion,
 }) => {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const [inputText, setInputText] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async () => {
     const trimmed = inputText.trim();
     if (trimmed.length < 5) {
-      Alert.alert('Validation Error', 'Question must be at least 5 characters');
+      Alert.alert(translateScreenLabel("screenLabels.BroadcastQaModal.validationError"), translateScreenLabel("screenLabels.BroadcastQaModal.questionMustBeAtLeast5Characters"));
       return;
     }
     // DPDP Act 2023 check
     if (/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/i.test(trimmed)) {
-      Alert.alert('Privacy Protection', 'Please do not include email addresses in questions.');
+      Alert.alert(translateScreenLabel("screenLabels.BroadcastQaModal.privacyProtection"), translateScreenLabel("screenLabels.BroadcastQaModal.pleaseDoNotIncludeEmailAddressesIn"));
       return;
     }
     if (/(\+91|0)?[6-9][0-9]{9}/.test(trimmed)) {
-      Alert.alert('Privacy Protection', 'Please do not include phone numbers in questions.');
+      Alert.alert(translateScreenLabel("screenLabels.BroadcastQaModal.privacyProtection"), translateScreenLabel("screenLabels.BroadcastQaModal.pleaseDoNotIncludePhoneNumbersIn"));
       return;
     }
 
@@ -52,7 +54,7 @@ export const BroadcastQaModal: React.FC<Props> = ({
       await onSubmitQuestion(trimmed);
       setInputText('');
     } catch (err: any) {
-      Alert.alert('Submission Error', err.message || 'Failed to submit question');
+      Alert.alert(translateScreenLabel("screenLabels.BroadcastQaModal.submissionError"), err.message || translateScreenLabel("screenLabels.BroadcastQaModal.failedToSubmitQuestion"));
     } finally {
       setSubmitting(false);
     }
@@ -65,7 +67,7 @@ export const BroadcastQaModal: React.FC<Props> = ({
           <View style={styles.header}>
             <View style={styles.titleRow}>
               <Ionicons name="chatbubbles" size={20} color="#3B82F6" />
-              <Text style={styles.title}>Audience Q&A</Text>
+              <Text style={styles.title}>{translateScreenLabel("screenLabels.BroadcastQaModal.audienceQA")}</Text>
             </View>
             <Pressable onPress={onClose} style={styles.closeBtn}>
               <Ionicons name="close" size={22} color="#94A3B8" />
@@ -78,7 +80,7 @@ export const BroadcastQaModal: React.FC<Props> = ({
             contentContainerStyle={styles.listContent}
             ListEmptyComponent={
               <View style={styles.emptyContainer}>
-                <Text style={styles.emptyText}>No audience questions yet. Be the first to ask!</Text>
+                <Text style={styles.emptyText}>{translateScreenLabel("screenLabels.BroadcastQaModal.noAudienceQuestionsYetBeTheFirstTo")}</Text>
               </View>
             }
             renderItem={({ item }) => (
@@ -86,7 +88,7 @@ export const BroadcastQaModal: React.FC<Props> = ({
                 {item.isPinned && (
                   <View style={styles.pinnedBadge}>
                     <Ionicons name="pin" size={12} color="#F59E0B" />
-                    <Text style={styles.pinnedText}>PINNED BY HOST</Text>
+                    <Text style={styles.pinnedText}>{translateScreenLabel("screenLabels.BroadcastQaModal.pinnedByHost")}</Text>
                   </View>
                 )}
                 <Text style={styles.questionText}>{item.questionText}</Text>
@@ -113,7 +115,7 @@ export const BroadcastQaModal: React.FC<Props> = ({
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
-              placeholder="Ask a question for the broadcaster..."
+              placeholder={translateScreenLabel("screenLabels.BroadcastQaModal.askAQuestionForTheBroadcaster")}
               placeholderTextColor="#64748B"
               value={inputText}
               onChangeText={setInputText}

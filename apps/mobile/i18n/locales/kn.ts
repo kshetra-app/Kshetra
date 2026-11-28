@@ -2,6 +2,546 @@
  * KN translation
  */
 const kn = {
+  "screenLabels": {
+    "ConstituencySelectorSheet": {
+      "acValue1": "AC {{value1}}"
+    },
+    "EventCard": {
+      "rsvp": "ಹಾಜರಾತಿಯನ್ನು ಖಚಿತಪಡಿಸಿ"
+    },
+    "news": {
+      "noSavedStoriesYet": "ಇನ್ನೂ ಉಳಿಸಿದ ಕಥೆಗಳಿಲ್ಲ",
+      "noStoriesAreAvailableForThisArea": "ಈ ಪ್ರದೇಶಕ್ಕೆ ಇನ್ನೂ ಯಾವುದೇ ಕಥೆಗಳು ಲಭ್ಯವಿಲ್ಲ",
+      "noValue1StoriesAreAvailableRightNow": "ಇದೀಗ ಯಾವುದೇ {{value1}} ಕಥೆಗಳು ಲಭ್ಯವಿಲ್ಲ",
+      "noNewsStoriesAreAvailableRightNow": "ಸದ್ಯಕ್ಕೆ ಯಾವುದೇ ಸುದ್ದಿಗಳು ಲಭ್ಯವಿಲ್ಲ"
+    },
+    "hierarchy": {
+      "value1Records": "{{value1}} ದಾಖಲೆಗಳು",
+      "value1Value2Value3DrillDown": "{{value1}} → {{value2}} → {{value3}} ಡ್ರಿಲ್-ಡೌನ್"
+    },
+    "moderation": {
+      "actionApplied": "ಕ್ರಿಯೆಯನ್ನು ಅನ್ವಯಿಸಲಾಗಿದೆ",
+      "reportProcessedSuccessfullyValue1": "ವರದಿಯನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲಾಗಿದೆ: {{value1}}",
+      "error": "ದೋಷ",
+      "failedToApplyModerationAction": "ಮಾಡರೇಶನ್ ಕ್ರಿಯೆಯನ್ನು ಅನ್ವಯಿಸಲು ವಿಫಲವಾಗಿದೆ",
+      "networkRequestFailed": "ನೆಟ್‌ವರ್ಕ್ ವಿನಂತಿ ವಿಫಲವಾಗಿದೆ",
+      "userIdValue1": "ಬಳಕೆದಾರ ID: {{value1}}..."
+    },
+    "ComposeSheet": {
+      "mp4": "MP4",
+      "optionValue1": "ಆಯ್ಕೆ {{value1}}"
+    },
+    "ProfileHeroCard": {
+      "label1stRunnerUp": "1ನೇ ರನ್ನರ್ ಅಪ್",
+      "label2ndRunnerUp": "2ನೇ ರನ್ನರ್ ಅಪ್",
+      "yrs": "ವರ್ಷ"
+    },
+    "ProjectCard": {
+      "acValue1": "· AC # {{value1}}"
+    },
+    "RegisterAspirantModal": {
+      "pleaseLogInBeforeRegisteringAsAn": "ಆಕಾಂಕ್ಷಿಯಾಗಿ ನೋಂದಾಯಿಸುವ ಮೊದಲು ದಯವಿಟ್ಟು ಲಾಗ್ ಇನ್ ಮಾಡಿ."
+    },
+    "dashboard": {
+      "reporter": "ವರದಿಗಾರ",
+      "noLoadedReportsMatchTheseFiltersMoreReports": "ಯಾವುದೇ ಲೋಡ್ ಮಾಡಲಾದ ವರದಿಗಳು ಈ ಫಿಲ್ಟರ್‌ಗಳಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ. ಹುಡುಕಲು ಹೆಚ್ಚಿನ ವರದಿಗಳು ಲಭ್ಯವಿವೆ.",
+      "couldNotLoadTheNextPageTheReports": "ಮುಂದಿನ ಪುಟವನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಈಗಾಗಲೇ ತೋರಿಸಿರುವ ವರದಿಗಳು ಬದಲಾಗಿಲ್ಲ.",
+      "value1AlertSValue2AwaitingAcknowledgment": "{{value1}} ಎಚ್ಚರಿಕೆ(ಗಳು) · {{value2}} ಸ್ವೀಕೃತಿಗಾಗಿ ಕಾಯುತ್ತಿದೆ",
+      "value1Alert": "{{value1}} ಎಚ್ಚರಿಕೆ",
+      "watchLiveFeed": "ಲೈವ್ ಫೀಡ್ ಅನ್ನು ವೀಕ್ಷಿಸಿ"
+    },
+    "explore": {
+      "value1Value2Found": "{{value1}}  {{value2}} ಕಂಡುಬಂದಿದೆ"
+    },
+    "tabs": {
+      "urbanValue1": "ಅರ್ಬನ್ {{value1}}",
+      "ruralGramPanchayat": "ಗ್ರಾಮೀಣ ಗ್ರಾಮ ಪಂಚಾಯತ್",
+      "othersValue1": "ಇತರೆ: {{value1}} %",
+      "value1Cr": "₹ {{value1}} ಕೋಟಿ",
+      "netValue1Cr": "ನಿವ್ವಳ: ₹ {{value1}} Cr",
+      "value1Yrs": "{{value1}} ವರ್ಷ",
+      "dobValue1": "ಜನ್ಮ ದಿನಾಂಕ · {{value1}}",
+      "tapAnyStateToExploreItsAssemblyConstituencies": "ಯಾವುದೇ ರಾಜ್ಯದ ಅಸೆಂಬ್ಲಿ ಕ್ಷೇತ್ರಗಳನ್ನು ಅನ್ವೇಷಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ",
+      "boothValue1": "ಬೂತ್ # {{value1}}",
+      "acValue1Value2": "AC # {{value1}} · {{value2}}",
+      "value1AcValue2": "{{value1}} (AC # {{value2}} )",
+      "acValue1": "AC # {{value1}}",
+      "label1st": "1 ನೇ",
+      "label2nd": "2 ನೇ",
+      "label3rd": "3 ನೇ"
+    },
+    "intelligence": {
+      "value1Value2AssemblyElections": "{{value1}}  {{value2}} · ಅಸೆಂಬ್ಲಿ ಚುನಾವಣೆಗಳು",
+      "seatValue1": "ಆಸನ {{value1}}",
+      "value1SeatValue2": "{{value1}} ಸೀಟ್ {{value2}}",
+      "value1MarginOfValue2Votes": "{{value1}} — {{value2}} ಮತಗಳ ಅಂತರ",
+      "marginDataUnavailable": "ಮಾರ್ಜಿನ್ ಡೇಟಾ ಲಭ್ಯವಿಲ್ಲ",
+      "value1AppearsInValue2RecordedConstituenciesValue3": "{{value1}}  {{value2}} ರೆಕಾರ್ಡ್ ಮಾಡಿದ ಕ್ಷೇತ್ರಗಳಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತದೆ ( {{value3}} % ಪಾರ್ಟಿ-ತಿಳಿದಿರುವ ದಾಖಲೆಗಳು)",
+      "value1WithValue2SeatsValue3": "{{value1}}  {{value2}} ಸೀಟುಗಳೊಂದಿಗೆ ( {{value3}} %)",
+      "partyDataUnavailable": "ಪಾರ್ಟಿ ಡೇಟಾ ಲಭ್ಯವಿಲ್ಲ",
+      "dataValue1StateElectionCommission": "ಡೇಟಾ: {{value1}} ರಾಜ್ಯ ಚುನಾವಣಾ ಆಯೋಗ",
+      "value1Turnout": "{{value1}} % ಮತದಾನ"
+    },
+    "profile": {
+      "featureFlagsDevSwitches": "ವೈಶಿಷ್ಟ್ಯ ಫ್ಲ್ಯಾಗ್‌ಗಳು ಮತ್ತು ದೇವ್ ಸ್ವಿಚ್‌ಗಳು",
+      "value1TapForDevSwitches": "{{value1}} • ದೇವ್ ಸ್ವಿಚ್‌ಗಳಿಗಾಗಿ ಟ್ಯಾಪ್ ಮಾಡಿ"
+    },
+    "shorts": {
+      "value1ShortValue2": "{{value1}} ಕಿರು {{value2}}"
+    },
+    "candidateXray": {
+      "candidateRecordNotFound": "ಅಭ್ಯರ್ಥಿಯ ದಾಖಲೆ ಕಂಡುಬಂದಿಲ್ಲ",
+      "affidavitProfilesHaveBeenConsolidatedIntoLegislatorProfiles": "ಅಫಿಡವಿಟ್ ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ಶಾಸಕರ ಪ್ರೊಫೈಲ್‌ಗಳಾಗಿ ಏಕೀಕರಿಸಲಾಗಿದೆ.",
+      "loadingProfile": "ಪ್ರೊಫೈಲ್ ಲೋಡ್ ಆಗುತ್ತಿದೆ..."
+    },
+    "constituency": {
+      "notReported": "ವರದಿಯಾಗಿಲ್ಲ",
+      "shareConstituencyCard": "ಕ್ಷೇತ್ರದ ಕಾರ್ಡ್ ಹಂಚಿಕೊಳ್ಳಿ",
+      "profileRecord": "ಪ್ರೊಫೈಲ್ ದಾಖಲೆ",
+      "historicalPoliticalData19992026": "ಐತಿಹಾಸಿಕ ರಾಜಕೀಯ ದತ್ತಾಂಶ (1999–2026)",
+      "viewAllValue1": "ಎಲ್ಲವನ್ನೂ ವೀಕ್ಷಿಸಿ ( {{value1}} )",
+      "assemblyElectionPodiumResultsWith1st2ndAnd": "1, 2 ಮತ್ತು 3 ನೇ ಸ್ಥಾನದ ಅಭ್ಯರ್ಥಿಗಳು, ಅಂತರಗಳು ಮತ್ತು ಮತ ಹಂಚಿಕೆಗಳೊಂದಿಗೆ ಅಸೆಂಬ್ಲಿ ಚುನಾವಣಾ ವೇದಿಕೆಯ ಫಲಿತಾಂಶಗಳು:",
+      "showAllValue1PastElections1999Value2": "ಎಲ್ಲಾ {{value1}} ಹಿಂದಿನ ಚುನಾವಣೆಗಳನ್ನು ತೋರಿಸಿ (1999– {{value2}} )"
+    },
+    "simulator": {
+      "dataStatusPoligramScenario": "ಡೇಟಾ ಸ್ಥಿತಿ: ಪೋಲಿಗ್ರಾಮ್ ಸನ್ನಿವೇಶ",
+      "stateAssemblyIntraStateDistrictProjectionArticle170": "ರಾಜ್ಯ ಅಸೆಂಬ್ಲಿ ಮತ್ತು ಇಂಟ್ರಾ-ಸ್ಟೇಟ್ ಡಿಸ್ಟ್ರಿಕ್ಟ್ ಪ್ರೊಜೆಕ್ಷನ್ - ಆರ್ಟಿಕಲ್ 170 / ಅನ್ವಯವಾಗುವ ಶಾಸನಬದ್ಧ ಚೌಕಟ್ಟು. ಇದು ಶೈಕ್ಷಣಿಕ ಸಂಶೋಧನಾ ಸಿಮ್ಯುಲೇಶನ್ ಆಗಿದೆ, ಭಾರತದ ಡಿಲಿಮಿಟೇಶನ್ ಆಯೋಗದ ಅಧಿಕೃತ ಆದೇಶವಲ್ಲ.",
+      "simulationQualityValue1Within10DeviationBound": "ಸಿಮ್ಯುಲೇಶನ್ ಗುಣಮಟ್ಟ: {{value1}} % ± 10% ವಿಚಲನ ಬೌಂಡ್ ಒಳಗೆ"
+    },
+    "state": {
+      "populationValue1Value2Seat": "ಜನಸಂಖ್ಯೆ: {{value1}} · {{value2}} / ಸೀಟ್",
+      "constitutionalDeviationValue1Value2": "ಸಾಂವಿಧಾನಿಕ ವಿಚಲನ: {{value1}}  {{value2}} %",
+      "scValue1": "SC ( {{value1}} %)",
+      "stValue1": "ST ( {{value1}} %)",
+      "value1DistrictsValue2ProjectedSeatsIdealValue3Seat": "{{value1}} ಜಿಲ್ಲೆಗಳು · {{value2}} ಯೋಜಿತ ಆಸನಗಳು · ಆದರ್ಶ: {{value3}} / ಸೀಟ್",
+      "value1Seats": "{{value1}} ಸೀಟುಗಳು",
+      "scValue1StValue2UrbanValue3": "SC {{value1}} % · ST {{value2}} % · ನಗರ {{value3}} %",
+      "acValue1Value2": "AC # {{value1}}  {{value2}}",
+      "districtValue1Value2": "ಜಿಲ್ಲೆ: {{value1}}  {{value2}}"
+    },
+    "editProfile": {
+      "yourName": "ನಿಮ್ಮ ಹೆಸರು",
+      "tellUsAboutYourself": "ನಿಮ್ಮ ಬಗ್ಗೆ ನಮಗೆ ತಿಳಿಸಿ..."
+    },
+    "issue": {
+      "flagValue1ForRepresentativeAttentionInPoligram": "ಪೋಲಿಗ್ರಾಮ್‌ನಲ್ಲಿ ಪ್ರತಿನಿಧಿ ಗಮನಕ್ಕಾಗಿ \" {{value1}} \" ಅನ್ನು ಫ್ಲ್ಯಾಗ್ ಮಾಡುವುದೇ?",
+      "alreadyDisputed": "ಈಗಾಗಲೇ ವಿವಾದಿತವಾಗಿದೆ",
+      "youHaveAlreadyDisputedThisResolution": "ನೀವು ಈಗಾಗಲೇ ಈ ನಿರ್ಣಯವನ್ನು ವಿವಾದಿಸಿರುವಿರಿ.",
+      "doYouBelieveThisIssueHasNot": "ಈ ಸಮಸ್ಯೆಯನ್ನು ಸರಿಯಾಗಿ ಪರಿಹರಿಸಲಾಗಿಲ್ಲ ಎಂದು ನೀವು ನಂಬುತ್ತೀರಾ? ನಿಮ್ಮ ವಿವಾದವನ್ನು ದಾಖಲಿಸಲಾಗುತ್ತದೆ. 5+ ನಾಗರಿಕರು ತಕರಾರು ಮಾಡಿದರೆ, ಸಮಸ್ಯೆಯನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪುನಃ ತೆರೆಯಲಾಗುತ್ತದೆ.",
+      "dispute": "ವಿವಾದ",
+      "byValue1": "{{value1}} ಮೂಲಕ",
+      "resolvedValue1": "{{value1}} ಪರಿಹರಿಸಲಾಗಿದೆ",
+      "reopenedValue1CitizensDisputedTheResolution": "ಪುನಃ ತೆರೆಯಲಾಗಿದೆ - {{value1}} ನಾಗರಿಕರು ನಿರ್ಣಯವನ್ನು ವಿವಾದಿಸಿದ್ದಾರೆ",
+      "evidenceValue1": "ಸಾಕ್ಷಿ ( {{value1}} )",
+      "showAllValue1MediaFiles": "ಎಲ್ಲಾ {{value1}} ಮಾಧ್ಯಮ ಫೈಲ್‌ಗಳನ್ನು ತೋರಿಸಿ",
+      "statusTimeline": "ಸ್ಥಿತಿ ಟೈಮ್‌ಲೈನ್",
+      "official": "ಅಧಿಕೃತ"
+    },
+    "leadershipAcademy": {
+      "moduleUnavailable": "ಮಾಡ್ಯೂಲ್ ಲಭ್ಯವಿಲ್ಲ",
+      "theModuleCouldNotBeOpenedRight": "ಮಾಡ್ಯೂಲ್ ಅನ್ನು ಇದೀಗ ತೆರೆಯಲಾಗಲಿಲ್ಲ.",
+      "couldNotJoinChallenge": "ಸವಾಲಿಗೆ ಸೇರಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ",
+      "leadershipAcademyIsCurrentlyUnavailable": "ನಾಯಕತ್ವ ಅಕಾಡೆಮಿ ಪ್ರಸ್ತುತ ಲಭ್ಯವಿಲ್ಲ.",
+      "loadingModules": "ಮಾಡ್ಯೂಲ್‌ಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...",
+      "noPublishedModulesAreAvailable": "ಯಾವುದೇ ಪ್ರಕಟಿತ ಮಾಡ್ಯೂಲ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ."
+    },
+    "legislator": {
+      "value1ElectionPerformance": "{{value1}} ಚುನಾವಣಾ ಕಾರ್ಯಕ್ಷಮತೆ",
+      "electionPerformance": "ಚುನಾವಣಾ ಕಾರ್ಯಕ್ಷಮತೆ",
+      "couldNotFindDataForAcValue1": "AC # {{value1}} ಗಾಗಿ ಡೇಟಾವನ್ನು ಹುಡುಕಲಾಗಲಿಲ್ಲ",
+      "profession": "ವೃತ್ತಿ",
+      "maritalStatus": "ವೈವಾಹಿಕ ಸ್ಥಿತಿ",
+      "dateOfBirth": "ಹುಟ್ಟಿದ ದಿನಾಂಕ",
+      "assemblyTermStatus": "ಅಸೆಂಬ್ಲಿ ಅವಧಿ ಮತ್ತು ಸ್ಥಿತಿ",
+      "term": "ಅವಧಿ",
+      "podiumRank": "ಪೋಡಿಯಂ ಶ್ರೇಣಿ",
+      "currentParty": "ಪ್ರಸ್ತುತ ಪಕ್ಷ",
+      "constituencyElectionHistory": "ಕ್ಷೇತ್ರದ ಚುನಾವಣಾ ಇತಿಹಾಸ",
+      "fullElectionCyclesForValue1Value2TapAny": "# {{value1}}  {{value2}} ಗಾಗಿ ಪೂರ್ಣ ಚುನಾವಣಾ ಚಕ್ರಗಳು. ಅವರ ಪ್ರೊಫೈಲ್ ಡೋಸಿಯರ್ ಅನ್ನು ವೀಕ್ಷಿಸಲು ಯಾವುದೇ ಅಭ್ಯರ್ಥಿಯನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ."
+    },
+    "distribution": {
+      "shipsAsASeparateLightweightBuildAppsWeb": "ಪ್ರತ್ಯೇಕ ಹಗುರವಾದ ನಿರ್ಮಾಣವಾಗಿ ರವಾನಿಸಲಾಗುತ್ತದೆ (ಅಪ್ಲಿಕೇಶನ್‌ಗಳು/ವೆಬ್-ರಿಸೀವರ್). ಸ್ಥಳೀಯ ವಿಂಡೋಸ್ + ಆಂಡ್ರಾಯ್ಡ್ ಟಿವಿ ರ್ಯಾಪರ್‌ಗಳು ಒಂದೇ ಪುಟದಲ್ಲಿ ಹಂತ 2 ಪಾಲಿಶ್ ಆಗಿವೆ."
+    },
+    "localBodies": {
+      "sourceAndhraPradeshStateElectionCommissionApsec": "ಮೂಲ: ಆಂಧ್ರ ಪ್ರದೇಶ ರಾಜ್ಯ ಚುನಾವಣಾ ಆಯೋಗ (APSEC) - ಅಧಿಕೃತ ಸ್ಥಳೀಯ ಸಂಸ್ಥೆ ಚುನಾವಣಾ ಫಲಿತಾಂಶಗಳು. ಗ್ರಾಮ ಪಂಚಾಯಿತಿ ಚುನಾವಣೆ ಅಧಿಕೃತವಾಗಿ ಪಕ್ಷೇತರ.",
+      "sourceTelanganaStateElectionCommissionTsecKnow": "ಮೂಲ: ತೆಲಂಗಾಣ ರಾಜ್ಯ ಚುನಾವಣಾ ಆಯೋಗ (TSEC) — ನಿಮ್ಮ ಸಾರ್ವಜನಿಕ ಪ್ರತಿನಿಧಿಯನ್ನು ತಿಳಿಯಿರಿ (ಗ್ರಾಮೀಣ). ಗ್ರಾಮ ಪಂಚಾಯಿತಿ ಚುನಾವಣೆ ಅಧಿಕೃತವಾಗಿ ಪಕ್ಷೇತರ.",
+      "ts": "ಟಿಎಸ್",
+      "ap": "ಎಪಿ",
+      "mandalParishadTerritorialConstituencyMptcValue1": "ಮಂಡಲ ಪರಿಷದ್ ಪ್ರಾದೇಶಿಕ ಕ್ಷೇತ್ರ (MPTC) ( {{value1}} )",
+      "gramPanchayatsValue1": "ಗ್ರಾಮ ಪಂಚಾಯತಿಗಳು ( {{value1}} )"
+    },
+    "onboarding": {
+      "selectedValue1Value2Value3": "ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ: # {{value1}}  {{value2}}  {{value3}}"
+    },
+    "parliament": {
+      "lokSabha18th": "ಲೋಕಸಭೆ (18ನೇ)",
+      "value1Yrs": "{{value1}} ವರ್ಷಗಳು",
+      "lsValue1RsValue2TotalValue3": "LS: {{value1}} · RS: {{value2}} · ಒಟ್ಟು: {{value3}}"
+    },
+    "reader": {
+      "article": "ಲೇಖನ",
+      "contentFromValue1": "{{value1}} ನಿಂದ ವಿಷಯ"
+    },
+    "representative": {
+      "value1Record": "{{value1}} ದಾಖಲೆ",
+      "officiallyNonPartyStatePanchayatiRajAct": "ಅಧಿಕೃತವಾಗಿ ಪಕ್ಷೇತರ (ರಾಜ್ಯ ಪಂಚಾಯತ್ ರಾಜ್ ಕಾಯಿದೆ)",
+      "officialElectionResultsFromAndhraPradeshState": "ಆಂಧ್ರ ಪ್ರದೇಶ ರಾಜ್ಯ ಚುನಾವಣಾ ಆಯೋಗದಿಂದ (APSEC) ಅಧಿಕೃತ ಚುನಾವಣಾ ಫಲಿತಾಂಶಗಳು",
+      "officialElectionResultsFromTelanganaStateElection": "ತೆಲಂಗಾಣ ರಾಜ್ಯ ಚುನಾವಣಾ ಆಯೋಗದಿಂದ (TSEC) ಅಧಿಕೃತ ಚುನಾವಣಾ ಫಲಿತಾಂಶಗಳು — ನಿಮ್ಮ ಪ್ರತಿನಿಧಿಯನ್ನು ತಿಳಿದುಕೊಳ್ಳಿ (KYR)",
+      "thisPollIsOfficiallyNonPartyPartyAffiliation": "ಈ ಸಮೀಕ್ಷೆಯು ಅಧಿಕೃತವಾಗಿ ಪಕ್ಷೇತರವಾಗಿದೆ. ಪಕ್ಷದ ಸದಸ್ಯತ್ವ ( {{value1}} ) ವಾಸ್ತವಿಕ / ಅನಧಿಕೃತವಾಗಿದೆ.",
+      "wardValue1": "ವಾರ್ಡ್ {{value1}}",
+      "value1DeclaredCaseValue2": "{{value1}} ಡಿಕ್ಲೇರ್ಡ್ ಕೇಸ್ {{value2}}",
+      "verifyOnStateElectionCommissionPortal": "ರಾಜ್ಯ ಚುನಾವಣಾ ಆಯೋಗದ ಪೋರ್ಟಲ್‌ನಲ್ಲಿ ಪರಿಶೀಲಿಸಿ",
+      "suggestAnEditWithSource": "ಸಂಪಾದನೆಯನ್ನು ಸೂಚಿಸಿ (ಮೂಲದೊಂದಿಗೆ)"
+    },
+    "edit": {
+      "noChanges": "ಯಾವುದೇ ಬದಲಾವಣೆಗಳಿಲ್ಲ",
+      "editAtLeastOneFieldBeforeSubmitting": "ಸಲ್ಲಿಸುವ ಮೊದಲು ಕನಿಷ್ಠ ಒಂದು ಕ್ಷೇತ್ರವನ್ನು ಸಂಪಾದಿಸಿ.",
+      "sourceRequired": "ಮೂಲ ಅಗತ್ಯವಿದೆ",
+      "enterAnHttpsLinkSupportingTheCorrection": "ತಿದ್ದುಪಡಿಯನ್ನು ಬೆಂಬಲಿಸುವ HTTPS ಲಿಂಕ್ ಅನ್ನು ನಮೂದಿಸಿ.",
+      "thankYou": "ಧನ್ಯವಾದಗಳು",
+      "yourCorrectionHasBeenSubmittedForReview": "ನಿಮ್ಮ ತಿದ್ದುಪಡಿಯನ್ನು ಪರಿಶೀಲನೆಗಾಗಿ ಸಲ್ಲಿಸಲಾಗಿದೆ.",
+      "submissionFailed": "ಸಲ್ಲಿಕೆ ವಿಫಲವಾಗಿದೆ",
+      "pleaseTryAgainLater": "ದಯವಿಟ್ಟು ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
+      "submitting": "ಸಲ್ಲಿಸಲಾಗುತ್ತಿದೆ...",
+      "submitForModeration": "ಮಾಡರೇಶನ್‌ಗಾಗಿ ಸಲ್ಲಿಸಿ",
+      "theRepresentativeProfileCouldNotBeLoaded": "ಪ್ರತಿನಿಧಿ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಲೋಡ್ ಮಾಡಲಾಗಲಿಲ್ಲ.",
+      "value1Value2Value3EveryEditRequiresAVerifiable": "{{value1}}  {{value2}}  {{value3}} ಪ್ರತಿ ಸಂಪಾದನೆಗೆ ಪರಿಶೀಲಿಸಬಹುದಾದ ಮೂಲ ಅಗತ್ಯವಿರುತ್ತದೆ ಮತ್ತು ಹೊಣೆಗಾರಿಕೆಗಾಗಿ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಆಗಿದೆ. ಸಂಪಾದನೆಗಳನ್ನು ಪ್ರಕಟಿಸುವ ಮೊದಲು ಮಾಡರೇಟ್ ಮಾಡಲಾಗುತ್ತದೆ.",
+      "sourceLinkRequired": "ಮೂಲ ಲಿಂಕ್ (ಅಗತ್ಯವಿದೆ)",
+      "httpsTsecGovInOrNewsGazetteUrl": "https://tsec.gov.in/... ಅಥವಾ ಸುದ್ದಿ / ಗೆಜೆಟ್ URL",
+      "citationNoteOptional": "ಉಲ್ಲೇಖ / ಟಿಪ್ಪಣಿ (ಐಚ್ಛಿಕ)",
+      "eGTsecKnowYourRepresentativePagePublished": "ಉದಾ. TSEC ನೋ-ಯುವರ್-ರೆಪ್ರೆಸೆಂಟೇಟಿವ್ ಪುಟ, 2020-12-04 ಪ್ರಕಟಿಸಲಾಗಿದೆ"
+    },
+    "search": {
+      "trySearchingBy": "ಇವರಿಂದ ಹುಡುಕಲು ಪ್ರಯತ್ನಿಸಿ:",
+      "constituencyNameJubileeHills": "• ಕ್ಷೇತ್ರದ ಹೆಸರು: \"ಜುಬಿಲಿ ಹಿಲ್ಸ್\"",
+      "acNumber141": "• AC ಸಂಖ್ಯೆ: \"141\"",
+      "mlaNameRevanthReddy": "• ಶಾಸಕರ ಹೆಸರು: \"ರೇವಂತ್ ರೆಡ್ಡಿ\"",
+      "partyBjpOrInc": "• ಪಕ್ಷ: \"ಬಿಜೆಪಿ\" ಅಥವಾ \"ಐಎನ್‌ಸಿ\"",
+      "issueWaterSupply": "• ಸಂಚಿಕೆ: \"ನೀರು ಪೂರೈಕೆ\""
+    },
+    "AdCard": {
+      "featuredPartner": "ವೈಶಿಷ್ಟ್ಯಗೊಳಿಸಿದ ಪಾಲುದಾರ",
+      "sponsored": "ಪ್ರಾಯೋಜಿತ",
+      "commercialPromotion": "ವಾಣಿಜ್ಯ ಪ್ರಚಾರ"
+    },
+    "BroadcastPollCard": {
+      "liveAudiencePoll": "ಲೈವ್ ಪ್ರೇಕ್ಷಕರ ಅಭಿಪ್ರಾಯ ಸಂಗ್ರಹ",
+      "pollResults": "ಪೋಲ್ ಫಲಿತಾಂಶಗಳು",
+      "value1Votes": "{{value1}} ಮತಗಳು",
+      "submittingAnonymousBallot": "ಅನಾಮಧೇಯ ಮತಪತ್ರವನ್ನು ಸಲ್ಲಿಸಲಾಗುತ್ತಿದೆ..."
+    },
+    "BroadcastQaModal": {
+      "validationError": "ಮೌಲ್ಯೀಕರಣ ದೋಷ",
+      "questionMustBeAtLeast5Characters": "ಪ್ರಶ್ನೆಯು ಕನಿಷ್ಠ 5 ಅಕ್ಷರಗಳಾಗಿರಬೇಕು",
+      "privacyProtection": "ಗೌಪ್ಯತೆ ರಕ್ಷಣೆ",
+      "pleaseDoNotIncludeEmailAddressesIn": "ದಯವಿಟ್ಟು ಇಮೇಲ್ ವಿಳಾಸಗಳನ್ನು ಪ್ರಶ್ನೆಗಳಲ್ಲಿ ಸೇರಿಸಬೇಡಿ.",
+      "pleaseDoNotIncludePhoneNumbersIn": "ದಯವಿಟ್ಟು ಪ್ರಶ್ನೆಗಳಲ್ಲಿ ಫೋನ್ ಸಂಖ್ಯೆಗಳನ್ನು ಸೇರಿಸಬೇಡಿ.",
+      "submissionError": "ಸಲ್ಲಿಕೆ ದೋಷ",
+      "failedToSubmitQuestion": "ಪ್ರಶ್ನೆಯನ್ನು ಸಲ್ಲಿಸಲು ವಿಫಲವಾಗಿದೆ",
+      "audienceQA": "ಪ್ರೇಕ್ಷಕರ ಪ್ರಶ್ನೋತ್ತರ",
+      "noAudienceQuestionsYetBeTheFirstTo": "ಇನ್ನೂ ಪ್ರೇಕ್ಷಕರ ಪ್ರಶ್ನೆಗಳಿಲ್ಲ. ಕೇಳಲು ಮೊದಲಿಗರಾಗಿರಿ!",
+      "pinnedByHost": "ಹೋಸ್ಟ್‌ನಿಂದ ಪಿನ್ ಮಾಡಲಾಗಿದೆ",
+      "askAQuestionForTheBroadcaster": "ಪ್ರಸಾರಕರಿಗೆ ಪ್ರಶ್ನೆಯನ್ನು ಕೇಳಿ..."
+    },
+    "CampaignOutreachPanel": {
+      "theBroadcastCouldNotBeCreated": "ಪ್ರಸಾರವನ್ನು ರಚಿಸಲಾಗಲಿಲ್ಲ.",
+      "deliveryIsUnavailableUntilARealMessaging": "ನಿಜವಾದ ಸಂದೇಶ ಪೂರೈಕೆದಾರರು, ಸಮ್ಮತಿ ಆಧಾರಿತ ಪ್ರೇಕ್ಷಕರ ಮೂಲ ಮತ್ತು ವಿತರಣಾ ವರದಿಯನ್ನು ಸಂಪರ್ಕಿಸುವವರೆಗೆ ವಿತರಣೆಯು ಲಭ್ಯವಿರುವುದಿಲ್ಲ.",
+      "simulationModeNoMessagesAreSentReal": "ಸಿಮ್ಯುಲೇಶನ್ ಮೋಡ್. ಯಾವುದೇ ಸಂದೇಶಗಳನ್ನು ಕಳುಹಿಸಲಾಗಿಲ್ಲ. ನೈಜ ವಿತರಣೆಗೆ ಪೂರೈಕೆದಾರರ ಸೆಟಪ್ ಅಗತ್ಯವಿದೆ {{value1}}. {{value2}}",
+      "noLiveAudienceSegmentsAreConnected": "ಯಾವುದೇ ಲೈವ್ ಪ್ರೇಕ್ಷಕರ ವಿಭಾಗಗಳನ್ನು ಸಂಪರ್ಕಿಸಲಾಗಿಲ್ಲ.",
+      "noAudienceSegmentsAreAvailable": "ಯಾವುದೇ ಪ್ರೇಕ್ಷಕರ ವಿಭಾಗಗಳು ಲಭ್ಯವಿಲ್ಲ.",
+      "describeTheRecordedVoiceMessage": "ರೆಕಾರ್ಡ್ ಮಾಡಿದ ಧ್ವನಿ ಸಂದೇಶವನ್ನು ವಿವರಿಸಿ...",
+      "typeYourMessageUseNameBoothFor": "ನಿಮ್ಮ ಸಂದೇಶವನ್ನು ಟೈಪ್ ಮಾಡಿ. ವೈಯಕ್ತೀಕರಣಕ್ಕಾಗಿ {name}, {booth} ಬಳಸಿ.",
+      "value1ToValue2": "{{value1}} ರಿಂದ {{value2}}",
+      "deliveryNotConnected": "ವಿತರಣೆಯನ್ನು ಸಂಪರ್ಕಿಸಲಾಗಿಲ್ಲ",
+      "value1CharsValue2": "{{value1}} ಅಕ್ಷರಗಳು {{value2}}",
+      "goesOutValue1": "{{value1}} ಹೊರಗೆ ಹೋಗುತ್ತದೆ",
+      "answered": "ಉತ್ತರಿಸಿದರು",
+      "templateName": "ಟೆಂಪ್ಲೇಟ್ ಹೆಸರು",
+      "bodyWithNameBooth": "ದೇಹವು {ಹೆಸರು}, {ಬೂತ್}..."
+    },
+    "CompareSheet": {
+      "search": "ಹುಡುಕು...",
+      "mla": "ಶಾಸಕ",
+      "value1Winner": "{{value1}} ವಿಜೇತ",
+      "swing": "ಸ್ವಿಂಗ್",
+      "loyalty": "ನಿಷ್ಠೆ",
+      "selectTwoConstituenciesToCompareThemSideBy": "ಅಕ್ಕಪಕ್ಕದಲ್ಲಿ ಹೋಲಿಸಲು ಎರಡು ಕ್ಷೇತ್ರಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ"
+    },
+    "DataPendingCard": {
+      "theOfficialMapBoundaryForThisArea": "ಈ ಪ್ರದೇಶದ ಅಧಿಕೃತ ನಕ್ಷೆಯ ಗಡಿಯನ್ನು ಇನ್ನೂ ಪ್ರಕಟಿಸಲಾಗಿಲ್ಲ. ಪಟ್ಟಿ ವೀಕ್ಷಣೆಯು ಸಂಪೂರ್ಣವಾಗಿ ನಿಖರವಾಗಿ ಉಳಿದಿದೆ.",
+      "thisSeatExistsButAVerifiedOffice": "ಈ ಆಸನ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ, ಆದರೆ ಪರಿಶೀಲಿಸಿದ ಕಚೇರಿ-ಹೋಲ್ಡರ್ ದಾಖಲೆ ಇನ್ನೂ ಲಭ್ಯವಿಲ್ಲ. ಅಧಿಕೃತ ಮೂಲಗಳಿಂದ ದೃಢೀಕರಿಸಿದ ಡೇಟಾವನ್ನು ಮಾತ್ರ ನಾವು ತೋರಿಸುತ್ತೇವೆ.",
+      "fingerprint": "· ಬೆರಳಚ್ಚು ✓",
+      "expectedSourceValue1": "ನಿರೀಕ್ಷಿತ ಮೂಲ: {{value1}}"
+    },
+    "DataPipelineCard": {
+      "dataPipeline": "ಡೇಟಾ ಪೈಪ್ಲೈನ್",
+      "value1Value2Healthy": "{{value1}} / {{value2}} ಆರೋಗ್ಯಕರ"
+    },
+    "DelimitationShareCard": {
+      "constitutionalAssessment": "ಸಾಂವಿಧಾನಿಕ ಮೌಲ್ಯಮಾಪನ",
+      "postalCodeValue1Value2": "ಅಂಚೆ ಕೋಡ್ {{value1}} · {{value2}}",
+      "current": "ಪ್ರಸ್ತುತ",
+      "proposed": "ಪ್ರಸ್ತಾಪಿಸಲಾಗಿದೆ",
+      "dpdpAct2023CompliantZeroVoterTracking": "DPDP ಕಾಯಿದೆ 2023 ಕಂಪ್ಲೈಂಟ್ · ಶೂನ್ಯ ಮತದಾರರ ಟ್ರ್ಯಾಕಿಂಗ್",
+      "shareMyImpactCard": "ನನ್ನ ಇಂಪ್ಯಾಕ್ಟ್ ಕಾರ್ಡ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ"
+    },
+    "DevFeatureSwitcher": {
+      "devControl": "DEV ನಿಯಂತ್ರಣ"
+    },
+    "ErrorBoundary": {
+      "errorLog": "ದೋಷ ಲಾಗ್",
+      "hideLogs": "ದಾಖಲೆಗಳನ್ನು ಮರೆಮಾಡಿ",
+      "viewLogs": "ಲಾಗ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ",
+      "poligramEncounteredAnIssueWhileLoadingThisScreen": "ಈ ಪರದೆಯನ್ನು ಲೋಡ್ ಮಾಡುವಾಗ Poligram ಸಮಸ್ಯೆಯನ್ನು ಎದುರಿಸಿದೆ.",
+      "copyShareLog": "ನಕಲು / ಹಂಚಿಕೆ ಲಾಗ್",
+      "crashDiagnosticsStackTrace": "ಕ್ರ್ಯಾಶ್ ಡಯಾಗ್ನೋಸ್ಟಿಕ್ಸ್ ಮತ್ತು ಸ್ಟಾಕ್ ಟ್ರೇಸ್",
+      "jsStackTrace": "JS ಸ್ಟಾಕ್ ಟ್ರೇಸ್:",
+      "componentHierarchy": "ಘಟಕ ಶ್ರೇಣಿ:"
+    },
+    "KYCVerificationSheet": {
+      "byProceedingIAcknowledgeAndAgreeThat": "ಮುಂದುವರಿಯುವ ಮೂಲಕ, ನಾನು ಇದನ್ನು ಅಂಗೀಕರಿಸುತ್ತೇನೆ ಮತ್ತು ಒಪ್ಪುತ್ತೇನೆ:",
+      "value1MyIdentityNamePhonePhotoWillBe": "{{value1}} ನನ್ನ ಗುರುತನ್ನು (ಹೆಸರು, ಫೋನ್, ಫೋಟೋ) ರೆಕಾರ್ಡ್ ಮಾಡಲಾಗುತ್ತದೆ ಮತ್ತು ಸುರಕ್ಷಿತವಾಗಿ ಸಂಗ್ರಹಿಸಲಾಗುತ್ತದೆ.",
+      "value1MyDeviceInformationIpAddressAndLocation": "{{value1}} ನನ್ನ ಸಾಧನದ ಮಾಹಿತಿ, IP ವಿಳಾಸ ಮತ್ತು ಸ್ಥಳವನ್ನು ನಾನು ನಿರ್ವಹಿಸುವ ಪ್ರತಿಯೊಂದು ವಿಷಯದ ಕ್ರಿಯೆಯೊಂದಿಗೆ ಸೆರೆಹಿಡಿಯಲಾಗುತ್ತದೆ.",
+      "value1ThisDataMayBeSharedWithLaw": "{{value1}} ನನ್ನ ವಿಷಯವು ಭಾರತೀಯ ಕಾನೂನನ್ನು ಉಲ್ಲಂಘಿಸುವುದು ಕಂಡುಬಂದರೆ (IT ಕಾಯಿದೆ 2000, IPC, ಇತ್ಯಾದಿ) ಕಾನೂನು ಜಾರಿ ಸಂಸ್ಥೆಗಳೊಂದಿಗೆ ಈ ಡೇಟಾವನ್ನು ಹಂಚಿಕೊಳ್ಳಬಹುದು.",
+      "value1IAmSolelyResponsibleForAllContent": "{{value1}} ನಾನು ಪೋಸ್ಟ್ ಮಾಡುವ ಎಲ್ಲಾ ವಿಷಯಗಳಿಗೆ ನಾನು ಮಾತ್ರ ಜವಾಬ್ದಾರನಾಗಿರುತ್ತೇನೆ ಮತ್ತು ನಾನು ಮಾನಹಾನಿಕರ, ನಕಲಿ ಅಥವಾ ಕಾನೂನುಬಾಹಿರ ವಿಷಯವನ್ನು ಪೋಸ್ಟ್ ಮಾಡುವುದಿಲ್ಲ.",
+      "value1FalseOrMisleadingVerificationDetailsMayResult": "{{value1}} ತಪ್ಪು ಅಥವಾ ತಪ್ಪುದಾರಿಗೆಳೆಯುವ ಪರಿಶೀಲನೆ ವಿವರಗಳು ಶಾಶ್ವತ ನಿಷೇಧ ಮತ್ತು ಕಾನೂನು ಕ್ರಮಕ್ಕೆ ಕಾರಣವಾಗಬಹುದು.",
+      "iHaveReadAndAgreeToTheAbove": "ಮೇಲಿನ ಹೊಣೆಗಾರಿಕೆಯ ನಿಯಮಗಳನ್ನು ನಾನು ಓದಿದ್ದೇನೆ ಮತ್ತು ಒಪ್ಪುತ್ತೇನೆ",
+      "yourDeviceInfoNetworkDetailsAndLocationWill": "ನಿಮ್ಮ ಸಾಧನದ ಮಾಹಿತಿ, ನೆಟ್‌ವರ್ಕ್ ವಿವರಗಳು ಮತ್ತು ಸ್ಥಳವನ್ನು ಇದೀಗ ಸೆರೆಹಿಡಿಯಲಾಗುತ್ತದೆ."
+    },
+    "LeaderProfileModal": {
+      "acValue1Value2": "🎯 AC # {{value1}}  {{value2}}",
+      "civicLeader": "🎯 ನಾಗರಿಕ ನಾಯಕ",
+      "ind": "ಸ್ವತಂತ್ರ ಅಭ್ಯರ್ಥಿ (IND)",
+      "aspirant": "ಮಹತ್ವಾಕಾಂಕ್ಷಿ",
+      "activeInConstituencyOutreachSabhas": "ಕ್ಷೇತ್ರ ವ್ಯಾಪ್ತಿಯ ಸಭೆಗಳಲ್ಲಿ ಸಕ್ರಿಯ",
+      "label1HrAgo": "1 ಗಂಟೆ ಹಿಂದೆ",
+      "educationGrassrootsBackground": "ಶಿಕ್ಷಣ ಮತ್ತು ತಳಮಟ್ಟದ ಹಿನ್ನೆಲೆ",
+      "maPublicPolicy": "ಪೋಸ್ಟ್ ಪದವಿಯೇಶನ್ (MA ಸಾರ್ವಜನಿಕ ನೀತಿ)",
+      "postGraduationMaPublicPolicy": "ಸ್ನಾತಕೋತ್ತರ ಪದವಿ (MA ಸಾರ್ವಜನಿಕ ನೀತಿ)",
+      "osmaniaUniversityDistinction": "ಉಸ್ಮಾನಿಯಾ ವಿಶ್ವವಿದ್ಯಾಲಯ · ವಿಶಿಷ್ಟತೆ",
+      "grassrootsCivicActionCommittee": "ತಳಮಟ್ಟದ ನಾಗರಿಕ ಕ್ರಿಯಾ ಸಮಿತಿ",
+      "waterSecurityYouthConvenor2018Present": "ಜಲ ಭದ್ರತೆ ಮತ್ತು ಯುವ ಸಂಚಾಲಕರು (2018 - ಪ್ರಸ್ತುತ)",
+      "aClearPublicAgendaForTheFuture": "ಈ ಕ್ಷೇತ್ರದ ಭವಿಷ್ಯಕ್ಕಾಗಿ ಸ್ಪಷ್ಟ ಸಾರ್ವಜನಿಕ ಕಾರ್ಯಸೂಚಿ. ಉಪಕ್ರಮಗಳಿಗೆ ಆದ್ಯತೆ ನೀಡಲು ನಾಗರಿಕರು ಮತ ಹಾಕಬಹುದು:",
+      "iSolemnlyPledgeToUpholdTheConstitution": "ಭಾರತದ ಸಂವಿಧಾನವನ್ನು ಎತ್ತಿಹಿಡಿಯಲು, ಭ್ರಷ್ಟಾಚಾರಕ್ಕೆ ಶೂನ್ಯ ಸಹಿಷ್ಣುತೆಯನ್ನು ಕಾಪಾಡಿಕೊಳ್ಳಲು, ಸಾರ್ವಜನಿಕ ವೆಚ್ಚದಲ್ಲಿ ಸಂಪೂರ್ಣ ಪಾರದರ್ಶಕತೆಯನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಲು ಮತ್ತು ಪ್ರತಿಯೊಬ್ಬ ನಾಗರಿಕರಿಗೆ ಪ್ರವೇಶಿಸಲು ಮತ್ತು ಜವಾಬ್ದಾರಿಯುತವಾಗಿ ಉಳಿಯಲು ನಾನು ಪ್ರತಿಜ್ಞೆ ಮಾಡುತ್ತೇನೆ.",
+      "boothReach": "ಬೂತ್ ರೀಚ್",
+      "responseTime": "ಪ್ರತಿಕ್ರಿಯೆ ಸಮಯ",
+      "signInToMessageThisProfile": "ಈ ಪ್ರೊಫೈಲ್ ಸಂದೇಶವನ್ನು ಕಳುಹಿಸಲು ಸೈನ್ ಇನ್ ಮಾಡಿ.",
+      "volunteer": "ಸ್ವಯಂಸೇವಕ ✓",
+      "eciVerified": "ECI ಪರಿಶೀಲಿಸಲಾಗಿದೆ"
+    },
+    "LiveBroadcaster": {
+      "consumerBuildsAreDecoupledFromHeavyNativeWebrtc": "ನೇರ HLS ಪ್ಲೇಬ್ಯಾಕ್‌ಗಾಗಿ ಗ್ರಾಹಕರ ನಿರ್ಮಾಣಗಳನ್ನು ಭಾರೀ ಸ್ಥಳೀಯ WebRTC ಬೈನರಿಗಳಿಂದ ಬೇರ್ಪಡಿಸಲಾಗಿದೆ. ಲೈವ್ ವೀಡಿಯೊವನ್ನು ಪ್ರಸಾರ ಮಾಡಲು, ಪೋಲಿಗ್ರಾಮ್ ಸ್ಟುಡಿಯೋ ವೆಬ್ ಕ್ಲೈಂಟ್ ಅನ್ನು https://studio.poligram.in ನಲ್ಲಿ ಬಳಸಿ ಅಥವಾ OBS ನಿಂದ RTMP/SRT ಮೂಲಕ ಸಂಪರ್ಕಿಸಿ."
+    },
+    "MapFallback": {
+      "genValue1ScValue2StValue3": "GEN {{value1}} · SC {{value2}} · ST {{value3}}",
+      "value1Value2Constituencies": "{{value1}} · {{value2}} ಕ್ಷೇತ್ರಗಳು",
+      "interactiveMapUnavailable": "ಸಂವಾದಾತ್ಮಕ ನಕ್ಷೆ ಲಭ್ಯವಿಲ್ಲ",
+      "theFullMapboxMapRequiresADevelopmentBuild": "ಪೂರ್ಣ ಮ್ಯಾಪ್‌ಬಾಕ್ಸ್ ನಕ್ಷೆಗೆ ಅಭಿವೃದ್ಧಿ ನಿರ್ಮಾಣದ ಅಗತ್ಯವಿದೆ. {{value1}} ರನ್: npx ಎಕ್ಸ್‌ಪೋ ರನ್:ಆಂಡ್ರಾಯ್ಡ್ (ಅಥವಾ ಇಎಎಸ್ ಡೆವ್ ಬಿಲ್ಡ್ ಅನ್ನು ರಚಿಸಿ). {{value2}} ಎಕ್ಸ್‌ಪೋ ಗೋದಲ್ಲಿ ಎಲ್ಲಾ ಇತರ ವೈಶಿಷ್ಟ್ಯಗಳು ಸಾಮಾನ್ಯವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತವೆ!",
+      "electionPartySeats": "ಚುನಾವಣೆ - ಪಕ್ಷದ ಸ್ಥಾನಗಳು",
+      "delimitationProjection": "ಡಿಲಿಮಿಟೇಶನ್ ಪ್ರೊಜೆಕ್ಷನ್",
+      "topConstituenciesByMargin": "ಅಂತರದ ಮೂಲಕ ಉನ್ನತ ಕ್ಷೇತ್ರಗಳು"
+    },
+    "ModuleDetailModal": {
+      "quizCouldNotBeSaved": "ರಸಪ್ರಶ್ನೆಯನ್ನು ಉಳಿಸಲಾಗಲಿಲ್ಲ",
+      "checkYourConnectionAndTrySubmittingYour": "ನಿಮ್ಮ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ನಿಮ್ಮ ಉತ್ತರಗಳನ್ನು ಮತ್ತೆ ಸಲ್ಲಿಸಲು ಪ್ರಯತ್ನಿಸಿ.",
+      "progressCouldNotBeSaved": "ಪ್ರಗತಿಯನ್ನು ಉಳಿಸಲಾಗಲಿಲ್ಲ",
+      "yourModuleIsStillOpenPleaseTry": "ನಿಮ್ಮ ಮಾಡ್ಯೂಲ್ ಇನ್ನೂ ತೆರೆದಿರುತ್ತದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
+      "value1MinValue2Value3": "{{value1}} ನಿಮಿಷ · {{value2}} · {{value3}}",
+      "value1Value2Source": "\" {{value1}} \" - {{value2}}. ಮೂಲ ↗"
+    },
+    "PhotoViewerModal": {
+      "photoSourcedFromWikipediaMyneta": "ಫೋಟೋ ವಿಕಿಪೀಡಿಯಾ / ಮೈನೆಟಾದಿಂದ ಪಡೆಯಲಾಗಿದೆ"
+    },
+    "PodiumHistoryCard": {
+      "delim2008": "ಡೆಲಿಮ್ 2008",
+      "delim1976": "ಡೆಲಿಮ್ 1976",
+      "delimValue1": "ಡೆಲಿಮ್ {{value1}}",
+      "label1st": "🥇 1 ನೇ",
+      "label2nd": "🥈 2 ನೇ",
+      "label3rd": "🥉 3 ನೇ"
+    },
+    "PoliticalAdCard": {
+      "constituencyAnnouncementCampaignReleaseFromValue1Tap": "{{value1}} ನಿಂದ ಕ್ಷೇತ್ರದ ಘೋಷಣೆ ಮತ್ತು ಪ್ರಚಾರ ಬಿಡುಗಡೆ. ಪೂರ್ಣ ಪೋಸ್ಟ್ ಮತ್ತು ಚರ್ಚೆಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ.",
+      "politicalAdPaidPromotionByValue1": "ರಾಜಕೀಯ ಜಾಹೀರಾತು · {{value1}} ಮೂಲಕ ಪಾವತಿಸಿದ ಪ್ರಚಾರ",
+      "targetValue1Value2": "ಗುರಿ: {{value1}}  {{value2}}",
+      "certifiedUnderEciMcmcGuidelinesPaidValue1": "ECI / MCMC ಮಾರ್ಗಸೂಚಿಗಳ ಅಡಿಯಲ್ಲಿ ಪ್ರಮಾಣೀಕರಿಸಲಾಗಿದೆ · ₹ {{value1}} ಪಾವತಿಸಲಾಗಿದೆ"
+    },
+    "PoliticalShortsCarousel": {
+      "new": "ಹೊಸ",
+      "uploadShort": "ಚಿಕ್ಕದನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",
+      "addShort": "ಶಾರ್ಟ್ ಸೇರಿಸಿ",
+      "shareLocalReport": "ಸ್ಥಳೀಯ ವರದಿಯನ್ನು ಹಂಚಿಕೊಳ್ಳಿ",
+      "noShortsInThisConstituency": "ಈ ಕ್ಷೇತ್ರದಲ್ಲಿ ಯಾವುದೇ ಕಿರುಚಿತ್ರಗಳಿಲ್ಲ.",
+      "beTheFirst": "ಮೊದಲಿಗರಾಗಿರಿ!"
+    },
+    "ReportIssueSheet": {
+      "youCanAddUpToValue1Media": "ನೀವು {{value1}} ಮಾಧ್ಯಮ ಫೈಲ್‌ಗಳನ್ನು ಸೇರಿಸಬಹುದು.",
+      "value1Value2MediaAttached": "{{value1}} / {{value2}} ಮಾಧ್ಯಮವನ್ನು ಲಗತ್ತಿಸಲಾಗಿದೆ"
+    },
+    "ReportSheet": {
+      "reportsAreReviewedByOurModerationTeamWithin": "ವರದಿಗಳನ್ನು ನಮ್ಮ ಮಾಡರೇಶನ್ ತಂಡವು 24 ಗಂಟೆಗಳ ಒಳಗೆ ಪರಿಶೀಲಿಸುತ್ತದೆ. ತಪ್ಪು ವರದಿಗಳು ನಿಮ್ಮ ಖ್ಯಾತಿಯ ಸ್ಕೋರ್ ಮೇಲೆ ಪರಿಣಾಮ ಬೀರಬಹುದು."
+    },
+    "RevenueCard": {
+      "revenueDashboard": "ಆದಾಯ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+      "totalRevenue": "ಒಟ್ಟು ಆದಾಯ",
+      "projectedMrr": "ಯೋಜಿತ MRR",
+      "politicians": "ರಾಜಕಾರಣಿಗಳು",
+      "avgRoi": "ಸರಾಸರಿ ROI",
+      "revenueByFormat": "ಸ್ವರೂಪದ ಮೂಲಕ ಆದಾಯ",
+      "monthlyGrowth": "ಮಾಸಿಕ ಬೆಳವಣಿಗೆ",
+      "unitEconomics": "ಘಟಕ ಅರ್ಥಶಾಸ್ತ್ರ",
+      "costPromotedPostValue1": "ವೆಚ್ಚ/ಪ್ರಚಾರದ ಪೋಸ್ಟ್: {{value1}}",
+      "avgPoliticiansStateValue1": "ಸರಾಸರಿ ರಾಜಕಾರಣಿಗಳು/ರಾಜ್ಯ: {{value1}}",
+      "activeStatesValue1": "ಸಕ್ರಿಯ ರಾಜ್ಯಗಳು: {{value1}}",
+      "monthlyStateValue1": "ಮಾಸಿಕ/ರಾಜ್ಯ: {{value1}}"
+    },
+    "SeatProjectionCard": {
+      "popValue1": "ಪಾಪ್: {{value1}}",
+      "popSeatValue1": "ಪಾಪ್/ಸೀಟ್: {{value1}}",
+      "devValue1Value2": "ದೇವ್: {{value1}}  {{value2}} %"
+    },
+    "ShareableCardModal": {
+      "ind": "ಸ್ವತಂತ್ರ",
+      "value1District": "{{value1}} ಜಿಲ್ಲೆ",
+      "runnerUp2": "ರನ್ನರ್-ಅಪ್",
+      "value1Terms": "{{value1}} ನಿಯಮಗಳು",
+      "tenure": "ಅಧಿಕಾರಾವಧಿ",
+      "preparingVisualCard": "ವಿಷುಯಲ್ ಕಾರ್ಡ್ ಸಿದ್ಧಪಡಿಸಲಾಗುತ್ತಿದೆ...",
+      "shareVisualGraphicCard": "ವಿಷುಯಲ್ ಗ್ರಾಫಿಕ್ ಕಾರ್ಡ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ",
+      "officialCivicCard": "ಅಧಿಕೃತ ಸಿವಿಕ್ ಕಾರ್ಡ್",
+      "winner": "🥇 ವಿಜೇತ",
+      "value1VotesValue2": "{{value1}} ಮತಗಳು {{value2}}",
+      "runnerUp": "🥈 ರನ್ನರ್-ಅಪ್",
+      "margin": "ಅಂಚು",
+      "verifiedByEciForm21ePoligramCivicIntelligence": "ECI ಫಾರ್ಮ್ 21E ಮೂಲಕ ಪರಿಶೀಲಿಸಲಾಗಿದೆ • ಪೋಲಿಗ್ರಾಮ್ ಸಿವಿಕ್ ಇಂಟೆಲಿಜೆನ್ಸ್",
+      "shareDetailedStoryFormattedText": "ವಿವರವಾದ ಕಥೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳಿ (ಫಾರ್ಮ್ಯಾಟ್ ಮಾಡಿದ ಪಠ್ಯ)"
+    },
+    "ShortsPlayerModal": {
+      "couldNotSaveYourCommentPleaseTry": "ನಿಮ್ಮ ಕಾಮೆಂಟ್ ಅನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
+      "saved": "ಉಳಿಸಲಾಗಿದೆ",
+      "asAVerifiedConstituentOfValue1Is": "{{value1}} ನ ಪರಿಶೀಲಿಸಿದ ಘಟಕವಾಗಿ, ಈ ವೀಡಿಯೊ ನಿಮ್ಮ ಕ್ಷೇತ್ರಕ್ಕೆ ಪ್ರಸ್ತುತವಾಗಿದೆ ಮತ್ತು ರಚನಾತ್ಮಕವಾಗಿದೆಯೇ?",
+      "helpVerifyThisVideoFromValue1To": "ಈ ವೀಡಿಯೊವನ್ನು ರಾಷ್ಟ್ರೀಯ ಮಟ್ಟಕ್ಕೆ ಪ್ರಚಾರ ಮಾಡಲು {{value1}} ನಿಂದ ಪರಿಶೀಲಿಸಲು ಸಹಾಯ ಮಾಡಿ.",
+      "commentsCouldNotBeLoaded": "ಕಾಮೆಂಟ್‌ಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗಲಿಲ್ಲ."
+    },
+    "StateView": {
+      "refValue1Value2": "ಉಲ್ಲೇಖ: {{value1}} ( {{value2}} )"
+    },
+    "WealthTimeline": {
+      "value1GrowthTimelineContainsUndisclosedObservations": "{{value1}} ಬೆಳವಣಿಗೆಯ ಟೈಮ್‌ಲೈನ್ ಬಹಿರಂಗಪಡಿಸದ ಅವಲೋಕನಗಳನ್ನು ಒಳಗೊಂಡಿದೆ"
+    },
+    "GrassrootsBooths": {
+      "wardValue1": "ವಾರ್ಡ್ # {{value1}} ·",
+      "value1Voters": "{{value1}} ಮತದಾರರು",
+      "voterCountUnavailable": "ಮತದಾರರ ಎಣಿಕೆ ಲಭ್ಯವಿಲ್ಲ",
+      "targetValue1": "ಗುರಿ: {{value1}}",
+      "targetUnavailable": "ಗುರಿ ಲಭ್ಯವಿಲ್ಲ",
+      "check": "ಪರಿಶೀಲಿಸಿ",
+      "eGRameshGoud": "ಉದಾ. ರಮೇಶ್ ಗೌಡ್"
+    },
+    "GrassrootsWorkers": {
+      "cannotSaveWorkLog": "ಕೆಲಸದ ಲಾಗ್ ಅನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ",
+      "chooseACampaignWorkerAndBoothThat": "ಪ್ರಚಾರದ ದಾಖಲೆಗಳಲ್ಲಿ ಲಭ್ಯವಿರುವ ಪ್ರಚಾರ, ಕೆಲಸಗಾರ ಮತ್ತು ಬೂತ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ.",
+      "checkTheSessionDuration": "ಅಧಿವೇಶನದ ಅವಧಿಯನ್ನು ಪರಿಶೀಲಿಸಿ",
+      "enterAWholeNumberOfMinutesFrom": "1 ರಿಂದ 1,440 ರವರೆಗೆ ನಿಮಿಷಗಳ ಸಂಪೂರ್ಣ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ.",
+      "checkHouseholdsVisited": "ಭೇಟಿ ನೀಡಿದ ಮನೆಗಳನ್ನು ಪರಿಶೀಲಿಸಿ",
+      "enterAWholeNumberFrom0To": "0 ರಿಂದ 100,000 ವರೆಗಿನ ಸಂಪೂರ್ಣ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ.",
+      "workSessionSaved": "ಕೆಲಸದ ಅವಧಿಯನ್ನು ಉಳಿಸಲಾಗಿದೆ",
+      "thisSessionWasSavedToTheCampaign": "ಈ ಸೆಶನ್ ಅನ್ನು ಪ್ರಚಾರ ಕಾರ್ಯ ಲಾಗ್‌ಗೆ ಉಳಿಸಲಾಗಿದೆ.",
+      "workSessionNotSaved": "ಕೆಲಸದ ಅವಧಿಯನ್ನು ಉಳಿಸಲಾಗಿಲ್ಲ",
+      "boothValue1": "· ಬೂತ್ # {{value1}}",
+      "completedSessionsUnavailable": "ಪೂರ್ಣಗೊಂಡ ಅವಧಿಗಳು ಲಭ್ಯವಿಲ್ಲ",
+      "value1CompletedSessions": "{{value1}} ಪೂರ್ಣಗೊಂಡ ಅವಧಿಗಳು",
+      "loggedHoursUnavailable": "ಲಾಗ್ ಮಾಡಿದ ಗಂಟೆಗಳು ಲಭ್ಯವಿಲ್ಲ",
+      "value1HoursLogged": "{{value1}} ಗಂಟೆಗಳ ಲಾಗ್ ಮಾಡಲಾಗಿದೆ",
+      "logCompletedOutreachForValue1": "{{value1}} ಗಾಗಿ ಲಾಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ",
+      "saving": "ಉಳಿಸಲಾಗುತ್ತಿದೆ...",
+      "saveWorkSession": "ಕೆಲಸದ ಅವಧಿಯನ್ನು ಉಳಿಸಿ",
+      "poligramUser": "ಪೋಲಿಗ್ರಾಮ್ ಬಳಕೆದಾರ",
+      "logCompletedOutreach": "ಲಾಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ",
+      "eGBSrinivas": "ಉದಾ. ಬಿ.ಶ್ರೀನಿವಾಸ್",
+      "value1ReportedByTheCampaignTeamNotIndependently": "{{value1}} · ಪ್ರಚಾರ ತಂಡದಿಂದ ವರದಿಯಾಗಿದೆ, ಸ್ವತಂತ್ರವಾಗಿ ಪರಿಶೀಲಿಸಲಾಗಿಲ್ಲ",
+      "campaignBooth": "ಪ್ರಚಾರ ಬೂತ್",
+      "campaignBoothRecordsAreUnavailableRefreshTheCampaign": "ಪ್ರಚಾರ ಬೂತ್ ದಾಖಲೆಗಳು ಲಭ್ಯವಿಲ್ಲ. ಕೆಲಸವನ್ನು ಲಾಗ್ ಮಾಡುವ ಮೊದಲು ಪ್ರಚಾರವನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಿ.",
+      "sessionDurationMinutes": "ಅಧಿವೇಶನದ ಅವಧಿ (ನಿಮಿಷಗಳು)",
+      "sessionDurationInMinutes": "ನಿಮಿಷಗಳಲ್ಲಿ ಅಧಿವೇಶನದ ಅವಧಿ",
+      "householdsVisited": "ಮನೆಗಳಿಗೆ ಭೇಟಿ ನೀಡಿದರು"
+    },
+    "SimplifiedOutreach": {
+      "minimumWalletRechargeIs500": "ಕನಿಷ್ಠ ವಾಲೆಟ್ ರೀಚಾರ್ಜ್ ₹500 ಆಗಿದೆ.",
+      "notConnected": "ಸಂಪರ್ಕಗೊಂಡಿಲ್ಲ",
+      "label100Free": "100% ಉಚಿತ",
+      "indicativePricing": "ಸೂಚಕ ಬೆಲೆ",
+      "pricingUnavailable": "ಬೆಲೆ ಲಭ್ಯವಿಲ್ಲ",
+      "sufficientBalanceRemainingAfterBlastValue1": "✓ ಸಾಕಷ್ಟು ಸಮತೋಲನ. ಸ್ಫೋಟದ ನಂತರ ಉಳಿದಿರುವುದು: ₹ {{value1}}",
+      "walletBalanceShortByValue1TopUp": "⚠️ ವಾಲೆಟ್ ಬ್ಯಾಲೆನ್ಸ್ ಕಡಿಮೆ ₹ {{value1}}. ಟಾಪ್-ಅಪ್ ಅಗತ್ಯವಿದೆ.",
+      "duration028QualityHighVerified": "ಅವಧಿ: 0:28 · ಗುಣಮಟ್ಟ: ಹೆಚ್ಚಿನದು · ಪರಿಶೀಲಿಸಲಾಗಿದೆ",
+      "topUpValue1ToScheduleBlast": "ಬ್ಲಾಸ್ಟ್ ಅನ್ನು ನಿಗದಿಪಡಿಸಲು ₹ {{value1}} ಟಾಪ್-ಅಪ್",
+      "delivered": "✓ ವಿತರಿಸಲಾಗಿದೆ",
+      "calling": "📞 ಕರೆ ಮಾಡಲಾಗುತ್ತಿದೆ...",
+      "queued": "ಸರದಿಯಲ್ಲಿ ನಿಂತಿದೆ",
+      "available": "ಲಭ್ಯವಿದೆ",
+      "revanthReddyInc": "ರೇವಂತ್ ರೆಡ್ಡಿ · INC",
+      "wardValue1": "ವಾರ್ಡ್ # {{value1}}",
+      "liveCallDeliveryProgress": "ಲೈವ್ ಕರೆ ವಿತರಣಾ ಪ್ರಗತಿ",
+      "targetValue1VotersCostValue2": "ಗುರಿ: {{value1}} ಮತದಾರರು · ವೆಚ್ಚ: ₹ {{value2}}",
+      "busy": "ಕಾರ್ಯನಿರತ",
+      "unreachable": "ತಲುಪಲು ಸಾಧ್ಯವಿಲ್ಲ",
+      "creditsCanBeUsedImmediatelyForVoiceObd": "ವಾಯ್ಸ್ OBD ಕರೆ ಬ್ಲಾಸ್ಟ್‌ಗಳು ಮತ್ತು ಪ್ರಚಾರದ ಪೋಸ್ಟ್‌ಗಳಿಗೆ ಕ್ರೆಡಿಟ್‌ಗಳನ್ನು ತಕ್ಷಣವೇ ಬಳಸಬಹುದು.",
+      "chooseRechargeAmount": "ರೀಚಾರ್ಜ್ ಮೊತ್ತವನ್ನು ಆಯ್ಕೆಮಾಡಿ:",
+      "orEnterCustomAmount": "ಅಥವಾ ಕಸ್ಟಮ್ ಮೊತ್ತವನ್ನು ನಮೂದಿಸಿ (₹):",
+      "payValue1ViaUpiNetbanking": "UPI / ನೆಟ್‌ಬ್ಯಾಂಕಿಂಗ್ ಮೂಲಕ ₹ {{value1}} ಪಾವತಿಸಿ"
+    },
+    "CriminalRecordCard": {
+      "ipc": "IPC:",
+      "pending": "ಬಾಕಿಯಿದೆ",
+      "criminalCaseDisclosureUnavailable": "ಕ್ರಿಮಿನಲ್ ಪ್ರಕರಣದ ಬಹಿರಂಗಪಡಿಸುವಿಕೆ ಲಭ್ಯವಿಲ್ಲ",
+      "noCriminalCasesDeclared": "ಯಾವುದೇ ಕ್ರಿಮಿನಲ್ ಪ್ರಕರಣಗಳನ್ನು ಘೋಷಿಸಲಾಗಿಲ್ಲ",
+      "value1CaseValue2Value3": "{{value1}} ಕೇಸ್ {{value2}}  {{value3}}",
+      "totalCases": "ಒಟ್ಟು ಪ್ರಕರಣಗಳು",
+      "serious": "ಗಂಭೀರ",
+      "convictions": "ಕನ್ವಿಕ್ಷನ್ಸ್",
+      "value1CaseDetailsValue2": "{{value1}} ಪ್ರಕರಣದ ವಿವರಗಳು ( {{value2}} )",
+      "caseValue1": "ಪ್ರಕರಣ: {{value1}}",
+      "courtValue1": "ನ್ಯಾಯಾಲಯ: {{value1}}",
+      "chargesFramed": "ಆರೋಪಗಳನ್ನು ರೂಪಿಸಲಾಗಿದೆ"
+    },
+    "DynastyCard": {
+      "politicalDynasty": "ರಾಜಕೀಯ ರಾಜವಂಶ",
+      "thisLegislatorComesFromAPoliticalFamily": "ಈ ಶಾಸಕ ರಾಜಕೀಯ ಕುಟುಂಬದಿಂದ ಬಂದವರು",
+      "familyInPolitics": "ರಾಜಕೀಯದಲ್ಲಿ ಕುಟುಂಬ",
+      "familyConstituencies": "ಕುಟುಂಬ ಕ್ಷೇತ್ರಗಳು"
+    },
+    "ElectionHistoryCard": {
+      "won": "ಗೆದ್ದಿದೆ",
+      "lost": "ಕಳೆದುಹೋಗಿದೆ",
+      "defeated": "ಸೋಲಿಸಿದರು",
+      "lostTo": "ಗೆ ಸೋತರು",
+      "value1WinRate": "{{value1}} % ಗೆಲುವಿನ ದರ",
+      "share": "ಪಾಲು"
+    },
+    "FinancialBreakdownCard": {
+      "noFinancialDataAvailable": "ಯಾವುದೇ ಹಣಕಾಸಿನ ಡೇಟಾ ಲಭ್ಯವಿಲ್ಲ",
+      "financialDisclosure": "ಹಣಕಾಸು ಬಹಿರಂಗಪಡಿಸುವಿಕೆ",
+      "assetBreakdown": "ಆಸ್ತಿ ವಿಭಜನೆ",
+      "selfMovable": "ಸ್ವಯಂ ಚಲಿಸಬಲ್ಲ",
+      "selfImmovable": "ಸ್ವಯಂ ಅಚಲ",
+      "dependents": "ಅವಲಂಬಿತರು",
+      "spouseMovable": "ಸಂಗಾತಿಯ ಚಲಿಸಬಲ್ಲ",
+      "spouseImmovable": "ಸಂಗಾತಿಯು ಸ್ಥಿರ",
+      "declaredIncomeItr": "ಘೋಷಿತ ಆದಾಯ (ITR)",
+      "wealthTimeline": "ಸಂಪತ್ತಿನ ಟೈಮ್ಲೈನ್",
+      "value1Value2SinceValue3": "{{value1}}  {{value2}} % ರಿಂದ {{value3}}",
+      "totalLiabilities": "ಒಟ್ಟು ಹೊಣೆಗಾರಿಕೆಗಳು:"
+    },
+    "PerformanceCard": {
+      "mplads": "MPLADS",
+      "legislativePerformance": "ಶಾಸಕಾಂಗ ಕಾರ್ಯಕ್ಷಮತೆ",
+      "comingSoon": "ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿದೆ"
+    },
+    "RedFlagsBanner": {
+      "value1RedFlagValue2Detected": "{{value1}} ಕೆಂಪು ಧ್ವಜ {{value2}} ಪತ್ತೆಯಾಗಿದೆ"
+    }
+  },
   "constituencyDirectory": {
     "currentRepresentative": "ಪ್ರಸ್ತುತ ಪ್ರತಿನಿಧಿ",
     "loading": "ನೇರ ಕ್ಷೇತ್ರದ ದಾಖಲೆಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...",
@@ -41,6 +581,21 @@ const kn = {
     "reportIssue": "ಸಮಸ್ಯೆಯನ್ನು ವರದಿ ಮಾಡಿ"
   },
   "partyRegistry": {
+    "electionRecord": "ಚುನಾವಣಾ ದಾಖಲೆ",
+    "historyAndFilings": "ಇತಿಹಾಸ ಮತ್ತು ದಾಖಲಾತಿಗಳು",
+    "electionCode": "ರೆಕಾರ್ಡ್ ಮಾಡಿದ ಪಾರ್ಟಿ ಕೋಡ್ · {{code}}",
+    "ballotSymbol": "ಮತದಾನದ ಚಿಹ್ನೆ · {{symbol}}",
+    "seatsWon": "ಗೆದ್ದ ಸೀಟುಗಳು · {{seats}}",
+    "lokSabhaElection": "{{year}} ಲೋಕಸಭೆ ಚುನಾವಣೆ",
+    "stateAssemblyElection": "{{year}}  {{state}} ಅಸೆಂಬ್ಲಿ ಚುನಾವಣೆ",
+    "foundedBy": "{{year}} ನಲ್ಲಿ {{founder}} ನಿಂದ ಸ್ಥಾಪಿಸಲಾಗಿದೆ.",
+    "registeredIn": "{{year}} ನಲ್ಲಿ ಭಾರತದ ಚುನಾವಣಾ ಆಯೋಗದೊಂದಿಗೆ ನೋಂದಾಯಿಸಲಾಗಿದೆ.",
+    "renamedIn": "ಹಿಂದೆ {{name}} ಎಂದು ಕರೆಯಲಾಗುತ್ತಿತ್ತು. {{year}} ನಲ್ಲಿ ಹೆಸರು ಬದಲಾಗಿದೆ.",
+    "profileSummary": {
+      "national": "ಭಾರತದ ಚುನಾವಣಾ ಆಯೋಗವು ಈ ಪಕ್ಷವನ್ನು {{election}} ನಲ್ಲಿ ಮಾನ್ಯತೆ ಪಡೆದ ರಾಷ್ಟ್ರೀಯ ಪಕ್ಷವೆಂದು ಪಟ್ಟಿ ಮಾಡಿದೆ.",
+      "state": "ಭಾರತದ ಚುನಾವಣಾ ಆಯೋಗವು ಈ ಪಕ್ಷವನ್ನು {{election}} ನಲ್ಲಿ ಮಾನ್ಯತೆ ಪಡೆದ ರಾಜ್ಯ ಪಕ್ಷವೆಂದು ಪಟ್ಟಿ ಮಾಡಿದೆ.",
+      "registered": "ಭಾರತದ ಚುನಾವಣಾ ಆಯೋಗವು ಈ ಪಕ್ಷವನ್ನು {{election}} ನಲ್ಲಿ ನೋಂದಾಯಿಸಲಾಗಿದೆ ಮತ್ತು ಗುರುತಿಸಲಾಗಿಲ್ಲ ಎಂದು ಪಟ್ಟಿ ಮಾಡಿದೆ."
+    },
     "retryControls": "ಕೆಲವು ಪುಟ ನಿಯಂತ್ರಣಗಳನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಮರುಪ್ರಯತ್ನಿಸಿ",
     "verifyToClaim": "ಅರ್ಜಿ ಸಲ್ಲಿಸಲು ನಿಮ್ಮ ಕೊಡುಗೆದಾರರ ಖಾತೆಯನ್ನು ಪರಿಶೀಲಿಸಿ",
     "contributorPending": "ಕೊಡುಗೆದಾರರ ಪರಿಶೀಲನೆಯು ಪರಿಶೀಲನೆಯಲ್ಲಿದೆ.",
@@ -3059,6 +3614,16 @@ const kn = {
     }
   },
   "kycSheet": {
+    "submitted": "ಪರಿಶೀಲನೆಗೆ ಸಲ್ಲಿಸಲಾಗಿದೆ",
+    "pendingReviewMsg": "ನಿಮ್ಮ ಸಲ್ಲಿಕೆಯನ್ನು ಉಳಿಸಲಾಗಿದೆ. ಅಧಿಕೃತ ವಿಮರ್ಶಕರು ಅದನ್ನು ಪರಿಶೀಲಿಸಿದ ನಂತರವೇ ಕೊಡುಗೆದಾರರ ಕ್ರಮಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ.",
+    "reviewNotice": "ಕೊಡುಗೆದಾರರ ಪರಿಶೀಲನೆಯು ಸಮುದಾಯವನ್ನು ರಕ್ಷಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ. ನಿಮ್ಮ ಗುರುತಿನ ವಿವರಗಳನ್ನು ಪರಿಶೀಲನೆಗಾಗಿ ಸಂಗ್ರಹಿಸಲಾಗಿದೆ ಮತ್ತು ನಿಮ್ಮ ಸಾರ್ವಜನಿಕ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ತೋರಿಸಲಾಗುವುದಿಲ್ಲ.",
+    "selfieReviewNotice": "ಪರಿಶೀಲನೆಗಾಗಿ ನಿಮ್ಮ ಸೆಲ್ಫಿಯನ್ನು ಖಾಸಗಿ ಸಂಗ್ರಹಣೆಗೆ ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ. ಸ್ವಯಂಚಾಲಿತ ಮುಖ ಹೊಂದಾಣಿಕೆಯನ್ನು ನಿರ್ವಹಿಸಲಾಗುವುದಿಲ್ಲ.",
+    "checkingStatus": "ನಿಮ್ಮ ಉಳಿಸಿದ ಪರಿಶೀಲನೆ ಸ್ಥಿತಿಯನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...",
+    "statusUnavailable": "ನಿಮ್ಮ ಸ್ಥಿತಿಯನ್ನು ಲೋಡ್ ಮಾಡಲು ನಮಗೆ ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಸಂಪರ್ಕಿಸಿದಾಗ ಮರುಪ್ರಯತ್ನಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ.",
+    "rejectedResubmitHint": "ನಿಮ್ಮ ವಿವರಗಳನ್ನು ಸರಿಪಡಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ ಮತ್ತು ಪರಿಶೀಲನೆಗಾಗಿ ಮರುಸಲ್ಲಿಸಿ.",
+    "resubmitTitle": "ನಿಮ್ಮ ಸಲ್ಲಿಕೆಯನ್ನು ನವೀಕರಿಸಿ",
+    "resubmitNotice": "ನಿರಾಕರಣೆಯ ಕಾರಣವನ್ನು ಪರಿಶೀಲಿಸಿ, ನಿಮ್ಮ ವಿವರಗಳನ್ನು ಸರಿಪಡಿಸಿ ಮತ್ತು ಪರಿಶೀಲನೆಗಾಗಿ ಮತ್ತೊಮ್ಮೆ ಸಲ್ಲಿಸಿ.",
+    "agreeAndVerify": "ಸಮ್ಮತಿಸಿ ಮತ್ತು ಪರಿಶೀಲನೆಗಾಗಿ ಸಲ್ಲಿಸಿ",
     "title": "ಕೊಡುಗೆದಾರ ಪರಿಶೀಲನೆ",
     "verified": "ಪರಿಶೀಲಿಸಲಾಗಿದೆ!",
     "verifiedMsg": "ನೀವು ಈಗ ಪರಿಶೀಲಿಸಿದ ಕೊಡುಗೆದಾರರಾಗಿದ್ದೀರಿ.",

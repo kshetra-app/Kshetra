@@ -2,6 +2,7 @@
  * WealthTimeline — Visualizes a candidate's asset growth across elections.
  * Bar chart showing total assets per election year with growth percentage.
  */
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet } from 'react-native';
@@ -15,6 +16,7 @@ interface WealthTimelineProps {
 }
 
 export default React.memo(function WealthTimeline({ affidavits, growths }: WealthTimelineProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   if (affidavits.length === 0) return null;
 
@@ -123,9 +125,7 @@ export default React.memo(function WealthTimeline({ affidavits, growths }: Wealt
               {formatINR(sorted[sorted.length - 1].totalAssets)} ({sorted[sorted.length - 1].electionYear})
             </Text>
           ) : (
-            <Text style={styles.summaryText}>
-              {t('wealthTimeline.totalGrowth')} Growth timeline contains undisclosed observations
-            </Text>
+            <Text style={styles.summaryText}>{translateScreenLabel("screenLabels.WealthTimeline.value1GrowthTimelineContainsUndisclosedObservations", { value1: t('wealthTimeline.totalGrowth') })}</Text>
           )}
           {growths[growths.length - 1].annualizedGrowth != null && (
             <Text style={styles.summaryAnnualized}>

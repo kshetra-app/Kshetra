@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useState, useMemo } from 'react';
 import {
   View,
@@ -41,6 +42,7 @@ export default function ConstituencySelectorSheet({
   onClose,
   onSelect,
 }: ConstituencySelectorSheetProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const [search, setSearch] = useState('');
@@ -166,9 +168,7 @@ export default function ConstituencySelectorSheet({
               >
                 <View style={styles.itemLeft}>
                   <View style={[styles.acBadge, { backgroundColor: colors.primaryLight }]}>
-                    <Text style={[styles.acBadgeText, { color: colors.primary }]}>
-                      AC {item.acNo}
-                    </Text>
+                    <Text style={[styles.acBadgeText, { color: colors.primary }]}>{translateScreenLabel("screenLabels.ConstituencySelectorSheet.acValue1", { value1: item.acNo })}</Text>
                   </View>
                   <View style={styles.itemInfo}>
                     <View style={styles.itemNameRow}>

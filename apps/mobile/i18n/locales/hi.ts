@@ -2,6 +2,546 @@
  * HI translation
  */
 const hi = {
+  "screenLabels": {
+    "news": {
+      "noSavedStoriesYet": "अभी तक कोई सहेजी गई कहानियाँ नहीं",
+      "noStoriesAreAvailableForThisArea": "इस क्षेत्र के लिए अभी तक कोई कहानियाँ उपलब्ध नहीं हैं",
+      "noValue1StoriesAreAvailableRightNow": "अभी कोई {{value1}} कहानियाँ उपलब्ध नहीं हैं",
+      "noNewsStoriesAreAvailableRightNow": "अभी कोई समाचार उपलब्ध नहीं है"
+    },
+    "hierarchy": {
+      "value1Records": "{{value1}} रिकॉर्ड",
+      "value1Value2Value3DrillDown": "{{value1}} → {{value2}} → {{value3}} ड्रिल-डाउन"
+    },
+    "moderation": {
+      "actionApplied": "कार्रवाई लागू",
+      "reportProcessedSuccessfullyValue1": "रिपोर्ट सफलतापूर्वक संसाधित हुई: {{value1}}",
+      "error": "त्रुटि",
+      "failedToApplyModerationAction": "मॉडरेशन कार्रवाई लागू करने में विफल",
+      "networkRequestFailed": "नेटवर्क अनुरोध विफल रहा",
+      "userIdValue1": "उपयोगकर्ता आईडी: {{value1}}..."
+    },
+    "ComposeSheet": {
+      "mp4": "MP4",
+      "optionValue1": "विकल्प {{value1}}"
+    },
+    "ProfileHeroCard": {
+      "label1stRunnerUp": "प्रथम उपविजेता",
+      "label2ndRunnerUp": "द्वितीय उपविजेता",
+      "yrs": "साल"
+    },
+    "ProjectCard": {
+      "acValue1": "· एसी # {{value1}}"
+    },
+    "RegisterAspirantModal": {
+      "pleaseLogInBeforeRegisteringAsAn": "कृपया एक आकांक्षी के रूप में पंजीकरण करने से पहले लॉग इन करें।"
+    },
+    "dashboard": {
+      "reporter": "रिपोर्टर",
+      "noLoadedReportsMatchTheseFiltersMoreReports": "कोई भी लोड की गई रिपोर्ट इन फ़िल्टर से मेल नहीं खाती। खोजने के लिए और अधिक रिपोर्टें उपलब्ध हैं।",
+      "couldNotLoadTheNextPageTheReports": "अगला पेज लोड नहीं हो सका. पहले से दिखाई गई रिपोर्टें अपरिवर्तित हैं।",
+      "value1AlertSValue2AwaitingAcknowledgment": "{{value1}} अलर्ट · {{value2}} पावती की प्रतीक्षा में है",
+      "value1Alert": "{{value1}} अलर्ट",
+      "watchLiveFeed": "लाइव फ़ीड देखें"
+    },
+    "explore": {
+      "value1Value2Found": "{{value1}}  {{value2}} मिला"
+    },
+    "tabs": {
+      "urbanValue1": "शहरी {{value1}}",
+      "ruralGramPanchayat": "ग्रामीण ग्राम पंचायत",
+      "othersValue1": "अन्य: {{value1}} %",
+      "value1Cr": "₹ {{value1}} करोड़",
+      "netValue1Cr": "नेट: ₹ {{value1}} करोड़",
+      "value1Yrs": "{{value1}} वर्ष",
+      "dobValue1": "जन्मतिथि: {{value1}}",
+      "tapAnyStateToExploreItsAssemblyConstituencies": "किसी भी राज्य के विधानसभा क्षेत्रों का पता लगाने के लिए उस पर टैप करें",
+      "boothValue1": "बूथ # {{value1}}",
+      "acValue1Value2": "एसी # {{value1}} · {{value2}}",
+      "value1AcValue2": "{{value1}} (एसी # {{value2}} )",
+      "acValue1": "एसी # {{value1}}",
+      "label1st": "प्रथम",
+      "label2nd": "दूसरा",
+      "label3rd": "तीसरा"
+    },
+    "intelligence": {
+      "value1Value2AssemblyElections": "{{value1}}  {{value2}} · विधानसभा चुनाव",
+      "seatValue1": "सीट {{value1}}",
+      "value1SeatValue2": "{{value1}} सीट {{value2}}",
+      "value1MarginOfValue2Votes": "{{value1}} - {{value2}} वोटों का अंतर",
+      "marginDataUnavailable": "मार्जिन डेटा अनुपलब्ध",
+      "value1AppearsInValue2RecordedConstituenciesValue3": "{{value1}} रिकॉर्ड किए गए निर्वाचन क्षेत्रों में {{value2}} दिखाई देता है (पार्टी-ज्ञात रिकॉर्ड का {{value3}} %)",
+      "value1WithValue2SeatsValue3": "{{value2}} सीटों के साथ {{value1}} ( {{value3}} %)",
+      "partyDataUnavailable": "पार्टी डेटा अनुपलब्ध",
+      "dataValue1StateElectionCommission": "डेटा: {{value1}} राज्य चुनाव आयोग",
+      "value1Turnout": "{{value1}} % मतदान"
+    },
+    "profile": {
+      "featureFlagsDevSwitches": "फ़ीचर फ़्लैग और डेव स्विच",
+      "value1TapForDevSwitches": "{{value1}} • डेव स्विच के लिए टैप करें"
+    },
+    "shorts": {
+      "value1ShortValue2": "{{value1}} लघु {{value2}}"
+    },
+    "candidateXray": {
+      "candidateRecordNotFound": "अभ्यर्थी का रिकार्ड नहीं मिला",
+      "affidavitProfilesHaveBeenConsolidatedIntoLegislatorProfiles": "शपथ पत्र प्रोफाइल को विधायक प्रोफाइल में समेकित किया गया है।",
+      "loadingProfile": "प्रोफ़ाइल लोड हो रही है..."
+    },
+    "constituency": {
+      "notReported": "रिपोर्ट नहीं की गई",
+      "shareConstituencyCard": "निर्वाचन क्षेत्र कार्ड साझा करें",
+      "profileRecord": "प्रोफ़ाइल रिकॉर्ड",
+      "historicalPoliticalData19992026": "ऐतिहासिक राजनीतिक डेटा (1999-2026)",
+      "viewAllValue1": "सभी देखें ( {{value1}} )",
+      "assemblyElectionPodiumResultsWith1st2ndAnd": "पहले, दूसरे और तीसरे स्थान के उम्मीदवारों, मार्जिन और वोट शेयर के साथ विधानसभा चुनाव मंच के परिणाम:",
+      "showAllValue1PastElections1999Value2": "सभी {{value1}} पिछले चुनाव दिखाएँ (1999- {{value2}} )"
+    },
+    "simulator": {
+      "dataStatusPoligramScenario": "डेटा स्थिति: पॉलीग्राम परिदृश्य",
+      "stateAssemblyIntraStateDistrictProjectionArticle170": "राज्य विधानसभा और अंतर-राज्य जिला प्रक्षेपण - अनुच्छेद 170 / लागू वैधानिक ढांचा। यह एक अकादमिक शोध अनुकरण है, भारत के परिसीमन आयोग का आधिकारिक आदेश नहीं है।",
+      "simulationQualityValue1Within10DeviationBound": "सिमुलेशन गुणवत्ता: {{value1}} % ±10% विचलन सीमा के भीतर"
+    },
+    "state": {
+      "populationValue1Value2Seat": "जनसंख्या: {{value1}} · {{value2}} /सीट",
+      "constitutionalDeviationValue1Value2": "संवैधानिक विचलन: {{value1}}  {{value2}} %",
+      "scValue1": "एससी ( {{value1}} %)",
+      "stValue1": "एसटी ( {{value1}} %)",
+      "value1DistrictsValue2ProjectedSeatsIdealValue3Seat": "{{value1}} जिले · {{value2}} अनुमानित सीटें · आदर्श: {{value3}} /सीट",
+      "value1Seats": "{{value1}} सीटें",
+      "scValue1StValue2UrbanValue3": "SC {{value1}} % · ST {{value2}} % · शहरी {{value3}} %",
+      "acValue1Value2": "एसी # {{value1}}  {{value2}}",
+      "districtValue1Value2": "जिला: {{value1}}  {{value2}}"
+    },
+    "editProfile": {
+      "yourName": "आपका नाम",
+      "tellUsAboutYourself": "हमें अपने बारे में बताएं..."
+    },
+    "issue": {
+      "flagValue1ForRepresentativeAttentionInPoligram": "पोलिग्राम में प्रतिनिधि ध्यान के लिए \" {{value1}} \" ध्वजांकित करें?",
+      "alreadyDisputed": "पहले से ही विवादित है",
+      "youHaveAlreadyDisputedThisResolution": "आप पहले ही इस प्रस्ताव पर विवाद कर चुके हैं।",
+      "doYouBelieveThisIssueHasNot": "क्या आप मानते हैं कि इस मुद्दे का उचित समाधान नहीं किया गया है? आपका विवाद दर्ज किया जाएगा. यदि 5+ नागरिक विवाद करते हैं, तो मुद्दा स्वचालित रूप से फिर से खुल जाएगा।",
+      "dispute": "विवाद",
+      "byValue1": "{{value1}} द्वारा",
+      "resolvedValue1": "{{value1}} का समाधान किया गया",
+      "reopenedValue1CitizensDisputedTheResolution": "पुनः खोला गया - {{value1}} नागरिकों ने प्रस्ताव पर विवाद किया",
+      "evidenceValue1": "साक्ष्य ( {{value1}} )",
+      "showAllValue1MediaFiles": "सभी {{value1}} मीडिया फ़ाइलें दिखाएँ",
+      "statusTimeline": "स्थिति समयरेखा",
+      "official": "आधिकारिक"
+    },
+    "leadershipAcademy": {
+      "moduleUnavailable": "मॉड्यूल अनुपलब्ध",
+      "theModuleCouldNotBeOpenedRight": "मॉड्यूल अभी खोला नहीं जा सका.",
+      "couldNotJoinChallenge": "चुनौती में शामिल नहीं हो सका",
+      "leadershipAcademyIsCurrentlyUnavailable": "नेतृत्व अकादमी वर्तमान में अनुपलब्ध है।",
+      "loadingModules": "मॉड्यूल लोड हो रहा है...",
+      "noPublishedModulesAreAvailable": "कोई प्रकाशित मॉड्यूल उपलब्ध नहीं है."
+    },
+    "legislator": {
+      "value1ElectionPerformance": "{{value1}} चुनाव प्रदर्शन",
+      "electionPerformance": "चुनाव प्रदर्शन",
+      "couldNotFindDataForAcValue1": "AC # {{value1}} के लिए डेटा नहीं मिल सका",
+      "profession": "पेशा",
+      "maritalStatus": "वैवाहिक स्थिति",
+      "dateOfBirth": "जन्मतिथि",
+      "assemblyTermStatus": "विधानसभा अवधि और स्थिति",
+      "term": "अवधि",
+      "podiumRank": "पोडियम रैंक",
+      "currentParty": "वर्तमान पार्टी",
+      "constituencyElectionHistory": "निर्वाचन क्षेत्र का चुनाव इतिहास",
+      "fullElectionCyclesForValue1Value2TapAny": "# {{value1}}  {{value2}} के लिए पूर्ण चुनाव चक्र। किसी भी उम्मीदवार का प्रोफ़ाइल डोजियर देखने के लिए उसे टैप करें।"
+    },
+    "distribution": {
+      "shipsAsASeparateLightweightBuildAppsWeb": "एक अलग हल्के बिल्ड (ऐप्स/वेब-रिसीवर) के रूप में भेजा जाता है। नेटिव विंडोज़ + एंड्रॉइड टीवी रैपर एक ही पृष्ठ पर चरण 2 पॉलिश हैं।"
+    },
+    "localBodies": {
+      "sourceAndhraPradeshStateElectionCommissionApsec": "स्रोत: आंध्र प्रदेश राज्य चुनाव आयोग (एपीएसईसी) - आधिकारिक स्थानीय निकाय चुनाव परिणाम। ग्राम पंचायत चुनाव आधिकारिक तौर पर गैर-दलीय होते हैं।",
+      "sourceTelanganaStateElectionCommissionTsecKnow": "स्रोत: तेलंगाना राज्य चुनाव आयोग (टीएसईसी) - अपने जन प्रतिनिधि (ग्रामीण) को जानें। ग्राम पंचायत चुनाव आधिकारिक तौर पर गैर-दलीय होते हैं।",
+      "ts": "टी.एस",
+      "ap": "एपी",
+      "mandalParishadTerritorialConstituencyMptcValue1": "मंडल परिषद प्रादेशिक निर्वाचन क्षेत्र (MPTC) ( {{value1}} )",
+      "gramPanchayatsValue1": "ग्राम पंचायतें ( {{value1}} )"
+    },
+    "onboarding": {
+      "selectedValue1Value2Value3": "चयनित: # {{value1}}  {{value2}}  {{value3}}"
+    },
+    "parliament": {
+      "lokSabha18th": "लोकसभा (18वीं)",
+      "value1Yrs": "{{value1}} वर्ष",
+      "lsValue1RsValue2TotalValue3": "LS: {{value1}} · RS: {{value2}} · कुल: {{value3}}"
+    },
+    "reader": {
+      "article": "आलेख",
+      "contentFromValue1": "{{value1}} से सामग्री"
+    },
+    "representative": {
+      "value1Record": "{{value1}} रिकॉर्ड",
+      "officiallyNonPartyStatePanchayatiRajAct": "आधिकारिक तौर पर गैर-पार्टी (राज्य पंचायती राज अधिनियम)",
+      "officialElectionResultsFromAndhraPradeshState": "आंध्र प्रदेश राज्य चुनाव आयोग (एपीएसईसी) से आधिकारिक चुनाव परिणाम",
+      "officialElectionResultsFromTelanganaStateElection": "तेलंगाना राज्य चुनाव आयोग (टीएसईसी) से आधिकारिक चुनाव परिणाम - अपने प्रतिनिधि को जानें (केवाईआर)",
+      "thisPollIsOfficiallyNonPartyPartyAffiliation": "यह जनमत सर्वेक्षण आधिकारिक तौर पर गैर-दलीय है। पार्टी संबद्धता ( {{value1}} ) वास्तविक/अनौपचारिक है।",
+      "wardValue1": "वार्ड {{value1}}",
+      "value1DeclaredCaseValue2": "{{value1}} घोषित मामला {{value2}}",
+      "verifyOnStateElectionCommissionPortal": "राज्य निर्वाचन आयोग पोर्टल पर सत्यापन करें",
+      "suggestAnEditWithSource": "एक संपादन का सुझाव दें (स्रोत के साथ)"
+    },
+    "edit": {
+      "noChanges": "कोई परिवर्तन नहीं",
+      "editAtLeastOneFieldBeforeSubmitting": "सबमिट करने से पहले कम से कम एक फ़ील्ड संपादित करें.",
+      "sourceRequired": "स्रोत आवश्यक",
+      "enterAnHttpsLinkSupportingTheCorrection": "सुधार का समर्थन करने वाला HTTPS लिंक दर्ज करें।",
+      "thankYou": "धन्यवाद",
+      "yourCorrectionHasBeenSubmittedForReview": "आपका सुधार समीक्षा हेतु प्रस्तुत कर दिया गया है।",
+      "submissionFailed": "सबमिशन विफल",
+      "pleaseTryAgainLater": "कृपया बाद में पुन: प्रयास करें।",
+      "submitting": "सबमिट किया जा रहा है...",
+      "submitForModeration": "मॉडरेशन के लिए सबमिट करें",
+      "theRepresentativeProfileCouldNotBeLoaded": "प्रतिनिधि प्रोफ़ाइल लोड नहीं की जा सकी.",
+      "value1Value2Value3EveryEditRequiresAVerifiable": "{{value1}}  {{value2}}  {{value3}} प्रत्येक संपादन के लिए एक सत्यापन योग्य स्रोत की आवश्यकता होती है और जवाबदेही के लिए फिंगरप्रिंट किया जाता है। प्रकाशन से पहले संपादनों को मॉडरेट किया जाता है।",
+      "sourceLinkRequired": "स्रोत लिंक (आवश्यक)",
+      "httpsTsecGovInOrNewsGazetteUrl": "https://tsec.gov.in/... या समाचार/राजपत्र यूआरएल",
+      "citationNoteOptional": "उद्धरण/नोट (वैकल्पिक)",
+      "eGTsecKnowYourRepresentativePagePublished": "जैसे टीएसईसी नो-योर-रिप्रेजेंटेटिव पेज, 2020-12-04 प्रकाशित"
+    },
+    "search": {
+      "trySearchingBy": "इनके द्वारा खोजने का प्रयास करें:",
+      "constituencyNameJubileeHills": "• निर्वाचन क्षेत्र का नाम: \"जुबली हिल्स\"",
+      "acNumber141": "• एसी नंबर: \"141\"",
+      "mlaNameRevanthReddy": "• विधायक का नाम: \"रेवंत रेड्डी\"",
+      "partyBjpOrInc": "• पार्टी: \"बीजेपी\" या \"कांग्रेस\"",
+      "issueWaterSupply": "• मुद्दा: \"जल आपूर्ति\""
+    },
+    "AdCard": {
+      "featuredPartner": "फ़ीचर्ड पार्टनर",
+      "sponsored": "प्रायोजित",
+      "commercialPromotion": "वाणिज्यिक प्रचार"
+    },
+    "BroadcastPollCard": {
+      "liveAudiencePoll": "लाइव ऑडियंस पोल",
+      "pollResults": "मतदान परिणाम",
+      "value1Votes": "{{value1}} वोट",
+      "submittingAnonymousBallot": "गुमनाम मतपत्र सबमिट किया जा रहा है..."
+    },
+    "BroadcastQaModal": {
+      "validationError": "सत्यापन त्रुटि",
+      "questionMustBeAtLeast5Characters": "प्रश्न कम से कम 5 अक्षर का होना चाहिए",
+      "privacyProtection": "गोपनीयता सुरक्षा",
+      "pleaseDoNotIncludeEmailAddressesIn": "कृपया प्रश्नों में ईमेल पते शामिल न करें।",
+      "pleaseDoNotIncludePhoneNumbersIn": "कृपया प्रश्नों में फ़ोन नंबर शामिल न करें.",
+      "submissionError": "सबमिशन त्रुटि",
+      "failedToSubmitQuestion": "प्रश्न सबमिट करने में विफल",
+      "audienceQA": "श्रोता प्रश्नोत्तर",
+      "noAudienceQuestionsYetBeTheFirstTo": "अभी तक दर्शकों का कोई प्रश्न नहीं है. पूछने वाले पहले व्यक्ति बनें!",
+      "pinnedByHost": "होस्ट द्वारा पिन किया गया",
+      "askAQuestionForTheBroadcaster": "प्रसारक के लिए एक प्रश्न पूछें..."
+    },
+    "CampaignOutreachPanel": {
+      "theBroadcastCouldNotBeCreated": "प्रसारण नहीं बनाया जा सका.",
+      "deliveryIsUnavailableUntilARealMessaging": "वास्तविक मैसेजिंग प्रदाता, सहमति-आधारित ऑडियंस स्रोत और डिलीवरी रिपोर्टिंग कनेक्ट होने तक डिलीवरी अनुपलब्ध है।",
+      "simulationModeNoMessagesAreSentReal": "सिमुलेशन मोड. कोई संदेश नहीं भेजा जाता. वास्तविक डिलीवरी के लिए प्रदाता सेटअप {{value1}} की आवश्यकता होती है। {{value2}}",
+      "noLiveAudienceSegmentsAreConnected": "कोई भी लाइव ऑडियंस खंड जुड़ा नहीं है.",
+      "noAudienceSegmentsAreAvailable": "कोई ऑडियंस खंड उपलब्ध नहीं है.",
+      "describeTheRecordedVoiceMessage": "रिकॉर्ड किए गए ध्वनि संदेश का वर्णन करें...",
+      "typeYourMessageUseNameBoothFor": "अपना संदेश टाइप करें. वैयक्तिकरण के लिए {नाम}, {बूथ} का उपयोग करें।",
+      "value1ToValue2": "{{value1}} से {{value2}}",
+      "deliveryNotConnected": "डिलीवरी कनेक्ट नहीं है",
+      "value1CharsValue2": "{{value1}} वर्ण {{value2}}",
+      "goesOutValue1": "{{value1}} बाहर चला जाता है",
+      "answered": "उत्तर दिया",
+      "templateName": "टेम्पलेट का नाम",
+      "bodyWithNameBooth": "{नाम}, {बूथ} वाला शरीर..."
+    },
+    "CompareSheet": {
+      "search": "खोजें...",
+      "mla": "विधायक",
+      "value1Winner": "{{value1}} विजेता",
+      "swing": "झूला",
+      "loyalty": "वफ़ादारी",
+      "selectTwoConstituenciesToCompareThemSideBy": "उनकी साथ-साथ तुलना करने के लिए दो निर्वाचन क्षेत्रों का चयन करें"
+    },
+    "ConstituencySelectorSheet": {
+      "acValue1": "एसी {{value1}}"
+    },
+    "DataPendingCard": {
+      "theOfficialMapBoundaryForThisArea": "इस क्षेत्र के लिए आधिकारिक मानचित्र सीमा अभी तक प्रकाशित नहीं की गई है। सूची दृश्य पूर्णतः सटीक रहता है.",
+      "thisSeatExistsButAVerifiedOffice": "यह सीट मौजूद है, लेकिन सत्यापित कार्यालय-धारक रिकॉर्ड अभी तक उपलब्ध नहीं है। हम केवल आधिकारिक स्रोतों से पुष्टि किए गए डेटा दिखाते हैं।",
+      "fingerprint": "· फिंगरप्रिंट ✓",
+      "expectedSourceValue1": "अपेक्षित स्रोत: {{value1}}"
+    },
+    "DataPipelineCard": {
+      "dataPipeline": "डेटा पाइपलाइन",
+      "value1Value2Healthy": "{{value1}} / {{value2}} स्वस्थ"
+    },
+    "DelimitationShareCard": {
+      "constitutionalAssessment": "संवैधानिक मूल्यांकन",
+      "postalCodeValue1Value2": "डाक कोड {{value1}} · {{value2}}",
+      "current": "वर्तमान",
+      "proposed": "प्रस्तावित",
+      "dpdpAct2023CompliantZeroVoterTracking": "डीपीडीपी अधिनियम 2023 के अनुरूप · शून्य मतदाता ट्रैकिंग",
+      "shareMyImpactCard": "मेरा प्रभाव कार्ड साझा करें"
+    },
+    "DevFeatureSwitcher": {
+      "devControl": "देव नियंत्रण"
+    },
+    "ErrorBoundary": {
+      "errorLog": "त्रुटि लॉग",
+      "hideLogs": "लॉग छिपाएँ",
+      "viewLogs": "लॉग देखें",
+      "poligramEncounteredAnIssueWhileLoadingThisScreen": "इस स्क्रीन को लोड करते समय पॉलीग्राम को एक समस्या का सामना करना पड़ा।",
+      "copyShareLog": "लॉग कॉपी/शेयर करें",
+      "crashDiagnosticsStackTrace": "क्रैश डायग्नोस्टिक्स और स्टैक ट्रेस",
+      "jsStackTrace": "जेएस स्टैक ट्रेस:",
+      "componentHierarchy": "घटक पदानुक्रम:"
+    },
+    "EventCard": {
+      "rsvp": "आरएसवीपी"
+    },
+    "KYCVerificationSheet": {
+      "byProceedingIAcknowledgeAndAgreeThat": "आगे बढ़ते हुए, मैं स्वीकार करता हूं और सहमत हूं कि:",
+      "value1MyIdentityNamePhonePhotoWillBe": "{{value1}} मेरी पहचान (नाम, फोन, फोटो) रिकॉर्ड की जाएगी और सुरक्षित रूप से संग्रहीत की जाएगी।",
+      "value1MyDeviceInformationIpAddressAndLocation": "{{value1}} मेरे डिवाइस की जानकारी, आईपी पता और स्थान मेरे द्वारा की जाने वाली प्रत्येक सामग्री कार्रवाई के साथ कैप्चर किया जाएगा।",
+      "value1ThisDataMayBeSharedWithLaw": "{{value1}} यदि मेरी सामग्री भारतीय कानून (आईटी अधिनियम 2000, आईपीसी, आदि) का उल्लंघन करती पाई जाती है तो यह डेटा कानून प्रवर्तन एजेंसियों के साथ साझा किया जा सकता है।",
+      "value1IAmSolelyResponsibleForAllContent": "{{value1}} मैं अपने द्वारा पोस्ट की गई सभी सामग्री के लिए पूरी तरह जिम्मेदार हूं, और मैं अपमानजनक, नकली या अवैध सामग्री पोस्ट नहीं करूंगा।",
+      "value1FalseOrMisleadingVerificationDetailsMayResult": "{{value1}} गलत या भ्रामक सत्यापन विवरण के परिणामस्वरूप स्थायी प्रतिबंध और कानूनी कार्रवाई हो सकती है।",
+      "iHaveReadAndAgreeToTheAbove": "मैंने जवाबदेही की उपरोक्त शर्तों को पढ़ लिया है और उनसे सहमत हूं",
+      "yourDeviceInfoNetworkDetailsAndLocationWill": "अब आपकी डिवाइस की जानकारी, नेटवर्क विवरण और स्थान कैप्चर कर लिया जाएगा।"
+    },
+    "LeaderProfileModal": {
+      "acValue1Value2": "🎯एसी # {{value1}}  {{value2}}",
+      "civicLeader": "🎯 नागरिक नेता",
+      "ind": "निर्दलीय",
+      "aspirant": "आकांक्षी",
+      "activeInConstituencyOutreachSabhas": "निर्वाचन क्षेत्र की आउटरीच सभाओं में सक्रिय",
+      "label1HrAgo": "1 घंटा पहले",
+      "educationGrassrootsBackground": "शिक्षा एवं जमीनी स्तर की पृष्ठभूमि",
+      "maPublicPolicy": "పోస్ట్ क्रेडिट कार्ड (एमए सार्वजनिक नीति)",
+      "postGraduationMaPublicPolicy": "पोस्ट ग्रेजुएशन (एमए पब्लिक पॉलिसी)",
+      "osmaniaUniversityDistinction": "उस्मानिया विश्वविद्यालय · विशिष्टता",
+      "grassrootsCivicActionCommittee": "जमीनी स्तर की नागरिक कार्रवाई समिति",
+      "waterSecurityYouthConvenor2018Present": "जल सुरक्षा एवं युवा संयोजक (2018 - वर्तमान)",
+      "aClearPublicAgendaForTheFuture": "इस निर्वाचन क्षेत्र के भविष्य के लिए एक स्पष्ट सार्वजनिक एजेंडा। नागरिक पहलों को प्राथमिकता देने के लिए मतदान कर सकते हैं:",
+      "iSolemnlyPledgeToUpholdTheConstitution": "मैं भारत के संविधान को बनाए रखने, भ्रष्टाचार के प्रति शून्य सहनशीलता बनाए रखने, सार्वजनिक व्यय में पूर्ण पारदर्शिता सुनिश्चित करने और प्रत्येक नागरिक के लिए सुलभ और जवाबदेह बने रहने की सत्यनिष्ठा से प्रतिज्ञा करता हूं।",
+      "boothReach": "बूथ तक पहुंचें",
+      "responseTime": "प्रतिक्रिया समय",
+      "signInToMessageThisProfile": "इस प्रोफ़ाइल पर संदेश भेजने के लिए साइन इन करें.",
+      "volunteer": "स्वयंसेवक ✓",
+      "eciVerified": "ईसीआई सत्यापित"
+    },
+    "LiveBroadcaster": {
+      "consumerBuildsAreDecoupledFromHeavyNativeWebrtc": "दुबले HLS प्लेबैक के लिए उपभोक्ता बिल्ड को भारी देशी WebRTC बायनेरिज़ से अलग किया जाता है। लाइव वीडियो प्रसारित करने के लिए, https://studio.poligram.in पर पॉलीग्राम स्टूडियो वेब क्लाइंट का उपयोग करें या ओबीएस से आरटीएमपी/एसआरटी के माध्यम से कनेक्ट करें।"
+    },
+    "MapFallback": {
+      "value1Value2Constituencies": "{{value1}} · {{value2}} निर्वाचन क्षेत्र",
+      "interactiveMapUnavailable": "इंटरैक्टिव मानचित्र अनुपलब्ध",
+      "theFullMapboxMapRequiresADevelopmentBuild": "पूर्ण मैपबॉक्स मानचित्र के लिए विकास निर्माण की आवश्यकता होती है। {{value1}} रन: npx एक्सपो रन: एंड्रॉइड (या एक ईएएस डेव बिल्ड बनाएं)। {{value2}} एक्सपो गो में अन्य सभी सुविधाएँ सामान्य रूप से काम करती हैं!",
+      "electionPartySeats": "चुनाव - पार्टी सीटें",
+      "delimitationProjection": "परिसीमन प्रक्षेपण",
+      "genValue1ScValue2StValue3": "जनरल {{value1}} · SC {{value2}} · ST {{value3}}",
+      "topConstituenciesByMargin": "मार्जिन के आधार पर शीर्ष निर्वाचन क्षेत्र"
+    },
+    "ModuleDetailModal": {
+      "quizCouldNotBeSaved": "प्रश्नोत्तरी सहेजी नहीं जा सकी",
+      "checkYourConnectionAndTrySubmittingYour": "अपना कनेक्शन जांचें और अपने उत्तर दोबारा सबमिट करने का प्रयास करें।",
+      "progressCouldNotBeSaved": "प्रगति को बचाया नहीं जा सका",
+      "yourModuleIsStillOpenPleaseTry": "आपका मॉड्यूल अभी भी खुला है. कृपया पुन: प्रयास करें।",
+      "value1MinValue2Value3": "{{value1}} मिनट · {{value2}} · {{value3}}",
+      "value1Value2Source": "\" {{value1}} \" - {{value2}}. स्रोत ↗"
+    },
+    "PhotoViewerModal": {
+      "photoSourcedFromWikipediaMyneta": "फोटो विकिपीडिया/मायनेटा से लिया गया है"
+    },
+    "PodiumHistoryCard": {
+      "delim2008": "डेलीम 2008",
+      "delim1976": "डेलीम 1976",
+      "delimValue1": "डेलीम {{value1}}",
+      "label1st": "🥇 प्रथम",
+      "label2nd": "🥈 दूसरा",
+      "label3rd": "🥉तीसरा"
+    },
+    "PoliticalAdCard": {
+      "constituencyAnnouncementCampaignReleaseFromValue1Tap": "{{value1}} से निर्वाचन क्षेत्र की घोषणा और अभियान जारी। पूरी पोस्ट और चर्चाएँ देखने के लिए टैप करें।",
+      "politicalAdPaidPromotionByValue1": "राजनीतिक विज्ञापन · {{value1}} द्वारा सशुल्क प्रचार",
+      "targetValue1Value2": "लक्ष्य: {{value1}}  {{value2}}",
+      "certifiedUnderEciMcmcGuidelinesPaidValue1": "ईसीआई/एमसीएमसी दिशानिर्देशों के तहत प्रमाणित · ₹ {{value1}} का भुगतान किया गया"
+    },
+    "PoliticalShortsCarousel": {
+      "new": "नया",
+      "uploadShort": "लघु अपलोड करें",
+      "addShort": "लघु जोड़ें",
+      "shareLocalReport": "स्थानीय रिपोर्ट साझा करें",
+      "noShortsInThisConstituency": "इस निर्वाचन क्षेत्र में कोई कमी नहीं है.",
+      "beTheFirst": "पहले बनें!"
+    },
+    "ReportIssueSheet": {
+      "youCanAddUpToValue1Media": "आप {{value1}} तक मीडिया फ़ाइलें जोड़ सकते हैं.",
+      "value1Value2MediaAttached": "{{value1}} / {{value2}} मीडिया संलग्न"
+    },
+    "ReportSheet": {
+      "reportsAreReviewedByOurModerationTeamWithin": "हमारी मॉडरेशन टीम द्वारा 24 घंटों के भीतर रिपोर्ट की समीक्षा की जाती है। झूठी रिपोर्टें आपके प्रतिष्ठा स्कोर को प्रभावित कर सकती हैं।"
+    },
+    "RevenueCard": {
+      "revenueDashboard": "राजस्व डैशबोर्ड",
+      "totalRevenue": "कुल राजस्व",
+      "projectedMrr": "प्रक्षेपित एमआरआर",
+      "politicians": "राजनेता",
+      "avgRoi": "औसत ROI",
+      "revenueByFormat": "प्रारूप के अनुसार राजस्व",
+      "monthlyGrowth": "मासिक वृद्धि",
+      "unitEconomics": "इकाई अर्थशास्त्र",
+      "costPromotedPostValue1": "लागत/प्रचारित पोस्ट: {{value1}}",
+      "avgPoliticiansStateValue1": "औसत राजनेता/राज्य: {{value1}}",
+      "activeStatesValue1": "सक्रिय अवस्थाएँ: {{value1}}",
+      "monthlyStateValue1": "मासिक/राज्य: {{value1}}"
+    },
+    "SeatProjectionCard": {
+      "popValue1": "पॉप: {{value1}}",
+      "popSeatValue1": "पॉप/सीट: {{value1}}",
+      "devValue1Value2": "विकास: {{value1}}  {{value2}} %"
+    },
+    "ShareableCardModal": {
+      "value1District": "{{value1}} जिला",
+      "ind": "आईएनडी",
+      "runnerUp2": "उपविजेता",
+      "value1Terms": "{{value1}} शर्तें",
+      "tenure": "कार्यकाल",
+      "preparingVisualCard": "विज़ुअल कार्ड तैयार किया जा रहा है...",
+      "shareVisualGraphicCard": "विज़ुअल ग्राफ़िक कार्ड साझा करें",
+      "officialCivicCard": "आधिकारिक नागरिक कार्ड",
+      "winner": "🥇 विजेता",
+      "value1VotesValue2": "{{value1}} वोट {{value2}}",
+      "runnerUp": "🥈 उपविजेता",
+      "margin": "मार्जिन",
+      "verifiedByEciForm21ePoligramCivicIntelligence": "ईसीआई फॉर्म 21ई द्वारा सत्यापित • पोलिग्राम सिविक इंटेलिजेंस",
+      "shareDetailedStoryFormattedText": "विस्तृत कहानी साझा करें (स्वरूपित पाठ)"
+    },
+    "ShortsPlayerModal": {
+      "couldNotSaveYourCommentPleaseTry": "आपकी टिप्पणी सहेजी नहीं जा सकी. कृपया पुन: प्रयास करें।",
+      "saved": "सहेजा गया",
+      "asAVerifiedConstituentOfValue1Is": "{{value1}} के सत्यापित घटक के रूप में, क्या यह वीडियो आपके निर्वाचन क्षेत्र के लिए प्रासंगिक और रचनात्मक है?",
+      "helpVerifyThisVideoFromValue1To": "इस वीडियो को राष्ट्रीय स्तर पर प्रचारित करने के लिए {{value1}} से सत्यापित करने में सहायता करें।",
+      "commentsCouldNotBeLoaded": "टिप्पणियाँ लोड नहीं की जा सकीं."
+    },
+    "StateView": {
+      "refValue1Value2": "संदर्भ: {{value1}} ( {{value2}} )"
+    },
+    "WealthTimeline": {
+      "value1GrowthTimelineContainsUndisclosedObservations": "{{value1}} ग्रोथ टाइमलाइन में अज्ञात अवलोकन शामिल हैं"
+    },
+    "GrassrootsBooths": {
+      "wardValue1": "वार्ड # {{value1}} ·",
+      "value1Voters": "{{value1}} मतदाता",
+      "voterCountUnavailable": "मतदाताओं की संख्या उपलब्ध नहीं है",
+      "targetValue1": "लक्ष्य: {{value1}}",
+      "targetUnavailable": "लक्ष्य अनुपलब्ध",
+      "check": "जांचें",
+      "eGRameshGoud": "जैसे रमेश गौड़"
+    },
+    "GrassrootsWorkers": {
+      "cannotSaveWorkLog": "कार्य लॉग सहेजा नहीं जा सकता",
+      "chooseACampaignWorkerAndBoothThat": "एक अभियान, कार्यकर्ता और बूथ चुनें जो अभियान रिकॉर्ड में उपलब्ध हैं।",
+      "checkTheSessionDuration": "सत्र की अवधि जांचें",
+      "enterAWholeNumberOfMinutesFrom": "1 से 1,440 तक मिनटों की पूरी संख्या दर्ज करें।",
+      "checkHouseholdsVisited": "जिन घरों का दौरा किया गया, उनकी जाँच करें",
+      "enterAWholeNumberFrom0To": "0 से 100,000 तक की पूर्ण संख्या दर्ज करें.",
+      "workSessionSaved": "कार्य सत्र सहेजा गया",
+      "thisSessionWasSavedToTheCampaign": "यह सत्र अभियान कार्य लॉग में सहेजा गया था।",
+      "workSessionNotSaved": "कार्य सत्र सहेजा नहीं गया",
+      "boothValue1": "· बूथ # {{value1}}",
+      "completedSessionsUnavailable": "पूर्ण सत्र अनुपलब्ध",
+      "value1CompletedSessions": "{{value1}} ने सत्र पूरा किया",
+      "loggedHoursUnavailable": "लॉग किए गए घंटे अनुपलब्ध हैं",
+      "value1HoursLogged": "{{value1}} घंटे लॉग किए गए",
+      "logCompletedOutreachForValue1": "{{value1}} के लिए लॉग पूर्ण आउटरीच",
+      "saving": "सहेजा जा रहा है...",
+      "saveWorkSession": "कार्य सत्र सहेजें",
+      "poligramUser": "पोलिग्राम उपयोगकर्ता",
+      "logCompletedOutreach": "लॉग पूरा आउटरीच",
+      "eGBSrinivas": "जैसे बी श्रीनिवास",
+      "value1ReportedByTheCampaignTeamNotIndependently": "{{value1}} · अभियान टीम द्वारा रिपोर्ट किया गया, स्वतंत्र रूप से सत्यापित नहीं",
+      "campaignBooth": "अभियान बूथ",
+      "campaignBoothRecordsAreUnavailableRefreshTheCampaign": "अभियान बूथ रिकॉर्ड अनुपलब्ध हैं. कार्य लॉग करने से पहले अभियान को ताज़ा करें।",
+      "sessionDurationMinutes": "सत्र अवधि (मिनट)",
+      "sessionDurationInMinutes": "सत्र की अवधि मिनटों में",
+      "householdsVisited": "घरों का दौरा किया"
+    },
+    "SimplifiedOutreach": {
+      "minimumWalletRechargeIs500": "न्यूनतम वॉलेट रिचार्ज ₹500 है।",
+      "notConnected": "कनेक्टेड नहीं",
+      "label100Free": "100% मुफ़्त",
+      "indicativePricing": "सांकेतिक मूल्य निर्धारण",
+      "pricingUnavailable": "मूल्य निर्धारण अनुपलब्ध",
+      "sufficientBalanceRemainingAfterBlastValue1": "✓ पर्याप्त संतुलन। विस्फोट के बाद शेष: ₹ {{value1}}",
+      "walletBalanceShortByValue1TopUp": "⚠️ वॉलेट बैलेंस ₹ {{value1}} कम। टॉप-अप आवश्यक है.",
+      "duration028QualityHighVerified": "अवधि: 0:28 · गुणवत्ता: उच्च · सत्यापित",
+      "topUpValue1ToScheduleBlast": "ब्लास्ट शेड्यूल करने के लिए टॉप-अप ₹ {{value1}}",
+      "delivered": "✓ वितरित",
+      "calling": "📞 कॉलिंग...",
+      "queued": "कतारबद्ध",
+      "available": "उपलब्ध",
+      "revanthReddyInc": "रेवंत रेड्डी · इंक",
+      "wardValue1": "वार्ड # {{value1}}",
+      "liveCallDeliveryProgress": "लाइव कॉल डिलिवरी प्रगति",
+      "targetValue1VotersCostValue2": "लक्ष्य: {{value1}} मतदाता · लागत: ₹ {{value2}}",
+      "busy": "व्यस्त",
+      "unreachable": "अगम्य",
+      "creditsCanBeUsedImmediatelyForVoiceObd": "वॉयस ओबीडी कॉल ब्लास्ट और प्रचारित पोस्ट के लिए क्रेडिट का तुरंत उपयोग किया जा सकता है।",
+      "chooseRechargeAmount": "रिचार्ज राशि चुनें:",
+      "orEnterCustomAmount": "या कस्टम राशि दर्ज करें (₹):",
+      "payValue1ViaUpiNetbanking": "UPI/नेटबैंकिंग के माध्यम से ₹ {{value1}} का भुगतान करें"
+    },
+    "CriminalRecordCard": {
+      "pending": "लंबित",
+      "criminalCaseDisclosureUnavailable": "आपराधिक मामले का खुलासा अनुपलब्ध",
+      "noCriminalCasesDeclared": "कोई आपराधिक मामला घोषित नहीं",
+      "value1CaseValue2Value3": "{{value1}} मामला {{value2}}  {{value3}}",
+      "totalCases": "कुल मामले",
+      "serious": "गंभीर",
+      "convictions": "दोषसिद्धि",
+      "value1CaseDetailsValue2": "{{value1}} केस विवरण ( {{value2}} )",
+      "caseValue1": "केस: {{value1}}",
+      "courtValue1": "कोर्ट: {{value1}}",
+      "ipc": "आईपीसी:",
+      "chargesFramed": "आरोप तय"
+    },
+    "DynastyCard": {
+      "politicalDynasty": "राजनीतिक राजवंश",
+      "thisLegislatorComesFromAPoliticalFamily": "ये विधायक एक राजनीतिक परिवार से आते हैं",
+      "familyInPolitics": "राजनीति में परिवार",
+      "familyConstituencies": "पारिवारिक निर्वाचन क्षेत्र"
+    },
+    "ElectionHistoryCard": {
+      "won": "जीता",
+      "lost": "खो गया",
+      "defeated": "पराजित",
+      "lostTo": "से हार गया",
+      "value1WinRate": "{{value1}} % जीत दर",
+      "share": "साझा करें"
+    },
+    "FinancialBreakdownCard": {
+      "noFinancialDataAvailable": "कोई वित्तीय डेटा उपलब्ध नहीं है",
+      "financialDisclosure": "वित्तीय प्रकटीकरण",
+      "assetBreakdown": "संपत्ति का टूटना",
+      "selfMovable": "स्वयं चलने योग्य",
+      "selfImmovable": "स्वयं अचल",
+      "dependents": "आश्रित",
+      "spouseMovable": "जीवनसाथी गतिशील",
+      "spouseImmovable": "जीवनसाथी अचल",
+      "declaredIncomeItr": "घोषित आय (आईटीआर)",
+      "wealthTimeline": "धन समयरेखा",
+      "value1Value2SinceValue3": "{{value1}}  {{value2}} % {{value3}} से",
+      "totalLiabilities": "कुल देनदारियाँ:"
+    },
+    "PerformanceCard": {
+      "legislativePerformance": "विधायी प्रदर्शन",
+      "comingSoon": "जल्द आ रहा है",
+      "mplads": "एमपीलैड्स"
+    },
+    "RedFlagsBanner": {
+      "value1RedFlagValue2Detected": "{{value1}} लाल झंडा {{value2}} का पता चला"
+    }
+  },
   "constituencyDirectory": {
     "currentRepresentative": "वर्तमान प्रतिनिधि",
     "loading": "लाइव निर्वाचन क्षेत्र के रिकॉर्ड की जाँच की जा रही है...",
@@ -53,6 +593,21 @@ const hi = {
     "menuDescription": "विधानसभा परिणाम और आधिकारिक मतगणना अपडेट"
   },
   "partyRegistry": {
+    "electionRecord": "चुनाव रिकॉर्ड",
+    "historyAndFilings": "इतिहास और फाइलिंग",
+    "electionCode": "रिकॉर्ड किया गया पार्टी कोड · {{code}}",
+    "ballotSymbol": "मतपत्र चिह्न · {{symbol}}",
+    "seatsWon": "सीटें जीतीं · {{seats}}",
+    "lokSabhaElection": "{{year}} लोकसभा चुनाव",
+    "stateAssemblyElection": "{{year}}  {{state}} विधानसभा चुनाव",
+    "foundedBy": "{{year}} में {{founder}} द्वारा स्थापित।",
+    "registeredIn": "{{year}} में भारत निर्वाचन आयोग के साथ पंजीकृत।",
+    "renamedIn": "पहले {{name}} के नाम से जाना जाता था। नाम {{year}} में बदल गया।",
+    "profileSummary": {
+      "national": "भारत के चुनाव आयोग ने {{election}} में इस पार्टी को मान्यता प्राप्त राष्ट्रीय पार्टी के रूप में सूचीबद्ध किया।",
+      "state": "भारत के चुनाव आयोग ने इस पार्टी को {{election}} में एक मान्यता प्राप्त राज्य पार्टी के रूप में सूचीबद्ध किया है।",
+      "registered": "भारत के चुनाव आयोग ने इस पार्टी को {{election}} में पंजीकृत और गैर-मान्यता प्राप्त के रूप में सूचीबद्ध किया है।"
+    },
     "about": "पार्टी के बारे में",
     "registryIdentity": "{{party}} को {{code}} के अंतर्गत राजनीतिक दल निर्देशिका में सूचीबद्ध किया गया है।",
     "founded": "{{year}} में स्थापित।",
@@ -3059,6 +3614,16 @@ const hi = {
     }
   },
   "kycSheet": {
+    "submitted": "समीक्षा हेतु प्रस्तुत किया गया",
+    "pendingReviewMsg": "आपका सबमिशन सहेजा गया है. किसी अधिकृत समीक्षक द्वारा सत्यापित किए जाने के बाद ही योगदानकर्ता की कार्रवाइयां सक्षम की जाएंगी।",
+    "reviewNotice": "योगदानकर्ता सत्यापन समुदाय की सुरक्षा में मदद करता है। आपकी पहचान का विवरण समीक्षा के लिए संग्रहीत किया जाता है और आपकी सार्वजनिक प्रोफ़ाइल पर नहीं दिखाया जाता है।",
+    "selfieReviewNotice": "आपकी सेल्फी समीक्षा के लिए निजी भंडारण पर अपलोड की गई है। स्वचालित चेहरा मिलान नहीं किया जाता है.",
+    "checkingStatus": "आपकी सहेजी गई सत्यापन स्थिति की जाँच की जा रही है...",
+    "statusUnavailable": "हम आपका स्टेटस लोड नहीं कर सके. कनेक्ट होने पर पुनः प्रयास करने के लिए टैप करें।",
+    "rejectedResubmitHint": "अपना विवरण ठीक करने और समीक्षा के लिए पुनः सबमिट करने के लिए टैप करें।",
+    "resubmitTitle": "अपना सबमिशन अपडेट करें",
+    "resubmitNotice": "अस्वीकृति के कारण की समीक्षा करें, अपना विवरण सही करें और समीक्षा के लिए दोबारा सबमिट करें।",
+    "agreeAndVerify": "सहमत हूं और समीक्षा के लिए सबमिट करें",
     "title": "पहचान सत्यापन",
     "verified": "सत्यापित!",
     "verifiedMsg": "अब आप एक सत्यापित योगदानकर्ता हैं। आप पोस्ट, टिप्पणी और रिपोर्ट कर सकते हैं।",

@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -25,6 +26,7 @@ import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
  * feeds directly back into the reporter's credibility score (doc Section 12.6).
  */
 export default function DepartmentDashboardScreen() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -127,9 +129,7 @@ export default function DepartmentDashboardScreen() {
       )}
 
       <View style={styles.summaryRow}>
-        <Text style={styles.summaryText}>
-          {inbox.length} alert(s) · {pending} awaiting acknowledgment
-        </Text>
+        <Text style={styles.summaryText}>{translateScreenLabel("screenLabels.dashboard.value1AlertSValue2AwaitingAcknowledgment", { value1: inbox.length, value2: pending })}</Text>
       </View>
 
       <FlatList
@@ -170,6 +170,7 @@ function AlertCard({
   onAck: (id: string, verdict: AlertAcknowledgment) => void;
   onOpen: () => void;
 }) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const dcfg = DEPARTMENT_CONFIG[alert.departmentType];
   const acked = alert.acknowledgment ? ACK_CONFIG[alert.acknowledgment] : null;
@@ -191,9 +192,9 @@ function AlertCard({
           <Ionicons name={dcfg.icon as any} size={18} color={dcfg.color} />
         </View>
         <View style={{ flex: 1 }}>
-          <Text style={styles.cardTitle}>{dcfg.label} alert</Text>
+          <Text style={styles.cardTitle}>{translateScreenLabel("screenLabels.dashboard.value1Alert", { value1: dcfg.label })}</Text>
           <Text style={styles.cardMeta}>
-            {eventName ?? 'Reporter'} · {new Date(alert.dispatchedAt).toLocaleTimeString()}
+            {eventName ?? translateScreenLabel("screenLabels.dashboard.reporter")} · {new Date(alert.dispatchedAt).toLocaleTimeString()}
           </Text>
         </View>
         {event && (
@@ -224,7 +225,7 @@ function AlertCard({
 
       <Pressable style={styles.watchBtn} onPress={onOpen}>
         <Ionicons name="play-circle" size={16} color="#4F8EF7" />
-        <Text style={styles.watchText}>Watch live feed</Text>
+        <Text style={styles.watchText}>{translateScreenLabel("screenLabels.dashboard.watchLiveFeed")}</Text>
       </Pressable>
 
       {acked ? (

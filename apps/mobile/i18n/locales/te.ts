@@ -2,6 +2,546 @@
  * TE translation
  */
 const te = {
+  "screenLabels": {
+    "ConstituencySelectorSheet": {
+      "acValue1": "AC {{value1}}"
+    },
+    "EventCard": {
+      "rsvp": "హాజరును నిర్ధారించండి"
+    },
+    "news": {
+      "noSavedStoriesYet": "ఇంకా సేవ్ చేయబడిన కథనాలు లేవు",
+      "noStoriesAreAvailableForThisArea": "ఈ ప్రాంతానికి సంబంధించిన కథనాలు ఇంకా అందుబాటులో లేవు",
+      "noValue1StoriesAreAvailableRightNow": "{{value1}} కథనాలు ప్రస్తుతం అందుబాటులో లేవు",
+      "noNewsStoriesAreAvailableRightNow": "ప్రస్తుతం వార్తా కథనాలు అందుబాటులో లేవు"
+    },
+    "hierarchy": {
+      "value1Records": "{{value1}} రికార్డులు",
+      "value1Value2Value3DrillDown": "{{value1}} → {{value2}} → {{value3}} డ్రిల్-డౌన్"
+    },
+    "moderation": {
+      "actionApplied": "చర్య వర్తింపజేయబడింది",
+      "reportProcessedSuccessfullyValue1": "నివేదిక విజయవంతంగా ప్రాసెస్ చేయబడింది: {{value1}}",
+      "error": "లోపం",
+      "failedToApplyModerationAction": "నియంత్రణ చర్యను వర్తింపజేయడంలో విఫలమైంది",
+      "networkRequestFailed": "నెట్‌వర్క్ అభ్యర్థన విఫలమైంది",
+      "userIdValue1": "వినియోగదారు ID: {{value1}}..."
+    },
+    "ComposeSheet": {
+      "mp4": "MP4",
+      "optionValue1": "ఎంపిక {{value1}}"
+    },
+    "ProfileHeroCard": {
+      "label1stRunnerUp": "1వ రన్నరప్",
+      "label2ndRunnerUp": "2వ రన్నరప్",
+      "yrs": "యస్"
+    },
+    "ProjectCard": {
+      "acValue1": "· AC # {{value1}}"
+    },
+    "RegisterAspirantModal": {
+      "pleaseLogInBeforeRegisteringAsAn": "దయచేసి ఆశావహులుగా నమోదు చేసుకునే ముందు లాగిన్ చేయండి."
+    },
+    "dashboard": {
+      "reporter": "రిపోర్టర్",
+      "noLoadedReportsMatchTheseFiltersMoreReports": "లోడ్ చేయబడిన నివేదికలు ఈ ఫిల్టర్‌లకు సరిపోలలేదు. శోధించడానికి మరిన్ని నివేదికలు అందుబాటులో ఉన్నాయి.",
+      "couldNotLoadTheNextPageTheReports": "తదుపరి పేజీని లోడ్ చేయడం సాధ్యపడలేదు. ఇప్పటికే చూపిన నివేదికలు మారలేదు.",
+      "value1AlertSValue2AwaitingAcknowledgment": "{{value1}} హెచ్చరిక(లు) · {{value2}} రసీదు కోసం వేచి ఉంది",
+      "value1Alert": "{{value1}} హెచ్చరిక",
+      "watchLiveFeed": "ప్రత్యక్ష ప్రసారాన్ని చూడండి"
+    },
+    "explore": {
+      "value1Value2Found": "{{value1}}  {{value2}} కనుగొనబడింది"
+    },
+    "tabs": {
+      "urbanValue1": "అర్బన్ {{value1}}",
+      "ruralGramPanchayat": "గ్రామీణ గ్రామ పంచాయత్",
+      "othersValue1": "ఇతరులు: {{value1}} %",
+      "value1Cr": "₹ {{value1}} Cr",
+      "netValue1Cr": "నికర: ₹ {{value1}} Cr",
+      "value1Yrs": "{{value1}} సంవత్సరాలు",
+      "dobValue1": "పుట్టిన తేదీ · {{value1}}",
+      "tapAnyStateToExploreItsAssemblyConstituencies": "దాని అసెంబ్లీ నియోజకవర్గాలను అన్వేషించడానికి ఏదైనా రాష్ట్రం నొక్కండి",
+      "boothValue1": "బూత్ # {{value1}}",
+      "acValue1Value2": "AC # {{value1}} · {{value2}}",
+      "value1AcValue2": "{{value1}} (AC # {{value2}} )",
+      "acValue1": "AC # {{value1}}",
+      "label1st": "1వ",
+      "label2nd": "2వ",
+      "label3rd": "3వ"
+    },
+    "intelligence": {
+      "value1Value2AssemblyElections": "{{value1}}  {{value2}} · అసెంబ్లీ ఎన్నికలు",
+      "seatValue1": "సీటు {{value1}}",
+      "value1SeatValue2": "{{value1}} సీటు {{value2}}",
+      "value1MarginOfValue2Votes": "{{value1}} — {{value2}} ఓట్ల మార్జిన్",
+      "marginDataUnavailable": "మార్జిన్ డేటా అందుబాటులో లేదు",
+      "value1AppearsInValue2RecordedConstituenciesValue3": "{{value1}}  {{value2}} రికార్డ్ చేయబడిన నియోజకవర్గాల్లో కనిపిస్తుంది ( {{value3}} % పార్టీ-తెలిసిన రికార్డులు)",
+      "value1WithValue2SeatsValue3": "{{value2}} సీట్లతో {{value1}} ( {{value3}} %)",
+      "partyDataUnavailable": "పార్టీ డేటా అందుబాటులో లేదు",
+      "dataValue1StateElectionCommission": "డేటా: {{value1}} రాష్ట్ర ఎన్నికల సంఘం",
+      "value1Turnout": "{{value1}} % ఓటింగ్ శాతం"
+    },
+    "profile": {
+      "featureFlagsDevSwitches": "ఫీచర్ ఫ్లాగ్‌లు & దేవ్ స్విచ్‌లు",
+      "value1TapForDevSwitches": "{{value1}} • దేవ్ స్విచ్‌ల కోసం నొక్కండి"
+    },
+    "shorts": {
+      "value1ShortValue2": "{{value1}} చిన్న {{value2}}"
+    },
+    "candidateXray": {
+      "candidateRecordNotFound": "అభ్యర్థి రికార్డు దొరకలేదు",
+      "affidavitProfilesHaveBeenConsolidatedIntoLegislatorProfiles": "అఫిడవిట్ ప్రొఫైల్‌లు లెజిస్లేటర్ ప్రొఫైల్‌లుగా ఏకీకృతం చేయబడ్డాయి.",
+      "loadingProfile": "ప్రొఫైల్ లోడ్ అవుతోంది..."
+    },
+    "constituency": {
+      "notReported": "నివేదించబడలేదు",
+      "shareConstituencyCard": "నియోజకవర్గ కార్డ్‌ని పంచుకోండి",
+      "profileRecord": "ప్రొఫైల్ రికార్డ్",
+      "historicalPoliticalData19992026": "హిస్టారికల్ పొలిటికల్ డేటా (1999–2026)",
+      "viewAllValue1": "అన్నింటినీ వీక్షించండి ( {{value1}} )",
+      "assemblyElectionPodiumResultsWith1st2ndAnd": "1వ, 2వ మరియు 3వ స్థానాల అభ్యర్థులు, మార్జిన్లు మరియు ఓట్ షేర్లతో అసెంబ్లీ ఎన్నికల పోడియం ఫలితాలు:",
+      "showAllValue1PastElections1999Value2": "అన్ని {{value1}} గత ఎన్నికలను చూపు (1999– {{value2}} )"
+    },
+    "simulator": {
+      "dataStatusPoligramScenario": "డేటా స్థితి: పోలిగ్రామ్ దృశ్యం",
+      "stateAssemblyIntraStateDistrictProjectionArticle170": "రాష్ట్ర అసెంబ్లీ & ఇంట్రా-స్టేట్ డిస్ట్రిక్ట్ ప్రొజెక్షన్ — ఆర్టికల్ 170 / వర్తించే చట్టబద్ధమైన ఫ్రేమ్‌వర్క్. ఇది అకడమిక్ రీసెర్చ్ సిమ్యులేషన్, డీలిమిటేషన్ కమిషన్ ఆఫ్ ఇండియా అధికారిక ఆర్డర్ కాదు.",
+      "simulationQualityValue1Within10DeviationBound": "అనుకరణ నాణ్యత: {{value1}} % ±10% విచలనం లోపల"
+    },
+    "state": {
+      "populationValue1Value2Seat": "జనాభా: {{value1}} · {{value2}} / సీటు",
+      "constitutionalDeviationValue1Value2": "రాజ్యాంగ విచలనం: {{value1}}  {{value2}} %",
+      "scValue1": "SC ( {{value1}} %)",
+      "stValue1": "ST ( {{value1}} %)",
+      "value1DistrictsValue2ProjectedSeatsIdealValue3Seat": "{{value1}} జిల్లాలు · {{value2}} అంచనా వేసిన సీట్లు · ఆదర్శం: {{value3}} /సీటు",
+      "value1Seats": "{{value1}} సీట్లు",
+      "scValue1StValue2UrbanValue3": "SC {{value1}} % · ST {{value2}} % · అర్బన్ {{value3}} %",
+      "acValue1Value2": "AC # {{value1}}  {{value2}}",
+      "districtValue1Value2": "జిల్లా: {{value1}}  {{value2}}"
+    },
+    "editProfile": {
+      "yourName": "మీ పేరు",
+      "tellUsAboutYourself": "మీ గురించి చెప్పండి..."
+    },
+    "issue": {
+      "flagValue1ForRepresentativeAttentionInPoligram": "పోలిగ్రామ్‌లో ప్రతినిధుల దృష్టికి \" {{value1}} \"ని ఫ్లాగ్ చేయాలా?",
+      "alreadyDisputed": "ఇప్పటికే వివాదాస్పదమైంది",
+      "youHaveAlreadyDisputedThisResolution": "మీరు ఇప్పటికే ఈ తీర్మానాన్ని వివాదం చేసారు.",
+      "doYouBelieveThisIssueHasNot": "ఈ సమస్య సరిగ్గా పరిష్కరించబడలేదని మీరు నమ్ముతున్నారా? మీ వివాదం రికార్డ్ చేయబడుతుంది. 5+ పౌరులు వివాదం చేస్తే, సమస్య స్వయంచాలకంగా మళ్లీ తెరవబడుతుంది.",
+      "dispute": "వివాదం",
+      "byValue1": "{{value1}} ద్వారా",
+      "resolvedValue1": "{{value1}} పరిష్కరించబడింది",
+      "reopenedValue1CitizensDisputedTheResolution": "మళ్లీ తెరవబడింది - {{value1}} పౌరులు తీర్మానాన్ని వివాదం చేశారు",
+      "evidenceValue1": "సాక్ష్యం ( {{value1}} )",
+      "showAllValue1MediaFiles": "అన్ని {{value1}} మీడియా ఫైల్‌లను చూపించు",
+      "statusTimeline": "స్థితి కాలక్రమం",
+      "official": "అధికారిక"
+    },
+    "leadershipAcademy": {
+      "moduleUnavailable": "మాడ్యూల్ అందుబాటులో లేదు",
+      "theModuleCouldNotBeOpenedRight": "మాడ్యూల్ ప్రస్తుతం తెరవబడదు.",
+      "couldNotJoinChallenge": "ఛాలెంజ్‌లో చేరడం సాధ్యపడలేదు",
+      "leadershipAcademyIsCurrentlyUnavailable": "లీడర్‌షిప్ అకాడమీ ప్రస్తుతం అందుబాటులో లేదు.",
+      "loadingModules": "మాడ్యూల్‌లను లోడ్ చేస్తోంది…",
+      "noPublishedModulesAreAvailable": "ప్రచురించబడిన మాడ్యూల్స్ అందుబాటులో లేవు."
+    },
+    "legislator": {
+      "value1ElectionPerformance": "{{value1}} ఎన్నికల పనితీరు",
+      "electionPerformance": "ఎన్నికల పనితీరు",
+      "couldNotFindDataForAcValue1": "AC # {{value1}} కోసం డేటా కనుగొనబడలేదు",
+      "profession": "వృత్తి",
+      "maritalStatus": "వైవాహిక స్థితి",
+      "dateOfBirth": "పుట్టిన తేదీ",
+      "assemblyTermStatus": "అసెంబ్లీ టర్మ్ & స్టేటస్",
+      "term": "పదం",
+      "podiumRank": "పోడియం ర్యాంక్",
+      "currentParty": "ప్రస్తుత పార్టీ",
+      "constituencyElectionHistory": "నియోజకవర్గ ఎన్నికల చరిత్ర",
+      "fullElectionCyclesForValue1Value2TapAny": "# {{value1}}  {{value2}} కోసం పూర్తి ఎన్నికల చక్రాలు. ఏదైనా అభ్యర్థి వారి ప్రొఫైల్ పత్రాన్ని వీక్షించడానికి నొక్కండి."
+    },
+    "distribution": {
+      "shipsAsASeparateLightweightBuildAppsWeb": "ప్రత్యేక తేలికైన బిల్డ్ (యాప్‌లు/వెబ్-రిసీవర్)గా రవాణా చేయబడుతుంది. స్థానిక Windows + Android TV రేపర్‌లు ఒకే పేజీలో 2వ దశ పోలిష్‌గా ఉంటాయి."
+    },
+    "localBodies": {
+      "sourceAndhraPradeshStateElectionCommissionApsec": "మూలం: ఆంధ్రప్రదేశ్ రాష్ట్ర ఎన్నికల సంఘం (APSEC) — అధికారిక స్థానిక సంస్థల ఎన్నికల ఫలితాలు. గ్రామ పంచాయతీ ఎన్నికలు అధికారికంగా పార్టీ రహితమైనవి.",
+      "sourceTelanganaStateElectionCommissionTsecKnow": "మూలం: తెలంగాణ రాష్ట్ర ఎన్నికల సంఘం (TSEC) — మీ ప్రజా ప్రతినిధిని (గ్రామీణ) తెలుసుకోండి. గ్రామ పంచాయతీ ఎన్నికలు అధికారికంగా పార్టీ రహితమైనవి.",
+      "ts": "TS",
+      "ap": "AP",
+      "mandalParishadTerritorialConstituencyMptcValue1": "మండల పరిషత్ ప్రాదేశిక నియోజకవర్గం (MPTC) ( {{value1}} )",
+      "gramPanchayatsValue1": "గ్రామ పంచాయతీలు ( {{value1}} )"
+    },
+    "onboarding": {
+      "selectedValue1Value2Value3": "ఎంచుకోబడింది: # {{value1}}  {{value2}}  {{value3}}"
+    },
+    "parliament": {
+      "lokSabha18th": "లోక్‌సభ (18వ తేదీ)",
+      "value1Yrs": "{{value1}} సంవత్సరాలు",
+      "lsValue1RsValue2TotalValue3": "LS: {{value1}} · RS: {{value2}} · మొత్తం: {{value3}}"
+    },
+    "reader": {
+      "article": "వ్యాసం",
+      "contentFromValue1": "{{value1}} నుండి కంటెంట్"
+    },
+    "representative": {
+      "value1Record": "{{value1}} రికార్డ్",
+      "officiallyNonPartyStatePanchayatiRajAct": "అధికారికంగా పార్టీయేతర (రాష్ట్ర పంచాయతీరాజ్ చట్టం)",
+      "officialElectionResultsFromAndhraPradeshState": "ఆంధ్రప్రదేశ్ రాష్ట్ర ఎన్నికల సంఘం (APSEC) నుండి అధికారిక ఎన్నికల ఫలితాలు",
+      "officialElectionResultsFromTelanganaStateElection": "తెలంగాణ రాష్ట్ర ఎన్నికల సంఘం (TSEC) నుండి అధికారిక ఎన్నికల ఫలితాలు — మీ ప్రతినిధిని తెలుసుకోండి (KYR)",
+      "thisPollIsOfficiallyNonPartyPartyAffiliation": "ఈ పోల్ అధికారికంగా పార్టీయేతరమైనది. పార్టీ అనుబంధం ( {{value1}} ) వాస్తవమైనది / అనధికారికమైనది.",
+      "wardValue1": "వార్డ్ {{value1}}",
+      "value1DeclaredCaseValue2": "{{value1}} కేసు {{value2}} ప్రకటించింది",
+      "verifyOnStateElectionCommissionPortal": "రాష్ట్ర ఎన్నికల సంఘం పోర్టల్‌లో ధృవీకరించండి",
+      "suggestAnEditWithSource": "సవరణను సూచించండి (మూలంతో)"
+    },
+    "edit": {
+      "noChanges": "మార్పులు లేవు",
+      "editAtLeastOneFieldBeforeSubmitting": "సమర్పించే ముందు కనీసం ఒక ఫీల్డ్‌ని సవరించండి.",
+      "sourceRequired": "మూలం అవసరం",
+      "enterAnHttpsLinkSupportingTheCorrection": "దిద్దుబాటుకు మద్దతు ఇచ్చే HTTPS లింక్‌ని నమోదు చేయండి.",
+      "thankYou": "ధన్యవాదాలు",
+      "yourCorrectionHasBeenSubmittedForReview": "మీ దిద్దుబాటు సమీక్ష కోసం సమర్పించబడింది.",
+      "submissionFailed": "సమర్పణ విఫలమైంది",
+      "pleaseTryAgainLater": "దయచేసి తర్వాత మళ్లీ ప్రయత్నించండి.",
+      "submitting": "సమర్పిస్తోంది...",
+      "submitForModeration": "మోడరేషన్ కోసం సమర్పించండి",
+      "theRepresentativeProfileCouldNotBeLoaded": "ప్రతినిధి ప్రొఫైల్ లోడ్ చేయబడలేదు.",
+      "value1Value2Value3EveryEditRequiresAVerifiable": "{{value1}}  {{value2}}  {{value3}} ప్రతి సవరణకు ధృవీకరించదగిన మూలం అవసరం మరియు జవాబుదారీతనం కోసం వేలిముద్ర వేయబడుతుంది. ప్రచురించే ముందు సవరణలు నియంత్రించబడతాయి.",
+      "sourceLinkRequired": "మూల లింక్ (అవసరం)",
+      "httpsTsecGovInOrNewsGazetteUrl": "https://tsec.gov.in/... లేదా వార్తలు / గెజిట్ URL",
+      "citationNoteOptional": "అనులేఖనం / గమనిక (ఐచ్ఛికం)",
+      "eGTsecKnowYourRepresentativePagePublished": "ఉదా TSEC నో-యువర్-ప్రతినిధి పేజీ, 2020-12-04 ప్రచురించబడింది"
+    },
+    "search": {
+      "trySearchingBy": "దీని ద్వారా శోధించడానికి ప్రయత్నించండి:",
+      "constituencyNameJubileeHills": "• నియోజకవర్గం పేరు: \"జూబ్లీ హిల్స్\"",
+      "acNumber141": "• AC నంబర్: \"141\"",
+      "mlaNameRevanthReddy": "• ఎమ్మెల్యే పేరు: \"రేవంత్ రెడ్డి\"",
+      "partyBjpOrInc": "• పార్టీ: \"BJP\" లేదా \"INC\"",
+      "issueWaterSupply": "• సమస్య: \"నీటి సరఫరా\""
+    },
+    "AdCard": {
+      "featuredPartner": "ఫీచర్ చేసిన భాగస్వామి",
+      "sponsored": "స్పాన్సర్ చేయబడింది",
+      "commercialPromotion": "కమర్షియల్ ప్రమోషన్"
+    },
+    "BroadcastPollCard": {
+      "liveAudiencePoll": "ప్రత్యక్ష ప్రేక్షకుల పోల్",
+      "pollResults": "పోల్ ఫలితాలు",
+      "value1Votes": "{{value1}} ఓట్లు",
+      "submittingAnonymousBallot": "అనామక బ్యాలెట్‌ని సమర్పిస్తోంది..."
+    },
+    "BroadcastQaModal": {
+      "validationError": "ధ్రువీకరణ లోపం",
+      "questionMustBeAtLeast5Characters": "ప్రశ్న తప్పనిసరిగా కనీసం 5 అక్షరాలు ఉండాలి",
+      "privacyProtection": "గోప్యతా రక్షణ",
+      "pleaseDoNotIncludeEmailAddressesIn": "దయచేసి ప్రశ్నలలో ఇమెయిల్ చిరునామాలను చేర్చవద్దు.",
+      "pleaseDoNotIncludePhoneNumbersIn": "దయచేసి ప్రశ్నలలో ఫోన్ నంబర్‌లను చేర్చవద్దు.",
+      "submissionError": "సమర్పణ లోపం",
+      "failedToSubmitQuestion": "ప్రశ్నను సమర్పించడంలో విఫలమైంది",
+      "audienceQA": "ప్రేక్షకుల Q&A",
+      "noAudienceQuestionsYetBeTheFirstTo": "ఇంకా ప్రేక్షకుల ప్రశ్నలు లేవు. అడిగే మొదటి వ్యక్తి అవ్వండి!",
+      "pinnedByHost": "హోస్ట్ ద్వారా పిన్ చేయబడింది",
+      "askAQuestionForTheBroadcaster": "ప్రసారకర్త కోసం ఒక ప్రశ్న అడగండి..."
+    },
+    "CampaignOutreachPanel": {
+      "theBroadcastCouldNotBeCreated": "ప్రసారాన్ని సృష్టించడం సాధ్యపడలేదు.",
+      "deliveryIsUnavailableUntilARealMessaging": "నిజమైన మెసేజింగ్ ప్రొవైడర్, సమ్మతి ఆధారిత ప్రేక్షకుల సోర్స్ మరియు డెలివరీ రిపోర్టింగ్ కనెక్ట్ అయ్యే వరకు డెలివరీ అందుబాటులో ఉండదు.",
+      "simulationModeNoMessagesAreSentReal": "అనుకరణ మోడ్. సందేశాలు పంపబడవు. రియల్ డెలివరీకి ప్రొవైడర్ సెటప్ {{value1}} అవసరం. {{value2}}",
+      "noLiveAudienceSegmentsAreConnected": "ప్రత్యక్ష ప్రేక్షకుల విభాగాలు ఏవీ కనెక్ట్ చేయబడలేదు.",
+      "noAudienceSegmentsAreAvailable": "ప్రేక్షకుల విభాగాలు అందుబాటులో లేవు.",
+      "describeTheRecordedVoiceMessage": "రికార్డ్ చేయబడిన వాయిస్ సందేశాన్ని వివరించండి...",
+      "typeYourMessageUseNameBoothFor": "మీ సందేశాన్ని టైప్ చేయండి. వ్యక్తిగతీకరణ కోసం {name}, {booth}ని ఉపయోగించండి.",
+      "value1ToValue2": "{{value1}} నుండి {{value2}} వరకు",
+      "deliveryNotConnected": "డెలివరీ కనెక్ట్ కాలేదు",
+      "value1CharsValue2": "{{value1}} అక్షరాలు {{value2}}",
+      "goesOutValue1": "{{value1}} బయటకు వెళ్తుంది",
+      "answered": "సమాధానం ఇచ్చారు",
+      "templateName": "టెంప్లేట్ పేరు",
+      "bodyWithNameBooth": "{name}, {booth}తో శరీరం…"
+    },
+    "CompareSheet": {
+      "search": "శోధన...",
+      "mla": "ఎమ్మెల్యే",
+      "value1Winner": "{{value1}} విజేత",
+      "swing": "స్వింగ్",
+      "loyalty": "విధేయత",
+      "selectTwoConstituenciesToCompareThemSideBy": "పక్కపక్కనే పోల్చడానికి రెండు నియోజకవర్గాలను ఎంచుకోండి"
+    },
+    "DataPendingCard": {
+      "theOfficialMapBoundaryForThisArea": "ఈ ప్రాంతానికి సంబంధించిన అధికారిక మ్యాప్ సరిహద్దు ఇంకా ప్రచురించబడలేదు. జాబితా వీక్షణ పూర్తిగా ఖచ్చితమైనది.",
+      "thisSeatExistsButAVerifiedOffice": "ఈ సీటు ఉంది, కానీ ధృవీకరించబడిన ఆఫీస్ హోల్డర్ రికార్డ్ ఇంకా అందుబాటులో లేదు. మేము అధికారిక మూలాల నుండి ధృవీకరించబడిన డేటాను మాత్రమే చూపుతాము.",
+      "fingerprint": "· వేలిముద్ర ✓",
+      "expectedSourceValue1": "ఆశించిన మూలం: {{value1}}"
+    },
+    "DataPipelineCard": {
+      "dataPipeline": "డేటా పైప్‌లైన్",
+      "value1Value2Healthy": "{{value1}} / {{value2}} ఆరోగ్యంగా ఉంది"
+    },
+    "DelimitationShareCard": {
+      "constitutionalAssessment": "రాజ్యాంగ మూల్యాంకనం",
+      "postalCodeValue1Value2": "పోస్టల్ కోడ్ {{value1}} · {{value2}}",
+      "current": "ప్రస్తుత",
+      "proposed": "ప్రతిపాదించారు",
+      "dpdpAct2023CompliantZeroVoterTracking": "DPDP చట్టం 2023 కంప్లైంట్ · జీరో ఓటర్ ట్రాకింగ్",
+      "shareMyImpactCard": "నా ఇంపాక్ట్ కార్డ్‌ని షేర్ చేయండి"
+    },
+    "DevFeatureSwitcher": {
+      "devControl": "DEV నియంత్రణ"
+    },
+    "ErrorBoundary": {
+      "errorLog": "ఎర్రర్ లాగ్",
+      "hideLogs": "లాగ్‌లను దాచండి",
+      "viewLogs": "లాగ్‌లను వీక్షించండి",
+      "poligramEncounteredAnIssueWhileLoadingThisScreen": "ఈ స్క్రీన్‌ని లోడ్ చేస్తున్నప్పుడు Poligram ఒక సమస్యను ఎదుర్కొంది.",
+      "copyShareLog": "కాపీ / భాగస్వామ్యం లాగ్",
+      "crashDiagnosticsStackTrace": "క్రాష్ డయాగ్నోస్టిక్స్ & స్టాక్ ట్రేస్",
+      "jsStackTrace": "JS స్టాక్ ట్రేస్:",
+      "componentHierarchy": "కాంపోనెంట్ సోపానక్రమం:"
+    },
+    "KYCVerificationSheet": {
+      "byProceedingIAcknowledgeAndAgreeThat": "కొనసాగడం ద్వారా, నేను దీనిని అంగీకరిస్తున్నాను మరియు అంగీకరిస్తున్నాను:",
+      "value1MyIdentityNamePhonePhotoWillBe": "{{value1}} నా గుర్తింపు (పేరు, ఫోన్, ఫోటో) రికార్డ్ చేయబడుతుంది మరియు సురక్షితంగా నిల్వ చేయబడుతుంది.",
+      "value1MyDeviceInformationIpAddressAndLocation": "{{value1}} నేను చేసే ప్రతి కంటెంట్ చర్యతో నా పరికర సమాచారం, IP చిరునామా మరియు స్థానం సంగ్రహించబడతాయి.",
+      "value1ThisDataMayBeSharedWithLaw": "{{value1}} నా కంటెంట్ భారతీయ చట్టాన్ని (IT చట్టం 2000, IPC, మొదలైనవి) ఉల్లంఘిస్తున్నట్లు గుర్తించినట్లయితే, ఈ డేటా చట్టాన్ని అమలు చేసే ఏజెన్సీలతో భాగస్వామ్యం చేయబడవచ్చు.",
+      "value1IAmSolelyResponsibleForAllContent": "{{value1}} నేను పోస్ట్ చేసే మొత్తం కంటెంట్‌కు నేను పూర్తిగా బాధ్యత వహిస్తాను మరియు పరువు నష్టం కలిగించే, నకిలీ లేదా చట్టవిరుద్ధమైన కంటెంట్‌ను పోస్ట్ చేయను.",
+      "value1FalseOrMisleadingVerificationDetailsMayResult": "{{value1}} తప్పుడు లేదా తప్పుదారి పట్టించే ధృవీకరణ వివరాలు శాశ్వత నిషేధం మరియు చట్టపరమైన చర్యకు దారి తీయవచ్చు.",
+      "iHaveReadAndAgreeToTheAbove": "నేను పైన పేర్కొన్న జవాబుదారీ నిబంధనలను చదివి అంగీకరించాను",
+      "yourDeviceInfoNetworkDetailsAndLocationWill": "మీ పరికర సమాచారం, నెట్‌వర్క్ వివరాలు మరియు స్థానం ఇప్పుడు సంగ్రహించబడతాయి."
+    },
+    "LeaderProfileModal": {
+      "acValue1Value2": "🎯 AC # {{value1}}  {{value2}}",
+      "civicLeader": "🎯 పౌర నాయకుడు",
+      "ind": "స్వతంత్ర",
+      "aspirant": "ఆశావహుడు",
+      "activeInConstituencyOutreachSabhas": "నియోజకవర్గాల ప్రచార సభల్లో చురుగ్గా ఉన్నారు",
+      "label1HrAgo": "1 గం క్రితం",
+      "educationGrassrootsBackground": "విద్య & గ్రాస్‌రూట్ నేపథ్యం",
+      "maPublicPolicy": "పోస్ట్ గ్రాడ్యుయేషన్ (MA పబ్లిక్ పాలసీ)",
+      "postGraduationMaPublicPolicy": "పోస్ట్ గ్రాడ్యుయేషన్ (MA పబ్లిక్ పాలసీ)",
+      "osmaniaUniversityDistinction": "ఉస్మానియా యూనివర్సిటీ · ప్రత్యేకత",
+      "grassrootsCivicActionCommittee": "గ్రాస్‌రూట్ సివిక్ యాక్షన్ కమిటీ",
+      "waterSecurityYouthConvenor2018Present": "నీటి భద్రత & యూత్ కన్వీనర్ (2018 - ప్రస్తుతం)",
+      "aClearPublicAgendaForTheFuture": "ఈ నియోజకవర్గ భవిష్యత్తు కోసం స్పష్టమైన ప్రజా ఎజెండా. పౌరులు చొరవకు ప్రాధాన్యత ఇవ్వడానికి ఓటు వేయవచ్చు:",
+      "iSolemnlyPledgeToUpholdTheConstitution": "నేను భారత రాజ్యాంగాన్ని సమర్థిస్తానని, అవినీతిని ఏమాత్రం సహించనని, ప్రభుత్వ వ్యయంలో పూర్తి పారదర్శకతను నిర్ధారిస్తానని మరియు ప్రతి పౌరుడికి అందుబాటులో మరియు జవాబుదారీగా ఉంటానని ప్రతిజ్ఞ చేస్తున్నాను.",
+      "boothReach": "బూత్ రీచ్",
+      "responseTime": "ప్రతిస్పందన సమయం",
+      "signInToMessageThisProfile": "ఈ ప్రొఫైల్‌కు సందేశం పంపడానికి సైన్ ఇన్ చేయండి.",
+      "volunteer": "వాలంటీర్ ✓",
+      "eciVerified": "ECI ధృవీకరించబడింది"
+    },
+    "LiveBroadcaster": {
+      "consumerBuildsAreDecoupledFromHeavyNativeWebrtc": "లీన్ HLS ప్లేబ్యాక్ కోసం వినియోగదారుల బిల్డ్‌లు భారీ స్థానిక WebRTC బైనరీల నుండి విడదీయబడ్డాయి. ప్రత్యక్ష వీడియోను ప్రసారం చేయడానికి, https://studio.poligram.inలో Poligram స్టూడియో వెబ్ క్లయింట్‌ని ఉపయోగించండి లేదా OBS నుండి RTMP/SRT ద్వారా కనెక్ట్ చేయండి."
+    },
+    "MapFallback": {
+      "genValue1ScValue2StValue3": "GEN {{value1}} · SC {{value2}} · ST {{value3}}",
+      "value1Value2Constituencies": "{{value1}} · {{value2}} నియోజకవర్గాలు",
+      "interactiveMapUnavailable": "ఇంటరాక్టివ్ మ్యాప్ అందుబాటులో లేదు",
+      "theFullMapboxMapRequiresADevelopmentBuild": "పూర్తి మ్యాప్‌బాక్స్ మ్యాప్‌కు డెవలప్‌మెంట్ బిల్డ్ అవసరం. {{value1}} రన్: npx ఎక్స్‌పో రన్: android (లేదా EAS డెవ్ బిల్డ్‌ను సృష్టించండి). {{value2}} ఎక్స్‌పో గోలో అన్ని ఇతర ఫీచర్‌లు సాధారణంగా పని చేస్తాయి!",
+      "electionPartySeats": "ఎన్నికలు - పార్టీ సీట్లు",
+      "delimitationProjection": "డీలిమిటేషన్ ప్రొజెక్షన్",
+      "topConstituenciesByMargin": "మార్జిన్ వారీగా అగ్ర నియోజకవర్గాలు"
+    },
+    "ModuleDetailModal": {
+      "quizCouldNotBeSaved": "క్విజ్ సేవ్ చేయబడలేదు",
+      "checkYourConnectionAndTrySubmittingYour": "మీ కనెక్షన్‌ని తనిఖీ చేసి, మీ సమాధానాలను మళ్లీ సమర్పించడానికి ప్రయత్నించండి.",
+      "progressCouldNotBeSaved": "పురోగతిని సేవ్ చేయడం సాధ్యపడలేదు",
+      "yourModuleIsStillOpenPleaseTry": "మీ మాడ్యూల్ ఇప్పటికీ తెరిచి ఉంది. దయచేసి మళ్లీ ప్రయత్నించండి.",
+      "value1MinValue2Value3": "{{value1}} నిమి · {{value2}} · {{value3}}",
+      "value1Value2Source": "“ {{value1}} ” — {{value2}}. మూలం ↗"
+    },
+    "PhotoViewerModal": {
+      "photoSourcedFromWikipediaMyneta": "ఫోటో వికీపీడియా / MyNeta నుండి తీసుకోబడింది"
+    },
+    "PodiumHistoryCard": {
+      "delim2008": "డెలిమ్ 2008",
+      "delim1976": "డెలిమ్ 1976",
+      "delimValue1": "డెలిమ్ {{value1}}",
+      "label1st": "🥇 1వ",
+      "label2nd": "🥈 2వ",
+      "label3rd": "🥉 3వ"
+    },
+    "PoliticalAdCard": {
+      "constituencyAnnouncementCampaignReleaseFromValue1Tap": "{{value1}} నుండి నియోజకవర్గ ప్రకటన & ప్రచార విడుదల. పూర్తి పోస్ట్ మరియు చర్చలను వీక్షించడానికి నొక్కండి.",
+      "politicalAdPaidPromotionByValue1": "రాజకీయ ప్రకటన · {{value1}} ద్వారా చెల్లింపు ప్రచారం",
+      "targetValue1Value2": "లక్ష్యం: {{value1}}  {{value2}}",
+      "certifiedUnderEciMcmcGuidelinesPaidValue1": "ECI / MCMC మార్గదర్శకాల ప్రకారం ధృవీకరించబడింది · ₹ {{value1}} చెల్లించబడింది"
+    },
+    "PoliticalShortsCarousel": {
+      "new": "కొత్త",
+      "uploadShort": "చిన్నదిగా అప్‌లోడ్ చేయండి",
+      "addShort": "షార్ట్ జోడించండి",
+      "shareLocalReport": "స్థానిక నివేదికను భాగస్వామ్యం చేయండి",
+      "noShortsInThisConstituency": "ఈ నియోజకవర్గంలో షార్ట్‌లు లేవు.",
+      "beTheFirst": "మొదటి వ్యక్తి అవ్వండి!"
+    },
+    "ReportIssueSheet": {
+      "youCanAddUpToValue1Media": "మీరు {{value1}} వరకు మీడియా ఫైల్‌లను జోడించవచ్చు.",
+      "value1Value2MediaAttached": "{{value1}} / {{value2}} మీడియా జోడించబడింది"
+    },
+    "ReportSheet": {
+      "reportsAreReviewedByOurModerationTeamWithin": "నివేదికలను మా మోడరేషన్ బృందం 24 గంటలలోపు సమీక్షిస్తుంది. తప్పుడు నివేదికలు మీ కీర్తి స్కోర్‌ను ప్రభావితం చేయవచ్చు."
+    },
+    "RevenueCard": {
+      "revenueDashboard": "రెవెన్యూ డాష్‌బోర్డ్",
+      "totalRevenue": "మొత్తం ఆదాయం",
+      "projectedMrr": "అంచనా వేసిన MRR",
+      "politicians": "రాజకీయ నాయకులు",
+      "avgRoi": "సగటు ROI",
+      "revenueByFormat": "ఫార్మాట్ ద్వారా ఆదాయం",
+      "monthlyGrowth": "నెలవారీ వృద్ధి",
+      "unitEconomics": "యూనిట్ ఎకనామిక్స్",
+      "costPromotedPostValue1": "ధర/ప్రమోట్ చేయబడిన పోస్ట్: {{value1}}",
+      "avgPoliticiansStateValue1": "సగటు రాజకీయ నాయకులు/రాష్ట్రం: {{value1}}",
+      "activeStatesValue1": "క్రియాశీల రాష్ట్రాలు: {{value1}}",
+      "monthlyStateValue1": "నెలవారీ/రాష్ట్రం: {{value1}}"
+    },
+    "SeatProjectionCard": {
+      "popValue1": "పాప్: {{value1}}",
+      "popSeatValue1": "పాప్/సీట్: {{value1}}",
+      "devValue1Value2": "దేవ్: {{value1}}  {{value2}} %"
+    },
+    "ShareableCardModal": {
+      "value1District": "{{value1}} జిల్లా",
+      "ind": "స్వతంత్ర",
+      "runnerUp2": "రన్నరప్",
+      "value1Terms": "{{value1}} నిబంధనలు",
+      "tenure": "పదవీకాలం",
+      "preparingVisualCard": "విజువల్ కార్డ్‌ని సిద్ధం చేస్తోంది...",
+      "shareVisualGraphicCard": "విజువల్ గ్రాఫిక్ కార్డ్ షేర్ చేయండి",
+      "officialCivicCard": "అధికారిక పౌర కార్డు",
+      "winner": "🥇 విజేత",
+      "value1VotesValue2": "{{value1}} ఓట్లు {{value2}}",
+      "runnerUp": "🥈 రన్నర్-అప్",
+      "margin": "మార్జిన్",
+      "verifiedByEciForm21ePoligramCivicIntelligence": "ECI ఫారమ్ 21E ద్వారా ధృవీకరించబడింది • పోలిగ్రామ్ సివిక్ ఇంటెలిజెన్స్",
+      "shareDetailedStoryFormattedText": "వివరణాత్మక కథనాన్ని భాగస్వామ్యం చేయండి (ఫార్మాటెడ్ టెక్స్ట్)"
+    },
+    "ShortsPlayerModal": {
+      "couldNotSaveYourCommentPleaseTry": "మీ వ్యాఖ్యను సేవ్ చేయడం సాధ్యపడలేదు. దయచేసి మళ్లీ ప్రయత్నించండి.",
+      "saved": "సేవ్ చేయబడింది",
+      "asAVerifiedConstituentOfValue1Is": "{{value1}} యొక్క ధృవీకరించబడిన అంశంగా, ఈ వీడియో మీ నియోజకవర్గానికి సంబంధించినది మరియు నిర్మాణాత్మకంగా ఉందా?",
+      "helpVerifyThisVideoFromValue1To": "ఈ వీడియోని జాతీయ స్థాయికి ప్రమోట్ చేయడానికి {{value1}} నుండి ధృవీకరించడంలో సహాయపడండి.",
+      "commentsCouldNotBeLoaded": "వ్యాఖ్యలను లోడ్ చేయడం సాధ్యపడలేదు."
+    },
+    "StateView": {
+      "refValue1Value2": "రిఫరెన్స్: {{value1}} ( {{value2}} )"
+    },
+    "WealthTimeline": {
+      "value1GrowthTimelineContainsUndisclosedObservations": "{{value1}} గ్రోత్ టైమ్‌లైన్ బహిర్గతం చేయని పరిశీలనలను కలిగి ఉంది"
+    },
+    "GrassrootsBooths": {
+      "wardValue1": "వార్డు # {{value1}} ·",
+      "value1Voters": "{{value1}} ఓటర్లు",
+      "voterCountUnavailable": "ఓటరు గణన అందుబాటులో లేదు",
+      "targetValue1": "లక్ష్యం: {{value1}}",
+      "targetUnavailable": "లక్ష్యం అందుబాటులో లేదు",
+      "check": "తనిఖీ చేయండి",
+      "eGRameshGoud": "ఉదా రమేష్ గౌడ్"
+    },
+    "GrassrootsWorkers": {
+      "cannotSaveWorkLog": "పని లాగ్‌ను సేవ్ చేయడం సాధ్యపడదు",
+      "chooseACampaignWorkerAndBoothThat": "ప్రచార రికార్డులలో అందుబాటులో ఉన్న ప్రచారం, కార్యకర్త మరియు బూత్‌ను ఎంచుకోండి.",
+      "checkTheSessionDuration": "సెషన్ వ్యవధిని తనిఖీ చేయండి",
+      "enterAWholeNumberOfMinutesFrom": "1 నుండి 1,440 వరకు నిమిషాల మొత్తం సంఖ్యను నమోదు చేయండి.",
+      "checkHouseholdsVisited": "సందర్శించిన గృహాలను తనిఖీ చేయండి",
+      "enterAWholeNumberFrom0To": "0 నుండి 100,000 వరకు పూర్తి సంఖ్యను నమోదు చేయండి.",
+      "workSessionSaved": "పని సెషన్ సేవ్ చేయబడింది",
+      "thisSessionWasSavedToTheCampaign": "ఈ సెషన్ ప్రచార పని లాగ్‌లో సేవ్ చేయబడింది.",
+      "workSessionNotSaved": "పని సెషన్ సేవ్ చేయబడలేదు",
+      "boothValue1": "· బూత్ # {{value1}}",
+      "completedSessionsUnavailable": "పూర్తయిన సెషన్‌లు అందుబాటులో లేవు",
+      "value1CompletedSessions": "{{value1}} సెషన్‌లు పూర్తయ్యాయి",
+      "loggedHoursUnavailable": "లాగ్ చేసిన గంటలు అందుబాటులో లేవు",
+      "value1HoursLogged": "{{value1}} గంటలు లాగ్ చేయబడ్డాయి",
+      "logCompletedOutreachForValue1": "{{value1}} కోసం లాగ్ పూర్తయింది",
+      "saving": "సేవ్ చేస్తోంది...",
+      "saveWorkSession": "పని సెషన్‌ను సేవ్ చేయండి",
+      "poligramUser": "పోలిగ్రామ్ వినియోగదారు",
+      "logCompletedOutreach": "లాగ్ పూర్తయింది",
+      "eGBSrinivas": "ఉదా బి. శ్రీనివాస్",
+      "value1ReportedByTheCampaignTeamNotIndependently": "{{value1}} · ప్రచార బృందం ద్వారా నివేదించబడింది, స్వతంత్రంగా ధృవీకరించబడలేదు",
+      "campaignBooth": "ప్రచార బూత్",
+      "campaignBoothRecordsAreUnavailableRefreshTheCampaign": "ప్రచార బూత్ రికార్డులు అందుబాటులో లేవు. పనిని లాగింగ్ చేయడానికి ముందు ప్రచారాన్ని రిఫ్రెష్ చేయండి.",
+      "sessionDurationMinutes": "సెషన్ వ్యవధి (నిమిషాలు)",
+      "sessionDurationInMinutes": "నిమిషాల్లో సెషన్ వ్యవధి",
+      "householdsVisited": "గృహాలను సందర్శించారు"
+    },
+    "SimplifiedOutreach": {
+      "minimumWalletRechargeIs500": "కనీస వాలెట్ రీఛార్జ్ ₹500.",
+      "notConnected": "కనెక్ట్ కాలేదు",
+      "label100Free": "100% ఉచితం",
+      "indicativePricing": "సూచిక ధర",
+      "pricingUnavailable": "ధర అందుబాటులో లేదు",
+      "sufficientBalanceRemainingAfterBlastValue1": "✓ తగినంత బ్యాలెన్స్. పేలుడు తర్వాత మిగిలినవి: ₹ {{value1}}",
+      "walletBalanceShortByValue1TopUp": "⚠️ వాలెట్ బ్యాలెన్స్ తక్కువ ₹ {{value1}}. టాప్-అప్ అవసరం.",
+      "duration028QualityHighVerified": "వ్యవధి: 0:28 · నాణ్యత: అధికం · ధృవీకరించబడింది",
+      "topUpValue1ToScheduleBlast": "బ్లాస్ట్‌ని షెడ్యూల్ చేయడానికి టాప్-అప్ ₹ {{value1}}",
+      "delivered": "✓ పంపిణీ చేయబడింది",
+      "calling": "📞 కాల్ చేస్తోంది...",
+      "queued": "క్యూ కట్టారు",
+      "available": "అందుబాటులో ఉంది",
+      "revanthReddyInc": "రేవంత్ రెడ్డి · INC",
+      "wardValue1": "వార్డు # {{value1}}",
+      "liveCallDeliveryProgress": "లైవ్ కాల్ డెలివరీ పురోగతి",
+      "targetValue1VotersCostValue2": "లక్ష్యం: {{value1}} ఓటర్లు · ధర: ₹ {{value2}}",
+      "busy": "బిజీ",
+      "unreachable": "చేరుకోలేనిది",
+      "creditsCanBeUsedImmediatelyForVoiceObd": "వాయిస్ OBD కాల్ బ్లాస్ట్‌లు మరియు ప్రమోట్ చేయబడిన పోస్ట్‌ల కోసం క్రెడిట్‌లను వెంటనే ఉపయోగించవచ్చు.",
+      "chooseRechargeAmount": "రీఛార్జ్ మొత్తాన్ని ఎంచుకోండి:",
+      "orEnterCustomAmount": "లేదా కస్టమ్ అమౌంట్ (₹):",
+      "payValue1ViaUpiNetbanking": "UPI / నెట్‌బ్యాంకింగ్ ద్వారా ₹ {{value1}} చెల్లించండి"
+    },
+    "CriminalRecordCard": {
+      "ipc": "IPC:",
+      "pending": "పెండింగ్‌లో ఉంది",
+      "criminalCaseDisclosureUnavailable": "క్రిమినల్ కేసు బహిర్గతం అందుబాటులో లేదు",
+      "noCriminalCasesDeclared": "ఎలాంటి క్రిమినల్ కేసులు ప్రకటించలేదు",
+      "value1CaseValue2Value3": "{{value1}} కేసు {{value2}}  {{value3}}",
+      "totalCases": "మొత్తం కేసులు",
+      "serious": "తీవ్రమైన",
+      "convictions": "నేరారోపణలు",
+      "value1CaseDetailsValue2": "{{value1}} కేసు వివరాలు ( {{value2}} )",
+      "caseValue1": "కేసు: {{value1}}",
+      "courtValue1": "కోర్టు: {{value1}}",
+      "chargesFramed": "అభియోగాలు రూపొందించారు"
+    },
+    "DynastyCard": {
+      "politicalDynasty": "రాజకీయ రాజవంశం",
+      "thisLegislatorComesFromAPoliticalFamily": "ఈ శాసనసభ్యుడు రాజకీయ కుటుంబం నుంచి వచ్చిన వ్యక్తి",
+      "familyInPolitics": "రాజకీయాల్లో కుటుంబం",
+      "familyConstituencies": "కుటుంబ నియోజకవర్గాలు"
+    },
+    "ElectionHistoryCard": {
+      "won": "గెలిచింది",
+      "lost": "ఓడిపోయింది",
+      "defeated": "ఓడిపోయింది",
+      "lostTo": "ఓడిపోయింది",
+      "value1WinRate": "{{value1}} % గెలుపు రేటు",
+      "share": "వాటా"
+    },
+    "FinancialBreakdownCard": {
+      "noFinancialDataAvailable": "ఆర్థిక డేటా అందుబాటులో లేదు",
+      "financialDisclosure": "ఆర్థిక ప్రకటన",
+      "assetBreakdown": "ఆస్తి విభజన",
+      "selfMovable": "స్వీయ కదిలే",
+      "selfImmovable": "స్వయం కదలనిది",
+      "dependents": "ఆధారపడినవారు",
+      "spouseMovable": "జీవిత భాగస్వామి కదిలే",
+      "spouseImmovable": "జీవిత భాగస్వామి కదలని",
+      "declaredIncomeItr": "డిక్లేర్డ్ ఆదాయం (ITR)",
+      "wealthTimeline": "సంపద కాలక్రమం",
+      "value1Value2SinceValue3": "{{value3}} నుండి {{value1}}  {{value2}} %",
+      "totalLiabilities": "మొత్తం బాధ్యతలు:"
+    },
+    "PerformanceCard": {
+      "mplads": "MPLADS",
+      "legislativePerformance": "శాసన పనితీరు",
+      "comingSoon": "త్వరలో వస్తుంది"
+    },
+    "RedFlagsBanner": {
+      "value1RedFlagValue2Detected": "{{value1}} రెడ్ ఫ్లాగ్ {{value2}} కనుగొనబడింది"
+    }
+  },
   "constituencyDirectory": {
     "currentRepresentative": "ప్రస్తుత ప్రతినిధి",
     "loading": "ప్రత్యక్ష నియోజకవర్గ రికార్డులను తనిఖీ చేస్తోంది...",
@@ -53,6 +593,21 @@ const te = {
     "menuDescription": "అసెంబ్లీ ఫలితాలు మరియు అధికారిక లెక్కింపు నవీకరణలు"
   },
   "partyRegistry": {
+    "electionRecord": "ఎన్నికల రికార్డు",
+    "historyAndFilings": "చరిత్ర మరియు దాఖలాలు",
+    "electionCode": "రికార్డ్ చేయబడిన పార్టీ కోడ్ · {{code}}",
+    "ballotSymbol": "బ్యాలెట్ చిహ్నం · {{symbol}}",
+    "seatsWon": "గెలిచిన సీట్లు · {{seats}}",
+    "lokSabhaElection": "{{year}} లోక్‌సభ ఎన్నికలు",
+    "stateAssemblyElection": "{{year}}  {{state}} అసెంబ్లీ ఎన్నికలు",
+    "foundedBy": "{{year}} లో {{founder}} ద్వారా స్థాపించబడింది.",
+    "registeredIn": "{{year}} లో భారత ఎన్నికల సంఘంతో నమోదు చేయబడింది.",
+    "renamedIn": "గతంలో {{name}} అని పిలిచేవారు. {{year}} లో పేరు మార్చబడింది.",
+    "profileSummary": {
+      "national": "భారత ఎన్నికల సంఘం {{election}} లో ఈ పార్టీని గుర్తింపు పొందిన జాతీయ పార్టీగా జాబితా చేసింది.",
+      "state": "భారత ఎన్నికల సంఘం {{election}} లో ఈ పార్టీని గుర్తింపు పొందిన రాష్ట్ర పార్టీగా జాబితా చేసింది.",
+      "registered": "భారత ఎన్నికల సంఘం ఈ పార్టీని {{election}} లో నమోదిత మరియు గుర్తించబడనిదిగా జాబితా చేసింది."
+    },
     "about": "పార్టీ గురించి",
     "registryIdentity": "{{party}}  {{code}} క్రింద రాజకీయ పార్టీ డైరెక్టరీలో జాబితా చేయబడింది.",
     "founded": "{{year}} లో స్థాపించబడింది.",
@@ -3059,6 +3614,16 @@ const te = {
     }
   },
   "kycSheet": {
+    "submitted": "సమీక్ష కోసం సమర్పించబడింది",
+    "pendingReviewMsg": "మీ సమర్పణ సేవ్ చేయబడింది. అధీకృత సమీక్షకుడు ధృవీకరించిన తర్వాత మాత్రమే కంట్రిబ్యూటర్ చర్యలు ప్రారంభించబడతాయి.",
+    "reviewNotice": "కంట్రిబ్యూటర్ వెరిఫికేషన్ సంఘాన్ని రక్షించడంలో సహాయపడుతుంది. మీ గుర్తింపు వివరాలు సమీక్ష కోసం నిల్వ చేయబడ్డాయి మరియు మీ పబ్లిక్ ప్రొఫైల్‌లో చూపబడవు.",
+    "selfieReviewNotice": "సమీక్ష కోసం మీ సెల్ఫీ ప్రైవేట్ స్టోరేజ్‌కి అప్‌లోడ్ చేయబడింది. ఆటోమేటెడ్ ఫేస్ మ్యాచింగ్ నిర్వహించబడదు.",
+    "checkingStatus": "మీ సేవ్ చేయబడిన ధృవీకరణ స్థితిని తనిఖీ చేస్తోంది...",
+    "statusUnavailable": "మేము మీ స్థితిని లోడ్ చేయలేకపోయాము. కనెక్ట్ చేసినప్పుడు మళ్లీ ప్రయత్నించడానికి నొక్కండి.",
+    "rejectedResubmitHint": "మీ వివరాలను సరిదిద్దడానికి నొక్కండి మరియు సమీక్ష కోసం మళ్లీ సమర్పించండి.",
+    "resubmitTitle": "మీ సమర్పణను నవీకరించండి",
+    "resubmitNotice": "తిరస్కరణ కారణాన్ని సమీక్షించండి, మీ వివరాలను సరిదిద్దండి మరియు సమీక్ష కోసం మళ్లీ సమర్పించండి.",
+    "agreeAndVerify": "అంగీకరిస్తున్నారు & సమీక్ష కోసం సమర్పించండి",
     "title": "సహకారి ధృవీకరణ",
     "verified": "ధృవీకరించబడింది!",
     "verifiedMsg": "మీరు ఇప్పుడు ధృవీకరించబడిన కంట్రిబ్యూటర్. మీరు పోస్ట్ చేయవచ్చు, వ్యాఖ్యానించవచ్చు మరియు నివేదించవచ్చు.",

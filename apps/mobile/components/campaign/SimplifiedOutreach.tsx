@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import {
   View,
@@ -29,6 +30,7 @@ const RECHARGE_PACKS = [
 ];
 
 export default function SimplifiedOutreach() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const { colors } = useTheme();
 
@@ -170,7 +172,7 @@ export default function SimplifiedOutreach() {
   const handleExecuteRecharge = async () => {
     const amount = customRechargeAmount ? Number(customRechargeAmount) : selectedPackAmount;
     if (!amount || amount < 500) {
-      Alert.alert(t('common.error', { defaultValue: 'Invalid Amount' }), 'Minimum wallet recharge is ₹500.');
+      Alert.alert(t('common.error', { defaultValue: 'Invalid Amount' }), translateScreenLabel("screenLabels.SimplifiedOutreach.minimumWalletRechargeIs500"));
       return;
     }
 
@@ -200,7 +202,7 @@ export default function SimplifiedOutreach() {
             </Text>
             <Text style={[styles.walletBalance, { color: colors.text }]}>
               {walletAvailable ? `₹${wallet.balanceINR.toLocaleString('en-IN')}` : t('campaignManager.balanceUnavailable', { defaultValue: 'Balance unavailable' })}{' '}
-              {walletAvailable ? <Text style={{ fontSize: 11, fontWeight: '600', color: '#10B981' }}>Available</Text> : null}
+              {walletAvailable ? <Text style={{ fontSize: 11, fontWeight: '600', color: '#10B981' }}>{translateScreenLabel("screenLabels.SimplifiedOutreach.available")}</Text> : null}
             </Text>
           </View>
         </View>
@@ -290,7 +292,7 @@ export default function SimplifiedOutreach() {
           <View style={[styles.pricingCard, { backgroundColor: '#DCFCE7', borderColor: '#86EFAC' }]}>
             <View style={styles.pricingHeader}>
               <View style={styles.badgeFree}>
-                <Text style={styles.badgeFreeText}>{IS_LIVE_ENVIRONMENT ? 'NOT CONNECTED' : '100% FREE'}</Text>
+                <Text style={styles.badgeFreeText}>{IS_LIVE_ENVIRONMENT ? translateScreenLabel("screenLabels.SimplifiedOutreach.notConnected") : translateScreenLabel("screenLabels.SimplifiedOutreach.label100Free")}</Text>
               </View>
               <Text style={styles.pricingTitle}>
                 {IS_LIVE_ENVIRONMENT
@@ -363,7 +365,7 @@ export default function SimplifiedOutreach() {
                 <Text style={styles.posterText}>
                   "ఓటుతో మార్పు సాధ్యం — మన నాంపల్లి, మన భవిష్యత్తు"
                 </Text>
-                <Text style={styles.posterAuthor}>Revanth Reddy · INC</Text>
+                <Text style={styles.posterAuthor}>{translateScreenLabel("screenLabels.SimplifiedOutreach.revanthReddyInc")}</Text>
               </View>
             )}
 
@@ -386,7 +388,7 @@ export default function SimplifiedOutreach() {
           <View style={[styles.pricingCard, { backgroundColor: '#FEF3C7', borderColor: '#FCD34D' }]}>
             <View style={styles.pricingHeader}>
               <View style={[styles.badgeFree, { backgroundColor: '#D97706' }]}>
-                <Text style={styles.badgeFreeText}>{pricingAvailable ? 'INDICATIVE PRICING' : 'PRICING UNAVAILABLE'}</Text>
+                <Text style={styles.badgeFreeText}>{pricingAvailable ? translateScreenLabel("screenLabels.SimplifiedOutreach.indicativePricing") : translateScreenLabel("screenLabels.SimplifiedOutreach.pricingUnavailable")}</Text>
               </View>
               <Text style={[styles.pricingTitle, { color: '#92400E' }]}>
                 {obdRate === null
@@ -436,8 +438,8 @@ export default function SimplifiedOutreach() {
                 {!walletAvailable || !pricingAvailable || audienceCount === null
                   ? t('campaignManager.walletOrPricingUnavailable', { defaultValue: 'Verified audience, wallet, and current pricing are required.' })
                   : isBalanceSufficient
-                    ? `✓ Sufficient balance. Remaining after blast: ₹${(wallet.balanceINR - (obdTotalCost ?? 0)).toLocaleString('en-IN')}`
-                    : `⚠️ Wallet balance short by ₹${balanceDeficit.toLocaleString('en-IN')}. Top-up required.`}
+                    ? translateScreenLabel("screenLabels.SimplifiedOutreach.sufficientBalanceRemainingAfterBlastValue1", { value1: (wallet.balanceINR - (obdTotalCost ?? 0)).toLocaleString('en-IN') })
+                    : translateScreenLabel("screenLabels.SimplifiedOutreach.walletBalanceShortByValue1TopUp", { value1: balanceDeficit.toLocaleString('en-IN') })}
               </Text>
             </View>
           </View>
@@ -467,9 +469,7 @@ export default function SimplifiedOutreach() {
                   style={[styles.chip, selectedWard === w && styles.chipActive]}
                   onPress={() => setSelectedWard(w)}
                 >
-                  <Text style={[styles.chipText, selectedWard === w && styles.chipTextActive]}>
-                    Ward #{w}
-                  </Text>
+                  <Text style={[styles.chipText, selectedWard === w && styles.chipTextActive]}>{translateScreenLabel("screenLabels.SimplifiedOutreach.wardValue1", { value1: w })}</Text>
                 </Pressable>
               ))}
             </ScrollView>
@@ -560,7 +560,7 @@ export default function SimplifiedOutreach() {
                 <Text style={[styles.audioMockSub, { color: colors.textSecondary }]}>
                   {IS_LIVE_ENVIRONMENT
                     ? t('campaignManager.realAudioRequired', { defaultValue: 'A verified campaign audio file is required.' })
-                    : 'Duration: 0:28 · Quality: High · Verified'}
+                    : translateScreenLabel("screenLabels.SimplifiedOutreach.duration028QualityHighVerified")}
                 </Text>
               </View>
               {!IS_LIVE_ENVIRONMENT && <Pressable style={styles.btnPlayAudio}>
@@ -587,7 +587,7 @@ export default function SimplifiedOutreach() {
                       ? t('campaignManager.broadcastUnavailable', { defaultValue: 'Broadcast unavailable' })
                       : isBalanceSufficient
                       ? t('campaignManager.dispatchVoiceCallBtn', { defaultValue: 'Schedule Call Blast (₹{{cost}})', cost: obdTotalCost.toLocaleString('en-IN') })
-                      : `Top-Up ₹${balanceDeficit.toLocaleString('en-IN')} to Schedule Blast`}
+                      : translateScreenLabel("screenLabels.SimplifiedOutreach.topUpValue1ToScheduleBlast", { value1: balanceDeficit.toLocaleString('en-IN') })}
                   </Text>
                 </>
               )}
@@ -606,7 +606,7 @@ export default function SimplifiedOutreach() {
             <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <View style={styles.trackerHeader}>
                 <Text style={[styles.cardHeading, { color: colors.text, marginBottom: 0 }]}>
-                  Live Call Delivery Progress
+                  {translateScreenLabel("screenLabels.SimplifiedOutreach.liveCallDeliveryProgress")}
                 </Text>
                 <View
                   style={[
@@ -635,10 +635,10 @@ export default function SimplifiedOutreach() {
                     ]}
                   >
                     {obdBroadcasts[0].status === 'completed'
-                      ? '✓ Delivered'
+                      ? translateScreenLabel("screenLabels.SimplifiedOutreach.delivered")
                       : obdBroadcasts[0].status === 'calling'
-                      ? '📞 Calling...'
-                      : 'Queued'}
+                      ? translateScreenLabel("screenLabels.SimplifiedOutreach.calling")
+                      : translateScreenLabel("screenLabels.SimplifiedOutreach.queued")}
                   </Text>
                 </View>
               </View>
@@ -646,9 +646,7 @@ export default function SimplifiedOutreach() {
               <Text style={[styles.trackerTitle, { color: colors.text }]}>
                 {obdBroadcasts[0].title}
               </Text>
-              <Text style={[styles.trackerSub, { color: colors.textSecondary }]}>
-                Target: {obdBroadcasts[0].totalRecipients.toLocaleString('en-IN')} voters · Cost: ₹{obdBroadcasts[0].totalCostINR.toLocaleString('en-IN')}
-              </Text>
+              <Text style={[styles.trackerSub, { color: colors.textSecondary }]}>{translateScreenLabel("screenLabels.SimplifiedOutreach.targetValue1VotersCostValue2", { value1: obdBroadcasts[0].totalRecipients.toLocaleString('en-IN'), value2: obdBroadcasts[0].totalCostINR.toLocaleString('en-IN') })}</Text>
 
               {/* Progress Bar */}
               <View style={styles.progressBarBg}>
@@ -668,19 +666,19 @@ export default function SimplifiedOutreach() {
                   <Text style={styles.statBoxNum}>
                     {obdBroadcasts[0].answeredCount}
                   </Text>
-                  <Text style={styles.statBoxLabel}>Answered</Text>
+                  <Text style={styles.statBoxLabel}>{translateScreenLabel("screenLabels.CampaignOutreachPanel.answered")}</Text>
                 </View>
                 <View style={styles.statBox}>
                   <Text style={[styles.statBoxNum, { color: '#F59E0B' }]}>
                     {obdBroadcasts[0].busyCount}
                   </Text>
-                  <Text style={styles.statBoxLabel}>Busy</Text>
+                  <Text style={styles.statBoxLabel}>{translateScreenLabel("screenLabels.SimplifiedOutreach.busy")}</Text>
                 </View>
                 <View style={styles.statBox}>
                   <Text style={[styles.statBoxNum, { color: '#EF4444' }]}>
                     {obdBroadcasts[0].unreachableCount}
                   </Text>
-                  <Text style={styles.statBoxLabel}>Unreachable</Text>
+                  <Text style={styles.statBoxLabel}>{translateScreenLabel("screenLabels.SimplifiedOutreach.unreachable")}</Text>
                 </View>
               </View>
             </View>
@@ -727,11 +725,11 @@ export default function SimplifiedOutreach() {
             </View>
 
             <Text style={[styles.modalSub, { color: colors.textSecondary }]}>
-              Credits can be used immediately for Voice OBD call blasts and promoted posts.
+              {translateScreenLabel("screenLabels.SimplifiedOutreach.creditsCanBeUsedImmediatelyForVoiceObd")}
             </Text>
 
             {/* Quick Packs */}
-            <Text style={[styles.packHeading, { color: colors.text }]}>Choose Recharge Amount:</Text>
+            <Text style={[styles.packHeading, { color: colors.text }]}>{translateScreenLabel("screenLabels.SimplifiedOutreach.chooseRechargeAmount")}</Text>
             <View style={styles.packGrid}>
               {RECHARGE_PACKS.map((pack) => (
                 <Pressable
@@ -759,7 +757,7 @@ export default function SimplifiedOutreach() {
 
             {/* Custom Amount Input */}
             <Text style={[styles.inputLabel, { color: colors.textSecondary, marginTop: 14 }]}>
-              Or Enter Custom Amount (₹):
+              {translateScreenLabel("screenLabels.SimplifiedOutreach.orEnterCustomAmount")}
             </Text>
             <TextInput
               style={[styles.input, { color: colors.text, borderColor: colors.border }]}
@@ -781,9 +779,7 @@ export default function SimplifiedOutreach() {
               ) : (
                 <>
                   <Ionicons name="card" size={18} color="#FFFFFF" />
-                  <Text style={styles.btnActionText}>
-                    Pay ₹{customRechargeAmount ? Number(customRechargeAmount).toLocaleString('en-IN') : selectedPackAmount.toLocaleString('en-IN')} via UPI / Netbanking
-                  </Text>
+                  <Text style={styles.btnActionText}>{translateScreenLabel("screenLabels.SimplifiedOutreach.payValue1ViaUpiNetbanking", { value1: customRechargeAmount ? Number(customRechargeAmount).toLocaleString('en-IN') : selectedPackAmount.toLocaleString('en-IN') })}</Text>
                 </>
               )}
             </Pressable>

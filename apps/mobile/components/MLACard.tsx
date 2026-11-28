@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -31,6 +32,7 @@ interface MLACardProps {
 }
 
 export default function MLACard({ profile, onAvatarPress }: MLACardProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const partyColor = getPartyColor(profile.party);
@@ -65,9 +67,7 @@ export default function MLACard({ profile, onAvatarPress }: MLACardProps) {
             {getLocalizedCandidateName(profile.name, i18n.language) || profile.name}
           </Text>
           {localizedConstName ? (
-            <Text style={[styles.constituencyLabel, { color: colors.textMuted }]}>
-              AC #{profile.acNo} · {localizedConstName}
-            </Text>
+            <Text style={[styles.constituencyLabel, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.tabs.acValue1Value2", { value1: profile.acNo, value2: localizedConstName })}</Text>
           ) : null}
           <View style={styles.partyRow}>
             <View style={[styles.partyBadge, { backgroundColor: partyColor }]}>

@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useMemo, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -71,6 +72,7 @@ export default function ProfileHeroCard({
   onPhotoPress,
   onSharePress,
 }: Props) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const partyColor = getPartyColor(party);
@@ -129,7 +131,7 @@ export default function ProfileHeroCard({
       <View style={styles.topBar}>
         <View style={styles.verifiedPill}>
           <Ionicons name="person-circle-outline" size={12} color="#FDE68A" />
-          <Text style={styles.verifiedPillText}>Profile record</Text>
+          <Text style={styles.verifiedPillText}>{translateScreenLabel("screenLabels.constituency.profileRecord")}</Text>
         </View>
         {onSharePress && (
           <Pressable style={styles.shareBtnNavy} onPress={onSharePress} hitSlop={8}>
@@ -183,7 +185,7 @@ export default function ProfileHeroCard({
             <Text style={styles.aliasNameNavy} numberOfLines={1}>{fullName}</Text>
           )}
           <Text style={styles.officeSubtitle}>
-            {rank === 'winner' || isCurrentMember ? houseLabel : (rank === 'ru1' ? '1st Runner-up' : '2nd Runner-up')} · {constituency} ({localizedDistrict})
+            {rank === 'winner' || isCurrentMember ? houseLabel : (rank === 'ru1' ? translateScreenLabel("screenLabels.ProfileHeroCard.label1stRunnerUp") : translateScreenLabel("screenLabels.ProfileHeroCard.label2ndRunnerUp"))} · {constituency} ({localizedDistrict})
           </Text>
         </View>
 
@@ -192,7 +194,7 @@ export default function ProfileHeroCard({
           <View style={styles.computedMetricPill}>
             <Text style={styles.computedMetricLabel}>{t('legislator.age', { defaultValue: 'Age' })}</Text>
             <Text style={styles.computedMetricValue}>
-              {age != null ? age : '—'} <Text style={styles.computedMetricUnit}>{age != null ? 'Yrs' : ''}</Text>
+              {age != null ? age : '—'} <Text style={styles.computedMetricUnit}>{age != null ? translateScreenLabel("screenLabels.ProfileHeroCard.yrs") : ''}</Text>
             </Text>
           </View>
           <View style={styles.computedMetricPill}>

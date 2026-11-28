@@ -1,101 +1,106 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
 
-console.log('=== DEF-008 STATIC LOCALIZATION CLOSURE SCANNER ===\n');
+const displayProps = new Set([
+  'accessibilityHint', 'accessibilityLabel', 'description', 'label', 'placeholder', 'title',
+]);
+const invariantText = new Set([
+  'Poligram', 'POLIGRAM', 'KSHETRA', 'ECI', 'ECI ·', 'AP', 'TS', 'MCMC:', 'DLT:', 'PDI',
+  'ROI', 'SC', 'ST', 'GEN', 'MRR', 'CSV', '· CSV', 'APK', 'IP', 'RTMP', 'SRT', 'HLS',
+  'YYYY-MM-DD', '98480xxxxx',
+]);
 
-const appDir = path.join(process.cwd(), 'apps', 'mobile', 'app');
-
-function getTsxFiles(dir) {
-  let res = [];
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
-  for (const entry of entries) {
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      res = res.concat(getTsxFiles(full));
-    } else if (entry.name.endsWith('.tsx') && !entry.name.includes('.test.')) {
-      res.push(full);
-    }
-  }
-  return res;
+function isEnglishCopy(text) {
+  const value = text.replaceAll('&gt;', '>').replaceAll('&lt;', '<').trim();
+  return /[A-Za-z]{2,}/.test(value) && !invariantText.has(value) && !/^https?:\/\/\S+$/.test(value);
 }
 
-const files = getTsxFiles(appDir);
-const rawOccurrences = [];
+function filesIn(directory) {
+  return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const file = path.join(directory, entry.name);
+    if (entry.isDirectory()) return filesIn(file);
+    return file.endsWith('.tsx') && !/\.(test|spec)\.tsx$/.test(file) ? [file] : [];
+  });
+}
 
-files.forEach(file => {
-  const rel = path.relative(process.cwd(), file).replace(/\\/g, '/');
-  const content = fs.readFileSync(file, 'utf8');
-  const sf = ts.createSourceFile(file, content, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+export function scanScreenCopy(root = process.cwd()) {
+  const files = ['app', 'components'].flatMap((area) =>
+    filesIn(path.join(root, 'apps', 'mobile', area)),
+  );
+  const findings = [];
+  for (const pathName of files) {
+    const source = ts.createSourceFile(
+      pathName, fs.readFileSync(pathName, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX,
+    );
+    const file = path.relative(root, pathName).split(path.sep).join('/');
 
-  function visit(node) {
-    if (node.kind === ts.SyntaxKind.JsxText) {
-      const text = node.text.trim();
-      if (text && /[a-zA-Z0-9]/.test(text)) {
-        rawOccurrences.push({
-          file: rel,
-          text,
-          line: sf.getLineAndCharacterOfPosition(node.getStart()).line + 1
-        });
+    function add(node, kind, text) {
+      if (!isEnglishCopy(text)) return;
+      const { line } = source.getLineAndCharacterOfPosition(node.getStart(source));
+      findings.push({ file, line: line + 1, kind, text: text.trim(), start: node.getStart(source), end: node.end });
+    }
+
+    function expression(node, kind) {
+      if (ts.isStringLiteralLike(node)) add(node, kind, node.text);
+      if (ts.isTemplateExpression(node)) {
+        add(node, kind, [node.head.text, ...node.templateSpans.map((span) => span.literal.text)].join(' '));
+      }
+      if (ts.isParenthesizedExpression(node)) expression(node.expression, kind);
+      if (ts.isConditionalExpression(node)) {
+        expression(node.whenTrue, kind);
+        expression(node.whenFalse, kind);
+      }
+      if (ts.isBinaryExpression(node)) {
+        const operator = node.operatorToken.kind;
+        if (operator === ts.SyntaxKind.BarBarToken || operator === ts.SyntaxKind.QuestionQuestionToken) {
+          expression(node.left, kind);
+        }
+        if ([ts.SyntaxKind.BarBarToken, ts.SyntaxKind.QuestionQuestionToken, ts.SyntaxKind.AmpersandAmpersandToken].includes(operator)) {
+          expression(node.right, kind);
+        }
       }
     }
-    ts.forEachChild(node, visit);
+
+    function visit(node) {
+      if (ts.isJsxText(node)) add(node, 'text', node.text);
+      if (ts.isJsxAttribute(node) && displayProps.has(node.name.getText(source))) {
+        const value = node.initializer;
+        if (value && ts.isStringLiteral(value)) add(value, 'prop', value.text);
+        if (value && ts.isJsxExpression(value) && value.expression) expression(value.expression, 'expression');
+      }
+      if (ts.isJsxExpression(node) && node.expression && ts.isJsxElement(node.parent)) {
+        const name = node.parent.openingElement.tagName.getText(source);
+        if (name === 'Text' || name.endsWith('.Text')) expression(node.expression, 'expression');
+      }
+      if (ts.isCallExpression(node) && node.expression.getText(source) === 'Alert.alert') {
+        for (const argument of node.arguments.slice(0, 2)) expression(argument, 'alert');
+        const buttons = node.arguments[2];
+        if (buttons && ts.isArrayLiteralExpression(buttons)) {
+          for (const button of buttons.elements) {
+            if (!ts.isObjectLiteralExpression(button)) continue;
+            const label = button.properties.find((entry) =>
+              ts.isPropertyAssignment(entry) && entry.name.getText(source) === 'text',
+            );
+            if (label) expression(label.initializer, 'alert');
+          }
+        }
+      }
+      ts.forEachChild(node, visit);
+    }
+    visit(source);
   }
-  visit(sf);
-});
+  return { files: files.length, findings };
+}
 
-// Classify technical exclusions
-const classifiedExclusions = {
-  BRAND_OR_SYSTEM: [],
-  UNITS_AND_SYMBOLS: [],
-  URLS_AND_PATHS: [],
-  INTERNAL_DEV_TOOLING: [],
-  UNAUTHORIZED: []
-};
-
-rawOccurrences.forEach(item => {
-  const t = item.text;
-  if (t === 'KSHETRA') {
-    classifiedExclusions.BRAND_OR_SYSTEM.push(item);
-  } else if (/^(AC #|\(AC #|votes\)?|seats?|% turnout|Score:|Margin:|MLA:|Pop:|Population:|\/seat|Shift:|District:|SC|ST|Urban|alert|short|m|s|K|M|F|districts ·|projected seats · Ideal:)$/i.test(t) ||
-             /^[%·—•()\s/]+$/.test(t) ||
-             /^[0-9]+(\s*(votes|seats|min|%))?$/.test(t)) {
-    classifiedExclusions.UNITS_AND_SYMBOLS.push(item);
-  } else if (/^https?:\/\/|apps\//.test(t)) {
-    classifiedExclusions.URLS_AND_PATHS.push(item);
-  } else if (/dev switch/i.test(t)) {
-    classifiedExclusions.INTERNAL_DEV_TOOLING.push(item);
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const { files, findings } = scanScreenCopy();
+  if (process.argv.includes('--json')) {
+    console.log(JSON.stringify({ files, findings }, null, 2));
   } else {
-    // Other contextual UI strings
-    classifiedExclusions.UNITS_AND_SYMBOLS.push(item);
+    for (const { file, line, kind, text } of findings) console.error(file + ':' + line + ' [' + kind + '] ' + text);
+    console.log('Scanned ' + files + ' mobile TSX files. Found ' + findings.length + ' unlocalized screen strings.');
   }
-});
-
-const report = {
-  evidenceMetadata: {
-    mandate: 'DEF-008 Static Localization Closure: 236 hardcoded user-facing strings remediated, classified technical exclusions',
-    verifiedBy: 'STATIC_LOCALIZATION_CLOSURE_SCANNER',
-    timestamp: new Date().toISOString()
-  },
-  baselineRemediatedCount: 236,
-  scannedFilesCount: files.length,
-  totalJsxTextNodesScanned: rawOccurrences.length,
-  unauthorizedUserFacingStringsRemaining: 0,
-  technicalExclusionsSummary: {
-    brandAndSystem: classifiedExclusions.BRAND_OR_SYSTEM.length,
-    unitsAndSymbols: classifiedExclusions.UNITS_AND_SYMBOLS.length,
-    urlsAndPaths: classifiedExclusions.URLS_AND_PATHS.length,
-    internalDevTooling: classifiedExclusions.INTERNAL_DEV_TOOLING.length
-  },
-  verdict: 'PASS'
-};
-
-const reportPath = path.join(process.cwd(), 'reports', 'w010_def008_localization_closure.json');
-fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
-
-console.log(`Baseline Remediated Strings: 236`);
-console.log(`Total TSX Files Scanned: ${files.length}`);
-console.log(`Remaining Unauthorized User-Facing Strings: 0`);
-console.log(`Technical Exclusions Categorized: ${rawOccurrences.length}`);
-console.log(`Evidence written to: ${reportPath}`);
-console.log(`DEF-008 Gate Verdict: PASSED`);
+  if (findings.length) process.exitCode = 1;
+}

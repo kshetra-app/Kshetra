@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import {
   View,
@@ -55,6 +56,7 @@ interface ShareableCardModalProps {
 }
 
 export default function ShareableCardModal({ visible, onClose, data }: ShareableCardModalProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t, i18n } = useTranslation();
   const { colors, isDark } = useTheme();
   const [sharingVisual, setSharingVisual] = useState(false);
@@ -283,7 +285,7 @@ export default function ShareableCardModal({ visible, onClose, data }: Shareable
             <View style={styles.headerLeft}>
               <View style={styles.verifiedRow}>
                 <Ionicons name="shield-checkmark" size={14} color="#10B981" />
-                <Text style={styles.verifiedText}>OFFICIAL CIVIC CARD</Text>
+                <Text style={styles.verifiedText}>{translateScreenLabel("screenLabels.ShareableCardModal.officialCivicCard")}</Text>
               </View>
               <Text style={[styles.modalTitle, { color: colors.text }]} numberOfLines={1}>
                 {data.title}
@@ -302,11 +304,11 @@ export default function ShareableCardModal({ visible, onClose, data }: Shareable
                 <View>
                   <Text style={[styles.previewTitle, { color: colors.text }]}>{data.title}</Text>
                   <Text style={[styles.previewSub, { color: colors.textMuted }]}>
-                    {data.district ? `${data.district} District` : ''} {data.category ? `• ${data.category}` : ''} • {data.stateCode}
+                    {data.district ? translateScreenLabel("screenLabels.ShareableCardModal.value1District", { value1: data.district }) : ''} {data.category ? `• ${data.category}` : ''} • {data.stateCode}
                   </Text>
                 </View>
                 <View style={[styles.pillBadge, { backgroundColor: '#C5A05922', borderColor: '#C5A059' }]}>
-                  <Text style={styles.pillText}>{data.acNo ? `AC #${data.acNo}` : data.stateCode}</Text>
+                  <Text style={styles.pillText}>{data.acNo ? translateScreenLabel("screenLabels.tabs.acValue1", { value1: data.acNo }) : data.stateCode}</Text>
                 </View>
               </View>
 
@@ -314,10 +316,10 @@ export default function ShareableCardModal({ visible, onClose, data }: Shareable
               <View style={[styles.candBox, { borderLeftColor: partyColor }]}>
                 <View style={styles.candHeaderRow}>
                   <View style={[styles.rankTag, { backgroundColor: '#F59E0B' }]}>
-                    <Text style={styles.rankTagText}>🥇 WINNER</Text>
+                    <Text style={styles.rankTagText}>{translateScreenLabel("screenLabels.ShareableCardModal.winner")}</Text>
                   </View>
                   <View style={[styles.partyPill, { backgroundColor: partyColor }]}>
-                    <Text style={styles.partyPillText}>{data.winnerParty || 'IND'}</Text>
+                    <Text style={styles.partyPillText}>{data.winnerParty || translateScreenLabel("screenLabels.ShareableCardModal.ind")}</Text>
                   </View>
                 </View>
                 <View style={styles.candMainRow}>
@@ -327,9 +329,7 @@ export default function ShareableCardModal({ visible, onClose, data }: Shareable
                       {data.winnerName || data.title}
                     </Text>
                     {data.winnerVotes ? (
-                      <Text style={[styles.candVotesText, { color: colors.textSecondary }]}>
-                        {data.winnerVotes.toLocaleString()} votes {data.winnerVoteShare ? `(${data.winnerVoteShare}%)` : ''}
-                      </Text>
+                      <Text style={[styles.candVotesText, { color: colors.textSecondary }]}>{translateScreenLabel("screenLabels.ShareableCardModal.value1VotesValue2", { value1: data.winnerVotes.toLocaleString(), value2: data.winnerVoteShare ? `(${data.winnerVoteShare}%)` : '' })}</Text>
                     ) : null}
                   </View>
                 </View>
@@ -340,28 +340,26 @@ export default function ShareableCardModal({ visible, onClose, data }: Shareable
                 <View style={[styles.candBox, { borderLeftColor: ruPartyColor, marginTop: 8 }]}>
                   <View style={styles.candHeaderRow}>
                     <View style={[styles.rankTag, { backgroundColor: '#94A3B8' }]}>
-                      <Text style={styles.rankTagText}>🥈 RUNNER-UP</Text>
+                      <Text style={styles.rankTagText}>{translateScreenLabel("screenLabels.ShareableCardModal.runnerUp")}</Text>
                     </View>
                     <View style={[styles.partyPill, { backgroundColor: ruPartyColor }]}>
-                      <Text style={styles.partyPillText}>{data.runnerUpParty || 'IND'}</Text>
+                      <Text style={styles.partyPillText}>{data.runnerUpParty || translateScreenLabel("screenLabels.ShareableCardModal.ind")}</Text>
                     </View>
                   </View>
                   <View style={styles.candMainRow}>
                     <CandidateAvatar name={data.runnerUpName || 'Runner-Up'} party={data.runnerUpParty || 'IND'} size={40} />
                     <View style={styles.candDetails}>
                       <Text style={[styles.candNameText, { color: colors.text }]} numberOfLines={1}>
-                        {data.runnerUpName || 'Runner-Up'}
+                        {data.runnerUpName || translateScreenLabel("screenLabels.ShareableCardModal.runnerUp2")}
                       </Text>
                       {data.runnerUpVotes ? (
-                        <Text style={[styles.candVotesText, { color: colors.textSecondary }]}>
-                          {data.runnerUpVotes.toLocaleString()} votes
-                        </Text>
+                        <Text style={[styles.candVotesText, { color: colors.textSecondary }]}>{translateScreenLabel("screenLabels.BroadcastPollCard.value1Votes", { value1: data.runnerUpVotes.toLocaleString() })}</Text>
                       ) : null}
                     </View>
                     {data.margin != null && (
                       <View style={styles.marginCol}>
                         <Text style={styles.marginNum}>+{data.margin.toLocaleString()}</Text>
-                        <Text style={styles.marginLbl}>MARGIN</Text>
+                        <Text style={styles.marginLbl}>{translateScreenLabel("screenLabels.ShareableCardModal.margin")}</Text>
                       </View>
                     )}
                   </View>
@@ -374,14 +372,14 @@ export default function ShareableCardModal({ visible, onClose, data }: Shareable
                   <Text style={[styles.metricVal, { color: colors.gold || '#C5A059' }]}>
                     {data.margin != null ? data.margin.toLocaleString() : '—'}
                   </Text>
-                  <Text style={[styles.metricLbl, { color: colors.textMuted }]}>Victory Margin</Text>
+                  <Text style={[styles.metricLbl, { color: colors.textMuted }]}>{translateScreenLabel("mapLegend.victoryMargin")}</Text>
                 </View>
                 <View style={[styles.metricTile, { backgroundColor: colors.surface }]}>
                   <Text style={[styles.metricVal, { color: colors.gold || '#C5A059' }]}>
-                    {data.turnoutPercent ? `${data.turnoutPercent}%` : (data.terms ? `${data.terms} Terms` : 'Verified')}
+                    {data.turnoutPercent ? `${data.turnoutPercent}%` : (data.terms ? translateScreenLabel("screenLabels.ShareableCardModal.value1Terms", { value1: data.terms }) : translateScreenLabel("profile.verified"))}
                   </Text>
                   <Text style={[styles.metricLbl, { color: colors.textMuted }]}>
-                    {data.turnoutPercent ? 'Turnout' : 'Tenure'}
+                    {data.turnoutPercent ? translateScreenLabel("map.colorModes.turnout") : translateScreenLabel("screenLabels.ShareableCardModal.tenure")}
                   </Text>
                 </View>
               </View>
@@ -389,7 +387,7 @@ export default function ShareableCardModal({ visible, onClose, data }: Shareable
               {/* Card Footer */}
               <View style={styles.cardFooter}>
                 <Ionicons name="sparkles" size={12} color="#C5A059" />
-                <Text style={styles.footerNote}>Verified by ECI Form 21E • Poligram Civic Intelligence</Text>
+                <Text style={styles.footerNote}>{translateScreenLabel("screenLabels.ShareableCardModal.verifiedByEciForm21ePoligramCivicIntelligence")}</Text>
               </View>
             </View>
 
@@ -406,7 +404,7 @@ export default function ShareableCardModal({ visible, onClose, data }: Shareable
                   <Ionicons name="image" size={18} color="#FFFFFF" style={{ marginRight: 8 }} />
                 )}
                 <Text style={styles.primaryActionText}>
-                  {sharingVisual ? 'Preparing Visual Card...' : 'Share Visual Graphic Card'}
+                  {sharingVisual ? translateScreenLabel("screenLabels.ShareableCardModal.preparingVisualCard") : translateScreenLabel("screenLabels.ShareableCardModal.shareVisualGraphicCard")}
                 </Text>
               </Pressable>
 
@@ -416,7 +414,7 @@ export default function ShareableCardModal({ visible, onClose, data }: Shareable
               >
                 <Ionicons name="chatbubble-ellipses-outline" size={17} color={colors.gold || colors.primary} style={{ marginRight: 8 }} />
                 <Text style={[styles.secondaryActionText, { color: colors.text }]}>
-                  Share Detailed Story (Formatted Text)
+                  {translateScreenLabel("screenLabels.ShareableCardModal.shareDetailedStoryFormattedText")}
                 </Text>
               </Pressable>
             </View>

@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import {
   View,
@@ -43,6 +44,7 @@ export default function EditProfileScreen() {
 }
 
 function EditProfile({ userId }: { userId?: string }) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const router = useRouter();
   const { t } = useTranslation();
   const { colors } = useTheme();
@@ -213,7 +215,7 @@ function EditProfile({ userId }: { userId?: string }) {
             style={styles.textInput}
             value={displayName}
             onChangeText={setDisplayName}
-            placeholder="Your name"
+            placeholder={translateScreenLabel("screenLabels.editProfile.yourName")}
             placeholderTextColor="#4B5563"
             maxLength={50}
             autoCapitalize="words"
@@ -227,7 +229,7 @@ function EditProfile({ userId }: { userId?: string }) {
             style={[styles.textInput, styles.textArea]}
             value={bio}
             onChangeText={setBio}
-            placeholder="Tell us about yourself..."
+            placeholder={translateScreenLabel("screenLabels.editProfile.tellUsAboutYourself")}
             placeholderTextColor="#4B5563"
             maxLength={200}
             multiline

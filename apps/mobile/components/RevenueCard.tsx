@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { RevenueFlowData } from '../lib/campaignTypes';
@@ -8,16 +9,17 @@ interface RevenueCardProps {
 }
 
 export default function RevenueCard({ data }: RevenueCardProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>Revenue Dashboard</Text>
+      <Text style={styles.title}>{translateScreenLabel("screenLabels.RevenueCard.revenueDashboard")}</Text>
 
       {/* Key Metrics */}
       <View style={styles.kpiRow}>
         <View style={styles.kpi}>
           <Ionicons name="cash" size={20} color="#10B981" />
           <Text style={styles.kpiValue}>{formatBudget(data.totalRevenue)}</Text>
-          <Text style={styles.kpiLabel}>Total Revenue</Text>
+          <Text style={styles.kpiLabel}>{translateScreenLabel("screenLabels.RevenueCard.totalRevenue")}</Text>
         </View>
         <View style={styles.kpi}>
           <Ionicons name="trending-up" size={20} color="#3B82F6" />
@@ -27,7 +29,7 @@ export default function RevenueCard({ data }: RevenueCardProps) {
         <View style={styles.kpi}>
           <Ionicons name="rocket" size={20} color="#F59E0B" />
           <Text style={styles.kpiValue}>{formatBudget(data.projectedMRR)}</Text>
-          <Text style={styles.kpiLabel}>Projected MRR</Text>
+          <Text style={styles.kpiLabel}>{translateScreenLabel("screenLabels.RevenueCard.projectedMrr")}</Text>
         </View>
       </View>
 
@@ -35,24 +37,24 @@ export default function RevenueCard({ data }: RevenueCardProps) {
       <View style={styles.summaryRow}>
         <View style={styles.summaryItem}>
           <Text style={styles.summaryValue}>{data.totalCampaigns}</Text>
-          <Text style={styles.summaryLabel}>Campaigns</Text>
+          <Text style={styles.summaryLabel}>{translateScreenLabel("campaignManager.tabs.campaigns")}</Text>
         </View>
         <View style={styles.summaryItem}>
           <Text style={styles.summaryValue}>{data.totalAds}</Text>
-          <Text style={styles.summaryLabel}>Ads</Text>
+          <Text style={styles.summaryLabel}>{translateScreenLabel("campaignManager.tabs.ads")}</Text>
         </View>
         <View style={styles.summaryItem}>
           <Text style={styles.summaryValue}>{data.activePoliticians}</Text>
-          <Text style={styles.summaryLabel}>Politicians</Text>
+          <Text style={styles.summaryLabel}>{translateScreenLabel("screenLabels.RevenueCard.politicians")}</Text>
         </View>
         <View style={styles.summaryItem}>
           <Text style={[styles.summaryValue, { color: '#10B981' }]}>{data.avgROI}%</Text>
-          <Text style={styles.summaryLabel}>Avg ROI</Text>
+          <Text style={styles.summaryLabel}>{translateScreenLabel("screenLabels.RevenueCard.avgRoi")}</Text>
         </View>
       </View>
 
       {/* Revenue by Format */}
-      <Text style={styles.sectionTitle}>Revenue by Format</Text>
+      <Text style={styles.sectionTitle}>{translateScreenLabel("screenLabels.RevenueCard.revenueByFormat")}</Text>
       {data.revenueByFormat.slice(0, 4).map((item) => {
         const config = AD_FORMAT_CONFIG[item.format as keyof typeof AD_FORMAT_CONFIG];
         const pct = data.totalRevenue > 0 ? Math.round((item.revenue / data.totalRevenue) * 100) : 0;
@@ -69,7 +71,7 @@ export default function RevenueCard({ data }: RevenueCardProps) {
       })}
 
       {/* Monthly Trend */}
-      <Text style={styles.sectionTitle}>Monthly Growth</Text>
+      <Text style={styles.sectionTitle}>{translateScreenLabel("screenLabels.RevenueCard.monthlyGrowth")}</Text>
       <View style={styles.monthRow}>
         {data.revenueByMonth.slice(-4).map((m) => (
           <View key={m.month} style={styles.monthItem}>
@@ -82,14 +84,14 @@ export default function RevenueCard({ data }: RevenueCardProps) {
 
       {/* Unit Economics */}
       <View style={styles.unitEcon}>
-        <Text style={styles.sectionTitle}>Unit Economics</Text>
+        <Text style={styles.sectionTitle}>{translateScreenLabel("screenLabels.RevenueCard.unitEconomics")}</Text>
         <View style={styles.unitRow}>
-          <Text style={styles.unitLabel}>Cost/Promoted Post: {formatBudget(data.unitEconomics.costPerPromotedPost)}</Text>
-          <Text style={styles.unitLabel}>Avg Politicians/State: {data.unitEconomics.avgPoliticiansPerState}</Text>
+          <Text style={styles.unitLabel}>{translateScreenLabel("screenLabels.RevenueCard.costPromotedPostValue1", { value1: formatBudget(data.unitEconomics.costPerPromotedPost) })}</Text>
+          <Text style={styles.unitLabel}>{translateScreenLabel("screenLabels.RevenueCard.avgPoliticiansStateValue1", { value1: data.unitEconomics.avgPoliticiansPerState })}</Text>
         </View>
         <View style={styles.unitRow}>
-          <Text style={styles.unitLabel}>Active States: {data.unitEconomics.statesActive}</Text>
-          <Text style={styles.unitLabel}>Monthly/State: {formatBudget(data.unitEconomics.monthlyRevenuePerState)}</Text>
+          <Text style={styles.unitLabel}>{translateScreenLabel("screenLabels.RevenueCard.activeStatesValue1", { value1: data.unitEconomics.statesActive })}</Text>
+          <Text style={styles.unitLabel}>{translateScreenLabel("screenLabels.RevenueCard.monthlyStateValue1", { value1: formatBudget(data.unitEconomics.monthlyRevenuePerState) })}</Text>
         </View>
       </View>
     </View>

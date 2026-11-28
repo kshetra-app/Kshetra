@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useState, useRef } from 'react';
 import {
   View,
@@ -49,6 +50,7 @@ type OnboardingStep = 'welcome' | 'name' | 'role' | 'constituency' | 'interests'
 const STEPS: OnboardingStep[] = ['welcome', 'name', 'role', 'constituency', 'interests', 'done'];
 
 export default function OnboardingScreen() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const router = useRouter();
   const { colors } = useTheme();
@@ -213,10 +215,7 @@ export default function OnboardingScreen() {
             {selectedAcNo && !acSearch && (
               <View style={styles.selectedAc}>
                 <Ionicons name="checkmark-circle" size={16} color="#10B981" />
-                <Text style={styles.selectedAcText}>
-                  Selected: #{selectedAcNo}{' '}
-                  {stateConstituencies.find((c) => c.acNo === selectedAcNo)?.name}
-                </Text>
+                <Text style={styles.selectedAcText}>{translateScreenLabel("screenLabels.onboarding.selectedValue1Value2Value3", { value1: selectedAcNo, value2: ' ', value3: stateConstituencies.find((c) => c.acNo === selectedAcNo)?.name })}</Text>
               </View>
             )}
           </View>

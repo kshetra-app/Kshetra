@@ -30,7 +30,7 @@ export default function ProjectCard({ project, onPress }: ProjectCardProps) {
       </View>
 
       <Text style={styles.name}>{project.name}</Text>
-      <Text style={styles.location}>{project.districtName}, {project.stateCode}{project.constituencyAcNo ? ` · AC #${project.constituencyAcNo}` : ''}</Text>
+      <Text style={styles.location}>{project.districtName}, {project.stateCode}{project.constituencyAcNo ? t("screenLabels.ProjectCard.acValue1", { value1: project.constituencyAcNo }) : ''}</Text>
       <Text style={styles.description} numberOfLines={2}>{project.description}</Text>
       <CivicVerificationDate date={project.sourceVerifiedOn} />
 

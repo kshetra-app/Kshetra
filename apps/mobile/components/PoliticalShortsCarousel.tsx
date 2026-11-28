@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useState, useCallback, useRef, useMemo } from 'react';
 import {
   View,
@@ -20,6 +21,7 @@ import { useMyConstituencyStore } from '../stores/myConstituency';
 import { isInContentPeriod } from '@kshetra/shared';
 
 export default function PoliticalShortsCarousel() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const [playerVisible, setPlayerVisible] = useState(false);
   const [uploadVisible, setUploadVisible] = useState(false);
@@ -82,13 +84,13 @@ export default function PoliticalShortsCarousel() {
           {filteredShorts.length > 0 && (
             <View style={styles.liveBadge}>
               <View style={styles.liveDot} />
-              <Text style={styles.liveText}>NEW</Text>
+              <Text style={styles.liveText}>{translateScreenLabel("screenLabels.PoliticalShortsCarousel.new")}</Text>
             </View>
           )}
         </View>
         <Pressable style={styles.seeAllBtn} onPress={() => setUploadVisible(true)}>
           <Ionicons name="add-circle" size={14} color="#4F8EF7" />
-          <Text style={styles.seeAllText}>Upload Short</Text>
+          <Text style={styles.seeAllText}>{translateScreenLabel("screenLabels.PoliticalShortsCarousel.uploadShort")}</Text>
         </Pressable>
       </View>
 
@@ -106,17 +108,17 @@ export default function PoliticalShortsCarousel() {
           <Pressable style={styles.uploadCard} onPress={() => setUploadVisible(true)}>
             <View style={styles.uploadCardInner}>
               <Ionicons name="camera" size={32} color="#4F8EF7" style={{ marginBottom: 4 }} />
-              <Text style={styles.uploadCardTitle}>Add Short</Text>
-              <Text style={styles.uploadCardDesc}>Share local report</Text>
+              <Text style={styles.uploadCardTitle}>{translateScreenLabel("screenLabels.PoliticalShortsCarousel.addShort")}</Text>
+              <Text style={styles.uploadCardDesc}>{translateScreenLabel("screenLabels.PoliticalShortsCarousel.shareLocalReport")}</Text>
             </View>
           </Pressable>
         }
         ListEmptyComponent={
           scopeFilter === 'constituency' ? (
             <View style={styles.emptyCard}>
-              <Text style={styles.emptyText}>No shorts in this constituency.</Text>
+              <Text style={styles.emptyText}>{translateScreenLabel("screenLabels.PoliticalShortsCarousel.noShortsInThisConstituency")}</Text>
               <Pressable style={styles.emptyBtn} onPress={() => setUploadVisible(true)}>
-                <Text style={styles.emptyBtnText}>Be the first!</Text>
+                <Text style={styles.emptyBtnText}>{translateScreenLabel("screenLabels.PoliticalShortsCarousel.beTheFirst")}</Text>
               </Pressable>
             </View>
           ) : null

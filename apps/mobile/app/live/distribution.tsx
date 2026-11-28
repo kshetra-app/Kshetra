@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useMemo, useState } from 'react';
 import {
   View,
@@ -26,6 +27,7 @@ import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
  * All reuse the protocol-agnostic distribution layer; no new client software.
  */
 export default function DistributionScreen() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { colors } = useTheme();
@@ -151,8 +153,7 @@ export default function DistributionScreen() {
             <Text style={styles.code}>https://receiver.kshetra.in</Text>
           </View>
           <Text style={styles.note}>
-            Ships as a separate lightweight build (apps/web-receiver). Native Windows +
-            Android TV wrappers are Phase 2 polish on the same page.
+            {translateScreenLabel("screenLabels.distribution.shipsAsASeparateLightweightBuildAppsWeb")}
           </Text>
         </Card>
       </ScrollView>

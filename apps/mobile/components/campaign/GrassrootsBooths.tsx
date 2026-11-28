@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import {
   View,
@@ -20,6 +21,7 @@ import type { BoothStrategy } from '../../lib/campaignTypes';
 type BoothFilter = 'all' | 'unassigned' | 'critical' | 'strong';
 
 export default function GrassrootsBooths() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const { colors } = useTheme();
 
@@ -219,7 +221,7 @@ export default function GrassrootsBooths() {
                 <View style={{ flex: 1, marginLeft: 10 }}>
                   <Text style={[styles.boothName, { color: colors.text }]}>{b.boothName}</Text>
                   <Text style={[styles.boothMeta, { color: colors.textSecondary }]}>
-                    {b.wardNo ? `Ward #${b.wardNo} · ` : ''}{b.totalVoters > 0 ? `${b.totalVoters.toLocaleString('en-IN')} Voters` : 'Voter count unavailable'} · {b.targetVotes > 0 ? `Target: ${b.targetVotes}` : 'Target unavailable'}
+                    {b.wardNo ? translateScreenLabel("screenLabels.GrassrootsBooths.wardValue1", { value1: b.wardNo }) : ''}{b.totalVoters > 0 ? translateScreenLabel("screenLabels.GrassrootsBooths.value1Voters", { value1: b.totalVoters.toLocaleString('en-IN') }) : translateScreenLabel("screenLabels.GrassrootsBooths.voterCountUnavailable")} · {b.targetVotes > 0 ? translateScreenLabel("screenLabels.GrassrootsBooths.targetValue1", { value1: b.targetVotes }) : translateScreenLabel("screenLabels.GrassrootsBooths.targetUnavailable")}
                   </Text>
                 </View>
                 {b.supportEstimate > 0 ? <View
@@ -364,7 +366,7 @@ export default function GrassrootsBooths() {
                 {isCheckingUser ? (
                   <ActivityIndicator size="small" color="#FFFFFF" />
                 ) : (
-                  <Text style={styles.checkBtnText}>Check</Text>
+                  <Text style={styles.checkBtnText}>{translateScreenLabel("screenLabels.GrassrootsBooths.check")}</Text>
                 )}
               </Pressable>
             </View>
@@ -401,7 +403,7 @@ export default function GrassrootsBooths() {
             </Text>
             <TextInput
               style={[styles.modalInput, { color: colors.text, borderColor: colors.border }]}
-              placeholder="e.g. Ramesh Goud"
+              placeholder={translateScreenLabel("screenLabels.GrassrootsBooths.eGRameshGoud")}
               placeholderTextColor="#9CA3AF"
               value={inchargeName}
               onChangeText={setInchargeName}

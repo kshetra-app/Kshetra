@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   View,
@@ -78,6 +79,7 @@ export default function DiscoveryHubSheet({
   sourceScreen = 'map',
   initialSection = 'guide',
 }: DiscoveryHubSheetProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const { colors } = useTheme();
   const router = useRouter();
@@ -150,7 +152,7 @@ export default function DiscoveryHubSheet({
       onRequestClose={onClose}
     >
       <View style={styles.backdrop}>
-        <Pressable style={styles.backdropDismiss} onPress={onClose} accessibilityLabel="Dismiss" />
+        <Pressable style={styles.backdropDismiss} onPress={onClose} accessibilityLabel={translateScreenLabel("moderation.dismiss")} />
         <View
           style={[
             styles.sheet,

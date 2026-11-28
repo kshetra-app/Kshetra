@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,6 +20,7 @@ export default function PerformanceCard({
   performanceScore,
   mpladsUtilized,
 }: Props) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { colors } = useTheme();
   const hasData = questionsAsked > 0 || debatesParticipated > 0 || privateMemberBills > 0;
 
@@ -27,9 +29,9 @@ export default function PerformanceCard({
       <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 }]}>
         <View style={styles.header}>
           <Ionicons name="bar-chart" size={18} color={colors.primary} />
-          <Text style={[styles.title, { color: colors.text }]}>Legislative Performance</Text>
+          <Text style={[styles.title, { color: colors.text }]}>{translateScreenLabel("screenLabels.PerformanceCard.legislativePerformance")}</Text>
         </View>
-        <Text style={[styles.emptyText, { color: colors.textMuted }]}>Coming soon</Text>
+        <Text style={[styles.emptyText, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.PerformanceCard.comingSoon")}</Text>
       </View>
     );
   }
@@ -39,7 +41,7 @@ export default function PerformanceCard({
       {/* Header */}
       <View style={styles.header}>
         <Ionicons name="bar-chart" size={18} color={colors.primary} />
-        <Text style={[styles.title, { color: colors.text }]}>Legislative Performance</Text>
+        <Text style={[styles.title, { color: colors.text }]}>{translateScreenLabel("screenLabels.PerformanceCard.legislativePerformance")}</Text>
         {performanceScore != null && performanceScore > 0 && (
           <View style={[styles.scoreBadge, { backgroundColor: colors.goldLight, borderColor: colors.goldBorder, borderWidth: 1 }]}>
             <Text style={[styles.scoreText, { color: colors.gold }]}>{performanceScore.toFixed(0)}/100</Text>
@@ -49,11 +51,11 @@ export default function PerformanceCard({
 
       {/* Activity metrics */}
       <View style={styles.metricsGrid}>
-        <MetricItem icon="help-circle" color={colors.teal} value={questionsAsked} label="Questions" surface={colors.surfaceElevated} textColor={colors.text} textMuted={colors.textMuted} border={colors.border} />
-        <MetricItem icon="chatbubbles" color={colors.success} value={debatesParticipated} label="Debates" surface={colors.surfaceElevated} textColor={colors.text} textMuted={colors.textMuted} border={colors.border} />
-        <MetricItem icon="document-text" color={colors.gold} value={privateMemberBills} label="Bills" surface={colors.surfaceElevated} textColor={colors.text} textMuted={colors.textMuted} border={colors.border} />
+        <MetricItem icon="help-circle" color={colors.teal} value={questionsAsked} label={translateScreenLabel("parliament.questions")} surface={colors.surfaceElevated} textColor={colors.text} textMuted={colors.textMuted} border={colors.border} />
+        <MetricItem icon="chatbubbles" color={colors.success} value={debatesParticipated} label={translateScreenLabel("parliament.debates")} surface={colors.surfaceElevated} textColor={colors.text} textMuted={colors.textMuted} border={colors.border} />
+        <MetricItem icon="document-text" color={colors.gold} value={privateMemberBills} label={translateScreenLabel("civicMetrics.tabs.bills")} surface={colors.surfaceElevated} textColor={colors.text} textMuted={colors.textMuted} border={colors.border} />
         {mpladsUtilized != null && (
-          <MetricItem icon="construct" color={colors.primary} value={`${mpladsUtilized}%`} label="MPLADS" surface={colors.surfaceElevated} textColor={colors.text} textMuted={colors.textMuted} border={colors.border} />
+          <MetricItem icon="construct" color={colors.primary} value={`${mpladsUtilized}%`} label={translateScreenLabel("screenLabels.PerformanceCard.mplads")} surface={colors.surfaceElevated} textColor={colors.text} textMuted={colors.textMuted} border={colors.border} />
         )}
       </View>
     </View>

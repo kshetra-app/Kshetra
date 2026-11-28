@@ -5,6 +5,7 @@
  * with a mandatory source citation. The submission is fingerprinted (CCA/KYC)
  * and queued for moderation via `representative_edits`.
  */
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, Pressable, Alert } from 'react-native';
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
@@ -27,6 +28,7 @@ const EDITABLE_FIELDS: { key: string; label: string; keyboard?: 'default' | 'pho
 ];
 
 export default function RepresentativeEditScreen() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { id, office, jurisdiction } = useLocalSearchParams<{ id: string; office?: string; jurisdiction?: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -86,11 +88,11 @@ export default function RepresentativeEditScreen() {
     if (submitting || !rep) return;
     const diff = buildDiff();
     if (Object.keys(diff).length === 0) {
-      Alert.alert('No changes', 'Edit at least one field before submitting.');
+      Alert.alert(translateScreenLabel("screenLabels.edit.noChanges"), translateScreenLabel("screenLabels.edit.editAtLeastOneFieldBeforeSubmitting"));
       return;
     }
     if (!sourceUrl.trim().startsWith('https://')) {
-      Alert.alert('Source required', 'Enter an HTTPS link supporting the correction.');
+      Alert.alert(translateScreenLabel("screenLabels.edit.sourceRequired"), translateScreenLabel("screenLabels.edit.enterAnHttpsLinkSupportingTheCorrection"));
       return;
     }
 
@@ -109,11 +111,11 @@ export default function RepresentativeEditScreen() {
       logContentAction('add_evidence', {
         type: 'representative_edit', id: rep.id, body: sourceUrl.trim(), screenName: 'representative_edit',
       });
-      Alert.alert('Thank you', 'Your correction has been submitted for review.', [
-        { text: 'Done', onPress: () => router.back() },
+      Alert.alert(translateScreenLabel("screenLabels.edit.thankYou"), translateScreenLabel("screenLabels.edit.yourCorrectionHasBeenSubmittedForReview"), [
+        { text: translateScreenLabel("common.done"), onPress: () => router.back() },
       ]);
     } catch (error) {
-      Alert.alert('Submission failed', error instanceof Error ? error.message : 'Please try again later.');
+      Alert.alert(translateScreenLabel("screenLabels.edit.submissionFailed"), error instanceof Error ? error.message : translateScreenLabel("screenLabels.edit.pleaseTryAgainLater"));
     } finally {
       setSubmitting(false);
     }
@@ -136,14 +138,11 @@ export default function RepresentativeEditScreen() {
           ),
         }}
       />
-      {loadError && <Text style={{ color: colors.text, padding: 16 }}>The representative profile could not be loaded.</Text>}
+      {loadError && <Text style={{ color: colors.text, padding: 16 }}>{translateScreenLabel("screenLabels.edit.theRepresentativeProfileCouldNotBeLoaded")}</Text>}
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 32 }}>
         <View style={[styles.banner, { backgroundColor: colors.primaryLight, borderColor: colors.primary + '40' }]}>
           <Ionicons name="shield-checkmark-outline" size={16} color={colors.primary} />
-          <Text style={[styles.bannerText, { color: colors.textSecondary }]}>
-            {office ? `${office} · ` : ''}{jurisdiction ?? ''}{'\n'}
-            Every edit requires a verifiable source and is fingerprinted for accountability. Edits are moderated before publishing.
-          </Text>
+          <Text style={[styles.bannerText, { color: colors.textSecondary }]}>{translateScreenLabel("screenLabels.edit.value1Value2Value3EveryEditRequiresAVerifiable", { value1: office ? `${office} · ` : '', value2: jurisdiction ?? '', value3: '\n' })}</Text>
         </View>
 
         {EDITABLE_FIELDS.filter(({ key }) => key !== 'party' || rep?.partyOfficial).map((f) => (
@@ -163,25 +162,25 @@ export default function RepresentativeEditScreen() {
         <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
         <View style={styles.fieldWrap}>
-          <Text style={[styles.label, { color: colors.textSecondary }]}>Source link (required)</Text>
+          <Text style={[styles.label, { color: colors.textSecondary }]}>{translateScreenLabel("screenLabels.edit.sourceLinkRequired")}</Text>
           <TextInput
             value={sourceUrl}
             onChangeText={setSourceUrl}
             keyboardType="url"
             autoCapitalize="none"
-            placeholder="https://tsec.gov.in/... or news / gazette URL"
+            placeholder={translateScreenLabel("screenLabels.edit.httpsTsecGovInOrNewsGazetteUrl")}
             placeholderTextColor={colors.textMuted}
             style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text }]}
           />
         </View>
 
         <View style={styles.fieldWrap}>
-          <Text style={[styles.label, { color: colors.textSecondary }]}>Citation / note (optional)</Text>
+          <Text style={[styles.label, { color: colors.textSecondary }]}>{translateScreenLabel("screenLabels.edit.citationNoteOptional")}</Text>
           <TextInput
             value={citation}
             onChangeText={setCitation}
             multiline
-            placeholder="e.g. TSEC Know-Your-Representative page, published 2020-12-04"
+            placeholder={translateScreenLabel("screenLabels.edit.eGTsecKnowYourRepresentativePagePublished")}
             placeholderTextColor={colors.textMuted}
             style={[styles.input, styles.multiline, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text }]}
           />
@@ -193,7 +192,7 @@ export default function RepresentativeEditScreen() {
           onPress={handleSubmit}
         >
           <Ionicons name="send" size={16} color="#FFF" />
-          <Text style={styles.submitText}>{submitting ? 'Submitting…' : 'Submit for moderation'}</Text>
+          <Text style={styles.submitText}>{submitting ? translateScreenLabel("screenLabels.edit.submitting") : translateScreenLabel("screenLabels.edit.submitForModeration")}</Text>
         </Pressable>
       </ScrollView>
       <DiscoveryHubSheet

@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +13,7 @@ interface SeatProjectionCardProps {
 }
 
 export default function SeatProjectionCard({ allocation, compact = false, onPress }: SeatProjectionCardProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const { colors } = useTheme();
   const isGainer = allocation.seatChange > 0;
@@ -97,15 +99,9 @@ export default function SeatProjectionCard({ allocation, compact = false, onPres
 
       {/* Population stats */}
       <View style={styles.statsRow}>
-        <Text style={[styles.statText, { color: colors.textMuted }]}>
-          Pop: {formatPopulation(allocation.totalPopulation)}
-        </Text>
-        <Text style={[styles.statText, { color: colors.textMuted }]}>
-          Pop/Seat: {formatPopulation(allocation.populationPerProjectedSeat)}
-        </Text>
-        <Text style={[styles.statText, { color: Math.abs(allocation.deviationPercent) > 10 ? colors.danger : colors.textMuted }]}>
-          Dev: {allocation.deviationPercent > 0 ? '+' : ''}{allocation.deviationPercent.toFixed(1)}%
-        </Text>
+        <Text style={[styles.statText, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.SeatProjectionCard.popValue1", { value1: formatPopulation(allocation.totalPopulation) })}</Text>
+        <Text style={[styles.statText, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.SeatProjectionCard.popSeatValue1", { value1: formatPopulation(allocation.populationPerProjectedSeat) })}</Text>
+        <Text style={[styles.statText, { color: Math.abs(allocation.deviationPercent) > 10 ? colors.danger : colors.textMuted }]}>{translateScreenLabel("screenLabels.SeatProjectionCard.devValue1Value2", { value1: allocation.deviationPercent > 0 ? '+' : '', value2: allocation.deviationPercent.toFixed(1) })}</Text>
       </View>
     </Pressable>
   );

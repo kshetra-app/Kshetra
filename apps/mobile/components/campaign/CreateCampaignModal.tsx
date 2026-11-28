@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -26,6 +27,7 @@ interface CreateCampaignModalProps {
 }
 
 export default function CreateCampaignModal({ visible, onClose, onCreated }: CreateCampaignModalProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
@@ -174,7 +176,7 @@ export default function CreateCampaignModal({ visible, onClose, onCreated }: Cre
               onChangeText={(value) => setStateCode(value.replace(/[^a-z]/gi, '').slice(0, 2).toUpperCase())}
               maxLength={2}
               autoCapitalize="characters"
-              placeholder="TS"
+              placeholder={translateScreenLabel("screenLabels.localBodies.ts")}
               placeholderTextColor={colors.textSecondary}
             />
 

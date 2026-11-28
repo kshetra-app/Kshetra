@@ -7,6 +7,16 @@ jest.mock('../lib/supabase', () => ({ supabase: { from: jest.fn() } }));
 test('returns cited facts from the registry without implying an approved Poligram Page', async () => {
   const sourceUrl = 'https://www.eci.gov.in/constitution-of-political-party';
   const facts = [{ kind: 'constitution', sourceUrl }];
+  const election = {
+    kind: 'electionProfile',
+    election: 'lokSabha',
+    year: 2024,
+    category: 'state',
+    eciCode: 'JD(U)',
+    seatsWon: 12,
+    sourceUrl:
+      'https://www.eci.gov.in/eci-backend/public/all_files/GE-2024-statistical-report/3-List-Of-Political-Parties-Participated.pdf',
+  };
   const lookup = {
     select: jest.fn().mockReturnThis(),
     eq: jest.fn().mockReturnThis(),
@@ -19,7 +29,7 @@ test('returns cited facts from the registry without implying an approved Poligra
         name: 'Janata Dal (United)',
         short_name: 'JDU',
         page_id: null,
-        profile_evidence: facts,
+        profile_evidence: [...facts, election],
         provenance_records: { metadata: { sourceUrl } },
         organization_multilingual_names: [
           { language_code: 'hi', name_value: 'जनता दल (यूनाइटेड)', valid_from: '2003-10-30' },
@@ -48,6 +58,9 @@ test('returns cited facts from the registry without implying an approved Poligra
       names: [{ language_code: 'hi', name_value: 'जनता दल (यूनाइटेड)' }],
     });
     expect(result.json()).not.toHaveProperty('profile_evidence');
+    const fullProfile = await app.inject('/api/v1/parties/ORG-PARTY-JDU?profile=full');
+    expect(fullProfile.statusCode).toBe(200);
+    expect(fullProfile.json().profileEvidence).toEqual([...facts, election]);
     expect(supabase.from).toHaveBeenCalledWith('political_organizations');
     expect(lookup.eq).toHaveBeenCalledWith('id', 'ORG-PARTY-JDU');
     expect(lookup.eq).toHaveBeenCalledWith('org_type', 'political_party');

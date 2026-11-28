@@ -4,38 +4,20 @@ import os from 'os';
 import path from 'path';
 import crypto from 'crypto';
 import { execSync } from 'child_process';
+import { verifyCheckoutLineage } from './lib/checkout-lineage.mjs';
 
 console.log('=== RUNNING DEDICATED INDEPENDENT GOVERNANCE REGRESSION SUITE (AMENDMENT v1.6 - REV-8) ===\n');
 
 // =============================================================================
 // INDEPENDENT RUNTIME & GIT REPOSITORY STATE DERIVATION
 // =============================================================================
-const actualHead = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
+const actualHead = verifyCheckoutLineage();
 const actualOriginMaster = execSync('git rev-parse origin/master', { encoding: 'utf8' }).trim();
 const actualBranch = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
 const porcelainStatus = execSync('git status --porcelain', { encoding: 'utf8' }).trim();
 
 assert.strictEqual(actualHead.length, 40, 'Actual local HEAD SHA must be 40 characters');
 assert.strictEqual(actualOriginMaster.length, 40, 'Actual origin/master SHA must be 40 characters');
-const githubEventName = process.env.GITHUB_EVENT_NAME || '';
-if (githubEventName === 'pull_request') {
-  const baseRef = process.env.GITHUB_BASE_REF || '';
-  const headRef = process.env.GITHUB_HEAD_REF || '';
-  const githubSha = process.env.GITHUB_SHA || '';
-  assert.strictEqual(baseRef, 'master', 'Governance PR base must be canonical master');
-  assert.strictEqual(actualBranch, 'HEAD', 'GitHub pull_request checkout must use detached merge HEAD');
-  assert.strictEqual(actualHead, githubSha, 'PR checkout HEAD must match GITHUB_SHA');
-  const firstParent = execSync('git rev-parse HEAD^1', { encoding: 'utf8' }).trim();
-  const secondParent = execSync('git rev-parse HEAD^2', { encoding: 'utf8' }).trim();
-  assert.strictEqual(firstParent, actualOriginMaster, 'PR merge first parent must match origin/master');
-  assert.match(headRef, /^[A-Za-z0-9._/-]+$/, 'PR head branch must be a safe branch name');
-  assert.ok(!headRef.includes('..'), 'PR head branch must not contain a path traversal segment');
-  const originHead = execSync(`git rev-parse "origin/${headRef}"`, { encoding: 'utf8' }).trim();
-  assert.strictEqual(secondParent, originHead, 'PR merge second parent must match origin/<head>');
-} else {
-  assert.strictEqual(actualBranch, 'master', 'Active branch must be master for non-PR governance execution');
-}
-
 console.log(`[REPOSITORY STATE] Branch: ${actualBranch}`);
 console.log(`[REPOSITORY STATE] Local HEAD: ${actualHead}`);
 console.log(`[REPOSITORY STATE] origin/master: ${actualOriginMaster}`);

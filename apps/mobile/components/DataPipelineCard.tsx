@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { DataPipelineStatus } from '../lib/electionLiveTypes';
@@ -9,6 +10,7 @@ interface DataPipelineCardProps {
 }
 
 function PipelineRow({ item }: { item: DataPipelineStatus }) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const freshnessColor = getDataFreshnessColor(item.freshness);
   return (
     <View style={styles.row}>
@@ -19,13 +21,14 @@ function PipelineRow({ item }: { item: DataPipelineStatus }) {
       </View>
       <View style={styles.rowStats}>
         <Text style={styles.recordCount}>{item.recordCount > 0 ? item.recordCount.toLocaleString() : '-'}</Text>
-        <Text style={styles.recordLabel}>records</Text>
+        <Text style={styles.recordLabel}>{translateScreenLabel("intelligence.records")}</Text>
       </View>
     </View>
   );
 }
 
 export default function DataPipelineCard({ pipeline, onRefresh }: DataPipelineCardProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const healthy = pipeline.filter((p) => p.isHealthy).length;
   const total = pipeline.length;
   const overallHealthy = healthy === total;
@@ -35,12 +38,12 @@ export default function DataPipelineCard({ pipeline, onRefresh }: DataPipelineCa
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Ionicons name="git-network" size={18} color="#4F8EF7" />
-          <Text style={styles.title}>Data Pipeline</Text>
+          <Text style={styles.title}>{translateScreenLabel("screenLabels.DataPipelineCard.dataPipeline")}</Text>
         </View>
         <View style={styles.headerRight}>
           <View style={[styles.healthBadge, { backgroundColor: overallHealthy ? '#10B98120' : '#EF444420' }]}>
             <View style={[styles.healthDotLarge, { backgroundColor: overallHealthy ? '#10B981' : '#EF4444' }]} />
-            <Text style={[styles.healthText, { color: overallHealthy ? '#10B981' : '#EF4444' }]}>{healthy}/{total} healthy</Text>
+            <Text style={[styles.healthText, { color: overallHealthy ? '#10B981' : '#EF4444' }]}>{translateScreenLabel("screenLabels.DataPipelineCard.value1Value2Healthy", { value1: healthy, value2: total })}</Text>
           </View>
           {onRefresh && (
             <Pressable onPress={onRefresh} hitSlop={8}>

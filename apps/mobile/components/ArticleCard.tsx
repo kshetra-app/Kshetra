@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useTranslation } from 'react-i18next';
 import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -13,6 +14,7 @@ interface ArticleCardProps {
 }
 
 export default function ArticleCard({ article, onPress, onTip, compact }: ArticleCardProps) {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
   const { colors } = useTheme();
   const typeConfig = ARTICLE_TYPE_CONFIG[article.type];
@@ -74,7 +76,7 @@ export default function ArticleCard({ article, onPress, onTip, compact }: Articl
               <Text style={[styles.authorName, { color: colors.text }]}>{article.authorName}</Text>
               <Ionicons name={tierConfig.icon as any} size={12} color={tierConfig.color} style={{ marginLeft: 4 }} />
             </View>
-            <Text style={[styles.authorMeta, { color: colors.textMuted }]}>{t('articleCard.minRead', { n: article.readTimeMinutes })} · {article.stateCode || 'India'}</Text>
+            <Text style={[styles.authorMeta, { color: colors.textMuted }]}>{t('articleCard.minRead', { n: article.readTimeMinutes })} · {article.stateCode || translateScreenLabel("stateSwitcherExtended.india")}</Text>
           </View>
         </View>
 
@@ -113,7 +115,7 @@ export default function ArticleCard({ article, onPress, onTip, compact }: Articl
           {onTip && (
             <Pressable style={[styles.tipButton, { backgroundColor: colors.goldLight, borderColor: colors.goldBorder, borderWidth: 1 }]} onPress={onTip}>
               <Ionicons name="gift" size={14} color={colors.gold} />
-              <Text style={[styles.tipText, { color: colors.gold }]}>Tip</Text>
+              <Text style={[styles.tipText, { color: colors.gold }]}>{translateScreenLabel("journalist.tip")}</Text>
             </Pressable>
           )}
         </View>

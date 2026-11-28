@@ -1,3 +1,4 @@
+import { useTranslation as useScreenTranslation } from 'react-i18next';
 import { useMemo, useRef, useState } from 'react';
 import {
   View,
@@ -21,6 +22,7 @@ import i18n from '../i18n';
  * open an external browser.
  */
 export default function ReaderScreen() {
+  const { t: translateScreenLabel } = useScreenTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -77,7 +79,7 @@ function onYouTubeIframeAPIReady(){
         </Pressable>
         <View style={styles.headerCenter}>
           <Text style={[styles.headerTitle, { color: colors.text }]} numberOfLines={1}>
-            {params.title ?? (isVideo ? 'Video' : 'Article')}
+            {params.title ?? (isVideo ? translateScreenLabel("common.newsCategories.video") : translateScreenLabel("screenLabels.reader.article"))}
           </Text>
           {!!params.source && (
             <Text style={[styles.headerSource, { color: colors.textMuted }]} numberOfLines={1}>
@@ -134,9 +136,7 @@ function onYouTubeIframeAPIReady(){
       {!!params.source && (
         <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 8), borderTopColor: colors.border, backgroundColor: colors.surface }]}>
           <Ionicons name="link-outline" size={12} color={colors.textMuted} />
-          <Text style={[styles.footerText, { color: colors.textMuted }]} numberOfLines={1}>
-            Content from {params.source}
-          </Text>
+          <Text style={[styles.footerText, { color: colors.textMuted }]} numberOfLines={1}>{translateScreenLabel("screenLabels.reader.contentFromValue1", { value1: params.source })}</Text>
         </View>
       )}
       <DiscoveryHubSheet

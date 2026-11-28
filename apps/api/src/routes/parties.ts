@@ -9,6 +9,12 @@ const uuid = { type: 'string', format: 'uuid' };
 const partyParam = { type: 'object', required: ['id'], properties: { id: partyId } };
 const teamRoles = ['editor', 'approver', 'publisher', 'moderator'];
 const reviewRoles = new Set(['admin', 'super_admin', 'compliance_officer']);
+const legacyProfileKinds = new Set([
+  'founded',
+  'contributionReport',
+  'constitution',
+  'assemblyElection',
+]);
 const claimFields =
   'id,organization_id,claimant_id,evidence_url,authority_summary,status,review_note,reviewed_at,created_at';
 
@@ -77,9 +83,14 @@ export const partyRoutes: FastifyPluginAsync = async (app) => {
     },
   );
 
-  app.get<{ Params: { id: string } }>(
+  app.get<{ Params: { id: string }; Querystring: { profile?: 'full' } }>(
     root + '/:id',
-    { schema: { params: partyParam } },
+    {
+      schema: {
+        params: partyParam,
+        querystring: { type: 'object', properties: { profile: { const: 'full' } } },
+      },
+    },
     async (request, reply) => {
       const { data, error } = await lookupParty(request.params.id);
       if (error) return dbError(reply, request, error);
@@ -118,12 +129,16 @@ export const partyRoutes: FastifyPluginAsync = async (app) => {
         sourceUrl = citation?.source_url ?? null;
       }
       const today = new Date().toISOString().slice(0, 10);
+      const facts = (profileEvidence ?? []).filter(
+        (fact: { kind: string }) =>
+          request.query.profile === 'full' || legacyProfileKinds.has(fact.kind),
+      );
       return {
         ...party,
         page_id: verification ? linkedPage : null,
         verifiedAt: verification?.reviewed_at ?? null,
         sourceUrl,
-        profileEvidence: profileEvidence ?? [],
+        profileEvidence: facts,
         names: names
           .filter((name) => name.valid_from <= today && (!name.valid_to || name.valid_to >= today))
           .map(({ language_code, name_value }) => ({ language_code, name_value })),
