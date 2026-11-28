@@ -268,7 +268,9 @@ export default function LegislatorProfileScreen() {
         _redFlags.push({
           type: 'multiple_cases',
           severity: 'warning',
-          description: `${targetCriminalCases} criminal case${targetCriminalCases > 1 ? 's' : ''} declared in election affidavit`,
+          description: translateScreenLabel('screenLabels.representative.casesDisclosed', {
+            count: targetCriminalCases,
+          }),
         });
       }
 
@@ -287,12 +289,13 @@ export default function LegislatorProfileScreen() {
       console.error('[LegislatorProfile] Data load error:', e);
       return { mla: null, constituency: null, winnerAffidavit: null, financialRecords: [], redFlags: [], electionYear: parsedElectionYear ?? null, podiumDetail: null, podiumContest: null, isSamePersonAsSittingMLA: false };
     }
-  }, [stateCode, acNo, parsedElectionYear, parsedRank, podiumTick, incumbent, profileKey]);
+  }, [stateCode, acNo, parsedElectionYear, parsedRank, podiumTick, incumbent, profileKey, translateScreenLabel]);
 
   if (IS_LIVE_ENVIRONMENT && acNo > 0 && !podiumDetail && profileLoaded !== profileKey) {
     return (
       <View style={[styles.center, { backgroundColor: colors.background }]}>
-        <ActivityIndicator color={colors.primary} />
+        <Stack.Screen options={{ title: translateScreenLabel('additionalScreenLabels.candidate.legislator') }} />
+        <ActivityIndicator color={colors.primary} accessibilityLabel={translateScreenLabel('common.loading')} />
       </View>
     );
   }
