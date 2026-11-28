@@ -106,8 +106,7 @@ const ne = {
     },
     "ProfileHeroCard": {
       "label1stRunnerUp": "1st रनर अप",
-      "label2ndRunnerUp": "दोस्रो उपविजेता",
-      "yrs": "वर्ष"
+      "label2ndRunnerUp": "दोस्रो उपविजेता"
     },
     "ProjectCard": {
       "acValue1": "· AC # {{value1}}"
@@ -145,8 +144,7 @@ const ne = {
     },
     "intelligence": {
       "value1Value2AssemblyElections": "{{value1}}  {{value2}} · विधानसभा चुनाव",
-      "seatValue1": "सीट {{value1}}",
-      "value1SeatValue2": "{{value1}} सीट {{value2}}",
+      "seatCount": "सिट: {{count}}",
       "value1MarginOfValue2Votes": "{{value1}} — {{value2}} भोटहरूको मार्जिन",
       "marginDataUnavailable": "मार्जिन डेटा उपलब्ध छैन",
       "value1AppearsInValue2RecordedConstituenciesValue3": "{{value1}}  {{value2}} रेकर्ड गरिएका निर्वाचन क्षेत्रहरूमा देखा पर्दछ (पार्टी-ज्ञात रेकर्डहरूको {{value3}} %)",
@@ -160,7 +158,7 @@ const ne = {
       "value1TapForDevSwitches": "{{value1}} • Dev स्विचहरूका लागि ट्याप गर्नुहोस्"
     },
     "shorts": {
-      "value1ShortValue2": "{{value1}} छोटो {{value2}}"
+      "shortCount": "छोटा भिडियो: {{count}}"
     },
     "candidateXray": {
       "candidateRecordNotFound": "उम्मेदवार रेकर्ड फेला परेन",
@@ -262,7 +260,7 @@ const ne = {
       "officialElectionResultsFromTelanganaStateElection": "तेलंगाना राज्य निर्वाचन आयोग (TSEC) बाट आधिकारिक निर्वाचन परिणामहरू - आफ्नो प्रतिनिधि (KYR) जान्नुहोस्",
       "thisPollIsOfficiallyNonPartyPartyAffiliation": "यो मतदान आधिकारिक रूपमा गैर-दलीय हो। पार्टी सम्बद्धता ( {{value1}} ) वास्तविक / अनौपचारिक छ।",
       "wardValue1": "वार्ड {{value1}}",
-      "value1DeclaredCaseValue2": "{{value1}} घोषित केस {{value2}}",
+      "casesDisclosed": "शपथपत्रमा खुलाइएका मुद्दा: {{count}}",
       "verifyOnStateElectionCommissionPortal": "राज्य निर्वाचन आयोग पोर्टलमा प्रमाणित गर्नुहोस्",
       "suggestAnEditWithSource": "सम्पादन गर्न सुझाव दिनुहोस् (स्रोत सहित)"
     },
@@ -327,6 +325,7 @@ const ne = {
       "value1ToValue2": "{{value1}} देखि {{value2}}",
       "deliveryNotConnected": "डेलिभरी जडान भएको छैन",
       "value1CharsValue2": "{{value1}} वर्ण {{value2}}",
+      "smsSegmentCount": "एसएमएसका खण्ड: {{count}}",
       "goesOutValue1": "{{value1}} बाहिर जान्छ",
       "answered": "जवाफ दिए",
       "templateName": "टेम्प्लेट नाम",
@@ -389,7 +388,6 @@ const ne = {
       "activeInConstituencyOutreachSabhas": "निर्वाचन क्षेत्र आउटरिच सभाहरूमा सक्रिय",
       "label1HrAgo": "१ घण्टा अघि",
       "educationGrassrootsBackground": "शिक्षा र ग्रासरुट पृष्ठभूमि",
-      "maPublicPolicy": "పోస్ట్ గ్రాడ్యుయేషన్ (MA सार्वजनिक नीति)",
       "postGraduationMaPublicPolicy": "स्नातकोत्तर (एमए सार्वजनिक नीति)",
       "osmaniaUniversityDistinction": "उस्मानिया विश्वविद्यालय · विशिष्टता",
       "grassrootsCivicActionCommittee": "ग्रासरुट नागरिक कार्य समिति",
@@ -569,7 +567,7 @@ const ne = {
       "pending": "विचाराधीन",
       "criminalCaseDisclosureUnavailable": "आपराधिक मुद्दा खुलासा उपलब्ध छैन",
       "noCriminalCasesDeclared": "कुनै फौजदारी मुद्दा घोषणा गरिएको छैन",
-      "value1CaseValue2Value3": "{{value1}} केस {{value2}}  {{value3}}",
+      "seriousCount": "खुलाइएका गम्भीर मुद्दा: {{count}}",
       "totalCases": "कुल केसहरू",
       "serious": "गम्भीर",
       "convictions": "विश्वासहरू",
@@ -612,7 +610,7 @@ const ne = {
       "comingSoon": "चाँडै आउँदैछ"
     },
     "RedFlagsBanner": {
-      "value1RedFlagValue2Detected": "{{value1}} रातो झण्डा {{value2}} पत्ता लाग्यो"
+      "flagCount": "समीक्षा गर्नुपर्ने विषय: {{count}}"
     }
   },
   "constituencyDirectory": {
@@ -667,7 +665,7 @@ const ne = {
     "profileSummary": {
       "national": "भारतको निर्वाचन आयोगले यस पार्टीलाई {{election}} मा मान्यता प्राप्त राष्ट्रिय पार्टीको रूपमा सूचीबद्ध गर्यो।",
       "state": "भारतको निर्वाचन आयोगले यस पार्टीलाई {{election}} मा एक मान्यता प्राप्त राज्य पार्टीको रूपमा सूचीबद्ध गर्यो।",
-      "registered": "भारतको निर्वाचन आयोगले यस पार्टीलाई {{election}} मा दर्ता र अपरिचितको रूपमा सूचीबद्ध गर्यो।"
+      "registered": "{{election}} का बेला भारतको निर्वाचन आयोगले यसलाई दर्ता भएको दलका रूपमा सूचीकृत गरेको थियो। यसले राष्ट्रिय वा राज्यस्तरीय दलको मान्यता पाएको थिएन।"
     },
     "retryControls": "केही पृष्ठ नियन्त्रणहरू लोड गर्न सकिएन। पुन: प्रयास गर्नुहोस्",
     "verifyToClaim": "आवेदन दिन आफ्नो योगदानकर्ता खाता प्रमाणित गर्नुहोस्",
@@ -698,8 +696,8 @@ const ne = {
     "follow": "पेज फलो गर्नुहोस्",
     "unfollow": "पेज अनफलो गर्नुहोस्",
     "myDeclaration": "मेरो सम्बद्धता",
-    "affiliationHelp": "तपाईले एउटा पार्टीको सम्बन्ध घोषणा गर्न सक्नुहुन्छ। पृष्ठ पछ्याउँदा सम्बद्धता घोषणा गर्दैन।",
-    "publicAffiliation": "स्व-घोषित सम्बद्धता: {{party}}",
+    "affiliationHelp": "तपाईंले कुनै एक दलसँग आफ्नो आबद्धता घोषणा गर्न सक्नुहुन्छ। दलको पेज फलो गर्दा उसका नयाँ पोस्ट देखिन्छन्। यसले तपाईंले घोषणा गरेको आबद्धता बदलिँदैन।",
+    "publicAffiliation": "सदस्यले आफैँ घोषणा गरेको दलगत आबद्धता: {{party}}",
     "declare": "आबद्धता घोषणा गर्नुहोस्",
     "publicLabel": "सार्वजनिक",
     "privateLabel": "निजी",
@@ -834,7 +832,7 @@ const ne = {
     "sort": "क्रमबद्ध गर्नुहोस्",
     "compare": "तुलना गर्नुहोस्",
     "reset": "रिसेट",
-    "follow": "फॉलो गर्नुहोस्",
+    "follow": "फलो गर्नुहोस्",
     "refresh": "ताजा गर्नुहोस्",
     "viewAll": "सबै हेर्नुहोस्",
     "learnMore": "थप जान्नुहोस्",
@@ -857,10 +855,10 @@ const ne = {
     "following": "फलो गर्दै",
     "timeAgo": {
       "justNow": "भर्खरै",
-      "minutesAgo": "{{n}} मिनेट अघि",
-      "hoursAgo": "{{n}} घण्टा अघि",
-      "daysAgo": "{{n}} दिन अघि",
-      "weeksAgo": "{{n}} हप्ता अघि"
+      "minutesAgo": "{{n}} मिनेटअघि",
+      "hoursAgo": "{{n}} घण्टाअघि",
+      "daysAgo": "{{n}} दिनअघि",
+      "weeksAgo": "{{n}} हप्ताअघि"
     },
     "scopes": {
       "constituency": "निर्वाचन क्षेत्र",
@@ -994,7 +992,7 @@ const ne = {
     "viewFullConstituencyData": "पूर्ण निर्वाचन क्षेत्र डाटा हेर्नुहोस्",
     "mlaProfileDossier": "एमएलए प्रोफाइल र डोजियर",
     "following": "अनुसरण",
-    "follow": "फॉलो गर्नुहोस्",
+    "follow": "फलो गर्नुहोस्",
     "recentElectionResult": "भर्खरको चुनावी नतिजा",
     "communityPulseTitle": "निर्वाचन क्षेत्र नागरिक फोरम",
     "communityPulseDesc": "स्थानीय मतदाताहरूसँग जडान गर्नुहोस्, नागरिक मुद्दाहरू रिपोर्ट गर्नुहोस्, वा यस निर्वाचन क्षेत्रको लागि तल्लो तहका सामुदायिक छलफलहरू हेर्नुहोस्।",
@@ -1656,7 +1654,8 @@ const ne = {
       "acknowledged": "स्वीकृत",
       "in_progress": "प्रगतिमा",
       "resolved": "समाधान गरिएको",
-      "closed": "बन्द"
+      "closed": "बन्द",
+      "reopened": "फेरि खोलियो"
     },
     "headlineCategories": {
       "politics": "राजनीति",
@@ -2394,6 +2393,7 @@ const ne = {
     "tabs": {
       "feed": "फ़ीड",
       "factChecks": "फ़ैक्ट चेक",
+      "journalists": "पत्रकारहरू",
       "investigations": "जाँच",
       "myArticles": "मेरे लेख"
     },
@@ -2445,7 +2445,7 @@ const ne = {
     "grievanceCount": "{{count}} शिकायतें",
     "pendingGrievances": "लंबित",
     "resolvedGrievances": "निपटाई गई",
-    "live": "लाइভ",
+    "live": "प्रत्यक्ष",
     "cancelled": "रद्द",
     "going": "जा रहे छन्",
     "attended": "उपस्थित",
@@ -2594,7 +2594,7 @@ const ne = {
     "serviceVoice": "वॉयस कॉल (OBD)",
     "serviceMeta": "फेसबुक पेज",
     "whatsappFreeTitle": "पूर्णतः निःशुल्क · सीधा संपर्क",
-    "whatsappPricingDesc": "अपने आधिकोरिक फोन से असीमित स्टेटस साझा गर्नुहोस् और ग्रुप ब्रॉडकोस्ट गर्नुहोस्। किसी टेलीकॉम अनुमोदन को आवश्यकता नहीं।",
+    "whatsappPricingDesc": "आफ्नो आधिकारिक फोनबाट स्टाटस सेयर गर्नुहोस् र समूहमा सन्देश पठाउनुहोस्।",
     "guidanceTitle": "यह कैसे कोम करता छ और नियम",
     "dos": "क्या गर्नुहोस्",
     "donts": "क्या न गर्नुहोस्",
@@ -2879,7 +2879,7 @@ const ne = {
       "goBack": "पछाडि जानुहोस्",
       "provisioning": "स्ट्रिम तयार गरिदै…",
       "replayUnavailable": "रिप्ले उपलब्ध छैन",
-      "live": "लाइভ",
+      "live": "प्रत्यक्ष",
       "replay": "रिप्ले गर्नुहोस्",
       "viewers": "{{count}} दर्शक",
       "viewers_one": "{{count}} दर्शक",
@@ -3008,7 +3008,7 @@ const ne = {
       "bypassed": "बाइपास गरिएको"
     },
     "card": {
-      "live": "लाइভ",
+      "live": "प्रत्यक्ष",
       "replay": "रिप्ले गर्नुहोस्",
       "viewers": "{{count}} दर्शक",
       "viewers_one": "{{count}} दर्शक",
@@ -3020,7 +3020,7 @@ const ne = {
     "broadcaster": {
       "endBroadcast": "प्रसारण समाप्त गर्नुहोस्",
       "connecting": "जडान हुँदै…",
-      "live": "लाइভ",
+      "live": "प्रत्यक्ष",
       "reconnecting": "पुनः जडान हुँदै…",
       "connectionFailed": "जडान असफल भयो",
       "cameraPermission": "क्यामेरा अनुमति आवश्यक छ",
@@ -3038,7 +3038,7 @@ const ne = {
     }
   },
   "liveElection": {
-    "screenTitle": "लाइভ निर्वाचन केन्द्र",
+    "screenTitle": "प्रत्यक्ष निर्वाचन केन्द्र",
     "screenSubtitle": "वास्तविक समयको मतगणना र नतिजाहरू",
     "noLiveElection": "हाल कुनै प्रत्यक्ष निर्वाचन सञ्चालनमा छैन",
     "noLiveElectionDesc": "मतगणना सुरु भएपछि नतिजाहरू प्रत्यक्ष अपडेट हुनेछन्।",
@@ -3048,7 +3048,7 @@ const ne = {
     "systemHealth": "गणना पाइपलाइन: {{status}} ({{healthy}}/{{total}} स्रोत चालू)",
     "title": "लाइव चुनाव",
     "subtitle": "रियल-टाइम मतगणना और परिणाम",
-    "live": "लाइভ",
+    "live": "प्रत्यक्ष",
     "declared": "घोषित",
     "countingComplete": "मतगणना पूर्ण",
     "majority": "बहुमत",
@@ -3413,7 +3413,7 @@ const ne = {
     "targetYearRequired": "तपाईले लड्न चाहनु भएको चुनावी वर्ष छान्नुहोस्।",
     "affiliationRequired": "जारी राख्नको लागि सम्बद्धता छान्नुहोस्।",
     "title": "आकांक्षी बन्नुहोस्",
-    "introText": "एक सार्वजनिक नागरिक प्रोफ़ाइल बनाएं ताकि अपने सिविक स्कोर को ट्रैक कर सकां, बैज कमा सकां और अपने निर्वाचन क्षेत्र को बता सकां कि आप नेतृत्व करना चाहते छन्। आप कभी भी अपनी प्रोफ़ाइल छिपा सकते छन्।",
+    "introText": "आफ्नो नागरिक स्कोर हेर्न र कहाँ सेवा गर्न चाहनुहुन्छ भन्ने जानकारी दिन नागरिक प्रोफाइल बनाउनुहोस्। यसलाई सार्वजनिक राख्ने वा नराख्ने निर्णय तपाईंको हो।",
     "publicName": "सार्वजनिक नाम",
     "namePlaceholder": "मतदाता जो नाम देखेंगे",
     "nameRequired": "नाम आवश्यक",
@@ -3434,9 +3434,9 @@ const ne = {
     "listInDirectoryDesc": "अन्य नागरिक आपको ढूंढ और समर्थन कर सकते छन्।",
     "createProfile": "मेरो आकांक्षी प्रोफाइल बनाउनुहोस्",
     "welcomeTitle": "स्वागत, आकांक्षी!",
-    "welcomeMsg": "आपको नागरिक प्रोफ़ाइल सक्रिय छ। अपना सिविक स्कोर बढ़ाने का लिए मॉड्यूल और चुनौतियां पूरी गर्नुहोस्।",
+    "welcomeMsg": "तपाईंको नागरिक प्रोफाइल सुरक्षित भयो। यसलाई कसले हेर्न सक्छ भन्ने कुरा प्रोफाइल सेटिङमा बदल्न सक्नुहुन्छ।",
     "successTitle": "स्वागत छ, आकोंक्षी नेता!",
-    "successMsg": "आपको नागरिक प्रोफाइल लाइव छ। अपना सिविक स्कोर बढ़ाने का लिए मॉड्यूल और चुनौतियां पूरी गर्नुहोस्।",
+    "successMsg": "तपाईंको नागरिक प्रोफाइल सुरक्षित भयो। यसलाई कसले हेर्न सक्छ भन्ने कुरा प्रोफाइल सेटिङमा बदल्न सक्नुहुन्छ।",
     "errorTitle": "प्रोफाइल नहीं बन सको",
     "errorMsg": "कुछ गलत हुआ। कृपया पुनः प्रयास गर्नुहोस्।",
     "letsGo": "सुरु गरौं",
@@ -3771,12 +3771,12 @@ const ne = {
     "democraticCuration": "लोकतांत्रिक स्थानीय चयन",
     "curationDesc": "अपने निर्वाचन क्षेत्र को तय करने में मदद गर्नुहोस् कि कौन सी सामग्री प्रासंगिक और विश्वसनीय छ।",
     "approve": "स्वीकृति",
-    "flagShort": "फ़्लैग गर्नुहोस्",
+    "flagShort": "समीक्षाका लागि रिपोर्ट गर्नुहोस्",
     "skip": "छोड्नुहोस्",
     "views": "व्यूज़",
     "comments": "टिप्पणियां",
     "noComments": "अभी कोई टिप्पणी नहीं छ",
-    "addComment": "टिप्पणी जोड़ें...",
+    "addComment": "टिप्पणी लेख्नुहोस्…",
     "post": "पोस्ट गर्नुहोस्",
     "videoUnavailableDesc": "यह वीडियो लोड नहीं हो सको। इसे हटा दिया गया हो सकता छ या यह क्षेत्र-प्रतिबंधित छ।",
     "alertReportedTitle": "रिपोर्ट किया गया",
@@ -3913,7 +3913,7 @@ const ne = {
     "directoryTitle": "स्थानीय निकाय निर्देशिका",
     "nationalSelectStateDesc": "ग्राम पञ्चायत, सरपञ्च र वडा सदस्य निर्वाचन रेकર્ડहरू उपलब्ध छन्। चयन गर्नुहोस्:",
     "stateIngestionDesc": "{{state}} को लागि राज्य निर्वाचन आयोगबाट पञ्चायत रेकર્ડहरू समावेश गरिँदैछ:",
-    "verifiedTsec": "प्रमाणित आधिकारिक रेकર્ડहरू",
+    "verifiedTsec": "TSEC बाट पुष्टि भएको",
     "tsStatsSummary": "३१ जिल्लाहरू · १२,७०৫ ग्राम पञ्चायतहरू",
     "tsRecordsSummary": "७२,१३४ प्रमाणित प्रतिनिधि रेकર્ડहरू",
     "verifiedApsec": "प्रमाणित APSEC",
@@ -3934,7 +3934,7 @@ const ne = {
     "campaignHQDesc": "चुनाव लड्नुहोस्, प्रचार व्यवस्थापन गर्नुहोस्, ह्वाट्सएप र एसएमएस मार्फत मतदातासम्म पुग्नुहोस्",
     "sections": {
       "politiciansAndCampaign": "राजनीतिज्ञ र प्रचार",
-      "liveMediaExchange": "लाइभ मिडिया एक्सचेन्ج",
+      "liveMediaExchange": "प्रत्यक्ष प्रसारण",
       "civicAndElections": "नागरिक सेवा र निर्वाचन",
       "account": "खाता"
     },
@@ -3952,7 +3952,7 @@ const ne = {
       "moderation": "मध्यस्थता",
       "distribution": "वितरण",
       "devSwitches": "डेभ स्विचहरू",
-      "civicDashboard": "नागरिक ड्यासबોર્ડ",
+      "civicDashboard": "नागरिक ड्यासबोर्ड",
       "delimitation": "क्षेत्र पुनर्निर्धारण",
       "analytics": "गहिरो विश्लेषण",
       "civicMetrics": "नागरिक मेट्रिक्स",

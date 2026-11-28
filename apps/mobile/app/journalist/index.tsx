@@ -16,9 +16,9 @@ import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 type JournalistTab = 'news' | 'factcheck' | 'breaking' | 'journalists';
 
 const TAB_KEYS: { key: JournalistTab; icon: string; i18nKey: string }[] = [
-  { key: 'news', icon: 'newspaper', i18nKey: 'journalist.tabs.news' },
-  { key: 'breaking', icon: 'flash', i18nKey: 'journalist.tabs.breaking' },
-  { key: 'factcheck', icon: 'shield-checkmark', i18nKey: 'journalist.tabs.factcheck' },
+  { key: 'news', icon: 'newspaper', i18nKey: 'tabs.news' },
+  { key: 'breaking', icon: 'flash', i18nKey: 'common.newsCategories.breaking' },
+  { key: 'factcheck', icon: 'shield-checkmark', i18nKey: 'journalist.tabs.factChecks' },
   { key: 'journalists', icon: 'people', i18nKey: 'journalist.tabs.journalists' },
 ];
 

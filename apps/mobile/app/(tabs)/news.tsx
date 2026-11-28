@@ -26,9 +26,9 @@ import { getUnifiedConstituenciesForState } from '../../lib/stateDataAdapter';
 import {
   NEWS_LANGUAGES,
   NEWS_CATEGORIES,
-  formatRelativeTime,
   type NewsItem,
 } from '../../lib/newsTypes';
+import { useTimeAgo } from '../../lib/useTimeAgo';
 import NewsCard from '../../components/NewsCard';
 import AdCard from '../../components/AdCard';
 import { AD_INSERT_INTERVAL } from '../../lib/adConfig';
@@ -42,6 +42,7 @@ export default function NewsScreen() {
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [showScopeModal, setShowScopeModal] = useState(false);
   const { t } = useTranslation();
+  const { timeAgo } = useTimeAgo(true);
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
 
@@ -208,7 +209,7 @@ export default function NewsScreen() {
               {hasFeedSnapshot
                 ? refreshFailed
                   ? t('news.refreshFailed', { defaultValue: 'Refresh failed. Showing recent saved stories.' })
-                  : t('news.lastUpdated', { time: formatRelativeTime(generatedAt), defaultValue: 'Updated {{time}}' })
+                  : t('news.lastUpdated', { time: timeAgo(generatedAt), defaultValue: 'Updated {{time}}' })
                 : loading || !loaded
                   ? t('common.loading')
                   : t('common.newsUnavailable', { defaultValue: 'News is unavailable right now.' })}

@@ -103,8 +103,7 @@ const ml = {
     },
     "ProfileHeroCard": {
       "label1stRunnerUp": "ഒന്നാം റണ്ണറപ്പ്",
-      "label2ndRunnerUp": "രണ്ടാം റണ്ണറപ്പ്",
-      "yrs": "വർഷം"
+      "label2ndRunnerUp": "രണ്ടാം റണ്ണറപ്പ്"
     },
     "ProjectCard": {
       "acValue1": "· എസി # {{value1}}"
@@ -129,7 +128,7 @@ const ml = {
       "othersValue1": "മറ്റുള്ളവ: {{value1}} %",
       "value1Cr": "₹ {{value1}} കോടി",
       "netValue1Cr": "മൊത്തം: ₹ {{value1}} Cr",
-      "value1Yrs": "{{value1}} വർഷം",
+      "value1Yrs": "{{value1}} വയസ്സ്",
       "dobValue1": "ജനനത്തീയതി · {{value1}}",
       "tapAnyStateToExploreItsAssemblyConstituencies": "ഏതെങ്കിലും സംസ്ഥാനത്തിൻ്റെ നിയമസഭാ മണ്ഡലങ്ങൾ പര്യവേക്ഷണം ചെയ്യാൻ ടാപ്പ് ചെയ്യുക",
       "boothValue1": "ബൂത്ത് # {{value1}}",
@@ -142,8 +141,7 @@ const ml = {
     },
     "intelligence": {
       "value1Value2AssemblyElections": "{{value1}}  {{value2}} · നിയമസഭാ തിരഞ്ഞെടുപ്പ്",
-      "seatValue1": "സീറ്റ് {{value1}}",
-      "value1SeatValue2": "{{value1}} സീറ്റ് {{value2}}",
+      "seatCount": "സീറ്റുകൾ: {{count}}",
       "value1MarginOfValue2Votes": "{{value1}} — {{value2}} വോട്ടുകളുടെ മാർജിൻ",
       "marginDataUnavailable": "മാർജിൻ ഡാറ്റ ലഭ്യമല്ല",
       "value1AppearsInValue2RecordedConstituenciesValue3": "{{value2}} രേഖപ്പെടുത്തിയിട്ടുള്ള നിയോജകമണ്ഡലങ്ങളിൽ {{value1}} ദൃശ്യമാകുന്നു ( പാർട്ടി അറിയപ്പെടുന്ന റെക്കോർഡുകളുടെ {{value3}} %)",
@@ -157,7 +155,7 @@ const ml = {
       "value1TapForDevSwitches": "{{value1}} • ദേവ് സ്വിച്ചുകൾക്കായി ടാപ്പ് ചെയ്യുക"
     },
     "shorts": {
-      "value1ShortValue2": "{{value1}} ഹ്രസ്വമായ {{value2}}"
+      "shortCount": "ഹ്രസ്വ വീഡിയോകൾ: {{count}}"
     },
     "candidateXray": {
       "candidateRecordNotFound": "സ്ഥാനാർത്ഥി രേഖ കണ്ടെത്തിയില്ല",
@@ -245,7 +243,7 @@ const ml = {
     },
     "parliament": {
       "lokSabha18th": "ലോക്സഭ (18)",
-      "value1Yrs": "{{value1}} വർഷം",
+      "value1Yrs": "{{value1}} വയസ്സ്",
       "lsValue1RsValue2TotalValue3": "LS: {{value1}} · RS: {{value2}} · ആകെ: {{value3}}"
     },
     "reader": {
@@ -259,7 +257,7 @@ const ml = {
       "officialElectionResultsFromTelanganaStateElection": "തെലങ്കാന സംസ്ഥാന തിരഞ്ഞെടുപ്പ് കമ്മീഷനിൽ (TSEC) നിന്നുള്ള ഔദ്യോഗിക തിരഞ്ഞെടുപ്പ് ഫലങ്ങൾ — നിങ്ങളുടെ പ്രതിനിധിയെ അറിയുക (KYR)",
       "thisPollIsOfficiallyNonPartyPartyAffiliation": "ഈ വോട്ടെടുപ്പ് ഔദ്യോഗികമായി കക്ഷിരഹിതമാണ്. പാർട്ടി അഫിലിയേഷൻ ( {{value1}} ) യഥാർത്ഥ / അനൗദ്യോഗികമാണ്.",
       "wardValue1": "വാർഡ് {{value1}}",
-      "value1DeclaredCaseValue2": "{{value1}} കേസ് {{value2}} പ്രഖ്യാപിച്ചു",
+      "casesDisclosed": "സത്യവാങ്മൂലത്തിൽ വെളിപ്പെടുത്തിയ കേസുകൾ: {{count}}",
       "verifyOnStateElectionCommissionPortal": "സംസ്ഥാന തിരഞ്ഞെടുപ്പ് കമ്മീഷൻ പോർട്ടലിൽ പരിശോധിക്കുക",
       "suggestAnEditWithSource": "ഒരു എഡിറ്റ് നിർദ്ദേശിക്കുക (ഉറവിടത്തോടെ)"
     },
@@ -324,6 +322,7 @@ const ml = {
       "value1ToValue2": "{{value1}} മുതൽ {{value2}} വരെ",
       "deliveryNotConnected": "ഡെലിവറി ബന്ധിപ്പിച്ചിട്ടില്ല",
       "value1CharsValue2": "{{value1}} അക്ഷരങ്ങൾ {{value2}}",
+      "smsSegmentCount": "എസ്എംഎസ് ഭാഗങ്ങൾ: {{count}}",
       "goesOutValue1": "{{value1}} പുറത്തേക്ക് പോകുന്നു",
       "answered": "ഉത്തരം നൽകി",
       "templateName": "ടെംപ്ലേറ്റ് പേര്",
@@ -389,7 +388,6 @@ const ml = {
       "activeInConstituencyOutreachSabhas": "മണ്ഡലം ജനസമ്പർക്ക സഭകളിൽ സജീവം",
       "label1HrAgo": "1 മണിക്കൂർ മുമ്പ്",
       "educationGrassrootsBackground": "വിദ്യാഭ്യാസവും ഗ്രാസ്റൂട്ട് പശ്ചാത്തലവും",
-      "maPublicPolicy": "പോസ്റ്റ് ഗ്രാഡ്യുയേഷൻ (എംഎ പബ്ലിക് പോളിസി)",
       "postGraduationMaPublicPolicy": "ബിരുദാനന്തര ബിരുദം (എംഎ പബ്ലിക് പോളിസി)",
       "osmaniaUniversityDistinction": "ഒസ്മാനിയ യൂണിവേഴ്സിറ്റി · വ്യത്യസ്തത",
       "grassrootsCivicActionCommittee": "ഗ്രാസ്റൂട്ട് സിവിക് ആക്ഷൻ കമ്മിറ്റി",
@@ -568,7 +566,7 @@ const ml = {
       "pending": "കെട്ടിക്കിടക്കുന്നു",
       "criminalCaseDisclosureUnavailable": "ക്രിമിനൽ കേസ് വെളിപ്പെടുത്തൽ ലഭ്യമല്ല",
       "noCriminalCasesDeclared": "ക്രിമിനൽ കേസുകളൊന്നും പ്രഖ്യാപിച്ചിട്ടില്ല",
-      "value1CaseValue2Value3": "{{value1}} കേസ് {{value2}}  {{value3}}",
+      "seriousCount": "വെളിപ്പെടുത്തിയ ഗുരുതര കേസുകൾ: {{count}}",
       "totalCases": "ആകെ കേസുകൾ",
       "serious": "ഗുരുതരമായ",
       "convictions": "ബോധ്യങ്ങൾ",
@@ -612,7 +610,7 @@ const ml = {
       "comingSoon": "ഉടൻ വരുന്നു"
     },
     "RedFlagsBanner": {
-      "value1RedFlagValue2Detected": "{{value1}} ചുവന്ന പതാക {{value2}} കണ്ടെത്തി"
+      "flagCount": "പരിശോധിക്കേണ്ട കാര്യങ്ങൾ: {{count}}"
     }
   },
   "constituencyDirectory": {
@@ -667,7 +665,7 @@ const ml = {
     "profileSummary": {
       "national": "ഇന്ത്യൻ തിരഞ്ഞെടുപ്പ് കമ്മീഷൻ ഈ പാർട്ടിയെ {{election}} -ൽ അംഗീകൃത ദേശീയ പാർട്ടിയായി പട്ടികപ്പെടുത്തി.",
       "state": "ഇന്ത്യൻ തിരഞ്ഞെടുപ്പ് കമ്മീഷൻ ഈ പാർട്ടിയെ {{election}} -ൽ അംഗീകൃത സംസ്ഥാന പാർട്ടിയായി പട്ടികപ്പെടുത്തി.",
-      "registered": "ഇന്ത്യൻ തിരഞ്ഞെടുപ്പ് കമ്മീഷൻ ഈ പാർട്ടിയെ {{election}} -ൽ രജിസ്റ്റർ ചെയ്തതും അംഗീകരിക്കപ്പെടാത്തതുമായി പട്ടികപ്പെടുത്തി."
+      "registered": "{{election}} സമയത്ത് ഇന്ത്യൻ തിരഞ്ഞെടുപ്പ് കമ്മീഷൻ ഈ പാർട്ടിയെ രജിസ്റ്റർ ചെയ്ത പാർട്ടിയായി പട്ടികപ്പെടുത്തിയിരുന്നു. ദേശീയ പാർട്ടി എന്നോ സംസ്ഥാന പാർട്ടി എന്നോ അംഗീകാരമുണ്ടായിരുന്നില്ല."
     },
     "retryControls": "ചില പേജ് നിയന്ത്രണങ്ങൾ ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല. വീണ്ടും ശ്രമിക്കുക",
     "verifyToClaim": "അപേക്ഷിക്കാൻ നിങ്ങളുടെ കോൺട്രിബ്യൂട്ടർ അക്കൗണ്ട് പരിശോധിച്ചുറപ്പിക്കുക",
@@ -696,10 +694,10 @@ const ml = {
     "followers_one": "{{count}} അനുയായി",
     "followers_other": "{{count}} അനുയായികൾ",
     "follow": "പേജ് പിന്തുടരുക",
-    "unfollow": "പേജ് പിന്തുടരുന്നത് ഒഴിവാക്കുക",
+    "unfollow": "പേജ് പിന്തുടരുന്നത് നിർത്തുക",
     "myDeclaration": "എൻ്റെ അഫിലിയേഷൻ",
-    "affiliationHelp": "നിങ്ങൾക്ക് ഒരു പാർട്ടി അഫിലിയേഷൻ പ്രഖ്യാപിക്കാം. ഒരു പേജ് പിന്തുടരുന്നത് ഒരു അഫിലിയേഷൻ പ്രഖ്യാപിക്കുന്നില്ല.",
-    "publicAffiliation": "സ്വയം പ്രഖ്യാപിത അഫിലിയേഷൻ: {{party}}",
+    "affiliationHelp": "ഒരു പാർട്ടിയുമായുള്ള ബന്ധം നിങ്ങൾക്ക് അറിയിക്കാം. ആ പാർട്ടിയുടെ പേജ് പിന്തുടർന്നാൽ പുതിയ പോസ്റ്റുകൾ കാണാം. അതുകൊണ്ട് നിങ്ങൾ അറിയിച്ച പാർട്ടി ബന്ധം മാറില്ല.",
+    "publicAffiliation": "അംഗം സ്വയം അറിയിച്ച പാർട്ടി ബന്ധം: {{party}}",
     "declare": "അഫിലിയേഷൻ പ്രഖ്യാപിക്കുക",
     "publicLabel": "പബ്ലിക്",
     "privateLabel": "സ്വകാര്യം",
@@ -834,7 +832,7 @@ const ml = {
     "sort": "ക്രമീകരിക്കുക",
     "compare": "പോല്ചംഡി",
     "reset": "റീസെറ്റ്",
-    "follow": "അനുസരിംചംഡി",
+    "follow": "പിന്തുടരുക",
     "refresh": "പുതുക്കുക",
     "viewAll": "എല്ലാം കാണുക",
     "learnMore": "കൂടുതലറിയുക",
@@ -856,7 +854,7 @@ const ml = {
     "followers": "ഫോളോവേഴ്‌സ്",
     "following": "ഫോളോ ചെയ്യുന്നു",
     "timeAgo": {
-      "justNow": "ഇപ്പോൾ",
+      "justNow": "ഇപ്പോൾ തന്നെ",
       "minutesAgo": "{{n}} മിനിറ്റ് മുമ്പ്",
       "hoursAgo": "{{n}} മണിക്കൂർ മുമ്പ്",
       "daysAgo": "{{n}} ദിവസം മുമ്പ്",
@@ -994,7 +992,7 @@ const ml = {
     "viewFullConstituencyData": "മണ്ഡലത്തിൻ്റെ മുഴുവൻ ഡാറ്റയും കാണുക",
     "mlaProfileDossier": "MLA പ്രൊഫൈലും ഡോസിയും",
     "following": "ഫാലോ അവുതുന്നവി",
-    "follow": "അനുസരിംചംഡി",
+    "follow": "പിന്തുടരുക",
     "recentElectionResult": "സമീപകാല തിരഞ്ഞെടുപ്പ് ഫലം",
     "communityPulseTitle": "നിയോജക മണ്ഡലം സിവിക് ഫോറം",
     "communityPulseDesc": "പ്രാദേശിക വോട്ടർമാരുമായി ബന്ധപ്പെടുക, പൗരപ്രശ്നങ്ങൾ റിപ്പോർട്ട് ചെയ്യുക, അല്ലെങ്കിൽ ഈ നിയോജക മണ്ഡലത്തിനായുള്ള അടിസ്ഥാന കമ്മ്യൂണിറ്റി ചർച്ചകൾ കാണുക.",
@@ -1656,7 +1654,8 @@ const ml = {
       "acknowledged": "അംഗീകരിച്ചവ",
       "in_progress": "നടപടിയിലുള്ളവ",
       "resolved": "പരിഹരിച്ചവ",
-      "closed": "അടച്ചവ"
+      "closed": "അടച്ചവ",
+      "reopened": "വീണ്ടും തുറന്നു"
     },
     "headlineCategories": {
       "politics": "രാഷ്ട്രീയം",
@@ -2394,6 +2393,7 @@ const ml = {
     "tabs": {
       "feed": "ഫീഡ്",
       "factChecks": "ഫ്യാക്ട് ചെക്‌ലു",
+      "journalists": "മാധ്യമപ്രവർത്തകർ",
       "investigations": "പരിശോധനലു",
       "myArticles": "നാ വ്യാസാലു"
     },
@@ -2594,7 +2594,7 @@ const ml = {
     "serviceVoice": "വായിസ് കാല് (OBD)",
     "serviceMeta": "ഫേസ്‌ബുക് പേജ്",
     "whatsappFreeTitle": "പൂര്തി ഉചിതം · നേരുഗാ ചേരവേത",
-    "whatsappPricingDesc": "മീ അധികാരിക ഫോന് ദ്വാരാ അപരിമിത സ്ടേടസ് ഷേരിംഗ് മരിയു ഗ്രൂപ് ബ്രാഡ്‌കാസ്ട്. എലാംടി ടെലികാം അനുമതുലു അവസരം ലേദു.",
+    "whatsappPricingDesc": "നിങ്ങളുടെ ഔദ്യോഗിക ഫോണിൽ നിന്ന് സ്റ്റാറ്റസ് പങ്കുവെക്കുകയും ഗ്രൂപ്പുകളിലേക്ക് സന്ദേശം അയയ്ക്കുകയും ചെയ്യുക.",
     "guidanceTitle": "ഇദി എലാ പനിചേസ്തുംദി & നിബംധനലു",
     "dos": "ചേയവലസിനവി",
     "donts": "ചേയകൂഡനിവി",
@@ -3413,7 +3413,7 @@ const ml = {
     "targetYearRequired": "നിങ്ങൾ മത്സരിക്കാൻ ഉദ്ദേശിക്കുന്ന തിരഞ്ഞെടുപ്പ് വർഷം തിരഞ്ഞെടുക്കുക.",
     "affiliationRequired": "തുടരാൻ ഒരു അഫിലിയേഷൻ തിരഞ്ഞെടുക്കുക.",
     "title": "ആകാംക്ഷിയാകൂ",
-    "introText": "മീ സിവിക് സ്കോര്നു ട്രാക് ചേയഡാനികി, ബ്യാഡ്ജിലു സംപാദിംചഡാനികി മരിയു മീ നിയോജകവര്ഗാനികി മീരു നായകത്വം വഹിംചാലനുകുംടുന്നാരനി തെലിയജേയഡാനികി ഒക പബ്ലിക് സിവിക് പ്രൊഫൈല് സൃഷ്ടിംചംഡി.",
+    "introText": "നിങ്ങളുടെ പൗര സ്കോർ കാണാനും എവിടെ സേവനം ചെയ്യാൻ ആഗ്രഹിക്കുന്നു എന്ന് അറിയിക്കാനും ഒരു പൗര പ്രൊഫൈൽ ഉണ്ടാക്കുക. അത് പരസ്യമാക്കണമോ എന്ന് നിങ്ങൾക്ക് തീരുമാനിക്കാം.",
     "publicName": "പൊതു പേര്",
     "namePlaceholder": "ഓടര്ലു ചൂസേ പേരു",
     "nameRequired": "പേര് ആവശ്യം",
@@ -3434,9 +3434,9 @@ const ml = {
     "listInDirectoryDesc": "ഇതര പൌരുലു മിമ്മല്നി കനുഗൊനി മദ്ദതു ഇവ്വഗലരു.",
     "createProfile": "എന്റെ ആകാംക്ഷി പ്രൊഫൈൽ സൃഷ്ടിക്കൂ",
     "welcomeTitle": "സ്വാഗതം, ആകാംക്ഷി!",
-    "welcomeMsg": "മീ സിവിക് പ്രൊഫൈല് സക്രിയംഗാ ഉംദി. മീ സിവിക് സ്കോര് പെംചുകോവഡാനികി മാഡ്യൂല്സ് മരിയു സവാള്ലനു പൂര്തി ചേയംഡി.",
+    "welcomeMsg": "നിങ്ങളുടെ പൗര പ്രൊഫൈൽ സേവ് ചെയ്തു. ആർക്കൊക്കെ അത് കാണാം എന്നത് പ്രൊഫൈൽ ക്രമീകരണങ്ങളിൽ മാറ്റാം.",
     "successTitle": "സ്വാഗതം, ആശാവാഹി!",
-    "successMsg": "മീ പൌര പ്രൊഫൈല് സക്രിയംഗാ ഉംദി. മീ സിവിക് സ്കോരുനു പെംചുകോവഡാനികി മാഡ്യൂല്സ് മരിയു സവാള്ലനു പൂര്തി ചേയംഡി.",
+    "successMsg": "നിങ്ങളുടെ പൗര പ്രൊഫൈൽ സേവ് ചെയ്തു. ആർക്കൊക്കെ അത് കാണാം എന്നത് പ്രൊഫൈൽ ക്രമീകരണങ്ങളിൽ മാറ്റാം.",
     "errorTitle": "പ്രൊഫൈല് സൃഷ്ടിംചഡം സാധ്യം കാലേദു",
     "errorMsg": "ഏദോ തപ്പു ജരിഗിംദി. ദയചേസി മള്ലീ പ്രയത്നിംചംഡി.",
     "letsGo": "തുടങ്ങാം",
@@ -3771,12 +3771,12 @@ const ml = {
     "democraticCuration": "പ്രജാസ്വാമ്യ സ്ഥാനിക ക്യൂരേഷന്",
     "curationDesc": "ഏ കംടെംട് സംബംധിതമൈനദോ മരിയു നമ്മദഗിനദോ നിര്ണയിംചഡംലോ മീ നിയോജകവര്ഗാനികി സഹായപഡംഡി.",
     "approve": "അംഗീകരിക്കുക",
-    "flagShort": "ഫ്ലാഗ്",
+    "flagShort": "പരിശോധനയ്ക്കായി റിപ്പോർട്ട് ചെയ്യുക",
     "skip": "ഒഴിവാക്കുക",
     "views": "വീക്ഷണലു",
     "comments": "വ്യാഖ്യലു",
     "noComments": "ഇംകാ വ്യാഖ്യലു ലേവു",
-    "addComment": "വ്യാഖ്യനു ജോഡിംചംഡി...",
+    "addComment": "അഭിപ്രായം എഴുതുക…",
     "post": "പോസ്ട് ചേയംഡി",
     "videoUnavailableDesc": "ഈ വീഡിയോനു ലോഡ് ചേയഡം സാധ്യം കാലേദു. ഇദി തീസിവേയബഡി ഉംഡവച്ചു ലേദാ പ്രാംതീയ പരിമിതി ഉംഡവച്ചു.",
     "alertReportedTitle": "നിവേദിംചബഡിംദി",

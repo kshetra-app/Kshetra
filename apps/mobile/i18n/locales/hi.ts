@@ -100,8 +100,7 @@ const hi = {
     },
     "ProfileHeroCard": {
       "label1stRunnerUp": "प्रथम उपविजेता",
-      "label2ndRunnerUp": "द्वितीय उपविजेता",
-      "yrs": "साल"
+      "label2ndRunnerUp": "द्वितीय उपविजेता"
     },
     "ProjectCard": {
       "acValue1": "· एसी # {{value1}}"
@@ -139,8 +138,7 @@ const hi = {
     },
     "intelligence": {
       "value1Value2AssemblyElections": "{{value1}}  {{value2}} · विधानसभा चुनाव",
-      "seatValue1": "सीट {{value1}}",
-      "value1SeatValue2": "{{value1}} सीट {{value2}}",
+      "seatCount": "सीटें: {{count}}",
       "value1MarginOfValue2Votes": "{{value1}} - {{value2}} वोटों का अंतर",
       "marginDataUnavailable": "मार्जिन डेटा अनुपलब्ध",
       "value1AppearsInValue2RecordedConstituenciesValue3": "{{value1}} रिकॉर्ड किए गए निर्वाचन क्षेत्रों में {{value2}} दिखाई देता है (पार्टी-ज्ञात रिकॉर्ड का {{value3}} %)",
@@ -154,7 +152,7 @@ const hi = {
       "value1TapForDevSwitches": "{{value1}} • डेव स्विच के लिए टैप करें"
     },
     "shorts": {
-      "value1ShortValue2": "{{value1}} लघु {{value2}}"
+      "shortCount": "छोटे वीडियो: {{count}}"
     },
     "candidateXray": {
       "candidateRecordNotFound": "अभ्यर्थी का रिकार्ड नहीं मिला",
@@ -256,7 +254,7 @@ const hi = {
       "officialElectionResultsFromTelanganaStateElection": "तेलंगाना राज्य चुनाव आयोग (टीएसईसी) से आधिकारिक चुनाव परिणाम - अपने प्रतिनिधि को जानें (केवाईआर)",
       "thisPollIsOfficiallyNonPartyPartyAffiliation": "यह जनमत सर्वेक्षण आधिकारिक तौर पर गैर-दलीय है। पार्टी संबद्धता ( {{value1}} ) वास्तविक/अनौपचारिक है।",
       "wardValue1": "वार्ड {{value1}}",
-      "value1DeclaredCaseValue2": "{{value1}} घोषित मामला {{value2}}",
+      "casesDisclosed": "हलफ़नामे में बताए गए मामले: {{count}}",
       "verifyOnStateElectionCommissionPortal": "राज्य निर्वाचन आयोग पोर्टल पर सत्यापन करें",
       "suggestAnEditWithSource": "एक संपादन का सुझाव दें (स्रोत के साथ)"
     },
@@ -321,6 +319,7 @@ const hi = {
       "value1ToValue2": "{{value1}} से {{value2}}",
       "deliveryNotConnected": "डिलीवरी कनेक्ट नहीं है",
       "value1CharsValue2": "{{value1}} वर्ण {{value2}}",
+      "smsSegmentCount": "एसएमएस के हिस्से: {{count}}",
       "goesOutValue1": "{{value1}} बाहर चला जाता है",
       "answered": "उत्तर दिया",
       "templateName": "टेम्पलेट का नाम",
@@ -389,7 +388,6 @@ const hi = {
       "activeInConstituencyOutreachSabhas": "निर्वाचन क्षेत्र की आउटरीच सभाओं में सक्रिय",
       "label1HrAgo": "1 घंटा पहले",
       "educationGrassrootsBackground": "शिक्षा एवं जमीनी स्तर की पृष्ठभूमि",
-      "maPublicPolicy": "పోస్ట్ क्रेडिट कार्ड (एमए सार्वजनिक नीति)",
       "postGraduationMaPublicPolicy": "पोस्ट ग्रेजुएशन (एमए पब्लिक पॉलिसी)",
       "osmaniaUniversityDistinction": "उस्मानिया विश्वविद्यालय · विशिष्टता",
       "grassrootsCivicActionCommittee": "जमीनी स्तर की नागरिक कार्रवाई समिति",
@@ -568,7 +566,7 @@ const hi = {
       "pending": "लंबित",
       "criminalCaseDisclosureUnavailable": "आपराधिक मामले का खुलासा अनुपलब्ध",
       "noCriminalCasesDeclared": "कोई आपराधिक मामला घोषित नहीं",
-      "value1CaseValue2Value3": "{{value1}} मामला {{value2}}  {{value3}}",
+      "seriousCount": "बताए गए गंभीर मामले: {{count}}",
       "totalCases": "कुल मामले",
       "serious": "गंभीर",
       "convictions": "दोषसिद्धि",
@@ -612,7 +610,7 @@ const hi = {
       "mplads": "एमपीलैड्स"
     },
     "RedFlagsBanner": {
-      "value1RedFlagValue2Detected": "{{value1}} लाल झंडा {{value2}} का पता चला"
+      "flagCount": "समीक्षा के लिए चिह्नित बिंदु: {{count}}"
     }
   },
   "constituencyDirectory": {
@@ -679,7 +677,7 @@ const hi = {
     "profileSummary": {
       "national": "भारत के चुनाव आयोग ने {{election}} में इस पार्टी को मान्यता प्राप्त राष्ट्रीय पार्टी के रूप में सूचीबद्ध किया।",
       "state": "भारत के चुनाव आयोग ने इस पार्टी को {{election}} में एक मान्यता प्राप्त राज्य पार्टी के रूप में सूचीबद्ध किया है।",
-      "registered": "भारत के चुनाव आयोग ने इस पार्टी को {{election}} में पंजीकृत और गैर-मान्यता प्राप्त के रूप में सूचीबद्ध किया है।"
+      "registered": "{{election}} के समय भारत निर्वाचन आयोग ने इसे पंजीकृत दल के रूप में दर्ज किया था। इसे राष्ट्रीय या राज्य दल की मान्यता नहीं थी।"
     },
     "about": "पार्टी के बारे में",
     "registryIdentity": "{{party}} को {{code}} के अंतर्गत राजनीतिक दल निर्देशिका में सूचीबद्ध किया गया है।",
@@ -708,10 +706,10 @@ const hi = {
     "followers_one": "{{count}} फ़ॉलोअर",
     "followers_other": "{{count}} फ़ॉलोअर",
     "follow": "पेज फ़ॉलो करें",
-    "unfollow": "पेज को अनफ़ॉलो करें",
+    "unfollow": "पेज अनफ़ॉलो करें",
     "myDeclaration": "मेरी दल संबद्धता",
-    "affiliationHelp": "आप एक दल से अपनी संबद्धता घोषित कर सकते हैं। किसी पेज को फ़ॉलो करने से संबद्धता घोषित नहीं होती।",
-    "publicAffiliation": "स्वयं घोषित दल संबद्धता: {{party}}",
+    "affiliationHelp": "आप किसी एक दल से अपना जुड़ाव बता सकते हैं। उसका पेज फ़ॉलो करने पर उसके नए पोस्ट दिखेंगे। इससे आपका जुड़ाव नहीं बदलेगा।",
+    "publicAffiliation": "सदस्य ने इस दल से अपना जुड़ाव बताया है: {{party}}",
     "declare": "संबद्धता घोषित करें",
     "publicLabel": "सार्वजनिक",
     "privateLabel": "निजी",
@@ -834,7 +832,7 @@ const hi = {
     "sort": "क्रमबद्ध करें",
     "compare": "तुलना करें",
     "reset": "रीसेट करें",
-    "follow": "फॉलो करें",
+    "follow": "फ़ॉलो करें",
     "refresh": "रीफ़्रेश करें",
     "viewAll": "सभी देखें",
     "learnMore": "और जानें",
@@ -856,11 +854,11 @@ const hi = {
     "followers": "फ़ॉलोअर्स",
     "following": "फ़ॉलो कर रहे हैं",
     "timeAgo": {
-      "justNow": "अभी",
-      "minutesAgo": "{{n}} मि. पहले",
-      "hoursAgo": "{{n}} घं. पहले",
+      "justNow": "अभी-अभी",
+      "minutesAgo": "{{n}} मिनट पहले",
+      "hoursAgo": "{{n}} घंटे पहले",
       "daysAgo": "{{n}} दिन पहले",
-      "weeksAgo": "{{n}} सप्ताह पहले"
+      "weeksAgo": "{{n}} हफ़्ते पहले"
     },
     "scopes": {
       "constituency": "निर्वाचन क्षेत्र",
@@ -994,7 +992,7 @@ const hi = {
     "viewFullConstituencyData": "संपूर्ण निर्वाचन क्षेत्र डेटा देखें",
     "mlaProfileDossier": "विधायक प्रोफाइल और डोजियर",
     "following": "अनुसरण",
-    "follow": "फॉलो करें",
+    "follow": "फ़ॉलो करें",
     "recentElectionResult": "हालिया चुनाव परिणाम",
     "communityPulseTitle": "संविधान सभा नागरिक मंच",
     "communityPulseDesc": "स्थानीय मतदाताओं से जुड़ें, नागरिक मुद्दों की रिपोर्ट करें, या इस निर्वाचन क्षेत्र के लिए जमीनी स्तर की सामुदायिक चर्चाएँ देखें।",
@@ -1656,7 +1654,8 @@ const hi = {
       "acknowledged": "स्वीकृत",
       "in_progress": "प्रगति में",
       "resolved": "हल किया",
-      "closed": "बंद"
+      "closed": "बंद",
+      "reopened": "फिर से खोला गया"
     },
     "headlineCategories": {
       "politics": "राजनीति",
@@ -2394,6 +2393,7 @@ const hi = {
     "tabs": {
       "feed": "फ़ीड",
       "factChecks": "फ़ैक्ट चेक",
+      "journalists": "पत्रकार",
       "investigations": "जाँच",
       "myArticles": "मेरे लेख"
     },
@@ -2594,7 +2594,7 @@ const hi = {
     "serviceVoice": "वॉयस कॉल (OBD)",
     "serviceMeta": "फेसबुक पेज",
     "whatsappFreeTitle": "पूर्णतः निःशुल्क · सीधा संपर्क",
-    "whatsappPricingDesc": "अपने आधिकारिक फोन से असीमित स्टेटस साझा करें और ग्रुप ब्रॉडकास्ट करें। किसी टेलीकॉम अनुमोदन की आवश्यकता नहीं।",
+    "whatsappPricingDesc": "अपने अधिकृत फ़ोन से स्टेटस साझा करें और ग्रुप में संदेश भेजें।",
     "guidanceTitle": "यह कैसे काम करता है और नियम",
     "dos": "क्या करें",
     "donts": "क्या न करें",
@@ -3413,7 +3413,7 @@ const hi = {
     "targetYearRequired": "वह चुनावी वर्ष चुनें जिसमें आप चुनाव लड़ना चाहते हैं।",
     "affiliationRequired": "जारी रखने के लिए एक संबद्धता चुनें.",
     "title": "आकांक्षी बनें",
-    "introText": "एक सार्वजनिक नागरिक प्रोफ़ाइल बनाएं ताकि अपने सिविक स्कोर को ट्रैक कर सकें, बैज कमा सकें और अपने निर्वाचन क्षेत्र को बता सकें कि आप नेतृत्व करना चाहते हैं। आप कभी भी अपनी प्रोफ़ाइल छिपा सकते हैं।",
+    "introText": "अपना नागरिक स्कोर देखने और यह बताने के लिए नागरिक प्रोफ़ाइल बनाएँ कि आप कहाँ सेवा करना चाहते हैं। इसे सार्वजनिक रखने का फ़ैसला आपका है।",
     "publicName": "सार्वजनिक नाम",
     "namePlaceholder": "मतदाता जो नाम देखेंगे",
     "nameRequired": "नाम आवश्यक है",
@@ -3434,9 +3434,9 @@ const hi = {
     "listInDirectoryDesc": "अन्य नागरिक आपको ढूंढ और समर्थन कर सकते हैं।",
     "createProfile": "मेरी आकांक्षी प्रोफ़ाइल बनाएं",
     "welcomeTitle": "स्वागत है, आकांक्षी!",
-    "welcomeMsg": "आपकी नागरिक प्रोफ़ाइल सक्रिय है। अपना सिविक स्कोर बढ़ाने के लिए मॉड्यूल और चुनौतियां पूरी करें।",
+    "welcomeMsg": "आपकी नागरिक प्रोफ़ाइल सेव हो गई है। प्रोफ़ाइल सेटिंग में तय करें कि यह किसे दिखाई दे।",
     "successTitle": "स्वागत है, आकांक्षी नेता!",
-    "successMsg": "आपकी नागरिक प्रोफाइल लाइव है। अपना सिविक स्कोर बढ़ाने के लिए मॉड्यूल और चुनौतियां पूरी करें।",
+    "successMsg": "आपकी नागरिक प्रोफ़ाइल सेव हो गई है। प्रोफ़ाइल सेटिंग में तय करें कि यह किसे दिखाई दे।",
     "errorTitle": "प्रोफाइल नहीं बन सकी",
     "errorMsg": "कुछ गलत हुआ। कृपया पुनः प्रयास करें।",
     "letsGo": "चलो शुरू करें",
@@ -3771,12 +3771,12 @@ const hi = {
     "democraticCuration": "लोकतांत्रिक स्थानीय चयन",
     "curationDesc": "अपने निर्वाचन क्षेत्र को तय करने में मदद करें कि कौन सी सामग्री प्रासंगिक और विश्वसनीय है।",
     "approve": "स्वीकृत करें",
-    "flagShort": "फ़्लैग करें",
+    "flagShort": "समीक्षा के लिए रिपोर्ट करें",
     "skip": "छोड़ें",
     "views": "व्यूज़",
     "comments": "टिप्पणियां",
     "noComments": "अभी कोई टिप्पणी नहीं है",
-    "addComment": "टिप्पणी जोड़ें...",
+    "addComment": "टिप्पणी लिखें…",
     "post": "पोस्ट करें",
     "videoUnavailableDesc": "यह वीडियो लोड नहीं हो सका। इसे हटा दिया गया हो सकता है या यह क्षेत्र-प्रतिबंधित है।",
     "alertReportedTitle": "रिपोर्ट किया गया",

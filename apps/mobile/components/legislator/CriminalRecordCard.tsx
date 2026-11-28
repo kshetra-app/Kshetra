@@ -60,7 +60,7 @@ export default function CriminalRecordCard({ totalCases, seriousCases, convictio
     return (
       <View style={[styles.compactContainer, { backgroundColor: colors.surface, borderLeftColor: severityColor, borderColor: colors.border, borderWidth: 1 }]}>
         <Ionicons name="warning" size={14} color={severityColor} />
-        <Text style={[styles.compactText, { color: severityColor }]}>{translateScreenLabel("screenLabels.CriminalRecordCard.value1CaseValue2Value3", { value1: totalCases, value2: totalCases > 1 ? 's' : '', value3: (seriousCases ?? 0) > 0 ? ` (${seriousCases} serious)` : '' })}</Text>
+        <Text style={[styles.compactText, { color: severityColor }]}>{translateScreenLabel("screenLabels.representative.casesDisclosed", { count: totalCases })}{(seriousCases ?? 0) > 0 && (' · ' + translateScreenLabel("screenLabels.CriminalRecordCard.seriousCount", { count: seriousCases }))}</Text>
       </View>
     );
   }
@@ -74,7 +74,7 @@ export default function CriminalRecordCard({ totalCases, seriousCases, convictio
           <Text style={[styles.title, { color: colors.text }]}>{translateScreenLabel("representative.criminalRecord")}</Text>
         </View>
         <View style={[styles.severityBadge, { backgroundColor: severityColor + '20' }]}>
-          <Text style={[styles.severityText, { color: severityColor }]}>{severity.toUpperCase()}</Text>
+          <Text style={[styles.severityText, { color: severityColor }]}>{translateScreenLabel(`content.issueSeverity.${severity === 'minor' ? 'low' : severity === 'serious' ? 'high' : 'critical'}`)}</Text>
         </View>
       </View>
 

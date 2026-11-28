@@ -283,7 +283,7 @@ export default function RepresentativeProfileScreen() {
             {profile.criminalCases != null && (
               <View style={[styles.section, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                 <Text style={[styles.sectionTitle, { color: colors.text }]}>{i18n.t('representative.criminalRecord')}</Text>
-                <Text style={[styles.kvValue, { color: profile.criminalCases > 0 ? colors.danger : colors.success }]}>{translateScreenLabel("screenLabels.representative.value1DeclaredCaseValue2", { value1: profile.criminalCases, value2: profile.criminalCases === 1 ? '' : 's' })}</Text>
+                <Text style={[styles.kvValue, { color: profile.criminalCases > 0 ? colors.danger : colors.success }]}>{translateScreenLabel("screenLabels.representative.casesDisclosed", { count: profile.criminalCases })}</Text>
               </View>
             )}
 

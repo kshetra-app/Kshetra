@@ -223,7 +223,7 @@ function Composer({ onSent }: { onSent: () => void }) {
           ))}
         </View>
       )}
-      <Text style={styles.counter}>{translateScreenLabel("screenLabels.CampaignOutreachPanel.value1CharsValue2", { value1: body.length, value2: channel === 'sms' ? ` · ${smsSegments} SMS segment${smsSegments > 1 ? 's' : ''}` : '' })}</Text>
+      <Text style={styles.counter}>{translateScreenLabel("screenLabels.CampaignOutreachPanel.value1CharsValue2", { value1: body.length, value2: channel === 'sms' ? ' · ' + translateScreenLabel("screenLabels.CampaignOutreachPanel.smsSegmentCount", { count: smsSegments }) : '' })}</Text>
 
       {/* Campaign name */}
       <Text style={styles.label}>{t('outreachPanel.broadcastName')}</Text>

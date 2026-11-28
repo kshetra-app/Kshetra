@@ -302,7 +302,7 @@ export default function IntelligenceScreen() {
               />
               <Text style={styles.partyName}>{party}</Text>
               <Text style={styles.seatCount}>
-                {seats} {IS_LIVE_ENVIRONMENT ? t('intelligence.records', { defaultValue: 'records' }) : translateScreenLabel("screenLabels.intelligence.seatValue1", { value1: seats !== 1 ? 's' : '' })}
+                {IS_LIVE_ENVIRONMENT ? `${seats} ${t('intelligence.records', { defaultValue: 'records' })}` : translateScreenLabel('screenLabels.intelligence.seatCount', { count: seats })}
               </Text>
             </View>
             <View style={styles.barContainer}>
@@ -362,7 +362,7 @@ export default function IntelligenceScreen() {
               <Text style={styles.districtSeats}>
                 {IS_LIVE_ENVIRONMENT
                   ? `${d.totalSeats} ${t('intelligence.records', { defaultValue: 'records' })}`
-                  : translateScreenLabel("screenLabels.intelligence.value1SeatValue2", { value1: d.totalSeats, value2: d.totalSeats !== 1 ? 's' : '' })}
+                  : translateScreenLabel("screenLabels.intelligence.seatCount", { count: d.totalSeats })}
               </Text>
             </View>
             <View style={styles.districtParties}>

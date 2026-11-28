@@ -313,7 +313,7 @@ export default function StateDelimitationDetail() {
                   >
                     <View style={{ flex: 1 }}>
                       <Text style={[styles.acName, { color: colors.text }]}>{translateScreenLabel("screenLabels.state.acValue1Value2", { value1: c.acNo, value2: c.name })}</Text>
-                      <Text style={[styles.acDistrict, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.state.districtValue1Value2", { value1: c.district, value2: c.winnerName && c.winnerParty ? ` · MLA: ${c.winnerName} (${c.winnerParty})` : '' })}</Text>
+                      <Text style={[styles.acDistrict, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.state.districtValue1Value2", { value1: c.district, value2: c.winnerName && c.winnerParty ? ` · ${t('additionalScreenLabels.search.mla')}: ${c.winnerName} (${c.winnerParty})` : '' })}</Text>
                     </View>
                     <View style={[styles.acTypeBadge, { backgroundColor: colors.primaryLight }]}>
                       <Text style={[styles.acTypeText, { color: colors.primary }]}>{c.type}</Text>

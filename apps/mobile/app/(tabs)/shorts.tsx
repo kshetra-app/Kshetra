@@ -115,7 +115,7 @@ export default function ShortsScreen({ hideHeader = false, searchQuery = '' }: S
             {!hideHeader && (
               <Text style={[styles.title, { color: colors.text }]}>{t('tabs.shorts', { defaultValue: 'Shorts' })}</Text>
             )}
-            <Text style={[styles.subtitle, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.shorts.value1ShortValue2", { value1: shorts.length, value2: shorts.length !== 1 ? 's' : '' })}</Text>
+            <Text style={[styles.subtitle, { color: colors.textMuted }]}>{translateScreenLabel("screenLabels.shorts.shortCount", { count: shorts.length })}</Text>
           </View>
         </View>
         <Pressable style={[styles.uploadBtn, { backgroundColor: colors.primary }]} onPress={() => setUploadVisible(true)}>

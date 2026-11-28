@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import type { NewsItem } from '../lib/newsTypes';
-import { formatRelativeTime } from '../lib/newsTypes';
+import { useTimeAgo } from '../lib/useTimeAgo';
 import { useTheme } from '../lib/theme';
 
 interface NewsCardProps {
@@ -15,6 +15,7 @@ interface NewsCardProps {
 
 function NewsCardBase({ item, bookmarked, onToggleBookmark }: NewsCardProps) {
   const { t } = useTranslation();
+  const { timeAgo } = useTimeAgo(true);
   const { colors } = useTheme();
   const router = useRouter();
   const accent = item.source.accent ?? colors.primary;
@@ -45,7 +46,7 @@ function NewsCardBase({ item, bookmarked, onToggleBookmark }: NewsCardProps) {
             <Ionicons name="checkmark-circle" size={12} color={colors.gold} />
           )}
           <Text style={[styles.dotSep, { color: colors.textMuted }]}>·</Text>
-          <Text style={[styles.time, { color: colors.textMuted }]}>{formatRelativeTime(item.publishedAt)}</Text>
+          <Text style={[styles.time, { color: colors.textMuted }]}>{timeAgo(item.publishedAt)}</Text>
         </View>
 
         <Text style={[styles.title, { color: colors.text }]} numberOfLines={3}>

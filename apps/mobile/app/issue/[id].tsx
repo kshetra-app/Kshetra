@@ -16,6 +16,8 @@ import {
 } from '../../lib/civicTypes';
 import type { IssueComment, IssueStatusChange } from '../../lib/civicTypes';
 
+import { useTimeAgo } from '../../lib/useTimeAgo';
+import { useLocalizedDate } from '../../lib/useLocalizedDate';
 import { useTheme } from '../../lib/theme';
 import DiscoveryHubSheet from '../../components/DiscoveryHubSheet';
 import { gateContentAction, logContentAction } from '../../lib/contentAccountability';
@@ -24,29 +26,13 @@ function isVideoUri(uri: string): boolean {
   return /\.(mp4|mov|m4v|webm|avi|mkv|3gp)(\?.*)?$/i.test(uri) || uri.includes('video');
 }
 
-function timeAgo(dateStr: string): string {
-  const now = Date.now();
-  const then = new Date(dateStr).getTime();
-  const diffMs = now - then;
-  const mins = Math.floor(diffMs / 60000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m ago`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
-  return new Date(dateStr).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
-}
-
-function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-}
-
 export default function IssueDetailScreen() {
   const { t: translateScreenLabel } = useScreenTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { t } = useTranslation();
+  const { timeAgo } = useTimeAgo(true);
+  const { formatDate } = useLocalizedDate();
   const { colors } = useTheme();
 
   const issues = useCivicStore((s) => s.issues);
@@ -152,9 +138,10 @@ export default function IssueDetailScreen() {
   const sevConfig = SEVERITY_CONFIG[issue.severity];
   const authorityAcknowledged = statusHistory.some((entry) =>
     entry.actorRole === 'authority' && entry.toStatus === 'acknowledged');
-  const statusConfig = issue.status === 'acknowledged' && !authorityAcknowledged
-    ? { ...STATUS_CONFIG.acknowledged, label: t('issueDetail.legacyAcknowledgment', { defaultValue: 'Acknowledgment on record' }) }
-    : STATUS_CONFIG[issue.status] ?? STATUS_CONFIG.open;
+  const statusConfig = STATUS_CONFIG[issue.status] ?? STATUS_CONFIG.open;
+  const statusLabel = issue.status === 'acknowledged' && !authorityAcknowledged
+    ? t('issueDetail.legacyAcknowledgment')
+    : t(`content.issueStatus.${issue.status}`, statusConfig.label);
 
   const handleShare = async () => {
     const text = shareIssue(issue.id);
@@ -321,14 +308,14 @@ export default function IssueDetailScreen() {
         <View style={styles.badgeRow}>
           <View style={[styles.badge, { backgroundColor: catConfig.color + '20' }]}>
             <Ionicons name={catConfig.icon as any} size={13} color={catConfig.color} />
-            <Text style={[styles.badgeText, { color: catConfig.color }]}>{catConfig.label}</Text>
+            <Text style={[styles.badgeText, { color: catConfig.color }]}>{t(`content.issueCategories.${issue.category}`, catConfig.label)}</Text>
           </View>
           <View style={[styles.badge, { backgroundColor: sevConfig.color + '20' }]}>
-            <Text style={[styles.badgeText, { color: sevConfig.color }]}>{sevConfig.label}</Text>
+            <Text style={[styles.badgeText, { color: sevConfig.color }]}>{t(`content.issueSeverity.${issue.severity}`, sevConfig.label)}</Text>
           </View>
           <View style={[styles.badge, { backgroundColor: statusConfig.color + '20' }]}>
             <Ionicons name={statusConfig.icon as any} size={12} color={statusConfig.color} />
-            <Text style={[styles.badgeText, { color: statusConfig.color }]}>{statusConfig.label}</Text>
+            <Text style={[styles.badgeText, { color: statusConfig.color }]}>{statusLabel}</Text>
           </View>
           {issue.isVerifiedReport && (
             <View style={[styles.badge, { backgroundColor: '#10B98120' }]}>
@@ -469,7 +456,7 @@ export default function IssueDetailScreen() {
             <View style={styles.resolutionCard}>
               <Text style={styles.resolutionText}>{issue.resolutionNote}</Text>
               {issue.resolvedAt && (
-                <Text style={styles.resolutionDate}>{translateScreenLabel("screenLabels.issue.resolvedValue1", { value1: formatDate(issue.resolvedAt) })}</Text>
+                <Text style={styles.resolutionDate}>{translateScreenLabel("screenLabels.issue.resolvedValue1", { value1: formatDate(issue.resolvedAt, { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) })}</Text>
               )}
             </View>
             {issue.status === 'resolved' && (
@@ -556,8 +543,8 @@ export default function IssueDetailScreen() {
                     </View>
                     <View style={styles.timelineContent}>
                       <View style={styles.timelineHeader}>
-                        <Text style={[styles.timelineStatus, { color: toConfig.color }]}>{toConfig.label}</Text>
-                        <Text style={styles.timelineTime}>{formatDate(entry.createdAt)}</Text>
+                        <Text style={[styles.timelineStatus, { color: toConfig.color }]}>{t(`content.issueStatus.${entry.toStatus}`, toConfig.label)}</Text>
+                        <Text style={styles.timelineTime}>{formatDate(entry.createdAt, { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</Text>
                       </View>
                       <Text style={styles.timelineActor}>
                         {entry.changedByName ?? t('issueDetail.actorUnrecorded', { defaultValue: 'Actor not recorded' })}
@@ -699,6 +686,7 @@ function CommentCard({ comment, disabled, onEdit, onRemove }: {
 }) {
   const { t: translateScreenLabel } = useScreenTranslation();
   const { t } = useTranslation();
+  const { timeAgo } = useTimeAgo(true);
   const { colors } = useTheme();
   return (
     <View style={[styles.commentCard, comment.isOfficial && styles.commentCardOfficial]}>

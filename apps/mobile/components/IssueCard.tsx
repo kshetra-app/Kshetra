@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
+import { useTimeAgo } from '../lib/useTimeAgo';
 import { useTheme } from '../lib/theme';
 import { useCivicStore } from '../stores/civic';
 import type { CivicIssue } from '../lib/civicTypes';
@@ -11,20 +12,6 @@ import {
   SEVERITY_CONFIG,
   STATUS_CONFIG,
 } from '../lib/civicTypes';
-
-function timeAgo(dateStr: string): string {
-  const now = Date.now();
-  const then = new Date(dateStr).getTime();
-  const diffMs = now - then;
-  const mins = Math.floor(diffMs / 60000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m ago`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
-  return new Date(dateStr).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
-}
 
 interface IssueCardProps {
   issue: CivicIssue;
@@ -36,6 +23,7 @@ interface IssueCardProps {
 
 export default function IssueCard({ issue, onUpvote, onPress, onFollow, onShare }: IssueCardProps) {
   const { t } = useTranslation();
+  const { timeAgo } = useTimeAgo(true);
   const { colors } = useTheme();
   const catConfig = ISSUE_CATEGORY_CONFIG[issue.category];
   const sevConfig = SEVERITY_CONFIG[issue.severity];

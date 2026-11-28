@@ -640,8 +640,8 @@ export default function HierarchyScreen() {
                     {t('hierarchy.registeredVoters')}: —
                   </Text>
                 )}
-                {b.maleVoters != null ? <Text style={[styles.boothStatMuted, { color: colors.textMuted }]}>M {b.maleVoters.toLocaleString('en-IN')}</Text> : null}
-                {b.femaleVoters != null ? <Text style={[styles.boothStatMuted, { color: colors.textMuted }]}>F {b.femaleVoters.toLocaleString('en-IN')}</Text> : null}
+                {b.maleVoters != null ? <Text style={[styles.boothStatMuted, { color: colors.textMuted }]} >{t('constituency.male')} {b.maleVoters.toLocaleString('en-IN')}</Text> : null}
+                {b.femaleVoters != null ? <Text style={[styles.boothStatMuted, { color: colors.textMuted }]} >{t('constituency.female')} {b.femaleVoters.toLocaleString('en-IN')}</Text> : null}
                 {b.location ? <Text style={[styles.boothStatMuted, { color: colors.textMuted }]}>{b.location.latitude.toFixed(3)}, {b.location.longitude.toFixed(3)}</Text> : null}
               </View>
             </View>

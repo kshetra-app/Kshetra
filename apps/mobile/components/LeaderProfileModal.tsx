@@ -552,7 +552,7 @@ export default function LeaderProfileModal({
                 <View style={styles.timelineItem}>
                   <View style={styles.timelineDot} />
                   <View style={{ flex: 1, marginLeft: 10 }}>
-                    <Text style={styles.timelineHeading}>{isTelugu ? translateScreenLabel("screenLabels.LeaderProfileModal.maPublicPolicy") : translateScreenLabel("screenLabels.LeaderProfileModal.postGraduationMaPublicPolicy")}</Text>
+                    <Text style={styles.timelineHeading}>{translateScreenLabel("screenLabels.LeaderProfileModal.postGraduationMaPublicPolicy")}</Text>
                     <Text style={styles.timelineSub}>{isTelugu ? 'ఉస్మానియా విశ్వవిద్యాలయం · ప్రథమ శ్రేణి' : translateScreenLabel("screenLabels.LeaderProfileModal.osmaniaUniversityDistinction")}</Text>
                   </View>
                 </View>

@@ -45,7 +45,7 @@ export default function RedFlagsBanner({ flags }: Props) {
     <View style={[styles.container, { backgroundColor: bgColor, borderColor }]}>
       <View style={styles.header}>
         <Ionicons name="warning" size={16} color={criticalCount > 0 ? colors.danger : '#D97706'} />
-        <Text style={[styles.headerText, { color: colors.text }]}>{translateScreenLabel("screenLabels.RedFlagsBanner.value1RedFlagValue2Detected", { value1: flags.length, value2: flags.length > 1 ? 's' : '' })}</Text>
+        <Text style={[styles.headerText, { color: colors.text }]}>{translateScreenLabel("screenLabels.RedFlagsBanner.flagCount", { count: flags.length })}</Text>
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.flagsScroll}>
         {flags.map((flag, idx) => {

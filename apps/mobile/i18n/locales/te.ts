@@ -106,8 +106,7 @@ const te = {
     },
     "ProfileHeroCard": {
       "label1stRunnerUp": "1వ రన్నరప్",
-      "label2ndRunnerUp": "2వ రన్నరప్",
-      "yrs": "యస్"
+      "label2ndRunnerUp": "2వ రన్నరప్"
     },
     "ProjectCard": {
       "acValue1": "· AC # {{value1}}"
@@ -132,7 +131,7 @@ const te = {
       "othersValue1": "ఇతరులు: {{value1}} %",
       "value1Cr": "₹ {{value1}} Cr",
       "netValue1Cr": "నికర: ₹ {{value1}} Cr",
-      "value1Yrs": "{{value1}} సంవత్సరాలు",
+      "value1Yrs": "{{value1}} ఏళ్లు",
       "dobValue1": "పుట్టిన తేదీ · {{value1}}",
       "tapAnyStateToExploreItsAssemblyConstituencies": "దాని అసెంబ్లీ నియోజకవర్గాలను అన్వేషించడానికి ఏదైనా రాష్ట్రం నొక్కండి",
       "boothValue1": "బూత్ # {{value1}}",
@@ -145,8 +144,7 @@ const te = {
     },
     "intelligence": {
       "value1Value2AssemblyElections": "{{value1}}  {{value2}} · అసెంబ్లీ ఎన్నికలు",
-      "seatValue1": "సీటు {{value1}}",
-      "value1SeatValue2": "{{value1}} సీటు {{value2}}",
+      "seatCount": "సీట్లు: {{count}}",
       "value1MarginOfValue2Votes": "{{value1}} — {{value2}} ఓట్ల మార్జిన్",
       "marginDataUnavailable": "మార్జిన్ డేటా అందుబాటులో లేదు",
       "value1AppearsInValue2RecordedConstituenciesValue3": "{{value1}}  {{value2}} రికార్డ్ చేయబడిన నియోజకవర్గాల్లో కనిపిస్తుంది ( {{value3}} % పార్టీ-తెలిసిన రికార్డులు)",
@@ -160,7 +158,7 @@ const te = {
       "value1TapForDevSwitches": "{{value1}} • దేవ్ స్విచ్‌ల కోసం నొక్కండి"
     },
     "shorts": {
-      "value1ShortValue2": "{{value1}} చిన్న {{value2}}"
+      "shortCount": "చిన్న వీడియోలు: {{count}}"
     },
     "candidateXray": {
       "candidateRecordNotFound": "అభ్యర్థి రికార్డు దొరకలేదు",
@@ -248,7 +246,7 @@ const te = {
     },
     "parliament": {
       "lokSabha18th": "లోక్‌సభ (18వ తేదీ)",
-      "value1Yrs": "{{value1}} సంవత్సరాలు",
+      "value1Yrs": "{{value1}} ఏళ్లు",
       "lsValue1RsValue2TotalValue3": "LS: {{value1}} · RS: {{value2}} · మొత్తం: {{value3}}"
     },
     "reader": {
@@ -262,7 +260,7 @@ const te = {
       "officialElectionResultsFromTelanganaStateElection": "తెలంగాణ రాష్ట్ర ఎన్నికల సంఘం (TSEC) నుండి అధికారిక ఎన్నికల ఫలితాలు — మీ ప్రతినిధిని తెలుసుకోండి (KYR)",
       "thisPollIsOfficiallyNonPartyPartyAffiliation": "ఈ పోల్ అధికారికంగా పార్టీయేతరమైనది. పార్టీ అనుబంధం ( {{value1}} ) వాస్తవమైనది / అనధికారికమైనది.",
       "wardValue1": "వార్డ్ {{value1}}",
-      "value1DeclaredCaseValue2": "{{value1}} కేసు {{value2}} ప్రకటించింది",
+      "casesDisclosed": "అఫిడవిట్‌లో వెల్లడించిన కేసులు: {{count}}",
       "verifyOnStateElectionCommissionPortal": "రాష్ట్ర ఎన్నికల సంఘం పోర్టల్‌లో ధృవీకరించండి",
       "suggestAnEditWithSource": "సవరణను సూచించండి (మూలంతో)"
     },
@@ -327,6 +325,7 @@ const te = {
       "value1ToValue2": "{{value1}} నుండి {{value2}} వరకు",
       "deliveryNotConnected": "డెలివరీ కనెక్ట్ కాలేదు",
       "value1CharsValue2": "{{value1}} అక్షరాలు {{value2}}",
+      "smsSegmentCount": "ఎస్ఎంఎస్ భాగాలు: {{count}}",
       "goesOutValue1": "{{value1}} బయటకు వెళ్తుంది",
       "answered": "సమాధానం ఇచ్చారు",
       "templateName": "టెంప్లేట్ పేరు",
@@ -389,7 +388,6 @@ const te = {
       "activeInConstituencyOutreachSabhas": "నియోజకవర్గాల ప్రచార సభల్లో చురుగ్గా ఉన్నారు",
       "label1HrAgo": "1 గం క్రితం",
       "educationGrassrootsBackground": "విద్య & గ్రాస్‌రూట్ నేపథ్యం",
-      "maPublicPolicy": "పోస్ట్ గ్రాడ్యుయేషన్ (MA పబ్లిక్ పాలసీ)",
       "postGraduationMaPublicPolicy": "పోస్ట్ గ్రాడ్యుయేషన్ (MA పబ్లిక్ పాలసీ)",
       "osmaniaUniversityDistinction": "ఉస్మానియా యూనివర్సిటీ · ప్రత్యేకత",
       "grassrootsCivicActionCommittee": "గ్రాస్‌రూట్ సివిక్ యాక్షన్ కమిటీ",
@@ -569,7 +567,7 @@ const te = {
       "pending": "పెండింగ్‌లో ఉంది",
       "criminalCaseDisclosureUnavailable": "క్రిమినల్ కేసు బహిర్గతం అందుబాటులో లేదు",
       "noCriminalCasesDeclared": "ఎలాంటి క్రిమినల్ కేసులు ప్రకటించలేదు",
-      "value1CaseValue2Value3": "{{value1}} కేసు {{value2}}  {{value3}}",
+      "seriousCount": "వెల్లడించిన తీవ్రమైన కేసులు: {{count}}",
       "totalCases": "మొత్తం కేసులు",
       "serious": "తీవ్రమైన",
       "convictions": "నేరారోపణలు",
@@ -612,7 +610,7 @@ const te = {
       "comingSoon": "త్వరలో వస్తుంది"
     },
     "RedFlagsBanner": {
-      "value1RedFlagValue2Detected": "{{value1}} రెడ్ ఫ్లాగ్ {{value2}} కనుగొనబడింది"
+      "flagCount": "పరిశీలించాల్సిన అంశాలు: {{count}}"
     }
   },
   "constituencyDirectory": {
@@ -679,7 +677,7 @@ const te = {
     "profileSummary": {
       "national": "{{election}} జరిగినప్పుడు భారత ఎన్నికల సంఘం ఈ పార్టీని గుర్తింపు పొందిన జాతీయ పార్టీగా నమోదు చేసింది.",
       "state": "{{election}} జరిగినప్పుడు భారత ఎన్నికల సంఘం ఈ పార్టీని గుర్తింపు పొందిన రాష్ట్ర పార్టీగా నమోదు చేసింది.",
-      "registered": "{{election}} జరిగినప్పుడు భారత ఎన్నికల సంఘం ఈ పార్టీని నమోదైన, గుర్తింపు లేని రాజకీయ పార్టీగా పేర్కొంది."
+      "registered": "{{election}} సమయంలో భారత ఎన్నికల సంఘం ఈ పార్టీని నమోదైన పార్టీగా పేర్కొంది. దీనికి జాతీయ లేదా రాష్ట్ర పార్టీ గుర్తింపు లేదు."
     },
     "about": "పార్టీ గురించి",
     "registryIdentity": "{{party}}  {{code}} క్రింద రాజకీయ పార్టీ డైరెక్టరీలో జాబితా చేయబడింది.",
@@ -710,8 +708,8 @@ const te = {
     "follow": "పేజీని అనుసరించండి",
     "unfollow": "పేజీని అనుసరించడం ఆపండి",
     "myDeclaration": "నా పార్టీ అనుబంధం",
-    "affiliationHelp": "మీరు ఒక పార్టీతో అనుబంధాన్ని ప్రకటించవచ్చు. పేజీని అనుసరించడం ద్వారా అనుబంధం ప్రకటించినట్లు కాదు.",
-    "publicAffiliation": "స్వయంగా ప్రకటించిన పార్టీ అనుబంధం: {{party}}",
+    "affiliationHelp": "మీరు ఒక పార్టీతో మీ అనుబంధాన్ని ప్రకటించవచ్చు. పార్టీ పేజీని అనుసరిస్తే దాని తాజా పోస్టులు కనిపిస్తాయి. మీ అనుబంధం మారదు.",
+    "publicAffiliation": "సభ్యుడు స్వయంగా ప్రకటించిన పార్టీ అనుబంధం: {{party}}",
     "declare": "పార్టీ అనుబంధాన్ని ప్రకటించండి",
     "publicLabel": "బహిరంగం",
     "privateLabel": "వ్యక్తిగతం",
@@ -857,10 +855,10 @@ const te = {
     "following": "అనుసరిస్తున్నారు",
     "timeAgo": {
       "justNow": "ఇప్పుడే",
-      "minutesAgo": "{{n}} ని. క్రితం",
-      "hoursAgo": "{{n}} గం. క్రితం",
-      "daysAgo": "{{n}} రో. క్రితం",
-      "weeksAgo": "{{n}} వా. క్రితం"
+      "minutesAgo": "{{n}} నిమిషాల క్రితం",
+      "hoursAgo": "{{n}} గంటల క్రితం",
+      "daysAgo": "{{n}} రోజుల క్రితం",
+      "weeksAgo": "{{n}} వారాల క్రితం"
     },
     "scopes": {
       "constituency": "నియోజకవర్గం",
@@ -1656,7 +1654,8 @@ const te = {
       "acknowledged": "స్వీకరించబడింది",
       "in_progress": "పురోగతిలో",
       "resolved": "పరిష్కరించబడింది",
-      "closed": "మూసివేయబడింది"
+      "closed": "మూసివేయబడింది",
+      "reopened": "మళ్లీ తెరిచారు"
     },
     "headlineCategories": {
       "politics": "రాజకీయాలు",
@@ -2394,6 +2393,7 @@ const te = {
     "tabs": {
       "feed": "ఫీడ్",
       "factChecks": "ఫ్యాక్ట్ చెక్‌లు",
+      "journalists": "పాత్రికేయులు",
       "investigations": "పరిశోధనలు",
       "myArticles": "నా వ్యాసాలు"
     },
@@ -2594,7 +2594,7 @@ const te = {
     "serviceVoice": "వాయిస్ కాల్ (OBD)",
     "serviceMeta": "ఫేస్‌బుక్ పేజ్",
     "whatsappFreeTitle": "పూర్తి ఉచితం · నేరుగా చేరవేత",
-    "whatsappPricingDesc": "మీ అధికారిక ఫోన్ ద్వారా అపరిమిత స్టేటస్ షేరింగ్ మరియు గ్రూప్ బ్రాడ్‌కాస్ట్. ఎలాంటి టెలికాం అనుమతులు అవసరం లేదు.",
+    "whatsappPricingDesc": "మీ అధీకృత ఫోన్ నుంచి స్టేటస్‌ను పంచుకోండి, గ్రూప్‌లకు సందేశాలు పంపండి.",
     "guidanceTitle": "ఇది ఎలా పనిచేస్తుంది & నిబంధనలు",
     "dos": "చేయవలసినవి",
     "donts": "చేయకూడనివి",
@@ -3413,7 +3413,7 @@ const te = {
     "targetYearRequired": "మీరు పోటీ చేయాలనుకుంటున్న ఎన్నికల సంవత్సరాన్ని ఎంచుకోండి.",
     "affiliationRequired": "కొనసాగించడానికి అనుబంధాన్ని ఎంచుకోండి.",
     "title": "ఆకాంక్షగా మారండి",
-    "introText": "మీ సివిక్ స్కోర్ను ట్రాక్ చేయడానికి, బ్యాడ్జిలు సంపాదించడానికి మరియు మీ నియోజకవర్గానికి మీరు నాయకత్వం వహించాలనుకుంటున్నారని తెలియజేయడానికి ఒక పబ్లిక్ సివిక్ ప్రొఫైల్ సృష్టించండి.",
+    "introText": "మీ పౌర స్కోర్‌ను చూసేందుకు, మీరు ఎక్కడ సేవ చేయాలనుకుంటున్నారో తెలియజేసేందుకు పౌర ప్రొఫైల్‌ను సృష్టించండి. దాన్ని అందరికీ చూపాలా అనేది మీ నిర్ణయం.",
     "publicName": "బహిరంగ పేరు",
     "namePlaceholder": "ఓటర్లు చూసే పేరు",
     "nameRequired": "పేరు అవసరం",
@@ -3434,9 +3434,9 @@ const te = {
     "listInDirectoryDesc": "ఇతర పౌరులు మిమ్మల్ని కనుగొని మద్దతు ఇవ్వగలరు.",
     "createProfile": "నా ఆకాంక్షి ప్రొఫైల్ సృష్టించు",
     "welcomeTitle": "స్వాగతం, ఆకాంక్షి!",
-    "welcomeMsg": "మీ సివిక్ ప్రొఫైల్ సక్రియంగా ఉంది. మీ సివిక్ స్కోర్ పెంచుకోవడానికి మాడ్యూల్స్ మరియు సవాళ్లను పూర్తి చేయండి.",
+    "welcomeMsg": "మీ పౌర ప్రొఫైల్ సేవ్ అయింది. ఎవరికి కనిపించాలో ప్రొఫైల్ సెట్టింగ్‌లలో మార్చవచ్చు.",
     "successTitle": "స్వాగతం, ఆశావాహి!",
-    "successMsg": "మీ పౌర ప్రొఫైల్ సక్రియంగా ఉంది. మీ సివిక్ స్కోరును పెంచుకోవడానికి మాడ్యూల్స్ మరియు సవాళ్లను పూర్తి చేయండి.",
+    "successMsg": "మీ పౌర ప్రొఫైల్ సేవ్ అయింది. ఎవరికి కనిపించాలో ప్రొఫైల్ సెట్టింగ్‌లలో మార్చవచ్చు.",
     "errorTitle": "ప్రొఫైల్ సృష్టించడం సాధ్యం కాలేదు",
     "errorMsg": "ఏదో తప్పు జరిగింది. దయచేసి మళ్లీ ప్రయత్నించండి.",
     "letsGo": "ప్రారంభిద్దాం",
@@ -3771,12 +3771,12 @@ const te = {
     "democraticCuration": "ప్రజాస్వామ్య స్థానిక క్యూరేషన్",
     "curationDesc": "ఏ కంటెంట్ సంబంధితమైనదో మరియు నమ్మదగినదో నిర్ణయించడంలో మీ నియోజకవర్గానికి సహాయపడండి.",
     "approve": "ఆమోదించు",
-    "flagShort": "ఫ్లాగ్",
+    "flagShort": "సమీక్షకు పంపండి",
     "skip": "దాటవేయి",
     "views": "వీక్షణలు",
     "comments": "వ్యాఖ్యలు",
     "noComments": "ఇంకా వ్యాఖ్యలు లేవు",
-    "addComment": "వ్యాఖ్యను జోడించండి...",
+    "addComment": "వ్యాఖ్య రాయండి…",
     "post": "పోస్ట్ చేయండి",
     "videoUnavailableDesc": "ఈ వీడియోను లోడ్ చేయడం సాధ్యం కాలేదు. ఇది తీసివేయబడి ఉండవచ్చు లేదా ప్రాంతీయ పరిమితి ఉండవచ్చు.",
     "alertReportedTitle": "నివేదించబడింది",

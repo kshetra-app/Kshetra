@@ -194,7 +194,7 @@ export default function ProfileHeroCard({
           <View style={styles.computedMetricPill}>
             <Text style={styles.computedMetricLabel}>{t('legislator.age', { defaultValue: 'Age' })}</Text>
             <Text style={styles.computedMetricValue}>
-              {age != null ? age : '—'} <Text style={styles.computedMetricUnit}>{age != null ? translateScreenLabel("screenLabels.ProfileHeroCard.yrs") : ''}</Text>
+              {age != null ? translateScreenLabel('screenLabels.tabs.value1Yrs', { value1: age }) : '—'}
             </Text>
           </View>
           <View style={styles.computedMetricPill}>
@@ -391,10 +391,5 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: '#FFFFFF',
     marginTop: 2,
-  },
-  computedMetricUnit: {
-    fontSize: 9.5,
-    fontWeight: '600',
-    color: 'rgba(255, 255, 255, 0.7)',
   },
 });

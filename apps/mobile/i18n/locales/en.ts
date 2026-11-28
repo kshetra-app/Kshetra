@@ -101,14 +101,13 @@ const en =  {
       "othersValue1": "Others: {{value1}}%",
       "value1Cr": "₹{{value1}} Cr",
       "netValue1Cr": "Net: ₹{{value1}} Cr",
-      "value1Yrs": "{{value1}} Yrs",
+      "value1Yrs": "{{value1}} years",
       "dobValue1": "DOB: {{value1}}"
     },
     "intelligence": {
       "value1Turnout": "{{value1}}% turnout",
       "value1Value2AssemblyElections": "{{value1}} {{value2}} · Assembly Elections",
-      "seatValue1": "seat{{value1}}",
-      "value1SeatValue2": "{{value1}} seat{{value2}}",
+      "seatCount": "Seats: {{count}}",
       "value1MarginOfValue2Votes": "{{value1}} — margin of {{value2}} votes",
       "marginDataUnavailable": "Margin data unavailable",
       "value1AppearsInValue2RecordedConstituenciesValue3": "{{value1}} appears in {{value2}} recorded constituencies ({{value3}}% of party-known records)",
@@ -121,7 +120,7 @@ const en =  {
       "value1TapForDevSwitches": "{{value1}} • Tap for Dev Switches"
     },
     "shorts": {
-      "value1ShortValue2": "{{value1}} short{{value2}}"
+      "shortCount": "Short videos: {{count}}"
     },
     "candidateXray": {
       "candidateRecordNotFound": "Candidate record not found",
@@ -210,7 +209,7 @@ const en =  {
     "parliament": {
       "lsValue1RsValue2TotalValue3": "LS: {{value1}} · RS: {{value2}} · Total: {{value3}}",
       "lokSabha18th": "Lok Sabha (18th)",
-      "value1Yrs": "{{value1}} yrs"
+      "value1Yrs": "{{value1}} years"
     },
     "reader": {
       "contentFromValue1": "Content from {{value1}}",
@@ -219,7 +218,7 @@ const en =  {
     "representative": {
       "thisPollIsOfficiallyNonPartyPartyAffiliation": "This poll is officially non-party. Party affiliation ({{value1}}) is de-facto / unofficial.",
       "wardValue1": "Ward {{value1}}",
-      "value1DeclaredCaseValue2": "{{value1}} declared case{{value2}}",
+      "casesDisclosed": "Cases disclosed: {{count}}",
       "verifyOnStateElectionCommissionPortal": "Verify on State Election Commission Portal",
       "suggestAnEditWithSource": "Suggest an edit (with source)",
       "value1Record": "{{value1}} record",
@@ -279,6 +278,7 @@ const en =  {
     },
     "CampaignOutreachPanel": {
       "value1CharsValue2": "{{value1}} chars{{value2}}",
+      "smsSegmentCount": "SMS segments: {{count}}",
       "goesOutValue1": "Goes out {{value1}}",
       "answered": "Answered",
       "templateName": "Template name",
@@ -357,7 +357,6 @@ const en =  {
       "activeInConstituencyOutreachSabhas": "Active in constituency outreach Sabhas",
       "label1HrAgo": "1 hr ago",
       "educationGrassrootsBackground": "Education & Grassroots Background",
-      "maPublicPolicy": "పోస్ట్ గ్రాడ్యుయేషన్ (MA Public Policy)",
       "postGraduationMaPublicPolicy": "Post Graduation (MA Public Policy)",
       "osmaniaUniversityDistinction": "Osmania University · Distinction",
       "grassrootsCivicActionCommittee": "Grassroots Civic Action Committee",
@@ -534,7 +533,7 @@ const en =  {
     "CriminalRecordCard": {
       "criminalCaseDisclosureUnavailable": "Criminal case disclosure unavailable",
       "noCriminalCasesDeclared": "No criminal cases declared",
-      "value1CaseValue2Value3": "{{value1}} case{{value2}}{{value3}}",
+      "seriousCount": "Serious cases disclosed: {{count}}",
       "totalCases": "Total Cases",
       "serious": "Serious",
       "convictions": "Convictions",
@@ -579,7 +578,7 @@ const en =  {
       "mplads": "MPLADS"
     },
     "RedFlagsBanner": {
-      "value1RedFlagValue2Detected": "{{value1}} Red Flag{{value2}} Detected"
+      "flagCount": "Items flagged for review: {{count}}"
     },
     "news": {
       "noSavedStoriesYet": "No saved stories yet",
@@ -605,8 +604,7 @@ const en =  {
     },
     "ProfileHeroCard": {
       "label1stRunnerUp": "1st Runner-up",
-      "label2ndRunnerUp": "2nd Runner-up",
-      "yrs": "Yrs"
+      "label2ndRunnerUp": "2nd Runner-up"
     },
     "ProjectCard": {
       "acValue1": " · AC #{{value1}}"
@@ -688,18 +686,18 @@ const en =  {
     "profileSummary": {
       "national": "The Election Commission of India listed this party as a recognized national party in the {{election}}.",
       "state": "The Election Commission of India listed this party as a recognized state party in the {{election}}.",
-      "registered": "The Election Commission of India listed this party as registered and unrecognized in the {{election}}."
+      "registered": "The Election Commission of India listed this party for the {{election}} as registered without national or state party recognition."
     },
     "actionFailed": "Could not save the change. Please try again.",
     "official": "Verified official Page",
     "source": "View official source",
     "followers_one": "{{count}} follower",
     "followers_other": "{{count}} followers",
-    "follow": "Follow Page",
-    "unfollow": "Unfollow Page",
+    "follow": "Follow page",
+    "unfollow": "Unfollow page",
     "myDeclaration": "My affiliation",
-    "affiliationHelp": "You can declare one party affiliation. Following a Page does not declare an affiliation.",
-    "publicAffiliation": "Self-declared affiliation: {{party}}",
+    "affiliationHelp": "You can declare your affiliation with one party. Following its page keeps you up to date and leaves your affiliation setting unchanged.",
+    "publicAffiliation": "Affiliation declared by the user: {{party}}",
     "declare": "Declare affiliation",
     "publicLabel": "Public",
     "privateLabel": "Private",
@@ -844,7 +842,7 @@ const en =  {
     "followers": "Followers",
     "following": "Following",
     "timeAgo": {
-      "justNow": "just now",
+      "justNow": "Just now",
       "minutesAgo": "{{n}}m ago",
       "hoursAgo": "{{n}}h ago",
       "daysAgo": "{{n}}d ago",
@@ -1644,7 +1642,8 @@ const en =  {
       "acknowledged": "Acknowledged",
       "in_progress": "In Progress",
       "resolved": "Resolved",
-      "closed": "Closed"
+      "closed": "Closed",
+      "reopened": "Reopened"
     },
     "headlineCategories": {
       "politics": "Politics",
@@ -2382,6 +2381,7 @@ const en =  {
     "tabs": {
       "feed": "Feed",
       "factChecks": "Fact Checks",
+      "journalists": "Journalists",
       "investigations": "Investigations",
       "myArticles": "My Articles"
     },
@@ -2582,7 +2582,7 @@ const en =  {
     "serviceVoice": "Voice Call (OBD)",
     "serviceMeta": "Facebook Page",
     "whatsappFreeTitle": "Zero Cost · Direct Organic Reach",
-    "whatsappPricingDesc": "Unlimited status shares and group broadcasts using your official device. No telecom approvals needed.",
+    "whatsappPricingDesc": "Share status updates and send messages to groups from your authorised phone.",
     "guidanceTitle": "How It Works & Best Practices",
     "dos": "DOs",
     "donts": "DON'Ts",
@@ -3413,7 +3413,7 @@ const en =  {
     "targetYearRequired": "Choose the election year you intend to contest.",
     "affiliationRequired": "Choose an affiliation to continue.",
     "title": "Become an Aspirant",
-    "introText": "Create a public civic profile to track your Civic Score, earn badges, and let your constituency know you want to lead. You can hide your profile any time.",
+    "introText": "Create a civic profile to track your Civic Score and tell people where you want to serve. You choose whether to show it publicly.",
     "publicName": "Public name",
     "namePlaceholder": "Name voters will see",
     "nameRequired": "Name required",
@@ -3434,9 +3434,9 @@ const en =  {
     "listInDirectoryDesc": "Other citizens can find and endorse you.",
     "createProfile": "Create my Aspirant profile",
     "welcomeTitle": "Welcome, Aspirant!",
-    "welcomeMsg": "Your civic profile is live. Complete modules and challenges to grow your Civic Score.",
+    "welcomeMsg": "Your civic profile was saved. You can manage its visibility from your profile settings.",
     "successTitle": "Welcome, Aspirant!",
-    "successMsg": "Your civic profile is live. Complete modules and challenges to grow your Civic Score.",
+    "successMsg": "Your civic profile was saved. You can manage its visibility from your profile settings.",
     "errorTitle": "Could not create profile",
     "errorMsg": "Something went wrong. Please try again.",
     "letsGo": "Let’s go",
@@ -3771,12 +3771,12 @@ const en =  {
     "democraticCuration": "Democratic Local Curation",
     "curationDesc": "Help your constituency decide what content is relevant and trustworthy.",
     "approve": "Approve",
-    "flagShort": "Flag",
+    "flagShort": "Flag for review",
     "skip": "Skip",
     "views": "views",
     "comments": "Comments",
     "noComments": "No comments yet",
-    "addComment": "Add a comment...",
+    "addComment": "Write a comment…",
     "post": "Post",
     "videoUnavailableDesc": "This video could not be loaded. It may have been removed or is region-restricted.",
     "alertReportedTitle": "Reported",

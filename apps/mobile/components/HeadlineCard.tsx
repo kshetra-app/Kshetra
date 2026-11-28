@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, Pressable, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { useTimeAgo } from '../lib/useTimeAgo';
 import { useTheme } from '../lib/theme';
 import type { Headline } from '../lib/civicTypes';
 
@@ -16,27 +17,13 @@ const CATEGORY_COLORS: Record<string, string> = {
   opinion: '#EA580C',
 };
 
-function formatTimeAgo(dateStr: string, t: any): string {
-  const now = Date.now();
-  const then = new Date(dateStr).getTime();
-  if (isNaN(then)) return '';
-  const diffMs = Math.max(0, now - then);
-  const mins = Math.floor(diffMs / 60000);
-  if (mins < 1) return t('common.justNow', { defaultValue: 'Just now' });
-  if (mins < 60) return `${mins}${t('common.minutesShort', { defaultValue: 'm' })} ${t('common.ago', { defaultValue: 'ago' })}`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}${t('common.hoursShort', { defaultValue: 'h' })} ${t('common.ago', { defaultValue: 'ago' })}`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}${t('common.daysShort', { defaultValue: 'd' })} ${t('common.ago', { defaultValue: 'ago' })}`;
-  return new Date(dateStr).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-}
-
 interface HeadlineCardProps {
   headline: Headline;
 }
 
 export default function HeadlineCard({ headline }: HeadlineCardProps) {
   const { t } = useTranslation();
+  const { timeAgo } = useTimeAgo(true);
   const { colors } = useTheme();
   const catColor = CATEGORY_COLORS[headline.category] ?? colors.gold;
   const catLabel = t(`content.headlineCategories.${headline.category}`, headline.category.replace(/_/g, ' '));
@@ -72,7 +59,7 @@ export default function HeadlineCard({ headline }: HeadlineCardProps) {
             <Text style={[styles.categoryText, { color: catColor }]}>{catLabel}</Text>
           </View>
         </View>
-        <Text style={[styles.timeText, { color: colors.textMuted }]}>{formatTimeAgo(headline.publishedAt, t)}</Text>
+        <Text style={[styles.timeText, { color: colors.textMuted }]}>{timeAgo(headline.publishedAt)}</Text>
       </View>
 
       <Text style={[styles.title, { color: colors.text }]} numberOfLines={3}>{hlTitle}</Text>

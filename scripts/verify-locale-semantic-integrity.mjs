@@ -5,6 +5,22 @@ import ts from 'typescript';
 const localesDir = path.join(process.cwd(), 'apps', 'mobile', 'i18n', 'locales');
 const fallbackPolicyPath = path.join(process.cwd(), 'apps', 'mobile', 'i18n', 'approvedEnglishFallbacks.json');
 const languages = ['en', 'te', 'hi', 'ta', 'kn', 'ml', 'mr', 'bn', 'gu', 'or', 'pa', 'as', 'ne'];
+const localeScripts = {
+  te: 'Telugu',
+  hi: 'Devanagari',
+  ta: 'Tamil',
+  kn: 'Kannada',
+  ml: 'Malayalam',
+  mr: 'Devanagari',
+  bn: 'Bengali',
+  gu: 'Gujarati',
+  or: 'Oriya',
+  pa: 'Gurmukhi',
+  as: 'Bengali',
+  ne: 'Devanagari',
+};
+// These user-facing sections have been checked for accidental script substitution.
+const scriptCheckedSections = ['partyRegistry.', 'common.timeAgo.', 'shortsPlayer.'];
 const fallbackPolicy = JSON.parse(fs.readFileSync(fallbackPolicyPath, 'utf8'));
 if (fallbackPolicy.fallbackLanguage !== 'en' || !Array.isArray(fallbackPolicy.keys)) {
   throw new Error('Approved English fallback policy is missing or invalid.');
@@ -80,6 +96,27 @@ const enFile = path.join(localesDir, 'en.ts');
 const enObj = loadLocale(enFile);
 const enFlat = flatten(enObj);
 const enKeys = Object.keys(enFlat);
+const mobileDir = path.dirname(path.dirname(localesDir));
+const screenRootDirs = ['app', 'components'].map((folder) => path.join(mobileDir, folder));
+for (const directory of screenRootDirs) {
+  for (const relativeFile of fs.readdirSync(directory, { recursive: true })) {
+    if (!relativeFile.endsWith('.tsx') || /\.(test|spec)\.tsx$/.test(relativeFile)) continue;
+    const file = path.join(directory, relativeFile);
+    const screen = ts.createSourceFile(file, fs.readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true);
+    function inspectScreen(node) {
+      if (ts.isPropertyAssignment(node) && node.name.text === 'i18nKey' &&
+          ts.isStringLiteralLike(node.initializer)) {
+        const key = node.initializer.text;
+        if (!(key in enFlat)) {
+          const { line } = screen.getLineAndCharacterOfPosition(node.getStart(screen));
+          throw new Error(`${path.relative(process.cwd(), file)}:${line + 1} uses an undefined locale key ${key}`);
+        }
+      }
+      ts.forEachChild(node, inspectScreen);
+    }
+    inspectScreen(screen);
+  }
+}
 const unknownFallbackKeys = Array.from(approvedEnglishFallbacks).filter(k => !(k in enFlat));
 if (unknownFallbackKeys.length > 0 || approvedEnglishFallbacks.size !== fallbackPolicy.keys.length) {
   throw new Error(`Approved English fallback policy contains invalid or duplicate keys: ${unknownFallbackKeys.join(', ')}`);
@@ -114,6 +151,8 @@ languages.forEach(lang => {
   const extraKeys = keys.filter(k => !(k in enFlat));
   const tokenMismatches = [];
   const copiedEnglishKeys = [];
+  const mixedScriptKeys = [];
+  const localeScript = localeScripts[lang] && new RegExp(`\\p{Script=${localeScripts[lang]}}`, 'u');
 
   for (const k of enKeys) {
     const expectedVal = enFlat[k];
@@ -128,6 +167,13 @@ languages.forEach(lang => {
     if (lang !== 'en' && actualVal === expectedVal && !invariantLocaleKeys.has(k) &&
         /[a-z]{2}/i.test(actualVal.replace(/\{\{[^}]+\}\}/g, ''))) {
       copiedEnglishKeys.push(k);
+    }
+    if (localeScript && scriptCheckedSections.some((section) => k.startsWith(section))) {
+      const words = actualVal.replace(/\{\{[^}]+\}\}/g, '');
+      if ([...words].some((char) => /\p{L}|\p{M}/u.test(char) && !localeScript.test(char) &&
+          !/\p{Script=Latin}|\p{Script=Common}|\p{Script=Inherited}/u.test(char))) {
+        mixedScriptKeys.push(k);
+      }
     }
     const expectedTokens = extractTokens(expectedVal).sort();
     const actualTokens = extractTokens(actualVal).sort();
@@ -149,9 +195,12 @@ languages.forEach(lang => {
 
   const effectiveKeyCount = keys.length + approvedFallbackKeys.length;
   const isPass = missingKeys.length === 0 && extraKeys.length === 0 && tokenMismatches.length === 0 &&
-    copiedEnglishKeys.length === 0 && effectiveKeyCount === enKeys.length;
+    copiedEnglishKeys.length === 0 && mixedScriptKeys.length === 0 && effectiveKeyCount === enKeys.length;
   if (copiedEnglishKeys.length) {
     console.error(`[i18n] ${lang} contains copied English values: ${copiedEnglishKeys.join(', ')}`);
+  }
+  if (mixedScriptKeys.length) {
+    console.error(`[i18n] ${lang} contains unexpected scripts: ${mixedScriptKeys.join(', ')}`);
   }
   if (!isPass) allPass = false;
 

@@ -15,10 +15,10 @@ import { IS_LIVE_ENVIRONMENT } from '../../lib/environment';
 type Tab = 'politicians' | 'events' | 'manifestos' | 'surveys';
 
 const TAB_KEYS: { key: Tab; i18nKey: string; icon: string }[] = [
-  { key: 'politicians', i18nKey: 'politicianPortal.tabPoliticians', icon: 'people' },
-  { key: 'events', i18nKey: 'politicianPortal.tabEvents', icon: 'calendar' },
-  { key: 'manifestos', i18nKey: 'politicianPortal.tabManifestos', icon: 'document-text' },
-  { key: 'surveys', i18nKey: 'politicianPortal.tabSurveys', icon: 'bar-chart' },
+  { key: 'politicians', i18nKey: 'pages.tabPoliticians', icon: 'people' },
+  { key: 'events', i18nKey: 'politicianPortal.tabs.events', icon: 'calendar' },
+  { key: 'manifestos', i18nKey: 'politicianPortal.tabs.manifesto', icon: 'document-text' },
+  { key: 'surveys', i18nKey: 'politicianPortal.tabs.surveys', icon: 'bar-chart' },
 ];
 
 export default function PoliticianPortalScreen() {
@@ -93,6 +93,8 @@ export default function PoliticianPortalScreen() {
               { backgroundColor: colors.surface, borderColor: colors.goldBorder || colors.border, borderWidth: 1 },
               activeTab === tab.key && { backgroundColor: colors.primary, borderColor: colors.primary },
             ]}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: activeTab === tab.key }}
             onPress={() => setActiveTab(tab.key)}
           >
             <Ionicons name={(activeTab === tab.key ? tab.icon : `${tab.icon}-outline`) as any} size={16} color={activeTab === tab.key ? '#FFFFFF' : colors.textMuted} />

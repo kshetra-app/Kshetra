@@ -106,8 +106,7 @@ const mr = {
     },
     "ProfileHeroCard": {
       "label1stRunnerUp": "पहिला उपविजेता",
-      "label2ndRunnerUp": "2रा उपविजेता",
-      "yrs": "वर्ष"
+      "label2ndRunnerUp": "2रा उपविजेता"
     },
     "ProjectCard": {
       "acValue1": "· AC # {{value1}}"
@@ -132,7 +131,7 @@ const mr = {
       "othersValue1": "इतर: {{value1}} %",
       "value1Cr": "₹ {{value1}} कोटी",
       "netValue1Cr": "निव्वळ: ₹ {{value1}} कोटी",
-      "value1Yrs": "{{value1}} वर्ष",
+      "value1Yrs": "{{value1}} वर्षे",
       "dobValue1": "जन्मतारीख · {{value1}}",
       "tapAnyStateToExploreItsAssemblyConstituencies": "कोणत्याही राज्याचे विधानसभा मतदारसंघ एक्सप्लोर करण्यासाठी टॅप करा",
       "boothValue1": "बूथ # {{value1}}",
@@ -145,8 +144,7 @@ const mr = {
     },
     "intelligence": {
       "value1Value2AssemblyElections": "{{value1}}  {{value2}} · विधानसभा निवडणुका",
-      "seatValue1": "सीट {{value1}}",
-      "value1SeatValue2": "{{value1}} सीट {{value2}}",
+      "seatCount": "जागा: {{count}}",
       "value1MarginOfValue2Votes": "{{value1}} — {{value2}} मतांचे फरक",
       "marginDataUnavailable": "मार्जिन डेटा अनुपलब्ध",
       "value1AppearsInValue2RecordedConstituenciesValue3": "{{value1}}  {{value2}} रेकॉर्ड केलेल्या मतदारसंघांमध्ये दिसून येतो (पक्ष-ज्ञात रेकॉर्डपैकी {{value3}} %)",
@@ -160,7 +158,7 @@ const mr = {
       "value1TapForDevSwitches": "{{value1}} • देव स्विचसाठी टॅप करा"
     },
     "shorts": {
-      "value1ShortValue2": "{{value1}} लहान {{value2}}"
+      "shortCount": "छोटे व्हिडिओ: {{count}}"
     },
     "candidateXray": {
       "candidateRecordNotFound": "उमेदवाराची नोंद सापडली नाही",
@@ -262,7 +260,7 @@ const mr = {
       "officialElectionResultsFromTelanganaStateElection": "तेलंगणा राज्य निवडणूक आयोग (TSEC) कडून अधिकृत निवडणूक निकाल - तुमचे प्रतिनिधी जाणून घ्या (KYR)",
       "thisPollIsOfficiallyNonPartyPartyAffiliation": "हे मतदान अधिकृतपणे पक्षविरहित आहे. पक्ष संलग्नता ( {{value1}} ) वास्तविक / अनधिकृत आहे.",
       "wardValue1": "प्रभाग {{value1}}",
-      "value1DeclaredCaseValue2": "{{value1}} घोषित केस {{value2}}",
+      "casesDisclosed": "प्रतिज्ञापत्रात नमूद प्रकरणे: {{count}}",
       "verifyOnStateElectionCommissionPortal": "राज्य निवडणूक आयोगाच्या पोर्टलवर पडताळणी करा",
       "suggestAnEditWithSource": "संपादन सुचवा (स्रोतसह)"
     },
@@ -327,6 +325,7 @@ const mr = {
       "value1ToValue2": "{{value1}} ते {{value2}}",
       "deliveryNotConnected": "वितरण कनेक्ट केलेले नाही",
       "value1CharsValue2": "{{value1}} वर्ण {{value2}}",
+      "smsSegmentCount": "एसएमएसचे भाग: {{count}}",
       "goesOutValue1": "{{value1}} बाहेर जातो",
       "answered": "उत्तर दिले",
       "templateName": "टेम्पलेट नाव",
@@ -389,7 +388,6 @@ const mr = {
       "activeInConstituencyOutreachSabhas": "मतदारसंघ प्रचार सभांमध्ये सक्रिय",
       "label1HrAgo": "1 तासापूर्वी",
       "educationGrassrootsBackground": "शिक्षण आणि तळागाळातील पार्श्वभूमी",
-      "maPublicPolicy": "పోస్ట్ గ్రాడ్యుయేషన్ (MA सार्वजनिक धोरण)",
       "postGraduationMaPublicPolicy": "पोस्ट ग्रॅज्युएशन (एमए सार्वजनिक धोरण)",
       "osmaniaUniversityDistinction": "उस्मानिया विद्यापीठ · विशिष्टता",
       "grassrootsCivicActionCommittee": "तळागाळातील नागरी कृती समिती",
@@ -569,7 +567,7 @@ const mr = {
       "pending": "प्रलंबित",
       "criminalCaseDisclosureUnavailable": "गुन्हेगारी प्रकरणाचा खुलासा उपलब्ध नाही",
       "noCriminalCasesDeclared": "कोणतेही फौजदारी गुन्हे जाहीर केलेले नाहीत",
-      "value1CaseValue2Value3": "{{value1}} केस {{value2}}  {{value3}}",
+      "seriousCount": "नमूद गंभीर प्रकरणे: {{count}}",
       "totalCases": "एकूण प्रकरणे",
       "serious": "गंभीर",
       "convictions": "समजुती",
@@ -612,7 +610,7 @@ const mr = {
       "comingSoon": "लवकरच येत आहे"
     },
     "RedFlagsBanner": {
-      "value1RedFlagValue2Detected": "{{value1}} लाल ध्वज {{value2}} आढळला"
+      "flagCount": "तपासायचे मुद्दे: {{count}}"
     }
   },
   "constituencyDirectory": {
@@ -667,7 +665,7 @@ const mr = {
     "profileSummary": {
       "national": "भारताच्या निवडणूक आयोगाने {{election}} मध्ये हा पक्ष मान्यताप्राप्त राष्ट्रीय पक्ष म्हणून सूचीबद्ध केला आहे.",
       "state": "भारताच्या निवडणूक आयोगाने {{election}} मध्ये या पक्षाला मान्यताप्राप्त राज्य पक्ष म्हणून सूचीबद्ध केले.",
-      "registered": "भारताच्या निवडणूक आयोगाने या पक्षाला {{election}} मध्ये नोंदणीकृत आणि अपरिचित म्हणून सूचीबद्ध केले."
+      "registered": "{{election}} वेळी भारत निवडणूक आयोगाने या पक्षाची नोंद नोंदणीकृत पक्ष म्हणून केली होती. या पक्षाला राष्ट्रीय किंवा राज्य पक्ष म्हणून मान्यता नव्हती."
     },
     "retryControls": "काही पृष्ठ नियंत्रणे लोड होऊ शकली नाहीत. पुन्हा प्रयत्न करा",
     "verifyToClaim": "अर्ज करण्यासाठी तुमचे योगदानकर्ता खाते सत्यापित करा",
@@ -698,8 +696,8 @@ const mr = {
     "follow": "पेज फॉलो करा",
     "unfollow": "पेज अनफॉलो करा",
     "myDeclaration": "माझी संलग्नता",
-    "affiliationHelp": "तुम्ही एका पक्षाची संलग्नता घोषित करू शकता. पृष्ठाचे अनुसरण केल्याने संलग्नता घोषित होत नाही.",
-    "publicAffiliation": "स्वयं-घोषित संलग्नता: {{party}}",
+    "affiliationHelp": "तुम्ही एका पक्षाशी तुमचा संबंध जाहीर करू शकता. त्या पक्षाचे पेज फॉलो केल्यावर त्याच्या नवीन पोस्ट दिसतील. तुम्ही जाहीर केलेला संबंध बदलणार नाही.",
+    "publicAffiliation": "सदस्याने स्वतः जाहीर केलेला पक्षाशी संबंध: {{party}}",
     "declare": "संलग्नता घोषित करा",
     "publicLabel": "सार्वजनिक",
     "privateLabel": "खाजगी",
@@ -857,10 +855,10 @@ const mr = {
     "following": "फॉलो करत आहात",
     "timeAgo": {
       "justNow": "आत्ताच",
-      "minutesAgo": "{{n}} मि. पूर्वी",
-      "hoursAgo": "{{n}} तास पूर्वी",
-      "daysAgo": "{{n}} दिवस पूर्वी",
-      "weeksAgo": "{{n}} आठवडे पूर्वी"
+      "minutesAgo": "{{n}} मिनिटांपूर्वी",
+      "hoursAgo": "{{n}} तासांपूर्वी",
+      "daysAgo": "{{n}} दिवसांपूर्वी",
+      "weeksAgo": "{{n}} आठवड्यांपूर्वी"
     },
     "scopes": {
       "constituency": "मतदारसंघ",
@@ -1656,7 +1654,8 @@ const mr = {
       "acknowledged": "मान्य",
       "in_progress": "प्रगतीत",
       "resolved": "सोडवलेले",
-      "closed": "बंद"
+      "closed": "बंद",
+      "reopened": "पुन्हा उघडले"
     },
     "headlineCategories": {
       "politics": "राजकारण",
@@ -2394,6 +2393,7 @@ const mr = {
     "tabs": {
       "feed": "फीड",
       "factChecks": "तथ्य तपासणी",
+      "journalists": "पत्रकार",
       "investigations": "शोधपत्रकारिता",
       "myArticles": "माझे लेख"
     },
@@ -2594,7 +2594,7 @@ const mr = {
     "serviceVoice": "व्हॉइस कॉल (OBD)",
     "serviceMeta": "फेसबुक पेज",
     "whatsappFreeTitle": "शून्य खर्च · थेट सेंद्रिय पोहोच",
-    "whatsappPricingDesc": "तुमचे अधिकृत डिव्हाइस वापरून अमर्यादित स्टेटस शेअर्स आणि ग्रुप ब्रॉडकास्ट. दूरसंचार मंजुरीची गरज नाही.",
+    "whatsappPricingDesc": "तुमच्या अधिकृत फोनवरून स्टेटस शेअर करा आणि ग्रुपना संदेश पाठवा.",
     "guidanceTitle": "ते कसे कार्य करते आणि सर्वोत्तम पद्धती",
     "dos": "करण्याच्या गोष्टी",
     "donts": "करू नका",
@@ -3413,7 +3413,7 @@ const mr = {
     "targetYearRequired": "तुम्हाला निवडणूक लढवायची आहे ते वर्ष निवडा.",
     "affiliationRequired": "सुरू ठेवण्यासाठी संलग्नता निवडा.",
     "title": "आकांक्षी बना",
-    "introText": "तुमचा नागरी स्कोअर ट्रॅक करण्यासाठी सार्वजनिक नागरी प्रोफाइल तयार करा, बॅज मिळवा आणि तुमच्या मतदारसंघाला कळवा की तुम्हाला नेतृत्व करायचे आहे. तुम्ही तुमचे प्रोफाइल कधीही लपवू शकता.",
+    "introText": "तुमचे नागरिक गुण पाहण्यासाठी आणि तुम्हाला कुठे काम करायचे आहे हे सांगण्यासाठी नागरिक प्रोफाइल तयार करा. ते सार्वजनिक ठेवायचे की नाही हे तुम्ही ठरवा.",
     "publicName": "सार्वजनिक नाव",
     "namePlaceholder": "नाव मतदारांना दिसेल",
     "nameRequired": "नाव आवश्यक",
@@ -3434,9 +3434,9 @@ const mr = {
     "listInDirectoryDesc": "इतर नागरिक तुम्हाला शोधू शकतात आणि समर्थन देऊ शकतात.",
     "createProfile": "माझी आकांक्षी प्रोफाइल बनवा",
     "welcomeTitle": "स्वागत, आकांक्षी!",
-    "welcomeMsg": "तुमची नागरी प्रोफाइल तयार झाली आहे. तुमचा नागरी स्कोअर वाढवण्यासाठी मॉड्यूल पूर्ण करा.",
+    "welcomeMsg": "तुमचे नागरिक प्रोफाइल जतन झाले. ते कोणाला दिसावे हे प्रोफाइल सेटिंग्जमध्ये बदलू शकता.",
     "successTitle": "स्वागत आहे, इच्छुक उमेदवार!",
-    "successMsg": "तुमची नागरी प्रोफाइल तयार झाली आहे. तुमचा नागरी स्कोअर वाढवण्यासाठी मॉड्यूल पूर्ण करा.",
+    "successMsg": "तुमचे नागरिक प्रोफाइल जतन झाले. ते कोणाला दिसावे हे प्रोफाइल सेटिंग्जमध्ये बदलू शकता.",
     "errorTitle": "प्रोफाइल तयार होऊ शकली नाही",
     "errorMsg": "काहीतरी चूक झाली. कृपया पुन्हा प्रयत्न करा.",
     "letsGo": "सुरू करूया",
@@ -3771,12 +3771,12 @@ const mr = {
     "democraticCuration": "लोकतांत्रिक स्थानीय चयन",
     "curationDesc": "अपने निर्वाचन क्षेत्र को तय करने में मदद करा कि कौन सी सामग्री प्रासंगिक और विश्वसनीय आहे।",
     "approve": "मंजूर करा",
-    "flagShort": "फ़्लैग करा",
+    "flagShort": "तपासणीसाठी तक्रार करा",
     "skip": "वगळा",
     "views": "व्यूज़",
     "comments": "टिप्पणियां",
     "noComments": "अभी कोई टिप्पणी नहीं आहे",
-    "addComment": "टिप्पणी जोड़ें...",
+    "addComment": "टिप्पणी लिहा…",
     "post": "पोस्ट करा",
     "videoUnavailableDesc": "यह वीडियो लोड नहीं हो सका। इसे हटा दिया गया हो सकता आहे या यह क्षेत्र-प्रतिबंधित आहे।",
     "alertReportedTitle": "रिपोर्ट किया गया",

@@ -1790,7 +1790,7 @@ function FullMapScreen() {
               </View>
               <View style={{ backgroundColor: '#1E293B', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, borderWidth: 1, borderColor: '#334155' }}>
                 <Text style={{ fontSize: 10, fontWeight: '700', color: '#94A3B8' }}>
-                  {selectedBooth.isUrban ? translateScreenLabel("screenLabels.tabs.urbanValue1", { value1: selectedBooth.wardNumber ? `· WARD ${selectedBooth.wardNumber}` : '' }) : translateScreenLabel("screenLabels.tabs.ruralGramPanchayat")}
+                  {selectedBooth.isUrban ? translateScreenLabel("screenLabels.tabs.urbanValue1", { value1: selectedBooth.wardNumber ? `· ${t('hierarchy.ward')} ${selectedBooth.wardNumber}` : '' }) : translateScreenLabel("screenLabels.tabs.ruralGramPanchayat")}
                 </Text>
               </View>
               {selectedBooth.historical && (
