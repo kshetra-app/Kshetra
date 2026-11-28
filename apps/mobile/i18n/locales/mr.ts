@@ -2,6 +2,15 @@
  * MR translation
  */
 const mr = {
+  "financialDisclosure": {
+    "completeItemization": "सर्व मालमत्ता घटकांचा तपशील",
+    "zeroAssets": "मालमत्तेचे मूल्य शून्य घोषित केले आहे",
+    "partialItemization": "प्रतिज्ञापत्रात मालमत्तेचा केवळ आंशिक तपशील दिला आहे",
+    "missingTotal": "एकूण मालमत्ता घोषित केलेली नाही. प्रतिज्ञापत्रातील आंशिक तपशील दाखवला आहे",
+    "noAssetsDisclosure": "प्रतिज्ञापत्रात मालमत्ता जाहीर केलेली नाही",
+    "noItemization": "प्रतिज्ञापत्रात घटकनिहाय तपशील दिलेला नाही",
+    "notDisclosed": "जाहीर केलेले नाही"
+  },
   "screenLabels": {
     "ConstituencySelectorSheet": {
       "acValue1": "AC {{value1}}"

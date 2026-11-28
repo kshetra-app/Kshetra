@@ -2,6 +2,15 @@
  * BN translation
  */
 const bn = {
+  "financialDisclosure": {
+    "completeItemization": "সব সম্পদের খাতভিত্তিক বিবরণ",
+    "zeroAssets": "সম্পদের মূল্য শূন্য ঘোষণা করা হয়েছে",
+    "partialItemization": "হলফনামায় সম্পদের আংশিক বিবরণ দেওয়া হয়েছে",
+    "missingTotal": "মোট সম্পদের মূল্য ঘোষণা করা হয়নি। হলফনামার আংশিক বিবরণ দেখানো হয়েছে",
+    "noAssetsDisclosure": "হলফনামায় সম্পদ ঘোষণা করা হয়নি",
+    "noItemization": "হলফনামায় খাতভিত্তিক বিবরণ দেওয়া হয়নি",
+    "notDisclosed": "প্রকাশ করা হয়নি"
+  },
   "screenLabels": {
     "news": {
       "noSavedStoriesYet": "এখনও কোন সংরক্ষিত গল্প",

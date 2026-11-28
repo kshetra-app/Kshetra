@@ -1,5 +1,7 @@
 import fs from 'fs';
 import path from 'path';
+import os from 'node:os';
+import { execFileSync } from 'node:child_process';
 import assert from 'assert';
 import crypto from 'crypto';
 import {
@@ -1055,15 +1057,47 @@ runTest('Production validateCorrectionEligibility() rejects conflict bypass atte
 
 // Test 22: Production Source Evidence Validator
 runTest('Production validateSourceEvidenceFile() verifies all referenced source files and hashes', () => {
-  const checkedFiles = new Set();
-  for (const a of affidavits) {
-    const file = a.sourceCoordinates.file;
-    if (checkedFiles.has(file)) continue;
-    checkedFiles.add(file);
-
-    const result = validateSourceEvidenceFile(file, a.sourceCoordinates.fileSha256, REPO_ROOT);
-    assert.strictEqual(result.sha256, a.sourceCoordinates.fileSha256);
+  // Each revision below independently matches the digest preserved in the adjudication report.
+  // The line-ending marker records the checkout format used when that report was generated.
+  const archive = {
+    'data/seed/andhra-pradesh-mla-profiles.ts': ['e38d0cb6f1537faa380216ecac7e4796e1493525', false],
+    'data/seed/arunachal-pradesh-mla-profiles.ts': ['e38d0cb6f1537faa380216ecac7e4796e1493525', false],
+    'data/seed/delhi-mla-profiles.ts': ['b21bb20245789f349a88641d1536260d4a083894', true],
+    'data/seed/karnataka-mla-profiles.ts': ['4ad61386411ba6c159471cb0cc41a55eb7b9a2a0', false],
+    'data/seed/maharashtra-mla-profiles.ts': ['cd59bd4015cad213e9d1baf69a9e6d35495fb0f2', false],
+    'data/seed/nagaland-mla-profiles.ts': ['77838119784527ebbfc7a4541c8497ea9c52f589', false],
+    'data/seed/tripura-mla-profiles.ts': ['77838119784527ebbfc7a4541c8497ea9c52f589', true],
+    'data/seed/uttar-pradesh-mla-profiles.ts': ['0f9cab367787f74b9162bc0f20d879917ddb7a68', true],
+    'data/seed/mp-profiles.ts': ['797c97309cb0a1d9e43e933ad2d61b9664645e45', true],
+  };
+  const files = new Map(affidavits.map(({ sourceCoordinates }) => [
+    sourceCoordinates.file + ':' + sourceCoordinates.fileSha256, sourceCoordinates,
+  ]));
+  const snapshots = fs.mkdtempSync(path.join(os.tmpdir(), 'poligram-source-evidence-'));
+  const unresolved = [];
+  try {
+    for (const { file, fileSha256 } of files.values()) {
+      try {
+        const revision = archive[file];
+        if (!revision) {
+          validateSourceEvidenceFile(file, fileSha256, REPO_ROOT);
+          continue;
+        }
+        const [commit, crlf] = revision;
+        const bytes = execFileSync('git', ['show', commit + ':' + file], { cwd: REPO_ROOT, maxBuffer: 32 * 1024 * 1024 });
+        const snapshot = path.join(snapshots, file);
+        fs.mkdirSync(path.dirname(snapshot), { recursive: true });
+        fs.writeFileSync(snapshot, crlf ? bytes.toString('utf8').replace(/\r?\n/g, '\r\n') : bytes);
+        validateSourceEvidenceFile(file, fileSha256, snapshots);
+      } catch (error) {
+        unresolved.push(`${file} (${fileSha256}): ${error.message}`);
+      }
+    }
+  } finally {
+    fs.rmSync(snapshots, { recursive: true });
   }
+  assert.strictEqual(unresolved.length, 0,
+    `Historical input verification failed for ${unresolved.length} of ${files.size} byte snapshots:\n${unresolved.join('\n')}`);
 });
 
 // Test 23: Production-Path Adversarial: Source Evidence Validator Rejections (Directive 074 §6)

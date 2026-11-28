@@ -2,6 +2,15 @@
  * GU translation
  */
 const gu = {
+  "financialDisclosure": {
+    "completeItemization": "તમામ સંપત્તિનો વિગતવાર હિસાબ",
+    "zeroAssets": "સંપત્તિનું મૂલ્ય શૂન્ય જાહેર કર્યું છે",
+    "partialItemization": "સોગંદનામામાં સંપત્તિની આંશિક વિગતો જ આપી છે",
+    "missingTotal": "કુલ સંપત્તિનું મૂલ્ય જાહેર કર્યું નથી. સોગંદનામાની આંશિક વિગતો દર્શાવી છે",
+    "noAssetsDisclosure": "સોગંદનામામાં સંપત્તિ જાહેર કરી નથી",
+    "noItemization": "સોગંદનામામાં દરેક ઘટકની વિગત આપી નથી",
+    "notDisclosed": "જાહેર કર્યું નથી"
+  },
   "screenLabels": {
     "news": {
       "noSavedStoriesYet": "હજી સુધી કોઈ સાચવેલી વાર્તાઓ નથી",

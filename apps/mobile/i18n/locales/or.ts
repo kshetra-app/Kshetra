@@ -2,6 +2,15 @@
  * OR translation
  */
 const or = {
+  "financialDisclosure": {
+    "completeItemization": "ସମସ୍ତ ସମ୍ପତ୍ତିର ବିସ୍ତୃତ ତାଲିକା",
+    "zeroAssets": "ସମ୍ପତ୍ତିର ମୂଲ୍ୟ ଶୂନ୍ୟ ବୋଲି ଘୋଷଣା କରାଯାଇଛି",
+    "partialItemization": "ସତ୍ୟପାଠରେ ସମ୍ପତ୍ତିର ଆଂଶିକ ବିବରଣୀ ଦିଆଯାଇଛି",
+    "missingTotal": "ମୋଟ ସମ୍ପତ୍ତି ମୂଲ୍ୟ ଘୋଷଣା ହୋଇନାହିଁ। ସତ୍ୟପାଠର ଆଂଶିକ ବିବରଣୀ ଦେଖାଯାଇଛି",
+    "noAssetsDisclosure": "ସତ୍ୟପାଠରେ ସମ୍ପତ୍ତି ଘୋଷଣା ହୋଇନାହିଁ",
+    "noItemization": "ସତ୍ୟପାଠରେ ପ୍ରତ୍ୟେକ ଘଟକର ବିବରଣୀ ଦିଆଯାଇନାହିଁ",
+    "notDisclosed": "ଘୋଷଣା ହୋଇନାହିଁ"
+  },
   "screenLabels": {
     "EventCard": {
       "rsvp": "ଉପସ୍ଥିତି ନିଶ୍ଚିତ କରନ୍ତୁ"

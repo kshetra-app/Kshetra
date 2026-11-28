@@ -2,6 +2,15 @@
  * PA translation
  */
 const pa = {
+  "financialDisclosure": {
+    "completeItemization": "ਸਾਰੀ ਜਾਇਦਾਦ ਦਾ ਮੱਦਵਾਰ ਵੇਰਵਾ",
+    "zeroAssets": "ਜਾਇਦਾਦ ਦੀ ਕੀਮਤ ਸਿਫ਼ਰ ਐਲਾਨੀ ਗਈ ਹੈ",
+    "partialItemization": "ਹਲਫ਼ਨਾਮੇ ਵਿੱਚ ਜਾਇਦਾਦ ਦਾ ਅੰਸ਼ਕ ਵੇਰਵਾ ਦਿੱਤਾ ਗਿਆ ਹੈ",
+    "missingTotal": "ਕੁੱਲ ਜਾਇਦਾਦ ਦੀ ਕੀਮਤ ਐਲਾਨੀ ਨਹੀਂ ਗਈ। ਹਲਫ਼ਨਾਮੇ ਦਾ ਅੰਸ਼ਕ ਵੇਰਵਾ ਦਿਖਾਇਆ ਗਿਆ ਹੈ",
+    "noAssetsDisclosure": "ਹਲਫ਼ਨਾਮੇ ਵਿੱਚ ਜਾਇਦਾਦ ਦਾ ਖੁਲਾਸਾ ਨਹੀਂ ਕੀਤਾ ਗਿਆ",
+    "noItemization": "ਹਲਫ਼ਨਾਮੇ ਵਿੱਚ ਮੱਦਵਾਰ ਵੇਰਵਾ ਨਹੀਂ ਦਿੱਤਾ ਗਿਆ",
+    "notDisclosed": "ਖੁਲਾਸਾ ਨਹੀਂ ਕੀਤਾ ਗਿਆ"
+  },
   "screenLabels": {
     "ConstituencySelectorSheet": {
       "acValue1": "AC {{value1}}"

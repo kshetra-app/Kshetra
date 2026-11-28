@@ -2,6 +2,15 @@
  * English (en) — Base translation
  */
 const en =  {
+  financialDisclosure: {
+    completeItemization: 'Complete itemization',
+    zeroAssets: 'Affirmative zero assets disclosed',
+    partialItemization: 'Partial itemization — complete component breakdown not disclosed in filing',
+    missingTotal: 'Total assets not disclosed in filing — partial itemization shown as filed',
+    noAssetsDisclosure: 'Assets not disclosed in filing',
+    noItemization: 'Component breakdown not itemized in filing',
+    notDisclosed: 'Not Disclosed',
+  },
   "screenLabels": {
     "dashboard": {
       "noLoadedReportsMatchTheseFiltersMoreReports": "No loaded reports match these filters. More reports are available to search.",

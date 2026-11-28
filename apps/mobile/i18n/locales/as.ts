@@ -2,6 +2,15 @@
  * AS translation
  */
 const as = {
+  "financialDisclosure": {
+    "completeItemization": "সকলো সম্পত্তিৰ পৃথক বিৱৰণ",
+    "zeroAssets": "সম্পত্তিৰ মূল্য শূন্য বুলি ঘোষণা কৰা হৈছে",
+    "partialItemization": "শপতনামাত সম্পত্তিৰ আংশিক বিৱৰণহে দিয়া হৈছে",
+    "missingTotal": "মুঠ সম্পত্তিৰ মূল্য ঘোষণা কৰা হোৱা নাই। শপতনামাত দিয়া আংশিক বিৱৰণ দেখুওৱা হৈছে",
+    "noAssetsDisclosure": "শপতনামাত সম্পত্তিৰ তথ্য প্ৰকাশ কৰা হোৱা নাই",
+    "noItemization": "শপতনামাত প্ৰতিটো ভাগৰ পৃথক বিৱৰণ দিয়া হোৱা নাই",
+    "notDisclosed": "প্ৰকাশ কৰা হোৱা নাই"
+  },
   "screenLabels": {
     "ConstituencySelectorSheet": {
       "acValue1": "AC {{value1}}"

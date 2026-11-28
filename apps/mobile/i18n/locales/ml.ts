@@ -2,6 +2,15 @@
  * ML translation
  */
 const ml = {
+  "financialDisclosure": {
+    "completeItemization": "എല്ലാ ആസ്തിയിനങ്ങളുടെയും വിശദാംശങ്ങൾ",
+    "zeroAssets": "ആസ്തിമൂല്യം പൂജ്യമെന്ന് പ്രഖ്യാപിച്ചു",
+    "partialItemization": "സത്യവാങ്മൂലത്തിൽ ആസ്തിയുടെ ഭാഗിക വിവരങ്ങൾ മാത്രമേ നൽകിയിട്ടുള്ളൂ",
+    "missingTotal": "മൊത്തം ആസ്തിമൂല്യം വെളിപ്പെടുത്തിയിട്ടില്ല. സത്യവാങ്മൂലത്തിലെ ഭാഗിക വിവരങ്ങൾ കാണിക്കുന്നു",
+    "noAssetsDisclosure": "സത്യവാങ്മൂലത്തിൽ ആസ്തി വെളിപ്പെടുത്തിയിട്ടില്ല",
+    "noItemization": "സത്യവാങ്മൂലത്തിൽ ഇനം തിരിച്ച് വിവരങ്ങൾ നൽകിയിട്ടില്ല",
+    "notDisclosed": "വെളിപ്പെടുത്തിയിട്ടില്ല"
+  },
   "screenLabels": {
     "ConstituencySelectorSheet": {
       "acValue1": "AC {{value1}}"

@@ -2,6 +2,15 @@
  * TE translation
  */
 const te = {
+  "financialDisclosure": {
+    "completeItemization": "పూర్తి ఆస్తుల వివరాలు",
+    "zeroAssets": "ఆస్తుల విలువ సున్నాగా ప్రకటించారు",
+    "partialItemization": "దాఖలులో ఆస్తుల వివరాలు పాక్షికంగా మాత్రమే వెల్లడించారు",
+    "missingTotal": "మొత్తం ఆస్తుల విలువ వెల్లడించలేదు. దాఖలులోని పాక్షిక వివరాలు చూపుతున్నాం",
+    "noAssetsDisclosure": "దాఖలులో ఆస్తుల వివరాలు వెల్లడించలేదు",
+    "noItemization": "దాఖలులో ఆస్తుల వారీగా వివరాలు ఇవ్వలేదు",
+    "notDisclosed": "వెల్లడించలేదు"
+  },
   "screenLabels": {
     "ConstituencySelectorSheet": {
       "acValue1": "AC {{value1}}"
@@ -595,18 +604,18 @@ const te = {
   "partyRegistry": {
     "electionRecord": "ఎన్నికల రికార్డు",
     "historyAndFilings": "చరిత్ర మరియు దాఖలాలు",
-    "electionCode": "రికార్డ్ చేయబడిన పార్టీ కోడ్ · {{code}}",
-    "ballotSymbol": "బ్యాలెట్ చిహ్నం · {{symbol}}",
+    "electionCode": "ఎన్నికల సంఘం నమోదు చేసిన పార్టీ సంకేతం · {{code}}",
+    "ballotSymbol": "ఎన్నికల గుర్తు · {{symbol}}",
     "seatsWon": "గెలిచిన సీట్లు · {{seats}}",
     "lokSabhaElection": "{{year}} లోక్‌సభ ఎన్నికలు",
-    "stateAssemblyElection": "{{year}}  {{state}} అసెంబ్లీ ఎన్నికలు",
+    "stateAssemblyElection": "{{year}} {{state}} శాసనసభ ఎన్నికలు",
     "foundedBy": "{{year}} లో {{founder}} ద్వారా స్థాపించబడింది.",
     "registeredIn": "{{year}} లో భారత ఎన్నికల సంఘంతో నమోదు చేయబడింది.",
     "renamedIn": "గతంలో {{name}} అని పిలిచేవారు. {{year}} లో పేరు మార్చబడింది.",
     "profileSummary": {
-      "national": "భారత ఎన్నికల సంఘం {{election}} లో ఈ పార్టీని గుర్తింపు పొందిన జాతీయ పార్టీగా జాబితా చేసింది.",
-      "state": "భారత ఎన్నికల సంఘం {{election}} లో ఈ పార్టీని గుర్తింపు పొందిన రాష్ట్ర పార్టీగా జాబితా చేసింది.",
-      "registered": "భారత ఎన్నికల సంఘం ఈ పార్టీని {{election}} లో నమోదిత మరియు గుర్తించబడనిదిగా జాబితా చేసింది."
+      "national": "{{election}} జరిగినప్పుడు భారత ఎన్నికల సంఘం ఈ పార్టీని గుర్తింపు పొందిన జాతీయ పార్టీగా నమోదు చేసింది.",
+      "state": "{{election}} జరిగినప్పుడు భారత ఎన్నికల సంఘం ఈ పార్టీని గుర్తింపు పొందిన రాష్ట్ర పార్టీగా నమోదు చేసింది.",
+      "registered": "{{election}} జరిగినప్పుడు భారత ఎన్నికల సంఘం ఈ పార్టీని నమోదైన, గుర్తింపు లేని రాజకీయ పార్టీగా పేర్కొంది."
     },
     "about": "పార్టీ గురించి",
     "registryIdentity": "{{party}}  {{code}} క్రింద రాజకీయ పార్టీ డైరెక్టరీలో జాబితా చేయబడింది.",

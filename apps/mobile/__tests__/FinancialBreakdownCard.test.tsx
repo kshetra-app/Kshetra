@@ -15,7 +15,10 @@
  * - Asserts correct labels and values rendered, no missing value represented as zero, zero runtime exceptions
  */
 import React from 'react';
-import { render, screen } from '@testing-library/react-native';
+import { render as renderNative, screen } from '@testing-library/react-native';
+import { createInstance } from 'i18next';
+import { I18nextProvider } from 'react-i18next';
+import en from '../i18n/locales/en';
 import FinancialBreakdownCard, {
   resolveBreakdownState,
   formatINR,
@@ -24,6 +27,15 @@ import FinancialBreakdownCard, {
 jest.mock('@expo/vector-icons', () => ({
   Ionicons: 'Ionicons',
 }));
+
+const translations = createInstance();
+beforeAll(async () => {
+  await translations.init({ lng: 'en', resources: { en: { translation: en } } });
+});
+
+function render(element: React.ReactElement) {
+  return renderNative(<I18nextProvider i18n={translations}>{element}</I18nextProvider>);
+}
 
 describe('<FinancialBreakdownCard /> & resolveBreakdownState (Directive 067 §4.2)', () => {
   // Scenario 1: all components disclosed and positive total

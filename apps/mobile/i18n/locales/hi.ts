@@ -2,6 +2,15 @@
  * HI translation
  */
 const hi = {
+  "financialDisclosure": {
+    "completeItemization": "सभी मदों का विवरण",
+    "zeroAssets": "संपत्ति का मूल्य शून्य घोषित किया गया",
+    "partialItemization": "शपथपत्र में संपत्ति का केवल आंशिक विवरण दिया गया है",
+    "missingTotal": "कुल संपत्ति घोषित नहीं की गई। शपथपत्र में दिए गए आंशिक विवरण दिखाए गए हैं",
+    "noAssetsDisclosure": "शपथपत्र में संपत्ति घोषित नहीं की गई",
+    "noItemization": "शपथपत्र में मदवार विवरण नहीं दिया गया",
+    "notDisclosed": "घोषित नहीं किया गया"
+  },
   "screenLabels": {
     "news": {
       "noSavedStoriesYet": "अभी तक कोई सहेजी गई कहानियाँ नहीं",

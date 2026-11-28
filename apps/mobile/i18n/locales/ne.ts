@@ -2,6 +2,15 @@
  * NE translation
  */
 const ne = {
+  "financialDisclosure": {
+    "completeItemization": "सबै सम्पत्तिको शीर्षकगत विवरण",
+    "zeroAssets": "सम्पत्तिको मूल्य शून्य घोषणा गरिएको छ",
+    "partialItemization": "शपथपत्रमा सम्पत्तिको आंशिक विवरण मात्र दिइएको छ",
+    "missingTotal": "कुल सम्पत्ति घोषणा गरिएको छैन। शपथपत्रमा दिइएको आंशिक विवरण देखाइएको छ",
+    "noAssetsDisclosure": "शपथपत्रमा सम्पत्ति खुलाइएको छैन",
+    "noItemization": "शपथपत्रमा प्रत्येक शीर्षकको छुट्टाछुट्टै विवरण छैन",
+    "notDisclosed": "खुलाइएको छैन"
+  },
   "screenLabels": {
     "ConstituencySelectorSheet": {
       "acValue1": "AC {{value1}}"
