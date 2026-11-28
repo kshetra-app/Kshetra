@@ -25,6 +25,7 @@ import { useTheme } from '../lib/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFeedStore } from '../stores/feed';
 import { useAuthStore } from '../stores/auth';
+import { selectUserProfileForAccount, useUserProfileStore } from '../stores/userProfile';
 import type { Post, Comment } from '../lib/feedTypes';
 import PollCard from './PollCard';
 import ContentGateActions from './ContentGateActions';
@@ -124,8 +125,8 @@ export default function PostDetailModal({
   const toggleReaction = useFeedStore((s) => s.toggleReaction);
   const votePoll = useFeedStore((s) => s.votePoll);
   const deletePost = useFeedStore((s) => s.deletePost);
-  const user = useAuthStore((s) => s.user);
-  const userId = user?.id ?? 'anon';
+  const userId = useAuthStore((s) => s.user?.id) ?? 'anon';
+  const ownProfile = useUserProfileStore((s) => selectUserProfileForAccount(s.profile, userId));
   const displayPost = post ? getLocalizedPost(post, i18n.language) : null;
   const comments = getLocalizedComments(
     rawComments.filter((c) => !c.isDeleted),
@@ -159,7 +160,7 @@ export default function PostDetailModal({
       return;
     }
 
-    const authorName = user?.email?.split('@')[0] ?? 'Citizen';
+    const authorName = ownProfile?.displayName?.trim() || t('verification.citizen');
     const clientToken = `client_cmt_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
     const newComment: Comment = {
       id: clientToken,
@@ -200,7 +201,7 @@ export default function PostDetailModal({
     } finally {
       setIsSendingComment(false);
     }
-  }, [post, commentText, user, userId, i18n.language, isSendingComment, commentLoading, addComment, editComment, editingId, t]);
+  }, [post, commentText, ownProfile, userId, i18n.language, isSendingComment, commentLoading, addComment, editComment, editingId, t]);
 
   const handleShare = useCallback(async () => {
     if (!post) return;
@@ -426,6 +427,9 @@ export default function PostDetailModal({
               <View style={[styles.metricsBar, { borderTopColor: colors.border, borderBottomColor: colors.border }]}>
                 <Pressable
                   style={styles.metricItem}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('postCard.like')}
+                  accessibilityState={{ selected: post.userReaction === 'like' }}
                   onPress={async () => {
                     if (!gateContentAction('react_post')) return;
                     const saved = await toggleReaction(post.id, 'like', onPostChanged ? post : undefined);

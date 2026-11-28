@@ -439,8 +439,6 @@ const en =  {
   "feed": {
     "archiveRecentHint": "Last 30 days",
     "archiveOlderHint": "Older posts",
-    "voteCount_one": "{{count}} vote",
-    "voteCount_other": "{{count}} votes",
     "selectRegion": "Select Feed Location",
     "nationalFeedHint": "Discussions and news from across India",
     "localFeedHint": "Posts from this constituency",

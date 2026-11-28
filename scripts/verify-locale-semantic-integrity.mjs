@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import ts from 'typescript';
 
 const localesDir = path.join(process.cwd(), 'apps', 'mobile', 'i18n', 'locales');
 const fallbackPolicyPath = path.join(process.cwd(), 'apps', 'mobile', 'i18n', 'approvedEnglishFallbacks.json');
@@ -14,6 +15,23 @@ console.log('=== 13-LANGUAGE SEMANTIC & BIDIRECTIONAL TOKEN INTEGRITY VALIDATOR 
 
 function loadLocale(filePath) {
   const content = fs.readFileSync(filePath, 'utf8');
+  const source = ts.createSourceFile(filePath, content, ts.ScriptTarget.Latest);
+  function inspect(node) {
+    if (ts.isObjectLiteralExpression(node)) {
+      const keys = new Set();
+      for (const property of node.properties) {
+        const key = property.name?.text;
+        if (key === undefined) continue;
+        if (keys.has(key)) {
+          const { line } = source.getLineAndCharacterOfPosition(property.getStart(source));
+          throw new Error(`${filePath}:${line + 1} has duplicate translation key ${key}`);
+        }
+        keys.add(key);
+      }
+    }
+    ts.forEachChild(node, inspect);
+  }
+  inspect(source);
   const clean = content
     .replace(/^import\s+.*;/gm, '')
     .replace(/^export\s+type\s+.*;/gm, '')
